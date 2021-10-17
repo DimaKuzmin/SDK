@@ -20,7 +20,7 @@ IC void set_backface( u32 &face_flags, bool value )
 
 IC u16 convert_edge_index( u32 face_flags, u16 edge_index )
 {
-	VERIFY( edge_index>=0 && edge_index<=2 );
+	//VERIFY( edge_index>=0 && edge_index<=2 );
 	if( is_backface( face_flags ) )
 		return (4 - edge_index)%3;
 	else
@@ -30,14 +30,14 @@ IC u16 convert_edge_index( u32 face_flags, u16 edge_index )
 IC bool is_soft_edge( u32 face_flags, u16 edge_index )
 {
 	edge_index = convert_edge_index( face_flags, edge_index );
-	VERIFY( edge_index>=0 && edge_index<=2 );
+	//VERIFY( edge_index>=0 && edge_index<=2 );
 	return  !( face_flags & ( 1<<edge_index ) );
 }
 
 IC void set_soft_edge( u32 &face_flags, u16 edge_index, bool value )
 {
 	edge_index = convert_edge_index( face_flags, edge_index );
-	VERIFY( edge_index>=0 && edge_index<=2 );
+	//VERIFY( edge_index>=0 && edge_index<=2 );
 	if(value)
 		face_flags &=	~(1<<edge_index);
 	else

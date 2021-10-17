@@ -31,6 +31,7 @@ void UISpawnTool::Draw()
         ImGui::TreePop();
     } 
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+    
     if (ImGui::TreeNode("Commands"))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
@@ -42,6 +43,7 @@ void UISpawnTool::Draw()
                     if (m_AttachObject) ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
                 }
                 ImGui::SameLine(0, 10);
+
                 if (ImGui::Button("Detach Object", ImVec2(-1, 0)))
                 {
                     ObjectList lst;

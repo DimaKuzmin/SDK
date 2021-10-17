@@ -17,6 +17,7 @@
 *   Returns int with capablity bit set.
 *
 ****************************************************/
+
 #ifdef X64
 int _cpuid ( _processor_info *pinfo )
 {
