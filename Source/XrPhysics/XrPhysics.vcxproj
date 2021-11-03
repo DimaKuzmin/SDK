@@ -222,7 +222,7 @@
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

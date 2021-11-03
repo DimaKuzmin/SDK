@@ -225,7 +225,7 @@
       <PreprocessorDefinitions>ENGINE_BUILD;_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <Optimization>Full</Optimization>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>

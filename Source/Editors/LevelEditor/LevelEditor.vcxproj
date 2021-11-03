@@ -488,7 +488,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

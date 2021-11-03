@@ -233,7 +233,7 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <OmitFramePointers>true</OmitFramePointers>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>

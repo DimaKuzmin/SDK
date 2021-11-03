@@ -215,7 +215,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
