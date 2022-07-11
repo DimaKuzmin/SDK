@@ -30,6 +30,7 @@ public:
     struct XRCORE_API	Sect {
 		shared_str		Name;
 		Items			Data;
+		xr_vector<shared_str> Includes;
 
 		BOOL			line_exist	(LPCSTR L, LPCSTR* val=0);
 	};
@@ -135,6 +136,7 @@ public:
 	BOOL		r_line			( LPCSTR S, int L,	LPCSTR* N, LPCSTR* V )const;
 	BOOL		r_line			( const shared_str& S, int L,	LPCSTR* N, LPCSTR* V )const;
 
+	void		w_section_include(LPCSTR S, LPCSTR include_sec);
     void		w_string		( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment=0 );
 	void		w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment=0 );
 	void		w_u16			( LPCSTR S, LPCSTR L, u16				V, LPCSTR comment=0 );

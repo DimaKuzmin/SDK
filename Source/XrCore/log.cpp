@@ -8,6 +8,8 @@
 	#include "malloc.h"
 #endif
 
+IWriter* filelog = nullptr;
+ 
 extern BOOL					LogExecCB		= TRUE;
 static string_path			logFName		= "engine.log";
 static string_path			log_file_name	= "engine.log";
@@ -22,6 +24,7 @@ static LogCallback			LogCB			= 0;
 
 void FlushLog			()
 {
+	/*
 	if (!no_log){
 		logCS.Enter			();
 		IWriter *f			= FS.w_open(logFName);
@@ -34,6 +37,10 @@ void FlushLog			()
         }
 		logCS.Leave			();
     }
+	*/
+	if (filelog)
+		filelog->flush();
+
 }
 
 void AddOne				(const char *split) 
@@ -56,7 +63,13 @@ void AddOne				(const char *split)
 	}
 
 	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
+	if (LogExecCB&&LogCB)
+		LogCB(split);
+
+	if (filelog)
+		filelog->w_string(split);
+
+	FlushLog();
 
 	logCS.Leave				();
 }
@@ -192,6 +205,8 @@ void CreateLog			(BOOL nl)
         }
         FS.w_close		(f);
     }
+
+	filelog = FS.w_open(logFName);
 }
 
 void CloseLog(void)
@@ -199,4 +214,5 @@ void CloseLog(void)
 	FlushLog		();
  	LogFile->clear	();
 	xr_delete		(LogFile);
+	FS.w_close(filelog);
 }

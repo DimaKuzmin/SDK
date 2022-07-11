@@ -547,6 +547,7 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 			{
 				m_EditGameTypeValue = node;
 			}
+
 			DrawEditGameType();
 		}
 			break;

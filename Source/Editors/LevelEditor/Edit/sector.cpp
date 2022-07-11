@@ -462,8 +462,9 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
 
     sprintf			(buff,"item_mesh_name_%.4d",item_idx);
     m_name			= ini.r_string	(sect_name, buff);
-
+     
 	sitem.mesh=sitem.object->GetReference()->FindMeshByName(m_name);
+
     if (sitem.mesh==0)
     {
     	ELog.Msg(mtError,"Sector Item contains object '%s' mesh '%s' - can't load.\nMesh not found.",o_name,m_name);

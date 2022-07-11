@@ -41,10 +41,13 @@ void CObjectAnimator::SetActiveMotion(COMotion* mot)
 void CObjectAnimator::LoadMotions(LPCSTR fname)
 {
 	string_path			full_path;
-	if (!FS.exist( full_path, "$level$", fname ))
-		if (!FS.exist( full_path, "$game_anims$", fname ))
-			Debug.fatal(DEBUG_INFO,"Can't find motion file '%s'.",fname);
-            
+    if (!FS.exist(full_path, "$level$", fname))
+        if (!FS.exist(full_path, "$game_anims$", fname))
+        {   //	Debug.fatal(DEBUG_INFO,"Can't find motion file '%s'.",fname);
+            Msg("Can't find motion file '%s'.", fname);
+            return;
+        }
+
     LPCSTR  ext			= strext(full_path);
     if (ext){
 		Clear			();
@@ -105,7 +108,8 @@ COMotion* CObjectAnimator::Play(bool loop, LPCSTR name)
 			m_MParam.Play	();
             return 		m_Motions.front();
         }else{
-            Debug.fatal	(DEBUG_INFO,"OBJ ANIM::Cycle '%s' not found.",name);
+           // Debug.fatal	(DEBUG_INFO,"OBJ ANIM::Cycle '%s' not found.",name);
+            Msg("OBJ ANIM::Cycle '%s' not found.", name);
             return NULL;
         }
     }

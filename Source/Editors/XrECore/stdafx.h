@@ -114,6 +114,7 @@ struct astr_pred
 #define _server_data_root_	"$server_data_root$"
 #define _local_root_		"$local_root$"
 #define _import_			"$import$"
+#define _import_spawns_		"$import_spawns$"
 #define _sounds_			"$sounds$"
 #define _textures_			"$textures$"
 #define _objects_			"$objects$"

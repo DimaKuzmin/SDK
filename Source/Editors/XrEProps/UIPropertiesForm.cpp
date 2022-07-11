@@ -478,7 +478,7 @@ void UIPropertiesForm::DrawEditText()
 					}
 					else
 					{
-						R_ASSERT(false);
+						//R_ASSERT(false);
 					}
 				}
 			}
@@ -586,6 +586,9 @@ int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
 	return 0;
 }
 
+bool single_check = false;
+#include "../../xrServerEntities/gametype_chooser.h"
+
 void UIPropertiesForm::DrawEditGameType()
 {
 	if (ImGui::BeginPopupContextItem("EditGameType", 0))
@@ -596,39 +599,49 @@ void UIPropertiesForm::DrawEditGameType()
 		ImGui::PopStyleVar(3);
 		{
 			ImGui::BeginGroup();
+
 			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
+				bool cheked = single_check;
+				//m_EditGameTypeChooser.MatchType(eGameIDSingle);
 				if (ImGui::Checkbox("Single", &cheked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
+					Msg("checked [%s] set_value [%d]", m_EditGameTypeChooser.MatchType(eGameIDSingle) ? "true" : "false", cheked);
+					m_EditGameTypeChooser.SetValue(eGameIDSingle, cheked);
+					single_check = cheked;
 				}
+			    
 			}
+
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
 				if (ImGui::Checkbox("DM", &cheked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
+					Msg("checked [%s]", cheked ? "true" : "false");
+					m_EditGameTypeChooser.SetValue(eGameIDDeathmatch, cheked);
 				}
 			}
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);
 				if (ImGui::Checkbox("TDM", &cheked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
+					Msg("checked [%s]", cheked ? "true" : "false");
+					m_EditGameTypeChooser.SetValue(eGameIDTeamDeathmatch, cheked);
 				}
 			}
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);
 				if (ImGui::Checkbox("ArtefactHunt", &cheked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
+					Msg("checked [%s]", cheked ? "true" : "false");
+					m_EditGameTypeChooser.SetValue(eGameIDArtefactHunt, cheked);
 				}
 			}
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);
 				if (ImGui::Checkbox("CTA", &cheked))
 				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
+					Msg("checked [%s]", cheked ? "true" : "false");
+					m_EditGameTypeChooser.SetValue(eGameIDCaptureTheArtefact, cheked);
 				}
 			}
 			ImGui::EndGroup(); ImGui::SameLine();

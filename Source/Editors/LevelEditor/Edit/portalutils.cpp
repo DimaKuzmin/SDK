@@ -474,8 +474,18 @@ public:
     	Tools->ClearDebugDraw();
         int ps = portals.size();
         int curr = 0;
+
+        SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
     	for (sPortalIt p_it=portals.begin(); p_it!=portals.end(); ++p_it, ++curr)
         {
+            pb->Update(curr);
+           
+            string128 text = {0};
+            printf(text, "portal %u of %u", &curr, &ps);
+            
+            
+            
+            pb->Info(text);
 		    if (p_it->e.size()>1)
             {
                 Msg("portal %d of %d", curr, ps);
@@ -517,6 +527,9 @@ public:
                 }
 
         }
+
+        UI->ProgressEnd(pb);
+
     }
 };
 

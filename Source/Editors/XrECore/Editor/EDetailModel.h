@@ -76,6 +76,11 @@ public:
 
 	bool				Load            (IReader&);
 	void				Save            (IWriter&);
+
+    bool                LoadLTX(CInifile&, LPCSTR section);
+    void                SaveLTX(CInifile&, LPCSTR section);
+
+
     void				Export			(IWriter&, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot);
     void				Export			(LPCSTR name);
 

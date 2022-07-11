@@ -280,7 +280,17 @@ CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* p
     {
     	CCustomObject* CO = (*_I);
     	LPCSTR _name = CO->GetName();
-        R_ASSERT	(_name);
+        //R_ASSERT	(_name);
+        if (!_name)
+            _name = "null_name";
+
+        if (!name)
+        {
+            Msg("Object Has Name %s / ref_name %s", _name, CO->RefName());
+           // return (*_I);
+            return 0;
+        }
+       
     	if((pass!=*_I) && (0==strcmp(_name,name)) ) 
         	return (*_I);
     }

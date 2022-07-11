@@ -120,6 +120,7 @@ void UIMainMenuForm::Draw()
                 if (ImGui::MenuItem("Reload Textures", "")) { ExecCommand(COMMAND_RELOAD_TEXTURES); }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
+                if (ImGui::MenuItem("Export Scene Textures", "")) { ExecCommand(COMMAND_EXPORT_SCENE_TEXTURES); }
                 if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
                 ImGui::Separator();
                 if (ImGui::MenuItem("Sync THM", ""))

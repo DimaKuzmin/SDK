@@ -57,8 +57,12 @@ bool CEditableObject::Save(const char* fname)
             t_vRotate.set			(0,0,0);
             t_vPosition.set			(0,0,0);
             t_vScale.set			(1,1,1);
+
+            Msg("set t_vPosition to 0,0,0");
         }
     }
+
+
 
     // save object
     IWriter* F			= FS.w_open(fname);
@@ -127,7 +131,8 @@ void CEditableObject::Save(IWriter& F)
     F.close_chunk	();
 
     // bones
-    if (!m_Bones.empty()){
+    if (!m_Bones.empty())
+    {
 	    F.open_chunk	(EOBJ_CHUNK_BONES2);
 	    for (BoneIt b_it=m_Bones.begin(); b_it!=m_Bones.end(); ++b_it)
 		{
@@ -178,12 +183,15 @@ void CEditableObject::Save(IWriter& F)
         F.close_chunk	();
     }
 
-    if (IsDynamic())
+//    if (IsDynamic())
 	{
 		F.open_chunk	(EOBJ_CHUNK_ACTORTRANSFORM);
         F.w_fvector3	(a_vPosition);
         F.w_fvector3	(a_vRotate);
-		F.close_chunk	();
+		F.close_chunk	();       
+
+        Msg("SAVE Position [%f][%f][%f]", a_vPosition.x, a_vPosition.y, a_vPosition.z);
+        Msg("SAVE a_vRotate [%f][%f][%f]", a_vRotate.x, a_vRotate.y, a_vRotate.z);
     }
 
     F.open_chunk		(EOBJ_CHUNK_DESC);
@@ -244,7 +252,10 @@ bool CEditableObject::Load(IReader& F)
 				if (cnt>1) ELog.DlgMsg(mtError,"Object surface '%s' has more than one TC's.",buf.c_str());
 				R_ASSERT(1<=cnt);
 			}
-		}else if (F.find_chunk(EOBJ_CHUNK_SURFACES2)){
+		}
+        else
+        if (F.find_chunk(EOBJ_CHUNK_SURFACES2))
+        {
 			u32 cnt = F.r_u32();
 			m_Surfaces.resize(cnt);
 			for (SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++){
@@ -287,6 +298,18 @@ bool CEditableObject::Load(IReader& F)
 				}
 		}
 
+        if (F.find_chunk(EOBJ_CHUNK_ACTORTRANSFORM))
+        {
+            F.r_fvector3(a_vPosition);
+            F.r_fvector3(a_vRotate);
+            //Msg("Load Position");
+
+            Msg("Load Position [%f][%f][%f]", a_vPosition.x, a_vPosition.y, a_vPosition.z);
+            Msg("Load a_vRotate [%f][%f][%f]", a_vRotate.x, a_vRotate.y, a_vRotate.z);
+
+            //Msg("Load Position END");
+        }
+
 		// Load meshes
 		IReader* OBJ = F.open_chunk(EOBJ_CHUNK_EDITMESHES);
 		if(OBJ)
@@ -308,6 +331,8 @@ bool CEditableObject::Load(IReader& F)
 			}
 			OBJ->close();
 		}
+
+
 
 		// bones
         if (bRes){
@@ -351,6 +376,7 @@ bool CEditableObject::Load(IReader& F)
 	                (*s_it)->SortBonesBySkeleton(m_Bones);
                 }
             }
+
             if (F.find_chunk(EOBJ_CHUNK_SMOTIONS2))
             {
             	shared_str 		tmp;
@@ -363,7 +389,8 @@ bool CEditableObject::Load(IReader& F)
                     _GetItem			(tmp.c_str(),k,nm);
                 	m_SMotionRefs.push_back	(nm);
             	}
-            }else
+            }
+            else
             if (F.find_chunk(EOBJ_CHUNK_SMOTIONS3))
             {
                 u32 set_cnt		= F.r_u32();
@@ -415,22 +442,23 @@ bool CEditableObject::Load(IReader& F)
 
         if (bRes)
         {
-            if (F.find_chunk	(EOBJ_CHUNK_ACTORTRANSFORM))
+            if (F.find_chunk(EOBJ_CHUNK_ACTORTRANSFORM))
             {
-                F.r_fvector3	(a_vPosition);
-                F.r_fvector3	(a_vRotate);
+                F.r_fvector3(a_vPosition);
+                F.r_fvector3(a_vRotate);
             }
 
-            if (F.find_chunk	(EOBJ_CHUNK_DESC))
+            if (F.find_chunk(EOBJ_CHUNK_DESC))
             {
-                F.r_stringZ		(m_CreateName);
-                F.r				(&m_CreateTime,sizeof(m_CreateTime));
-                F.r_stringZ		(m_ModifName);
-                F.r				(&m_ModifTime,sizeof(m_ModifTime));
+                F.r_stringZ(m_CreateName);
+                F.r(&m_CreateTime, sizeof(m_CreateTime));
+                F.r_stringZ(m_ModifName);
+                F.r(&m_ModifTime, sizeof(m_ModifTime));
             }
-	
+
             ResetSAnimation();
         }
+        
 
 		if (!bRes) break;
 		UpdateBox		();

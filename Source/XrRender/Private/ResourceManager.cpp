@@ -354,19 +354,61 @@ void	CResourceManager::DeferredUnload	()
 void	CResourceManager::ED_UpdateTextures(AStringVec* names)
 {
 	// 1. Unload
-	if (names){
+	if (names)
+	{
 		for (u32 nid=0; nid<names->size(); nid++)
 		{
 			map_TextureIt I = m_textures.find	((*names)[nid].c_str());
 			if (I!=m_textures.end())	I->second->Unload();
 		}
-	}else{
+	}
+	else
+	{
 		for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
 			t->second->Unload();
 	}
 
 	// 2. Load
 	// DeferredUpload	();
+}
+void CResourceManager::ExportTexturesToDir(LPCSTR name)
+{
+	for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
+	{
+		if (xr_strcmp("$null", t->second->cName.c_str()) == 0)
+			continue;
+		{
+			string_path new_path, old_path;
+			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(new_path, "$export_textures$", t->second->cName.c_str());
+
+			xr_strcat(old_path, ".dds");
+			xr_strcat(new_path, ".dds");
+
+			if (FS.exist(old_path))
+			{
+				FS.file_copy(old_path, new_path);
+				Msg("Copy to [%s]", new_path);
+			}
+		}
+
+		{
+			string_path new_path, old_path;
+			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(new_path, "$export_textures$", t->second->cName.c_str());
+
+			xr_strcat(old_path, ".tga");
+			xr_strcat(new_path, ".tga");
+ 
+			if (FS.exist(old_path))
+			{
+				FS.file_copy(old_path, new_path);
+				Msg("Copy TGA to [%s]", new_path);
+			}
+		}
+	}
+
+
 }
 #endif
 

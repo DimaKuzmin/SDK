@@ -42,7 +42,15 @@
 #define RPOINT_SIZE 0.5f
 #define ENVMOD_SIZE 0.25f
 #define MAX_TEAM 6
-const u32 RP_COLORS[MAX_TEAM]={0xff0000,0x00ff00,0x0000ff,0xffff00,0x00ffff,0xff00ff};
+const u32 RP_COLORS[MAX_TEAM]=
+{
+    0xff0000,
+    0x00ff00,
+    0x0000ff,
+    0xffff00,
+    0x00ffff,
+    0xff00ff
+};
 //----------------------------------------------------
 void CSE_Visual::set_visual	   	(LPCSTR name, bool load)
 {
@@ -92,12 +100,13 @@ void CLE_Visual::OnChangeVisual	()
     {
         visual				= ::Render->model_Create(source->visual_name.c_str());
 
-        if(NULL==visual && !g_tmp_lock)
+        if(NULL==visual && !g_tmp_lock && false)
         {
-         xr_string _msg = "Model [" + xr_string(source->visual_name.c_str())+"] not found. Do you want to select it from library?";
+              xr_string _msg = "Model [" + xr_string(source->visual_name.c_str())+"] not found. Do you want to select it from library?";
               int mr = ELog.DlgMsg(mtConfirmation,mbYes |mbNo, _msg.c_str());
               LPCSTR _new_val = 0;
               g_tmp_lock = true;
+              
               if (mr == mrYes)
               {
                   UIChooseForm::SelectItem(smVisual, 1);
@@ -304,8 +313,15 @@ void CSpawnPoint::SSpawnData::get_bone_xform	(LPCSTR name, Fmatrix& xform)
 bool CSpawnPoint::SSpawnData::LoadLTX	(CInifile& ini, LPCSTR sect_name)
 {
     xr_string temp 		= ini.r_string		(sect_name, "name");
-    Create				(temp.c_str());
 
+    if (!pSettings->section_exist(temp.c_str()))
+    {
+        Msg("ERROR Cant read [%s] in system.ltx", temp.c_str());
+        return false;
+    }
+
+    Create				(temp.c_str());
+    
     if(ini.line_exist(sect_name,"fl"))
 		m_flags.assign		(ini.r_u8(sect_name,"fl"));
         
@@ -336,6 +352,52 @@ void CSpawnPoint::SSpawnData::SaveLTX	(CInifile& ini, LPCSTR sect_name)
     Packet.inistream 		= &ini_stream;
     
     m_Data->Spawn_Write	(Packet,TRUE);
+}
+
+LPCSTR CSpawnPoint::SSpawnData::ReadCustomData()
+{
+    NET_Packet 				Packet;
+
+    string_path path;
+    FS.update_path(path, _import_, "temp.ltx");
+    CInifile* file = xr_new<CInifile>(path, false);
+
+    SIniFileStream 			ini_stream;
+    ini_stream.ini = file;
+    ini_stream.sect = "spawn_ini";
+    ini_stream.move_begin();
+    Packet.inistream = &ini_stream;
+
+    m_Data->Spawn_Write(Packet, TRUE);
+
+    LPCSTR cfg = file->r_string("spawn_ini", "000024");
+
+    return cfg;
+}
+
+void CSpawnPoint::SSpawnData::ModifyCustomData(string4096 data)
+{
+    NET_Packet 				Packet;
+
+    string_path path;
+    FS.update_path(path, _import_, "temp_modify_data.ltx");
+    CInifile* file = new CInifile(path, false, false);
+
+    SIniFileStream 			ini_stream;
+    ini_stream.ini = file;
+    ini_stream.sect = "spawn_ini";
+    ini_stream.move_begin();
+    Packet.inistream = &ini_stream;
+    m_Data->Spawn_Write(Packet, TRUE);
+   
+    file->remove_line("spawn_ini", "000024");
+    file->w_string("spawn_ini", "000024", data);
+   
+    ini_stream.move_begin();
+    Packet.r_pos = 0;
+    file->save_as(path);
+     
+    m_Data->Spawn_Read(Packet);
 }
 
 void CSpawnPoint::SSpawnData::SaveStream(IWriter& F)
@@ -1256,6 +1318,7 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
 	if (m_SpawnData.Valid()){
     	if (m_SpawnData.m_Data->validate()){
 	    	m_SpawnData.ExportGame		(F,this);
+          
         }else{
         	Log	("!Invalid spawn data:",GetName());
             return false;
@@ -1391,7 +1454,7 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
                 C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillRespawnItemProfile);
              }else
             {
-				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0,7);
+				PHelper().CreateU8		(items, PrepareKey(pref,"Respawn Point\\Team"), 		&m_RP_TeamID, 	0, 255);
             }
 			Token8Value* TV = PHelper().CreateToken8	(items, PrepareKey(pref,"Respawn Point\\Spawn Type"),	&m_RP_Type, 	rpoint_type);
             TV->OnChangeEvent.bind		(this,&CSpawnPoint::OnRPointTypeChange);

@@ -53,7 +53,15 @@ BOOL is_combat_cover			(shared_str const &table_id)
 		LUA_TTABLE
 		);
 
+	if (!result)
+		return false;
+	
+
 	VERIFY2						(result, make_string("bad or missing description in smart_cover [%s]", table_id.c_str()));
+
+	//if (!result)
+	//	return false;
+
 	if (table.type() != LUA_TTABLE) {
 		VERIFY					(table.type() != LUA_TNIL);
 		return					(TRUE);
@@ -181,10 +189,13 @@ void CSE_SmartCover::FillProps	(LPCSTR pref, PropItemVec& items)
 	PHelper().CreateFloat		(items, PrepareKey(pref,*s_name,"enter min enemy distance"),&m_enter_min_enemy_distance,	0.f, 100.f);
 	PHelper().CreateFloat		(items, PrepareKey(pref,*s_name,"exit min enemy distance"),	&m_exit_min_enemy_distance,		0.f, 100.f);
 
-	if (is_combat_cover(m_description)) {
+	if (is_combat_cover(m_description)) 
+	{
 		PHelper().CreateBOOL	(items, PrepareKey(pref, *s_name, "is combat cover"), &m_is_combat_cover);
 		PHelper().CreateBOOL	(items, PrepareKey(pref, *s_name, "can fire"), &m_can_fire);
 	}
+	 
+
 #	endif // #ifdef XRSEFACTORY_EXPORTS
 }
 #endif // #ifndef XRGAME_EXPORTS

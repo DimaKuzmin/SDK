@@ -398,6 +398,14 @@ CCommandVar 	CommandReloadTextures(CCommandVar p1, CCommandVar p2)
     UI->RedrawScene		();
     return				TRUE;
 }
+
+CCommandVar CommandExportSceneTextures(CCommandVar p1, CCommandVar p2)
+{
+    EDevice.Resources->ExportTexturesToDir(0);
+
+    return TRUE;
+}
+
 CCommandVar 	CommandChangeSnap(CCommandVar p1, CCommandVar p2)
 {
     not_implemented();
@@ -678,6 +686,7 @@ void TUI::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_CHECK_TEXTURES,     	CommandCheckTextures);
 	REGISTER_CMD_S	    (COMMAND_REFRESH_TEXTURES,   	CommandRefreshTextures);	
 	REGISTER_CMD_S	    (COMMAND_RELOAD_TEXTURES,    	CommandReloadTextures);
+    REGISTER_CMD_S      (COMMAND_EXPORT_SCENE_TEXTURES, CommandExportSceneTextures);
 	REGISTER_CMD_S	    (COMMAND_CHANGE_SNAP,        	CommandChangeSnap);
     REGISTER_CMD_S	    (COMMAND_UNLOAD_TEXTURES,    	CommandUnloadTextures);
     REGISTER_CMD_S	    (COMMAND_EVICT_OBJECTS,      	CommandEvictObjects);

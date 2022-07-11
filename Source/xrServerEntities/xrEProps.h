@@ -37,6 +37,7 @@ IC xr_string FolderAppend	(LPCSTR val)
 }
 IC shared_str PrepareKey	(LPCSTR pref, 	LPCSTR key)
 {
+   // Msg("key[%s]/pref[%s]", key, pref);
     R_ASSERT	(key);
 	return 		shared_str((FolderAppend(pref)+key).c_str());
 }

@@ -35,7 +35,8 @@ struct SChooseItem{
     SChooseItem() {}
 	shared_str				name;
 	shared_str				hint;
-    SChooseItem	(LPCSTR nm, LPCSTR ht):name(nm),hint(ht){}
+    shared_str              path;
+    SChooseItem	(LPCSTR nm, LPCSTR ht, LPCSTR pt = "") :name(nm), hint(ht), path(pt) {}
 };
 DEFINE_VECTOR(SChooseItem,ChooseItemVec,ChooseItemVecIt);
 #ifndef ImTextureID

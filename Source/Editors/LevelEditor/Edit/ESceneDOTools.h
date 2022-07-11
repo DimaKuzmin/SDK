@@ -90,6 +90,10 @@ public:
 
     void				SaveColorIndices		(IWriter&);
     bool				LoadColorIndices		(IReader&);
+
+    void                SaveColorIndicesLTX(CInifile&);
+    bool                LoadColorIndicesLTX(CInifile&);
+
 public:
 						EDetailManager			();
     virtual 			~EDetailManager			();

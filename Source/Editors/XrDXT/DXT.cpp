@@ -36,8 +36,9 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, ST
 	case STextureParams::kMIPFilterTriangle:    ResizeFilter = BearResizeFilter::Triangle; break;
 	case STextureParams::kMIPFilterKaiser:     ResizeFilter = BearResizeFilter::Catmullrom;   break;
 	}
-	Image.GenerateMipmap(ResizeFilter);
-	Image.Convert(Format);
+ 
+	//Image.GenerateMipmap(ResizeFilter);
+	//Image.Convert(Format);
 	Msg("DXT: Compressing Image: 2 [Closing File]. Time from start %f ms", T.GetElapsed_sec() * 1000.f);
 	return Image.SaveToDds(out_name);;
 }

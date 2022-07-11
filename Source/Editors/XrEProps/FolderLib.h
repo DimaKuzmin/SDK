@@ -323,16 +323,29 @@ public:
 		}
 		else if (N->IsFloder())
 		{
-			if (N->Selected)ImGui::SetNextTreeNodeOpen(true);
+			if (N->Selected)
+			{
+				ImGui::SetNextTreeNodeOpen(true);
+			}
+
+
 			ImGui::AlignTextToFramePadding();
 			ImGuiTreeNodeFlags FloderFlags = ImGuiTreeNodeFlags_OpenOnArrow;
 			if (IsFloderBullet(N))FloderFlags |= ImGuiTreeNodeFlags_Bullet;
-			if (IsFloderSelected(N))FloderFlags |= ImGuiTreeNodeFlags_Selected;
+			if (IsFloderSelected(N))
+			{
+				FloderFlags |= ImGuiTreeNodeFlags_Selected;
+			}
+
 			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
 			{
+				//Msg("Selected");
+				SelectedFOLDER(N);
+
 				DrawAfterFloderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)
 					IsItemClicked(N);
+				
 				for (Node& node : N->Nodes)
 				{
 					if (node.IsFloder() && IsDrawFloder(&node))
@@ -340,6 +353,7 @@ public:
 						DrawNode(&node);
 					}
 				}
+
 				for (Node& node : N->Nodes)
 				{
 					if (!node.IsFloder())
@@ -347,6 +361,7 @@ public:
 						DrawNode(&node);
 					}
 				}
+
 				ImGui::TreePop();
 			}
 			else
@@ -368,6 +383,9 @@ public:
 	virtual bool IsFloderSelected(Node* Node) { return false; }
 	virtual void EventRenameNode(Node* Node, const char* old_path, const char* new_path) {}
 	virtual void EventRemoveNode(Node* Node, const char* path) {}
+
+	virtual void SelectedFOLDER(Node* N) {}
+
 	inline void GetFullPath(Node* Object, string_path& full_path)
 	{
 		if (Object->Path.c_str() && Object->Path.c_str()[0])

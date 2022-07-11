@@ -246,8 +246,8 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
 
         if (guid!=m_GUID)
         {
-            ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
-            return 			FALSE;
+           // ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
+           // return 			FALSE;
         }
         // read data
         M->LoadLTX			(ini);
@@ -276,12 +276,14 @@ BOOL EScene::LoadLevelPart(ESceneToolBase* M, LPCSTR map_name)
         xrGUID			guid;
         R->r			(&guid,sizeof(guid));
 
+        /*
         if (guid!=m_GUID)
         {
             ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
         	FS.r_close		(R);
             return 			FALSE;
         }
+        */
         // read data
         IReader* chunk 	= R->open_chunk	(CHUNK_TOOLS_DATA+M->FClassID);
         if(chunk!=NULL)
@@ -398,7 +400,8 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
             {
             	if (_I->second->IsNeedSave())
                     _I->second->SaveStream	(m_SaveCache);
-            }else
+            }
+            else
             {
             	// !ForUndo
                     xr_string part_name 	= part_prefix + _I->second->ClassName() + ".part";
@@ -624,6 +627,10 @@ bool EScene::ReadObjectStream(IReader& F, CCustomObject*& O)
 //----------------------------------------------------
 bool EScene::ReadObjectLTX(CInifile& ini, LPCSTR sect_name, CCustomObject*& O)
 {
+  //  Msg("read %s", sect_name);
+    if (!ini.section_exist(sect_name))
+        return false;
+
     ObjClassID clsid		= OBJCLASS_DUMMY;
     clsid 					= ObjClassID(ini.r_u32(sect_name,"clsid"));
 	O 						= GetOTool(clsid)->CreateObject(0,0);

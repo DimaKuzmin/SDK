@@ -185,6 +185,9 @@ public:
     virtual void   		SaveLTX            		(CInifile&, int id);
     virtual bool 		can_use_inifile			()								{return false;}
 
+    virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset);
+    virtual void        SaveStreamPOS(IWriter&);
+
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
     virtual bool   		Export          		(LPCSTR path);

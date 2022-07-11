@@ -138,7 +138,7 @@ protected:
 	TProperties* m_SummaryInfo;
 
     ObjectList		m_ESO_SnapObjects; // временно здесь а вообще нужно перенести в ESceneTools
-protected:
+public:
     bool 			OnLoadAppendObject			(CCustomObject* O);
     bool 			OnLoadSelectionAppendObject(CCustomObject* O);
 protected:

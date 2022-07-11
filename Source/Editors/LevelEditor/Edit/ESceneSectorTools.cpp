@@ -78,7 +78,8 @@ void ESceneSectorTool::OnBeforeObjectChange(CCustomObject* O)
 	inherited::OnBeforeObjectChange(O);
 
     CSceneObject* obj = dynamic_cast<CSceneObject*>(O);
-    if (obj&&!m_Objects.empty()){
+    if (obj&&!m_Objects.empty())
+    {
 	    EditMeshVec* meshes = obj->Meshes();
         for (EditMeshIt m_it= meshes->begin(); m_it!=meshes->end(); m_it++){
 	        for(ObjectIt _F=m_Objects.begin();_F!=m_Objects.end();_F++){

@@ -4,6 +4,7 @@
 #include "Edit\ESceneCustomOTools.h"
 #include "Edit\CustomObject.h"
 #include "Edit\GroupObject.h"
+
 UIObjectList* UIObjectList::Form = nullptr;
 UIObjectList::UIObjectList()
 {
@@ -16,9 +17,15 @@ UIObjectList::~UIObjectList()
 {
 }
 
+ 
 void UIObjectList::Draw()
 {
-	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400, 400));
+	int offset_y = LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT ? 180 : 0;
+
+	int offset_x = 50;
+
+ 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400 + offset_x, 400 + offset_y));
+	 
 
 	if (!ImGui::Begin("Object List", &bOpen))
 	{
@@ -26,26 +33,39 @@ void UIObjectList::Draw()
 		ImGui::End();
 		return;
 	}
-	{
-		ImGui::BeginGroup();
-		if (ImGui::BeginChild("Left", ImVec2(-130, -ImGui::GetFrameHeight()-4), true))
-		{
-			DrawObjects();
-		}
-		ImGui::EndChild();
 
-		ImGui::SetNextItemWidth(-130);
-		ImGui::InputText("##value", m_Filter, sizeof(m_Filter));
+	{
+			ImGui::BeginGroup();
+		
+			if (ImGui::BeginChild("Left", ImVec2(-200 - offset_x, -ImGui::GetFrameHeight()-8 - offset_y), true))
+			{
+				DrawObjects();
+			}
+			ImGui::EndChild();
+
+			ImGui::SetNextItemWidth(-200 - offset_x);
+			ImGui::InputText("##value", m_Filter, sizeof(m_Filter));
+
+			if (offset_y > 0)
+ 			{ 
+				ListBoxForTypes();
+			}
+		 
+		
+		
 		ImGui::EndGroup();
+	}
+	
+	ImGui::SameLine();
 
-	}ImGui::SameLine();
-	if (ImGui::BeginChild("Right", ImVec2(130, 0)))
+	if (ImGui::BeginChild("Right", ImVec2(200 + offset_x, 0)))
 	{
+		
 		if (ImGui::RadioButton("All", m_Mode == M_All))
 		{
 			m_Mode = M_All;
-
 		}
+
 		if (ImGui::RadioButton("Visible Only", m_Mode == M_Visible))
 		{
 			m_Mode = M_Visible;
@@ -54,9 +74,9 @@ void UIObjectList::Draw()
 		if (ImGui::RadioButton("Invisible Only", m_Mode == M_Inbvisible))
 		{
 			m_Mode = M_Inbvisible;
-
 		}
-		ImGui::Separator();
+		//ImGui::Separator();
+
 		if (ImGui::Button("Show Selected", ImVec2(-1, 0)))
 		{
 			if (m_SelectedObject)
@@ -64,8 +84,8 @@ void UIObjectList::Draw()
 				m_SelectedObject->Show(true);
 				m_SelectedObject->Select(true);
 			}
-			
 		}
+
 		if (ImGui::Button("Hide Selected", ImVec2(-1, 0)))
 		{
 			if (m_SelectedObject)
@@ -73,6 +93,8 @@ void UIObjectList::Draw()
 				m_SelectedObject->Show(false);
 			}
 		}
+ 
+		UpdateUIObjectList();
 	}
 	ImGui::EndChild();
 
@@ -98,7 +120,8 @@ void UIObjectList::Update()
 
 void UIObjectList::Show()
 {
-	if (Form == nullptr)Form = xr_new< UIObjectList>();
+	if (Form == nullptr)
+		Form = xr_new< UIObjectList>();
 }
 
 void UIObjectList::Close()
@@ -107,8 +130,8 @@ void UIObjectList::Close()
 }
 
 void UIObjectList::DrawObjects()
-{
-	
+{	
+//	Msg("CurrentTOOLS %d", LTools->CurrentClassID() );
 	m_cur_cls = LTools->CurrentClassID();
 	string1024				str_name;
 
@@ -121,6 +144,7 @@ void UIObjectList::DrawObjects()
 				continue;
 			ObjectList& lst = ot->GetObjects();
 			ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+		
 			if (ImGui::TreeNode("floder", ("%ss", it->second->ClassDesc())))
 			{
 				if (OBJCLASS_GROUP == it->first)
@@ -181,52 +205,74 @@ void UIObjectList::DrawObjects()
 						DrawObject(*_F,0);
 						FindSelectedObj = FindSelectedObj | (*_F) == m_SelectedObject;
 					}
-					if (!FindSelectedObj)m_SelectedObject = nullptr;
+					if (!FindSelectedObj)
+						m_SelectedObject = nullptr;
 
 				}
 				ImGui::TreePop();
 			}
-
-
-			
+		
 		}
 	}
 }
 
 void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
-{
-	if (m_Filter[0])
-	{
-		if (name)
-		{
-			if (strstr(name, m_Filter) == 0)return;
-		}
-		else
-		{
-			if (strstr(obj->GetName(), m_Filter) == 0)return;
-		}
-	}
+{ 
+	if (m_Filter[0] && obj->GetName() != 0)
+	if (strstr(obj->GetName(), m_Filter) == 0)
+		return;
+
+	if (!CheckNameForType(obj))
+		return;
+
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 
 	if (obj->Selected())
 	{
 		Flags |= ImGuiTreeNodeFlags_Bullet;
 	}
+
 	if (m_SelectedObject == obj)
 	{
 		Flags |= ImGuiTreeNodeFlags_Selected;
-	}
-	if(name)
+	}	 
+
+	if (name)
 		ImGui::TreeNodeEx(name, Flags);
 	else
 		ImGui::TreeNodeEx(obj->GetName(), Flags);
+
+	if (ImGui::GetIO().KeyAlt && m_SelectedObject)
+	{
+		if (!obj->Selected() && !ImGui::GetIO().KeyCtrl)
+		{
+			obj->Select(true);
+		}
+		else if (ImGui::GetIO().KeyCtrl)
+		{
+			obj->Select(false);
+		}
+		return;
+	}
+
 	if (ImGui::IsItemClicked())
 	{
-		if(!ImGui::GetIO().KeyCtrl)
-			Scene->SelectObjects(false, OBJCLASS_DUMMY);
-		obj->Select(true);
-		m_SelectedObject = obj;
+		if (m_SelectedObject != obj)
+		{
+			obj->Select(true);
+
+			m_SelectedObject = obj;
+		}
+
+		if (ImGui::GetIO().KeyCtrl)
+		{
+			obj->Select(false);
+		}
 	}
+
+
+
+	
 }
 
 

@@ -405,7 +405,8 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
             FS.update_path			(tga_fn,_textures_,		 EFS.ChangeFileExt(base_name,".tga").c_str());
             FS.update_path			(thm_fn,_game_textures_, EFS.ChangeFileExt(base_name,".thm").c_str());
             FS.update_path			(dds_fn,_game_textures_, EFS.ChangeFileExt(base_name,".dds").c_str());
-            if (bForceBaseAge){
+            if (bForceBaseAge)
+            {
             	int age 			= it->time_write;
                 FS.set_file_age			(tga_fn,age);
                 FS.set_file_age			(thm_fn,age);
@@ -636,7 +637,8 @@ BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, in
 
 	U32Vec pixels;
     u32 w=512,h=512;
-    if (EDevice.MakeScreenshot(pixels,w,h)){
+    if (EDevice.MakeScreenshot(pixels,w,h))
+    {
         EObjectThumbnail tex(tex_name,false);
         tex.CreateFromData(pixels.data(),w,h,obj->GetFaceCount(),obj->GetVertexCount());
         tex.Save(age);

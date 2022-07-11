@@ -1449,6 +1449,7 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
             I.w				= LOD_IMAGE_SIZE*LOD_SAMPLE_COUNT;
             I.h				= LOD_IMAGE_SIZE;
 	        pb->Inc();
+            ELog.Msg(mtInformation, "id[%d]", k);
         }
 
         SSimpleImage merged_image;
@@ -1465,16 +1466,20 @@ BOOL SceneBuilder::CompileStatic(bool b_selected_only)
             tp.flags.assign		(STextureParams::flDitherColor|STextureParams::flGenerateMipMaps);
             ImageLib.MakeGameTexture		(fn_color.c_str(),merged_image.layers[0].data(), tp);
             ImageLib.MakeGameTexture		(fn_normal.c_str(),merged_image.layers[1].data(),tp);
-	        for (int k=0; k<(int)l_lods.size(); k++){        
+	        for (int k=0; k<(int)l_lods.size(); k++)
+            {        
 	            e_b_lod& l	= l_lods[k];         
-                for (u32 f=0; f<8; f++){
-                	for (u32 t=0; t<4; t++){
+                for (u32 f=0; f<8; f++)
+                {
+                	for (u32 t=0; t<4; t++)
+                    {
                     	Fvector2& uv = l.lod.faces[f].t[t];
                         u32 id 		 = remap[k];
                     	ImageLib.MergedTextureRemapUV(uv.x,uv.y,uv.x,uv.y,offsets[id],scales[id],rotated[id]);
                     }
                 }
 		        pb->Inc();
+                ELog.Msg(mtInformation, "id2[%d]", k);
 			}
         }else{
             ELog.DlgMsg		(mtError,"Failed to build merged LOD texture. Merged texture more than [4096x4096].");

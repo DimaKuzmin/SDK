@@ -261,8 +261,16 @@ void ESceneAIMapTool::hash_Initialize()
 
 void ESceneAIMapTool::hash_FillFromNodes()
 {
-	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
-    	AINodeVec* V = HashMap((*it)->Pos); R_ASSERT2(V,"AINode position out of bounds.");
+	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
+    {
+    	AINodeVec* V = HashMap((*it)->Pos);
+        //R_ASSERT2(V,"AINode position out of bounds.");
+        if (!V)
+        {
+            Msg("Out bounds x[%.2f] y[%.2f] z[%.2f]", (*it)->Pos.x, (*it)->Pos.y, (*it)->Pos.z);
+            continue;
+
+        }
         V->push_back	(*it);
     }
 }
@@ -367,13 +375,17 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 	SAINode N;
 
 	BOOL bRes		= CreateNode(vAt,N,bIC);
-    if (!bRes&&bIC&&bSuperIC){
+    //Msg("Created_NODE");
+    if (!bRes&&bIC&&bSuperIC)
+    {
     	Fvector D	= {0,1,0};
 		N.Plane.build(vAt,D);					// build plane
 		N.Plane.intersectRayPoint(vAt,D,N.Pos);	// "project" position
         bRes		= TRUE;
     }
-	if (bRes) {
+    //Msg("Plane Check");
+	if (bRes) 
+    {
 		//*** check if similar node exists
 		SAINode* old = FindNode(N.Pos);
 		if (!old){

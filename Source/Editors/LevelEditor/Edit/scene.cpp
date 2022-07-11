@@ -276,7 +276,8 @@ bool EScene::GetBox(Fbox& box, ObjectList& lst)
 {
     box.invalidate();
     bool bRes=false;
-    for(ObjectIt it=lst.begin();it!=lst.end();it++){
+    for(ObjectIt it=lst.begin();it!=lst.end();it++)
+    {
         Fbox bb;
 
         if((*it)->GetBox(bb))

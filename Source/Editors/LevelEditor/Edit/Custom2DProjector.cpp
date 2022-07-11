@@ -31,23 +31,40 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 {
 	geom.destroy();
     mesh.clear	();
-	for (ObjectIt it=lst.begin(); it!=lst.end(); it++){
+
+
+	//U32Vec vec(4096 * 4096);
+
+	for (ObjectIt it=lst.begin(); it!=lst.end(); it++)
+	{
     	CSceneObject*	 S = (CSceneObject*)(*it);
     	CEditableObject* O = S->GetReference(); VERIFY(O);
 
         Fmatrix T; S->GetFullTransformToWorld(T);
         mesh.reserve	(mesh.size()+S->GetFaceCount()*3);
-        for (EditMeshIt m_it=O->FirstMesh(); m_it!=O->LastMesh(); m_it++){
-	        for (u32 f_id=0; f_id!=(*m_it)->GetFCount(); f_id++){
+        for (EditMeshIt m_it=O->FirstMesh(); m_it!=O->LastMesh(); m_it++)
+		{
+	
+
+
+	        for (u32 f_id=0; f_id!=(*m_it)->GetFCount(); f_id++)
+			{
+				//CSurface* surface = (*m_it)->GetSurfaceByFaceID(f_id);
+				//surface->_ShaderName();
             	FVF::V v;
-                for (int k=0; k<3; k++){
+                for (int k=0; k<3; k++)
+				{
                 	T.transform_tiny(v.p,(*m_it)->GetVertices()[(*m_it)->GetFaces()[f_id].pv[k].pindex]);
 					v.t.x = GetUFromX(v.p.x,box);
 					v.t.y = GetVFromZ(v.p.z,box);
                     mesh.push_back(v);
                 }
+
+			
             }
         }
+
+	 
     }
 	geom.create(FVF::F_V,RCache.Vertex.Buffer(),0);
 }
@@ -79,7 +96,8 @@ void CCustom2DProjector::Render(bool blended)
 void CCustom2DProjector::CreateShader()
 {
 	DestroyShader		();
-	if (Valid()){
+	if (Valid())
+	{
 		shader_blended.create	("editor\\do_base",*name);
 		shader_overlap.create	("default",*name);
 		geom.create				(FVF::F_V,RCache.Vertex.Buffer(),0);

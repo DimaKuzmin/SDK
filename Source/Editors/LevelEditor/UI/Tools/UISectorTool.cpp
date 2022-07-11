@@ -28,7 +28,8 @@ void UISectorTool::Draw()
             if (ImGui::Button("Capture Volume", ImVec2(-1,0)))
             {
                 CSector* S = PortalUtils.GetSelectedSector();
-                if (S) {
+                if (S)
+                {
                     S->CaptureInsideVolume();
                     Scene->UndoSave();
                 }

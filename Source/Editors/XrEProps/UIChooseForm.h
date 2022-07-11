@@ -4,6 +4,8 @@ class XREPROPS_API UIChooseForm :
 {
     virtual void DrawItem(Node* Node);
     virtual bool IsDrawFloder(Node* Node);
+    virtual void SelectedFOLDER(Node* N);
+
     void AppendItem(SChooseItem& item);
     void UpdateTexture();
     Node m_GeneralNode;

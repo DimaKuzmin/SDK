@@ -47,6 +47,7 @@ void UIObjectTool::Draw()
                 m_MultiAppend = true;
             }
         }
+
         ImGui::Separator();
         {
             float size = float(ImGui::CalcItemWidth());
@@ -293,7 +294,8 @@ void UIObjectTool::MultiSelByRefObject(bool clear_prev)
         std::random_shuffle(sellist.begin(), sellist.end());
         int max_k = iFloor(float(sellist.size()) / 100.f * float(m_selPercent) + 0.5f);
         int k = 0;
-        for (LPU32It o_it = sellist.begin(); k < max_k; o_it++, k++) {
+        for (LPU32It o_it = sellist.begin(); k < max_k; o_it++, k++) 
+        {
             CSceneObject* _O = (CSceneObject*)(*o_it);
             _O->Select(true);
         }

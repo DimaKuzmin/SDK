@@ -117,6 +117,10 @@ public:
     virtual bool   		LoadLTX            		(CInifile&)=0;
     virtual void		SaveStream         		(IWriter&)=0;
     virtual void   		SaveLTX            		(CInifile&, int id)=0;
+
+    virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset) { return false; };
+
+
     virtual bool		can_use_inifile			()				{return true;}
 
     virtual bool		LoadSelection      		(IReader&)=0;

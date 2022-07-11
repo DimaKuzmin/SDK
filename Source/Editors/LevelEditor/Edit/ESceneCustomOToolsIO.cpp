@@ -76,10 +76,10 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
 
       for(i=0; i<count; ++i)
       {
-      	
-        
           CCustomObject* obj	= NULL;
           sprintf				(buff, "object_%d", i);
+            
+          if (ini.section_exist(buff))
           if( Scene->ReadObjectLTX(ini, buff, obj) )
           {
               if (!OnLoadAppendObject(obj))

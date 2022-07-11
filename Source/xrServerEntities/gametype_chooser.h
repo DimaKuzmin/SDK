@@ -13,6 +13,8 @@ enum EGameIDs {
         eGameIDCaptureTheArtefact                       = u32(1) << 4,
         eGameIDDominationZone                           = u32(1) << 5,
         eGameIDTeamDominationZone                       = u32(1) << 6,
+        eGameIDCoop                                     = u32(1) << 7,
+        eGameIDRoleplay                                 = u32(1) << 8
 };
 
 class PropValue;
@@ -26,14 +28,18 @@ struct GameTypeChooser
 		void	FillProp		(LPCSTR pref, PropItemVec& items);
 #endif // #ifndef XRGAME_EXPORTS
 
-#ifdef _EDITOR
+
 	bool 	LoadStream		(IReader&F);
 	bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name, bool bOldFormat);
 	void 	SaveStream		(IWriter&);
 	void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
-#endif
+
+    void    SetValue(const u16& mask, bool& value) { 
+        Msg("set[%d] value [%d]", mask,value);
+        m_GameType.set(mask, value); 
+    };
 	void	SetDefaults		()				{m_GameType.one();}
-	bool	MatchType		(const u16 t) const		{return (t==eGameIDNoGame) || !!m_GameType.test(t);};
+	bool	MatchType		(const u16& mask) const		{return m_GameType.test(mask);};
 };
 
 #endif

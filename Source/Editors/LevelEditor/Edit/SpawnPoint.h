@@ -87,6 +87,9 @@ public:
         bool		    LoadLTX			(CInifile& ini, LPCSTR sect_name);
         void		    SaveLTX			(CInifile& ini, LPCSTR sect_name);
 
+        LPCSTR            ReadCustomData();
+        void              ModifyCustomData(string4096 data);
+
 		bool 			ExportGame		(SExportStreams* F, CSpawnPoint* owner);
 
 		void			FillProp		(LPCSTR pref, PropItemVec& values);

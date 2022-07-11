@@ -4,6 +4,24 @@ UIChooseForm::EventsMap	UIChooseForm::m_Events;
 UIChooseForm* UIChooseForm::Form = 0;
 xr_string UIChooseForm::m_LastSelection;
 ImTextureID   UIChooseForm::NullTexture = nullptr;
+
+void UIChooseForm::SelectedFOLDER(Node* N)
+{
+    if (ImGui::GetIO().KeyCtrl && ImGui::IsItemClicked())
+    {
+        m_SelectedItems.clear();
+
+        for (Node& Node : N->Nodes)
+        {
+            Msg("Node [%s]", Node.Name.c_str());
+            m_ClickItem = Node.Object;
+
+            m_SelectedItems.push_back(m_ClickItem);
+ 
+        }
+    }
+}
+
 void UIChooseForm::DrawItem(Node* Node)
 {
     if (m_Filter.PassFilter(Node->Name.c_str()))
@@ -31,12 +49,14 @@ void UIChooseForm::DrawItem(Node* Node)
                 break;
             }
         }
+
         if (m_SelectedItem ==  Node->Object)
         {
             Flags |= ImGuiTreeNodeFlags_Selected;
         }
            
         ImGui::TreeNodeEx(Node->Name.c_str(), Flags);
+       
         if (ImGui::IsItemClicked())
         {
             if ( E.flags.test(SChooseEvents::flClearTexture))
@@ -45,6 +65,7 @@ void UIChooseForm::DrawItem(Node* Node)
                     m_Texture->Release();
                 m_Texture = 0;
             }
+
             m_SelectedItem = Node->Object;
             UpdateTexture();
             if (!E.on_sel.empty() && !m_Flags.is(cfMultiSelect))
@@ -53,8 +74,15 @@ void UIChooseForm::DrawItem(Node* Node)
                 E.on_sel(m_SelectedItem, Vec);
                 m_Props->AssignItems(Vec);
             }
-            if (ImGui::GetIO().KeyCtrl||!m_Flags.is(cfMultiSelect))
+
+            if (ImGui::GetIO().KeyCtrl || !m_Flags.is(cfMultiSelect))
+            {
                 m_ClickItem = Node->Object;
+               // Msg("Path [%s]", Node->Path.c_str());
+            }
+              
+             
+         
         }
     }
 
@@ -66,19 +94,24 @@ bool UIChooseForm::IsDrawFloder(Node*node)
     {
         if (N.IsFloder())
         {
-            result = result | IsDrawFloder(&N);
+            result = result || IsDrawFloder(&N);
         }
-        else  if (N.IsObject())
+        else
+        if (N.IsObject())
         {
-            result = result | m_Filter.PassFilter(N.Name.c_str());
+            result = result || m_Filter.PassFilter(N.Name.c_str());
         }
     }
     return result;
 }
+
+
 void UIChooseForm::AppendItem(SChooseItem& item)
 {
+   Msg("node name = %s", item.name.c_str());
    Node*node =  AppendObject(&m_GeneralNode, item.name.c_str());
-   VERIFY(node);
+  // VERIFY(node);
+   if (node)
    node->Object = &item;
 }
 void UIChooseForm::UpdateTexture()
@@ -156,10 +189,12 @@ void UIChooseForm::Draw()
         if (N)SelectObject(&m_GeneralNode, m_LastSelection.c_str());
         m_LastSelection.clear();
     }
+
     if (m_SelectedItem&& E.flags.test(SChooseEvents::flAnimated))
     {
         if (!E.on_get_texture.empty())E.on_get_texture(m_SelectedItem->name.c_str(), m_Texture);
     }
+
     ImGui::Columns(2);
     {
         {
@@ -237,10 +272,23 @@ void UIChooseForm::Draw()
                     }
                 }
                 ImGui::EndChild();
-                if (ImGui::Button("Up")) { if (iSelectedInList > 0) { std::swap(m_SelectedItems[iSelectedInList - 1], m_SelectedItems[iSelectedInList]); iSelectedInList = -(iSelectedInList - 1) - 2; } } ImGui::SameLine();
+                if (ImGui::Button("Up")) {
+                    if (iSelectedInList > 0) 
+                    { std::swap(m_SelectedItems[iSelectedInList - 1], 
+                        m_SelectedItems[iSelectedInList]); 
+                    iSelectedInList = -(iSelectedInList - 1) - 2; 
+                    } 
+                }
+                ImGui::SameLine();
+
                 if (ImGui::Button("Down")) { if (m_SelectedItems.size() > 1 && iSelectedInList < m_SelectedItems.size() - 1) { std::swap(m_SelectedItems[iSelectedInList], m_SelectedItems[iSelectedInList + 1]); iSelectedInList = -(iSelectedInList + 1) - 2; } }  ImGui::SameLine();
                 if (ImGui::Button("Del")) { if (m_SelectedItems.size() && iSelectedInList >= 0) { m_SelectedItems.erase(m_SelectedItems.begin() + iSelectedInList); iSelectedInList = -1; } } ImGui::SameLine();
                 if (ImGui::Button("Clear List")) { m_SelectedItems.clear(); iSelectedInList = -1;/*  if (E.flags.test(SChooseEvents::flClearTexture) ){ if (m_Texture)m_Texture->Release(); m_Texture = 0; } */ImGui::SameLine(); }
+                if (ImGui::Button("Ctrl")) 
+                {
+
+                }
+            
             }
            
             ImGui::EndChild();
@@ -262,8 +310,7 @@ void UIChooseForm::Draw()
       
     
     if (m_ClickItem)
-    {
-       
+    {       
         {
            
 
@@ -428,6 +475,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
         if (init_name && init_name[0])
             m_LastSelection = init_name;
     }
+
     //Form->tvItems->Selected = 0;
 
     // fill items
@@ -444,15 +492,19 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
     }
     else
     {
-        SChooseEvents* e = GetEvents(choose_ID); VERIFY2(e, "Can't find choose event.");
+        SChooseEvents* e = GetEvents(choose_ID);
+        VERIFY2(e, "Can't find choose event.");
         Form->E = *e;
+
     }
     // set & fill
 
 
     Form->m_Title = Form->E.caption.c_str();
     if (!Form->E.on_fill.empty())
+    {
         Form->E.on_fill(Form->m_Items, fill_param);
+    }
 
     Form->FillItems(choose_ID);
 
@@ -472,6 +524,13 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
             }
         }
     }
+
+    for (auto item : Form->m_Items)
+    {
+         
+    }
+
+
     /*ImGui::GetBack*/
     //.	Form->paItemsCount->Caption		= AnsiString(" Items in list: ")+AnsiString(Form->tvItems->Items->Count);
 
@@ -488,7 +547,8 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
 
 void UIChooseForm::AppendEvents(u32 choose_ID, LPCSTR caption, TOnChooseFillItems on_fill, TOnChooseSelectItem on_sel, TGetTexture on_thm, TOnChooseClose on_close, u32 flags)
 {
-	EventsMapIt it = m_Events.find(choose_ID); VERIFY(it == m_Events.end());
+	EventsMapIt it = m_Events.find(choose_ID);
+    VERIFY(it == m_Events.end());
 	m_Events.insert(std::make_pair(choose_ID, SChooseEvents(caption, on_fill, on_sel, on_thm, on_close, flags)));
 
 }

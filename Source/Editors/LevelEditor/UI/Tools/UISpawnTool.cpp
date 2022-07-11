@@ -40,16 +40,20 @@ void UISpawnTool::Draw()
             {
                 if (ImGui::Checkbox("Attach Object...", &m_AttachObject))
                 {
-                    if (m_AttachObject) ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
+                    if (m_AttachObject)
+                        ExecCommand(COMMAND_CHANGE_ACTION, etaAdd);
                 }
+             
                 ImGui::SameLine(0, 10);
-
+               
                 if (ImGui::Button("Detach Object", ImVec2(-1, 0)))
                 {
                     ObjectList lst;
+                    
                     if (Scene->GetQueryObjects(lst, OBJCLASS_SPAWNPOINT, 1, 1, 0)) {
                         for (ObjectIt it = lst.begin(); it != lst.end(); it++) {
-                            CSpawnPoint* O = dynamic_cast<CSpawnPoint*>(*it); R_ASSERT(O);
+                            CSpawnPoint* O = dynamic_cast<CSpawnPoint*>(*it); 
+                            R_ASSERT(O);
                             O->DetachObject();
                         }
                     }
@@ -61,7 +65,9 @@ void UISpawnTool::Draw()
         ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());
         ImGui::TreePop();
     }
+
     ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
+
     if (ImGui::TreeNode("Object List"))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
@@ -83,7 +89,8 @@ void UISpawnTool::SelByRefObject(bool flag)
         for (; _F != _E; _F++) {
             if ((*_F)->Visible()) {
                 CSpawnPoint* _O = (CSpawnPoint*)(*_F);
-                if (_O->RefCompare(N)) _O->Select(flag);
+                if (_O->RefCompare(N)) 
+                    _O->Select(flag);
             }
         }
     }
@@ -127,10 +134,13 @@ void UISpawnTool::MultiSelByRefObject(bool clear_prev)
 void UISpawnTool::RefreshList()
 {
     ListItemsVec items;
-    LHelper().CreateItem(items, RPOINT_CHOOSE_NAME, 0, 0, 0);
-    LHelper().CreateItem(items, ENVMOD_CHOOSE_NAME, 0, 0, 0);
+    LHelper().CreateItem(items, RPOINT_CHOOSE_NAME, 0, 0, RPOINT_CHOOSE_NAME);
+    LHelper().CreateItem(items, ENVMOD_CHOOSE_NAME, 0, 0, ENVMOD_CHOOSE_NAME);
+
+
     CInifile::Root& data = ((CInifile*)pSettings)->sections();
-    for (CInifile::RootIt it = data.begin(); it != data.end(); it++) {
+    for (CInifile::RootIt it = data.begin(); it != data.end(); it++) 
+    {
         LPCSTR val;
         if ((*it)->line_exist("$spawn", &val))
         {
@@ -140,6 +150,7 @@ void UISpawnTool::RefreshList()
             {
                 ListItem* I = LHelper().CreateItem(items, caption.c_str(), 0, ListItem::flDrawThumbnail, (LPVOID) * (*it)->Name);
                 //m_caption_to_sect[caption] = sect;
+              //  Msg("CreateItem [%s]", caption.c_str());
             }
         }
     }
@@ -151,6 +162,7 @@ void UISpawnTool::OnItemFocused(ListItem* item)
     m_Current = 0;
     if (item)
     {
+        Msg("ItemFocused [%s]", (*item).m_Object);
         m_Current = (LPCSTR)item->m_Object;
     }
     ExecCommand(COMMAND_RENDER_FOCUS);

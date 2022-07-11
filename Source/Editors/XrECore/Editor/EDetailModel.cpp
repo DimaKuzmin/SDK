@@ -227,6 +227,40 @@ void EDetail::Save(IWriter& F)
     F.close_chunk		();
 }
 
+bool EDetail::LoadLTX(CInifile& F, LPCSTR section)
+{
+    // reference
+    m_sRefs = F.r_string(section, "ref");
+
+    // scale
+    m_fMinScale = F.r_float(section, "min_scale");
+    m_fMaxScale = F.r_float(section, "min_scale");
+
+    // density factor
+    m_fDensityFactor = F.r_float(section, "density_factor");
+
+    // flags
+    m_Flags.flags = F.r_u32(section, "flags") ;
+
+    return true;
+}
+
+void EDetail::SaveLTX(CInifile& F, LPCSTR section)
+{
+    // reference
+    F.w_string(section, "ref", m_sRefs.c_str());
+ 
+    // scale
+    F.w_float(section, "min_scale", m_fMinScale);
+    F.w_float(section, "min_scale", m_fMaxScale);
+ 
+    // density factor
+    F.w_float(section, "density_factor", m_fDensityFactor);
+ 
+    // flags
+    F.w_u32(section, "flags", m_Flags.get());
+}
+
 void EDetail::Export(IWriter& F, LPCSTR tex_name, const Fvector2& offs, const Fvector2& scale, bool rot)
 {
 	R_ASSERT			(m_pRefs);

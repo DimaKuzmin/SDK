@@ -112,6 +112,7 @@ public:
 	void							ED_UpdateConstant	(LPCSTR Name, CConstant*	data);
 #ifdef _EDITOR
 	void							ED_UpdateTextures	(AStringVec* names);
+	void							ExportTexturesToDir (LPCSTR name);
 #endif
 
 	// Low level resource creation

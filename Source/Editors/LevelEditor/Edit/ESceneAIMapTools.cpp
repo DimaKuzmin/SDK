@@ -129,7 +129,9 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
     F.r				(&id,3); 			n3 = (SAINode*)tools->UnpackLink(id);
     F.r				(&id,3); 			n4 = (SAINode*)tools->UnpackLink(id);
 	pl				= F.r_u16(); 		pvDecompress(Plane.n,pl);
-    F.r				(&np,sizeof(np)); 	tools->UnpackPosition(Pos,np,tools->m_AIBBox,tools->m_Params);
+    F.r				(&np,sizeof(np)); 	
+    
+    tools->UnpackPosition(Pos,np,tools->m_AIBBox,tools->m_Params);
 	Plane.build		(Pos,Plane.n);
     flags.assign	(F.r_u8());
 }
@@ -145,7 +147,8 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
     id = n3?(u32)n3->idx:InvalidNode; F.w(&id,3);
     id = n4?(u32)n4->idx:InvalidNode; F.w(&id,3);
     pl = pvCompress (Plane.n);	 F.w_u16(pl);
-	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params); F.w(&np,sizeof(np));
+	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params);
+    F.w(&np,sizeof(np));
     F.w_u8			(flags.get());
 }
 
@@ -324,7 +327,8 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 
     R_ASSERT(F.find_chunk(AIMAP_CHUNK_NODES));
     m_Nodes.resize	(F.r_u32());
-	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++){
+	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
+    {
     	*it			= xr_new<SAINode>();
     	(*it)->LoadStream	(F,this);
     }
@@ -339,7 +343,8 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     }
 
 	// snap objects
-    if (F.find_chunk(AIMAP_CHUNK_SNAP_OBJECTS)){
+    if (F.find_chunk(AIMAP_CHUNK_SNAP_OBJECTS))
+    {
     	shared_str 	buf;
 		int cnt 	= F.r_u32();
         if (cnt){
@@ -357,6 +362,105 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     return true;
 }
 //----------------------------------------------------
+
+/*
+#include <thread>
+
+xr_map<u16, xr_vector<Fvector3>> thread_positions;
+
+void ADDNODES(void* data, u32 thread_id)
+{
+    ESceneAIMapTool* tool = (ESceneAIMapTool*) data;
+  
+    Msg("THREAD ADD NODE [%d]", thread_id);
+
+    if (tool)
+    for (auto pos : thread_positions[thread_id])
+    {
+        Msg("POS [%f][%f][%f]", pos.x, pos.y, pos.z);
+        tool->AddNode(pos, true, true, 1);
+    }
+}
+
+*/
+
+bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
+{
+    /*
+    for (auto th : thread_positions)
+    {
+        th.second.clear_and_free();
+    }
+
+    thread_positions.clear();
+    */
+  
+    if (F.find_chunk(2))
+    {
+        u32 size = F.r_u32(); 
+        SPBItem* pb = UI->ProgressStart(size, "Loading nodes...");
+        
+        u16 thread = 1;
+        Scene->lock();
+
+        for (int i = 0; i < size; i++)
+        {          
+           Fvector3 pos;
+           pos.x = F.r_float();
+           pos.y = F.r_float();
+           pos.z = F.r_float();
+
+           pos.add(offset);
+          
+           AddNode(pos, true, true, 1);
+
+           if (i % 128)
+               pb->Update(i);
+
+           //Msg("node[%d]/%d", i, size);
+
+           /* thread_positions[thread].push_back(pos);
+           if (i % 1000)
+           {
+               thread += 1;
+           }
+           */
+
+        }  
+
+        Scene->unlock();
+        /*
+        std::thread* threads = new std::thread[thread];
+
+        for (int i = 1; i < thread; i++)
+        {
+            threads[i] = std::thread(ADDNODES, this, i);
+        }
+
+        for (int i = 1; i < thread; i++)
+        {
+            threads[i].join();
+        }
+         */
+
+        UI->ProgressEnd(pb);
+
+        return true;
+    }
+}
+
+void ESceneAIMapTool::SaveStreamPOS(IWriter& write)
+{
+    write.open_chunk(2);
+    write.w_u32(m_Nodes.size());
+    for (auto node : m_Nodes)
+    {
+       write.w_float(node->Pos.x);
+       write.w_float(node->Pos.y);
+       write.w_float(node->Pos.z);
+    }
+    write.close_chunk();
+}
 
 bool ESceneAIMapTool::LoadSelection(IReader& F)
 {
