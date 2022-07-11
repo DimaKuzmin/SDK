@@ -10,7 +10,14 @@ namespace CDB
 	{
 		xr_vector<Fvector>::iterator I,E;
 		I=verts.begin();	E=verts.end();
-		for (;I!=E;I++)		if (I->similar(V,eps)) return u32(I-verts.begin());
+		
+		if (strstr(Core.Params, "-no_check_vertex") == 0)
+		{
+			for (; I != E; I++)
+				if (I->similar(V, eps))
+					return u32(I - verts.begin());
+		}
+
 		verts.push_back		(V);
 		return verts.size	()-1;
 	}
@@ -343,6 +350,7 @@ namespace CDB
 		faces.push_back(T);
 		flags.push_back(_flags);
 	}
+
 	u32		CollectorPacked::VPack(const Fvector& V)
 	{
 		u32 P = 0xffffffff;
@@ -355,15 +363,18 @@ namespace CDB
 		//		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
 
+		if (strstr(Core.Params, "-no_check_vertex") == 0)  
 		{
 			DWORDList* vl;
 			vl = &(VM[ix][iy][iz]);
 			for(DWORDIt it=vl->begin();it!=vl->end(); it++)
-				if( verts[*it].similar(V) )	{
-					P = *it;
-					break;
-				}
+			if (verts[*it].similar(V))
+			{
+				P = *it;
+				break;
+			}
 		}
+
 		if (0xffffffff==P)
 		{
 			P = verts.size();
