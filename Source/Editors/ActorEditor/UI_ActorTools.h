@@ -335,6 +335,9 @@ public:
 	CCommandVar 		CommandOptimizeMotions(CCommandVar p1, CCommandVar p2);
     CCommandVar 		CommandMakeThumbnail(CCommandVar p1, CCommandVar p2);
     CCommandVar			CommandBatchConvert	(CCommandVar p1, CCommandVar p2);
+
+    CCommandVar			CommandSurfaceExport(CCommandVar p1, CCommandVar p2);
+
 public:
     void OnDrawUI();
     inline bool IsPhysics()const { return m_IsPhysics; }

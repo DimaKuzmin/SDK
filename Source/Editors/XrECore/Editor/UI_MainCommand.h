@@ -71,6 +71,7 @@ enum
     COMMAND_SIMULATE,
     COMMAND_USE_SIMULATE_POSITIONS,
 
+    COMMAND_SURFACE_EXPORT,
     COMMAND_MAIN_LAST
 };
 //------------------------------------------------------------------------------

@@ -86,9 +86,7 @@ void CBuild::xrPhase_UVmap()
 					{
 						msF = (*it);
 						msA = a;
-						//break;
-					}
-					
+ 					}	
 				}
 			}
 
@@ -105,9 +103,7 @@ void CBuild::xrPhase_UVmap()
 				//Deflector  = D;
 				// break the cycle to startup again
 				D->OA_Export	();
-				
-
-			 
+ 	 
 				// Detach affected faces
 				faces_affected.clear	();
 				for (int i=0; i<int(g_XSplit[SP]->size()); i++) 
@@ -122,10 +118,10 @@ void CBuild::xrPhase_UVmap()
 				}
 				
 				// detaching itself
-				Detach				(&faces_affected);
+				//Detach				(&faces_affected);
 				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
 				 
-
+				StatusNoMSG("SP[%d], size[%d], all[%d], timer[%d]", SP, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ms());
 				
 			} 
 			else 
@@ -137,10 +133,11 @@ void CBuild::xrPhase_UVmap()
 					SP--;
 				}
 				// Cancel infine loop (while)
+				StatusNoMSG("SP[%d], size[%d], all[%d], timer[%d]", SP, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ms());
 				break;
 			}
 
-			StatusNoMSG("SP[%d], size[%d], all[%d], timer[%d]", SP, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ms() );
+			
 		}
 	}
 	clMsg("%d subdivisions...",g_XSplit.size());

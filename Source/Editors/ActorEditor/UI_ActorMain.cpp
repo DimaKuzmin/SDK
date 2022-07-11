@@ -485,6 +485,51 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
     return TRUE;
 }
 
+CCommandVar CActorTools::CommandSurfaceExport(CCommandVar p1, CCommandVar p2)
+{
+    if (ATools->CurrentObject())
+    {
+        int id = 0;
+        for (auto surface : ATools->CurrentObject()->Surfaces())
+        {
+            id++;
+            Msg("Surface[%d] name %s", id, surface->m_Texture.c_str());
+            {
+                string_path dest, src;
+                string256 filename = { 0 };
+                xr_strcat(filename, surface->m_Texture.c_str());
+                xr_strcat(filename, ".dds");
+                FS.update_path(src, "$game_textures$", filename);
+
+
+                if (FS.exist(src))
+                {
+                    FS.update_path(dest, "$export_surface$", filename);
+                    FS.file_copy(src, dest);
+                }
+            }
+           
+            
+            //thm
+            {
+                string_path dest, src;
+                string256 filename = { 0 };
+                xr_strcat(filename, surface->m_Texture.c_str());
+                xr_strcat(filename, ".thm");
+                FS.update_path(src, "$game_textures$", filename);
+
+                if (FS.exist(src))
+                {
+                    FS.update_path(dest, "$export_surface$", filename);
+                    FS.file_copy(src, dest);
+                }
+            }
+        }
+    }
+    
+    return TRUE;
+}
+
 
 void CActorMain::RegisterCommands()
 {
@@ -508,6 +553,9 @@ void CActorMain::RegisterCommands()
     REGISTER_CMD_C(COMMAND_OPTIMIZE_MOTIONS, ATools, CActorTools::CommandOptimizeMotions);
     REGISTER_CMD_CE(COMMAND_MAKE_THUMBNAIL, "Make Thumbnail", ATools, CActorTools::CommandMakeThumbnail, false);
     REGISTER_CMD_CE(COMMAND_BATCH_CONVERT, "File\\Batch Convert", ATools, CActorTools::CommandBatchConvert, false);
+    REGISTER_CMD_CE(COMMAND_SURFACE_EXPORT, "File\\ExportSurfaces", ATools, CActorTools::CommandSurfaceExport, true);
+
+
     // ui
     REGISTER_CMD_S(COMMAND_SHOW_CLIPMAKER, CommandShowClipMaker);
     REGISTER_CMD_S(COMMAND_MAKE_PREVIEW, CommandMakePreview);

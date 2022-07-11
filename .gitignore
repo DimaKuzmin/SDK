@@ -30,9 +30,13 @@ appdata/
 compilers_x64/
 converter/
 export_textures/
+export_surfaces/
 gamedata/
 import/
 import_spawns/
 gamedata/shaders/
 ccc__temp__vertices
 T-6638.7z
+actor.ini
+engine.log
+Source/BearBundle

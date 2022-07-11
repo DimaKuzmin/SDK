@@ -141,7 +141,7 @@ void CBuild::xrPhase_MergeLM()
 			rS.iArea	= L.Area();
 			rT			= rS;
 			
-			if (_rect_place(rT,&L)) 
+			//if (_rect_place(rT,&L)) 
 			{
 				BOOL		bRotated;
 				if (rT.SizeX() == rS.SizeX()) 

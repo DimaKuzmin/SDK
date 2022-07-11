@@ -34,6 +34,10 @@ void UIMainMenuForm::Draw()
             ImGui::Separator();
             if (ImGui::MenuItem("Batch Convert...", "")) { ExecCommand(COMMAND_BATCH_CONVERT); }
             ImGui::Separator();
+            if (ImGui::MenuItem("SurfaceTexturesExp...", ""))
+            {
+                ExecCommand(COMMAND_SURFACE_EXPORT);
+            };
             if (ImGui::BeginMenu("Export"))
             {
                 if (ImGui::MenuItem("Export OGF...", "")) { ExecCommand(COMMAND_EXPORT_OGF); }
@@ -61,6 +65,8 @@ void UIMainMenuForm::Draw()
             {
                 if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }
                 ImGui::Separator();
+                if (ImGui::MenuItem("Object Surface Export", "")) { ExecCommand(COMMAND_SURFACE_EXPORT); };
+
                 if (ImGui::MenuItem("Synchronize Textures", "")) { ExecCommand(COMMAND_REFRESH_TEXTURES); }
                 if (ImGui::MenuItem("Cheack New Textures", "")) { ExecCommand(COMMAND_CHECK_TEXTURES); }
                 ImGui::EndMenu();

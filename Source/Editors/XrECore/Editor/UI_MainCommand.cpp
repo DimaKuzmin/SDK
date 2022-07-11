@@ -368,6 +368,7 @@ CCommandVar 	CommandImageEditor(CCommandVar p1, CCommandVar p2)
     UIImageEditorForm::Show(false);
     return				TRUE;
 }
+
 CCommandVar 	CommandLightAnimEditor(CCommandVar p1, CCommandVar p2)
 {
     UIEditLightAnim::Show();
