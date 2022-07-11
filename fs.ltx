@@ -5,6 +5,7 @@ $server_data_root$          = false| false|  $fs_root$|rawdata\
 $server_backup$             = true|  false| $server_data_root$|     backup\
 $server_root$    		       = false|		true|	\
 $app_data_root$			    = true|		false|	$server_root$|			_appdata_\
+
 $game_data$                 = false| true|   $fs_root$| gamedata\
 $game_spawn$                = true|  false| $game_data$|            spawns\
 $game_levels$               = true|  false| $game_data$|            levels\
@@ -12,13 +13,13 @@ $game_meshes$               = true|  true|  $game_data$|            meshes\|    
 $game_anims$                = true|  true|  $game_data$|            anims\|          *.anm;*.anms|         Animation files
 $game_dm$                   = true|  true|  $game_data$|            meshes\|         *.dm|                  Detail Model files
 $game_shaders$              = true|  true|  $game_data$|            shaders\
-$game_particles$        	 = true|  true|  $server_data_root$|     particles\
+$game_particles$        	= true|  true|  $server_data_root$|     particles\
 $game_sounds$               = true|  true|  $game_data$|            sounds\
 $game_textures$             = true|  true|  $game_data$|            textures\
 $game_scripts$              = true|  false| $game_data$|            scripts\|        *.script|       Game script files
 $game_config$               = true|  false| $game_data$|            configs\
 $level$                     = false| false| $game_levels$
-$logs$      		    = true|  false| $sdk_root$|             logs\|           *.err|          Log files
+$logs$      		    	= true|  false| $sdk_root$|             logs\|           *.err|          Log files
 $screenshots$               = true|  false| $fs_root$|screenshots\
 $sounds$                    = true|  true|  $server_data_root$|     sounds\|         *.wav|          Wave files
 $textures$                  = true|  true|  $server_data_root$|     textures\
@@ -34,3 +35,10 @@ $omotions$                  = true|  true|  $import$|               |           
 $smotion$                   = true|  true|  $import$|               |                *.skl;*.skls|   Skeleton motion files
 $sbones$                    = true|  true|  $import$|               |                *.bones|               Skeleton bone data files
 $game_saves$                = false| true| $fs_root$| savedgames\
+
+$export_textures$			= false| true| $fs_root$| export_textures\
+
+$import_spawns$					= false| true| $fs_root$| import_spawns\
+
+
+$dump$      		    	= true|  false| $logs$|             logs\|           *.err|          Log files
