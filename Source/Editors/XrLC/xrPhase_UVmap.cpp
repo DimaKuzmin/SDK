@@ -86,7 +86,7 @@ void CBuild::xrPhase_UVmap()
 					{
 						msF = (*it);
 						msA = a;
-						break;
+						//break;
 					}
 					
 				}
@@ -107,7 +107,7 @@ void CBuild::xrPhase_UVmap()
 				D->OA_Export	();
 				
 
-				/*
+			 
 				// Detach affected faces
 				faces_affected.clear	();
 				for (int i=0; i<int(g_XSplit[SP]->size()); i++) 
@@ -124,7 +124,7 @@ void CBuild::xrPhase_UVmap()
 				// detaching itself
 				Detach				(&faces_affected);
 				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
-				*/
+				 
 
 				
 			} 
