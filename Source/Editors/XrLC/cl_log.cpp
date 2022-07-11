@@ -81,6 +81,16 @@ void __cdecl Status	(const char *format, ...)
 	csLog.Leave			();
 }
 
+void __cdecl StatusNoMSG(const char* format, ...)
+{
+	csLog.Enter();
+	va_list				mark;
+	va_start(mark, format);
+	vsprintf(status, format, mark);
+	bStatusChange = TRUE;
+ 	csLog.Leave();
+}
+
 
 
 void Progress		(const float F)

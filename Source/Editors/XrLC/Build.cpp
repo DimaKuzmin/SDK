@@ -74,6 +74,7 @@ void	CBuild::read( INetReader &r )
 	r_pod_vector( r, g_Shaders );
 	
 }
+
 void	CBuild::write( IWriter	&w ) const 
 {
 	w_pod( w, g_build_options );
@@ -150,92 +151,113 @@ void CBuild::Light_prepare()
 	for (u32 m=0; m<mu_models().size(); m++)	mu_models()[m]->calc_faceopacity();
 }
 
-
-//.#define CFORM_ONLY
 #ifdef LOAD_GL_DATA
 void net_light ();
 #endif
-void CBuild::Run	(LPCSTR P)
+
+bool skip_sectors = false;
+
+void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
 #ifdef LOAD_GL_DATA
-	net_light ();
+	net_light();
 	return;
 #endif
+
+	bool CformOnly = false;
+
+	if (strstr(Core.Params, "-cform"))
+	{
+		CformOnly = true;
+	}
+
+	if (strstr(Core.Params, "-no_sectors"))
+		skip_sectors = true;
 	//****************************************** Open Level
-	strconcat					(sizeof(path),path,P,"\\")	;
-	string_path					lfn				;
-	IWriter* fs					= FS.w_open		(strconcat(sizeof(lfn),lfn,path,"level."));
-	fs->open_chunk				(fsL_HEADER)	;
-	hdrLEVEL H;	
-	H.XRLC_version				= XRCL_PRODUCTION_VERSION;
-	H.XRLC_quality				= g_params().m_quality;
-	fs->w						(&H,sizeof(H));
-	fs->close_chunk				();
+	strconcat(sizeof(path), path, P, "\\");
+	string_path					lfn;
+	IWriter* fs = FS.w_open(strconcat(sizeof(lfn), lfn, path, "level."));
+	fs->open_chunk(fsL_HEADER);
+	hdrLEVEL H;
+	H.XRLC_version = XRCL_PRODUCTION_VERSION;
+	H.XRLC_quality = g_params().m_quality;
+	fs->w(&H, sizeof(H));
+	fs->close_chunk();
+
 
 	//****************************************** Dumb entry in shader-registration
-	RegisterShader				("");
+	RegisterShader("");
 
 	//****************************************** Saving lights
 	{
 		string256			fn;
-		IWriter*		fs	= FS.w_open	(strconcat(sizeof(fn),fn,pBuild->path,"build.lights"));
-		fs->w_chunk			(0,&*L_static().rgb.begin(),L_static().rgb.size()*sizeof(R_Light));
-		fs->w_chunk			(1,&*L_static().hemi.begin(),L_static().hemi.size()*sizeof(R_Light));
-		fs->w_chunk			(2,&*L_static().sun.begin(),L_static().sun.size()*sizeof(R_Light));
-		FS.w_close			(fs);
+		IWriter* fs = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.lights"));
+		fs->w_chunk(0, &*L_static().rgb.begin(), L_static().rgb.size() * sizeof(R_Light));
+		fs->w_chunk(1, &*L_static().hemi.begin(), L_static().hemi.size() * sizeof(R_Light));
+		fs->w_chunk(2, &*L_static().sun.begin(), L_static().sun.size() * sizeof(R_Light));
+		FS.w_close(fs);
 	}
 
 	//****************************************** Optimizing + checking for T-junctions
-	FPU::m64r					();
-	Phase						("Optimizing...");
-	mem_Compact					();
-	if(strstr(Core.Params,"-no_optimize") == 0)
-		PreOptimize					();
-	CorrectTJunctions			();
+	if (strstr(Core.Params, "-no_adaptive") == 0 && !CformOnly)
+	{
+		FPU::m64r();
+		Phase("Optimizing...");
+		mem_Compact();
+		PreOptimize();
+		CorrectTJunctions();
 
 	//****************************************** HEMI-Tesselate
-	FPU::m64r					();
-	Phase						("Adaptive HT...");
-	mem_Compact					();
-#ifndef CFORM_ONLY
-	xrPhase_AdaptiveHT			();
-#endif
-
-	//****************************************** Building normals
-	FPU::m64r					();
-	Phase						("Building normals...");
-	mem_Compact					();
-	CalcNormals					();
-	//SmoothVertColors			(5);
+	
+		FPU::m64r();
+		Phase("Adaptive HT...");
+		mem_Compact();
+		xrPhase_AdaptiveHT();
+	}
 
 	//****************************************** Collision DB
 	//should be after normals, so that double-sided faces gets separated
-	FPU::m64r					();
-	Phase						("Building collision database...");
-	mem_Compact					();
-	BuildCForm					();
-
-#ifdef CFORM_ONLY
-	return;
-#endif
-
-	BuildPortals				(*fs);
-
-	//****************************************** T-Basis
+	if (strstr(Core.Params, "-no_cform") == 0)
 	{
+		//****************************************** Building normals
+		FPU::m64r();
+		Phase("Building normals...");
+		mem_Compact();
+		CalcNormals();
+		//SmoothVertColors			(5);
+
 		FPU::m64r					();
-		Phase						("Building tangent-basis...");
-		xrPhase_TangentBasis		();
+		Phase						("Building collision database...");
 		mem_Compact					();
+		BuildCForm					();
+
+		if (CformOnly)
+			return;
+
+		BuildPortals(*fs);
+
+		//****************************************** T-Basis
+		{
+			FPU::m64r();
+			Phase("Building tangent-basis...");
+			xrPhase_TangentBasis();
+			mem_Compact();
+		}
 	}
 
-	//****************************************** GLOBAL-RayCast model
-	FPU::m64r					();
-	Phase						("Building rcast-CFORM model...");
-	mem_Compact					();
-	Light_prepare				();
-	BuildRapid					(TRUE);
+
+	
+	if (strstr(Core.Params, "-no_rcast") == 0)
+	{
+		//****************************************** GLOBAL-RayCast model
+		FPU::m64r();
+		Phase("Building rcast-CFORM model...");
+		mem_Compact();
+		Light_prepare();
+		BuildRapid(TRUE);
+	}
+
 
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
@@ -352,12 +374,15 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Phase			("Destroying ray-trace model...");
 	mem_Compact		();
 	lc_global_data()->destroy_rcmodel();
-
-	//****************************************** Build sectors
-	FPU::m64r		();
-	Phase			("Building sectors...");
-	mem_Compact		();
-	BuildSectors	();
+	
+	if (!skip_sectors)
+	{
+		//****************************************** Build sectors
+		FPU::m64r();
+		Phase("Building sectors...");
+		mem_Compact();
+		BuildSectors();
+	}
 
 	//****************************************** Saving MISC stuff
 	FPU::m64r		();

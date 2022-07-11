@@ -135,17 +135,22 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 							}
 						}
 					} 
-				} catch (...)
+				} 
+				catch (...)
 				{
 					clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 				}
-				if (Fcount) {
+
+				if (Fcount) 
+				{
 					// Calculate lighting amount
 					C.scale				(Fcount);
 					C.mul				(.5f);
 					defl.Lumel(U,V)._set(C);
 					defl.Marker(U,V)	= 255;
-				} else {
+				} 
+				else 
+				{
 					defl.Marker(U,V)	= 0;
 				}
 			}

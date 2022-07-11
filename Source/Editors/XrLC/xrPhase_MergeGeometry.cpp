@@ -214,7 +214,8 @@ void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume , u
 	u32 m_range = ( split_size - split ) / mergegm_threads_count;
 
 	// Assigning parameters
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) {
+	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) 
+	{
 		mergegm_params[ i ].selected = *selected;
 		mergegm_params[ i ].selected_volume = *selected_volume;
 
@@ -233,8 +234,10 @@ void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume , u
 	WaitForMultipleObjects( mergegm_threads_count , mergegm_ready_events , TRUE , INFINITE );
 
 	// Compose results
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) {
-		if ( mergegm_params[ i ].selected_volume < *selected_volume ) {
+	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) 
+	{
+		if ( mergegm_params[ i ].selected_volume < *selected_volume ) 
+		{
 			*selected = mergegm_params[ i ].selected;
 			*selected_volume = mergegm_params[ i ].selected_volume;
 		}
@@ -270,12 +273,14 @@ void CBuild::xrPhase_MergeGeometry	()
 
 	Status("Processing...");
 	validate_splits		();
-	for (u32 split=0; split<g_XSplit.size(); split++) {
+	for (u32 split=0; split<g_XSplit.size(); split++) 
+	{
 		vecFace&	subdiv	= *(g_XSplit[split]);
 		bool		bb_base_orig_inited = false;
 		Fbox		bb_base_orig;
 		Fbox		bb_base;
-		while (NeedMerge(subdiv,bb_base)) {
+		while (NeedMerge(subdiv,bb_base)) 
+		{
 			//	Save original AABB for later tests
 			if (!bb_base_orig_inited)
 			{
@@ -287,10 +292,13 @@ void CBuild::xrPhase_MergeGeometry	()
 			u32	selected		= split;
 			float	selected_volume	= flt_max;
 
-			if ( ( g_XSplit.size() - split ) < 200 ) { // may need adjustment
+			if ( ( g_XSplit.size() - split ) < 200 )
+			{ // may need adjustment
 				// single thread
 				FindBestMergeCandidate( &selected  , &selected_volume , split + 1 , g_XSplit.size() , &subdiv , &bb_base_orig , &bb_base );
-			} else {
+			}
+			else 
+			{
 				// multi thread
 				FindBestMergeCandidate_threads( &selected  , &selected_volume , split + 1 , g_XSplit.size() , &subdiv , &bb_base_orig , &bb_base );
 			}
@@ -302,8 +310,12 @@ void CBuild::xrPhase_MergeGeometry	()
 			xr_delete		(g_XSplit[selected]);
 			g_XSplit.erase	(g_XSplit.begin()+selected);
 		}
-		Progress(_sqrt(_sqrt(float(split)/float(g_XSplit.size()))));
+
+		Progress( float(split) / float(g_XSplit.size()) );
+
+		StatusNoMSG("MergeGeometry ... %d/%d", split, g_XSplit.size() );
 	}
+
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits			();
 

@@ -6,7 +6,8 @@
 #include "../Public/shader_xrlc.h"
 void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 {
-	for		(u32 fit=0; fit<m_faces.size(); fit++)	m_faces[fit]->flags.bProcessed = false;
+	for		(u32 fit=0; fit<m_faces.size(); fit++)
+		m_faces[fit]->flags.bProcessed = false;
 
 	v_faces			adjacent;	adjacent.reserve(6*2*3);
 

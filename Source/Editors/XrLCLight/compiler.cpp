@@ -7,7 +7,7 @@
 #include "lightthread.h"
 #include "xrLightDoNet.h"
 
-#define NUM_THREADS		3
+#define NUM_THREADS		32
 
 void	xrLight			()
 {

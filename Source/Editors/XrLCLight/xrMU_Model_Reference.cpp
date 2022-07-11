@@ -31,12 +31,7 @@ void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
 	c_bias.sun			= 0;
 }
 
-
-
-
-
-
-
+ 
 void xrMU_Reference::export_cform_game(CDB::CollectorPacked& CL)
 {
 	// Collecting data
@@ -99,16 +94,7 @@ void xrMU_Reference::export_cform_rcast(CDB::CollectorPacked& CL)
 {
 	model->export_cform_rcast(CL,xform);
 }
-
-	//xrMU_Model*				model;
- //   Fmatrix					xform;
- //   Flags32					flags;
-	//u16						sector;
-
-	//xr_vector<base_color>	color;
-
-	//base_color_c			c_scale;
-	//base_color_c			c_bias;
+  
 void		xrMU_Reference::			read				( INetReader	&r )
 {
 	

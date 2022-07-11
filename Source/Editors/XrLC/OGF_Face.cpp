@@ -145,15 +145,21 @@ void OGF::Optimize	()
 	// Real optimization
 	//////////////////////////////////////////////////////////////////////////
 	// x-vertices
-	try {
+	try
+	{
 		if (fast_path_data.vertices.size() && fast_path_data.faces.size())
 		{
-			try {
+			/*
+			try 
+			{
 				VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
 				VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
-			} catch(...) {
+			} 
+			catch(...) 
+			{
 				Msg	("* ERROR: optimize: x-geom : verify: failed");
 			}
+			*/
 
 			// Optimize texture coordinates
 			/*
@@ -189,7 +195,8 @@ void OGF::Optimize	()
 
 	//////////////////////////////////////////////////////////////////////////
 	// Detect relevant number of UV pairs
-	try {
+	try 
+	{
 		R_ASSERT			(data.vertices.size());
 		dwRelevantUV		= data.vertices.front().UV.size();
 		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);

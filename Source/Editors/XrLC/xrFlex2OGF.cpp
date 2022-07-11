@@ -70,6 +70,9 @@ void CBuild::Flex2OGF()
 
 	g_tree.clear	();
 	g_tree.reserve	(4096);
+
+	Status("Converting to OGF size [%d]", g_XSplit.size());
+
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		R_ASSERT			( ! (*it)->empty() );
@@ -105,7 +108,9 @@ void CBuild::Flex2OGF()
 					T.pBuildSurface		= T.pBuildSurface;	// Leave surface intact
 					R_ASSERT		(pOGF);
 					pOGF->textures.push_back(T);
-				} else {
+				}
+				else 
+				{
 					// If lightmaps persist
 					CLightmap*	LM	= F->lmap_layer;
 					if (LM)		{
@@ -130,7 +135,8 @@ void CBuild::Flex2OGF()
 				BuildOGFGeom( *pOGF, *(*it), _tc_ );
 			} catch (...) {  clMsg("* ERROR: Flex2OGF, model# %d, *faces*",MODEL_ID); }
 
-		} catch (...)
+		}
+		catch (...)
 		{
 			clMsg("* ERROR: Flex2OGF, 1st part, model# %d",MODEL_ID);
 		}

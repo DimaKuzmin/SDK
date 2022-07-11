@@ -48,8 +48,13 @@ void CBuild::xrPhase_UVmap()
 	float		p_cost	= 1.f / float(g_XSplit.size());
 	float		p_total	= 0.f;
 	vecFace		faces_affected;
+
+	clMsg("SP_SIZE %d", g_XSplit.size());
+
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
+		
+
 		Progress			(p_total+=p_cost);
 		
 		// ManOwaR, unsure:
@@ -67,21 +72,29 @@ void CBuild::xrPhase_UVmap()
 		//   find first poly that doesn't has mapping and start recursion
 		while (TRUE) 
 		{
+			CTimer timer; timer.Start();
 			// Select maximal sized poly
 			Face *	msF		= NULL;
 			float	msA		= 0;
+			 
 			for (vecFaceIt it = g_XSplit[SP]->begin(); it!=g_XSplit[SP]->end(); it++)
 			{
-				if ( (*it)->pDeflector == NULL ) {
+				if ( (*it)->pDeflector == NULL )
+				{
 					float a = (*it)->CalcArea();
-					if (a>msA) {
+					if (a>msA)
+					{
 						msF = (*it);
 						msA = a;
+						break;
 					}
+					
 				}
 			}
-			if (msF) {
 
+			if (msF)
+			{
+				
 				CDeflector *D = xr_new<CDeflector>();
 				lc_global_data()->g_deflectors().push_back	(D);
 				// Start recursion from this face
@@ -93,11 +106,15 @@ void CBuild::xrPhase_UVmap()
 				// break the cycle to startup again
 				D->OA_Export	();
 				
+
+				/*
 				// Detach affected faces
 				faces_affected.clear	();
-				for (int i=0; i<int(g_XSplit[SP]->size()); i++) {
+				for (int i=0; i<int(g_XSplit[SP]->size()); i++) 
+				{
 					Face *F = (*g_XSplit[SP])[i];
-					if ( F->pDeflector == D ) {
+					if ( F->pDeflector == D )
+					{
 						faces_affected.push_back(F);
 						g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i); 
 						i--;
@@ -107,7 +124,12 @@ void CBuild::xrPhase_UVmap()
 				// detaching itself
 				Detach				(&faces_affected);
 				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
-			} else {
+				*/
+
+				
+			} 
+			else 
+			{
 				if (g_XSplit[SP]->empty()) 
 				{
 					xr_delete		(g_XSplit[SP]);
@@ -117,6 +139,8 @@ void CBuild::xrPhase_UVmap()
 				// Cancel infine loop (while)
 				break;
 			}
+
+			StatusNoMSG("SP[%d], size[%d], all[%d], timer[%d]", SP, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ms() );
 		}
 	}
 	clMsg("%d subdivisions...",g_XSplit.size());

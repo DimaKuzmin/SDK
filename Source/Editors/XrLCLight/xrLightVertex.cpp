@@ -150,7 +150,7 @@ public:
 namespace lc_net{
 void RunLightVertexNet();
 }
-#define NUM_THREADS			4
+#define NUM_THREADS			32
 void LightVertex	( bool net )
 {
 	g_trans				= xr_new<mapVert>	();

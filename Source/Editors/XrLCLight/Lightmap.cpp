@@ -129,10 +129,19 @@ void CLightmap::Save( LPCSTR path )
 		for (u32 _x=0; _x<c_LMAP_size; _x++)
 		{
 			u32	offset	= _y*c_LMAP_size+_x;
-			if (lm.marker[offset]>=(254-BORDER))	lm.marker[offset]=255; else lm.marker[offset]=0;
+	
+			if (lm.marker[offset]>=(254-BORDER))	
+				lm.marker[offset]=255;
+			else
+				lm.marker[offset]=0;
 		}
+
+		//clMsg("offset_y %d", _y);
 	}
-	for (u32 ref=254; ref>(254-16); ref--) {
+
+
+	for (u32 ref=254; ref>(254-16); ref--) 
+	{
 		ApplyBorders	(lm,ref);
 		Progress		(1.f - float(ref)/float(254-16));
 	}

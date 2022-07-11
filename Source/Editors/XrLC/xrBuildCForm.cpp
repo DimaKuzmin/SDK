@@ -80,12 +80,14 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 	}
 }
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
+
 void CBuild::BuildCForm	()
 {
 	// Collecting data
 	Phase		("CFORM: creating...");
 	vecFace*	cfFaces		= xr_new<vecFace>	();
 	vecVertex*	cfVertices	= xr_new<vecVertex>	();
+	
 	{
 		xr_vector<bool>			cfVertexMarks;
 		cfVertexMarks.assign	(lc_global_data()->g_vertices().size(),false);
@@ -95,6 +97,7 @@ void CBuild::BuildCForm	()
 
 		Status("Collecting faces...");
 		cfFaces->reserve	(lc_global_data()->g_faces().size());
+
 		for (vecFaceIt I=lc_global_data()->g_faces().begin(); I!=lc_global_data()->g_faces().end(); ++I)
 		{
 			Face* F = *I;
@@ -148,17 +151,29 @@ void CBuild::BuildCForm	()
 			);
 		Progress(p_total+=p_cost);		// progress
 	}
-	if (bCriticalErrCnt) {
+
+
+	if (bCriticalErrCnt) 
+	{
 		err_save	();
 		clMsg		("MultipleEdges: %d faces",bCriticalErrCnt);
 	}
+
 	xr_delete		(cfFaces);
 	xr_delete		(cfVertices);
 
 	// Models
 	Status			("Models...");
-	for (u32 ref=0; ref<mu_refs().size(); ref++)
+
+	for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	{
+		Progress(float(ref / float(mu_refs().size())));
 		mu_refs()[ref]->export_cform_game(CL);
+
+		if (ref % 100 == 0)
+			clMsg("Model %d", ref);
+	}
+
 
 	// Simplification
 	if (g_params().m_quality!=ebqDraft)

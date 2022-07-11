@@ -28,7 +28,7 @@ void	ImplicitThread ::	Execute	()
 
 
 
-#define	NUM_THREADS	8
+#define	NUM_THREADS	32
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 		// Start threads

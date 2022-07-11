@@ -36,6 +36,8 @@
 void __cdecl	clMsg( const char *format, ...);
 void __cdecl	clLog( const char *format, ...);
 void __cdecl	Status( const char *format, ...);
+void __cdecl	StatusNoMSG(const char* format, ...);
+
 void			Progress	( const float F );
 void			Phase		( LPCSTR phase_name );
 // TODO: reference additional headers your program requires here

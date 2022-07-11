@@ -210,7 +210,13 @@ void global_claculation_data::xrLoad()
 							BT.pSurface.SwapRB();
 							BT.THM.SetHasSurface(TRUE);
 							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
-								Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
+							{
+								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
+ 
+								BT.dwWidth =  BT.pSurface.GetSize().x;
+								BT.dwHeight = BT.pSurface.GetSize().y;;
+							}
+
 							BT.Vflip	();
 						} else {
 							// Free surface memory

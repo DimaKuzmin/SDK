@@ -87,14 +87,17 @@ void CBuild::xrPhase_MergeLM()
 	{
 		VERIFY( lc_global_data() );
 		string512	phase_name;
-		xr_sprintf		(phase_name,"Building lightmap %d...", lc_global_data()->lightmaps().size());
+		xr_sprintf		(phase_name,"Building lightmap %d ... Layers[%d]", lc_global_data()->lightmaps().size(), Layer.size());
 		Phase		(phase_name);
 
 		// Sort layer by similarity (state changes)
 		// + calc material area
 		Status		("Selection...");
-		for (u32 it=0; it<materials().size(); it++) materials()[it].internal_max_area	= 0;
-		for (u32 it=0; it<Layer.size(); it++)	{
+		for (u32 it=0; it<materials().size(); it++)
+			materials()[it].internal_max_area	= 0;
+
+		for (u32 it=0; it<Layer.size(); it++)	
+		{
 			CDeflector*	D		= Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area	= _max(D->layer.Area(),materials()[D->GetBaseMaterial()].internal_max_area);
 		}
@@ -105,7 +108,8 @@ void CBuild::xrPhase_MergeLM()
 		u32 maxarea		= c_LMAP_size*c_LMAP_size*8;	// Max up to 8 lm selected
 		u32 curarea		= 0;
 		u32 merge_count	= 0;
-		for (u32 it=0; it<(int)Layer.size(); it++)	{
+		for (u32 it=0; it<(int)Layer.size(); it++)	
+		{
 			int		defl_area	= Layer[it]->layer.Area();
 			if (curarea + defl_area > maxarea) break;
 			curarea		+=	defl_area;
@@ -118,32 +122,45 @@ void CBuild::xrPhase_MergeLM()
 		CLightmap*	lmap		= xr_new<CLightmap> ();
 		VERIFY( lc_global_data() );
 		lc_global_data()->lightmaps().push_back	(lmap);
-
+		CTimer timer;
 		// Process 
 		for (u32 it=0; it<merge_count; it++) 
 		{
-			if (0==(it%1024))	Status	("Process [%d/%d]...",it,merge_count);
+			 
+			if (0 == (it % 1024))
+			{
+				u32 t_elapsed = timer.GetElapsed_ms();
+				Status("Process [%d/%d]...t[%d]", it, merge_count, t_elapsed);
+				timer.Start();
+			}
+
 			lm_layer&	L		= Layer[it]->layer;
 			L_rect		rT,rS; 
 			rS.a.set	(0,0);
 			rS.b.set	(L.width+2*BORDER-1, L.height+2*BORDER-1);
 			rS.iArea	= L.Area();
 			rT			= rS;
-			if (_rect_place(rT,&L)) 
+			
+			//if (_rect_place(rT,&L)) 
 			{
 				BOOL		bRotated;
-				if (rT.SizeX() == rS.SizeX()) {
-					R_ASSERT(rT.SizeY() == rS.SizeY());
+				if (rT.SizeX() == rS.SizeX()) 
+				{
+					//R_ASSERT(rT.SizeY() == rS.SizeY());
 					bRotated = FALSE;
-				} else {
-					R_ASSERT(rT.SizeX() == rS.SizeY());
-					R_ASSERT(rT.SizeY() == rS.SizeX());
+				} 
+				else
+				{
+					//R_ASSERT(rT.SizeX() == rS.SizeY());
+					//R_ASSERT(rT.SizeY() == rS.SizeX());
 					bRotated = TRUE;
 				}
+
 				lmap->Capture		(Layer[it],rT.a.x,rT.a.y,rT.SizeX(),rT.SizeY(),bRotated);
 				Layer[it]->bMerged	= TRUE;
 			}
-			Progress(_sqrt(float(it)/float(merge_count)));
+
+			Progress(float(it)/float(merge_count));
 		}
 		Progress	(1.f);
 
