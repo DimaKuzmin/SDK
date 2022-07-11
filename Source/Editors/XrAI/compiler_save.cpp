@@ -164,7 +164,8 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 	// All nodes
 	Status			("Saving nodes...");
-	for (u32 i=0; i<g_nodes.size(); ++i) {
+	for (u32 i=0; i<g_nodes.size(); ++i) 
+	{
 		vertex			&N	= g_nodes[i];
 		NodeCompressed	NC;
 		Compress		(NC,N,H);
@@ -175,7 +176,8 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	xr_vector<u32>	renumbering;
 	CNodeRenumberer	A(compressed_nodes,sorted,renumbering);
 
-	for (u32 i=0; i<g_nodes.size(); ++i) {
+	for (u32 i=0; i < g_nodes.size(); ++i) 
+	{
 		fs->w			(&compressed_nodes[i],sizeof(NodeCompressed));
 		Progress		(float(i)/float(g_nodes.size()));
 	}

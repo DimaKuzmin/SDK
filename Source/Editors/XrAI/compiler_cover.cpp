@@ -316,7 +316,8 @@ public:
 			thProgress	= float(N-Nstart)/float(Nend-Nstart);
 			vertex&		BaseNode= g_nodes[N];
 
-			if (!g_cover_nodes[N]) {
+			if (!g_cover_nodes[N])
+			{
 				BaseNode.high_cover[0]	= flt_max;
 				BaseNode.high_cover[1]	= flt_max;
 				BaseNode.high_cover[2]	= flt_max;
@@ -467,7 +468,8 @@ void compute_non_covers		()
 			if (!*J)
 				continue;
 
-			if (((*I).high_cover[0] + (*I).high_cover[1] + (*I).high_cover[2] + (*I).high_cover[3]) >= 4*.999f) {
+			if (((*I).high_cover[0] + (*I).high_cover[1] + (*I).high_cover[2] + (*I).high_cover[3]) >= 4*.999f)
+			{
 				if (((*I).low_cover[0] + (*I).low_cover[1] + (*I).low_cover[2] + (*I).low_cover[3]) >= 4*.999f)
 					continue;
 			}
@@ -524,7 +526,8 @@ void compute_non_covers		()
 		}
 
 		// this is incorrect
-		if (cover_pairs.empty()) {
+		if (cover_pairs.empty())
+		{
 			for (int i=0; i<4; ++i) {
 				VERIFY		((*I).high_cover[i] == flt_max);
 				(*I).high_cover[i]	= 1.f;
@@ -554,14 +557,15 @@ void compute_non_covers		()
 			}
 		}
 
-		for (int i=0; i<4; ++i) {
+		for (int i=0; i<4; ++i) 
+		{
 			clamp						((*I).high_cover[i], 0.f, 1.f);
 			clamp						((*I).low_cover[i], 0.f, 1.f);
 		}
 	}
 }
 
-#define NUM_THREADS	3
+#define NUM_THREADS	16
 extern	void mem_Optimize();
 void	xrCover	(bool pure_covers)
 {
@@ -577,7 +581,8 @@ void	xrCover	(bool pure_covers)
 	CThreadManager		Threads;
 	u32	stride			= g_nodes.size()/NUM_THREADS;
 	u32	last			= g_nodes.size()-stride*(NUM_THREADS-1);
-	for (u32 thID=0; thID<NUM_THREADS; thID++) {
+	for (u32 thID=0; thID<NUM_THREADS; thID++)
+	{
 		Threads.start(xr_new<CoverThread>(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)));
 //		CoverThread(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)).Execute();
 //		Threads.wait		();

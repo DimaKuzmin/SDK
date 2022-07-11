@@ -469,7 +469,8 @@ IC	float CLevelGraph::compute_square(float fAngle, float fAngleOfView, float b1,
 	if (fAngle < PI_DIV_2)
 		;
 	else
-		if (fAngle < PI) {
+		if (fAngle < PI) 
+		{
 			fAngle		-= PI_DIV_2;
 			b3			= b0;
 			b0			= b1;

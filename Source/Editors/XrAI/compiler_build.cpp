@@ -110,11 +110,11 @@ BOOL	CreateNode(Fvector& vAt, vertex& N)
 		}
 	}
 	if (points.size()<3) {
-//		Msg		("Failed to create node at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+		Msg		("Failed to create node at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
 		return	FALSE;
 	}
 	if (float(points.size())/float(RCAST_Total) < 0.7f) {
-//		Msg		("Partial chasm at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
+		Msg		("Partial chasm at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
 		return	FALSE;
 	}
 
@@ -125,6 +125,7 @@ BOOL	CreateNode(Fvector& vAt, vertex& N)
 		vNorm.add(normals[n]);
 	vNorm.div(float(normals.size()));
 	vNorm.normalize();
+	
 	/*
 	{
 		// second algorithm (Magic)
@@ -289,7 +290,8 @@ u32	FindNode(Fvector& vAt)
 	for (vecDW_it I=V.begin(); I!=V.end(); I++)
 	{
 		vertex& N = g_nodes[*I];
-		if (vAt.similar(N.Pos,eps)) return *I;
+		if (vAt.similar(N.Pos,eps))
+			return *I;
 	}
 	return InvalidNode;
 }
@@ -322,7 +324,8 @@ u32 BuildNode(Fvector& vFrom, Fvector& vAt)	// return node's index
 
 	// *** set up xr_new<node
 	vertex N;
-	if (CreateNode(vAt,N)) {
+	if (CreateNode(vAt,N)) 
+	{
 		//*** check if similar node exists
 		u32	old		= FindNode(N.Pos);
 		if (old==InvalidNode)	

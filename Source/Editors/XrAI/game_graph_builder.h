@@ -72,6 +72,7 @@ private:
 			void		mark_vertices				(u32 level_vertex_id);
 			void		fill_marks					(const float &start, const float &amount);
 			void		fill_distances				(const float &start, const float &amount);
+			void		fill_distances_part			(const float start, const float end);
 			void		recursive_update			(const u32 &index, const float &start, const float &amount);
 			void		iterate_distances			(const float &start, const float &amount);
 			void		save_cross_table			(const float &start, const float &amount);

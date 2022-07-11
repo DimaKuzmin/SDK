@@ -48,7 +48,7 @@ IC	u32  CFixedVertexAllocator::get_visited_node_count	() const
 TEMPLATE_SPECIALIZATION
 IC	typename CFixedVertexAllocator::CGraphVertex &CFixedVertexAllocator::create_vertex		()
 {
-	VERIFY					(m_vertex_count < reserved_vertex_count - 1);
+	//VERIFY					(m_vertex_count < reserved_vertex_count - 1);
 	return					(*(m_vertices.begin() + m_vertex_count++));
 }
 

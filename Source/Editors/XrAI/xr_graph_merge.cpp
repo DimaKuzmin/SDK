@@ -592,6 +592,7 @@ CGraphMerger::CGraphMerger(
 		dwOffset					+= tpLevelGraph->m_tpGraph->header().vertex_count();
 		R_ASSERT2					(tpGraphs.find(tLevel.id()) == tpGraphs.end(),"Level ids _MUST_ be different!");
 		tpGraphs.insert				(mk_pair(tLevel.id(),tpLevelGraph));
+	 
 		tGraphHeader.m_levels.insert(std::make_pair(tLevel.id(),tLevel));
 	}
 	

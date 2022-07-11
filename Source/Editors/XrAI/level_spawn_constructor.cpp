@@ -318,13 +318,22 @@ void CLevelSpawnConstructor::correct_objects					()
 		R_ASSERT2			(dwStart < dwFinish,S);
 	}
 
-	for (int i=0; i<(int)m_spawns.size(); i++) {
-		if (!m_spawns[i]->used_ai_locations()) {
+	for (int i=0; i<(int)m_spawns.size(); i++) 
+	{
+		if (!level_graph().valid_vertex_id(m_spawns[i]->m_tGraphID))
+		{
+			Msg("Node Vertex not valid id [%d] name[%s] position [%f][%f][%f]", m_spawns[i]->ID, m_spawns[i]->name(), VPUSH(m_spawns[i]->position()));
+		}
+
+		if (!m_spawns[i]->used_ai_locations())
+		{
 			m_spawns[i]->m_tGraphID = (GameGraph::_GRAPH_ID)m_level_graph_vertex_id;
 			m_spawns[i]->m_fDistance = 0.f;
 			m_spawns[i]->m_tNodeID = game_graph().vertex(m_level_graph_vertex_id)->level_vertex_id();
 			continue;
 		}
+
+
 		Fvector				position = m_spawns[i]->o_Position;
 		position.y			+= y_shift_correction;
 		m_spawns[i]->m_tNodeID = level_graph().vertex(u32(-1),position);

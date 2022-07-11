@@ -63,11 +63,14 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 	return false;
 }
 
+#include <memory>
+
 void xrLoad(LPCSTR name, bool draft_mode)
 {
 	FS.get_path					("$level$")->_set	((LPSTR)name);
 	string256					N;
-	if (!draft_mode)	{
+	if (!draft_mode)	
+	{
 		// shaders
 		string_path				N;
 		FS.update_path			(N,"$game_data$","shaders_xrlc.xr");
@@ -85,6 +88,20 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 
 			Fvector*	verts	= (Fvector*)fs->pointer();
+			
+			/*
+			CDB::TRI_Build* build_tris = (CDB::TRI_Build*)(verts + H.vertcount);
+			auto tris = std::make_unique<CDB::TRI[]>(H.facecount);
+			for (u32 i = 0; i != H.facecount; i++)
+			{
+				memcpy(tris[i].verts, build_tris[i].verts, sizeof(tris[i].verts));
+				tris[i].dummy = build_tris[i].dummy_low;
+			}
+
+			Level.build(verts, H.vertcount, tris.get(), H.facecount);
+			 */
+
+			 
 			xr_vector< CDB::TRI> tris(H.facecount);
 			{
 				u8* tris_pointer = (u8*)(verts + H.vertcount);
@@ -96,6 +113,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 			}
 			Level.build			( verts, H.vertcount, tris.data(), H.facecount );
+			 
+
 			Level.syncronize	();
 			Msg("* Level CFORM: %dK",Level.memory()/1024);
 
@@ -311,7 +330,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 		R_ASSERT			(F->open_chunk(E_AIMAP_CHUNK_NODES));
 		u32					N = F->r_u32();
+
 		R_ASSERT2			(N < ((u32(1) << u32(MAX_NODE_BIT_COUNT)) - 2),"Too many nodes!");
+		
 		g_nodes.resize		(N);
 
 		hdrNODES			H;
@@ -322,13 +343,15 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		H.aabb				= LevelBB;
 		
 		typedef BYTE NodeLink[3];
-		for (u32 i=0; i<N; i++) {
+		for (u32 i=0; i<N; i++)
+		{
 			NodeLink			id;
 			u16 				pl;
 			SNodePositionOld 	_np;
 			NodePosition 		np;
 			
-			for (int j=0; j<4; ++j) {
+			for (int j=0; j<4; ++j) 
+			{
 				F->r			(&id,3);
 				g_nodes[i].n[j]	= (*LPDWORD(&id)) & 0x00ffffff;
 			}
@@ -337,10 +360,15 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			pvDecompress	(g_nodes[i].Plane.n,pl);
 			F->r			(&_np,sizeof(_np));
 			CNodePositionConverter(_np,H,np);
-			g_nodes[i].Pos	= vertex_position(np,LevelBB,g_params);
+			g_nodes[i].Pos	= vertex_position(np, LevelBB, g_params);
 
-			g_nodes[i].Plane.build(g_nodes[i].Pos,g_nodes[i].Plane.n);
+			g_nodes[i].Plane.build(g_nodes[i].Pos, g_nodes[i].Plane.n);
+ 
 		}
+
+		Msg("Level Nodes %d", N);
+		Msg("Level Min BB [%f][%f][%f]", LevelBB.min.x, LevelBB.min.y, LevelBB.min.z);
+		Msg("Level Max BB [%f][%f][%f]", LevelBB.max.x, LevelBB.max.y, LevelBB.max.z);
 
 		F->close			();
 

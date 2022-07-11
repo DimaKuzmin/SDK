@@ -102,8 +102,12 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 
 	vertex.tGlobalPoint		= graph_point->o_Position;
 	vertex.tNodeID			= level_graph().valid_vertex_position(vertex.tLocalPoint) ? level_graph().vertex_id(vertex.tLocalPoint) : u32(-1);
-	if (!level_graph().valid_vertex_id(vertex.tNodeID)) {
-		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map",entity->name_replace(),VPUSH(entity->o_Position));
+	
+	Msg("NodeID %d", vertex.tNodeID);
+
+	if (!level_graph().valid_vertex_id(vertex.tNodeID))
+	{
+		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map", entity->name_replace(),VPUSH(entity->o_Position));
 		F_entity_Destroy	(entity);
 		return;
 	}
@@ -209,16 +213,28 @@ void CGameGraphBuilder::fill_marks			(const float &start, const float &amount)
 	Progress							(start + amount);
 }
 
+int select_distance = 0;
+
 void CGameGraphBuilder::fill_distances		(const float &start, const float &amount)
 {
 	Progress							(start);
+	
+	select_distance = graph().vertices().size();
 
-	m_distances.resize					(graph().vertices().size());
+	m_distances.resize					(select_distance);
+
 	{
 		DISTANCES::iterator				I = m_distances.begin();
 		DISTANCES::iterator				E = m_distances.end();
-		for ( ; I != E; I++) {
-			(*I).resize					(level_graph().header().vertex_count());
+
+		int i = 0;
+
+		for ( ; I != E; I++) 
+		{
+			i++;
+
+			(*I).resize					(level_graph().header().vertex_count());			
+			
 			xr_vector<u32>::iterator	i = (*I).begin();
 			xr_vector<u32>::iterator	e = (*I).end();
 			for ( ; i != e; i++)
@@ -227,6 +243,34 @@ void CGameGraphBuilder::fill_distances		(const float &start, const float &amount
 	}
 
 	Progress							(start + amount);
+}
+
+void CGameGraphBuilder::fill_distances_part(const float start, const float end)
+{
+	m_distances.clear_and_free();
+
+	m_distances.resize(start);
+
+	{
+		DISTANCES::iterator				I = m_distances.begin();
+		DISTANCES::iterator				E = m_distances.end();
+
+		int i = 0;
+
+		for (; I != E; I++)
+		{
+			i++;
+
+			(*I).resize(level_graph().header().vertex_count());
+
+			xr_vector<u32>::iterator	i = (*I).begin();
+			xr_vector<u32>::iterator	e = (*I).end();
+			for (; i != e; i++)
+				*i = u32(-1);
+		}
+	}	
+
+
 }
 
 void CGameGraphBuilder::recursive_update	(const u32 &game_vertex_id, const float &start, const float &amount)
@@ -302,16 +346,19 @@ void CGameGraphBuilder::recursive_update	(const u32 &game_vertex_id, const float
 	Progress				(start + amount);
 }
 
-void CGameGraphBuilder::iterate_distances	(const float &start, const float &amount)
+void CGameGraphBuilder::iterate_distances(const float& start, const float& amount)
 {
-	Progress							(start);
-
-	m_results.assign					(level_graph().header().vertex_count(),0);
+	Progress(start);
+	  
+	m_results.assign					(level_graph().header().vertex_count(), 0);			  
 	
-	float								amount_i = amount/float(graph().vertices().size());
-	for (int i=0, n=(int)graph().vertices().size(); i<n; ++i) {
-		if (i) {
-			for (int k=0, kn=(int)level_graph().header().vertex_count(); k<kn; ++k)
+	float								amount_i = amount/float(select_distance);			  //graph().vertices().size()
+
+	for (int i=0, n=(int)select_distance; i<n; ++i)  //graph().vertices().size()
+	{
+		if (i) 
+		{
+			for (int k=0, kn=(int)level_graph().header().vertex_count(); k<kn; ++k) 
 				m_distances[i][k]		= m_distances[i - 1][k];
 		}
 
@@ -345,7 +392,8 @@ void CGameGraphBuilder::save_cross_table	(const float &start, const float &amoun
 	
 	tMemoryStream.open_chunk			(CROSS_TABLE_CHUNK_DATA);
 
-	for (int i=0, n=level_graph().header().vertex_count(); i<n; i++) {
+	for (int i=0, n = level_graph().header().vertex_count(); i<n; i++) 
+	{
 		CGameLevelCrossTable::CCell	tCrossTableCell;
 		tCrossTableCell.tGraphIndex = (GameGraph::_GRAPH_ID)m_results[i];
 		VERIFY						(graph().header().vertex_count() > tCrossTableCell.tGraphIndex);
@@ -419,13 +467,15 @@ void CGameGraphBuilder::fill_neighbours		(const u32 &game_vertex_id)
 	m_mark_stack.reserve				(8192);
 	m_mark_stack.push_back				(level_vertex_id);
 
-	for ( ; !m_mark_stack.empty(); ) {
+	for ( ; !m_mark_stack.empty(); )
+	{
 		level_vertex_id					= m_mark_stack.back();
 		m_mark_stack.resize				(m_mark_stack.size() - 1);
 		CLevelGraph::CVertex			*node = level_graph().vertex(level_vertex_id);
 		level_graph().begin				(level_vertex_id,I,E);
 		m_marks[level_vertex_id]		= true;
-		for ( ; I != E; ++I) {
+		for ( ; I != E; ++I)
+		{
 			u32							next_level_vertex_id = node->link(I);
 			if (!level_graph().valid_vertex_id(next_level_vertex_id))
 				continue;
