@@ -988,7 +988,8 @@ BOOL SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
     float da 			= disp/float(samples);
     float mn_x  		= dir.x-disp/2;
     float mn_y  		= dir.y-disp/2;
-    for (int x=0; x<samples; x++){
+    for (int x=0; x<samples; x++)
+    {
         float fx = mn_x+x*da;
         for (int y=0; y<samples; y++){
             float fy = mn_y+y*da;
@@ -1001,6 +1002,7 @@ BOOL SceneBuilder::BuildSun(u8 quality, Fvector2 dir)
             sl.data.direction.setHP(fy,fx);
         }
     }
+
     // dynamic
     {
 		l_light_dynamic.push_back(b_light_dynamic());

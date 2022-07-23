@@ -326,10 +326,6 @@ void			xrLC_GlobalData	::write_base		( IWriter	&w ) const
 
 void		xrLC_GlobalData	::read			( INetReader	&r )
 {
-	
-
-
-
 	//read_faces = xr_new< tread_faces	>( &_g_faces );
 	read_faces->read( r );
 

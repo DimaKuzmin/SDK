@@ -107,6 +107,12 @@ public:
 		return			(result);
 	}
 
+	IC	float				GetElapsed_ms_float() const
+	{
+		float ret = float(GetElapsed_ticks() * u64(1000) / CPU::qpc_freq);
+		return			ret;
+	}
+
 	IC	u32				GetElapsed_ms	() const
 	{
 		return			(u32(GetElapsed_ticks()*u64(1000)/CPU::qpc_freq));

@@ -73,9 +73,13 @@ void	ImplicitExecute::	send_result				( IWriter	&w ) const
 	}
 }
 
+int id = 0;
 
 void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
-	{
+{
+	id++;
+	int th_id = id;
+
 		R_ASSERT( y_start != (u32(-1)) );
 		R_ASSERT( y_end != (u32(-1)) );
 		//R_ASSERT				(DATA);
@@ -96,9 +100,13 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 		
 		// Lighting itself
 		DB.ray_options	(0);
+		CTimer timer; timer.Start();
+
 		for (u32 V=y_start; V<y_end; V++)
 		{
-
+			CTimer t; t.Start();
+			u64 ticks = 0;
+			u32 founds = 0;
 			for (u32 U=0; U<defl.Width(); U++)
 			{
 				if( net_callback && !net_callback->test_connection() )
@@ -107,6 +115,7 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 				u32				Fcount	= 0;
 				
 				try {
+					
 					for (u32 J=0; J<Jcount; J++) 
 					{
 						// LUMEL space
@@ -117,6 +126,7 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 						
 						// World space
 						Fvector wP,wN,B;
+						
 						for (vecFaceIt it=space.begin(); it!=space.end(); it++)
 						{
 							Face	*F	= *it;
@@ -130,11 +140,15 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 								wP.from_bary(V1->P,V2->P,V3->P,B);
 								wN.from_bary(V1->N,V2->N,V3->N,B);
 								wN.normalize();
+								CTimer t2; t2.Start();
 								LightPoint	(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_nosun()?LP_dont_sun:0), F);
 								Fcount		++;
+								ticks += t2.GetElapsed_ticks();
 							}
 						}
 					} 
+					
+
 				} 
 				catch (...)
 				{
@@ -148,13 +162,23 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 					C.mul				(.5f);
 					defl.Lumel(U,V)._set(C);
 					defl.Marker(U,V)	= 255;
+
+					founds += Fcount;
 				} 
 				else 
 				{
 					defl.Marker(U,V)	= 0;
 				}
 			}
+
+	//		clMsg("T: %d, LIGHT: %d, countF: %d", t.GetElapsed_ticks(), ticks, founds);
+
 	//		thProgress	= float(V - y_start) / float(y_end-y_start);
+	//		string256 msg;
+	//		sprintf(msg, "TH %d, V: %d, end %d", th_id, V - y_start, y_end - y_start);
+	//		clMsg(msg);
+	
+			//clMsg("TH %d, V: %d, end %d", th_id, V - y_start, y_start - y_end);
 		}
 	}
 
@@ -197,6 +221,7 @@ void ImplicitLightingExec(BOOL b_net)
 
 	cl_globs.Allocate();
 	not_clear.clear();
+
 	// Sorting
 	Status("Sorting faces...");
 	for (vecFaceIt I=inlc_global_data()->g_faces().begin(); I!=inlc_global_data()->g_faces().end(); I++)
@@ -209,7 +234,7 @@ void ImplicitLightingExec(BOOL b_net)
 		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
 		u32				Tid = M.surfidx;
 		b_BuildTexture*	T	= &(inlc_global_data()->textures()[Tid]);
-		
+ 
 		Implicit_it		it	= calculator.find(Tid);
 		if (it==calculator.end()) 
 		{
@@ -232,7 +257,7 @@ void ImplicitLightingExec(BOOL b_net)
 		Status			("Lighting implicit map '%s'...",defl.texture->name);
 		Progress		(0);
 		defl.Allocate	();
-		
+				
 		// Setup cache
 		Progress					(0);
 		cl_globs.Initialize( defl );

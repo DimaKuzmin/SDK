@@ -59,6 +59,9 @@ void xrStripify		(xr_vector<u16> &indices, xr_vector<u16> &perturb, int iCacheSi
 
 void OGF::Stripify		()
 {
+	if (strstr(Core.Params, "-skip_prog_ogf"))
+		return;
+
 	if (progressive_test())	return;			// Mesh already progressive - don't stripify it
 
 	// fast verts

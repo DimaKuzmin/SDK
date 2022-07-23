@@ -364,7 +364,8 @@ void	COLLIDER::ray_query	(const MODEL *m_def, const Fvector& r_start,  const Fve
 	const AABBNoLeafNode* N = T->GetNodes();
 	r_clear					();
 	
-	if (CPU::ID.feature&_CPU_FEATURE_SSE)	{
+	if (CPU::ID.feature&_CPU_FEATURE_SSE)
+	{
 		// SSE
 		// Binary dispatcher
 		if (ray_mode&OPT_CULL)		{
@@ -412,12 +413,17 @@ void	COLLIDER::ray_query	(const MODEL *m_def, const Fvector& r_start,  const Fve
 				}
 			}
 		}
-	} else {
+	}
+	else 
+	{
 		// FPU
 		// Binary dispatcher
-		if (ray_mode&OPT_CULL)		{
-			if (ray_mode&OPT_ONLYFIRST)		{
-				if (ray_mode&OPT_ONLYNEAREST)		{
+		if (ray_mode&OPT_CULL)	
+		{
+			if (ray_mode&OPT_ONLYFIRST)		
+			{
+				if (ray_mode&OPT_ONLYNEAREST)		
+				{
 					ray_collider<false,true,true,true>		RC;
 					RC._init(this,m_def->verts,m_def->tris,r_start,r_dir,r_range);
 					RC._stab(N);

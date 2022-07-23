@@ -279,7 +279,9 @@ void OGF::MakeProgressive	(float metric_limit)
 
 //. AlexMX added for draft build mode
 	if (g_params().m_quality==ebqDraft)		return		;
-
+	
+	if (strstr(Core.Params, "-skip_prog_ogf"))
+		return;
 	progressive_cs.Enter	();
 
 	//////////////////////////////////////////////////////////////////////////

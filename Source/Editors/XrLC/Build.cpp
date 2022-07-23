@@ -30,7 +30,7 @@ xr_vector<OGF_Base *>	g_tree;
 //BOOL					b_net_light	= FALSE;
 SBuildOptions			g_build_options;
 vec2Face				g_XSplit;
-
+ 
 void	CBuild::CheckBeforeSave( u32 stage )
 {
 	bool b_g_tree_empty = g_tree.empty() ;
@@ -157,6 +157,8 @@ void net_light ();
 
 bool skip_sectors = false;
 
+extern string_path LEVEL_PATH;
+
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
@@ -176,6 +178,9 @@ void CBuild::Run(LPCSTR P)
 		skip_sectors = true;
 	//****************************************** Open Level
 	strconcat(sizeof(path), path, P, "\\");
+
+	xr_strcpy(LEVEL_PATH, path);
+
 	string_path					lfn;
 	IWriter* fs = FS.w_open(strconcat(sizeof(lfn), lfn, path, "level."));
 	fs->open_chunk(fsL_HEADER);
@@ -185,6 +190,20 @@ void CBuild::Run(LPCSTR P)
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
 
+	if (strstr(Core.Params, "-sample_9"))
+		g_params().m_lm_jitter_samples = 9;
+	else if (strstr(Core.Params, "-sample_4"))
+		g_params().m_lm_jitter_samples = 4;
+	else if (strstr(Core.Params, "-sample_1"))
+		g_params().m_lm_jitter_samples = 1;
+
+	LPCSTR pixel = strstr(Core.Params, "-pxpm");
+	LPCSTR val = pixel + 5;
+	int value;
+	if (pixel && sscanf(val, "%d", &value))
+	{
+ 		g_params().m_lm_pixels_per_meter = value;
+	}
 
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
@@ -218,45 +237,39 @@ void CBuild::Run(LPCSTR P)
 
 	//****************************************** Collision DB
 	//should be after normals, so that double-sided faces gets separated
-	if (strstr(Core.Params, "-no_cform") == 0)
+ 
+	//****************************************** Building normals
+	FPU::m64r();
+	Phase("Building normals...");
+	mem_Compact();
+	CalcNormals();
+	//SmoothVertColors			(5);
+
+	FPU::m64r					();
+	Phase						("Building collision database...");
+	mem_Compact					();
+	BuildCForm					();
+
+	if (CformOnly)
+		return;
+
+	BuildPortals(*fs);
+
+	//****************************************** T-Basis
 	{
-		//****************************************** Building normals
 		FPU::m64r();
-		Phase("Building normals...");
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
 		mem_Compact();
-		CalcNormals();
-		//SmoothVertColors			(5);
-
-		FPU::m64r					();
-		Phase						("Building collision database...");
-		mem_Compact					();
-		BuildCForm					();
-
-		if (CformOnly)
-			return;
-
-		BuildPortals(*fs);
-
-		//****************************************** T-Basis
-		{
-			FPU::m64r();
-			Phase("Building tangent-basis...");
-			xrPhase_TangentBasis();
-			mem_Compact();
-		}
 	}
-
-
-	
-	if (strstr(Core.Params, "-no_rcast") == 0)
-	{
-		//****************************************** GLOBAL-RayCast model
-		FPU::m64r();
-		Phase("Building rcast-CFORM model...");
-		mem_Compact();
-		Light_prepare();
-		BuildRapid(TRUE);
-	}
+ 
+	//****************************************** GLOBAL-RayCast model
+	FPU::m64r();
+	Phase("Building rcast-CFORM model...");
+	mem_Compact();
+	Light_prepare();
+	BuildRapid(TRUE);
+ 
 
 
 	//****************************************** GLOBAL-ILLUMINATION
@@ -270,6 +283,7 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	//****************************************** Starting MU
+	/* 	Moved TO After LIGHT
 	FPU::m64r					();
 	Phase						("LIGHT: Starting MU...");
 	mem_Compact					();
@@ -280,6 +294,8 @@ void CBuild::Run(LPCSTR P)
 		RunNetCompileDataPrepare( );
 	}
 	StartMu						();
+	*/
+
 	//****************************************** Resolve materials
 	FPU::m64r					();
 	Phase						("Resolving materials...");
@@ -333,6 +349,21 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Phase						("Converting to OGFs...");
 	mem_Compact					();
 	Flex2OGF					();
+
+	//****************************************** Starting MU
+	
+	 
+	FPU::m64r();
+	Phase("LIGHT: Starting MU...");
+	mem_Compact();
+	Light_prepare();
+	if (g_build_options.b_net_light)
+	{
+		lc_global_data()->mu_models_calc_materials();
+		RunNetCompileDataPrepare();
+	}
+	StartMu();
+	 
 
 	//****************************************** Wait for MU
 	FPU::m64r					();

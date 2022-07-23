@@ -28,6 +28,32 @@ void	_TCF::write		( IWriter	&w ) const
 	w.w(uv, sizeof(uv) );
 }
 
+void _TCF::readReader(IReader& r)
+{  
+	r.r(uv, sizeof(uv));
+}
+
+void _TCF::ReadLTX(CInifile* file, LPCSTR sec, LPCSTR pref)
+{
+	uv[0] = file->r_fvector2(sec, "v1");
+	uv[1] = file->r_fvector2(sec, "v2");
+	uv[2] = file->r_fvector2(sec, "v3");
+}
+
+void _TCF::WriteLTX(CInifile* file, LPCSTR sec, LPCSTR pref)
+{
+	string32 pr;
+	xr_strcpy(pr, pref);
+	xr_strcat(pr, "v1");
+	file->w_fvector2(sec, pr, uv[0]);
+	xr_strcpy(pr, pref);
+	xr_strcat(pr, "v2");
+	file->w_fvector2(sec, pr, uv[1]);
+	xr_strcpy(pr, pref);
+	xr_strcat(pr, "v3");
+	file->w_fvector2(sec, pr, uv[2]);
+}
+
 bool _TCF::similar(    const _TCF &_tc, float eps /*= EPS*/  ) const
 {
 	return	uv[0].similar( _tc.uv[0], eps )&&

@@ -141,19 +141,36 @@ void CBuild::Flex2OGF()
 			clMsg("* ERROR: Flex2OGF, 1st part, model# %d",MODEL_ID);
 		}
 		
-		try {
-			clMsg		("%3d: opt : v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->Optimize						();
-			clMsg		("%3d: cb  : v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->CalcBounds					();
-			clMsg		("%3d: prog: v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			if (!g_build_options.b_noise) pOGF->MakeProgressive	(c_PM_MetricLimit_static);
-			clMsg		("%3d: strp: v(%d)-f(%d)",	MODEL_ID,pOGF->data.vertices.size(),pOGF->data.faces.size());
-			pOGF->Stripify						();
-		} catch (...)	{
-			clMsg("* ERROR: Flex2OGF, 2nd part, model# %d",MODEL_ID);
-		}
+
+		bool skip = false;
+
 		
+		try {
+			if (!skip)
+			{
+				clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+				pOGF->Optimize();
+			}
+
+			clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+			pOGF->CalcBounds();
+			
+			if (!skip)
+			{
+				clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+				if (!g_build_options.b_noise)
+					pOGF->MakeProgressive(c_PM_MetricLimit_static);
+			}
+			
+			clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+			pOGF->Stripify();
+			
+		}
+		catch (...) {
+			clMsg("* ERROR: Flex2OGF, 2nd part, model# %d", MODEL_ID);
+		}
+		 
+
 		g_tree.push_back	(pOGF);
 		xr_delete			(*it);
 		Progress			(p_total+=p_cost);

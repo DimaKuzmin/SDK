@@ -9,6 +9,32 @@
 // Surface access
 extern void _InitSurface	();
 extern BOOL _rect_place		(L_rect &r, lm_layer*		D);
+ 
+xr_map <u16, xr_map<u16, bool> > chunk_file;
+
+int chunk_id;
+
+#define chunk_size 256
+
+void has_for_lm_chunk(L_rect lm_r, int chunk_id)
+{
+	int start = (chunk_id * 256);
+	int end = (chunk_id * 256) + chunk_size;
+
+	for (int y = start; y < end; y++)
+	{
+		for (int x = start; x < end; x++)
+		{
+			if (chunk_file[x][y] == 0)
+			{
+
+			}
+		}
+	}
+
+
+}
+
 
 IC int	compare_defl		(CDeflector* D1, CDeflector* D2)
 {
@@ -78,13 +104,24 @@ void CBuild::xrPhase_MergeLM()
 	for (u32 it=0; it<lc_global_data()->g_deflectors().size(); it++)
 	{
 		CDeflector*	D		= lc_global_data()->g_deflectors()[it];
+		
+	//	clMsg("Deflector [%d]", it);
 		if (D->bMerged)		continue;
 		Layer.push_back		(D);
 	}
+	
+	u32 size_layer = 0;
+	u32 LayerID = 0;
 
+	bool fastWay = strstr(Core.Params, "-fast_lightmaps");
+
+	CTimer timer; timer.Start();
 	// Merge this layer (which left unmerged)
 	while (Layer.size()) 
 	{
+		clMsg("Size: %d", Layer.size() );
+		LayerID += 1;
+
 		VERIFY( lc_global_data() );
 		string512	phase_name;
 		xr_sprintf		(phase_name,"Building lightmap %d ... Layers[%d]", lc_global_data()->lightmaps().size(), Layer.size());
@@ -122,46 +159,84 @@ void CBuild::xrPhase_MergeLM()
 		CLightmap*	lmap		= xr_new<CLightmap> ();
 		VERIFY( lc_global_data() );
 		lc_global_data()->lightmaps().push_back	(lmap);
-		CTimer timer;
-		// Process 
+ 		// Process 
+	 		
+		int x = 0, y = 0;
+
+		u16 prev_resize_height = 0;
+		u16 prev_resize_width = 0;
+
+		u16 max_y = 0;
+
 		for (u32 it=0; it<merge_count; it++) 
 		{
-			 
-			if (0 == (it % 1024))
-			{
-				u32 t_elapsed = timer.GetElapsed_ms();
-				Status("Process [%d/%d]...t[%d]", it, merge_count, t_elapsed);
-				timer.Start();
-			}
-
 			lm_layer&	L		= Layer[it]->layer;
-			L_rect		rT,rS; 
-			rS.a.set	(0,0);
-			rS.b.set	(L.width+2*BORDER-1, L.height+2*BORDER-1);
-			rS.iArea	= L.Area();
-			rT			= rS;
-			
-			//if (_rect_place(rT,&L)) 
+			 
+			if (fastWay)
 			{
-				BOOL		bRotated;
-				if (rT.SizeX() == rS.SizeX()) 
+				x += L.width + 2;
+				
+				if (max_y < L.height + 2)
+					max_y = L.height + 2;
+
+				if (x > c_LMAP_size - 16 - L.width)
 				{
-					//R_ASSERT(rT.SizeY() == rS.SizeY());
-					bRotated = FALSE;
-				} 
-				else
-				{
-					//R_ASSERT(rT.SizeX() == rS.SizeY());
-					//R_ASSERT(rT.SizeY() == rS.SizeX());
-					bRotated = TRUE;
+					x = 0;
+					y += max_y;
+					max_y = 0;
 				}
 
-				lmap->Capture		(Layer[it],rT.a.x,rT.a.y,rT.SizeX(),rT.SizeY(),bRotated);
-				Layer[it]->bMerged	= TRUE;
-			}
+				L_rect		rT, rS;
+				rS.a.set(x, y);
+				rS.b.set(x + L.width + 2 * BORDER - 1, y + L.height + 2 * BORDER - 1);
+				rS.iArea = L.Area();
+				rT = rS;
 
+				BOOL		bRotated;
+				if (rT.SizeX() == rS.SizeX())
+					bRotated = FALSE;
+				else
+					bRotated = TRUE;
+
+				if (y < c_LMAP_size - 16 - L.height)
+				{
+					lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+					Layer[it]->bMerged = TRUE;
+				}
+			}
+			else
+			{
+				L_rect		rT, rS;
+				rS.a.set(0, 0);
+				rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
+
+				rS.iArea = L.Area();
+				rT = rS;
+
+				if (_rect_place(rT, &L))
+				{
+					BOOL		bRotated;
+
+					if (rT.SizeX() == rS.SizeX())
+						bRotated = FALSE;
+					else
+						bRotated = TRUE;
+
+					lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+
+					Layer[it]->bMerged = TRUE;
+				}
+			}
+			 
 			Progress(float(it)/float(merge_count));
+
+			if (0 == (it % 1024))
+			{
+ 				Status("Process [%d/%d]...", it, merge_count);
+ 			}
+
 		}
+
 		Progress	(1.f);
 
 		// Remove merged lightmaps
@@ -169,11 +244,17 @@ void CBuild::xrPhase_MergeLM()
 		vecDeflIt last	= std::remove_if	(Layer.begin(),Layer.end(),pred_remove());
 		Layer.erase		(last,Layer.end());
 
-		// Save
-		Status			("Saving...");
-		VERIFY			( pBuild );
-		lmap->Save		(pBuild->path);
+		{
+			// Save
+			Status("Saving...");
+			VERIFY(pBuild);
+			lmap->Save(pBuild->path);
+		}
+
 	}
+
+	clMsg("MERGE LIGHT MAPS %d ms", timer.GetElapsed_ms() );
+
 	VERIFY( lc_global_data() );
 	clMsg		( "%d lightmaps builded", lc_global_data()->lightmaps().size() );
 

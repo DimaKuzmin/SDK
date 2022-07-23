@@ -11,7 +11,7 @@ namespace CDB
 		xr_vector<Fvector>::iterator I,E;
 		I=verts.begin();	E=verts.end();
 		
-		if (strstr(Core.Params, "-no_check_vertex") == 0)
+		if (strstr(Core.Params, "-no_check_faces") == 0)
 		{
 			for (; I != E; I++)
 				if (I->similar(V, eps))
@@ -363,7 +363,7 @@ namespace CDB
 		//		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
 
-		if (strstr(Core.Params, "-no_check_vertex") == 0)  
+		if (strstr(Core.Params, "-no_check_faces") == 0)  
 		{
 			DWORDList* vl;
 			vl = &(VM[ix][iy][iz]);

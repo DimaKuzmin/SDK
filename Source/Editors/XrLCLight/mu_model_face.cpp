@@ -18,7 +18,7 @@ Tface<data_vertex>::Tface()
 Tvertex<data_vertex>::Tvertex()
 {}
 
-_vertex*	_vertex::CreateCopy_NOADJ(v_vertices& vertises_storage ) const
+IC _vertex*	_vertex::CreateCopy_NOADJ(v_vertices& vertises_storage ) const
 {
 	//xrMU_Model::_vertex* V	= create_vertex(Fvector().set(0,0,0));
 	_vertex*	V		= mu_vertices_pool().create();

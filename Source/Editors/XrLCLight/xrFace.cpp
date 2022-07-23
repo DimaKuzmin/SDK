@@ -110,7 +110,7 @@ Tvertex<DataVertex>::~Tvertex()
 	}
 }
 
-Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
+IC Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 {
 	VERIFY( &vertises_storage == &inlc_global_data()->g_vertices() );
 	Vertex* V	= inlc_global_data()->create_vertex();
@@ -213,22 +213,33 @@ void	Face::Verify		()
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int			affected	= 0;
-void		start_unwarp_recursion()
+ 
+void start_unwarp_recursion()
 {
 	affected				= 1;
 }
+
+xr_vector<Face*> faces;
+ 
+inline xr_vector<Face*> getAFFECTED()
+{
+	return faces;
+}
+ 
 void Face::OA_Unwarp( CDeflector *D )
 {
 	if (pDeflector)					return;
-	if (!D->OA_Place(this))	return;
+	if (!D->OA_Place(this))		    return;
 	
 	// now iterate on all our neigbours
 	for (int i=0; i<3; ++i) 
-		for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
-		{
-			affected		+= 1;
-			(*it)->OA_Unwarp(D);
-		}
+	for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
+	{
+		affected		+= 1;
+		(*it)->OA_Unwarp(D);
+	}
+
+	faces.push_back(this);
 }
 
 
@@ -357,11 +368,85 @@ void	DataFace::	write	(IWriter	&w )const
 	write_lightmaps->write( w, lmap_layer );
 	w.w_u32( sm_group );
 }
+
+void DataFace::write_Reader(IWriter &w)
+{
+	base_Face::write_Reader(w);
+	w.w_fvector3(N);
+	w_vector(w, tc);
+	if (write_lightmaps)
+	{
+		//VERIFY(write_lightmaps);
+		w.w_u8(1);
+		write_lightmaps->write(w, lmap_layer);
+	}
+	w.w_u32(sm_group);
+}
+
+void DataFace::read_Reader(IReader& r)
+{
+	base_Face::read_Reader(r);
+
+	r.r_fvector3(N);
+	r_vector_reader(r, tc);
+	pDeflector = 0;
+	 
+	if (false)
+	{
+		//VERIFY(read_lightmaps);
+		read_lightmaps->read_Reader(r, lmap_layer);
+	}
+	sm_group = r.r_u32();
+}
+
+void DataFace::write_LTX(CInifile* file, LPCSTR sec, LPCSTR pref)
+{
+	base_Face::write_LTX(file, sec);
+
+	file->w_fvector3(sec, "vec", N);
+		
+	u32 id = 0;
+	for (auto t : tc)
+	{
+		string32 p = {0};
+		sprintf(p, "tcf_%d_", id);
+  		t.WriteLTX(file, sec, p);
+		id += 1;
+	}
+
+	file->w_u32(sec, "sm_group", sm_group);
+}
+
+void DataFace::read_LTX(CInifile* file, LPCSTR sec, LPCSTR pref)
+{
+	base_Face::write_LTX(file, sec);
+}
+
+
+void DataVertex::write_Reader(IWriter& w)
+{
+	base_Vertex::write_Reader(w);
+}
+void DataVertex::read_Reader(IReader& r)
+{
+	base_Vertex::read_Reader(r);
+}
+
+void DataVertex::write_LTX(CInifile* file, LPCSTR sec)
+{
+	base_Vertex::write_LTX(file, sec);
+}
+
+void DataVertex::read_LTX(CInifile* file, LPCSTR sec)
+{
+	base_Vertex::read_LTX(file, sec);
+}
+
 void	DataVertex::	read	(INetReader	&r )
 {
 	base_Vertex::read( r );
-
 }
+
 void	DataVertex::	write	(IWriter	&w )const
 {
 	base_Vertex::write( w );
@@ -385,20 +470,11 @@ void Face::write_vertices		( IWriter	&w )const
 void	Face::	read	( INetReader	&r )
 {
 	DataFace::read( r );
-	
-
-//	read_vertices( r );
-
 }
 
 void	Face::	write	( IWriter	&w )const
 {
 	DataFace::write( w );
-
-
-
-//	write_vertices( w );
-
 }
 
 

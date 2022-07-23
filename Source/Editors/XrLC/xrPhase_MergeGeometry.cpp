@@ -3,6 +3,8 @@
 #include "build.h"
 #include "../xrLCLight/xrface.h"
 
+#include <thread>
+
 extern void Detach		(vecFace* S);
 
 IC BOOL	FaceEqual		(Face* F1, Face* F2)
@@ -11,6 +13,23 @@ IC BOOL	FaceEqual		(Face* F1, Face* F2)
 	if (F1->tc.size()	!= F2->tc.size())		return FALSE;
 	if (F1->lmap_layer  != F2->lmap_layer)		return FALSE;
 	return TRUE;
+}
+
+Fbox CreateBbox(vecFace& subdiv)
+{
+	Fbox bb_base;
+
+	bb_base.invalidate();
+	for (u32 it = 0; it < subdiv.size(); it++)
+	{
+		Face* F = subdiv[it];
+		bb_base.modify(F->v[0]->P);
+		bb_base.modify(F->v[1]->P);
+		bb_base.modify(F->v[2]->P);
+	}
+	bb_base.grow(EPS_S);	// Enshure non-zero volume
+
+	return bb_base;
 }
 
 BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base)
@@ -33,6 +52,18 @@ BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base)
 	if (sz_base.x<c_SS_maxsize)		return TRUE;
 	if (sz_base.y<c_SS_maxsize)		return TRUE;
 	if (sz_base.z<c_SS_maxsize)		return TRUE;
+	return FALSE;
+}
+
+BOOL	NeedMergeBBOX(vecFace& subdiv, Fbox& bb_base)
+{
+	// 1. Amount of polygons
+	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))	return FALSE;
+
+	Fvector sz_base;	bb_base.getsize(sz_base);
+	if (sz_base.x < c_SS_maxsize)		return TRUE;
+	if (sz_base.y < c_SS_maxsize)		return TRUE;
+	if (sz_base.z < c_SS_maxsize)		return TRUE;
 	return FALSE;
 }
 
@@ -123,15 +154,28 @@ static LP_MERGEGM_PARAMS mergegm_params = NULL;
 DWORD WINAPI MergeGmThreadProc( LPVOID lpParameter )
 {
 	LP_MERGEGM_PARAMS pParams = ( LP_MERGEGM_PARAMS ) lpParameter;
-
+	bool fast = strstr(Core.Params, "-fast_merge_geom");
 	while( TRUE ) {
 		// Wait for "start" and "terminate" events
 		switch ( WaitForMultipleObjects( 2 , pParams->hEvents , FALSE , INFINITE ) ) {
 			case WAIT_OBJECT_0 + 0 :
-				FindBestMergeCandidate( 
-					&pParams->selected , &pParams->selected_volume , pParams->split , pParams->split_size , 
-					pParams->subdiv , pParams->bb_base_orig , pParams->bb_base 
-				);
+				
+				if (!fast)
+				{
+					FindBestMergeCandidate(
+						&pParams->selected, &pParams->selected_volume, pParams->split, pParams->split_size,
+						pParams->subdiv, pParams->bb_base_orig, pParams->bb_base
+					);
+				}
+				else
+				{
+					FindMergeBBOX(
+						&pParams->selected, &pParams->selected_volume, pParams->split, pParams->split_size,
+						pParams->subdiv, pParams->bb_base_orig, pParams->bb_base
+					);
+				}
+
+
 				// Signal "ready" event
 				SetEvent( pParams->hEvents[ 2 ] );
 				break;
@@ -214,8 +258,7 @@ void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume , u
 	u32 m_range = ( split_size - split ) / mergegm_threads_count;
 
 	// Assigning parameters
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) 
-	{
+	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) {
 		mergegm_params[ i ].selected = *selected;
 		mergegm_params[ i ].selected_volume = *selected_volume;
 
@@ -258,67 +301,148 @@ void FindBestMergeCandidate( u32* selected ,  float* selected_volume , u32 split
 		if ( ! ValidateMerge( subdiv->size() , *bb_base , *bb_base_orig , TEST.size() , bb , volume ) )
 			continue;
 
-		if ( volume < *selected_volume) {
+		if ( volume < *selected_volume)
+		{
 			*selected = test;
 			*selected_volume	= volume;
+			break;
 		}
 	}
 }
 
+xr_map<u16, Fbox> BoundBoxes;
+xr_map<u16, Fbox> BoundBoxesOrig;
+
+void FindMergeBBOX(u32* selected, float* selected_volume, u32 split, u32 split_size, vecFace* subdiv, Fbox* bb_base_orig, Fbox* bb_base)
+{
+	for (u32 test = split; test < split_size; test++) {
+ 		float volume;
+		vecFace& TEST = *(g_XSplit[test]);
+
+		if (!FaceEqual(subdiv->front(), TEST.front()))
+			continue;
+		if (!NeedMergeBBOX(TEST, BoundBoxes[test]))
+			continue;
+		if ( ! ValidateMerge( subdiv->size() , BoundBoxes[*selected], BoundBoxesOrig[*selected] , TEST.size() , BoundBoxes[test] , volume ) )
+			continue;
+
+		if (volume < *selected_volume)
+		{
+			*selected = test;
+			*selected_volume = volume;
+			break;
+		}
+	}
+}
 
 void CBuild::xrPhase_MergeGeometry	()
 {
-	// Initialize helper threads
-	InitMergeGmThreads();
-
 	Status("Processing...");
 	validate_splits		();
-	for (u32 split=0; split<g_XSplit.size(); split++) 
+
+	bool faster = strstr(Core.Params, "-fast_merge_geom");
+    
+	if (faster)
 	{
-		vecFace&	subdiv	= *(g_XSplit[split]);
-		bool		bb_base_orig_inited = false;
-		Fbox		bb_base_orig;
-		Fbox		bb_base;
-		while (NeedMerge(subdiv,bb_base)) 
+
+		BoundBoxes.clear();
+		
+		int i = 0;
+		for (auto split : g_XSplit)
 		{
-			//	Save original AABB for later tests
-			if (!bb_base_orig_inited)
-			{
-				bb_base_orig_inited = true;
-				bb_base_orig = bb_base;
-			}
-
-			// **OK**. Let's find the best candidate for merge
-			u32	selected		= split;
-			float	selected_volume	= flt_max;
-
-			if ( ( g_XSplit.size() - split ) < 200 )
-			{ // may need adjustment
-				// single thread
-				FindBestMergeCandidate( &selected  , &selected_volume , split + 1 , g_XSplit.size() , &subdiv , &bb_base_orig , &bb_base );
-			}
-			else 
-			{
-				// multi thread
-				FindBestMergeCandidate_threads( &selected  , &selected_volume , split + 1 , g_XSplit.size() , &subdiv , &bb_base_orig , &bb_base );
-			}
-
-			if (selected == split)	break;	// No candidates for merge
-
-			// **OK**. Perform merge
-			subdiv.insert	(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
-			xr_delete		(g_XSplit[selected]);
-			g_XSplit.erase	(g_XSplit.begin()+selected);
+			Fbox box = CreateBbox(*split);
+			BoundBoxes[i] = box;
+			BoundBoxesOrig[i] = box;
+			i++;
 		}
 
-		Progress( float(split) / float(g_XSplit.size()) );
 
-		StatusNoMSG("MergeGeometry ... %d/%d", split, g_XSplit.size() );
+		for (int split = 0; split < g_XSplit.size(); split++)
+		{
+			vecFace& subdiv = *(g_XSplit[split]);
+ 
+			Fbox bb_base = BoundBoxes[i];
+			Fbox bb_orig = BoundBoxesOrig[i];
+ 
+			while (NeedMergeBBOX(subdiv, bb_base))
+			{ 
+				u32	selected = split;
+				float	selected_volume = flt_max;
+				
+				if ((g_XSplit.size() - split) < 200)
+					FindMergeBBOX(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_orig, &bb_base);
+				else 
+					FindBestMergeCandidate_threads(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_orig, &bb_base);
+
+				if (selected == split)	break;	// No candidates for merge
+
+				// **OK**. Perform merge
+				BoundBoxes[split].merge(BoundBoxes[selected]);
+				BoundBoxes.erase(selected);
+
+				subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
+				xr_delete(g_XSplit[selected]);
+				g_XSplit.erase(g_XSplit.begin() + selected);
+			}
+
+			StatusNoMSG("merging: %d/%d", split ,g_XSplit.size());
+		}
+
 	}
+
+
+
+	if (!faster)
+	{
+		// Initialize helper threads
+		InitMergeGmThreads();
+
+		for (u32 split = 0; split < g_XSplit.size(); split++)
+		{
+			vecFace& subdiv = *(g_XSplit[split]);
+			bool		bb_base_orig_inited = false;
+			Fbox		bb_base_orig;
+			Fbox		bb_base;
+			while (NeedMerge(subdiv, bb_base))
+			{
+				//	Save original AABB for later tests
+				if (!bb_base_orig_inited)
+				{
+					bb_base_orig_inited = true;
+					bb_base_orig = bb_base;
+				}
+
+				// **OK**. Let's find the best candidate for merge
+				u32	selected = split;
+				float	selected_volume = flt_max;
+
+				if ((g_XSplit.size() - split) < 200) { // may need adjustment
+					// single thread
+					FindBestMergeCandidate(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_base_orig, &bb_base);
+				}
+				else {
+					// multi thread
+					FindBestMergeCandidate_threads(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_base_orig, &bb_base);
+				}
+
+				if (selected == split)	break;	// No candidates for merge
+
+				// **OK**. Perform merge
+				subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
+				xr_delete(g_XSplit[selected]);
+				g_XSplit.erase(g_XSplit.begin() + selected);
+			}
+			Progress( float(split) / float(g_XSplit.size()) );
+			StatusNoMSG("Merge %d/%d", split , g_XSplit.size());
+		}
+	
+		// Destroy helper threads
+		DoneMergeGmThreads();
+	}
+
 
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits			();
 
-	// Destroy helper threads
-	DoneMergeGmThreads();
 }
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    

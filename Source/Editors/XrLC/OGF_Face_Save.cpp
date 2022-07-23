@@ -281,6 +281,8 @@ void	OGF::PreSave		(u32 tree_id)
 		g_VB.Begin		(D);
 		for (itOGF_V V=data.vertices.begin(); V!=data.vertices.end(); V++)
 		{
+			OGF_Vertex vert = *V;
+
 			r1v_lmap	v	(V->P,V->N,V->T,V->B,V->Color,V->UV[0],V->UV[1]);
 			g_VB.Add		(&v,sizeof(v));
 		}

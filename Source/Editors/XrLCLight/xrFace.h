@@ -35,6 +35,13 @@ public:
 virtual	void		read	(INetReader	&r );
 virtual	void		write	(IWriter	&w )const;
 
+virtual void		write_Reader(IWriter& w);
+virtual void		read_Reader(IReader& r);
+
+virtual void		write_LTX(CInifile* file, LPCSTR sec);
+virtual void		read_LTX(CInifile* file, LPCSTR sec);
+
+
 	DataVertex				(){};
 	virtual		~DataVertex				(){};
 };
@@ -64,6 +71,12 @@ public:
 
 	virtual	void		read	(INetReader	&r );
 	virtual	void		write	(IWriter	&w )const;
+
+	virtual void		write_Reader(IWriter &w);
+	virtual void		read_Reader(IReader  &r);
+
+	virtual void		write_LTX(CInifile* file, LPCSTR sec, LPCSTR pref);
+	virtual void		read_LTX(CInifile* file, LPCSTR sec, LPCSTR pref);
 
 	DataFace(){};
 	virtual ~DataFace(){};
@@ -96,7 +109,10 @@ extern XRLC_LIGHT_API bool						g_bUnregister;
 
 #pragma pack(pop)
 
+extern inline XRLC_LIGHT_API xr_vector<Face*> getAFFECTED();
+
 extern "C" XRLC_LIGHT_API	void start_unwarp_recursion	();
+
 extern "C" XRLC_LIGHT_API	void destroy_vertex			( Vertex* &v, bool unregister );
 
 							void destroy_face			( Face* &v, bool unregister );

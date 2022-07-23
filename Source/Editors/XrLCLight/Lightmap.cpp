@@ -129,11 +129,13 @@ void CLightmap::Save( LPCSTR path )
 		for (u32 _x=0; _x<c_LMAP_size; _x++)
 		{
 			u32	offset	= _y*c_LMAP_size+_x;
-	
-			if (lm.marker[offset]>=(254-BORDER))	
-				lm.marker[offset]=255;
-			else
-				lm.marker[offset]=0;
+			if (offset < lm.marker.size())
+			{
+				if (lm.marker[offset] >= (254 - BORDER))
+					lm.marker[offset] = 255;
+				else
+					lm.marker[offset] = 0;
+			}
 		}
 
 		//clMsg("offset_y %d", _y);
@@ -161,9 +163,8 @@ void CLightmap::Save( LPCSTR path )
 	
 	// Saving			(DXT5.dds)
 	Status			("Compression base...");
+	
 	{
-
-
 		string_path				FN;
 		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
 		xr_sprintf					(FN,"%s%s_1.dds",	path,lm_texture.name);
@@ -179,7 +180,9 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
+
 	lm_packed.clear_and_free();
+
 	Status			("Compression hemi..."); //.
 	{
 

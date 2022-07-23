@@ -120,6 +120,8 @@ public:
 
 	CBuild	();
 	~CBuild	();
+
+	xr_map<u16, xr_vector<u32> >			geomX_Uvmap;
 };
 
 extern CBuild*		pBuild;			;

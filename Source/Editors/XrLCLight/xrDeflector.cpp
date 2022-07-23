@@ -66,6 +66,11 @@ void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_y+px));
+	if (ds_y < ss_x + py)
+	{
+		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
+	}
+	
 	R_ASSERT(ds_y>=(ss_x+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
@@ -81,6 +86,11 @@ void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px
 void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_y+px));
+	if (ds_y < ss_x + py)
+	{
+		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
+	}
+	
 	R_ASSERT(ds_y>=(ss_x+py));
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)

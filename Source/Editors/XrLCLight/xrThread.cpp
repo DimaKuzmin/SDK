@@ -25,6 +25,7 @@ void	CThreadManager::wait	(u32	sleep_time)
 	char		perf			[1024];
 	if( threads.empty() )
 		return;
+
 	for (;;)
 	{
 		Sleep	(sleep_time);
@@ -44,6 +45,7 @@ void	CThreadManager::wait	(u32	sleep_time)
 			else				xr_sprintf	(P," %3.1f",threads[ID]->thPerformance);
 			xr_strcat				(perf,P);
 		}
+
 		if (threads[0]->thMonitor)
 		{
 			Status	("Performance: %3.1f :%s",sumPerformance,perf);

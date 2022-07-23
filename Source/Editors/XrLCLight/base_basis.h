@@ -18,5 +18,35 @@ public:
 		Fvector	N			= { x,y,z };
 		set					(N);
 	}
+
+	void save_ltx(CInifile* file, LPCSTR sec, LPCSTR pref)
+	{
+		string32 line_name = { 0 };
+
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_x");
+		file->w_u8(sec, line_name, x);
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_y");
+		file->w_u8(sec, line_name, y);
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_z");
+		file->w_u8(sec, line_name, z);
+	};
+
+	void load_ltx(CInifile* file, LPCSTR sec, LPCSTR pref)
+	{
+		string32 line_name = {0};
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_x");
+		x = file->r_u8(sec, line_name);
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_y");
+		y = file->r_u8(sec, line_name);
+		xr_strcpy(line_name, pref);
+		xr_strcat(line_name, "basis_z");
+		z = file->r_u8(sec, line_name);
+	};
+
 	bool	similar			(const base_basis& o);
 };

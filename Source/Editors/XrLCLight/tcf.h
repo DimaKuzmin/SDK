@@ -1,6 +1,7 @@
 #pragma once
 class INetReader;
-struct XRLC_LIGHT_API _TCF {
+struct XRLC_LIGHT_API _TCF 
+{
 	Fvector2			uv	[3];
 
 	void	barycentric	(Fvector2 &P, float &u, float &v, float &w);
@@ -10,5 +11,9 @@ struct XRLC_LIGHT_API _TCF {
 	IC bool	isInside	(Fvector2 &P, Fvector &B)		{	barycentric(P,B);	return isInside(B);	}
 	void	read		( INetReader	&r );
 	void	write		( IWriter	&w ) const ;
+
+	void	readReader	(IReader& r);
+	void	ReadLTX(CInifile* file, LPCSTR sec, LPCSTR pref);
+	void	WriteLTX(CInifile* file, LPCSTR sec, LPCSTR pref);
 	bool	similar		(  const _TCF &_tc, float eps = EPS ) const;
 };

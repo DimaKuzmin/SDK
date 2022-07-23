@@ -433,9 +433,12 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	DB->ray_query	(MDL,P,D,R);
 
 	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) {
+	if (0==DB->r_count()) 
+	{
 		return 1;
-	} else {
+	}
+	else 
+	{
 		return getLastRP_Scale(DB,MDL, L,skip,bUseFaceDisable);
 	}
 	return 0;

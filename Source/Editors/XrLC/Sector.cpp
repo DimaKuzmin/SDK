@@ -59,7 +59,7 @@ void CSector::BuildHierrarhy	()
 	float	SizeLimit				= c_SS_maxsize/4.f;
 	if		(SizeLimit<4.f)			SizeLimit=4.f;
 	if		(delimiter<=SizeLimit)	delimiter*=2;		// just very small level
-
+	clMsg("SizeLimit %d, delimiter %d", SizeLimit, delimiter);
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
 		int iSize			= g_tree.size();

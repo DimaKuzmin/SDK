@@ -17,10 +17,22 @@
 #include "../../xrcore/xrSyncronize.h"
 
 
+int MuThreads()
+{
+	if (LPCSTR str = strstr(Core.Params, "-mu_th"))
+	{
+		LPCSTR new_str = str + 6;
+		int count = 0;
+		sscanf(new_str, "%d", &count);
+		return count;
+	}
+
+	return 8;
+}
 
 CThreadManager			mu_base;
 CThreadManager			mu_secondary;
-#define		MU_THREADS	4
+#define		MU_THREADS	MuThreads()
 // mu-light
 bool mu_models_local_calc_lightening = false;
 xrCriticalSection		mu_models_local_calc_lightening_wait_lock;
@@ -84,8 +96,7 @@ public:
 		Sleep				(0);
 
 		// Light models
-
-		
+ 
 		if(mu_light_net)
 		{
 			lc_net::RunBaseModelsNet( );

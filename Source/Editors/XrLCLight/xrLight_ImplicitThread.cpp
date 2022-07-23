@@ -26,13 +26,28 @@ void	ImplicitThread ::	Execute	()
 		execute.Execute(0);
 	}
 
+int THREADS_COUNT()
+{
+	LPCSTR str = strstr(Core.Params, "-th");
 
+	if (str)
+	{
+		int count = 0;
+		LPCSTR new_str = str + 3;
+		sscanf(new_str, "%d", &count);
+		return count;
+	}
 
-#define	NUM_THREADS	32
+	return 4;
+}
+
+#define	NUM_THREADS	THREADS_COUNT()
+
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 		// Start threads
 		CThreadManager			tmanager;
+	
 		u32	stride				= defl.Height()/NUM_THREADS;
 		for (u32 thID=0; thID<NUM_THREADS; thID++)
 			tmanager.start		(xr_new<ImplicitThread> (thID,&defl,thID*stride,thID*stride+stride));
