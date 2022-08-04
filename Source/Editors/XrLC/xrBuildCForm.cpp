@@ -174,9 +174,10 @@ void CBuild::BuildCForm	()
 			clMsg("Model %d", ref);
 	}
 
-
+	Status("SimplifyCFORM");
+	
 	// Simplification
-	if (g_params().m_quality!=ebqDraft)
+	if (g_params().m_quality!=ebqDraft && !strstr(Core.Params, "-no_simplify"))
 		SimplifyCFORM	(CL);
 
 	// bb?
