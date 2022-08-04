@@ -49,7 +49,16 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		CThreadManager			tmanager;
 	
 		u32	stride				= defl.Height()/NUM_THREADS;
-		for (u32 thID=0; thID<NUM_THREADS; thID++)
-			tmanager.start		(xr_new<ImplicitThread> (thID,&defl,thID*stride,thID*stride+stride));
+
+		for (u32 thID = 0; thID < NUM_THREADS; thID++)
+		{	
+			ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
+			if (thID == 0)
+			{
+				th->execute.ClearIDS();
+			}
+			tmanager.start(th);	
+		}
+
 		tmanager.wait			();
 }

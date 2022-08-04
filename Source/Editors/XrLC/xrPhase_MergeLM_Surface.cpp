@@ -5,15 +5,15 @@
 #include <intrin.h>
 #include <mmintrin.h>
 #include <emmintrin.h>
-
-static	BYTE	surface			[c_LMAP_size*c_LMAP_size];
+ 
+static	BYTE	surface			[1024*1024];
 const	u32		alpha_ref		= 254-BORDER;
 
 
 // Initialization
 void _InitSurface()
 {
-	FillMemory(surface, c_LMAP_size * c_LMAP_size, 0);
+	FillMemory(surface, 1024 * 1024, 0);
 }
 
 // Rendering of rect
@@ -28,7 +28,7 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 		// Normal (and fastest way)
 		for (u32 y = 0; y < s_y; y++)
 		{
-			BYTE* P = surface + (y + R.a.y) * c_LMAP_size + R.a.x;	// destination scan-line
+			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
 			u8* S = lm + y * s_x;
 			for (u32 x = 0; x < s_x; x++, P++, S++)
 				if (*S >= alpha_ref)			
@@ -40,7 +40,7 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 		// Rotated :(
 		for (u32 y = 0; y < s_x; y++)
 		{
-			BYTE* P = surface + (y + R.a.y) * c_LMAP_size + R.a.x;	// destination scan-line
+			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
 			for (u32 x = 0; x < s_y; x++, P++)
 			if (lm[x * s_x + y] >= alpha_ref)
 				*P = 255;
@@ -172,7 +172,7 @@ bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
 		// Normal (and fastest way)
 		for (int y = 0; y < s_y; y++)
 		{
-			BYTE* P = surface + (y + R.a.y) * c_LMAP_size + R.a.x;	// destination scan-line
+			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
 			u8* S = lm + y * s_x;
 			// accelerated part
 #ifndef USE_AVX2
@@ -219,7 +219,7 @@ bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
 	{
 		// Rotated :(
 		for (int y = 0; y < s_x; y++) {
-			BYTE* P = surface + (y + R.a.y) * c_LMAP_size + R.a.x;	// destination scan-line
+			BYTE* P = surface + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
 			for (x = 0; x < s_y; x++, P++)
 				if ((*P) && (lm[x * s_x + y] >= alpha_ref)) {
  					return false;
@@ -240,11 +240,11 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 
 	// Normal
 	{
-		int x_max = c_LMAP_size - r.b.x;
-		int y_max = c_LMAP_size - r.b.y;
+		int x_max = getLMSIZE() - r.b.x;
+		int y_max = getLMSIZE() - r.b.y;
 		for (int _Y = 0; _Y < y_max; _Y++)
 		{
-			temp_surf = surface + _Y * c_LMAP_size;
+			temp_surf = surface + _Y * getLMSIZE();
 
 			// accelerated part
 #ifndef USE_AVX2
@@ -313,12 +313,12 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 
 	// Rotated
 	{
-		int x_max = c_LMAP_size - r.b.y;
-		int y_max = c_LMAP_size - r.b.x;
+		int x_max = getLMSIZE() - r.b.y;
+		int y_max = getLMSIZE() - r.b.x;
 
 		for (int _Y = 0; _Y < y_max; _Y++) 
 		{
-			temp_surf = surface + _Y * c_LMAP_size;
+			temp_surf = surface + _Y * getLMSIZE();
 			// accelerated part
 #ifndef USE_AVX2
 			for (_X = 0; _X < x_max - 8; ) 

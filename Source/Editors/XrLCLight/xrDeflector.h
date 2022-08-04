@@ -102,13 +102,15 @@ extern XRLC_LIGHT_API void		DumpDeflctor	( const CDeflector &d );
 extern XRLC_LIGHT_API void		DeflectorsStats ();
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 
+extern XRLC_LIGHT_API u32		getLMSIZE();
 
-static const	u32								c_LMAP_size				= 1024;			// pixels
+
+//const u32	c_LMAP_size				= strstr(Core.Params, "-fast_lightmaps") ? 8192 : 1024;			// pixels
 
 #define rms_zero	((4+g_params().m_lm_rms_zero)/2)
 #define rms_shrink	((8+g_params().m_lm_rms)/2)
 
-typedef  vector_serialize< t_read<CDeflector,  get_id_standart<CDeflector> > >		tread_deflectors;
+typedef  vector_serialize< t_read<CDeflector,  get_id_standart<CDeflector> > >	tread_deflectors;
 typedef  vector_serialize< t_write<CDeflector, get_id_standart<CDeflector> > >	twrite_deflectors;
 
 extern	tread_deflectors	*read_deflectors	;

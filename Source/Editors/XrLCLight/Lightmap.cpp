@@ -36,11 +36,12 @@ CLightmap*	CLightmap::read_create ( )
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
 	// Allocate 512x512 texture if needed
-	if (lm.surface.empty())	lm.create(c_LMAP_size,c_LMAP_size);
+	if (lm.surface.empty())	
+		lm.create(getLMSIZE(), getLMSIZE());
 	
 	// Addressing
 	xr_vector<UVtri>	tris;
-	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER,c_LMAP_size,c_LMAP_size,bRotated);
+	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER, getLMSIZE(), getLMSIZE(),bRotated);
 	
 	// Capture faces and setup their coords
 	for (UVIt T=tris.begin(); T!=tris.end(); T++)
@@ -57,11 +58,11 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOO
 	{
 		u32 real_H	= (L.height	+ 2*BORDER);
 		u32 real_W	= (L.width	+ 2*BORDER);
-		blit	(lm,c_LMAP_size,c_LMAP_size,L,real_W,real_H,b_u,b_v,254-BORDER);
+		blit	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
 	} else {
 		u32 real_H	= (L.height	+ 2*BORDER);
 		u32 real_W	= (L.width	+ 2*BORDER);
-		blit_r	(lm,c_LMAP_size,c_LMAP_size,L,real_W,real_H,b_u,b_v,254-BORDER);
+		blit_r	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
 	}
 }
 
@@ -79,6 +80,8 @@ IC void pixel	(int x, int y,  b_texture* T, u32 C=color_rgba(0,255,0,0))
 	u32* raw = static_cast<u32*>(*T->pSurface);
 	raw[y*T->dwWidth+x]	= C;
 }
+
+
 IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
 {
     int dx = _abs(x2 - x1);
@@ -116,6 +119,8 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
     }
 }
 
+#include <thread>
+
 void CLightmap::Save( LPCSTR path )
 {
 	static int		lmapNameID = 0; ++lmapNameID;
@@ -124,11 +129,11 @@ void CLightmap::Save( LPCSTR path )
 
 	// Borders correction
 	Status			("Borders...");
-	for (u32 _y=0; _y<c_LMAP_size; _y++)
+	for (u32 _y=0; _y< getLMSIZE(); _y++)
 	{
-		for (u32 _x=0; _x<c_LMAP_size; _x++)
+		for (u32 _x=0; _x< getLMSIZE(); _x++)
 		{
-			u32	offset	= _y*c_LMAP_size+_x;
+			u32	offset	= _y* getLMSIZE() +_x;
 			if (offset < lm.marker.size())
 			{
 				if (lm.marker[offset] >= (254 - BORDER))
@@ -137,18 +142,20 @@ void CLightmap::Save( LPCSTR path )
 					lm.marker[offset] = 0;
 			}
 		}
-
-		//clMsg("offset_y %d", _y);
 	}
 
-
+	Status("APPLY BORDERS");	
+	int p = 0;
 	for (u32 ref=254; ref>(254-16); ref--) 
 	{
+		p++;
 		ApplyBorders	(lm,ref);
-		Progress		(1.f - float(ref)/float(254-16));
+		clMsg("REF %d / %d", ref, 254-16);
+		Progress		( float (p / 16 ) );
 	}
-	Progress			(1.f);
 
+	Progress			(1.f);
+	Status("END BORDERS");
 	xr_vector<u32>			lm_packed;
 	lm.Pack					(lm_packed);
 	xr_vector<u32>			hemi_packed;

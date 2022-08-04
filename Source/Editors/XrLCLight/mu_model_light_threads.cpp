@@ -19,15 +19,22 @@
 
 int MuThreads()
 {
+	/*
 	if (LPCSTR str = strstr(Core.Params, "-mu_th"))
 	{
 		LPCSTR new_str = str + 6;
 		int count = 0;
 		sscanf(new_str, "%d", &count);
 		return count;
-	}
+	} 
+	*/
 
-	return 8;
+	float size = inlc_global_data()->mu_refs().size() / 100;
+	if (size < 1)
+		size = 1;
+	u32 sizeRET = floor(size);
+
+	return sizeRET;
 }
 
 CThreadManager			mu_base;
@@ -102,15 +109,13 @@ public:
 			lc_net::RunBaseModelsNet( );
 			lc_net::RunRefModelsNet( );
 			return;
-			//lc_net::WaitRefModelsNet();
-		} 
+ 		} 
 		
 		for (u32 m=0; m<inlc_global_data()->mu_models().size(); m++)
 		{
 			inlc_global_data()->mu_models()[m]->calc_materials();
 			inlc_global_data()->mu_models()[m]->calc_lighting	();
 		}
-
 
 		SetMuModelsLocalCalcLighteningCompleted();
 

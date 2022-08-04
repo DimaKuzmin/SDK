@@ -74,11 +74,16 @@ void	ImplicitExecute::	send_result				( IWriter	&w ) const
 }
 
 int id = 0;
+int ids_timer = 0;
+
+xr_map<u16, int> thread_msg;
 
 void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 {
 	id++;
 	int th_id = id;
+	CTimer timer;
+	timer.Start();
 
 		R_ASSERT( y_start != (u32(-1)) );
 		R_ASSERT( y_end != (u32(-1)) );
@@ -100,11 +105,13 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 		
 		// Lighting itself
 		DB.ray_options	(0);
-		CTimer timer; timer.Start();
+ 
+		u32 timer_RAY = 0;
 
 		for (u32 V=y_start; V<y_end; V++)
 		{
-			CTimer t; t.Start();
+			thread_msg[th_id] = V-y_end;
+  
 			u64 ticks = 0;
 			u32 founds = 0;
 			for (u32 U=0; U<defl.Width(); U++)
@@ -114,8 +121,10 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 				base_color_c	C;
 				u32				Fcount	= 0;
 				
-				try {
-					
+				try
+				{
+					CTimer time;
+					time.Start();
 					for (u32 J=0; J<Jcount; J++) 
 					{
 						// LUMEL space
@@ -147,13 +156,17 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 							}
 						}
 					} 
-					
+
+					timer_RAY = timer.GetElapsed_ms();
 
 				} 
 				catch (...)
 				{
 					clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 				}
+
+				//if (th_id == 1)
+				//	clMsg("Rays (%d)ms, total rays(%d)", timer_RAY, Fcount);
 
 				if (Fcount) 
 				{
@@ -169,17 +182,26 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 				{
 					defl.Marker(U,V)	= 0;
 				}
+
+
+				if (timer.GetElapsed_ms() > 10000 && th_id == 1)
+				{
+					ids_timer += timer.GetElapsed_sec();
+					timer.Start();
+					clMsg("---START");
+					for (auto msg : thread_msg)
+					{						
+						clMsg("THREAD [%d] V[%d]", msg.first, msg.second);
+					}
+					clMsg("---END [%d] sec", ids_timer);
+				}
 			}
+  		}
+	}
 
-	//		clMsg("T: %d, LIGHT: %d, countF: %d", t.GetElapsed_ticks(), ticks, founds);
-
-	//		thProgress	= float(V - y_start) / float(y_end-y_start);
-	//		string256 msg;
-	//		sprintf(msg, "TH %d, V: %d, end %d", th_id, V - y_start, y_end - y_start);
-	//		clMsg(msg);
-	
-			//clMsg("TH %d, V: %d, end %d", th_id, V - y_start, y_start - y_end);
-		}
+	void ImplicitExecute::ClearIDS()
+	{
+		id = 0;
 	}
 
 //#pragma optimize( "g", off )

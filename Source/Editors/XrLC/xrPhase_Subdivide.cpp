@@ -69,8 +69,8 @@ void CBuild::xrPhase_Subdivide()
 		
 		if		(!bSplit && defl_base)	
 		{
-			if (defl_base->layer.width  >=	(c_LMAP_size-2*BORDER))	bSplit	= TRUE;
-			if (defl_base->layer.height >=	(c_LMAP_size-2*BORDER))	bSplit	= TRUE;
+			if (defl_base->layer.width  >=	(getLMSIZE() -2*BORDER))	bSplit	= TRUE;
+			if (defl_base->layer.height >=	(getLMSIZE() -2*BORDER))	bSplit	= TRUE;
 		}
 
 		// perform subdivide if needed

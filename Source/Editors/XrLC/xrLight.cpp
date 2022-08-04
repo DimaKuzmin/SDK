@@ -48,11 +48,15 @@ public:
 			}
 
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
+			if (lc_global_data()->g_deflectors().size() - task_pool.size() % 1024 == 0)
+			clMsg("DEFL[%d]/[%d]", lc_global_data()->g_deflectors().size() - task_pool.size(), lc_global_data()->g_deflectors().size());
+			
 			task_pool.pop_back	();
 			task_CS.Leave		();
 
 			// Perform operation
-			try {
+			try 
+			{
 				D->Light	(&DB,&LightsSelected,H);
 			} catch (...)
 			{
@@ -63,9 +67,22 @@ public:
 };
 
 
+int THREADS_COUNT()
+{
+	LPCSTR str = strstr(Core.Params, "-th");
 
+	if (str)
+	{
+		int count = 0;
+		LPCSTR new_str = str + 3;
+		sscanf(new_str, "%d", &count);
+		return count;
+	}
 
+	return 4;
+}
 
+#define TH_NUM THREADS_COUNT()
 
 
 void	CBuild::LMapsLocal				()
@@ -76,7 +93,7 @@ void	CBuild::LMapsLocal				()
 
 		// Randomize deflectors
 #ifndef NET_CMP
-		std::random_shuffle	(lc_global_data()->g_deflectors().begin(),lc_global_data()->g_deflectors().end());
+		std::random_shuffle	(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end());
 #endif
 
 #ifndef NET_CMP	
@@ -88,13 +105,12 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 #endif
 		
 
-		// Main process (4 threads)
+		// Main process (4 threads) (-th MAX_THREADS)
 		Status			("Lighting...");
 		CThreadManager	threads;
-		const	u32	thNUM	= 6;
-		CTimer	start_time;	
+ 		CTimer	start_time;	
 		start_time.Start();				
-		for				(int L=0; L<thNUM; L++)
+		for				(int L=0; L < TH_NUM; L++)
 			threads.start(xr_new<CLMThread> (L));
 		
 		threads.wait	(500);
@@ -146,10 +162,10 @@ void CBuild::Light()
 	LightVertex		();
 
 //
-	
+	clMsg("LightVertex END");
 
 	ImplicitNetWait();
-	WaitMuModelsLocalCalcLightening();
+	//WaitMuModelsLocalCalcLightening();
 	lc_net::get_task_manager().wait_all();
 	//	get_task_manager().wait_all();
 	lc_net::get_task_manager().release();

@@ -84,6 +84,9 @@ IC int	sort_defl_analyze	(CDeflector* D1, CDeflector* D2)
 // sorting - in increasing order
 IC bool	sort_defl_complex	(CDeflector* D1, CDeflector* D2)
 {
+	if (D1->layer.height < D2->layer.height)
+		return true;
+
 	switch (sort_defl_analyze(D1,D2))	
 	{
 	case 1:		return true;	// 1st is better 
@@ -93,7 +96,16 @@ IC bool	sort_defl_complex	(CDeflector* D1, CDeflector* D2)
 	}
 }
 
+IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
+{
+	if (D1->layer.height > D2->layer.height)
+		return true;
+	else 
+		return false;
+}
+
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0==D) return TRUE;}; if (D->bMerged) {D->bMerged=FALSE; return TRUE; } else return FALSE;  }; };
+ 
 
 void CBuild::xrPhase_MergeLM()
 {
@@ -104,12 +116,12 @@ void CBuild::xrPhase_MergeLM()
 	for (u32 it=0; it<lc_global_data()->g_deflectors().size(); it++)
 	{
 		CDeflector*	D		= lc_global_data()->g_deflectors()[it];
-		
-	//	clMsg("Deflector [%d]", it);
 		if (D->bMerged)		continue;
 		Layer.push_back		(D);
 	}
 	
+	std::sort(Layer.begin(), Layer.end(), sort_defl_fast);
+
 	u32 size_layer = 0;
 	u32 LayerID = 0;
 
@@ -130,19 +142,23 @@ void CBuild::xrPhase_MergeLM()
 		// Sort layer by similarity (state changes)
 		// + calc material area
 		Status		("Selection...");
-		for (u32 it=0; it<materials().size(); it++)
-			materials()[it].internal_max_area	= 0;
+
+		for (u32 it = 0; it < materials().size(); it++)
+		{
+			materials()[it].internal_max_area = 0;
+		}
 
 		for (u32 it=0; it<Layer.size(); it++)	
 		{
 			CDeflector*	D		= Layer[it];
 			materials()[D->GetBaseMaterial()].internal_max_area	= _max(D->layer.Area(),materials()[D->GetBaseMaterial()].internal_max_area);
 		}
-		std::stable_sort(Layer.begin(),Layer.end(),sort_defl_complex);
+
+		std::stable_sort(Layer.begin(),Layer.end(), sort_defl_complex);
 
 		// Select first deflectors which can fit
 		Status		("Selection...");
-		u32 maxarea		= c_LMAP_size*c_LMAP_size*8;	// Max up to 8 lm selected
+		u32 maxarea		= getLMSIZE() * getLMSIZE() * 8;	// Max up to 8 lm selected
 		u32 curarea		= 0;
 		u32 merge_count	= 0;
 		for (u32 it=0; it<(int)Layer.size(); it++)	
@@ -159,27 +175,24 @@ void CBuild::xrPhase_MergeLM()
 		CLightmap*	lmap		= xr_new<CLightmap> ();
 		VERIFY( lc_global_data() );
 		lc_global_data()->lightmaps().push_back	(lmap);
- 		// Process 
-	 		
+ 		
+		// Process 	
 		int x = 0, y = 0;
-
 		u16 prev_resize_height = 0;
 		u16 prev_resize_width = 0;
-
 		u16 max_y = 0;
 
-		for (u32 it=0; it<merge_count; it++) 
+		int MERGED = 0;
+		for (int it = 0; it < Layer.size(); it++)
 		{
 			lm_layer&	L		= Layer[it]->layer;
 			 
 			if (fastWay)
 			{
-				x += L.width + 2;
-				
 				if (max_y < L.height + 2)
 					max_y = L.height + 2;
 
-				if (x > c_LMAP_size - 16 - L.width)
+				if (x + L.width + 2 > getLMSIZE() - 16 - L.width)
 				{
 					x = 0;
 					y += max_y;
@@ -188,9 +201,18 @@ void CBuild::xrPhase_MergeLM()
 
 				L_rect		rT, rS;
 				rS.a.set(x, y);
-				rS.b.set(x + L.width + 2 * BORDER - 1, y + L.height + 2 * BORDER - 1);
+				rS.b.set(x + L.width + 2 * BORDER - 1, 
+						 y + L.height + 2 * BORDER - 1);
 				rS.iArea = L.Area();
+				
+				x += L.width + 2;
+				
 				rT = rS;
+
+				if (L.width > 50 || L.height > 50)
+				{
+				//	clMsg("w = %d, h = %d, x = %d, y = %d", L.width, L.height, x, y);
+				}
 
 				BOOL		bRotated;
 				if (rT.SizeX() == rS.SizeX())
@@ -198,10 +220,11 @@ void CBuild::xrPhase_MergeLM()
 				else
 					bRotated = TRUE;
 
-				if (y < c_LMAP_size - 16 - L.height)
+				if (y < getLMSIZE() - 16 - L.height)
 				{
 					lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
 					Layer[it]->bMerged = TRUE;
+					MERGED++;
 				}
 			}
 			else
@@ -228,14 +251,17 @@ void CBuild::xrPhase_MergeLM()
 				}
 			}
 			 
+			 
 			Progress(float(it)/float(merge_count));
 
 			if (0 == (it % 1024))
 			{
  				Status("Process [%d/%d]...", it, merge_count);
- 			}
-
+ 			}  
 		}
+
+		clMsg("MERGED: %d, TOT: %d", MERGED, Layer.size());
+		int recvest = Layer.size() - MERGED;
 
 		Progress	(1.f);
 
@@ -243,6 +269,8 @@ void CBuild::xrPhase_MergeLM()
 		Status			("Cleanup...");
 		vecDeflIt last	= std::remove_if	(Layer.begin(),Layer.end(),pred_remove());
 		Layer.erase		(last,Layer.end());
+
+		clMsg("LM After Clean %d==%d", Layer.size(), recvest);
 
 		{
 			// Save

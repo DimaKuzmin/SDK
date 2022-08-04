@@ -328,8 +328,8 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<=(c_LMAP_size-2*BORDER));
-		R_ASSERT		(lm.height	<=(c_LMAP_size-2*BORDER));
+		R_ASSERT		(lm.width	<=(getLMSIZE() -2*BORDER));
+		R_ASSERT		(lm.height	<=(getLMSIZE() -2*BORDER));
 		lm.create		(lm.width,lm.height);
 		L_Direct		(DB,LightsSelected,H);
 	} catch (...)
@@ -483,3 +483,11 @@ void	CDeflector::statistic_log			(  ) const
 }
 
 #endif
+
+u32 getLMSIZE()
+{
+	if (strstr(Core.Params, "-fast_lightmaps"))
+		return 8192;
+
+	return 1024;
+}

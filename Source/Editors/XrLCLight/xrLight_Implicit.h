@@ -16,6 +16,8 @@ public:
 
 	}
 	void		Execute			( net_task_callback *net_callback );
+	void		ClearIDS();
+
 	void		read			( INetReader	&r );
 	void		write			( IWriter	&w ) const ;
 

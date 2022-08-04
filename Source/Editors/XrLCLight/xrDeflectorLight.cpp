@@ -383,7 +383,8 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 			VERIFY( !!(build_texture.THM.HasSurface()) ==  !!(!T.pSurface.Empty()) );
 #endif
-			if (T.pSurface.Empty())	{
+			if (T.pSurface.Empty())	
+			{
 				F->flags.bOpaque	= true;
 				clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...");
 				return 0;
@@ -417,9 +418,38 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 	return scale;
 }
+CTimer timer_Global;
+u32 total_time1 = 0;
+u32 total_time2 = 0;
+u32 total_time3 = 0;
+
+u32 calls = 0;
+u64 total_CALLS = 0;
+xrCriticalSection lock_log;
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
 {
+	total_CALLS++;
+	calls++;
+	if (timer_Global.GetElapsed_ticks() == 0)
+		timer_Global.Start();
+	lock_log.Enter();
+	if (timer_Global.GetElapsed_sec() > 10)
+	{
+		u32 time1 = total_time1 / CPU::qpc_freq * 1000;
+		u32 time2 = total_time2 / CPU::qpc_freq * 1000;
+		u32 time3 = total_time3 / CPU::qpc_freq * 1000;
+
+		clMsg("T1[%u]ms, T2[%u]ms, T3[%u]ms, calls %u mil, t_calls %u mil", time1, time2, time3, calls / 1000000, total_CALLS / 1000000);
+		timer_Global.Start();
+		total_time1 = 0;
+		total_time2 = 0;
+		total_time3 = 0;
+		calls = 0;
+	}
+	lock_log.Leave();
+
+	CTimer t; t.Start();
 	R_ASSERT	(DB);
 
 	// 1. Check cached polygon
@@ -428,10 +458,11 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	if (res) {
 		if (range>0 && range<R) return 0;
 	}
-
-	// 2. Polygon doesn't pick - real database query
+	total_time1 += t.GetElapsed_ticks();
+ 	// 2. Polygon doesn't pick - real database query
 	DB->ray_query	(MDL,P,D,R);
-
+	total_time2 += t.GetElapsed_ticks();
+ 		
 	// 3. Analyze polygons and cache nearest if possible
 	if (0==DB->r_count()) 
 	{
@@ -441,10 +472,12 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	{
 		return getLastRP_Scale(DB,MDL, L,skip,bUseFaceDisable);
 	}
+	total_time3 += t.GetElapsed_ticks();
+
 	return 0;
 }
 
-void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip)
+IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip)
 {
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.01f);
@@ -890,7 +923,8 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 			layer.width				= lm_old.width;
 			layer.height			= lm_old.height;
 		}
-	} catch (...)
+	} 
+	catch (...)
 	{
 		
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
