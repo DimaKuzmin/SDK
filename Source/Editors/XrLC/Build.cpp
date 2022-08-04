@@ -219,14 +219,18 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	//****************************************** Optimizing + checking for T-junctions
+	
+	
+	FPU::m64r();
+	Phase("Optimizing...");
+	mem_Compact();
+	if (!strstr(Core.Params, "-no_optimize"))
+		PreOptimize();
+	CorrectTJunctions();
+	
+		
 	if (strstr(Core.Params, "-no_adaptive") == 0 && !CformOnly)
 	{
-		FPU::m64r();
-		Phase("Optimizing...");
-		mem_Compact();
-		PreOptimize();
-		CorrectTJunctions();
-
 	//****************************************** HEMI-Tesselate
 	
 		FPU::m64r();
@@ -283,7 +287,7 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	//****************************************** Starting MU
-	/* 	Moved TO After LIGHT
+	/* 	Moved TO After LIGHT (После стадии Convert To OGF и возможность задать ключом -mu_th потоки)	 (Возможно для сетевой компиляции стартуют раньше)
 	FPU::m64r					();
 	Phase						("LIGHT: Starting MU...");
 	mem_Compact					();
@@ -324,6 +328,7 @@ void CBuild::Run(LPCSTR P)
 	mu_base.wait				(500);
 	mu_secondary.wait			(500);
 #endif
+
 	if(g_build_options.b_net_light)
 		SetGlobalLightmapsDataInitialized();
 		
@@ -351,8 +356,6 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Flex2OGF					();
 
 	//****************************************** Starting MU
-	
-	 
 	FPU::m64r();
 	Phase("LIGHT: Starting MU...");
 	mem_Compact();
@@ -371,15 +374,11 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	mem_Compact					();
 	wait_mu_base				();
 
-	if( !g_build_options.b_net_light )
-						wait_mu_secondary();
-	
-///
-//	lc_global_data()->clear_mesh	();
-////
-
-//	mu_base.wait				(500);
-//	mu_secondary.wait			(500);
+	if (!g_build_options.b_net_light)
+	{
+		Phase("LIGHT: Waiting for MU-Secondary threads...");
+		wait_mu_secondary();
+	}
 
 	//****************************************** Export MU-models
 	FPU::m64r					();
@@ -388,14 +387,19 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	{
 		u32 m;
 		Status			("MU : Models...");
-		for (m=0; m<mu_models().size(); m++)	{
+		for (m=0; m<mu_models().size(); m++)	
+		{
+			clMsg("ID[%d], size[%d]", m, mu_models().size());
 			calc_ogf			(*mu_models()[m]);
 			export_geometry		(*mu_models()[m]);
 		}
 
 		Status			("MU : References...");
-		for (m=0; m<mu_refs().size(); m++)
+		for (m = 0; m < mu_refs().size(); m++)
+		{
+			clMsg("muref ID[%d], size[%d]", m, mu_models().size());
 			export_ogf(*mu_refs()[m]);
+		}
 
 //		lc_global_data()->clear_mu_models();
 	}

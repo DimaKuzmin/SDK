@@ -508,16 +508,25 @@ CCommandVar CActorTools::CommandSurfaceExport(CCommandVar p1, CCommandVar p2)
                     FS.file_copy(src, dest);
                 }
             }
-           
-            
+ 
             //thm
             {
+                
+
                 string_path dest, src;
                 string256 filename = { 0 };
                 xr_strcat(filename, surface->m_Texture.c_str());
                 xr_strcat(filename, ".thm");
-                FS.update_path(src, "$game_textures$", filename);
+                ETextureThumbnail* thm = xr_new<ETextureThumbnail>(filename);
 
+                if (thm)
+                {
+                   // STextureParams params;
+                   // 
+                }
+
+                FS.update_path(src, "$game_textures$", filename);
+                
                 if (FS.exist(src))
                 {
                     FS.update_path(dest, "$export_surface$", filename);

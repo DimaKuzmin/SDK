@@ -163,9 +163,11 @@ void CBuild::xrPhase_AdaptiveHT	()
 	DB.ray_options	(0);
 
 	Status			("Tesselating...");
-	if (1)
+	
+	if (!strstr(Core.Params, "-no_optimize"))
 	{
-		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	{		// clear split flag from all faces + calculate normals
+		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
+		{		// clear split flag from all faces + calculate normals
 			lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
 			lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
 			lc_global_data()->g_faces()[fit]->CalcNormal			();
@@ -419,7 +421,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
 					lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
 
-			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create,lc_global_data()->g_vertices().size(),cnt_verts);
+			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
 			FlushLog			();
 		}
 

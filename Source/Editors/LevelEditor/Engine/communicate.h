@@ -162,7 +162,7 @@ struct b_params
     // build quality
 	u16			m_quality;
 	u16			u_reserved;
-
+ 
 	// Progressive
 	float		f_reserved[6];
 
