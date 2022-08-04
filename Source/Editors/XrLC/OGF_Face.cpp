@@ -275,7 +275,9 @@ void OGF::MakeProgressive	(float metric_limit)
 	// there is no-sense to simplify small models
 	// for batch size 50,100,200 - we are CPU-limited anyway even on nv30
 	// for nv40 and up the better guess will probably be around 500
-	if (data.faces.size()<c_PM_FaceLimit)		return		;	
+	if (data.faces.size()<c_PM_FaceLimit)		return;	
+	if (data.faces.size() > 4096)				return; 
+	//ÅÑËÈ ÁÎËÅÅ 4096 òî î÷åíü äîëãî.
 
 //. AlexMX added for draft build mode
 	if (g_params().m_quality==ebqDraft)		return		;
@@ -312,13 +314,18 @@ void OGF::MakeProgressive	(float metric_limit)
 			progressive_clear	()		;
 			clMsg				("* mesh simplification failed");
 		}
-		while (VR && VR->swr_records.size()>0)	{
+		while (VR && VR->swr_records.size()>0)
+		{
 			// test metric
 			u32		_full	=	data.vertices.size	()		;
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
-			if		(_metric<metric_limit)		{
+			
+			//bool big_FACES = (VR->indices.size() / 3) > data.faces.size() * 2;
+
+			if		(_metric<metric_limit )//|| big_FACES
+			{
 				progressive_clear				()		;
 				clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded",_full,_simple,VR->indices.size()/3,metric_limit);
 				break									;
