@@ -63,16 +63,17 @@ void CBuild::xrPhase_UVmap()
 	float		p_cost	= 1.f / float(g_XSplit.size());
 	float		p_total	= 0.f;
 	vecFace		faces_affected;
-	u32			remove_count;
+	u32			remove_count = 0;
 
 	clMsg("SP_SIZE %d, pixel_per_metter %f, Jitter = %d", g_XSplit.size(), g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
  
 	orig_size = g_XSplit.size();
+	bool use_fast_method = strstr(Core.Params, "-fast_uv");
+
+
 
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
-		remove_count = 0;
-
 		Progress			(p_total+=p_cost);
  
 		// ManOwaR, unsure:
@@ -95,12 +96,15 @@ void CBuild::xrPhase_UVmap()
 		CTimer timer_GLOBAL;
 		timer_GLOBAL.Start();
 		
-		int id_face = 0;
-
+		int id_face = 0;		
 		vecFace* faces_selected = g_XSplit[SP];
-		std::sort(faces_selected->begin(), faces_selected->end(), sort_faces);
-		
 		vecFaceIt last_checked_id = faces_selected->begin();
+
+		if (use_fast_method)
+		{
+			remove_count = 0;
+			std::sort(faces_selected->begin(), faces_selected->end(), sort_faces);
+		}
 
 		while (TRUE) 
 		{
@@ -112,33 +116,35 @@ void CBuild::xrPhase_UVmap()
 			 
 			timer.Start();
 	
-
 			for (vecFaceIt it = last_checked_id; it != faces_selected->end(); it++, id_face++)
 			{
 				if ( (*it)->pDeflector == NULL )
 				{	
-					//clMsg("[%d] Size[%f]", id_face, (*it)->CalcArea());
-					msF = (*it);
-					/*
-					float a = (*it)->CalcArea();
-					if (a>msA)
+ 					msF = (*it);
+					if (!use_fast_method)
 					{
-						msF = (*it);
-						msA = a;
- 					}	
-					*/
-					last_checked_id = it;
+						float a = (*it)->CalcArea();
+						if (a > msA)
+						{
+							msF = (*it);
+							msA = a;
+						}
+					}
+					else
+					{
+						last_checked_id = it;
+					}				
 					break;
 				}
 			}
 
 			size_find_face += timer.GetElapsed_ticks();
 
-			if (!msF)
+			if (!msF && use_fast_method)
 			{
  				if (remove_count == g_XSplit[SP]->size())
 				{
-					clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
+					//clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
 					xr_delete(g_XSplit[SP]);
 					g_XSplit.erase(g_XSplit.begin() + SP);
 					SP--;
@@ -159,44 +165,48 @@ void CBuild::xrPhase_UVmap()
 
 			if (msF)
 			{
-				CDeflector *D = xr_new<CDeflector>();
-				lc_global_data()->g_deflectors().push_back	(D);
+				CDeflector* D = xr_new<CDeflector>();
+				lc_global_data()->g_deflectors().push_back(D);
 				// Start recursion from this face
 				start_unwarp_recursion();
-				D->OA_SetNormal	(msF->N);
+				D->OA_SetNormal(msF->N);
 
-				  
-				msF->OA_Unwarp			(D);
+
+				msF->OA_Unwarp(D);
 				// break the cycle to startup again
-				D->OA_Export	();
- 
+				D->OA_Export();
+
 
 				// Detach affected faces
-				faces_affected.clear();  			 
-				/*
-				for (int i=0; i<int(g_XSplit[SP]->size()); i++) 
-				{
-					Face *F = (*g_XSplit[SP])[i];
-					if ( F->pDeflector == D )
-					{
-						faces_affected.push_back(F);
-						//g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i); 
-						//i--;
-					}
-				} 
-				*/
-				
- 				for (auto face : *g_XSplit[SP])
-				{
-					if (face->pDeflector == 0) continue;
+				faces_affected.clear();
 
-					if (face->pDeflector == D)
+				if (!use_fast_method)
+				{
+					for (int i = 0; i<int(g_XSplit[SP]->size()); i++)
 					{
-						faces_affected.push_back(face);
- 						remove_count += 1;
+						Face* F = (*g_XSplit[SP])[i];
+						if (F->pDeflector == D)
+						{
+							faces_affected.push_back(F);
+							g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i); 
+							i--;
+						}
 					}
- 				}			
-				
+				}
+				else
+				{
+					for (auto face : *g_XSplit[SP])
+					{
+						if (face->pDeflector == 0) continue;
+
+						if (face->pDeflector == D)
+						{
+							faces_affected.push_back(face);
+							remove_count += 1;
+						}
+					}
+				}
+ 		
 				// detaching itself
 				Detach				(&faces_affected);
  				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
@@ -220,7 +230,7 @@ void CBuild::xrPhase_UVmap()
 			 
 			if (timer_GLOBAL.GetElapsed_ms() > 1000 )
 			{
-				clMsg("FIND FACE %u, FIND AFFECTED %u", size_find_face, size_calls);
+				//clMsg("FIND FACE %u, FIND AFFECTED %u", size_find_face, size_calls);
  
 				timer_GLOBAL.Start();
 				size_find_face = 0;
@@ -228,13 +238,9 @@ void CBuild::xrPhase_UVmap()
 			}
 			 
 			
-		}
-
-		
+		}	
 	}
-	    
-
-
+ 
 	clMsg("%d subdivisions...",g_XSplit.size());
 	err_save		();
 }
