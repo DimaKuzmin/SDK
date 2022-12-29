@@ -31,6 +31,7 @@ void CBuild::BuildSectors()
 		R_ASSERT(g_sectors[I]);
 		g_sectors[I]->BuildHierrarhy();
 		Progress(float(I)/float(g_sectors.size()));
+		Msg("Progress %d/%d", I, g_sectors.size());
 	}
 
 	Status("Assigning portals, occluders, glows, lights...");

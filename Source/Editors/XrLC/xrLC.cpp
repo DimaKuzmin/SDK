@@ -27,10 +27,27 @@ extern volatile BOOL bClose;
 
 static const char* h_str = 
 	"The following keys are supported / required:\n"
-	"-? or -h	== this help\n"
-	"-o			== modify build options\n"
-	"-nosun		== disable sun-lighting\n"
-	"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
+	"-? or -h			== this help\n"
+	"-o					== modify build options\n"
+	"-nosun				== disable sun-lighting\n"
+	"-norgb				== disable static lighting\n"
+	"-nohemi			== disable hemi lighting\n"
+	"-nosmg				== disable smoth groops\n"
+	//NEW SDK 8.0
+	"-no_invalidefaces  == disable check invalidate faces\n"
+	"-fast_lightmaps	== fast lightmaps dds pos x,y calculation\n"
+	"-fast_merge		== fast merge geometry (like single core calculation but threaded)\n" 
+	"-single_core_merge == calculation Stage MergeGeometry single core (faster way break; cycle for if find merge volume)\n"
+	"-fast_uv			== fast calculation Unwrap UV\n"
+	"-no_optimize		== OFF optimize geometry Pre stage AdaptiveHT\n"
+ 	//NEW THREADING AND CUSTOMIZE PARAMS
+	"-pxpm				== pixel per meter from SDK\n"
+	"-sample_1			== Jitter from SDK (1, 4, 9)\n"
+	"-mu_samples		== mu samples for calcuation Light for MU MODELS (1-6) \n"
+	"-th (num)			== Count Threads For Light CALCULATION IMPLICIT, LMAPS \n"
+	"-mu_th (num)		== Count Threads For Light CALCULATION MU MODELS \n"
+
+	"-f<NAME>			== compile level in GameData\\Levels\\<NAME>\\\n" 
 	"\n"
 	"NOTE: The last key is required for any functionality\n";
 
@@ -57,7 +74,9 @@ void Startup(LPSTR     lpCmdLine)
 	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
 	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
 	VERIFY( lc_global_data() );
-	lc_global_data()->b_nosun_set						( !!strstr(cmd,"-nosun") );
+	lc_global_data()->b_nosun_set						( strstr(cmd, "-nosun") );
+	lc_global_data()->b_norgb_set						( strstr(cmd, "-norgb") );
+	lc_global_data()->b_nohemi_set						( strstr(cmd, "-nohemi") );
 	//if (strstr(cmd,"-nosun"))							b_nosun			= TRUE;
 	
 	// Give a LOG-thread a chance to startup

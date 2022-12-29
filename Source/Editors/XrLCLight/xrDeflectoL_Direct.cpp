@@ -44,7 +44,7 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		VERIFY(inlc_global_data());
 		VERIFY(inlc_global_data()->RCAST_Model());
 
-		LightPoint		(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_nosun()?LP_dont_sun:0)|LP_DEFAULT, skip); //.
+		LightPoint		(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |(inlc_global_data()->b_nosun()?LP_dont_sun:0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |LP_DEFAULT, skip); //.
 		
 		C.mul		(.5f);
 		lm.surface	[_y*lm.width+_x]._set	(C);
@@ -75,8 +75,11 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	// Lighting itself
 	DB->ray_options	(0);
 	
-	for (u32 V=0; V<lm.height; V++)	{
-	if(_net_session && !_net_session->test_connection())
+//	Msg("Height MAP[%d], W[%d]", lm.height, lm.width);
+	
+	for (u32 V=0; V<lm.height; V++)
+	{
+		if(_net_session && !_net_session->test_connection())
 			 return;
 		for (u32 U=0; U<lm.width; U++)	{
 #ifdef NET_CMP
@@ -85,6 +88,9 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 #endif
 			u32				Fcount	= 0;
 			base_color_c	C;
+			
+
+
 			try {
 				for (u32 J=0; J<Jcount; J++) 
 				{
@@ -99,7 +105,8 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 					Fvector		wP,wN,B;
 					for (UVtri** it=&*space.begin(); it!=&*space.end(); it++)
 					{
-						if ((*it)->isInside(P,B)) {
+						if ((*it)->isInside(P,B) )
+						{
 							// We found triangle and have barycentric coords
 							Face	*F	= (*it)->owner;
 							Vertex	*V1 = F->v[0];
@@ -115,7 +122,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 							try {
 								VERIFY(inlc_global_data());
 								VERIFY(inlc_global_data()->RCAST_Model());
-								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_nosun()?LP_dont_sun:0)|LP_UseFaceDisable, F); //.
+								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun()?LP_dont_sun:0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F); //.
 								Fcount		+= 1;
 							} catch (...) {
 								clMsg("* ERROR (CDB). Recovered. ");
@@ -128,8 +135,9 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 				clMsg("* ERROR (Light). Recovered. ");
 			}
 			
-			if (Fcount) {
-				C.scale			(Fcount);
+			if (Fcount)
+			{
+				C.scale(Fcount);
 				C.mul			(.5f);
 				lm.surface		[V*lm.width+U]._set(C);
 				lm.marker		[V*lm.width+U] = 255;
@@ -139,6 +147,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 			}
 		}
 	}
+	
 	// *** Render Edges
 	float texel_size = (1.f/float(_max(lm.width,lm.height)))/8.f;
 	for (u32 t=0; t<UVpolys.size(); t++)

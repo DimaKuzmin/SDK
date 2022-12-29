@@ -5,7 +5,7 @@
 #include "progmesh.h"
 #include "xrSpherical.h"
 
-#include "PropSlimTools.h"
+//#include "../XrETools/PropSlimTools.h"
 #include "vbm.h"
 
 #include "../xrLCLight/xruvpoint.h"
@@ -106,6 +106,8 @@ extern xr_vector<OGF_Base *>		g_tree;
 
 struct OGF : public OGF_Base
 {
+	bool use_mt_progresive;
+
 	u32					material	;
 	vecOGF_T			textures	;
 /*
@@ -175,7 +177,7 @@ struct OGF : public OGF_Base
 
 	void				Optimize			();
 	void				CalculateTB			();
-	void				MakeProgressive		(float metric_limit);
+	void				MakeProgressive		(int MODEL_ID, float metric_limit);
 	void				Stripify			();
 	void				DumpFaces			();
 

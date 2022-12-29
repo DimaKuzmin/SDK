@@ -218,13 +218,6 @@ void start_unwarp_recursion()
 {
 	affected				= 1;
 }
-
-xr_vector<Face*> faces;
- 
-inline xr_vector<Face*> getAFFECTED()
-{
-	return faces;
-}
  
 void Face::OA_Unwarp( CDeflector *D )
 {
@@ -238,8 +231,6 @@ void Face::OA_Unwarp( CDeflector *D )
 		affected		+= 1;
 		(*it)->OA_Unwarp(D);
 	}
-
-	faces.push_back(this);
 }
 
 

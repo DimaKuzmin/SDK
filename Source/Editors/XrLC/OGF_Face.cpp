@@ -53,7 +53,8 @@ u16 OGF::x_BuildVertex	(x_vertex& V1)
 }
 u16 OGF::_BuildVertex	(OGF_Vertex& V1)
 {
-	try {
+	try 
+	{
 		for (itOGF_V it=data.vertices.begin(); it!=data.vertices.end(); it++)
 		{
 			if (it->similar(this,V1)) return u16(it-data.vertices.begin());
@@ -269,51 +270,82 @@ xrCriticalSection			progressive_cs
 	(MUTEX_PROFILE_ID(progressive_cs))
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
-void OGF::MakeProgressive	(float metric_limit)
+
+#include "..\XrETools\PropSlimTools.h"
+ 
+
+void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 {
 	// test
 	// there is no-sense to simplify small models
 	// for batch size 50,100,200 - we are CPU-limited anyway even on nv30
 	// for nv40 and up the better guess will probably be around 500
-	if (data.faces.size()<c_PM_FaceLimit)		return;	
-	if (data.faces.size() > 4096)				return; 
+	if (data.faces.size() < c_PM_FaceLimit * 4)		return;	
+	
+	//if (data.faces.size() > 4096)				return;  //se7kills
 	//≈—À» ¡ŒÀ≈≈ 4096 ÚÓ Ó˜ÂÌ¸ ‰ÓÎ„Ó.
 
 //. AlexMX added for draft build mode
 	if (g_params().m_quality==ebqDraft)		return		;
 	
-	if (strstr(Core.Params, "-skip_prog_ogf"))
+	if (g_build_options.b_noise)
 		return;
-	progressive_cs.Enter	();
-
+ 
 	//////////////////////////////////////////////////////////////////////////
 	// NORMAL
 	vecOGF_V	_saved_vertices		=	data.vertices	;
 	vecOGF_F	_saved_faces		=	data.faces		;
 
-	{
-		// prepare progressive geom
-		VIPM_Init				();
-		//clMsg("--- append v start .");
-		for (u32 v_idx=0;  v_idx<data.vertices.size(); v_idx++)	
-			VIPM_AppendVertex	(data.vertices[v_idx].P,	data.vertices[v_idx].UV[0]					);
-		//clMsg("--- append f start .");
-		for (u32 f_idx=0;  f_idx<data.faces.size();    f_idx++)	
-			VIPM_AppendFace		(data.faces[f_idx].v[0],	data.faces[f_idx].v[1],	data.faces[f_idx].v[2]	);
-		//clMsg("--- append end.");
+	VIPM_MultiTH mt_vipm;
 
-		// Convert
-		VIPM_Result*	VR		= 0;
-		try						{
-						VR		= VIPM_Convert			(u32(25),1.f,1);
-		} catch (...)			{
-			progressive_clear	()		;
-			clMsg				("* mesh simplification failed: access violation");
+	{
+		VIPM_Result* VR = 0;
+
+		if (use_mt_progresive)
+		{
+			mt_vipm.VIPM_Init(0);
+			for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
+				mt_vipm.VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
+			for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
+				mt_vipm.VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
+
+			try
+			{
+				VR = mt_vipm.VIPM_Convert(u32(25), 1.f, 1);
+			}
+			catch (...)
+			{
+				progressive_clear();
+				clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
+			}
 		}
-		if (0==VR)				{
-			progressive_clear	()		;
-			clMsg				("* mesh simplification failed");
+		else
+		{
+			VIPM_Init();
+			for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
+				VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
+			for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
+				VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
+
+			VIPM_Result* VR = 0;
+
+			try
+			{
+				VR = VIPM_Convert(u32(25), 1.f, 1);
+			}
+			catch (...)
+			{
+				progressive_clear();
+				clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
+			}
 		}
+   
+		if (0==VR)				
+		{
+			progressive_clear	()		;
+			clMsg				("[%d]* mesh simplification failed", MODEL_ID);
+		}
+
 		while (VR && VR->swr_records.size()>0)
 		{
 			// test metric
@@ -322,17 +354,17 @@ void OGF::MakeProgressive	(float metric_limit)
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
 			
-			//bool big_FACES = (VR->indices.size() / 3) > data.faces.size() * 2;
-
-			if		(_metric<metric_limit )//|| big_FACES
+			if		(_metric<metric_limit ) 
 			{
 				progressive_clear				()		;
-				clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded",_full,_simple,VR->indices.size()/3,metric_limit);
+				clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded", MODEL_ID,_full,_simple,VR->indices.size()/3,metric_limit);
 				break									;
-			} else {
-				clMsg	("* mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", _full,_simple,VR->indices.size()/3,metric_limit);
 			}
-
+			else
+			{
+				clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", MODEL_ID, _full,_simple,VR->indices.size()/3,metric_limit);
+			}
+   
 			// OK
 			// Permute vertices
 			for(u32 i=0; i<data.vertices.size(); i++)
@@ -355,38 +387,75 @@ void OGF::MakeProgressive	(float metric_limit)
 				dst.num_verts		= src.num_verts;
 				dst.offset			= src.offset;
 			}
+			
 
 			break	;
 		}
+    
 		// cleanup
-		VIPM_Destroy			();
+		if (use_mt_progresive)
+			mt_vipm.VIPM_Destroy();
+		else
+			VIPM_Destroy();
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// FAST-PATH
 	if (progressive_test() && fast_path_data.vertices.size() && fast_path_data.faces.size())
 	{
-		// prepare progressive geom
-		VIPM_Init				();
-		Fvector2				zero; zero.set		(0,0);
-		for (u32 v_idx=0;  v_idx<fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex	(fast_path_data.vertices[v_idx].P,	zero						);
-		for (u32 f_idx=0;  f_idx<fast_path_data.faces.size();    f_idx++)	VIPM_AppendFace		(fast_path_data.faces[f_idx].v[0],	fast_path_data.faces[f_idx].v[1],	fast_path_data.faces[f_idx].v[2]	);
+ 		// prepare progressive geom
+		VIPM_Result* VR = 0;
 
-		VIPM_Result*	VR		= 0;
-		try						{
-			VR		= VIPM_Convert			(u32(25),1.f,1);
-		} catch (...)			{
-			data.faces				= _saved_faces		;
-			data.vertices			= _saved_vertices	;
-			progressive_clear	()		;
-			clMsg				("* X-mesh simplification failed: access violation");
+		if (use_mt_progresive)
+		{
+			mt_vipm.VIPM_Init(0);
+			Fvector2				zero; zero.set(0, 0);
+			for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	mt_vipm.VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
+			for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	mt_vipm.VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
+
+
+			try
+			{
+				VR = mt_vipm.VIPM_Convert(u32(25), 1.f, 1);
+			}
+			catch (...)
+			{
+				data.faces = _saved_faces;
+				data.vertices = _saved_vertices;
+				progressive_clear();
+				clMsg("[%d] * X-mesh simplification failed: access violation", MODEL_ID);
+			}
 		}
-		if (0==VR)				{
+		else
+		{
+			VIPM_Init();
+			Fvector2				zero; zero.set(0, 0);
+			for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
+			for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
+
+
+			try
+			{
+				VR = VIPM_Convert(u32(25), 1.f, 1);
+			}
+			catch (...)
+			{
+				data.faces = _saved_faces;
+				data.vertices = _saved_vertices;
+				progressive_clear();
+				clMsg("[%d] * X-mesh simplification failed: access violation", MODEL_ID);
+			}
+		}
+	
+		if (0==VR)			
+		{
 			data.faces				= _saved_faces		;
 			data.vertices			= _saved_vertices	;
 			progressive_clear	()		;
-			clMsg				("* X-mesh simplification failed");
-		} else {
+			clMsg				("[%d] * X-mesh simplification failed", MODEL_ID);
+		} 
+		else
+		{
 			// Convert
 			/*
 			VIPM_Result*	VR		= VIPM_Convert		(u32(25),1.f,1);
@@ -398,7 +467,7 @@ void OGF::MakeProgressive	(float metric_limit)
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
-			clMsg	("X mesh simplified from [%4dv] to [%4dv], nf[%4d]",_full,_simple,VR ? VR->indices.size()/3 : 0);
+			clMsg	("[%d] X mesh simplified from [%4dv] to [%4dv], nf[%4d]", MODEL_ID,_full,_simple,VR ? VR->indices.size()/3 : 0);
 
 			// OK
 			vec_XV					vertices_saved;
@@ -427,12 +496,14 @@ void OGF::MakeProgressive	(float metric_limit)
 				dst.offset			= src.offset;
 			}
 		}
-
+ 
 		// cleanup
-		VIPM_Destroy			();
+		if (use_mt_progresive)
+			mt_vipm.VIPM_Destroy();
+		else
+			VIPM_Destroy();
 	}
-
-	progressive_cs.Leave	();
+ 
 }
 
 void OGF_Base::Save	(IWriter &fs)

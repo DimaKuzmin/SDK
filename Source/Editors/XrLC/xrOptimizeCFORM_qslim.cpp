@@ -166,7 +166,8 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 
 
 	// save source CDB
-	if (keep_temp_files) {
+	if (keep_temp_files) 
+	{
 		string_path			fn;
 		SaveAsSMF			(strconcat(sizeof(fn),fn,pBuild->path,"cform_optimized.smf"),CL);
 	}

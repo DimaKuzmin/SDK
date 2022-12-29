@@ -103,6 +103,10 @@ extern XRLC_LIGHT_API void		DeflectorsStats ();
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 
 extern XRLC_LIGHT_API u32		getLMSIZE();
+extern XRLC_LIGHT_API void		setLMSIZE(int size);
+
+
+
 
 
 //const u32	c_LMAP_size				= strstr(Core.Params, "-fast_lightmaps") ? 8192 : 1024;			// pixels

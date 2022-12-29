@@ -205,6 +205,21 @@ void CBuild::Run(LPCSTR P)
  		g_params().m_lm_pixels_per_meter = value;
 	}
 
+	bool use_avx = strstr(Core.Params, "-use_avx");
+	bool use_sse = strstr(Core.Params, "-use_sse");
+	bool use_fpu = strstr(Core.Params, "-use_fpu");
+
+ 	if (use_avx)
+		g_params().ray_calc_type = 2;
+
+	if (use_sse)
+		g_params().ray_calc_type = 1;
+
+	if (use_fpu)
+		g_params().ray_calc_type = 0;
+
+	 
+
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
 
@@ -219,7 +234,7 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	//****************************************** Optimizing + checking for T-junctions
-	
+	log_vminfo();
 	
 	FPU::m64r();
 	Phase("Optimizing...");
@@ -228,7 +243,8 @@ void CBuild::Run(LPCSTR P)
 		PreOptimize();
 	CorrectTJunctions();
 	
-		
+	log_vminfo();
+
 	if (strstr(Core.Params, "-no_adaptive") == 0 && !CformOnly)
 	{
 	//****************************************** HEMI-Tesselate
@@ -236,8 +252,11 @@ void CBuild::Run(LPCSTR P)
 		FPU::m64r();
 		Phase("Adaptive HT...");
 		mem_Compact();
+		log_vminfo();
 		xrPhase_AdaptiveHT();
 	}
+
+	log_vminfo();
 
 	//****************************************** Collision DB
 	//should be after normals, so that double-sided faces gets separated
@@ -252,8 +271,9 @@ void CBuild::Run(LPCSTR P)
 	FPU::m64r					();
 	Phase						("Building collision database...");
 	mem_Compact					();
+	log_vminfo();
 	BuildCForm					();
-
+	log_vminfo();
 	if (CformOnly)
 		return;
 
@@ -267,12 +287,15 @@ void CBuild::Run(LPCSTR P)
 		mem_Compact();
 	}
  
+ 
 	//****************************************** GLOBAL-RayCast model
 	FPU::m64r();
 	Phase("Building rcast-CFORM model...");
 	mem_Compact();
+	log_vminfo();
 	Light_prepare();
 	BuildRapid(TRUE);
+	log_vminfo();
  
 
 
@@ -303,26 +326,38 @@ void CBuild::Run(LPCSTR P)
 	//****************************************** Resolve materials
 	FPU::m64r					();
 	Phase						("Resolving materials...");
+	log_vminfo();
 	mem_Compact					();
 	xrPhase_ResolveMaterials	();
 	IsolateVertices				(TRUE);
+
+	log_vminfo();
 
 	//****************************************** UV mapping
 	{
 		FPU::m64r					();
 		Phase						("Build UV mapping...");
+		
 		mem_Compact					();
+		log_vminfo();
 		xrPhase_UVmap				();
 		IsolateVertices				(TRUE);
 	}
 	
+	log_vminfo();
+
 	//****************************************** Subdivide geometry
 	FPU::m64r					();
 	Phase						("Subdividing geometry...");
+	
 	mem_Compact					();
+	log_vminfo();
 	xrPhase_Subdivide			();
 	//IsolateVertices				(TRUE);
 	lc_global_data()->vertices_isolate_and_pool_reload();
+
+	log_vminfo();
+
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP
 	mu_base.wait				(500);
@@ -445,6 +480,8 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	SaveSectors		(*fs);
 
 	err_save		();
+ 
+	mem_Compact();
 }
 
 void CBuild::err_save	()

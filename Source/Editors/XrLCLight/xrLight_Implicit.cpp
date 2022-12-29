@@ -23,13 +23,7 @@ extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data
 
 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
-
-
-
-
-
-
-
+ 
 void		ImplicitExecute::read			( INetReader	&r )
 {
 	y_start = r.r_u32();	
@@ -52,7 +46,7 @@ void	ImplicitExecute::	receive_result			( INetReader	&r )
 	R_ASSERT( y_end != (u32(-1)) );
 	ImplicitDeflector&		defl	= cl_globs.DATA();
 	for (u32 V=y_start; V<y_end; V++)
-		for (u32 U=0; U<defl.Width(); U++)
+	for (u32 U=0; U<defl.Width(); U++)
 	{
 				
 		r_pod<base_color>( r, defl.Lumel( U, V ) );
@@ -66,147 +60,150 @@ void	ImplicitExecute::	send_result				( IWriter	&w ) const
 	R_ASSERT( y_end != (u32(-1)) );
 	ImplicitDeflector&		defl	= cl_globs.DATA();
 	for (u32 V=y_start; V<y_end; V++)
-		for (u32 U=0; U<defl.Width(); U++)
+	for (u32 U=0; U<defl.Width(); U++)
 	{
 		w_pod<base_color>( w, defl.Lumel( U, V ) );
 		w_pod<u8>		 ( w, defl.Marker( U, V ) );
 	}
 }
 
-int id = 0;
-int ids_timer = 0;
+int curHeight = 0;
 
-xr_map<u16, int> thread_msg;
+void ImplicitExecute::clear()
+{
+	curHeight = 0;
+}
+
+xrCriticalSection crImplicit;
+
+/*
+struct LPRecvest
+{
+	Fvector P;
+	Fvector N;
+	
+	Face* skip;
+	u32 flags;
+	base_color_c* color;
+	int V;
+	int U;
+
+};
+
+xr_vector<LPRecvest> light_recvests;
+*/
+
+
 
 void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 {
-	id++;
-	int th_id = id;
-	CTimer timer;
-	timer.Start();
-
-		R_ASSERT( y_start != (u32(-1)) );
-		R_ASSERT( y_end != (u32(-1)) );
-		//R_ASSERT				(DATA);
-		ImplicitDeflector&		defl	= cl_globs.DATA();
-		CDB::COLLIDER			DB;
+	net_cb = net_callback;
+		//R_ASSERT( y_start != (u32(-1)) );
+		//R_ASSERT( y_end != (u32(-1)) );
+		ImplicitDeflector& defl = cl_globs.DATA();
 		
 		// Setup variables
-		Fvector2	dim,half;
-		dim.set		(float(defl.Width()),float(defl.Height()));
+		//u32		Jcount;
+		//Fvector2	dim,half;
+		//Fvector2	JS;
+		//Fvector2*	Jitter;
+
+		dim.set		(float(defl.Width()), float(defl.Height()));
 		half.set	(.5f/dim.x,.5f/dim.y);
 		
 		// Jitter data
-		Fvector2	JS;
 		JS.set		(.499f/dim.x, .499f/dim.y);
-		u32			Jcount;
-		Fvector2*	Jitter;
+
 		Jitter_Select(Jitter, Jcount);
 		
 		// Lighting itself
+		CDB::COLLIDER			DB;
 		DB.ray_options	(0);
  
-		u32 timer_RAY = 0;
-
-		for (u32 V=y_start; V<y_end; V++)
-		{
-			thread_msg[th_id] = V-y_end;
-  
-			u64 ticks = 0;
-			u32 founds = 0;
-			for (u32 U=0; U<defl.Width(); U++)
+		//for (u32 V=y_start; V<y_end; V++)
+		for (;;)
+		{  
+			int ID = 0;
+			crImplicit.Enter();
+			ID = curHeight;
+			if (curHeight >= defl.Height())
 			{
-				if( net_callback && !net_callback->test_connection() )
-					return;
-				base_color_c	C;
-				u32				Fcount	= 0;
-				
-				try
-				{
-					CTimer time;
-					time.Start();
-					for (u32 J=0; J<Jcount; J++) 
-					{
-						// LUMEL space
-						Fvector2				P;
-						P.x						= float(U)/dim.x + half.x + Jitter[J].x * JS.x;
-						P.y						= float(V)/dim.y + half.y + Jitter[J].y * JS.y;
-						xr_vector<Face*>& space	= cl_globs.Hash().query(P.x,P.y);
-						
-						// World space
-						Fvector wP,wN,B;
-						
-						for (vecFaceIt it=space.begin(); it!=space.end(); it++)
-						{
-							Face	*F	= *it;
-							_TCF&	tc	= F->tc[0];
-							if (tc.isInside(P,B)) 
-							{
-								// We found triangle and have barycentric coords
-								Vertex	*V1 = F->v[0];
-								Vertex	*V2 = F->v[1];
-								Vertex	*V3 = F->v[2];
-								wP.from_bary(V1->P,V2->P,V3->P,B);
-								wN.from_bary(V1->N,V2->N,V3->N,B);
-								wN.normalize();
-								CTimer t2; t2.Start();
-								LightPoint	(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_nosun()?LP_dont_sun:0), F);
-								Fcount		++;
-								ticks += t2.GetElapsed_ticks();
-							}
-						}
-					} 
-
-					timer_RAY = timer.GetElapsed_ms();
-
-				} 
-				catch (...)
-				{
-					clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
-				}
-
-				//if (th_id == 1)
-				//	clMsg("Rays (%d)ms, total rays(%d)", timer_RAY, Fcount);
-
-				if (Fcount) 
-				{
-					// Calculate lighting amount
-					C.scale				(Fcount);
-					C.mul				(.5f);
-					defl.Lumel(U,V)._set(C);
-					defl.Marker(U,V)	= 255;
-
-					founds += Fcount;
-				} 
-				else 
-				{
-					defl.Marker(U,V)	= 0;
-				}
-
-
-				if (timer.GetElapsed_ms() > 10000 && th_id == 1)
-				{
-					ids_timer += timer.GetElapsed_sec();
-					timer.Start();
-					clMsg("---START");
-					for (auto msg : thread_msg)
-					{						
-						clMsg("THREAD [%d] V[%d]", msg.first, msg.second);
-					}
-					clMsg("---END [%d] sec", ids_timer);
-				}
+				crImplicit.Leave();
+				break;
 			}
+			curHeight++;
+			crImplicit.Leave(); 
+
+			ForCycle(defl, ID);
+			if (ID % 128 == 0)
+				Msg("CurV: %d", ID);
   		}
 	}
 
-	void ImplicitExecute::ClearIDS()
+void ImplicitExecute::ForCycle(ImplicitDeflector& defl, u32 V)
+{
+	for (u32 U = 0; U < defl.Width(); U++)
 	{
-		id = 0;
+		//if (net_cb && !net_cb->test_connection())
+		//	return;
+
+		base_color_c	C;
+		u32				Fcount = 0;
+
+		try
+		{
+			for (u32 J = 0; J < Jcount; J++)
+			{
+				// LUMEL space
+				Fvector2				P;
+				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+				xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+				// World space
+				Fvector wP, wN, B;
+
+				for (vecFaceIt it = space.begin(); it != space.end(); it++)
+				{
+					Face* F = *it;
+					_TCF& tc = F->tc[0];
+					if (tc.isInside(P, B))
+					{
+						// We found triangle and have barycentric coords
+						Vertex* V1 = F->v[0];
+						Vertex* V2 = F->v[1];
+						Vertex* V3 = F->v[2];
+						wP.from_bary(V1->P, V2->P, V3->P, B);
+						wN.from_bary(V1->N, V2->N, V3->N, B);
+						wN.normalize();
+
+						LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), F);
+
+						Fcount++;
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+			clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
+		}
+   
+		if (Fcount)
+		{
+			// Calculate lighting amount
+			C.scale(Fcount);
+			C.mul(.5f);
+			defl.Lumel(U, V)._set(C);
+			defl.Marker(U, V) = 255;
+		}
+		else
+		{
+			defl.Marker(U, V) = 0;
+		}
+
 	}
-
-//#pragma optimize( "g", off )
-
-
+}
 
 void ImplicitLightingExec(BOOL b_net);
 void ImplicitLightingTreadNetExec( void *p );
@@ -256,6 +253,8 @@ void ImplicitLightingExec(BOOL b_net)
 		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
 		u32				Tid = M.surfidx;
 		b_BuildTexture*	T	= &(inlc_global_data()->textures()[Tid]);
+
+		
  
 		Implicit_it		it	= calculator.find(Tid);
 		if (it==calculator.end()) 
@@ -265,7 +264,9 @@ void ImplicitLightingExec(BOOL b_net)
 			ImpD.faces.push_back(F);
 			calculator.insert	(mk_pair(Tid,ImpD));
 			not_clear.push_back	(Tid);
-		} else {
+		} 
+		else 
+		{
 			ImplicitDeflector&	ImpD = it->second;
 			ImpD.faces.push_back(F);
 		}

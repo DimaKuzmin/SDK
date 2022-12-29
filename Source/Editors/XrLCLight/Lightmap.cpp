@@ -33,12 +33,15 @@ CLightmap*	CLightmap::read_create ( )
 {
 	return xr_new<CLightmap>();
 }
+
+
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
 	// Allocate 512x512 texture if needed
-	if (lm.surface.empty())	
-		lm.create(getLMSIZE(), getLMSIZE());
 	
+ 	if (lm.surface.empty())	
+		lm.create(getLMSIZE(), getLMSIZE());
+
 	// Addressing
 	xr_vector<UVtri>	tris;
 	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER, getLMSIZE(), getLMSIZE(),bRotated);

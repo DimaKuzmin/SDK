@@ -59,7 +59,7 @@ void CSector::BuildHierrarhy	()
 	float	SizeLimit				= c_SS_maxsize/4.f;
 	if		(SizeLimit<4.f)			SizeLimit=4.f;
 	if		(delimiter<=SizeLimit)	delimiter*=2;		// just very small level
-	clMsg("SizeLimit %d, delimiter %d", SizeLimit, delimiter);
+ 
 	for (; SizeLimit<=delimiter; SizeLimit*=2)
 	{
 		int iSize			= g_tree.size();
@@ -94,11 +94,13 @@ void CSector::BuildHierrarhy	()
 						}
 					}
 				}
-
+				
 				// Analyze
 				if (best_id<0)		break;
 				pNode->AddChield	(best_id);
 			}
+
+			StatusNoMSG("Sector: %d/%d", I, iSize);
 
 			if (pNode->chields.size()>1)	{
 				pNode->CalcBounds		();

@@ -20,7 +20,7 @@ namespace lc_net{
 				if( from == to )
 					return;
 				R_ASSERT( from < to );
-				ImplicitExecute	exec( from, to );
+				ImplicitExecute	exec( from, to, 0);
 
 				tnet_execution_base< et_implicit_light > *el = lc_net::execution_factory.create<et_implicit_light>();
 				el->implementation( ).construct(exec);
@@ -28,12 +28,8 @@ namespace lc_net{
 	}
 	void RunImplicitnet(ImplicitDeflector& defl,  const xr_vector<u32> &exept )
 	{
-			
 			globals().get<gl_implicit_cl_data>().init();
 
-			
-	
-			
 			//WaitNetCompileDataPrepare( );
 			WaitMuModelsLocalCalcLightening();
 			inlc_global_data()->clear_build_textures_surface(exept);

@@ -312,7 +312,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			LPSTR N			= BT.name;
 			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
 			strlwr			(N);
-			if (0==xr_strcmp(N,"level_lods"))	{
+			if (0==xr_strcmp(N,"level_lods"))	
+			{
 				// HACK for merged lod textures
 				BT.dwWidth		= 1024;
 				BT.dwHeight		= 1024;
@@ -373,12 +374,34 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							BT.dwWidth	= BT.THM.width = BT.pSurface.GetSize().x;
 							BT.dwHeight	= BT.THM.height = BT.pSurface.GetSize().y;
 						}
+
 						//BT.Vflip	();
 					} else {
 						// Free surface memory
 					}
 				}
 			}
+
+			BOOL			bLOD = FALSE;
+			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
+
+			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
+			{	
+				if (strstr(Core.Params, "-cvrt_impl_texture_512"))
+				{
+					BT.pSurface.Scale(512, 512);
+					BT.dwWidth = 512;
+					BT.dwHeight = 512;
+				}
+
+				if (strstr(Core.Params, "-cvrt_impl_texture_256"))
+				{
+					BT.pSurface.Scale(256, 256);
+					BT.dwWidth = 256;
+					BT.dwHeight = 256;
+				}
+			}
+
 
 			// save all the stuff we've created
 			textures().push_back	(BT);

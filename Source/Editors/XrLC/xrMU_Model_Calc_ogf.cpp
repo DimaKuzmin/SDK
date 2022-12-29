@@ -33,9 +33,11 @@ void OGF_AddFace( OGF &ogf, const _face &FF, const xrMU_Model& model )
 
 void calc_ogf( xrMU_Model &	mu_model )
 {
+	int ids; 
 	// Build OGFs
 	for (xrMU_Model::v_subdivs_it it=mu_model.m_subdivs.begin(); it!=mu_model.m_subdivs.end(); it++)
 	{
+		ids++;
 		OGF*		pOGF	= xr_new<OGF> ();
 		b_material*	M		= &(pBuild->materials()[it->material]);	// and it's material
 		R_ASSERT	(M);
@@ -77,7 +79,7 @@ void calc_ogf( xrMU_Model &	mu_model )
 			pOGF->CalculateTB		();
 		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [calc_tb], model %s",*(mu_model.m_name)); }
 		try {
-			pOGF->MakeProgressive	(c_PM_MetricLimit_mu);
+			pOGF->MakeProgressive	(ids, c_PM_MetricLimit_mu);
 		} catch (...)	{ clMsg	("* ERROR: MU2OGF, [progressive], model %s",*(mu_model.m_name)); }
 		try {
 			pOGF->Stripify			();

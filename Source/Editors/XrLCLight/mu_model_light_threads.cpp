@@ -16,10 +16,9 @@
 #include "xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
-
 int MuThreads()
 {
-	/*
+	 
 	if (LPCSTR str = strstr(Core.Params, "-mu_th"))
 	{
 		LPCSTR new_str = str + 6;
@@ -27,14 +26,15 @@ int MuThreads()
 		sscanf(new_str, "%d", &count);
 		return count;
 	} 
-	*/
-
+	 
+	/*
 	float size = inlc_global_data()->mu_refs().size() / 100;
 	if (size < 1)
 		size = 1;
 	u32 sizeRET = floor(size);
 
 	return sizeRET;
+	*/
 }
 
 CThreadManager			mu_base;
@@ -56,12 +56,15 @@ void WaitMuModelsLocalCalcLightening()
 			break;
 	}
 }
+
 void SetMuModelsLocalCalcLighteningCompleted()
 {
 	mu_models_local_calc_lightening_wait_lock.Enter();
 	mu_models_local_calc_lightening = true;
 	mu_models_local_calc_lightening_wait_lock.Leave();
 }
+
+/* OLD GSC
 class CMULight	: public CThread
 {
 	u32			low;
@@ -84,6 +87,58 @@ public:
 		}
 	}
 };
+*/
+
+
+xr_vector<int>		task_pool_mu;
+
+xrCriticalSection	task_CS;
+
+//SE7KILLS
+class CMULight : public CThread
+{
+public:
+	CMULight(u32 ID) : CThread(ID) { thMessages = FALSE;}
+
+	virtual void	Execute()
+	{
+		// Priority
+		SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+		//Sleep(0);
+
+		xrMU_Reference* ref = 0;
+
+		for (;;)
+		{
+ 			task_CS.Enter();
+			if (task_pool_mu.empty())
+			{
+				task_CS.Leave();
+				return;
+			}
+
+			thProgress = (float(lc_global_data()->mu_refs().size() - task_pool_mu.size() ) / float(lc_global_data()->mu_refs().size()));
+
+			if ( ( lc_global_data()->mu_refs().size() - task_pool_mu.size() ) % 16 == 0)
+				Status("Progress %d / %d", lc_global_data()->mu_refs().size() - task_pool_mu.size(), lc_global_data()->mu_refs().size());
+
+			ref = inlc_global_data()->mu_refs()[task_pool_mu.back()];
+			task_pool_mu.pop_back();
+			task_CS.Leave();
+			try
+			{
+				ref->calc_lighting();
+			}
+			catch (...)
+			{
+				clMsg("* ERROR: CMULight::Execute - calc_lighting");
+			}
+						
+		}
+		
+
+	}
+};
 
 
 	//void LC_WaitRefModelsNet();
@@ -96,8 +151,6 @@ public:
 	}
 	virtual void	Execute()
 	{
-
-
 		// Priority
 		SetThreadPriority	(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 		Sleep				(0);
@@ -120,15 +173,26 @@ public:
 		SetMuModelsLocalCalcLighteningCompleted();
 
 		// Light references
+		
+		/*
 		u32	stride			= inlc_global_data()->mu_refs().size()/MU_THREADS;
 		u32	last			= inlc_global_data()->mu_refs().size()-stride*(MU_THREADS-1);
 		u32 threads = MU_THREADS;
 		get_intervals( MU_THREADS, inlc_global_data()->mu_refs().size(), threads, stride, last );
 
+		
 		for (u32 thID=0; thID<threads; thID++)
 			mu_secondary.start	( xr_new<CMULight> (thID,thID*stride,thID*stride + stride ) );
 		if(last > 0)
 			mu_secondary.start	( xr_new<CMULight> (threads,threads*stride,threads*stride + last ) );
+		*/
+
+		for (int i = 0; i < inlc_global_data()->mu_refs().size(); i++)
+			task_pool_mu.push_back(i);
+
+		for (int TH = 0; TH < MU_THREADS; TH++)
+			mu_secondary.start(xr_new<CMULight> (TH));
+
 	}
 };
 

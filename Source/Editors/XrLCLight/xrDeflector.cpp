@@ -313,7 +313,8 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 
 void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
-	try {
+	try 
+	{
 		lm_layer&		lm	= layer;
 
 		// UV & HASH
@@ -321,7 +322,8 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		Fbox2			bounds;
 		Bounds_Summary	(bounds);
 		H.initialize	(bounds,(u32)UVpolys.size());
-		for (u32 fid=0; fid<UVpolys.size(); fid++)	{
+		for (u32 fid=0; fid<UVpolys.size(); fid++)
+		{
 			UVtri* T	= &(UVpolys[fid]);
 			Bounds		(fid,bounds);
 			H.add		(bounds,T);
@@ -332,7 +334,8 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		R_ASSERT		(lm.height	<=(getLMSIZE() -2*BORDER));
 		lm.create		(lm.width,lm.height);
 		L_Direct		(DB,LightsSelected,H);
-	} catch (...)
+	} 
+	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::L_Calculate");
 	}
@@ -484,10 +487,24 @@ void	CDeflector::statistic_log			(  ) const
 
 #endif
 
+extern XRLC_LIGHT_API int global_size_map = 1024;
+
+
+void setLMSIZE(int size)
+{
+	global_size_map = size;
+}
+
 u32 getLMSIZE()
 {
 	if (strstr(Core.Params, "-fast_lightmaps"))
-		return 8192;
+	{
+		return global_size_map;
+	}
+
+
+	//if (strstr(Core.Params, "-fast_lightmaps"))
+	//	return 8192; 
 
 	return 1024;
 }

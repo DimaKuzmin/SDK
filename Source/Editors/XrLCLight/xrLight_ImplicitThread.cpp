@@ -8,11 +8,12 @@ class ImplicitThread : public CThread
 public:
 
 	ImplicitExecute		execute;
-	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA, u32 _y_start, u32 _y_end) :
-	CThread (ID), execute( _y_start, _y_end )
-	{
-		
+	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA, u32 _y_start, u32 _y_end) : CThread (ID), execute( _y_start, _y_end, ID )
+	{	
+		if (ID == 0)
+			execute.clear();
 	}
+
 	virtual void		Execute	();
 	
 
@@ -53,10 +54,6 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		for (u32 thID = 0; thID < NUM_THREADS; thID++)
 		{	
 			ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
-			if (thID == 0)
-			{
-				th->execute.ClearIDS();
-			}
 			tmanager.start(th);	
 		}
 

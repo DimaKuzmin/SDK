@@ -50,6 +50,9 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 
 
 		bool							_b_nosun;
+		bool							_b_no_rgb;
+		bool							_b_no_hemi;
+
 		bool							_gl_linear;
 private:
 		bool							b_vert_not_register;
@@ -95,9 +98,15 @@ public:
 		void						close_models_write		()const ;
 
 
-		bool						b_nosun			()		{	return _b_nosun; }
+		bool						b_nosun()	 {	return _b_nosun; }
+		bool						b_norgb()	 { return _b_no_rgb;  }
+		bool						b_nohemi()	 { return _b_no_hemi; }
+
 		bool						gl_linear		()		{	return _gl_linear; }
 IC		void						b_nosun_set		(bool v){	_b_nosun = v; }
+IC		void						b_norgb_set		(bool v) { _b_no_rgb = v; }
+IC		void						b_nohemi_set(bool v) { _b_no_hemi = v; };
+
 		void						initialize		()		;
 		void						destroy_rcmodel	()		;
 

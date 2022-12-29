@@ -69,9 +69,7 @@ void CBuild::xrPhase_UVmap()
  
 	orig_size = g_XSplit.size();
 	bool use_fast_method = strstr(Core.Params, "-fast_uv");
-
-
-
+ 
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
 		Progress			(p_total+=p_cost);
@@ -87,15 +85,9 @@ void CBuild::xrPhase_UVmap()
 		if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
 		if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
 		if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
-		
-		u64 size_calls = 0;
-		u64 size_find_face = 0;
  
-
 		//   find first poly that doesn't has mapping and start recursion
-		CTimer timer_GLOBAL;
-		timer_GLOBAL.Start();
-		
+
 		int id_face = 0;		
 		vecFace* faces_selected = g_XSplit[SP];
 		vecFaceIt last_checked_id = faces_selected->begin();
@@ -107,16 +99,12 @@ void CBuild::xrPhase_UVmap()
 		}
 
 		while (TRUE) 
-		{
-			CTimer timer; 
- 
+		{ 
 			// Select maximal sized poly
 			Face *	msF		= NULL;
 			float	msA		= 0;
 			 
-			timer.Start();
-	
-			for (vecFaceIt it = last_checked_id; it != faces_selected->end(); it++, id_face++)
+			for (vecFaceIt it = last_checked_id; it != faces_selected->end(); it++)
 			{
 				if ( (*it)->pDeflector == NULL )
 				{	
@@ -132,13 +120,12 @@ void CBuild::xrPhase_UVmap()
 					}
 					else
 					{
+						id_face++;
 						last_checked_id = it;
+						break;
 					}				
-					break;
 				}
 			}
-
-			size_find_face += timer.GetElapsed_ticks();
 
 			if (!msF && use_fast_method)
 			{
@@ -160,9 +147,6 @@ void CBuild::xrPhase_UVmap()
 				}
 			}
  
-			
-			timer.Start();
-
 			if (msF)
 			{
 				CDeflector* D = xr_new<CDeflector>();
@@ -210,9 +194,7 @@ void CBuild::xrPhase_UVmap()
 				// detaching itself
 				Detach				(&faces_affected);
  				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
-				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d], timer[%u]", SP, id_face, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ticks());
-				size_calls += timer.GetElapsed_ticks();
-
+				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d]", SP, id_face, g_XSplit[SP]->size() - remove_count, g_XSplit.size());
 			} 
 			else 
 			{
@@ -223,21 +205,9 @@ void CBuild::xrPhase_UVmap()
 					SP--;
 				}
 				// Cancel infine loop (while)
-				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d], timer[%u]", SP, id_face, g_XSplit[SP]->size(), g_XSplit.size(), timer.GetElapsed_ticks());
+				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d]", SP, id_face, g_XSplit[SP]->size(), g_XSplit.size());
 				break;
-			}	
-
-			 
-			if (timer_GLOBAL.GetElapsed_ms() > 1000 )
-			{
-				//clMsg("FIND FACE %u, FIND AFFECTED %u", size_find_face, size_calls);
- 
-				timer_GLOBAL.Start();
-				size_find_face = 0;
-				size_calls = 0;
-			}
-			 
-			
+			}				
 		}	
 	}
  
