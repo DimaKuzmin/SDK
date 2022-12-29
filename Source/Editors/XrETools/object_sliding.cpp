@@ -83,7 +83,8 @@ BOOL CalculateSW(Object* object, VIPM_Result* result, u32 optimize_vertex_order)
 	int iCurCollapse = 0;
 	int iCurSlidingWindowLevel = 0;
 	float total_error = 0.f;
-	while ( TRUE ){
+	while ( TRUE )
+	{
 		GeneralCollapseInfo *pCollapse = object->pNextCollapse;
 		if ( object->pNextCollapse == &(object->CollapseRoot) ) break;
 

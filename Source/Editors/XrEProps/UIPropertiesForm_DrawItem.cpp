@@ -140,12 +140,12 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 	{
 		bool change = false;
 		if (!DrawNumeric<u32>(node, change, m_Flags.test(plReadOnly)))
-			if (!DrawNumeric<float>(node, change, m_Flags.test(plReadOnly)))
-				if (!DrawNumeric<u8>(node, change, m_Flags.test(plReadOnly)))
-					if (!DrawNumeric<s8>(node, change, m_Flags.test(plReadOnly)))
-						if (!DrawNumeric<s16>(node, change, m_Flags.test(plReadOnly)))
-							if (!DrawNumeric<u16>(node, change, m_Flags.test(plReadOnly)))
-								if (!DrawNumeric<s32>(node, change, m_Flags.test(plReadOnly)))
+		if (!DrawNumeric<float>(node, change, m_Flags.test(plReadOnly)))
+			if (!DrawNumeric<u8>(node, change, m_Flags.test(plReadOnly)))
+				if (!DrawNumeric<s8>(node, change, m_Flags.test(plReadOnly)))
+					if (!DrawNumeric<s16>(node, change, m_Flags.test(plReadOnly)))
+						if (!DrawNumeric<u16>(node, change, m_Flags.test(plReadOnly)))
+							if (!DrawNumeric<s32>(node, change, m_Flags.test(plReadOnly)))
 									R_ASSERT(false);
 		if (change)Modified();
 	}
@@ -541,10 +541,12 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 		{
 			GameTypeValue* V = dynamic_cast<GameTypeValue*>(node->GetFrontValue()); R_ASSERT(V);
 			ImGui::Text(node->GetDrawText().c_str());
-			m_EditGameTypeChooser = V->GetValue();
+			
 			node->BeforeEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser);
 			if (ImGui::OpenPopupOnItemClick("EditGameType", 0))
 			{
+				m_EditGameTypeChooser = V->GetValue();
+				
 				m_EditGameTypeValue = node;
 			}
 
