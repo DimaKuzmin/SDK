@@ -103,7 +103,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	vertex.tGlobalPoint		= graph_point->o_Position;
 	vertex.tNodeID			= level_graph().valid_vertex_position(vertex.tLocalPoint) ? level_graph().vertex_id(vertex.tLocalPoint) : u32(-1);
 	
-	Msg("NodeID %d", vertex.tNodeID);
+	//Msg("NodeID %d", vertex.tNodeID);
 
 	if (!level_graph().valid_vertex_id(vertex.tNodeID))
 	{

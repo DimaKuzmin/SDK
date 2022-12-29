@@ -146,6 +146,8 @@ void	xrDisplay		();
 //void	xrPalettizeCovers();
 void	xrSaveNodes		(LPCSTR name, LPCSTR out_name);
 
+void xrADD_ERRORED_NODE(int pxz);
+
 // constants
 const int	RCAST_MaxTris	= (2*1024);
 const int	RCAST_Count		= 6;
@@ -162,20 +164,22 @@ const float	sim_dist		= 0.15f;
 const int	sim_light		= 32;
 const float	sim_cover		= 48;
 
-struct CNodePositionCompressor {
+struct CNodePositionCompressor 
+{
 	IC				CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H);
 };
+
 
 IC CNodePositionCompressor::CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
 {
 	float sp = 1/g_params.fPatchSize;
-	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z)/H.size + EPS_L + 1.5f);
-	int pxz	= iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f)*row_length + iFloor((Psrc.z - H.aabb.min.z)*sp   + EPS_L + .5f);
+	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
+	int pxz	= iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z)*sp   + EPS_L + .5f);
 	int py	= iFloor(65535.f*(Psrc.y-H.aabb.min.y)/(H.size_y)+EPS_L);
 	
-	if (pxz > (1 << MAX_NODE_BIT_COUNT) - 1)
+	if (pxz > u32 ( 1 << MAX_NODE_BIT_COUNT) )	   
 	{
-	//	Msg("pxz [%d] max[%d], Pos [%f][%f][%f]", pxz, (1 << MAX_NODE_BIT_COUNT) - 1, VPUSH(Psrc));
+ 		xrADD_ERRORED_NODE(pxz);
 	}
 
 	//VERIFY	(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);

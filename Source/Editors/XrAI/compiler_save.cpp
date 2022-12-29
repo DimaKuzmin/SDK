@@ -137,6 +137,9 @@ public:
 	}
 };
 
+int errored_nodes = 0;
+int E_MAX_PXZ = 0;
+
 void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 {
 	Msg				("NS: %d, CNS: %d, ratio: %f%%",sizeof(vertex),sizeof(CLevelGraph::CVertex),100*float(sizeof(CLevelGraph::CVertex))/float(sizeof(vertex)));
@@ -164,18 +167,51 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 	// All nodes
 	Status			("Saving nodes...");
+	int count = 0;
+	int MAX_PX = 0;
+
+	Msg("Min[%f][%f][%f]", H.aabb.min.x, H.aabb.min.y, H.aabb.min.z);
+	Msg("Max[%f][%f][%f]", H.aabb.max.x, H.aabb.max.y, H.aabb.max.z);
+
 	for (u32 i=0; i<g_nodes.size(); ++i) 
 	{
 		vertex			&N	= g_nodes[i];
 		NodeCompressed	NC;
 		Compress		(NC,N,H);
 		compressed_nodes.push_back(NC);
+
+		float x, z;
+
+		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
+		//int pxz = iFloor((x_o - H.aabb.min.x) * H.size + EPS_L + .5f) * m_row_length + iFloor((z_o - H.aabb.min.z) * H.size + EPS_L + .5f);
+		//int py = iFloor(65535.f * (y_o - H.aabb.min.y) / (H.size_y) + EPS_L);
+
+		x = NC.p.xz() / m_row_length;
+		z = NC.p.xz() % m_row_length;
+		x = float(x) * H.size + H.aabb.min.x;
+		z = float(z) * H.size + H.aabb.min.z;
+
+		int max_px = 0x00ffffff;
+
+		//if (NC.p.xz() > max_px)	  
+		{
+			count++;
+			if (NC.p.xz() > MAX_PX)
+			{
+				MAX_PX = NC.p.xz();
+				clMsg("NEW ROW[%d] Real[%f],[%f],[%f] unpacked x[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, z, NC.p.xz());
+			}
+		}
 	}
 
+	int n_e = errored_nodes;
+ 
+	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u], MAX_PXZ_2[%u]", 
+		compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), MAX_PX, errored_nodes);
+ 
 	xr_vector<u32>	sorted;
 	xr_vector<u32>	renumbering;
 	CNodeRenumberer	A(compressed_nodes,sorted,renumbering);
-
 	for (u32 i=0; i < g_nodes.size(); ++i) 
 	{
 		fs->w			(&compressed_nodes[i],sizeof(NodeCompressed));
@@ -186,4 +222,11 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	Msg				("%dK saved",SizeTotal/1024);
 
 	FS.w_close		(fs);
+}
+
+void xrADD_ERRORED_NODE(int pxz)
+{
+	errored_nodes++;
+	if (E_MAX_PXZ < pxz)
+	E_MAX_PXZ = pxz;
 }

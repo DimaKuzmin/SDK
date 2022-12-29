@@ -6,8 +6,6 @@
 CDB::MODEL			Level;
 CDB::COLLIDER		XRC;
 
-std::vector<vertex> vec;
-
 
 Nodes				g_nodes;
 xr_vector<SCover>	g_covers_palette;
@@ -66,9 +64,9 @@ void	mem_Optimize	()
 void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 {
 #ifndef WIN64
-	Msg("Win32 MaxNodeSize %u", vec.max_size());
+	Msg("Win32 MaxNodeSize %u", g_nodes.max_size());
 #else 
-	Msg("Win64 MaxNodeSize %u", vec.max_size());
+	Msg("Win64 MaxNodeSize %u", g_nodes.max_size());
 #endif
 
 	g_textures = xr_new< xr_vector<b_BuildTexture>>();

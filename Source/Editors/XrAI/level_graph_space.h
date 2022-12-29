@@ -22,7 +22,8 @@ namespace LevelGraph {
 		ICF const xrGUID	&guid					() const;
 	};
 
-	typedef NodePosition	CPosition;
+ 	typedef NodePosition	CPosition;
+ 
 
 	class CVertex : private NodeCompressed {
 	private:
