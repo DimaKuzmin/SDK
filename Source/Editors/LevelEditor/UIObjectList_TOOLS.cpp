@@ -12,10 +12,23 @@
 #include "SpawnPoint.h"
 #include "CustomObject.h"
 
+struct LevelSDK
+{
+	Fvector offset;
+	xr_string name;
+	xr_string path;
+};
+
+xr_map<int, LevelSDK> level_offsets;
+int size_merge_levels = 0;
+int cur_merge_levels = 0;
+
+
 
 
 xr_map<int, Fvector3> merge_offsets;	  
 xr_map< CCustomObject*, Fvector3> objects_original_POS;
+
 xr_map<u16, xr_vector<CCustomObject*> > objects_loaded;
 u16 loaded = 0;
 Fvector3 vec_offset = Fvector().set(0, 0, 0);
@@ -33,8 +46,6 @@ bool select_file = false;
 
 
 string4096 buffer_squads;	 
- 
-
  
 void UIObjectList::ExportSelectObjects()
 {
@@ -59,7 +70,7 @@ void UIObjectList::ExportSelectObjects()
 
 				for (auto obj : lst)
 				{
-					if (obj->Selected() && !smart_cast<CSceneObject*>(obj))
+					if (obj->Selected())
 					{
 						string32 buffer = { 0 };
 						sprintf(buffer, "object_%d", i);
@@ -79,7 +90,20 @@ void UIObjectList::ExportAllObjects()
 {
 	if (Scene->m_LevelOp.m_FNLevelPath.size() == 0)
 		return;
+		  
+	ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SCENEOBJECT));
 
+	if (scene_object)
+	{
+		ObjectList& list = scene_object->GetObjects();
+
+		for (auto obj : list)
+		{
+			string512 name;
+			sprintf(name, "%s_%s", Scene->m_LevelOp.m_FNLevelPath.c_str(), obj->GetName() );
+			obj->SetName(name);
+		}
+	}
 
 	string_path name;
 	string128 name_str;
@@ -124,6 +148,7 @@ void UIObjectList::ExportAllObjects()
 
 	ExportAIMap();
 
+	/*
 	if (Scene->GetTool(OBJCLASS_DO))
 	{
 		Msg("OBJCLASS_DO");
@@ -137,6 +162,7 @@ void UIObjectList::ExportAllObjects()
 		FS.w_close(write);
 		//Scene->GetTool(OBJCLASS_DO)->SaveStream();
 	}
+	*/
 }
 
 void UIObjectList::ExportAIMap()
@@ -163,16 +189,21 @@ void UIObjectList::ExportAIMap()
 
 
 
-void UIObjectList::ImportObjects(Fvector offset)
+void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 {
 	xr_string temp_fn = "";
 
 	loaded += 1;
 	objects_original_POS.clear();
-
-	if (EFS.GetOpenName(EDevice.m_hWnd, _import_, temp_fn))
+ 
+	if (!use_path && EFS.GetOpenName(EDevice.m_hWnd, _import_, temp_fn) || use_path)
 	{
+		if (use_path)
+			temp_fn = path;
+
 		CInifile file(temp_fn.c_str(), true, true, true);
+		 
+
 
 
 		string32 tmp; int i = 0;
@@ -229,28 +260,74 @@ void UIObjectList::ImportObjects(Fvector offset)
 			objects_loaded[loaded].push_back(obj);
 		}
 	}
-
-	if (Scene->GetTool(OBJCLASS_DO) && temp_fn.size() > 0 && false)
-	{
-		Msg("Load DETAIL");
-		string128 map = { 0 };
-		xr_strcat(map, temp_fn.c_str());
-		xr_strcat(map, "_detail");
-
-		if (FS.exist(map))
-		{
-			IReader* read = FS.r_open(map);
-			Scene->GetTool(OBJCLASS_DO)->LoadStream(*read);
-			FS.r_close(read);
-		}
-
-	}
+   
 
 
-	Msg("Memory Use: %d", objects_loaded.get_allocator().max_size());
+	//Msg("Memory Use: %d", objects_loaded.get_allocator().max_size());
 }
 
+void UIObjectList::ImportMultiply()
+{
+	ImGui::InputInt("merge_multi: ", &cur_merge_levels, 1, 1);
+  	for (int i = 0; i < level_offsets.size(); i++)
+	{
+		float value[3] = { level_offsets[i].offset.x, level_offsets[i].offset.y, level_offsets[i].offset.z };
 
+ 		if (ImGui::InputFloat3(level_offsets[i].name.c_str(), value, 0.0001f))
+			level_offsets[i].offset.set(value);
+	}
+
+	if (ImGui::Button("LoadFiles", ImVec2(-1, 0)))
+	{
+		level_offsets.clear();
+
+		xr_string buf_path = { 0 };
+		xr_string buf_name = { 0 };
+
+
+		for (int i = 0; i < cur_merge_levels; i++)
+		{
+			if (EFS.GetOpenPathName(EDevice.m_hWnd, _import_, buf_path, buf_name) )
+			{
+				//Msg("Load: %s", buf_path.c_str());
+				//Msg("Name: %s", buf_name.c_str());
+ 
+				LevelSDK l;
+				l.path = buf_path;
+				l.name = buf_name;
+				l.offset = {0, 0, 0};
+
+				level_offsets[i] = l;
+			}
+		}
+			
+	}
+	
+	if (ImGui::Button("LoadFromOffsets", ImVec2(-1, 0)))
+	{
+		LoadFromMultiply();
+	}
+
+	/*
+	for (int i = 0; i != cur_merge_levels; i++)
+	{
+		float value[3] = { level_offsets[i].x, level_offsets[i].y, level_offsets[i].z };
+		string32 offset = { 0 };
+		sprintf(offset, "offset_%d", i);
+		if (ImGui::InputFloat3(offset, value, 0.0001f))
+			level_offsets[i].set(value);
+	}
+	*/
+}
+
+void UIObjectList::LoadFromMultiply()
+{
+	for (int i = 0; i < level_offsets.size(); i++)
+	{
+		LevelSDK l = level_offsets[i]; 
+		ImportObjects(l.offset, true, l.path);
+	}
+}
 
 void UIObjectList::SaveSelectedObjects()
 {
@@ -1040,9 +1117,12 @@ xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
 
 
 int sector = 0;
+int cur_light_type = 0;
+const char* light_type[] = { "all", "lightmap", "dynamic", "animated"};
 
 void UIObjectList::UpdateUIObjectList()
 {
+
  	{
 		ImGui::Text("OFFSET: ");
 		float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
@@ -1053,16 +1133,16 @@ void UIObjectList::UpdateUIObjectList()
 
 	if (LTools->CurrentClassID() == OBJCLASS_SECTOR)
 	{
-		
 		ImGui::InputInt("sector_id", &sector, 1, 100);
 		if (ImGui::Button("FIND SECTOR BY ID"))
-		{
 			FindObjectSector(sector);
-		}
 	}
 
+	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
+		ImGui::ListBox("list_light", &cur_light_type, light_type, IM_ARRAYSIZE(light_type), 8);
 
-	if (LTools->CurrentClassID() != OBJCLASS_AIMAP || LTools->CurrentClassID() != OBJCLASS_DO || LTools->CurrentClassID() != OBJCLASS_GROUP)
+
+	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP)
 	{
 		if (ImGui::Button("Move Loaded to Offset", ImVec2(-1, 0)))
 			MoveObjectsToOffset();
@@ -1082,17 +1162,15 @@ void UIObjectList::UpdateUIObjectList()
 		if (ImGui::Button("sel loaded", ImVec2(-1, 0)))
 			SelectLoaded();
 
-		if (ImGui::Button("Check for custom data", ImVec2(-1, 0)) ) 
-			CheckCustomData();
-
-		if (ImGui::Button("check duplicate", ImVec2(-1, 0)))
-			CheckDuplicateNames();
+		//if (ImGui::Button("check duplicate", ImVec2(-1, 0)))
+		//	CheckDuplicateNames();
 
 		if (ImGui::Button("rename all objects", ImVec2(-1, 0) ) )
 			RenameALLObjectsToObject();
 
 	}
-	else if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
+	
+	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
 		if (ImGui::Button("select map file", ImVec2(-1, 0)))
 			SelectAIMAPFile();
@@ -1143,14 +1221,16 @@ void UIObjectList::UpdateUIObjectList()
 			BboxSelectedObject();
 
 		if (ImGui::Button("pos_objects_save_ltx", ImVec2(-1, 0) ))
-		{
 			POS_ObjectsToLTX();
-		}
 
+		ImportMultiply();
 	}
 
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
+		if (ImGui::Button("Check CustomData", ImVec2(-1, 0)))
+			CheckCustomData();
+
 		ImGui::InputText("#repace_name", prefix_name, sizeof(prefix_name));
 
 		if (ImGui::Button("rename_selected", ImVec2(-1, 0)))
@@ -1186,16 +1266,15 @@ void UIObjectList::UpdateUIObjectList()
 	}
 
 }
-
-
-
-
+ 
 int current_selected_item = 0;
 const char* items[] = { "null", "use_items", "smart_terrain", "space_restrictor", "smart_cover", "camp_zone", "zones", "campfire", "graph_point", "anomal_zone" };
 const char* fireboll[] = { "fireboll", "fireboll_acidic", "fireboll_electric" };
 const char* fild_zones[] = { "field_acidic", "field_psychic", "field_radioactive", "field_thermal" };
 const char* mine_zones[] = { "mine_acidic", "mine_electric", "mine_gravitational", "mine_thermal" };
 const char* use_items[] = { "antirad", "bandage", "conserva", "drug_", "energy_drink", "harmonica_a", "guitar_a", "kolbase", "vodka", "medkit", "wpn_", "outfit" };
+
+#include "ELight.h"
 
 bool UIObjectList::CheckNameForType(CCustomObject* obj)
 {
@@ -1258,6 +1337,31 @@ bool UIObjectList::CheckNameForType(CCustomObject* obj)
 					return false;
 		}
 	}
+	
+	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
+	{
+		CLight* light = (CLight*)obj;
+		if (light)
+		{
+			bool light_map = light->m_Flags.is(ELight::flAffectStatic);
+			bool dynamic   = light->m_Flags.is(ELight::flAffectDynamic);
+			bool animated = light->m_Flags.is(ELight::flProcedural);
+			if (light_map && cur_light_type == 1)
+				return true;
+
+			if (dynamic && cur_light_type == 2)
+				return true;
+			
+			if (animated && cur_light_type == 3)
+				return true;
+
+			if (cur_light_type == 0)
+				return true;
+
+			return false;
+		}
+	}
+
 
 	return true;
 }

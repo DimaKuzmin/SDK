@@ -56,10 +56,11 @@ void ESceneLightTool::SaveLTX(CInifile& ini, int id)
 
     ini.w_fvector2	("main", "sun_shadow_dir", m_SunShadowDir);
 
-	ini.w_u32			("main", "lcontrol_last_idx", lcontrol_last_idx);
+	ini.w_u32		("main", "lcontrol_last_idx", lcontrol_last_idx);
 
 	RTokenVecIt		_I 	= lcontrols.begin();
     RTokenVecIt		_E 	= lcontrols.end();
+   
     for (;_I!=_E; ++_I)
     {
         ini.w_u32	("lcontrols", _I->name.c_str(), _I->id);

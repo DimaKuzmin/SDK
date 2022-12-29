@@ -52,7 +52,8 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
         }
         */
     	Scene->BoxQuery(PQ,BB,CDB::OPT_FULL_TEST,m_CFModel);
-    }else
+    }
+    else
     	Scene->BoxQuery(PQ,BB,CDB::OPT_FULL_TEST,GetSnapList());
 
 	DWORD	dwCount 		= PQ.r_count();
@@ -100,7 +101,9 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 		D.N.mknormal(*D.v[0],*D.v[1],*D.v[2]);
 		if (D.N.y<=0)	tris.pop_back	();
 	}
-	if (tris.size()==0){
+
+	if (tris.size()==0)
+    {
 //		Log("chasm2");
 		return FALSE;			// chasm?
 	}
@@ -136,13 +139,15 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 			}
 		}
 	}
-	if (points.size()<3) {
+	if (points.size()<3) 
+    {
 //		Msg		("Failed to create node at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
 		return	FALSE;
 	}
 //.
 	float rc_lim = bIC?0.015f:0.7f;
-	if (float(points.size())/float(RCAST_Total) < rc_lim) {
+	if (float(points.size())/float(RCAST_Total) < rc_lim)
+    {
 //		Msg		("Partial chasm at [%f,%f,%f].",vAt.x,vAt.y,vAt.z);
 		return	FALSE;
 	}

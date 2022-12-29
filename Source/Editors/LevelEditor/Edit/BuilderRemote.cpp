@@ -1061,7 +1061,8 @@ BOOL SceneBuilder::BuildLight(CLight* e)
     if (!e->m_Flags.is_any(ELight::flAffectStatic|ELight::flAffectDynamic))
     	return FALSE;
 
-    if (!e->GetLControlName()){
+    if (!e->GetLControlName())
+    {
     	ELog.Msg(mtError,"Invalid light control name: light '%s'.",e->GetName());
     	return FALSE;
     }
@@ -1081,7 +1082,9 @@ BOOL SceneBuilder::BuildLight(CLight* e)
     L.controller_ID	= BuildLightControl(e->GetLControlName()); //BuildLightControl(LCONTROL_STATIC); 
 
     svector<u16, 16>* lpSectors = nullptr;
-    if (e->m_Flags.is(ELight::flAffectDynamic)){
+
+    if (e->m_Flags.is(ELight::flAffectDynamic))
+    {
 		svector<u16,16> sectors;
         lpSectors		= &sectors;
         Fvector pos 	= e->GetPosition();

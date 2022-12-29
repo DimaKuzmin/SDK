@@ -73,10 +73,12 @@ void ESceneLightTool::AppendFrameLight(CLight* src)
 
 void ESceneLightTool::BeforeRender()
 {
-    if (psDeviceFlags.is(rsLighting)){
+    if (psDeviceFlags.is(rsLighting))
+    {
         int l_cnt		= 0;
         // set scene lights
-        for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++){
+        for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
+        {
             CLight* l 		= (CLight*)(*_F);
             l_cnt++;
             if (l->Visible()&&l->m_UseInD3D&&l->m_Flags.is_any(ELight::flAffectDynamic|ELight::flAffectStatic))

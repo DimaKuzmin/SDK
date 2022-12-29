@@ -185,7 +185,7 @@ bool CPortal::Update(bool bLoadMode){
         Fvector InvNorm;
         InvNorm.invert(m_Normal);
         float dist;
-        for (int k=0; k<100; k++)
+        for (int k=0; k<100; k++) //k < 100
         {
 	        SF_dir.random_dir(m_Normal,PI_DIV_4);
 	        SB_dir.random_dir(InvNorm,PI_DIV_4);

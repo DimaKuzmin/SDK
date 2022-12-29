@@ -4,6 +4,7 @@ class CCustomObject;
  																						   
 class UIObjectList:public XrUI
 {
+
 public:
 	UIObjectList();
 	virtual ~UIObjectList();
@@ -17,7 +18,11 @@ public:
 	void ExportAllObjects();
 	void ExportAIMap();
 
-	void ImportObjects(Fvector offset = Fvector());
+	void ImportObjects(Fvector offset = Fvector(), bool use_path = false, xr_string path = {0});
+
+	void ImportMultiply();
+	void LoadFromMultiply();
+	
  	void SaveSelectedObjects();
 	void SetTerrainOffsetForAI();
 	void CopyTempLODforObjects();

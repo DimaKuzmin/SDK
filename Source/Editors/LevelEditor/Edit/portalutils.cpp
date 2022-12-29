@@ -15,6 +15,8 @@
 #include "../XrECore/Editor/ui_main.h"
 #include "ui_leveltools.h"
 
+#include <thread>
+
 CPortalUtils PortalUtils;
 #define EPS_P 0.001f
 
@@ -151,6 +153,7 @@ int CPortalUtils::CalculateAllPortals2()
     return bResult;
 }
 */
+
 //---------------------------------------------------------------------------
 CSector* CPortalUtils::FindSector(CSceneObject* o, CEditableMesh* m){
 	ObjectIt _F = Scene->FirstObj(OBJCLASS_SECTOR);
@@ -196,57 +199,139 @@ bool CPortalUtils::Validate(bool bMsg)
 
 const int clpMX = 64, clpMY=24, clpMZ=64;
 
+
+struct sFace
+{
+    u32 		v[3];
+    CSector* sector;
+
+    bool	hasVertex(u32 vert)
+    {
+        return (v[0] == vert) || (v[1] == vert) || (v[2] == vert);
+    }
+};
+struct sVert : public Fvector
+{
+    U32Vec adj;
+};
+struct sEdge
+{
+    CSector* s[2];
+    u32 v[2];
+    u32 used;
+    u32 dummy;
+
+    sEdge() { used = false; }
+    static bool c_less(const sEdge& E1, const sEdge& E2)
+    {
+        if (E1.s[0] < E2.s[0]) return true;
+        if (E1.s[1] < E2.s[1]) return true;
+        if (E1.v[0] < E2.v[0]) return true;
+        if (E1.v[1] < E2.v[1]) return true;
+        return false;
+    }
+    static bool c_equal(const sEdge& E1, const sEdge& E2)
+    {
+        return (E1.s[0] == E2.s[0]) && (E1.s[1] == E2.s[1]) && (E1.v[0] == E2.v[0]) && (E1.v[1] == E2.v[1]);
+    }
+    static int __cdecl compare(const void* arg1, const void* arg2)
+    {
+        return memcmp(arg1, arg2, sizeof(s) * sizeof(v)); //2*2*4
+    }
+};
+struct sPortal
+{
+    xr_deque<int> 	e;
+    CSector* s[2];
+};
+
+DEFINE_VECTOR(sVert, sVertVec, sVertIt);
+DEFINE_VECTOR(sFace, sFaceVec, sFaceIt);
+DEFINE_VECTOR(sEdge, sEdgeVec, sEdgeIt);
+DEFINE_VECTOR(sPortal, sPortalVec, sPortalIt);
+
+void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges, int start, int end)
+{
+    int ps = portals.size();
+
+    //SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
+
+    int curr = start;
+    CTimer t; 
+
+    for (int id = start; id != end; ++id, ++curr)
+    {       
+        sPortal* p_it = &portals[id];
+
+        //pb->Update(curr);
+
+        string128 text = { 0 };
+        printf(text, "TH[%u] portal %u of %u, ms[%d]", &th, &curr, &ps, t.GetElapsed_ms());
+        Msg("TH[%d] portal %d of %d, ms[%d]", th, curr, ps, t.GetElapsed_ms());
+        t.Start();
+        //pb->Info(text);
+
+        if (p_it->e.size() > 1)
+        {
+            CTimer t2; t2.Start();
+            // build vert-list
+            xr_vector<int>	vlist;
+            xr_deque<int>& elist = p_it->e;
+            vlist.reserve(elist.size() * 2);
+
+            for (xr_deque<int>::iterator e = elist.begin(); e != elist.end(); e++)
+            {
+                vlist.push_back(edges[*e].v[0]);
+                vlist.push_back(edges[*e].v[1]);
+            }
+
+            IntIt end = std::unique(vlist.begin(), vlist.end());
+            vlist.erase(end, vlist.end());
+     
+            // append portal
+            string256 namebuffer = {0};
+            sprintf(namebuffer, "portal_%d", id);
+            //Scene->GenObjectName(OBJCLASS_PORTAL, namebuffer);
+             
+            CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
+    
+            for (u32 i = 0; i < vlist.size(); i++)
+                _O->Vertices().push_back(verts[vlist[i]]);
+ 
+            _O->SetSectors(p_it->s[0], p_it->s[1]);
+            _O->Update();
+
+            if (_O->Valid()) 
+            {
+                Scene->AppendObject(_O, false);
+            }
+            else 
+            {
+                xr_delete(_O);
+                ELog.Msg(mtError, "Can't simplify Portal :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+            }          
+        }
+        else
+            if (p_it->e.size() == 0) {
+                ELog.Msg(mtError, "Can't create Portal from 0 edge :(\nPlease check geometry.\n'%s'<->'%s'\n", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+            }
+            else {
+                Fvector& v0 = verts[edges[p_it->e[0]].v[0]];
+                Fvector& v1 = verts[edges[p_it->e[0]].v[1]];
+                ELog.Msg(mtError, "Can't create Portal from one edge :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+                Tools->m_DebugDraw.AppendLine(v0, v1);
+            }
+
+    }
+
+    //UI->ProgressEnd(pb);
+}
+
+
 class sCollector
 {
-    struct sFace
-    {
-        u32 		v[3];
-        CSector* 	sector;
 
-        bool	hasVertex(u32 vert)
-        {
-            return (v[0]==vert)||(v[1]==vert)||(v[2]==vert);
-        }
-    };
-    struct sVert : public Fvector
-    {
-        U32Vec adj;
-    };
-    struct sEdge
-    {
-        CSector* s[2];
-        u32 v[2];
-        u32 used;
-        u32 dummy;
 
-        sEdge() { used=false; }
-	    static bool c_less(const sEdge& E1, const sEdge& E2)
-        {
-            if (E1.s[0]<E2.s[0]) return true;
-            if (E1.s[1]<E2.s[1]) return true;
-            if (E1.v[0]<E2.v[0]) return true;
-            if (E1.v[1]<E2.v[1]) return true;
-            return false;
-        }
-	    static bool c_equal(const sEdge& E1, const sEdge& E2)
-        {
-	        return (E1.s[0]==E2.s[0])&&(E1.s[1]==E2.s[1])&&(E1.v[0]==E2.v[0])&&(E1.v[1]==E2.v[1]);
-        }
-        static int __cdecl compare( const void *arg1, const void *arg2 )
-		{
-        	return memcmp(arg1,arg2, sizeof(s) * sizeof(v)); //2*2*4
-		}
-    };
-   	struct sPortal
-    {
-        xr_deque<int> 	e;
-        CSector* 		s[2];
-    };
-
-    DEFINE_VECTOR(sVert, sVertVec, sVertIt);
-    DEFINE_VECTOR(sFace, sFaceVec, sFaceIt);
-    DEFINE_VECTOR(sEdge, sEdgeVec, sEdgeIt);
-    DEFINE_VECTOR(sPortal, sPortalVec, sPortalIt);
 public:
     sVertVec		verts;
     sFaceVec		faces;
@@ -272,7 +357,7 @@ public:
             vl 			= &(VM[ix][iy][iz]);
             U32It it	= vl->begin();
             U32It it_e	= vl->end();
-            xr_vector<sCollector::sVert>::iterator verts_begin = verts.begin();
+            xr_vector<sVert>::iterator verts_begin = verts.begin();
             for(;it!=it_e; ++it)
             {
 //              if(verts[*it].similar(V) )	
@@ -469,69 +554,30 @@ public:
             portals.push_back	(current);
         }
     }
+
+
     void export_portals()
     {
     	Tools->ClearDebugDraw();
-        int ps = portals.size();
-        int curr = 0;
+          
+        std::thread* th = new std::thread[8];
 
-        SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
-    	for (sPortalIt p_it=portals.begin(); p_it!=portals.end(); ++p_it, ++curr)
-        {
-            pb->Update(curr);
-           
-            string128 text = {0};
-            printf(text, "portal %u of %u", &curr, &ps);
-            
-            
-            
-            pb->Info(text);
-		    if (p_it->e.size()>1)
-            {
-                Msg("portal %d of %d", curr, ps);
-            	// build vert-list
-                xr_vector<int>	vlist;
-                xr_deque<int>&	elist=p_it->e;
-                vlist.reserve	(elist.size()*2);
-                for (xr_deque<int>::iterator e=elist.begin(); e!=elist.end(); e++)
-                {
-                	vlist.push_back(edges[*e].v[0]);
-                	vlist.push_back(edges[*e].v[1]);
-                }
-                IntIt end = std::unique(vlist.begin(), vlist.end());
-                vlist.erase(end,vlist.end());
+        int split = portals.size() / 8;
 
-                // append portal
-                string256 namebuffer;
-                Scene->GenObjectName( OBJCLASS_PORTAL, namebuffer );
-                CPortal* _O = xr_new<CPortal>((LPVOID)0,namebuffer);
-                for (u32 i=0; i<vlist.size(); i++) {
-	                _O->Vertices().push_back(verts[vlist[i]]);
-                }
-                _O->SetSectors(p_it->s[0],p_it->s[1]);
-                _O->Update();
-                if (_O->Valid()){
-	 	            Scene->AppendObject(_O,false);
-                }else{
-                	xr_delete(_O);
-				    ELog.Msg(mtError,"Can't simplify Portal :(\nPlease check geometry.\n'%s'<->'%s'",p_it->s[0]->GetName(),p_it->s[1]->GetName());
-                }
-            }else
-            	if (p_it->e.size()==0){
-				    ELog.Msg(mtError,"Can't create Portal from 0 edge :(\nPlease check geometry.\n'%s'<->'%s'\n",p_it->s[0]->GetName(),p_it->s[1]->GetName());
-                }else{
-                	Fvector& v0=verts[edges[p_it->e[0]].v[0]];
-                	Fvector& v1=verts[edges[p_it->e[0]].v[1]];
-				    ELog.Msg(mtError,"Can't create Portal from one edge :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
-                    Tools->m_DebugDraw.AppendLine(v0,v1);
-                }
+        MT_PORTAL_EXPORT(0, portals, verts, edges, 0, portals.size());
+        
+        /*
+        for (int i = 0; i < 8; i++)
+            th[i] = std::thread(MT_PORTAL_EXPORT, i, portals, verts, edges, i * split, ( i + 1 * split) );
+        for (int i = 0; i < 8; i++)
+            th[i].join();
+        */
 
-        }
-
-        UI->ProgressEnd(pb);
 
     }
-};
+};        
+
+
 
 int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
     // calculate portals

@@ -22,7 +22,7 @@ void UIObjectList::Draw()
 {
 	int offset_y = LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT ? 180 : 0;
 
-	int offset_x = 50;
+	int offset_x = 100;
 
  	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400 + offset_x, 400 + offset_y));
 	 
@@ -242,19 +242,6 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 	else
 		ImGui::TreeNodeEx(obj->GetName(), Flags);
 
-	if (ImGui::GetIO().KeyAlt && m_SelectedObject)
-	{
-		if (!obj->Selected() && !ImGui::GetIO().KeyCtrl)
-		{
-			obj->Select(true);
-		}
-		else if (ImGui::GetIO().KeyCtrl)
-		{
-			obj->Select(false);
-		}
-		return;
-	}
-
 	if (ImGui::IsItemClicked())
 	{
 		if (m_SelectedObject != obj)
@@ -263,16 +250,20 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 
 			m_SelectedObject = obj;
 		}
-
-		if (ImGui::GetIO().KeyCtrl)
-		{
-			obj->Select(false);
-		}
 	}
 
+	if (ImGui::GetIO().KeyAlt)
+		obj->Select(false);
 
-
-	
+		
+	if (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift)
+	{
+		if (!obj->Selected())
+		{
+			obj->Select(true);
+		}	 
+ 	}
+ 
 }
 
 

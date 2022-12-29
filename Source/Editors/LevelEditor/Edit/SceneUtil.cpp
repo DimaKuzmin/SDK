@@ -68,8 +68,6 @@ bool EScene::FindDuplicateName()
 
 void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
 {
-
-
     for (int i = 0; true; i++)
     {
         bool result;

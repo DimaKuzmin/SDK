@@ -106,6 +106,9 @@ public:
 	EVisible 		Intersect	(const Fbox& box);
 
     virtual bool	Validate	(bool bMsg);
+
+
+    xrCriticalSection sector_cs;
 };
 
 #endif /*_INCDEF_Sector_H_*/
