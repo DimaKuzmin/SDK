@@ -27,7 +27,7 @@ int CALLBACK BrowseCallbackProc( HWND hWnd, UINT uMsg, LPARAM lParam,
 bool EFS_Utils::GetOpenName(HWND hWnd,LPCSTR initial, xr_string& buffer, bool bMulti, LPCSTR offset, int start_flt_ext )
 {
 	char			buf	[255*255]; //max files to select
-	xr_strcpy			(buf, buffer.c_str());
+	xr_strcpy		(buf, buffer.c_str());
 
 /*
 char* g_SHBF_Folder =("C:\\Program Files");
@@ -65,6 +65,21 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, xr_string& buffer, LPCSTR offset, i
 		buffer				= buf;
 
 	return bRes;
+}
+bool EFS_Utils::GetOpenPathName(HWND hWnd, LPCSTR path, xr_string &buf_path, xr_string &file_name)
+{
+	string512 buffer_path;
+	string512 buffer_name;
+	xr_strcpy(buffer_path, buf_path.c_str());
+	xr_strcpy(buffer_name, file_name.c_str());
+
+	bool res = GetOpenNameInternal_2(hWnd, path, buffer_name, buffer_path);
+	if (res)
+	{
+		buf_path = (char*) buffer_path;
+		file_name = (char*) buffer_name;
+	}
+ 	return res;
 }
 //----------------------------------------------------
 

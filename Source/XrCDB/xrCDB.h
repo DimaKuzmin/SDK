@@ -187,7 +187,7 @@ namespace CDB
 		~COLLIDER		();
 
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
-		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);
+		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f, int INSTR_IDX = 0); //0 = FPU, 1= SSE, 2 = AVX
 
 		ICF void		box_options		(u32 f)	{	box_mode = f;		}
 		void			box_query		(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim);

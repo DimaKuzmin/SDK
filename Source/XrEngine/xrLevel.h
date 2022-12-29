@@ -3,6 +3,8 @@
 
 #pragma once
 
+
+
 struct xrGUID {
 	u64	g[2];
 
@@ -92,14 +94,44 @@ struct	hdrNODES
 #pragma pack(push,1)
 #pragma pack(1)
 #ifndef _EDITOR
-class NodePosition {
+
+//#define _USE_NODE_POSITION_11
+
+#ifndef _USE_NODE_POSITION_11
+class NodePosition
+{
 	u8	data[5];
-	
-	ICF	void xz	(u32 value)	{ CopyMemory	(data,&value,3);		}
-	ICF	void y	(u16 value)	{ CopyMemory	(data + 3,&value,2);	}
 public:
-	ICF	u32	xz	() const	{
+	ICF	void xz(u32 value) { CopyMemory(data, &value, 3); }
+	ICF	void y(u16 value) { CopyMemory(data + 3, &value, 2); }
+
+	ICF	u32	xz() const {
 		return			((*((u32*)data)) & 0x00ffffff);
+	}
+	ICF	u32	x(u32 row) const {
+		return			(xz() / row);
+	}
+	ICF	u32	z(u32 row) const {
+		return			(xz() % row);
+	}
+	ICF	u32	y() const {
+		return			(*((u16*)(data + 3)));
+	}
+
+	friend class	CLevelGraph;
+	friend struct	CNodePositionCompressor;
+	friend struct	CNodePositionConverter;
+};
+#else 
+class NodePosition
+{
+	u8	data[6];
+public:
+	ICF	void xz	(u32 value)	{ CopyMemory	(data,&value,4);		}
+	ICF	void y	(u16 value)	{ CopyMemory	(data + 4,&value,2);	}
+
+	ICF	u32	xz	() const	{
+		return			((*((u32*)data)) & 0xffffffff);
 	}
 	ICF	u32	x	(u32 row) const		{
 		return			(xz() / row);
@@ -108,13 +140,14 @@ public:
 		return			(xz() % row);
 	}
 	ICF	u32	y	() const			{
-		return			(*((u16*)(data + 3)));
+		return			(*((u16*)(data + 4)));
 	}
 
 	friend class	CLevelGraph;
 	friend struct	CNodePositionCompressor;
 	friend struct	CNodePositionConverter;
 };
+#endif
 
 struct NodeCompressed {
 public:
@@ -182,6 +215,7 @@ public:
 	SCover			low;
 	u16				plane;
 	NodePosition	p;
+
 	// 32 + 16 + 40 + 92 = 180 bits = 24.5 bytes => 25 bytes
 
 	ICF	u32	link(u8 index) const
@@ -254,6 +288,7 @@ public:
 	u16				plane;
 	NodePosition	p;
 
+
 	ICF	u32	link(u8 index) const
 	{
 		switch (index) {
@@ -307,7 +342,10 @@ typedef	SNodePositionOld NodePosition;
 const u32 XRCL_CURRENT_VERSION		=	18; //17;	// input
 const u32 XRCL_PRODUCTION_VERSION	=	14;	// output 
 const u32 CFORM_CURRENT_VERSION		=	4;
-const u32 MAX_NODE_BIT_COUNT		=	23;
+const u32 MAX_NODE_BIT_COUNT		=	31;
+#ifdef _USE_NODE_POSITION_11
+const u32 XRAI_CURRENT_VERSION		=	11;
+#else 
 const u32 XRAI_CURRENT_VERSION		=	10;
-
+#endif
 #endif // xrLevelH

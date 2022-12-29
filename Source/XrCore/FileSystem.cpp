@@ -135,7 +135,8 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
     if (xr_strlen(buffer))
     {
         string_path		dr;
-        if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network
+        if (!(buffer[0]=='\\' && buffer[1]=='\\'))
+        { // if !network
             _splitpath		(buffer,dr,0,0,0);
 
             if (0==dr[0])
@@ -146,14 +147,21 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
              }
         }
     }
+
     ofn.lStructSize		= sizeof(OPENFILENAME);
 	ofn.hwndOwner 		= hWnd;
 	ofn.lpstrDefExt 	= P.m_DefExt;
+    
+    //BUFFER TO EXIT
 	ofn.lpstrFile 		= buffer;
 	ofn.nMaxFile 		= sz_buf;
+
+    //FILTER
 	ofn.lpstrFilter 	= flt;
 	ofn.nFilterIndex 	= start_flt_ext+2;
-    ofn.lpstrTitle              = "Open a File";
+
+    // COMMON
+    ofn.lpstrTitle      = "Open a File";
     string512 path; 
 	xr_strcpy				(path,(offset&&offset[0])?offset:P.m_Path);
 	ofn.lpstrInitialDir = path;
@@ -166,16 +174,6 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
                         
     ofn.FlagsEx			= 0;
 
-/*
-	unsigned int	dwVersion = GetVersion();
-	unsigned int	dwWindowsMajorVersion =  (DWORD)(LOBYTE(LOWORD(dwVersion)));
-	if ( dwWindowsMajorVersion == 6 )
-	{
-	     	ofn.Flags |= OFN_ENABLEHOOK;
-  	     	ofn.lpfnHook = OFNHookProcOldStyle;
-	}
-*/
-
 	bool bRes 			= !!GetOpenFileName( &ofn );
     if (!bRes)
     {
@@ -187,9 +185,10 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
             break;
         }
 	}
+
     if (bRes && bMulti)
     {
-    	Log				("buff=",buffer);
+    	Log				("buff=", buffer);
 		int cnt			= _GetItemCount(buffer,0x0);
         if (cnt>1)
         {
@@ -212,7 +211,73 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
             xr_strcpy		(buffer, sz_buf, fns);
         }
     }
+
     strlwr				(buffer);
+    return 				bRes;
+}
+
+bool EFS_Utils::GetOpenNameInternal_2(HWND hWnd, LPCSTR initial, LPSTR file, LPSTR path)
+{
+    FS_Path& P = *FS.get_path(initial);
+    string1024 			flt;
+    MakeFilter(flt, P.m_FilterCaption ? P.m_FilterCaption : "", P.m_DefExt);
+
+    OPENFILENAME 		ofn;
+    Memory.mem_fill(&ofn, 0, sizeof(ofn));
+
+    if (xr_strlen(path))
+    {
+        string_path		dr;
+        if (!(path[0] == '\\' && path[1] == '\\'))
+        {  
+            _splitpath(path, dr, 0, 0, 0);
+
+            if (0 == dr[0])
+            {
+                string_path		bb;
+                P._update(bb, path);
+                xr_strcpy(path, MAX_PATH, bb);
+            }
+        }
+    }
+
+    ofn.lStructSize = sizeof(OPENFILENAME);
+    ofn.hwndOwner = hWnd;
+    ofn.lpstrDefExt = P.m_DefExt;
+
+    //BUFFER TO EXIT
+    ofn.lpstrFile = path;
+    ofn.nMaxFile  = MAX_PATH;
+
+    ofn.lpstrFileTitle = file;
+    ofn.nMaxFileTitle = MAX_PATH;
+
+    //FILTER
+    //ofn.lpstrFilter = flt;
+    //ofn.nFilterIndex = start_flt_ext + 2;
+
+    // COMMON
+    ofn.lpstrTitle = "Open a File";
+
+    string512 path_str;
+    xr_strcpy(path_str, P.m_Path);
+    // xr_strcpy(path, (offset && offset[0]) ? offset : P.m_Path);
+  
+    ofn.lpstrInitialDir = path_str;
+    ofn.Flags = 
+        OFN_PATHMUSTEXIST |
+        OFN_FILEMUSTEXIST |
+        OFN_HIDEREADONLY  |
+        OFN_NOCHANGEDIR   | 
+        OFN_EXPLORER;
+
+    ofn.FlagsEx = 0;
+
+    bool bRes = !!GetOpenFileName(&ofn);
+    strlwr(file);
+    strlwr(path);
+ 
+
     return 				bRes;
 }
 

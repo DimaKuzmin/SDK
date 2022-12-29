@@ -9,7 +9,10 @@
 
 class XRCORE_API EFS_Utils {
 protected:
-	bool 		GetOpenNameInternal		(HWND hWnd,LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	bool 		GetOpenNameInternal		(HWND hWnd, LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+
+	bool 		GetOpenNameInternal_2 	(HWND hWnd, LPCSTR initial, LPSTR file, LPSTR path);
+
 public:
 				EFS_Utils		();
 	virtual 	~EFS_Utils		();
@@ -23,6 +26,8 @@ public:
 
 	bool 		GetSaveName		(LPCSTR initial, string_path& buffer, LPCSTR offset=0, int start_flt_ext=-1 );
 	bool 		GetSaveName		(LPCSTR initial, xr_string& buf, LPCSTR offset=0, int start_flt_ext=-1 );
+
+	bool		GetOpenPathName(HWND hWnd, LPCSTR path, xr_string& buf_path, xr_string& file_name);
 
 	void 		MarkFile		(LPCSTR fn, bool bDeleteSource);
 

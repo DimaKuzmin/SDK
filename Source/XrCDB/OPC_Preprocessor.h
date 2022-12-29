@@ -75,6 +75,7 @@
 	// - we can switch to __forceinline to check it's really better or not
 	// - we can remove __forceinline if the compiler doesn't support it
 	#define inline_				inline
+	#define inl_force			__forceinline
 
 	// Down the hatch
 	#pragma inline_depth( 255 )

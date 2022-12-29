@@ -592,7 +592,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 	_findclose		( hFile );
 
 	u32				count = rec_files.size();
-	_finddata_t		*buffer = (_finddata_t*)_alloca(count*sizeof(_finddata_t));
+	_finddata_t		*buffer = (_finddata_t*) _alloca(count*sizeof(_finddata_t));
 	std::copy		(&*rec_files.begin(), &*rec_files.begin() + count, buffer);
 
 //.	std::copy		(&*rec_files.begin(),&*rec_files.end(),buffer);

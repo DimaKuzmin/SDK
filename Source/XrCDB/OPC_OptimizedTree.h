@@ -48,8 +48,8 @@
 		inline_			BOOL				HasLeaf()		const	{ return (BOOL)(mData&1);		}	\
 		inline_			BOOL				HasLeaf2()		const	{ return (BOOL)(mData2&1);		}	\
 		/* Data access */																				\
-		inline_			const baseclass*	GetPos()		const	{ return (baseclass*)mData;		}	\
-		inline_			const baseclass*	GetNeg()		const	{ return (baseclass*)mData2;	}	\
+		inl_force			const baseclass*	GetPos()		const	{ return (baseclass*)mData;		}	\
+		inl_force			const baseclass*	GetNeg()		const	{ return (baseclass*)mData2;	}	\
 		inline_			udword				GetPrimitive()	const	{ return udword(mData>>1);		}	\
 		inline_			udword				GetPrimitive2()	const	{ return udword(mData2>>1);		}	\
 		/* Stats */																						\

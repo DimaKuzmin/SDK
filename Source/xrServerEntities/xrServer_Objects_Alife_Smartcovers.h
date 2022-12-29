@@ -18,7 +18,8 @@ class CSE_ALifeDynamicObject;
 
 SERVER_ENTITY_DECLARE_BEGIN2(CSE_SmartCover,CSE_ALifeDynamicObject,CSE_Shape)
 public:
-	struct SSCDrawHelper{
+	struct SSCDrawHelper
+	{
 		shared_str		string_identifier;
 		Fvector			point_position;
 		bool			is_enterable;
@@ -27,6 +28,8 @@ public:
 		float			range;
 		Fvector			fov_direction;
 		shared_str		animation_id;
+		shared_str		animation_loophole_sdk;
+
 	};
 	xr_vector<SSCDrawHelper>		m_draw_data;
 	shared_str						m_description;

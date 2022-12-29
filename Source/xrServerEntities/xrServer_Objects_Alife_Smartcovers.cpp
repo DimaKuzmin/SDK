@@ -234,6 +234,15 @@ Fvector parse_fvector (luabind::object const &table, LPCSTR identifier)
 	return			(luabind::object_cast<Fvector>(result));
 }
 
+bool check_value(luabind::object const& table, LPCSTR identity)
+{
+	luabind::object result = table[identity];
+	if (result.type() != LUA_TNIL)
+		return true;
+	else
+		return false;
+}
+
 float parse_float	(
 					 luabind::object const &table,
 					 LPCSTR identifier,
@@ -371,7 +380,8 @@ void CSE_SmartCover::fill_visuals()
 		CSE_Visual *visual			= xr_new<CSE_SmartVisual>();
 		visual->set_visual			("actors\\stalker_neutral\\stalker_neutral_1");
 
-		if (I->animation_id.size() == 0) {
+		if (I->animation_id.size() == 0)
+		{
 			Msg						("cover [%s] doesn't have idle_2_fire animation", I->string_identifier.c_str());
 			return;
 		}
@@ -446,7 +456,8 @@ shared_str animation_id(luabind::object table)
 {
 	luabind::object::iterator i = table.begin();
 	luabind::object::iterator e = table.end();
-	for ( ; i != e; ++i ) {
+	for ( ; i != e; ++i )
+	{
 		luabind::object	string = *i;
 		if (string.type() != LUA_TSTRING) {
 			VERIFY	(string.type() != LUA_TNIL);
@@ -507,6 +518,7 @@ void CSE_SmartCover::load_draw_data () {
 			VERIFY	(table.type() != LUA_TNIL);
 			continue;
 		}
+
 		m_draw_data.resize		(m_draw_data.size()+1);
 		SSCDrawHelper& H		= m_draw_data.back();
 
@@ -514,6 +526,9 @@ void CSE_SmartCover::load_draw_data () {
 		H.point_position		= parse_fvector(table, "fov_position");
 		H.is_enterable			= false;
 		H.fov_direction			= parse_fvector(table, "fov_direction");
+		
+		if (check_value(table, "animation_play_sdk"))
+			H.animation_loophole_sdk = parse_string(table, "animation_play_sdk");
 
 		if (H.fov_direction.square_magnitude() < EPS_L) {
 			Msg				("! fov direction for loophole %s is setup incorrectly", H.string_identifier.c_str());
@@ -555,8 +570,15 @@ void CSE_SmartCover::load_draw_data () {
 			break;
 		}
 */
+		
 
-	H.animation_id	= make_string("loophole_%s_visual", H.string_identifier.c_str()).c_str();
+		if (H.animation_loophole_sdk.size() == 0)
+			H.animation_id = make_string("loophole_%s_visual", H.string_identifier.c_str()).c_str();
+		else
+		{
+			H.animation_id = H.animation_loophole_sdk;
+			Msg("Replace SDK animation loophole: %s", H.animation_loophole_sdk.c_str());
+		}
 	}
 
 	check_enterable_loopholes	(m_description);

@@ -35,8 +35,8 @@ struct GameTypeChooser
 	void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
 
     void    SetValue(const u16& mask, bool& value) { 
-        Msg("set[%d] value [%d]", mask,value);
-        m_GameType.set(mask, value); 
+        Msg("set[%d] value [%d]", mask, value);
+        m_GameType.set(mask, value);
     };
 	void	SetDefaults		()				{m_GameType.one();}
 	bool	MatchType		(const u16& mask) const		{return m_GameType.test(mask);};
