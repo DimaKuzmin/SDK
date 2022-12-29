@@ -225,7 +225,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <Optimization>Full</Optimization>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <FloatingPointModel>Fast</FloatingPointModel>

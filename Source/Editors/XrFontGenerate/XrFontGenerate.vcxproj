@@ -212,9 +212,9 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>

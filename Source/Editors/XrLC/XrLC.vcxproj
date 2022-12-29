@@ -220,12 +220,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
@@ -260,7 +260,6 @@
     <ClInclude Include="NV_Library\VertexCache.h" />
     <ClInclude Include="OGF_Face.h" />
     <ClInclude Include="progmesh.h" />
-    <ClInclude Include="PropSlimTools.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="StdAfx.h" />

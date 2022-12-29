@@ -267,12 +267,12 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_EDITOR;_PARTICLE_EDITOR;DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\XrEngine\;..\..\XrRender\Public;..\..\XrRender\Private;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>

@@ -40,7 +40,9 @@ public:
 		{
 			// Get task
 			task_CS.Enter		();
+			
 			thProgress			= 1.f - float(task_pool.size())/float(lc_global_data()->g_deflectors().size());
+		
 			if (task_pool.empty())	
 			{
 				task_CS.Leave		();
@@ -49,7 +51,7 @@ public:
 
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
 			if (lc_global_data()->g_deflectors().size() - task_pool.size() % 1024 == 0)
-			clMsg("DEFL[%d]/[%d]", lc_global_data()->g_deflectors().size() - task_pool.size(), lc_global_data()->g_deflectors().size());
+				StatusNoMSG("DEFL[%d]/[%d]", lc_global_data()->g_deflectors().size() - task_pool.size(), lc_global_data()->g_deflectors().size());
 			
 			task_pool.pop_back	();
 			task_CS.Leave		();
@@ -58,7 +60,8 @@ public:
 			try 
 			{
 				D->Light	(&DB,&LightsSelected,H);
-			} catch (...)
+			} 
+			catch (...)
 			{
 				clMsg("* ERROR: CLMThread::Execute - light");
 			}
