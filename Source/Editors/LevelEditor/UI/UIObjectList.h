@@ -14,6 +14,8 @@ public:
 	static void Close();
 	static IC bool IsOpen()  { return Form; }
 
+	void SetScale(Fvector size);
+
 	void ExportSelectObjects();
 	void ExportAllObjects();
 	void ExportAIMap();

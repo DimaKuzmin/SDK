@@ -188,6 +188,13 @@ void UIObjectList::ExportAIMap()
 }
 
 
+void UIObjectList::SetScale(Fvector size)
+{
+	if (m_SelectedObject)
+	{
+		m_SelectedObject->SetScale(size);
+	}
+}
 
 void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 {
