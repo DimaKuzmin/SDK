@@ -15,6 +15,7 @@ void	LightThread::	Execute()
 
 		for (u32 _z=Nstart; _z<Nend; _z++)
 		{
+			Status("Z: %d/%d", _z, gl_data.slots_data.size_z());
 			for (u32 _x=0; _x<gl_data.slots_data.size_x(); _x++)
 			{
 				DetailSlot&	DS = gl_data.slots_data.get_slot( _x, _z );

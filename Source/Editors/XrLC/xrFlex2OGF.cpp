@@ -183,7 +183,7 @@ void MainThreadOGF(CBuild* build, int thID, bool use_mt_progresive)
 
 #define MAX_THREADS 4
 
-#define USE_MT 
+//#define USE_MT 
 
 void CBuild::Flex2OGF()
 {

@@ -388,26 +388,63 @@ void CResourceManager::ExportTexturesToDir(LPCSTR name)
 			xr_strcat(old_path, ".dds");
 			xr_strcat(new_path, ".dds");
 
+			string_path bump, bump2, bump_copy, bump_copy_2;
+
+			FS.update_path(bump, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(bump2, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(bump_copy, "$export_textures$", t->second->cName.c_str());
+			FS.update_path(bump_copy_2, "$export_textures$", t->second->cName.c_str());
+
+			xr_strcat(bump, "_bump.dds");
+			xr_strcat(bump2, "_bump#.dds");
+			xr_strcat(bump_copy, "_bump.dds");
+			xr_strcat(bump_copy_2, "_bump#.dds");
+
+
+			if (FS.exist(bump))
+				FS.file_copy(bump, bump_copy);
+			if (FS.exist(bump2))
+				FS.file_copy(bump2, bump_copy_2);
+
 			if (FS.exist(old_path))
 			{
 				FS.file_copy(old_path, new_path);
-				Msg("Copy to [%s]", new_path);
+				//Msg("Copy to [%s]", new_path);
 			}
 		}
+		
 
 		{
 			string_path new_path, old_path;
 			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());
 			FS.update_path(new_path, "$export_textures$", t->second->cName.c_str());
 
-			xr_strcat(old_path, ".tga");
-			xr_strcat(new_path, ".tga");
+			xr_strcat(old_path, ".thm");
+			xr_strcat(new_path, ".thm");
  
 			if (FS.exist(old_path))
 			{
 				FS.file_copy(old_path, new_path);
-				Msg("Copy TGA to [%s]", new_path);
+				//Msg("Copy THM to [%s]", new_path);
 			}
+
+			string_path bump, bump2, bump_copy, bump_copy_2;
+
+			FS.update_path(bump, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(bump2, "$game_textures$", t->second->cName.c_str());
+			FS.update_path(bump_copy, "$export_textures$", t->second->cName.c_str());
+			FS.update_path(bump_copy_2, "$export_textures$", t->second->cName.c_str());
+
+			xr_strcat(bump, "_bump.thm");
+			xr_strcat(bump2, "_bump#.thm");
+			xr_strcat(bump_copy, "_bump.thm");
+			xr_strcat(bump_copy_2, "_bump#.thm");
+
+
+			if (FS.exist(bump))
+				FS.file_copy(bump, bump_copy);
+			if (FS.exist(bump2))
+				FS.file_copy(bump2, bump_copy_2);
 		}
 	}
 

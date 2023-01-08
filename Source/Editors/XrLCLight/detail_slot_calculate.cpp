@@ -308,7 +308,7 @@ bool detail_slot_process( u32 _x, u32 _z, DetailSlot&	DS )
 		return true;
 }
 
-
+xrCriticalSection cs_DETAIL;
 
 bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result, CDB::COLLIDER &DB, base_lighting	&Selected )
 {
@@ -324,12 +324,13 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 	Fvector				bbC,bbD;
 	BB.get_CD			( bbC, bbD );	bbD.add( 0.01f );
 	DB.box_query		( &gl_data.RCAST_Model, bbC, bbD );
-
+	
 	box_result.clear	();
-	for (CDB::RESULT* I=DB.r_begin(); I!=DB.r_end(); I++) box_result.push_back(I->id);
+	for (CDB::RESULT* I=DB.r_begin(); I!=DB.r_end(); I++) 
+		box_result.push_back(I->id);
+	
 	if (box_result.empty())	
 		return false; 
-		//continue;
 
 	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris();
 	Fvector*	verts	= gl_data.RCAST_Model.get_verts();
@@ -342,6 +343,8 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
 	FPU::m64r		();
+	
+ 
 	for (int x=-LIGHT_Count; x<=LIGHT_Count; x++) 
 	{
 		Fvector		P;
@@ -357,10 +360,14 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 			Fvector start;	start.set	(P.x,BB.max.y+EPS,P.z);
 			
 			float		r_u,r_v,r_range;
+			
+			
 			for (DWORDIt tit=box_result.begin(); tit!=box_result.end(); tit++)
 			{
+			
 				CDB::TRI&	T		= tris	[*tit];
 				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
+				
 				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,TRUE))
 				{
 					if (r_range>=0.f)	{
@@ -371,7 +378,9 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 						}
 					}
 				}
-			}
+			}	
+			
+
 			if (P.y<BB.min.y) continue;
 			
 			// light point

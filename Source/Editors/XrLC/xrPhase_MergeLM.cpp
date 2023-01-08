@@ -72,7 +72,7 @@ IC bool	sort_defl_complex	(CDeflector* D1, CDeflector* D2)
 
 IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
 {
-	if (D1->layer.height > D2->layer.height)
+	if (D1->layer.height < D2->layer.height)
 		return true;
 	else 
 		return false;
@@ -162,20 +162,24 @@ void CBuild::xrPhase_MergeLM()
 
 	if (fastWay)
 	{
-		int area = 0;
- 
-		for (int it = 0; it < Layer.size(); it++)
-		{
-			lm_layer& L = Layer[it]->layer;
-			area += L.Area();
-		}
-
+		u64 area = 0;
 		int lm_1024 = 1024 * 1024;
 		int lm_2048 = 2048 * 2048;
 		int lm_4096 = 4096 * 4096;
 		int lm_8192 = 8192 * 8192;
 
-		int use_size = 1024;
+		for (int it = 0; it < Layer.size(); it++)
+		{
+			if (lm_8192 < area)
+				break;
+
+			lm_layer& L = Layer[it]->layer;
+			area += L.Area();
+		}
+
+
+
+		int use_size = 8192;
 
 		if (area < lm_1024)
 		{
@@ -193,6 +197,8 @@ void CBuild::xrPhase_MergeLM()
 		{
 			use_size = 8192;
 		}
+
+		Msg("Select LM_SIZE: %d", use_size);
 		setLMSIZE(use_size);
 	}
 	 
@@ -389,10 +395,13 @@ void CBuild::xrPhase_MergeLM()
 			VERIFY(pBuild);
 			lmap->Save(pBuild->path);
 		}
+		//else
+		//for (int i = 0; i < Layer.size();i++)
+ 		//	Msg("w: %d, h: %d", Layer[i]->layer.width, Layer[i]->layer.height);
 		else
-		for (int i = 0; i < Layer.size();i++)
- 			Msg("w: %d, h: %d", Layer[i]->layer.width, Layer[i]->layer.height);
- 
+		{
+			Msg("CRITICAL мевецн мер б кюир люое");
+		}
  
 
 	}
