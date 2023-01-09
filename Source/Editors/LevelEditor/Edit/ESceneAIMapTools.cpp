@@ -124,16 +124,33 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
 	u32 			id;
     u16 			pl;
 	NodePosition 	np;
-    F.r				(&id,3); 			n1 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n2 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n3 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n4 = (SAINode*)tools->UnpackLink(id);
-	pl				= F.r_u16(); 		pvDecompress(Plane.n,pl);
+    F.r				(&id,4); 			
+    n1 = (SAINode*)tools->UnpackLink(id);
+    F.r				(&id,4); 			
+    n2 = (SAINode*)tools->UnpackLink(id);
+    F.r				(&id,4); 			
+    n3 = (SAINode*)tools->UnpackLink(id);
+    F.r				(&id,4); 			
+    n4 = (SAINode*)tools->UnpackLink(id);
+	pl				= F.r_u16(); 		
+    pvDecompress(Plane.n,pl);
     F.r				(&np,sizeof(np)); 	
+   
     
+   // u32 idxx = F.r_u32();
+
     tools->UnpackPosition(Pos,np,tools->m_AIBBox,tools->m_Params);
-	Plane.build		(Pos,Plane.n);
+	Plane.build		(Pos, Plane.n);
     flags.assign	(F.r_u8());
+  
+    
+  /*  u32 max_32 = 0x00ffffff;
+    
+    if (n1->idx > max_32 && n2->idx > max_32 && n3->idx > max_32 && n4->idx > max_32)
+    {
+        Msg("n1[%d], n2[%d], n3[%d], n4[%d], pos[%f][%f][%f]", n1->idx, n2->idx, n3->idx, n4->idx, VPUSH(Pos));
+    }
+ */   
 }
 
 void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
@@ -142,14 +159,15 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
     u16 			pl;
 	NodePosition 	np;
 
-    id = n1?(u32)n1->idx:InvalidNode; F.w(&id,3);
-    id = n2?(u32)n2->idx:InvalidNode; F.w(&id,3);
-    id = n3?(u32)n3->idx:InvalidNode; F.w(&id,3);
-    id = n4?(u32)n4->idx:InvalidNode; F.w(&id,3);
+    id = n1?(u32)n1->idx:InvalidNode; F.w(&id,4);
+    id = n2?(u32)n2->idx:InvalidNode; F.w(&id,4);
+    id = n3?(u32)n3->idx:InvalidNode; F.w(&id,4);
+    id = n4?(u32)n4->idx:InvalidNode; F.w(&id,4);
     pl = pvCompress (Plane.n);	 F.w_u16(pl);
 	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params);
     F.w(&np,sizeof(np));
     F.w_u8			(flags.get());
+    //F.w_u32(idx);
 }
 
 ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
@@ -246,6 +264,9 @@ void ESceneAIMapTool::DenumerateNodes()
                      (*it)->n4 = 0;
                      continue;
                      }
+
+        //if ((*it)->idx > 16777215)
+        //    Msg("IDX [%u]", (*it)->idx);
 //                     ,"AINode: Wrong link found.");
     	(*it)->n1	= ((u32)(*it)->n1==InvalidNode)?0:m_Nodes[(u32)(*it)->n1];
     	(*it)->n2	= ((u32)(*it)->n2==InvalidNode)?0:m_Nodes[(u32)(*it)->n2];
@@ -334,11 +355,13 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     }
 	DenumerateNodes	();
 
-    if (F.find_chunk(AIMAP_CHUNK_INTERNAL_DATA)){
+    if (F.find_chunk(AIMAP_CHUNK_INTERNAL_DATA))
+    {
     	m_VisRadius	= F.r_float();
     	m_BrushSize	= F.r_u32();
     }
-    if (F.find_chunk(AIMAP_CHUNK_INTERNAL_DATA2)){
+    if (F.find_chunk(AIMAP_CHUNK_INTERNAL_DATA2))
+    {
     	m_SmoothHeight	= F.r_float();
     }
 
@@ -414,7 +437,7 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
           
            AddNode(pos, true, true, 1);
 
-           if (i % 128)
+           if (i % 25600 == 0)
                pb->Update(i);
 
            //Msg("node[%d]/%d", i, size);
@@ -460,6 +483,11 @@ void ESceneAIMapTool::SaveStreamPOS(IWriter& write)
        write.w_float(node->Pos.z);
     }
     write.close_chunk();
+}
+
+void ESceneAIMapTool::SelectNode(u32 id)
+{
+    m_Nodes[id]->flags.set(SAINode::flSelected, TRUE);
 }
 
 bool ESceneAIMapTool::LoadSelection(IReader& F)

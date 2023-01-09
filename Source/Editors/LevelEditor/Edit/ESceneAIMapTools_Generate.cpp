@@ -439,11 +439,115 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     // Estimate nodes
     float estimated_nodes	= (2*sz-1)*(2*sz-1);
 
-	SPBItem* pb 	= 0;
-    if (estimated_nodes>1024) pb = UI->ProgressStart(1, "Building nodes...");
+	//SPBItem* pb 	= 0;
+    //if (estimated_nodes>64) 
+     //   pb = UI->ProgressStart(1, "Building nodes...");
+    
     float radius			= sz*m_Params.fPatchSize-EPS_L;
+
+    /*
+    for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+    {
+        if ((*it).first == OBJCLASS_SCENEOBJECT)
+        {
+            ObjectList list_for_snap;
+
+            ObjectList* list = (*it).second->GetSnapList();
+
+            Fbox box_nodes;
+            box_nodes.min.sub(Pos, sz * 10);
+            box_nodes.max.add(Pos, sz * 10);
+
+            if (list)
+            for (auto O : *list)
+            {
+                Fbox box;
+                O->GetBox(box);
+
+                if (box_nodes.intersect(box))
+                {
+                    list_for_snap.push_back(O);
+                }
+            }
+
+            m_SnapObjects = list_for_snap;
+             
+        }
+    }*/
+
+    //SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
+    
+
+    /*
+    float cur_radius = 1;
+    AINodeVec nodes_created;
+    nodes_created.push_back(start);
+ 
+    while (radius > cur_radius)
+    {
+
+        pb->Update(cur_radius/radius);
+
+        for (auto N : nodes_created)
+        {
+            if (0 == N->n1)
+            {
+                Pos.set(N->Pos);
+                Pos.x -= m_Params.fPatchSize;
+                if (Pos.distance_to(start->Pos) <= radius)
+                {
+                    N->n1 = BuildNode(N->Pos, Pos, bIC);
+                }
+            }
+            // fwd
+            if (0 == N->n2) 
+            {
+                Pos.set(N->Pos);
+                Pos.z += m_Params.fPatchSize;
+                if (Pos.distance_to(start->Pos) <= radius)
+                {
+                    N->n2 = BuildNode(N->Pos, Pos, bIC);
+                    
+                }
+            }
+            // right
+            if (0 == N->n3) 
+            {
+                Pos.set(N->Pos);
+                Pos.x += m_Params.fPatchSize;
+                if (Pos.distance_to(start->Pos) <= radius)
+                    N->n3 = BuildNode(N->Pos, Pos, bIC);
+            }
+            // back
+            if (0 == N->n4)
+            {
+                Pos.set(N->Pos);
+                Pos.z -= m_Params.fPatchSize;
+                if (Pos.distance_to(start->Pos) <= radius)
+                    N->n4 = BuildNode(N->Pos, Pos, bIC);
+            }
+                    
+            if (N->n1)
+                nodes_created.push_back(N->n1);
+            if (N->n2)
+                nodes_created.push_back(N->n2);
+            if (N->n3)
+                nodes_created.push_back(N->n3);
+            if (N->n4)
+                nodes_created.push_back(N->n4);
+
+        }  
+        cur_radius++;
+    }
+
+    UI->ProgressEnd(pb);
+   
+       */
+
     // General cycle
-    for (int k=0; k<(int)m_Nodes.size(); k++){
+
+    for (int k=0; k<(int)m_Nodes.size(); k++)
+    {
         SAINode* N 			= m_Nodes[k];
         // left 
         if (0==N->n1){
@@ -473,20 +577,38 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
             if (Pos.distance_to(start->Pos)<=radius)
 	            N->n4		=	BuildNode(N->Pos,Pos,bIC);
         }
-        if (estimated_nodes>1024){
-            if (k%128==0) {
-                float	p1	= float(k)/float(m_Nodes.size());
-                float	p2	= float(m_Nodes.size())/estimated_nodes;
-                float	p	= 0.1f*p1+0.9f*p2;
 
-                clamp	(p,0.f,1.f);
-                pb->Update(p);
+        //Msg("K[%d]/size[%d]", k, m_Nodes.size());
+
+       // string256 str;
+       // sprintf(str, "K[%d]/size[%d]", k, m_Nodes.size());
+         
+       // if (k%256000 == 0)
+        //    pb->Info(str);
+
+        /*
+        if (estimated_nodes>1024)
+        {
+            if (k%256000==0)
+            {
+                //float	p1	= float(k)/float(m_Nodes.size());
+                //float	p2	= float(m_Nodes.size())/estimated_nodes;
+                //float	p	= 0.1f*p1+0.9f*p2;
+
+                //clamp	(p,0.f,1.f);
+                pb->Update(k/m_Nodes.size());
                 // check need abort && redraw
                 if (UI->NeedAbort()) break;
             }
         }
+        */
     }
-	if (estimated_nodes>1024) UI->ProgressEnd(pb);
+
+
+    //if (estimated_nodes>1024)
+   // UI->ProgressEnd(pb);
+
+
     return oldcount-m_Nodes.size();
 }
 
@@ -499,14 +621,16 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
 //	hash_Initialize ();
 
     R_ASSERT(!m_Nodes.empty());
+
     // Estimate nodes
-    Fvector	Pos,LevelSize;
+    Fvector	Pos, LevelSize;
     m_AIBBox.getsize	(LevelSize);
     float estimated_nodes	= (LevelSize.x/m_Params.fPatchSize)*(LevelSize.z/m_Params.fPatchSize);
 
     SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
     // General cycle
-    for (int k=0; k<(int)m_Nodes.size(); k++){
+    for (int k=0; k<(int)m_Nodes.size(); k++)
+    {
         SAINode* N 			= m_Nodes[k];
     	if (bFromSelectedOnly && !N->flags.is(SAINode::flSelected)) continue;
         // left 
@@ -533,7 +657,8 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
             Pos.z			-=	m_Params.fPatchSize;
             N->n4			=	BuildNode(N->Pos,Pos,false);
         }
-    	if (bFromSelectedOnly){
+    	if (bFromSelectedOnly)
+        {
 	        // select neighbour nodes
             if (N->n1) N->n1->flags.set(SAINode::flSelected,TRUE);
             if (N->n2) N->n2->flags.set(SAINode::flSelected,TRUE);
@@ -541,15 +666,21 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
             if (N->n4) N->n4->flags.set(SAINode::flSelected,TRUE);
         }
         
-        if (k%512==0) {
+        if (k%25600==0) 
+        {
             float	p1	= float(k)/float(m_Nodes.size());
             float	p2	= float(m_Nodes.size())/estimated_nodes;
             float	p	= 0.1f*p1+0.9f*p2;
 
             clamp	(p,0.f,1.f);
-            pb->Update(p);
+            
+            string32 s;
+            sprintf(s, "Nodes: %d", k);
+            pb->Info(s);
+            
+            //pb->Update(p);
             // check need abort && redraw
-            if (k%32768==0) UI->RedrawScene(false);
+            if (k%25600==0) UI->RedrawScene(false);
             if (UI->NeedAbort()) break;
         }
     }

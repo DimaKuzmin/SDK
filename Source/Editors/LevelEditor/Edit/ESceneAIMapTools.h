@@ -12,7 +12,7 @@
 class ESceneAIMapTool;
 struct SAINode;
 
-const DWORD InvalidNode		= (1<<24)-1;
+const u32 InvalidNode		= (1<<31)-1;
 
 #pragma pack(push,1)
 struct SAINode					// definition of "patch" or "node"
@@ -150,6 +150,7 @@ public:
     virtual void		OnObjectRemove			(CCustomObject* O, bool bDeleting);
     virtual	void		UpdateSnapList			(){m_Flags.set(flUpdateSnapList,TRUE);}
 	virtual ObjectList*	GetSnapList				(){return &m_SnapObjects;}
+    void SetSnapList(ObjectList* list) { m_SnapObjects = *list; };
 
 	// selection manipulate
     SAINode*			PickNode				(const Fvector& start, const Fvector& dir, float& dist);
@@ -187,6 +188,8 @@ public:
 
     virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset);
     virtual void        SaveStreamPOS(IWriter&);
+
+    void SelectNode(u32 id);
 
     virtual bool		LoadSelection      		(IReader&);
     virtual void		SaveSelection      		(IWriter&);
