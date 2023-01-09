@@ -342,18 +342,18 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		H.size_y			= 1.f;
 		H.aabb				= LevelBB;
 		
-		typedef BYTE NodeLink[3];
 		for (u32 i=0; i<N; i++)
 		{
-			NodeLink			id;
-			u16 				pl;
+ 			u16 				pl;
 			SNodePositionOld 	_np;
 			NodePosition 		np;
 			
 			for (int j=0; j<4; ++j) 
 			{
-				F->r			(&id,3);
-				g_nodes[i].n[j]	= (*LPDWORD(&id)) & 0x00ffffff;
+				u32 id = F->r_u32();
+ 				g_nodes[i].n[j]	= id;
+				//if (id != InvalidNode)
+				//	Msg("ID: %d", id);
 			}
 
 			pl				= F->r_u16();

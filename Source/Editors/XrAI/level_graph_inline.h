@@ -31,7 +31,9 @@ ICF bool CLevelGraph::valid_vertex_id	(u32 id) const
 
 ICF	CLevelGraph::CVertex	*CLevelGraph::vertex(const u32 vertex_id) const
 {
-	VERIFY				(valid_vertex_id(vertex_id));
+	if (!valid_vertex_id(vertex_id))
+		Msg("NO VALID [%u]", vertex_id);
+	//VERIFY				(valid_vertex_id(vertex_id));
 	return				(m_nodes + vertex_id);
 }
 
@@ -48,7 +50,7 @@ ICF	u32	CLevelGraph::vertex	(const CVertex &vertex_r) const
 
 IC	void CLevelGraph::unpack_xz(const CLevelGraph::CPosition &vertex_position, u32 &x, u32 &z) const
 {
-	//VERIFY				(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
+	VERIFY				(vertex_position.xz() < (1 << MAX_NODE_BIT_COUNT) - 1);
 
 
 	x					= vertex_position.xz() / m_row_length;
@@ -106,7 +108,7 @@ IC	const CLevelGraph::CPosition &CLevelGraph::vertex_position	(CLevelGraph::CPos
 
 	int					py	= iFloor(65535.f*(source_position.y - header().box().min.y)/header().factor_y() + EPS_S);
  
-	//VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);		 
+	VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);		 
 
 	dest_position.xz	(u32(pxz));
 	clamp				(py,0,65535);
@@ -206,7 +208,7 @@ IC bool CLevelGraph::inside				(const u32 vertex_id, const Fvector &position, co
 IC bool	CLevelGraph::inside				(const u32 vertex_id,	const Fvector2 &position) const
 {
 	int					pxz	= iFloor(((position.x - header().box().min.x)/header().cell_size() + .5f))*m_row_length + iFloor((position.y - header().box().min.z)/header().cell_size() + .5f);
-	//VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
+	VERIFY				(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
 	
 	bool				b = vertex(vertex_id)->position().xz() == u32(pxz);
 	return				(b);
@@ -583,8 +585,7 @@ IC	bool CLevelGraph::valid_vertex_position	(const Fvector &position) const
 	if (!(iFloor((position.x - header().box().min.x)/header().cell_size() + .5f) < (int)m_column_length))
 		return			(false);
 
-	return true;
-//	return				((vertex_position(position).xz() < (1 << MAX_NODE_BIT_COUNT) - 1));
+	return				((vertex_position(position).xz() < (1 << MAX_NODE_BIT_COUNT) - 1));
 }
 
 

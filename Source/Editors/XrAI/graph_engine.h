@@ -32,9 +32,8 @@ public:
 #ifndef AI_COMPILER
 	typedef CDataStorageBinaryHeap							CSolverPriorityQueue;
 #endif // AI_COMPILER
-	typedef CDataStorageBucketList<u32,u32,8*1024,false>	CPriorityQueue;
-	
-	typedef CVertexManagerFixed<u32,u32,8>					CVertexManager;
+	typedef CDataStorageBucketList<u32,u32, 8*1024,false>	CPriorityQueue;
+	typedef CVertexManagerFixed<u32,u32, 8>					CVertexManager;
 
 #ifndef AI_COMPILER
 	typedef CVertexManagerHashFixed<
@@ -44,8 +43,9 @@ public:
 				8*1024
 			>												CSolverVertexManager;
 #endif // AI_COMPILER
+
 #ifdef AI_COMPILER
-	typedef CVertexAllocatorFixed<2*1024*1024>				CVertexAllocator;
+	typedef CVertexAllocatorFixed<16*2*1024*1024>				CVertexAllocator;
 #else
 	typedef CVertexAllocatorFixed<64*1024>					CVertexAllocator;
 	typedef CVertexAllocatorFixed<8*1024>					CSolverVertexAllocator;

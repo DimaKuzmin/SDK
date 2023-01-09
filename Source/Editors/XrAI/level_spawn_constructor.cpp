@@ -530,7 +530,7 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 			(*I).tNodeID				= *i;
 			(*I).tPoint					= level_graph().vertex_position(*i);
 			(*I).fDistance				= cross_table().vertex(*i).distance();
-//			Msg							("    [%f][%f][%f] : %f",VPUSH((*I).tPoint),zone->o_Position.distance_to((*I).tPoint));
+			Msg							("    [%f][%f][%f] : %f",VPUSH((*I).tPoint),zone->o_Position.distance_to((*I).tPoint));
 		}
 		
 		l_tpaStack.clear				();
@@ -614,7 +614,7 @@ void CLevelSpawnConstructor::Execute							()
 	init								();
 	
 	correct_objects						();
-	generate_artefact_spawn_positions	();
+//	generate_artefact_spawn_positions	();
 	correct_level_changers				();
 	verify_space_restrictors			();
 	

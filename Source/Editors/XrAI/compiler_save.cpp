@@ -199,7 +199,7 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 			if (NC.p.xz() > MAX_PX)
 			{
 				MAX_PX = NC.p.xz();
-				clMsg("NEW ROW[%d] Real[%f],[%f],[%f] unpacked x[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, z, NC.p.xz());
+				clMsg("NEW ROW[%d] Real[%f],[%f] unpacked x[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.z, x, z, NC.p.xz());
 			}
 		}
 	}

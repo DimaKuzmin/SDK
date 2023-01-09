@@ -95,7 +95,7 @@ struct	hdrNODES
 #pragma pack(1)
 #ifndef _EDITOR
 
-//#define _USE_NODE_POSITION_11
+#define _USE_NODE_POSITION_11
 
 #ifndef _USE_NODE_POSITION_11
 class NodePosition
@@ -127,8 +127,8 @@ class NodePosition
 {
 	u8	data[6];
 public:
-	ICF	void xz	(u32 value)	{ CopyMemory	(data,&value,4);		}
-	ICF	void y	(u16 value)	{ CopyMemory	(data + 4,&value,2);	}
+	ICF	void xz	(u32 value)	{ CopyMemory	(data, &value, 4);		}
+	ICF	void y	(u16 value)	{ CopyMemory	(data + 4,&value, 2);	}
 
 	ICF	u32	xz	() const	{
 		return			((*((u32*)data)) & 0xffffffff);
@@ -149,16 +149,23 @@ public:
 };
 #endif
 
-struct NodeCompressed {
+struct NodeCompressed
+{
 public:
-	u8				data[12];
+	u8 data_light;
+	//u8			data[12];
+	u32				data[4];
+
 private:
 	
 	ICF	void link(u8 link_index, u32 value)
-	{
+	{	
+		/*
 		value			&= 0x007fffff;
-		switch (link_index) {
-			case 0 : {
+		switch (link_index)
+		{
+			case 0 :
+			{
 				value	|= (*(u32*)data) & 0xff800000;
 				CopyMemory(data, &value, sizeof(u32));
 				break;
@@ -182,15 +189,20 @@ private:
 				break;
 			}
 		}
+		*/ 
+
+		data[link_index] = value;
 	}
 	
 	ICF	void light(u8 value)
 	{
-		data[10]		|= value << 4;
-	}
+		data_light = value;
+		//data[10]		|= value << 4;
+	};
 
 public:
-	struct SCover {
+	struct SCover
+	{
 		u16			cover0 : 4;
 		u16			cover1 : 4;
 		u16			cover2 : 4;
@@ -220,18 +232,31 @@ public:
 
 	ICF	u32	link(u8 index) const
 	{
-		switch (index) {
-			case 0 :	return	((*(u32*)data) & 0x007fffff);
-			case 1 :	return	(((*(u32*)(data + 2)) >> 7) & 0x007fffff);
-			case 2 :	return	(((*(u32*)(data + 5)) >> 6) & 0x007fffff);
-			case 3 :	return	(((*(u32*)(data + 8)) >> 5) & 0x007fffff);
+		/*
+		switch (index)
+		{
+
+			case 0 :
+				return	((*(u32*)data) & 0x007fffff);
+			case 1 :
+				return	(((*(u32*)(data + 2)) >> 7) & 0x007fffff);
+			case 2 :
+				return	(((*(u32*)(data + 5)) >> 6) & 0x007fffff);
+			case 3 :
+				return	(((*(u32*)(data + 8)) >> 5) & 0x007fffff);
+
+
+
 			default :	NODEFAULT;
 		}
+		*/ 
+		return data[index];
+
 #ifdef DEBUG
 		return			(0);
 #endif
 	}
-	
+		
 	friend class	CLevelGraph;
 	friend struct	CNodeCompressed;
 	friend class	CNodeRenumberer;
