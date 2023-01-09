@@ -32,6 +32,8 @@ public:
 	bool ExportDir(xr_string& dir);
 
 	bool LoadAiMAP();
+	void AddSceneObjectToList();
+
 	void UndoLoad();
 	void SelectLoaded();
 	void CheckCustomData();

@@ -187,6 +187,15 @@ void UIObjectList::ExportAIMap()
 	}
 }
 
+void UIObjectList::AddSceneObjectToList()
+{
+	ESceneCustomOTool* scene_objects = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SCENEOBJECT));
+	ESceneAIMapTool* ai_map = dynamic_cast<ESceneAIMapTool*>(Scene->GetOTool(OBJCLASS_AIMAP));
+
+	if (ai_map && scene_objects)
+ 		ai_map->SetSnapList(&scene_objects->GetObjects());
+}
+
 
 void UIObjectList::SetScale(Fvector size)
 {
@@ -782,6 +791,8 @@ void UIObjectList::ModifyAIMAPFiles(Fvector offset)
 	}
 }
 
+int value_ai;
+
 void UIObjectList::MergeAIMAP(u32 files)
 {
 	xr_vector <Fvector3> result;
@@ -1177,8 +1188,26 @@ void UIObjectList::UpdateUIObjectList()
 
 	}
 	
+
+
+
+
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
+		/*
+		ImGui::InputInt("SelectID: ", &value_ai, 0, 100000000);
+
+		if (ImGui::Button("SelectNode", ImVec2(-1, 0)))
+		{
+			ESceneAIMapTool* ai_tool = (ESceneAIMapTool*)Scene->GetTool(OBJCLASS_AIMAP);
+			if (ai_tool)
+				ai_tool->SelectNode(value_ai);
+		}
+		
+		if (ImGui::Button("Set SnapList", ImVec2(-1, 0)))
+			AddSceneObjectToList();
+		*/
+
 		if (ImGui::Button("select map file", ImVec2(-1, 0)))
 			SelectAIMAPFile();
 
@@ -1197,7 +1226,8 @@ void UIObjectList::UpdateUIObjectList()
 
 		if (ImGui::Button("merge", ImVec2(-1, 0)))
 			MergeAIMAP(merge_ai_map_size);
-
+	   
+ 
 
 		ImGui::InputInt("size: ", &merge_ai_map_size, 1, 1);
 		if (merge_ai_map_size > 0)

@@ -254,7 +254,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
 {
     int ps = portals.size();
 
-    //SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
+    SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
 
     int curr = start;
     CTimer t; 
@@ -263,7 +263,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
     {       
         sPortal* p_it = &portals[id];
 
-        //pb->Update(curr);
+        pb->Update(curr);
 
         string128 text = { 0 };
         printf(text, "TH[%u] portal %u of %u, ms[%d]", &th, &curr, &ps, t.GetElapsed_ms());
@@ -324,7 +324,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
 
     }
 
-    //UI->ProgressEnd(pb);
+    UI->ProgressEnd(pb);
 }
 
 
