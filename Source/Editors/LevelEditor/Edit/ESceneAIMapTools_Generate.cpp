@@ -20,13 +20,14 @@ IC void SnapXZ	(Fvector&	V, float ps)
 	V.x = snapto(V.x,ps);
 	V.z = snapto(V.z,ps);
 }
-struct tri	{
+struct tri	
+{
 	Fvector* v[3];
 	Fvector	N;
 };
 
 const int	RCAST_MaxTris	= (2*1024);
-const int	RCAST_Count		= 4;
+const int	RCAST_Count		= 1;
 const int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
 const float	RCAST_Depth		= 1.f;
 const float RCAST_VALID 	= 0.55f;
@@ -40,7 +41,7 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
 	Fbox	BB;				BB.set	(PointUp,PointUp);		BB.grow(m_Params.fPatchSize/2);	// box 1
 	Fbox	B2;				B2.set	(PointDown,PointDown);	B2.grow(m_Params.fPatchSize/2);	// box 2
 	BB.merge				(B2);
-
+ 
     if (m_CFModel)
     {
     	/*
@@ -54,7 +55,10 @@ BOOL ESceneAIMapTool::CreateNode(Fvector& vAt, SAINode& N, bool bIC)
     	Scene->BoxQuery(PQ,BB,CDB::OPT_FULL_TEST,m_CFModel);
     }
     else
-    	Scene->BoxQuery(PQ,BB,CDB::OPT_FULL_TEST,GetSnapList());
+      
+    {
+         Scene->BoxQuery(PQ, BB, CDB::OPT_FULL_TEST, GetSnapList());         
+    }
 
 	DWORD	dwCount 		= PQ.r_count();
 	if (dwCount==0){
@@ -264,6 +268,47 @@ void ESceneAIMapTool::hash_Initialize()
 		}
 }
 
+void ESceneAIMapTool::hash_loadFromSaved(Fbox& box)
+{
+    for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
+    {
+        AINodeVec* V = hash_FillFromSaved((*it)->Pos, box);
+       
+        //R_ASSERT2(V,"AINode position out of bounds.");
+        if (!V)
+        {
+            Msg("Out bounds x[%.2f] y[%.2f] z[%.2f]", (*it)->Pos.x, (*it)->Pos.y, (*it)->Pos.z);
+            continue;
+
+        }
+        V->push_back(*it);
+    }
+}
+
+AINodeVec* ESceneAIMapTool::hash_FillFromSaved(Fvector& V, Fbox& box)
+{
+    // Calculate offset,scale,epsilon
+    Fvector				VMmin, VMscale, VMeps, scale;
+
+    Fbox& bb = box;
+    VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+    VMmin.set(bb.min);
+    VMeps.set(float(VMscale.x / HDIM_X / 2.f), float(0), float(VMscale.z / HDIM_Z / 2.f));
+    
+    VMeps.x = (VMeps.x < EPS_L) ? VMeps.x : EPS_L;
+    VMeps.y = (VMeps.y < EPS_L) ? VMeps.y : EPS_L;
+    VMeps.z = (VMeps.z < EPS_L) ? VMeps.z : EPS_L;
+
+    scale.set(float(HDIM_X), float(0), float(HDIM_Z));
+    scale.div(VMscale);
+
+    // Hash
+    DWORD ix, iz;
+    ix = iFloor((V.x - VMmin.x) * scale.x);
+    iz = iFloor((V.z - VMmin.z) * scale.z);
+    return (ix <= HDIM_X && iz <= HDIM_Z) ? &m_HASH[ix][iz] : 0;
+}
+
 void ESceneAIMapTool::hash_FillFromNodes()
 {
 	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++)
@@ -380,7 +425,7 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 	SAINode N;
 
 	BOOL bRes		= CreateNode(vAt,N,bIC);
-    //Msg("Created_NODE");
+
     if (!bRes&&bIC&&bSuperIC)
     {
     	Fvector D	= {0,1,0};

@@ -405,8 +405,11 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
             {
             	// !ForUndo
                     xr_string part_name 	= part_prefix + _I->second->ClassName() + ".part";
+                  
                     if(_I->second->can_use_inifile())
                     {
+                        Msg("Save TOOL: %d, name_file: %s", (u32) _I->first, part_name);
+
                         EFS.MarkFile			(part_name.c_str(),true);
                     	SaveToolLTX				(_I->second->FClassID, part_name.c_str());
                     }  //can_use_ini_file
@@ -414,7 +417,7 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
                     {
 						_I->second->SaveStream	(m_SaveCache);
 
-						EFS.MarkFile			(part_name.c_str(),true);
+						EFS.MarkFile			(part_name.c_str(), true);
 
 						IWriter* FF				= FS.w_open	(part_name.c_str());
 						R_ASSERT			(FF);

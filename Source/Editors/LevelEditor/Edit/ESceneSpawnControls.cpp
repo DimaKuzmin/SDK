@@ -36,6 +36,7 @@ bool  TUI_ControlSpawnAdd::AppendCallback(SBeforeAppendCallbackParams* p)
 bool  TUI_ControlSpawnAdd::Start(TShiftState Shift)
 {
     UISpawnTool* F = (UISpawnTool*)parent_tool->pForm;
+
 	if (F->IsAttachObject())
     {
 		CCustomObject* from = Scene->RayPickObject(UI->ZFar(), UI->m_CurrentRStart, UI->m_CurrentRDir, OBJCLASS_DUMMY, 0, 0);
@@ -69,7 +70,9 @@ bool  TUI_ControlSpawnAdd::Start(TShiftState Shift)
         	ELog.DlgMsg(mtError,"Attach impossible.");
         }
         */
-    }else{
+    }
+    else
+    {
 	    DefaultAddObject(Shift, TBeforeAppendCallback(this,& TUI_ControlSpawnAdd::AppendCallback));
     }
     return false;

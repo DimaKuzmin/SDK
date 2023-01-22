@@ -208,7 +208,8 @@ public:
 				R_ASSERT3							(E,"Can't create entity.",fName);
 //				E->Spawn_Read						(P);
 				CSE_ALifeGraphPoint					*tpGraphPoint = smart_cast<CSE_ALifeGraphPoint*>(E);
-				if (tpGraphPoint) {
+				if (tpGraphPoint) 
+				{
 					E->Spawn_Read					(P);
 
 					Fvector							tVector;
@@ -229,7 +230,8 @@ public:
 							}
 						}
 					}
-					if (fMinDistance < EPS_L) {
+					if (fMinDistance < EPS_L)
+					{
 						SConnectionVertex				T;
 						LPSTR							S;
 						S								= xr_strdup(tpGraphPoint->name_replace());

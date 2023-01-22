@@ -229,7 +229,7 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 
 		while (file.section_exist(tmp))
 		{
-			Msg("Read %s", tmp);
+			//Msg("Read %s", tmp);
 
 			if (file.r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
 			{
@@ -793,6 +793,34 @@ void UIObjectList::ModifyAIMAPFiles(Fvector offset)
 
 int value_ai;
 
+
+xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
+{
+	IReader* read = FS.r_open(file);
+
+	xr_vector<Fvector3> positions;
+
+	if (read)
+	{
+
+		read->open_chunk(2);
+
+		u32 size = read->r_u32();
+
+		for (int i = 0; i < size; i++)
+		{
+			Fvector3 pos;
+			read->r_fvector3(pos);
+			positions.push_back(pos);
+		}
+
+	}
+
+	FS.r_close(read);
+
+	return positions;
+}
+ 
 void UIObjectList::MergeAIMAP(u32 files)
 {
 	xr_vector <Fvector3> result;
@@ -819,9 +847,7 @@ void UIObjectList::MergeAIMAP(u32 files)
 		write->w_u32(result.size());
 		for (auto pos : result)
 		{
-			write->w_float(pos.x);
-			write->w_float(pos.y);
-			write->w_float(pos.z);
+			write->w_fvector3(pos);
 		}
 		write->close_chunk();
 		FS.w_close(write);
@@ -1103,40 +1129,11 @@ void UIObjectList::CreateLogicConfigs()
 	}
 }
 
-xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
-{
-	IReader* read = FS.r_open(file);
-
-	xr_vector<Fvector3> positions;
-
-	if (read)
-	{
-
-		read->open_chunk(2);
-
-		u32 size = read->r_u32();
-
-		for (int i = 0; i < size; i++)
-		{
-			Fvector3 pos;
-			pos.x = read->r_float();
-			pos.y = read->r_float();
-			pos.z = read->r_float();
-
-			positions.push_back(pos);
-		}
-
-	}
-
-	FS.r_close(read);
-
-	return positions;
-}
-
-
 int sector = 0;
 int cur_light_type = 0;
 const char* light_type[] = { "all", "lightmap", "dynamic", "animated"};
+
+int cur_smart = 0;
 
 void UIObjectList::UpdateUIObjectList()
 {
@@ -1158,7 +1155,6 @@ void UIObjectList::UpdateUIObjectList()
 
 	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
 		ImGui::ListBox("list_light", &cur_light_type, light_type, IM_ARRAYSIZE(light_type), 8);
-
 
 	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP)
 	{
@@ -1188,10 +1184,6 @@ void UIObjectList::UpdateUIObjectList()
 
 	}
 	
-
-
-
-
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
 		/*
@@ -1222,12 +1214,8 @@ void UIObjectList::UpdateUIObjectList()
 		if (ImGui::Button("move to offsets", ImVec2(-1, 0)))
 			ModifyAIMAPFiles(vec_offset);			
 		
-		
-
 		if (ImGui::Button("merge", ImVec2(-1, 0)))
 			MergeAIMAP(merge_ai_map_size);
-	   
- 
 
 		ImGui::InputInt("size: ", &merge_ai_map_size, 1, 1);
 		if (merge_ai_map_size > 0)
@@ -1265,8 +1253,8 @@ void UIObjectList::UpdateUIObjectList()
 
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
-		if (ImGui::Button("Check CustomData", ImVec2(-1, 0)))
-			CheckCustomData();
+		//if (ImGui::Button("Check CustomData", ImVec2(-1, 0)))
+		//	CheckCustomData();
 
 		ImGui::InputText("#repace_name", prefix_name, sizeof(prefix_name));
 
@@ -1274,6 +1262,38 @@ void UIObjectList::UpdateUIObjectList()
 		{
 			RenameSelectedObjects();
 		}
+
+		ImGui::InputInt("smart_mask", &cur_smart, 1, 10);
+
+		if (ImGui::Button("smart_terrain_mask export", ImVec2(-1, 0)))
+		{
+			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
+			ObjectList list = scene_object->GetObjects();
+
+			for (auto obj : list)
+			{
+			   if (obj->Selected())
+			   {
+				   Msg("[%s]", obj->GetName());
+				   Msg("  255, 255, 255, %d", cur_smart);
+						  
+			   }
+			}
+		}	
+
+		if (ImGui::Button("smart_terrain_names", ImVec2(-1, 0)))
+		{
+			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
+			ObjectList list = scene_object->GetObjects();
+
+			for (auto obj : list)
+			{
+				if (obj->Selected())
+					Msg("%s", obj->GetName());
+			}
+		}
+
+		/*
 
 		if (create_cfg_file)
 		{
@@ -1287,6 +1307,7 @@ void UIObjectList::UpdateUIObjectList()
 				ImGui::InputText("#custom_data", custom_data, sizeof(custom_data));
 			}
 		}
+
 	  
 		ImGui::Checkbox("#create_file", &create_cfg_file);
 		ImGui::Checkbox("#select_file", &select_file);
@@ -1300,6 +1321,8 @@ void UIObjectList::UpdateUIObjectList()
 		{
 			CreateLogicConfigs();
 		}
+
+		*/
 	}
 
 }

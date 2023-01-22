@@ -103,7 +103,8 @@ CCommandVar 	ExecCommand	(u32 cmd, CCommandVar p1, CCommandVar p2)
 	SECommand*	CMD 	= ECommands[cmd];
     VERIFY				(CMD&&!CMD->command.empty());
     static int exec_level= 0;
-    if (bAllowLogCommands){
+    if (bAllowLogCommands && false)
+    {
     	string128 level;strcpy(level,exec_level==0?"":";");
         for(int k=0; k<exec_level; ++k) strcat(level,".");
         xr_string sp1	= p1.IsString()?xr_string(p1):xr_string("");

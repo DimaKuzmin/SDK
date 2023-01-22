@@ -24,6 +24,8 @@ static const char* h_str =
 void Help()
 {	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
 
+XRLC_LIGHT_API extern int	LIGHT_Count;
+
 void Startup(LPSTR     lpCmdLine)
 {
 	char cmd[512],name[256];
@@ -55,6 +57,24 @@ void Startup(LPSTR     lpCmdLine)
 	CTimer				dwStartupTime; dwStartupTime.Start();
 
 	xrCompileDO			(bNet);
+ 
+	LPCSTR str = strstr(Core.Params, "-de_samples");
+
+	if (str)
+	{
+		int count = 0;
+		LPCSTR new_str = str + 3;
+		int sscanf_size = sscanf(new_str, "%d", &count);
+		if (count > 0 && count < 7 && sscanf_size == 1)
+			LIGHT_Count = count;
+		else
+			LIGHT_Count = 7;
+
+	}
+	else
+		LIGHT_Count = 7;
+
+		   
 
 	// Show statistic
 	char	stats[256];

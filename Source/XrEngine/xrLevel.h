@@ -353,7 +353,8 @@ public:
 };									// 2+5+2+11 = 20b
 #endif
 
-struct SNodePositionOld {
+struct SNodePositionOld 
+{
 	s16				x;
 	u16				y;
 	s16				z;

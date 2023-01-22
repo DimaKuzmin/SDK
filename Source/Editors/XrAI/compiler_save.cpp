@@ -179,34 +179,40 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		NodeCompressed	NC;
 		Compress		(NC,N,H);
 		compressed_nodes.push_back(NC);
-
+	  
+		if (NC.p.xz() > MAX_PX)
+			MAX_PX = NC.p.xz();
+		 
 		float x, z;
 
 		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
 		//int pxz = iFloor((x_o - H.aabb.min.x) * H.size + EPS_L + .5f) * m_row_length + iFloor((z_o - H.aabb.min.z) * H.size + EPS_L + .5f);
-		//int py = iFloor(65535.f * (y_o - H.aabb.min.y) / (H.size_y) + EPS_L);
+		int py = iFloor(65535.f * (NC.p.y() - H.aabb.min.y) / (H.size_y) + EPS_L);
 
 		x = NC.p.xz() / m_row_length;
 		z = NC.p.xz() % m_row_length;
 		x = float(x) * H.size + H.aabb.min.x;
 		z = float(z) * H.size + H.aabb.min.z;
 
+		 
+
 		int max_px = 0x00ffffff;
 
-		//if (NC.p.xz() > max_px)	  
+		if (NC.p.xz() > max_px)	  
 		{
 			count++;
 			if (NC.p.xz() > MAX_PX)
 			{
 				MAX_PX = NC.p.xz();
-				clMsg("NEW ROW[%d] Real[%f],[%f] unpacked x[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.z, x, z, NC.p.xz());
+				clMsg("NEW ROW[%d] Real[%f], [%f], [%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, z, NC.p.xz());
 			}
 		}
+		 
 	}
 
 	int n_e = errored_nodes;
  
-	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u], MAX_PXZ_2[%u]", 
+	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u]", 
 		compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), MAX_PX, errored_nodes);
  
 	xr_vector<u32>	sorted;

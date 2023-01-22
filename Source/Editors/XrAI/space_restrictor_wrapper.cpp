@@ -261,11 +261,16 @@ void CSpaceRestrictorWrapper::verify_connectivity	()
 
 	Msg								("! %d nodes are disconnected!",level_graph().header().vertex_count() - (nodes.size() + m_internal.size()));
 
+	
 	R_ASSERT3						(
 		nodes.size() + m_internal.size() == level_graph().header().vertex_count(),
 		"Restrictor separates AI map into several disconnected components",
 		object().name_replace()
 	);
+	
+
+	//if (nodes.size() + m_internal.size() == level_graph().header().vertex_count())
+	//	Msg("Restrictor separates AI map into several disconnected components", object().name_replace());
 }
 
 void CSpaceRestrictorWrapper::verify				(CLevelGraph &level_graph, CGraphEngine &graph_engine, bool no_separator_check)

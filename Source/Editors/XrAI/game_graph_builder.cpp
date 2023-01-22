@@ -92,7 +92,8 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 		graph_type::const_vertex_iterator	I = graph().vertices().begin();
 		graph_type::const_vertex_iterator	E = graph().vertices().end();
 		for ( ; I != E; ++I) {
-			if ((*I).second->data().tLocalPoint.distance_to_sqr(vertex.tLocalPoint) < EPS_L) {
+			if ((*I).second->data().tLocalPoint.distance_to_sqr(vertex.tLocalPoint) < EPS_L)
+			{
 				Msg			("! removing graph point [%s][%f][%f][%f] because it is too close to the another graph point",entity->name_replace(),VPUSH(entity->o_Position));
 				F_entity_Destroy(entity);
 				return;
@@ -129,7 +130,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	vertex.tLevelID			= 0;
 	vertex.tDeathPointCount = 0;
 	vertex.dwPointOffset	= 0;
-
+	Msg("VertexCount: %d, name: %s", graph().vertex_count(), entity->name_replace());
 	graph().add_vertex		(vertex,graph().vertices().size());
 
 	F_entity_Destroy		(entity);

@@ -176,15 +176,37 @@ bool CCustomObject::LoadStream(IReader& F)
 	return true;
 }
 
+bool ch_value(Fvector v)
+{
+    int max = (u32) 1 << 30;
+    int min = -max;
+ 
+    if (v.x > max || v.y > max || v.z > max)
+        return false;
+
+    if (v.x < min || v.y < min || v.z < min)
+        return false;
+
+    return true;
+}
+
 void CCustomObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
 {
 	ini.w_u32		(sect_name, "co_flags", m_CO_Flags.get());
 
 	ini.w_string	(sect_name, "name", FName.c_str());
+    
+    
+    Fvector3 zero;
+    zero.set(0, 0, 0);
 
-    ini.w_fvector3 	(sect_name, "position", FPosition);
-    ini.w_fvector3 	(sect_name, "rotation", FRotation);
-    ini.w_fvector3 	(sect_name, "scale", FScale);
+    ini.w_fvector3(sect_name, "position", ch_value(FPosition) ? FPosition : zero);
+    ini.w_fvector3 	(sect_name, "rotation", ch_value(FRotation) ? FRotation : zero);
+    ini.w_fvector3 	(sect_name, "scale", ch_value(FScale) ? FScale : zero );
+
+   // ini.w_fvector3(sect_name, "position", FPosition);
+   // ini.w_fvector3(sect_name, "rotation", FRotation);
+   // ini.w_fvector3(sect_name, "scale", FScale);
 
 /*
     // object motion

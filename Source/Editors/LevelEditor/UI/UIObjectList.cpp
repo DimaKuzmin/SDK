@@ -142,6 +142,7 @@ void UIObjectList::DrawObjects()
 		{
 			if (it->first == OBJCLASS_DUMMY)
 				continue;
+
 			ObjectList& lst = ot->GetObjects();
 			ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
 		

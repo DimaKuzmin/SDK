@@ -13,6 +13,8 @@ class ESceneAIMapTool;
 struct SAINode;
 
 const u32 InvalidNode		= (1<<31)-1;
+const u32 InvalidNode_32bit = (1 << 24) - 1;
+const u32 InvalidNode_64bit = (1 << 31) - 1;
 
 #pragma pack(push,1)
 struct SAINode					// definition of "patch" or "node"
@@ -56,6 +58,11 @@ struct SAINode					// definition of "patch" or "node"
 
     void   		LoadStream			(IReader&, ESceneAIMapTool*);
     void   		SaveStream			(IWriter&, ESceneAIMapTool*);
+
+    //void      LoadStreamOffset(IReader&, ESceneAIMapTool*);
+    //void   	SaveStreamOffset(IWriter&, ESceneAIMapTool*);
+
+
     void   		LoadLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
     void   		SaveLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
 
@@ -86,6 +93,12 @@ class ESceneAIMapTool: public ESceneToolBase
     ref_shader			m_Shader;
     CDB::MODEL*			m_CFModel;
 protected:
+    
+    Fbox saved_box;
+    void                hash_loadFromSaved(Fbox& box);
+    AINodeVec*          hash_FillFromSaved(Fvector& pos, Fbox& box);
+
+
     void 				hash_FillFromNodes		();
     void 				hash_Initialize			();
 	void 				hash_Clear				();

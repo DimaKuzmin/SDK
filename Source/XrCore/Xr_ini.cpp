@@ -894,7 +894,7 @@ void	CInifile::w_fvector2	( LPCSTR S, LPCSTR L, const Fvector2&	V, LPCSTR commen
 
 void	CInifile::w_fvector3	( LPCSTR S, LPCSTR L, const Fvector3&	V, LPCSTR comment )
 {
-	string128 temp; xr_sprintf		(temp,sizeof(temp),"%f,%f,%f", V.x, V.y, V.z);
+	string128 temp; xr_sprintf		(temp,sizeof(temp),"%.12f,%.12f,%.12f", V.x, V.y, V.z);
 	w_string	(S,L,temp,comment);
 }
 
