@@ -101,6 +101,35 @@ void face_thread(CDB::CollectorPacked* cl, u8 threadID)
 	threads_end.push_back(true);
 }
 
+size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightings, xr_vector<b_BuildTexture>& Textures)
+{
+	size_t VertexDataSize = RaycastModel->get_verts_count() * sizeof(12);
+	size_t TrisIndexSize = RaycastModel->get_tris_count() * sizeof(12);
+	size_t TrisAdditionalDataSize = RaycastModel->get_tris_count() * sizeof(32);
+
+	size_t OptixMeshDataOverhead = VertexDataSize + TrisIndexSize;
+
+	size_t TextureMemorySize = 0;
+	for (const b_BuildTexture& Texture : Textures)
+	{
+		size_t TextureSize = (Texture.dwHeight * Texture.dwWidth) * sizeof(u32);
+		TextureSize += sizeof(24);
+		TextureMemorySize += TextureSize;
+	}
+
+	size_t LightingInfoSize = (Lightings.rgb.size() + Lightings.sun.size() + Lightings.hemi.size()) * sizeof(R_Light);
+	size_t TotalMemorySize = VertexDataSize + TrisIndexSize + TrisAdditionalDataSize + OptixMeshDataOverhead + TextureMemorySize + LightingInfoSize;
+
+	clMsg(" [xrHardwareLight]: Vertex data size: %zu MB, Tris index size: %zu MB", VertexDataSize / 1024 / 1024, TrisIndexSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Tris Additional Data: %zu MB", TrisAdditionalDataSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: OptiX overhead: %zu MB", OptixMeshDataOverhead / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Overall texture memory: %zu MB", TextureMemorySize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Lighting: %zu MB", LightingInfoSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: TOTAL: %zu MB", TotalMemorySize / 1024 / 1024);
+
+	return TotalMemorySize;
+}
+
 #include <thread>
 
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
@@ -157,11 +186,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
  
 	clMsg("Faces [%d] cpu_msec [%d]", lc_global_data()->g_faces().size(), timer.GetElapsed_ms());
 	*/ 
-	 
-
-
-  
-	Status("Converting faces... (ONE CORE)");
+ 
+//	Status("Converting faces... (ONE CORE)");
 	 
 	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
 	{
@@ -236,6 +262,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	extern void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL);
 	
+	GetMemoryRequiredForLoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
+
 	// save source SMF
 	string_path				fn;
 

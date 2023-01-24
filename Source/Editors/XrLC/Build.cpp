@@ -190,6 +190,10 @@ void CBuild::Run(LPCSTR P)
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
 
+
+
+
+
 	if (strstr(Core.Params, "-sample_9"))
 		g_params().m_lm_jitter_samples = 9;
 	else if (strstr(Core.Params, "-sample_4"))

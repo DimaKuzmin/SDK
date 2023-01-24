@@ -121,6 +121,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>A:\SDK\SDK\SDK\Include\cuda\;A:\SDK\SDK\SDK\Include\optix\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -222,7 +223,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>cuda.lib;cudart_static.lib;optix_prime.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>$(IntermediateOutputPath)LightPoint.cu.obj %(AdditionalOptions)</AdditionalOptions>
     </Link>
+    <PreBuildEvent>
+      <Command>nvcc.exe -gencode=arch=compute_50,code=\"sm_50,compute_50\" -IA:\SDK\SDK\SDK\Include\cuda\ -IA:\SDK\SDK\Source\Engine\xrLC_Light\ --use-local-env -x cu -G --keep-dir $(Platform)\$(Configuration) -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DFORCE_NO_EXCEPTIONS -D_USE_MATH_DEFINES -DWIN32 -DDEBUG -D_WINDOWS -D_USRDLL -DXRLC_LIGHT_EXPORTS -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_VC80_UPGRADE=0x0710 -DWIN32 -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINDLL -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MD " -o $(IntermediateOutputPath)LightPoint.cu.obj "$(ProjectDir)LightPoint.cu"</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Shader_xrLC.h" />
@@ -235,6 +241,7 @@
     <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="detail_net_global_data.h" />
     <ClInclude Include="detail_slot_calculate.h" />
+    <ClInclude Include="DeviceBuffer.h" />
     <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="execute_statistics.h" />
     <ClInclude Include="file_compress.h" />
@@ -242,6 +249,7 @@
     <ClInclude Include="global_calculation_data.h" />
     <ClInclude Include="global_slots_data.h" />
     <ClInclude Include="gl_base_cl_data.h" />
+    <ClInclude Include="xrHardwareLight.h" />
     <ClInclude Include="hash2D.h" />
     <ClInclude Include="implicit_net_global_data.h" />
     <ClInclude Include="itterate_adjacents_static.h" />
@@ -308,6 +316,7 @@
     <ClInclude Include="xrLight_ImplicitRun.h" />
     <ClInclude Include="xrMU_Model.h" />
     <ClInclude Include="xrMU_Model_Reference.h" />
+    <ClInclude Include="xrRayDefinition.h" />
     <ClInclude Include="xrThread.h" />
     <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>
@@ -329,6 +338,7 @@
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
     <ClCompile Include="gl_base_cl_data.cpp" />
+    <ClCompile Include="xrHardwareLight.cpp" />
     <ClCompile Include="implicit_net_global_data.cpp" />
     <ClCompile Include="lcnet_task_manager.cpp" />
     <ClCompile Include="lcnet_task_menager_run_task.cpp" />
@@ -448,6 +458,9 @@
     <ProjectReference Include="..\XrDXT\XrDXT.vcxproj">
       <Project>{7c119635-1963-4547-b345-cb7ed7eb2ee4}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightPoint.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

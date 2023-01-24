@@ -69,6 +69,15 @@
     <Filter Include="do_light">
       <UniqueIdentifier>{56804a38-c24a-4fa0-a5e2-617c53a49bbc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Light\Lights\Hardware">
+      <UniqueIdentifier>{dd12f59c-10a9-4b02-a736-28fba4419f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\Lights\Hardware_code">
+      <UniqueIdentifier>{1078e1d6-564d-4052-9cb6-450d4da0ea40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\Lights\base_lighting">
+      <UniqueIdentifier>{0855af4f-c4de-4e7c-b110-78baa227bfa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -287,15 +296,6 @@
     <ClInclude Include="tga.h">
       <Filter>Light\Textures</Filter>
     </ClInclude>
-    <ClInclude Include="base_lighting.h">
-      <Filter>Light\Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="light_point.h">
-      <Filter>Light\Lights</Filter>
-    </ClInclude>
-    <ClInclude Include="R_light.h">
-      <Filter>Light\Lights</Filter>
-    </ClInclude>
     <ClInclude Include="base_color.h">
       <Filter>Light\color</Filter>
     </ClInclude>
@@ -324,6 +324,24 @@
       <Filter>do_light</Filter>
     </ClInclude>
     <ClInclude Include="..\Shader_xrLC.h" />
+    <ClInclude Include="R_light.h">
+      <Filter>Light\Lights\base_lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="base_lighting.h">
+      <Filter>Light\Lights\base_lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="light_point.h">
+      <Filter>Light\Lights\base_lighting</Filter>
+    </ClInclude>
+    <ClInclude Include="xrHardwareLight.h">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClInclude>
+    <ClInclude Include="xrRayDefinition.h">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceBuffer.h">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -542,9 +560,6 @@
     <ClCompile Include="tga.cpp">
       <Filter>Light\Textures</Filter>
     </ClCompile>
-    <ClCompile Include="base_lighting.cpp">
-      <Filter>Light\Lights</Filter>
-    </ClCompile>
     <ClCompile Include="base_color.cpp">
       <Filter>Light\color</Filter>
     </ClCompile>
@@ -581,8 +596,19 @@
     <ClCompile Include="..\Public\hxGridInterface.cpp">
       <Filter>kernel</Filter>
     </ClCompile>
+    <ClCompile Include="base_lighting.cpp">
+      <Filter>Light\Lights\base_lighting</Filter>
+    </ClCompile>
+    <ClCompile Include="xrHardwareLight.cpp">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LightPoint.cu">
+      <Filter>Light\Lights\Hardware</Filter>
+    </None>
   </ItemGroup>
 </Project>
