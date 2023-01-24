@@ -33,6 +33,136 @@ struct _MM_ALIGN16		ray_t {
 	vec_t		inv_dir;
 	vec_t		fwd_dir;
 };
+
+struct _MM_ALIGN16 RayOptimized
+{
+	ICF void set(Fvector3 o, Fvector3 d)
+	{
+		origin = o;
+		direction = d;
+		inv_direction.set(1 / d.x, 1 / d.y, 1 / d.z);
+		sign[0] = (inv_direction.x < 0) ? 1 : 0;
+		sign[1] = (inv_direction.y < 0) ? 1 : 0;
+		sign[2] = (inv_direction.z < 0) ? 1 : 0;
+	}
+	Fvector3 origin;
+	Fvector3 direction;
+	Fvector3 inv_direction;
+	int sign[3];
+};
+
+struct _MM_ALIGN16 BOX_Optimized
+{
+public:
+	ICF BOX_Optimized(const Fvector3& min, const Fvector3& max)
+	{
+		//RAssert(min < max);
+		bounds[0] = min;
+		bounds[1] = max;
+	}
+ 	Fvector3 bounds[2];
+
+};
+
+ICF static bool intersect_v1(const BOX_Optimized& b, const RayOptimized& r, float t0, float t1)
+{
+	 
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+	tmin = (b.bounds[r.sign[0]].x - r.origin.x) * r.inv_direction.x;
+	tmax = (b.bounds[1 - r.sign[0]].x - r.origin.x) * r.inv_direction.x;
+	tymin = (b.bounds[r.sign[1]].y - r.origin.y) * r.inv_direction.y;
+	tymax = (b.bounds[1 - r.sign[1]].y - r.origin.y) * r.inv_direction.y;
+	
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
+	
+	if (tymin > tmin)
+		tmin = tymin;
+	if (tymax < tmax)
+		tmax = tymax;
+	
+	tzmin = (b.bounds[r.sign[2]].z - r.origin.z) * r.inv_direction.z;
+	tzmax = (b.bounds[1 - r.sign[2]].z - r.origin.z) * r.inv_direction.z;
+
+	if ((tmin > tzmax) || (tzmin > tmax))
+		return false;
+
+	if (tzmin > tmin)
+		tmin = tzmin;
+	if (tzmax < tmax)
+		tmax = tzmax;
+
+	bool val = (tmin < t1) && (tmax > t0);
+
+	//if (val)
+	//Msg("tmin[%f] tmax[%f], max_dist[%f]",tmin,tmax, t0);
+
+	return (val);
+}
+
+struct _MM_ALIGN16 RayOptimized_v2
+{
+	float origin[3];
+	float dir[3];
+	float dir_inv[3];
+  
+	void SetOrigin(Fvector v)
+	{
+		origin[0] = v.x;
+		origin[1] = v.y;
+		origin[2] = v.z;
+	}
+
+	void SetDir(Fvector v)
+	{
+		dir[0] = v.x;
+		dir[1] = v.y;
+		dir[2] = v.z;
+	}
+
+	void SetInvDir(Fvector v)
+	{
+		dir_inv[0] = v.x;
+		dir_inv[1] = v.y;
+		dir_inv[2] = v.z;
+	}
+};
+
+/// An axis-aligned bounding box.
+struct _MM_ALIGN16 BOX_Optimized_v2
+{
+	float min[3];
+	float max[3];
+};
+
+ICF static inline float min(float x, float y) {
+	return x < y ? x : y;
+}
+
+ICF static inline float max(float x, float y)
+{
+	return x > y ? x : y;
+}
+
+
+ICF static bool intersection_v2(RayOptimized_v2* ray, BOX_Optimized_v2* box, float max_dist)
+{
+	float tmin = -max_dist, tmax = max_dist;
+	for (int i = 0; i < 3; ++i)
+	{
+		float t1 = (box->min[i] - ray->origin[i]) * ray->dir_inv[i];
+		float t2 = (box->max[i] - ray->origin[i]) * ray->dir_inv[i];
+
+		tmin = max(tmin, min(t1, t2));
+		tmax = min(tmax, max(t1, t2));
+	}
+	return tmin < tmax;
+}
+
+
+
+
+
 struct ray_segment_t {
 	float		t_near, t_far;
 };
@@ -208,7 +338,6 @@ ICF BOOL	isect_fpu_t(const Fvector& min, const Fvector& max, const ray_t& ray, F
 #define rotatelps(ps)		_mm_shuffle_ps((ps),(ps), 0x39)	// a,b,c,d -> b,c,d,a
 #define muxhps(low,high)	_mm_movehl_ps((low),(high))		// low{a,b,c,d}|high{e,f,g,h} = {c,d,g,h}
 
-
 static const float flt_plus_inf = -logf(0);	// let's keep C and C++ compilers happy.
 static const float _MM_ALIGN16
 ps_cst_plus_inf[4] = { flt_plus_inf,  flt_plus_inf,  flt_plus_inf,  flt_plus_inf },
@@ -272,6 +401,10 @@ public:
 	Fvector* verts;
 
 	ray_t			ray;
+	RayOptimized	ray_optimize;
+	RayOptimized_v2 ray_optimize_v2;
+
+ 
 	float			rRange;
 	float			rRange2;
 	bool			bUseSSE;
@@ -281,11 +414,20 @@ public:
 		dest = CL;
 		tris = T;
 		verts = V;
+		
 		ray.pos.set(C);
 		ray.inv_dir.set(1.f, 1.f, 1.f).div(D);
 		ray.fwd_dir.set(D);
+		
+		ray_optimize.set(C, D);
+		ray_optimize_v2.SetDir(D);
+		ray_optimize_v2.SetOrigin(C);
+		ray_optimize_v2.SetInvDir(ray.inv_dir);
+
+
 		rRange = R;
 		rRange2 = R * R;
+ 
 		if (!bUseSSE)
 		{
 			// for FPU - zero out inf
@@ -322,7 +464,7 @@ public:
 
 		_mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
 		_mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
-
+		
 		return 		isect_sse_t(box, ray, dist);
 	}
 
@@ -423,14 +565,17 @@ public:
 		}
 	}
 
-	int count = 0;
+	//u32 count;
+
 	void			_stab(const AABBNoLeafNode* node)
 	{
-		count++;
+		//count++;
 		// Should help
 		_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
 		// Actual ray/aabb test
+		
+		 
 		if (bUseSSE)
 		{
 			// use SSE
@@ -439,49 +584,146 @@ public:
 			//if (!isect_sse_fast(node, ray, d)) return;
 			if (d > rRange)																	return;
 		}
-		else {
+		else 
+		{
 			// use FPU
 			Fvector		P;
 			if (!_box_fpu((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))	return;
 			if (P.distance_to_sqr(ray.pos) > rRange2)											return;
 		}
+		 
 
+		/*
+		Fbox		BB;
+		BB.min.sub((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
+		BB.max.add((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
+
+	
+		
+		BOX_Optimized box(BB.min, BB.max);
+		if (!intersect_v1(box, ray_optimize, -rRange, rRange))
+			return;
+		
+
+		BOX_Optimized_v2 bbox;
+		bbox.min[0] = BB.min.x;
+		bbox.min[1] = BB.min.y;
+		bbox.min[2] = BB.min.z;
+		bbox.max[0] = BB.max.x;
+		bbox.max[1] = BB.max.y;
+		bbox.max[2] = BB.max.z;
+		if (!intersection_v2(&ray_optimize_v2, &bbox, rRange))
+			return;
+		*/
+
+/*
+		
+		//TextBOX   V1
+		Fbox		BB;
+		BB.min.sub((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
+		BB.max.add((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
+
+//#define use_method_v1
+
+#ifdef use_method_v1
+		BOX_Optimized box(BB.min, BB.max);		 
+		if (!intersect_v1(box, *r, -rRange, rRange))
+			return;
+	
+#else		 
+		//V2
+		ad_box bbox;
+		bbox.min[0] = BB.min.x;
+		bbox.min[1] = BB.min.y;
+		bbox.min[2] = BB.min.z;
+		bbox.max[0] = BB.max.x;
+		bbox.max[1] = BB.max.y;
+		bbox.max[2] = BB.max.z;
+		if (!intersection_v2(&r_a, &bbox, rRange))
+			return;
+		 
+#endif
+
+*/
 		// 1st chield
-		if (node->HasLeaf())	_prim(node->GetPrimitive());
-		else					_stab(node->GetPos());
+		if (node->HasLeaf())
+			_prim(node->GetPrimitive());
+		else	
+			_stab(node->GetPos());
 
 		// Early exit for "only first"
 		if (bFirst && dest->r_count())														return;
 
 		// 2nd chield
-		if (node->HasLeaf2())	_prim(node->GetPrimitive2());
-		else					_stab(node->GetNeg());
+		if (node->HasLeaf2())
+			_prim(node->GetPrimitive2());
+		else					
+			_stab(node->GetNeg());
 	}
 };
 
+xrCriticalSection csRAY;
 
+u64 IDX = 0;
+u64 RES = 0;
+u64 CCOUNT = 0;
 
 /*
-u64 IDX = 0;
-u64 RES = 0;  
 u64 TIDX = 0;
-xrCriticalSection csRAY;
   
 
 u64 countsTOTAL = 0;
 */
 
+CTimer* ttimer = 0;
+float old_sec = 0;
+
+u64 tri_time = 0;
+u64 pos_time = 0;
+ 
+u64 total_tri = 0;
+u64 total_ms = 0;
+
+bool start_thread = false;
+#include <thread>
+
+void StartLog()
+{
+
+	for (;;)
+	{
+		Sleep(5000);
+		Msg("TIDX: %u, CCOUNT[%u], RES: %u", IDX / 1000000, CCOUNT / 1000000, RES );
+	}
+}
+
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range, int INSTR_IDX) //0 = FPU, 1= SSE, 2 = AVX
 {
-	 
 	/*
-	CTimer timer; 
-	timer.Start();
+	if (!start_thread)
+	{
+		start_thread = true;
+		std::thread* th = new std::thread(StartLog);
+	}
+
 	IDX++;
 	*/
-	 
-	m_def->syncronize();
+	/*
+	csRAY.Enter();
+	if (!ttimer)
+	{
+		ttimer = xr_new<CTimer>();
+		ttimer->Start();
+ 	}
+	csRAY.Leave();
+
+	
+	CTimer timer; 
+	timer.Start();
+   	*/
  
+	m_def->syncronize();
+ 	
 
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
@@ -559,9 +801,12 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				ray_collider<false, false, false>	RC;
 				RC.bUseSSE = use_sse;
 				RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
+ 				
+				//CTimer t; t.Start();
 				RC._stab(N);
 				//RES += RC.dest->r_count();
-				//countsTOTAL += RC.count;
+				//CCOUNT += RC.count;
+				//tri_time += t.GetElapsed_ticks();
 			}
 		}
 	}
@@ -582,6 +827,22 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 	}
 	csRAY.Leave();
 	*/
-	
+ 	/*
+	csRAY.Enter();
+	if (IDX % 1000000 == 0)
+	{
+		u32 TRI = u32(u64(tri_time * ttimer->GetElapsed_ms()) / 10000000);
+
+		total_tri += TRI;
+		total_ms += ttimer->GetElapsed_ms();
+		
+		Msg("IDX[%u], RES[%u], time[%u], TRI: %u, total[%u], ms[%d]", IDX, RES, ttimer->GetElapsed_ms(), TRI, total_tri, total_ms);
+
+		ttimer->Start();
+		tri_time = 0;
+		pos_time = 0;
+	}
+	csRAY.Leave();
+ 	*/
 }
 

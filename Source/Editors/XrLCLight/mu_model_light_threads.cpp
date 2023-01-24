@@ -16,30 +16,11 @@
 #include "xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
-int MuThreads()
-{
-	 
-	if (LPCSTR str = strstr(Core.Params, "-mu_th"))
-	{
-		LPCSTR new_str = str + 6;
-		int count = 0;
-		sscanf(new_str, "%d", &count);
-		return count;
-	} 
-	 
-	/*
-	float size = inlc_global_data()->mu_refs().size() / 100;
-	if (size < 1)
-		size = 1;
-	u32 sizeRET = floor(size);
-
-	return sizeRET;
-	*/
-}
+int THREADS_COUNT();
 
 CThreadManager			mu_base;
 CThreadManager			mu_secondary;
-#define		MU_THREADS	MuThreads()
+#define		MU_THREADS	THREADS_COUNT()
 // mu-light
 bool mu_models_local_calc_lightening = false;
 xrCriticalSection		mu_models_local_calc_lightening_wait_lock;

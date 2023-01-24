@@ -45,8 +45,7 @@ static const char* h_str =
 	"-sample_1			== Jitter from SDK (1, 4, 9)\n"
 	"-mu_samples		== mu samples for calcuation Light for MU MODELS (1-6) \n"
 	"-th (num)			== Count Threads For Light CALCULATION IMPLICIT, LMAPS \n"
-	"-mu_th (num)		== Count Threads For Light CALCULATION MU MODELS \n"
-
+ 
 	"-f<NAME>			== compile level in GameData\\Levels\\<NAME>\\\n" 
 	"\n"
 	"NOTE: The last key is required for any functionality\n";

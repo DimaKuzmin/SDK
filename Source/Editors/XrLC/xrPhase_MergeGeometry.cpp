@@ -438,7 +438,8 @@ IC void FindSelectedMaterialCandidate(int th_id)
 	ready_threads++;
 }
 
-#define MAX_THREADS 8
+int THREADS_COUNT(); 
+#define MAX_THREADS THREADS_COUNT()
 
 void CBuild::xrPhase_MergeGeometry()
 {

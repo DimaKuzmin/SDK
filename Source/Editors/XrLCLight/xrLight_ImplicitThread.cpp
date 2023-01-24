@@ -30,13 +30,14 @@ void	ImplicitThread ::	Execute	()
 int THREADS_COUNT()
 {
 	LPCSTR str = strstr(Core.Params, "-th");
-
+ 
 	if (str)
 	{
 		int count = 0;
 		LPCSTR new_str = str + 3;
 		sscanf(new_str, "%d", &count);
-		return count;
+
+ 		return count;
 	}
 
 	return 4;
@@ -50,7 +51,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 		CThreadManager			tmanager;
 	
 		u32	stride				= defl.Height()/NUM_THREADS;
-
+		//Msg("Count: %d", NUM_THREADS);
 		for (u32 thID = 0; thID < NUM_THREADS; thID++)
 		{	
 			ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);

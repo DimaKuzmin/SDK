@@ -147,7 +147,8 @@ public:
 		}
 	}
 };
-namespace lc_net{
+namespace lc_net
+{
 void RunLightVertexNet();
 }
 
@@ -169,7 +170,8 @@ void LightVertex	( bool net )
 		for (u32 thID=0; thID<NUM_THREADS; thID++)	Threads.start(xr_new<CVertexLightThread>(thID));
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
-	} else
+	} 
+	else
 	{
 		lc_net::RunLightVertexNet();
 	}

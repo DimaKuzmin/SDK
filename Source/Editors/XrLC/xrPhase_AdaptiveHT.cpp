@@ -201,6 +201,10 @@ virtual	void Execute()
 
 CThreadManager	precalc_base_hemi;
 
+
+int THREADS_COUNT();
+#define MAX_THREADS THREADS_COUNT()
+
 void CBuild::xrPhase_AdaptiveHT	()
 {
 	CDB::COLLIDER	DB;
@@ -264,7 +268,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
 			ThreadPrecalcHemi.push_back(i);
 
-		for (int i = 0; i < 8; i++)
+		for (int i = 0; i < MAX_THREADS; i++)
 			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread> (i) );
 		
 		precalc_base_hemi.wait();

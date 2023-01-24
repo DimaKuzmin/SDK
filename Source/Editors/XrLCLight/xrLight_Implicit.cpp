@@ -97,52 +97,134 @@ xr_vector<LPRecvest> light_recvests;
 
 void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 {
-	net_cb = net_callback;
-		//R_ASSERT( y_start != (u32(-1)) );
-		//R_ASSERT( y_end != (u32(-1)) );
-		ImplicitDeflector& defl = cl_globs.DATA();
-		
-		// Setup variables
-		//u32		Jcount;
-		//Fvector2	dim,half;
-		//Fvector2	JS;
-		//Fvector2*	Jitter;
+	/*
+	ImplicitDeflector& defl = cl_globs.DATA();
+	CDB::COLLIDER			DB;
 
-		dim.set		(float(defl.Width()), float(defl.Height()));
-		half.set	(.5f/dim.x,.5f/dim.y);
-		
-		// Jitter data
-		JS.set		(.499f/dim.x, .499f/dim.y);
+	// Setup variables
+	Fvector2	dim, half;
+	dim.set(float(defl.Width()), float(defl.Height()));
+	half.set(.5f / dim.x, .5f / dim.y);
 
-		Jitter_Select(Jitter, Jcount);
-		
-		// Lighting itself
-		CDB::COLLIDER			DB;
-		DB.ray_options	(0);
- 
-		//for (u32 V=y_start; V<y_end; V++)
-		for (;;)
-		{  
-			int ID = 0;
-			crImplicit.Enter();
-			ID = curHeight;
-			if (curHeight >= defl.Height())
+	// Jitter data
+	Fvector2	JS;
+	JS.set(.499f / dim.x, .499f / dim.y);
+	u32			Jcount;
+	Fvector2* Jitter;
+	Jitter_Select(Jitter, Jcount);
+
+	// Lighting itself
+	DB.ray_options(0);
+	for (u32 V = y_start; V < y_end; V++)
+	{
+		if (V % 128 == 0)
+			Msg("CurV: %d",V);
+
+
+		for (u32 U = 0; U < defl.Width(); U++)
+		{
+			if (net_callback && !net_callback->test_connection())
+				return;
+			base_color_c	C;
+			u32				Fcount = 0;
+
+			try 
 			{
-				crImplicit.Leave();
-				break;
+				for (u32 J = 0; J < Jcount; J++)
+				{
+					// LUMEL space
+					Fvector2				P;
+					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+					// World space
+					Fvector wP, wN, B;
+					for (vecFaceIt it = space.begin(); it != space.end(); it++)
+					{
+						Face* F = *it;
+						_TCF& tc = F->tc[0];
+						if (tc.isInside(P, B))
+						{
+							// We found triangle and have barycentric coords
+							Vertex* V1 = F->v[0];
+							Vertex* V2 = F->v[1];
+							Vertex* V3 = F->v[2];
+							wP.from_bary(V1->P, V2->P, V3->P, B);
+							wN.from_bary(V1->N, V2->N, V3->N, B);
+							wN.normalize();
+							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), F);
+							Fcount++;
+						}
+					}
+				}
 			}
-			curHeight++;
-			crImplicit.Leave(); 
+			catch (...)
+			{
+				clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
+			}
+			if (Fcount) {
+				// Calculate lighting amount
+				C.scale(Fcount);
+				C.mul(.5f);
+				defl.Lumel(U, V)._set(C);
+				defl.Marker(U, V) = 255;
+			}
+			else {
+				defl.Marker(U, V) = 0;
+			}
+		}
+ 	}*/
 
-			ForCycle(defl, ID);
-			if (ID % 128 == 0)
-				Msg("CurV: %d", ID);
-  		}
-	}
+	
+	net_cb = net_callback;
+	//R_ASSERT( y_start != (u32(-1)) );
+	//R_ASSERT( y_end != (u32(-1)) );
+	ImplicitDeflector& defl = cl_globs.DATA();
+		
+	// Setup variables
+	//u32		Jcount;
+	//Fvector2	dim,half;
+	//Fvector2	JS;
+	//Fvector2*	Jitter;
 
-void ImplicitExecute::ForCycle(ImplicitDeflector& defl, u32 V)
+	dim.set		(float(defl.Width()), float(defl.Height()));
+	half.set	(.5f/dim.x,.5f/dim.y);
+		
+	// Jitter data
+	JS.set		(.499f/dim.x, .499f/dim.y);
+
+	Jitter_Select(Jitter, Jcount);
+		
+	// Lighting itself
+	CDB::COLLIDER			DB;
+	DB.ray_options	(0);
+ 
+	//for (u32 V=y_start; V<y_end; V++)
+	for (;;)
+	{  
+		int ID = 0;
+		crImplicit.Enter();
+		ID = curHeight;
+		if (curHeight >= defl.Height())
+		{
+			crImplicit.Leave();
+			break;
+		}
+		curHeight++;
+		crImplicit.Leave(); 
+
+		ForCycle(&defl, ID);
+		if (ID % 128 == 0)
+			Msg("CurV: %d", ID);
+  	}
+	 
+
+}
+
+void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 {
-	for (u32 U = 0; U < defl.Width(); U++)
+	for (u32 U = 0; U < defl->Width(); U++)
 	{
 		//if (net_cb && !net_cb->test_connection())
 		//	return;
@@ -194,12 +276,12 @@ void ImplicitExecute::ForCycle(ImplicitDeflector& defl, u32 V)
 			// Calculate lighting amount
 			C.scale(Fcount);
 			C.mul(.5f);
-			defl.Lumel(U, V)._set(C);
-			defl.Marker(U, V) = 255;
+			defl->Lumel(U, V)._set(C);
+			defl->Marker(U, V) = 255;
 		}
 		else
 		{
-			defl.Marker(U, V) = 0;
+			defl->Marker(U, V) = 0;
 		}
 
 	}

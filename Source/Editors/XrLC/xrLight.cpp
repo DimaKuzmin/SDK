@@ -146,6 +146,9 @@ void	CBuild::LMaps					()
 void XRLC_LIGHT_API ImplicitNetWait();
 void CBuild::Light()
 {
+	if (g_params().m_quality == ebqDraft)
+		return;
+
 	//****************************************** Implicit
 	{
 		FPU::m64r		();
@@ -165,7 +168,7 @@ void CBuild::Light()
 	LightVertex		();
 
 //
-	clMsg("LightVertex END");
+	//clMsg("LightVertex END");
 
 	ImplicitNetWait();
 	//WaitMuModelsLocalCalcLightening();

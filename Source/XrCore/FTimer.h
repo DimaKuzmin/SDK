@@ -25,6 +25,8 @@ protected:
 	u64			qwPauseAccum	;
 	BOOL		bPause			;
 public:
+
+	void SetPaused(bool value) { bPause = value; };
 				CTimerBase		()		: qwStartTime(0),qwPausedTime(0),qwPauseAccum(0),bPause(FALSE)		{ }
 	ICF	void	Start			()		{	if(bPause) return;	qwStartTime = CPU::QPC()-qwPauseAccum;		}
 	ICF u64		GetElapsed_ticks()const	{	if(bPause) return	qwPausedTime; else return CPU::QPC()-qwStartTime-CPU::qpc_overhead-qwPauseAccum; }

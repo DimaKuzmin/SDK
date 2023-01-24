@@ -180,8 +180,10 @@ void MainThreadOGF(CBuild* build, int thID, bool use_mt_progresive)
 };
 
 #include <thread>
+  
+int THREADS_COUNT();
+#define MAX_THREADS THREADS_COUNT()
 
-#define MAX_THREADS 4
 
 //#define USE_MT 
 

@@ -35,7 +35,7 @@ public:
 
 
 	void		Execute			( net_task_callback *net_callback );
-	void		ForCycle		(ImplicitDeflector& defl, u32 V);
+	void		ForCycle		(ImplicitDeflector* defl, u32 V);
 
 	void		read			( INetReader	&r );
 	void		write			( IWriter	&w ) const ;

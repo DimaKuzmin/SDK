@@ -310,7 +310,7 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	//****************************************** Starting MU
-	/* 	Moved TO After LIGHT (После стадии Convert To OGF и возможность задать ключом -mu_th потоки)	 (Возможно для сетевой компиляции стартуют раньше)
+	/* 	Moved TO After LIGHT (После стадии Convert To OGF и возможность задать ключом -th потоки)	 (Возможно для сетевой компиляции стартуют раньше)
 	FPU::m64r					();
 	Phase						("LIGHT: Starting MU...");
 	mem_Compact					();

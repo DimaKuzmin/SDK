@@ -80,7 +80,8 @@ IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
 
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0==D) return TRUE;}; if (D->bMerged) {D->bMerged=FALSE; return TRUE; } else return FALSE;  }; };
  
-#define MAX_THREADS 8
+int THREADS_COUNT();
+#define MAX_THREADS THREADS_COUNT()
 
 #include <thread>
 xrCriticalSection csLM;
