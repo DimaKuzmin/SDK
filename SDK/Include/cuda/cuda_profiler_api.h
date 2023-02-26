@@ -51,6 +51,17 @@
 #define __CUDA_PROFILER_API_H__
 
 #include "driver_types.h"
+
+#if defined(__CUDA_API_VERSION_INTERNAL) || defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+
 #if defined(__cplusplus)
 extern "C" {
 #endif /* __cplusplus */
@@ -69,60 +80,6 @@ extern "C" {
  */
 
 /**
- * \brief Initialize the CUDA profiler.
- *
- * Using this API user can initialize the CUDA profiler by specifying
- * the configuration file, output file and output file format. This
- * API is generally used to profile different set of counters by
- * looping the kernel launch. The \p configFile parameter can be used
- * to select profiling options including profiler counters. Refer to
- * the "Compute Command Line Profiler User Guide" for supported
- * profiler options and counters.
- *
- * Limitation: The CUDA profiler cannot be initialized with this API
- * if another profiling tool is already active, as indicated by the
- * ::cudaErrorProfilerDisabled return code.
- *
- * Typical usage of the profiling APIs is as follows: 
- *
- * for each set of counters/options\n
- * {\n
- *      cudaProfilerInitialize(); //Initialize profiling,set the counters/options in 
- * the config file \n
- *      ...\n
- *      cudaProfilerStart(); \n
- *      // code to be profiled \n
- *      cudaProfilerStop();\n
- *      ...\n
- *      cudaProfilerStart(); \n
- *      // code to be profiled \n
- *      cudaProfilerStop();\n
- *      ...\n
- * }\n
- *
- *
- * \param configFile - Name of the config file that lists the counters/options
- * for profiling.
- * \param outputFile - Name of the outputFile where the profiling results will
- * be stored.
- * \param outputMode - outputMode, can be ::cudaKeyValuePair OR ::cudaCSV.
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorProfilerDisabled
- * \notefnerr
- *
- * \sa
- * ::cudaProfilerStart,
- * ::cudaProfilerStop,
- * ::cuProfilerInitialize
- */
-extern __host__ cudaError_t CUDARTAPI cudaProfilerInitialize(const char *configFile, 
-                                                             const char *outputFile, 
-                                                             cudaOutputMode_t outputMode);
-
-/**
  * \brief Enable profiling.
  *
  * Enables profile collection by the active profiling tool for the
@@ -139,7 +96,6 @@ extern __host__ cudaError_t CUDARTAPI cudaProfilerInitialize(const char *configF
  * \notefnerr
  *
  * \sa
- * ::cudaProfilerInitialize,
  * ::cudaProfilerStop,
  * ::cuProfilerStart
  */
@@ -161,13 +117,14 @@ extern __host__ cudaError_t CUDARTAPI cudaProfilerStart(void);
  * \notefnerr
  *
  * \sa
- * ::cudaProfilerInitialize,
  * ::cudaProfilerStart,
  * ::cuProfilerStop
  */
 extern __host__ cudaError_t CUDARTAPI cudaProfilerStop(void);
 
 /** @} */ /* END CUDART_PROFILER */
+
+#undef __CUDA_DEPRECATED
 
 #if defined(__cplusplus)
 }

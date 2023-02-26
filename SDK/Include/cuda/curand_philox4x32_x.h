@@ -79,6 +79,7 @@ met:
 
 #ifndef CURAND_PHILOX4X32_X__H_
 #define CURAND_PHILOX4X32_X__H_
+#include <nv/target>
 
 #if !defined(QUALIFIERS)
 #define QUALIFIERS static __forceinline__ __device__
@@ -144,16 +145,16 @@ QUALIFIERS void Philox_State_Incr(curandStatePhilox4_32_10_t* s)
 
 QUALIFIERS unsigned int mulhilo32(unsigned int a, unsigned int b, unsigned int* hip)
 {
-#ifndef __CUDA_ARCH__
+NV_IF_ELSE_TARGET(NV_IS_HOST,
    // host code
    unsigned long long product = ((unsigned long long)a) * ((unsigned long long)b);
    *hip = product >> 32;
    return (unsigned int)product;
-#else
+,
    // device code
    *hip = __umulhi(a,b);
    return a*b;
-#endif
+)
 }
 
 QUALIFIERS uint4 _philox4x32round(uint4 ctr, uint2 key)

@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA Corporation.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -63,12 +63,12 @@ extern "C" {
 
 /** @defgroup signal_initialization Initialization
  * @ingroup npps
- *
+ * Functions that provide functionality of initialization signal like: set, zero or copy other signal.
  * @{
  */
 
 /** \defgroup signal_set Set
- *
+ * The set of set initialization operations available in the library.
  * @{
  *
  */
@@ -87,8 +87,12 @@ extern "C" {
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_8u_Ctx(Npp8u nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_8u(Npp8u nValue, Npp8u * pDst, int nLength);
 
@@ -97,8 +101,12 @@ nppsSet_8u(Npp8u nValue, Npp8u * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_8s_Ctx(Npp8s nValue, Npp8s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_8s(Npp8s nValue, Npp8s * pDst, int nLength);
 
@@ -107,8 +115,12 @@ nppsSet_8s(Npp8s nValue, Npp8s * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_16u_Ctx(Npp16u nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_16u(Npp16u nValue, Npp16u * pDst, int nLength);
 
@@ -117,8 +129,12 @@ nppsSet_16u(Npp16u nValue, Npp16u * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_16s_Ctx(Npp16s nValue, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_16s(Npp16s nValue, Npp16s * pDst, int nLength);
 
@@ -127,8 +143,12 @@ nppsSet_16s(Npp16s nValue, Npp16s * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_16sc_Ctx(Npp16sc nValue, Npp16sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_16sc(Npp16sc nValue, Npp16sc * pDst, int nLength);
 
@@ -137,8 +157,12 @@ nppsSet_16sc(Npp16sc nValue, Npp16sc * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_32u_Ctx(Npp32u nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_32u(Npp32u nValue, Npp32u * pDst, int nLength);
 
@@ -147,8 +171,12 @@ nppsSet_32u(Npp32u nValue, Npp32u * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_32s_Ctx(Npp32s nValue, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_32s(Npp32s nValue, Npp32s * pDst, int nLength);
 
@@ -157,8 +185,12 @@ nppsSet_32s(Npp32s nValue, Npp32s * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_32sc_Ctx(Npp32sc nValue, Npp32sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_32sc(Npp32sc nValue, Npp32sc * pDst, int nLength);
 
@@ -167,8 +199,12 @@ nppsSet_32sc(Npp32sc nValue, Npp32sc * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_32f_Ctx(Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_32f(Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -177,8 +213,12 @@ nppsSet_32f(Npp32f nValue, Npp32f * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_32fc_Ctx(Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_32fc(Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -187,8 +227,12 @@ nppsSet_32fc(Npp32fc nValue, Npp32fc * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_64s_Ctx(Npp64s nValue, Npp64s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_64s(Npp64s nValue, Npp64s * pDst, int nLength);
 
@@ -197,8 +241,12 @@ nppsSet_64s(Npp64s nValue, Npp64s * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_64sc_Ctx(Npp64sc nValue, Npp64sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_64sc(Npp64sc nValue, Npp64sc * pDst, int nLength);
 
@@ -207,8 +255,12 @@ nppsSet_64sc(Npp64sc nValue, Npp64sc * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_64f_Ctx(Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_64f(Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -217,8 +269,12 @@ nppsSet_64f(Npp64f nValue, Npp64f * pDst, int nLength);
  * \param nValue Value used to initialize the vector pDst.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSet_64fc_Ctx(Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSet_64fc(Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -226,7 +282,7 @@ nppsSet_64fc(Npp64fc nValue, Npp64fc * pDst, int nLength);
 /** @} signal_set */
 
 /** \defgroup signal_zero Zero
- *
+ * The set of zero initialization operations available in the library.
  * @{
  *
  */
@@ -242,8 +298,12 @@ nppsSet_64fc(Npp64fc nValue, Npp64fc * pDst, int nLength);
  * 8-bit unsigned char, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_8u_Ctx(Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_8u(Npp8u * pDst, int nLength);
 
@@ -251,8 +311,12 @@ nppsZero_8u(Npp8u * pDst, int nLength);
  * 16-bit integer, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_16s_Ctx(Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_16s(Npp16s * pDst, int nLength);
 
@@ -260,17 +324,25 @@ nppsZero_16s(Npp16s * pDst, int nLength);
  * 16-bit integer complex, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_16sc_Ctx(Npp16sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_16sc(Npp16sc * pDst, int nLength);
 
 /** 
  * 32-bit integer, vector zero method.
-  * \param pDst \ref destination_signal_pointer.
+ * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_32s_Ctx(Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_32s(Npp32s * pDst, int nLength);
 
@@ -278,8 +350,12 @@ nppsZero_32s(Npp32s * pDst, int nLength);
  * 32-bit integer complex, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_32sc_Ctx(Npp32sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_32sc(Npp32sc * pDst, int nLength);
 
@@ -287,8 +363,12 @@ nppsZero_32sc(Npp32sc * pDst, int nLength);
  * 32-bit float, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_32f_Ctx(Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_32f(Npp32f * pDst, int nLength);
 
@@ -296,8 +376,12 @@ nppsZero_32f(Npp32f * pDst, int nLength);
  * 32-bit float complex, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_32fc_Ctx(Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_32fc(Npp32fc * pDst, int nLength);
 
@@ -305,8 +389,12 @@ nppsZero_32fc(Npp32fc * pDst, int nLength);
  * 64-bit long long integer, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_64s_Ctx(Npp64s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_64s(Npp64s * pDst, int nLength);
 
@@ -314,8 +402,12 @@ nppsZero_64s(Npp64s * pDst, int nLength);
  * 64-bit long long integer complex, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_64sc_Ctx(Npp64sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_64sc(Npp64sc * pDst, int nLength);
 
@@ -323,8 +415,12 @@ nppsZero_64sc(Npp64sc * pDst, int nLength);
  * 64-bit double, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_64f_Ctx(Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_64f(Npp64f * pDst, int nLength);
 
@@ -332,8 +428,12 @@ nppsZero_64f(Npp64f * pDst, int nLength);
  * 64-bit double complex, vector zero method.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsZero_64fc_Ctx(Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsZero_64fc(Npp64fc * pDst, int nLength);
 
@@ -342,7 +442,7 @@ nppsZero_64fc(Npp64fc * pDst, int nLength);
 /** @} signal_zero */
 
 /** \defgroup signal_copy Copy
- *
+ * The set of copy initialization operations available in the library.
  * @{
  *
  */
@@ -362,8 +462,12 @@ nppsZero_64fc(Npp64fc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_8u_Ctx(const Npp8u * pSrc, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_8u(const Npp8u * pSrc, Npp8u * pDst, int nLength);
 
@@ -372,8 +476,12 @@ nppsCopy_8u(const Npp8u * pSrc, Npp8u * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength);
 
@@ -382,8 +490,12 @@ nppsCopy_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_32s_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_32s(const Npp32s * pSrc, Npp32s * pDst, int nLength);
 
@@ -392,8 +504,12 @@ nppsCopy_32s(const Npp32s * pSrc, Npp32s * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -402,8 +518,12 @@ nppsCopy_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_64s_Ctx(const Npp64s * pSrc, Npp64s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_64s(const Npp64s * pSrc, Npp64s * pDst, int nLength);
 
@@ -412,8 +532,12 @@ nppsCopy_64s(const Npp64s * pSrc, Npp64s * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength);
 
@@ -422,8 +546,12 @@ nppsCopy_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_32sc_Ctx(const Npp32sc * pSrc, Npp32sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_32sc(const Npp32sc * pSrc, Npp32sc * pDst, int nLength);
 
@@ -432,8 +560,12 @@ nppsCopy_32sc(const Npp32sc * pSrc, Npp32sc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
 
@@ -442,8 +574,12 @@ nppsCopy_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_64sc_Ctx(const Npp64sc * pSrc, Npp64sc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_64sc(const Npp64sc * pSrc, Npp64sc * pDst, int nLength);
 
@@ -452,8 +588,12 @@ nppsCopy_64sc(const Npp64sc * pSrc, Npp64sc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCopy_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCopy_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength);
 

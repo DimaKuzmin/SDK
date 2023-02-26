@@ -50,7 +50,7 @@
 #if !defined(__CUDA_D3D10_INTEROP_H__)
 #define __CUDA_D3D10_INTEROP_H__
 
-#if defined(_WIN32)
+#include "cuda_runtime_api.h"
 
 /** \cond impl_private */
 #if !defined(__dv)
@@ -69,9 +69,19 @@
 #endif /* !__dv */
 /** \endcond impl_private */
 
-#include "builtin_types.h"
-#include "host_defines.h"
 #include <d3d10_1.h>
+
+/** \cond impl_private */
+#if defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+/** \endcond impl_private */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -286,7 +296,7 @@ enum cudaD3D10MapFlags
  * \sa 
  * ::cudaD3D10SetDirect3DDevice
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10GetDirect3DDevice(ID3D10Device **ppD3D10Device);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10GetDirect3DDevice(ID3D10Device **ppD3D10Device);
 
 /**
  * \brief Sets the Direct3D 10 device to use for interoperability with 
@@ -297,6 +307,9 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10GetDirect3DDevice(ID3D10Device **
  * This function is deprecated and should no longer be used.  It is
  * no longer necessary to associate a CUDA device with a D3D10
  * device in order to achieve maximum interoperability performance.
+ *
+ * This function will immediately initialize the primary context on 
+ * \p device if needed.
  *
  * \param pD3D10Device - Direct3D device to use for interoperability
  * \param device       - The CUDA device to use.  This device must be among the devices
@@ -315,7 +328,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10GetDirect3DDevice(ID3D10Device **
  * ::cudaGraphicsD3D10RegisterResource,
  * ::cudaDeviceReset
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10SetDirect3DDevice(ID3D10Device *pD3D10Device, int device __dv(-1));
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10SetDirect3DDevice(ID3D10Device *pD3D10Device, int device __dv(-1));
 
 /**
  * \brief Registers a Direct3D 10 resource for access by CUDA
@@ -383,7 +396,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10SetDirect3DDevice(ID3D10Device *p
  *
  * \sa ::cudaGraphicsD3D10RegisterResource
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10RegisterResource(ID3D10Resource *pResource, unsigned int flags);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10RegisterResource(ID3D10Resource *pResource, unsigned int flags);
 
 /**
  * \brief Unregisters a Direct3D resource
@@ -406,7 +419,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10RegisterResource(ID3D10Resource *
  *
  * \sa ::cudaGraphicsUnregisterResource
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10UnregisterResource(ID3D10Resource *pResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10UnregisterResource(ID3D10Resource *pResource);
 
 /**
  * \brief Maps Direct3D Resources for access by CUDA
@@ -439,7 +452,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10UnregisterResource(ID3D10Resource
  *
  * \sa ::cudaGraphicsMapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10MapResources(int count, ID3D10Resource **ppResources);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10MapResources(int count, ID3D10Resource **ppResources);
 
 /**
  * \brief Unmaps Direct3D resources
@@ -468,7 +481,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10MapResources(int count, ID3D10Res
  *
  * \sa ::cudaGraphicsUnmapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10UnmapResources(int count, ID3D10Resource **ppResources);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10UnmapResources(int count, ID3D10Resource **ppResources);
 
 /**
  * \brief Gets an array through which to access a subresource of a Direct3D
@@ -502,7 +515,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10UnmapResources(int count, ID3D10R
  *
  * \sa ::cudaGraphicsSubResourceGetMappedArray
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedArray(cudaArray **ppArray, ID3D10Resource *pResource, unsigned int subResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedArray(cudaArray **ppArray, ID3D10Resource *pResource, unsigned int subResource);
 
 /**
  * \brief Set usage flags for mapping a Direct3D resource
@@ -540,7 +553,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedArray(cudaArray 
  *
  * \sa ::cudaGraphicsResourceSetMapFlags
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceSetMapFlags(ID3D10Resource *pResource, unsigned int flags); 
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceSetMapFlags(ID3D10Resource *pResource, unsigned int flags); 
 
 /**
  * \brief Gets the dimensions of a registered Direct3D surface
@@ -579,7 +592,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceSetMapFlags(ID3D10Resourc
  *
  * \sa ::cudaGraphicsSubResourceGetMappedArray
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetSurfaceDimensions(size_t *pWidth, size_t *pHeight, size_t *pDepth, ID3D10Resource *pResource, unsigned int subResource); 
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetSurfaceDimensions(size_t *pWidth, size_t *pHeight, size_t *pDepth, ID3D10Resource *pResource, unsigned int subResource); 
 
 /**
  * \brief Gets a pointer through which to access a subresource of a Direct3D
@@ -613,7 +626,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetSurfaceDimensions(size
  *
  * \sa ::cudaGraphicsResourceGetMappedPointer
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPointer(void **pPointer, ID3D10Resource *pResource, unsigned int subResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPointer(void **pPointer, ID3D10Resource *pResource, unsigned int subResource);
 
 /**
  * \brief Gets the size of a subresource of a Direct3D resource which has been
@@ -647,7 +660,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPointer(void **p
  *
  * \sa ::cudaGraphicsResourceGetMappedPointer
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedSize(size_t *pSize, ID3D10Resource *pResource, unsigned int subResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedSize(size_t *pSize, ID3D10Resource *pResource, unsigned int subResource);
 
 /**
  * \brief Gets the pitch of a subresource of a Direct3D resource which has been
@@ -700,7 +713,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedSize(size_t *pSi
  *
  * \sa ::cudaGraphicsSubResourceGetMappedArray
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPitch(size_t *pPitch, size_t *pPitchSlice, ID3D10Resource *pResource, unsigned int subResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPitch(size_t *pPitch, size_t *pPitchSlice, ID3D10Resource *pResource, unsigned int subResource);
 
 /** @} */ /* END CUDART_D3D10_DEPRECATED */
 
@@ -708,8 +721,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D10ResourceGetMappedPitch(size_t *pP
 }
 #endif /* __cplusplus */
 
-#endif /* _WIN32 */
-
 #undef __dv
+#undef __CUDA_DEPRECATED
 
 #endif /* __CUDA_D3D10_INTEROP_H__ */

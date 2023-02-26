@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,8 +47,15 @@
  * Users Notice.
  */
 
+
+
 #if !defined(__CUDA_RUNTIME_API_H__)
 #define __CUDA_RUNTIME_API_H__
+
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_CUDA_RUNTIME_API_H__
+#endif
 
 /**
  * \latexonly
@@ -128,9 +135,17 @@
  */
 
 /** CUDA Runtime API Version */
-#define CUDART_VERSION  9020
+#define CUDART_VERSION  12000
 
-#include "host_defines.h"
+#if defined(__CUDA_API_VER_MAJOR__) && defined(__CUDA_API_VER_MINOR__)
+# define __CUDART_API_VERSION ((__CUDA_API_VER_MAJOR__ * 1000) + (__CUDA_API_VER_MINOR__ * 10))
+#else
+# define __CUDART_API_VERSION CUDART_VERSION
+#endif
+
+#ifndef __DOXYGEN_ONLY__
+#include "crt/host_defines.h"
+#endif
 #include "builtin_types.h"
 
 #include "cuda_device_runtime_api.h"
@@ -143,6 +158,13 @@
     #define __CUDART_API_PTDS(api) api
     #define __CUDART_API_PTSZ(api) api
 #endif
+
+#define cudaSignalExternalSemaphoresAsync  __CUDART_API_PTSZ(cudaSignalExternalSemaphoresAsync_v2)
+#define cudaWaitExternalSemaphoresAsync    __CUDART_API_PTSZ(cudaWaitExternalSemaphoresAsync_v2)
+
+    #define cudaStreamGetCaptureInfo       __CUDART_API_PTSZ(cudaStreamGetCaptureInfo_v2)
+
+#define cudaGetDeviceProperties cudaGetDeviceProperties_v2
 
 #if defined(__CUDART_API_PER_THREAD_DEFAULT_STREAM)
     #define cudaMemcpy                     __CUDART_API_PTDS(cudaMemcpy)
@@ -160,6 +182,12 @@
     #define cudaMemset                     __CUDART_API_PTDS(cudaMemset)
     #define cudaMemset2D                   __CUDART_API_PTDS(cudaMemset2D)
     #define cudaMemset3D                   __CUDART_API_PTDS(cudaMemset3D)
+    #define cudaGraphInstantiateWithParams __CUDART_API_PTSZ(cudaGraphInstantiateWithParams)
+    #define cudaGraphUpload                __CUDART_API_PTSZ(cudaGraphUpload)
+    #define cudaGraphLaunch                __CUDART_API_PTSZ(cudaGraphLaunch)
+    #define cudaStreamBeginCapture         __CUDART_API_PTSZ(cudaStreamBeginCapture)
+    #define cudaStreamEndCapture           __CUDART_API_PTSZ(cudaStreamEndCapture)
+    #define cudaStreamIsCapturing          __CUDART_API_PTSZ(cudaStreamIsCapturing)
     #define cudaMemcpyAsync                __CUDART_API_PTSZ(cudaMemcpyAsync)
     #define cudaMemcpyToSymbolAsync        __CUDART_API_PTSZ(cudaMemcpyToSymbolAsync)
     #define cudaMemcpyFromSymbolAsync      __CUDART_API_PTSZ(cudaMemcpyFromSymbolAsync)
@@ -175,16 +203,26 @@
     #define cudaMemset3DAsync              __CUDART_API_PTSZ(cudaMemset3DAsync)
     #define cudaStreamQuery                __CUDART_API_PTSZ(cudaStreamQuery)
     #define cudaStreamGetFlags             __CUDART_API_PTSZ(cudaStreamGetFlags)
+    #define cudaStreamGetId                __CUDART_API_PTSZ(cudaStreamGetId)
     #define cudaStreamGetPriority          __CUDART_API_PTSZ(cudaStreamGetPriority)
     #define cudaEventRecord                __CUDART_API_PTSZ(cudaEventRecord)
+    #define cudaEventRecordWithFlags       __CUDART_API_PTSZ(cudaEventRecordWithFlags)
     #define cudaStreamWaitEvent            __CUDART_API_PTSZ(cudaStreamWaitEvent)
     #define cudaStreamAddCallback          __CUDART_API_PTSZ(cudaStreamAddCallback)
     #define cudaStreamAttachMemAsync       __CUDART_API_PTSZ(cudaStreamAttachMemAsync)
     #define cudaStreamSynchronize          __CUDART_API_PTSZ(cudaStreamSynchronize)
-    #define cudaLaunch                     __CUDART_API_PTSZ(cudaLaunch)
     #define cudaLaunchKernel               __CUDART_API_PTSZ(cudaLaunchKernel)
+    #define cudaLaunchKernelExC            __CUDART_API_PTSZ(cudaLaunchKernelExC)
+    #define cudaLaunchHostFunc             __CUDART_API_PTSZ(cudaLaunchHostFunc)
     #define cudaMemPrefetchAsync           __CUDART_API_PTSZ(cudaMemPrefetchAsync)
     #define cudaLaunchCooperativeKernel    __CUDART_API_PTSZ(cudaLaunchCooperativeKernel)
+    #define cudaStreamCopyAttributes       __CUDART_API_PTSZ(cudaStreamCopyAttributes)
+    #define cudaStreamGetAttribute         __CUDART_API_PTSZ(cudaStreamGetAttribute)
+    #define cudaStreamSetAttribute         __CUDART_API_PTSZ(cudaStreamSetAttribute)
+    #define cudaMallocAsync                __CUDART_API_PTSZ(cudaMallocAsync)
+    #define cudaFreeAsync                  __CUDART_API_PTSZ(cudaFreeAsync)
+    #define cudaMallocFromPoolAsync        __CUDART_API_PTSZ(cudaMallocFromPoolAsync)
+    #define cudaGetDriverEntryPoint        __CUDART_API_PTSZ(cudaGetDriverEntryPoint)
 #endif
 
 /** \cond impl_private */
@@ -204,7 +242,7 @@
 #endif /* !__dv */
 /** \endcond impl_private */
 
-#if (!defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 350))   /** Visible to SM>=3.5 and "__host__ __device__" only **/
+#if (defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 350))   /** Visible to SM>=3.5 and "__host__ __device__" only **/
 
 #define CUDART_DEVICE __device__ 
 
@@ -213,6 +251,21 @@
 #define CUDART_DEVICE
 
 #endif /** CUDART_DEVICE */
+
+#if !defined(__CUDACC_RTC__)
+#define EXCLUDE_FROM_RTC
+
+/** \cond impl_private */
+#if defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+/** \endcond impl_private */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -235,8 +288,13 @@ extern "C" {
  * in the current process.
  *
  * Explicitly destroys and cleans up all resources associated with the current
- * device in the current process.  Any subsequent API call to this device will 
- * reinitialize the device.
+ * device in the current process. It is the caller's responsibility to ensure
+ * that the resources are not accessed or passed in subsequent API calls and
+ * doing so will result in undefined behavior. These resources include CUDA types
+ * such as ::cudaStream_t, ::cudaEvent_t, ::cudaArray_t, ::cudaMipmappedArray_t,
+ * ::cudaTextureObject_t, ::cudaSurfaceObject_t, ::textureReference, ::surfaceReference,
+ * ::cudaExternalMemory_t, ::cudaExternalSemaphore_t and ::cudaGraphicsResource_t.
+ * Any subsequent API call to this device will reinitialize the device.
  *
  * Note that this function will reset the device immediately.  It is the caller's
  * responsibility to ensure that the device is not being accessed by any 
@@ -245,6 +303,8 @@ extern "C" {
  * \return
  * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSynchronize
  */
@@ -261,7 +321,10 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceReset(void);
  *
  * \return
  * ::cudaSuccess
+ * \note_device_sync_deprecated
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDeviceReset,
@@ -308,15 +371,14 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceSynchronize(v
  *   device memory which can no longer be used for user allocations. If these
  *   reservations of device memory fail, ::cudaDeviceSetLimit will return
  *   ::cudaErrorMemoryAllocation, and the limit can be reset to a lower value.
- *   This limit is only applicable to devices of compute capability 3.5 and
- *   higher. Attempting to set this limit on devices of compute capability less
- *   than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
- *   returned.
+ *   This limit is only applicable to devices of compute capability < 9.0.
+ *   Attempting to set this limit on devices of other compute capability will
+ *   results in error ::cudaErrorUnsupportedLimit being returned.
  *
  * - ::cudaLimitDevRuntimePendingLaunchCount controls the maximum number of
  *   outstanding device runtime launches that can be made from the current
  *   device. A grid is outstanding from the point of launch up until the grid
- *   is known to have been completed. Device runtime launches which violate 
+ *   is known to have been completed. Device runtime launches which violate
  *   this limitation fail and return ::cudaErrorLaunchPendingCountExceeded when
  *   ::cudaGetLastError() is called after launch. If more pending launches than
  *   the default (2048 launches) are needed for a module using the device
@@ -328,7 +390,15 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceSynchronize(v
  *   This limit is only applicable to devices of compute capability 3.5 and
  *   higher. Attempting to set this limit on devices of compute capability less
  *   than 3.5 will result in the error ::cudaErrorUnsupportedLimit being
- *   returned. 
+ *   returned.
+ *
+ * - ::cudaLimitMaxL2FetchGranularity controls the L2 cache fetch granularity.
+ *   Values can range from 0B to 128B. This is purely a performance hint and
+ *   it can be ignored or clamped depending on the platform.
+ *
+ * - ::cudaLimitPersistingL2CacheSize controls size in bytes available
+ *   for persisting L2 cache. This is purely a performance hint and it
+ *   can be ignored or clamped depending on the platform.
  *
  * \param limit - Limit to set
  * \param value - Size of limit
@@ -339,6 +409,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceSynchronize(v
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDeviceGetLimit,
@@ -347,20 +419,23 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceSynchronize(v
 extern __host__ cudaError_t CUDARTAPI cudaDeviceSetLimit(enum cudaLimit limit, size_t value);
 
 /**
- * \brief Returns resource limits
+ * \brief Return resource limits
  *
- * Returns in \p *pValue the current size of \p limit.  The supported
- * ::cudaLimit values are:
- * - ::cudaLimitStackSize: stack size in bytes of each GPU thread;
- * - ::cudaLimitPrintfFifoSize: size in bytes of the shared FIFO used by the
+ * Returns in \p *pValue the current size of \p limit. The following ::cudaLimit values are supported.
+ * - ::cudaLimitStackSize is the stack size in bytes of each GPU thread.
+ * - ::cudaLimitPrintfFifoSize is the size in bytes of the shared FIFO used by the
  *   ::printf() device system call.
- * - ::cudaLimitMallocHeapSize: size in bytes of the heap used by the
- *   ::malloc() and ::free() device system calls;
- * - ::cudaLimitDevRuntimeSyncDepth: maximum grid depth at which a
+ * - ::cudaLimitMallocHeapSize is the size in bytes of the heap used by the
+ *   ::malloc() and ::free() device system calls.
+ * - ::cudaLimitDevRuntimeSyncDepth is the maximum grid depth at which a
  *   thread can isssue the device runtime call ::cudaDeviceSynchronize()
- *   to wait on child grid launches to complete.
- * - ::cudaLimitDevRuntimePendingLaunchCount: maximum number of outstanding
+ *   to wait on child grid launches to complete. This functionality is removed
+ *   for devices of compute capability >= 9.0, and hence will return error
+ *   ::cudaErrorUnsupportedLimit on such devices.
+ * - ::cudaLimitDevRuntimePendingLaunchCount is the maximum number of outstanding
  *   device runtime launches.
+ * - ::cudaLimitMaxL2FetchGranularity is the L2 cache fetch granularity.
+ * - ::cudaLimitPersistingL2CacheSize is the persisting L2 cache size in bytes.
  *
  * \param limit  - Limit to query
  * \param pValue - Returned size of the limit
@@ -370,12 +445,38 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceSetLimit(enum cudaLimit limit, s
  * ::cudaErrorUnsupportedLimit,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDeviceSetLimit,
  * ::cuCtxGetLimit
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetLimit(size_t *pValue, enum cudaLimit limit);
+
+/**
+ * \brief Returns the maximum number of elements allocatable in a 1D linear texture for a given element size.
+ *
+ * Returns in \p maxWidthInElements the maximum number of elements allocatable in a 1D linear texture
+ * for given format descriptor \p fmtDesc.
+ *
+ * \param maxWidthInElements    - Returns maximum number of texture elements allocatable for given \p fmtDesc.
+ * \param fmtDesc               - Texture format description.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorUnsupportedLimit,
+ * ::cudaErrorInvalidValue
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cuDeviceGetTexture1DLinearMaxWidth
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetTexture1DLinearMaxWidth(size_t *maxWidthInElements, const struct cudaChannelFormatDesc *fmtDesc, int device);
+#endif
 
 /**
  * \brief Returns the preferred cache configuration for the current device.
@@ -398,11 +499,12 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetLimit(size
  * \param pCacheConfig - Returned cache configuration
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorInitializationError
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
- * \sa cudaDeviceSetCacheConfig,
+ * \sa ::cudaDeviceSetCacheConfig,
  * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
  * \ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C++ API)",
  * ::cuCtxGetCacheConfig
@@ -435,9 +537,10 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetCacheConfi
  *                           stream priority is returned
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorInitializationError
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreateWithPriority,
  * ::cudaStreamGetPriority,
@@ -477,9 +580,10 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetStreamPrio
  * \param cacheConfig - Requested cache configuration
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorInitializationError
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceGetCacheConfig,
  * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
@@ -506,9 +610,10 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceSetCacheConfig(enum cudaFuncCach
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSetCacheConfig,
  * ::cudaDeviceGetCacheConfig,
@@ -549,9 +654,10 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetSharedMemC
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSetCacheConfig,
  * ::cudaDeviceGetCacheConfig,
@@ -579,6 +685,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceSetSharedMemConfig(enum cudaShar
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidDevice
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDeviceGetPCIBusId,
@@ -607,6 +715,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceGetByPCIBusId(int *device, const
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidDevice
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDeviceGetByPCIBusId,
@@ -629,9 +739,11 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceGetPCIBusId(char *pciBusId, int 
  * on the imported event after the exported event has been freed 
  * with ::cudaEventDestroy will result in undefined behavior.
  *
- * IPC functionality is restricted to devices with support for unified 
- * addressing on Linux operating systems. IPC functionality is not supported
- * on Tegra platforms.
+ * IPC functionality is restricted to devices with support for unified
+ * addressing on Linux and Windows operating systems.
+ * IPC functionality on Windows is restricted to GPUs in TCC mode.
+ * Users can test their device for IPC functionality by calling
+ * ::cudaDeviceGetAttribute with ::cudaDevAttrIpcEventSupport
  *
  * \param handle - Pointer to a user allocated cudaIpcEventHandle
  *                    in which to return the opaque event handle
@@ -643,7 +755,10 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceGetPCIBusId(char *pciBusId, int 
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorMemoryAllocation,
  * ::cudaErrorMapBufferObjectFailed,
- * ::cudaErrorNotSupported
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaEventCreate,
@@ -670,9 +785,11 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetEventHandle(cudaIpcEventHandle_t
  * Performing operations on the imported event after the exported event has 
  * been freed with ::cudaEventDestroy will result in undefined behavior.
  *
- * IPC functionality is restricted to devices with support for unified 
- * addressing on Linux operating systems. IPC functionality is not supported
- * on Tegra platforms.
+ * IPC functionality is restricted to devices with support for unified
+ * addressing on Linux and Windows operating systems.
+ * IPC functionality on Windows is restricted to GPUs in TCC mode.
+ * Users can test their device for IPC functionality by calling
+ * ::cudaDeviceGetAttribute with ::cudaDevAttrIpcEventSupport
  *
  * \param event - Returns the imported event
  * \param handle  - Interprocess handle to open
@@ -680,10 +797,13 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetEventHandle(cudaIpcEventHandle_t
  * \returns
  * ::cudaSuccess,
  * ::cudaErrorMapBufferObjectFailed,
- * ::cudaErrorInvalidResourceHandle,
- * ::cudaErrorNotSupported
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorDeviceUninitialized
+ * \note_init_rt
+ * \note_callback
  *
-  * \sa
+ * \sa
  * ::cudaEventCreate,
  * ::cudaEventDestroy,
  * ::cudaEventSynchronize,
@@ -696,7 +816,6 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetEventHandle(cudaIpcEventHandle_t
  * ::cuIpcOpenEventHandle
  */
 extern __host__ cudaError_t CUDARTAPI cudaIpcOpenEventHandle(cudaEvent_t *event, cudaIpcEventHandle_t handle);
-
 
 /**
  * \brief Gets an interprocess memory handle for an existing device memory
@@ -712,9 +831,11 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcOpenEventHandle(cudaEvent_t *event,
  * ::cudaIpcGetMemHandle will return a unique handle for the
  * new memory. 
  *
- * IPC functionality is restricted to devices with support for unified 
- * addressing on Linux operating systems. IPC functionality is not supported
- * on Tegra platforms.
+ * IPC functionality is restricted to devices with support for unified
+ * addressing on Linux and Windows operating systems.
+ * IPC functionality on Windows is restricted to GPUs in TCC mode.
+ * Users can test their device for IPC functionality by calling
+ * ::cudaDeviceGetAttribute with ::cudaDevAttrIpcEventSupport
  *
  * \param handle - Pointer to user allocated ::cudaIpcMemHandle to return
  *                    the handle in.
@@ -722,10 +843,12 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcOpenEventHandle(cudaEvent_t *event,
  *
  * \returns
  * ::cudaSuccess,
- * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorMemoryAllocation,
  * ::cudaErrorMapBufferObjectFailed,
- * ::cudaErrorNotSupported
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaMalloc,
@@ -749,9 +872,16 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetMemHandle(cudaIpcMemHandle_t *ha
  * controlled by the ::cudaIpcMemLazyEnablePeerAccess flag. 
  * ::cudaDeviceCanAccessPeer can determine if a mapping is possible.
  *
+ * ::cudaIpcOpenMemHandle can open handles to devices that may not be visible
+ * in the process calling the API.
+ *
  * Contexts that may open ::cudaIpcMemHandles are restricted in the following way.
  * ::cudaIpcMemHandles from each device in a given process may only be opened 
  * by one context per device per other process.
+ *
+ * If the memory handle has already been opened by the current context, the
+ * reference count on the handle is incremented by 1 and the existing device pointer
+ * is returned.
  *
  * Memory returned from ::cudaIpcOpenMemHandle must be freed with
  * ::cudaIpcCloseMemHandle.
@@ -760,9 +890,11 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetMemHandle(cudaIpcMemHandle_t *ha
  * ::cudaIpcCloseMemHandle in the importing context will result in undefined
  * behavior.
  * 
- * IPC functionality is restricted to devices with support for unified 
- * addressing on Linux operating systems. IPC functionality is not supported
- * on Tegra platforms.
+ * IPC functionality is restricted to devices with support for unified
+ * addressing on Linux and Windows operating systems.
+ * IPC functionality on Windows is restricted to GPUs in TCC mode.
+ * Users can test their device for IPC functionality by calling
+ * ::cudaDeviceGetAttribute with ::cudaDevAttrIpcEventSupport
  *
  * \param devPtr - Returned device pointer
  * \param handle - ::cudaIpcMemHandle to open
@@ -772,8 +904,12 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetMemHandle(cudaIpcMemHandle_t *ha
  * ::cudaSuccess,
  * ::cudaErrorMapBufferObjectFailed,
  * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorDeviceUninitialized,
  * ::cudaErrorTooManyPeers,
- * ::cudaErrorNotSupported
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \note No guarantees are made about the address returned in \p *devPtr.  
  * In particular, multiple processes may not receive the same address for the same \p handle.
@@ -792,26 +928,31 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcGetMemHandle(cudaIpcMemHandle_t *ha
 extern __host__ cudaError_t CUDARTAPI cudaIpcOpenMemHandle(void **devPtr, cudaIpcMemHandle_t handle, unsigned int flags);
 
 /**
- * \brief Close memory mapped with cudaIpcOpenMemHandle
+ * \brief Attempts to close memory mapped with cudaIpcOpenMemHandle
  * 
- * Unmaps memory returnd by ::cudaIpcOpenMemHandle. The original allocation
+ * Decrements the reference count of the memory returnd by ::cudaIpcOpenMemHandle by 1.
+ * When the reference count reaches 0, this API unmaps the memory. The original allocation
  * in the exporting process as well as imported mappings in other processes
  * will be unaffected.
  *
  * Any resources used to enable peer access will be freed if this is the
  * last mapping using them.
  *
- * IPC functionality is restricted to devices with support for unified 
- * addressing on Linux operating systems. IPC functionality is not supported
- * on Tegra platforms.
+ * IPC functionality is restricted to devices with support for unified
+ * addressing on Linux and Windows operating systems.
+ * IPC functionality on Windows is restricted to GPUs in TCC mode.
+ * Users can test their device for IPC functionality by calling
+ * ::cudaDeviceGetAttribute with ::cudaDevAttrIpcEventSupport
  *
  * \param devPtr - Device pointer returned by ::cudaIpcOpenMemHandle
  * 
  * \returns
  * ::cudaSuccess,
  * ::cudaErrorMapBufferObjectFailed,
- * ::cudaErrorInvalidResourceHandle,
- * ::cudaErrorNotSupported
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaMalloc,
@@ -823,6 +964,39 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcOpenMemHandle(void **devPtr, cudaIp
  * ::cuIpcCloseMemHandle
  */
 extern __host__ cudaError_t CUDARTAPI cudaIpcCloseMemHandle(void *devPtr);
+
+/**
+ * \brief Blocks until remote writes are visible to the specified scope
+ *
+ * Blocks until remote writes to the target context via mappings created
+ * through GPUDirect RDMA APIs, like nvidia_p2p_get_pages (see
+ * https://docs.nvidia.com/cuda/gpudirect-rdma for more information), are
+ * visible to the specified scope.
+ *
+ * If the scope equals or lies within the scope indicated by
+ * ::cudaDevAttrGPUDirectRDMAWritesOrdering, the call will be a no-op and
+ * can be safely omitted for performance. This can be determined by
+ * comparing the numerical values between the two enums, with smaller
+ * scopes having smaller values.
+ *
+ * Users may query support for this API via ::cudaDevAttrGPUDirectRDMAFlushWritesOptions.
+ *
+ * \param target - The target of the operation, see cudaFlushGPUDirectRDMAWritesTarget
+ * \param scope  - The scope of the operation, see cudaFlushGPUDirectRDMAWritesScope
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorNotSupported,
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cuFlushGPUDirectRDMAWrites
+ */
+#if __CUDART_API_VERSION >= 11030
+extern __host__ cudaError_t CUDARTAPI cudaDeviceFlushGPUDirectRDMAWrites(enum cudaFlushGPUDirectRDMAWritesTarget target, enum cudaFlushGPUDirectRDMAWritesScope scope);
+#endif
 
 /** @} */ /* END CUDART_DEVICE */
 
@@ -859,10 +1033,12 @@ extern __host__ cudaError_t CUDARTAPI cudaIpcCloseMemHandle(void *devPtr);
  * \return
  * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceReset
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadExit(void);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadExit(void);
 
 /**
  * \brief Wait for compute device to finish
@@ -883,10 +1059,12 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadExit(void);
  * \return
  * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSynchronize
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadSynchronize(void);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadSynchronize(void);
 
 /**
  * \brief Set resource limits
@@ -930,10 +1108,12 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadSynchronize(void);
  * ::cudaErrorUnsupportedLimit,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSetLimit
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadSetLimit(enum cudaLimit limit, size_t value);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadSetLimit(enum cudaLimit limit, size_t value);
 
 /**
  * \brief Returns resource limits
@@ -961,10 +1141,12 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadSetLimit(enum cudaLimit limit, s
  * ::cudaErrorUnsupportedLimit,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceGetLimit
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadGetLimit(size_t *pValue, enum cudaLimit limit);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadGetLimit(size_t *pValue, enum cudaLimit limit);
 
 /**
  * \brief Returns the preferred cache configuration for the current device.
@@ -993,13 +1175,14 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadGetLimit(size_t *pValue, enum cu
  * \param pCacheConfig - Returned cache configuration
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorInitializationError
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceGetCacheConfig
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadGetCacheConfig(enum cudaFuncCache *pCacheConfig);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadGetCacheConfig(enum cudaFuncCache *pCacheConfig);
 
 /**
  * \brief Sets the preferred cache configuration for the current device.
@@ -1039,13 +1222,14 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadGetCacheConfig(enum cudaFuncCach
  * \param cacheConfig - Requested cache configuration
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorInitializationError
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceSetCacheConfig
  */
-extern __host__ cudaError_t CUDARTAPI cudaThreadSetCacheConfig(enum cudaFuncCache cacheConfig);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaThreadSetCacheConfig(enum cudaFuncCache cacheConfig);
 
 /** @} */ /* END CUDART_THREAD_DEPRECATED */
 
@@ -1065,7 +1249,11 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadSetCacheConfig(enum cudaFuncCach
  * \brief Returns the last error from a runtime call
  *
  * Returns the last error that has been produced by any of the runtime calls
- * in the same host thread and resets it to ::cudaSuccess.
+ * in the same instance of the CUDA Runtime library in the host thread and
+ * resets it to ::cudaSuccess.
+ *
+ * Note: Multiple instances of the CUDA Runtime library can be present in an
+ * application when using a library that statically links the CUDA Runtime.
  *
  * \return
  * ::cudaSuccess,
@@ -1092,12 +1280,17 @@ extern __host__ cudaError_t CUDARTAPI cudaThreadSetCacheConfig(enum cudaFuncCach
  * ::cudaErrorUnknown,
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorInsufficientDriver,
+ * ::cudaErrorNoDevice,
  * ::cudaErrorSetOnActiveProcess,
  * ::cudaErrorStartupFailure,
  * ::cudaErrorInvalidPtx,
+ * ::cudaErrorUnsupportedPtxVersion,
  * ::cudaErrorNoKernelImageForDevice,
- * ::cudaErrorJitCompilerNotFound
+ * ::cudaErrorJitCompilerNotFound,
+ * ::cudaErrorJitCompilationDisabled
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaPeekAtLastError, ::cudaGetErrorName, ::cudaGetErrorString, ::cudaError
  */
@@ -1107,8 +1300,11 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetLastError(void);
  * \brief Returns the last error from a runtime call
  *
  * Returns the last error that has been produced by any of the runtime calls
- * in the same host thread. Note that this call does not reset the error to
- * ::cudaSuccess like ::cudaGetLastError().
+ * in the same instance of the CUDA Runtime library in the host thread. This
+ * call does not reset the error to ::cudaSuccess like ::cudaGetLastError().
+ *
+ * Note: Multiple instances of the CUDA Runtime library can be present in an
+ * application when using a library that statically links the CUDA Runtime.
  *
  * \return
  * ::cudaSuccess,
@@ -1135,12 +1331,17 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetLastError(void);
  * ::cudaErrorUnknown,
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorInsufficientDriver,
+ * ::cudaErrorNoDevice,
  * ::cudaErrorSetOnActiveProcess,
  * ::cudaErrorStartupFailure,
  * ::cudaErrorInvalidPtx,
+ * ::cudaErrorUnsupportedPtxVersion,
  * ::cudaErrorNoKernelImageForDevice,
- * ::cudaErrorJitCompilerNotFound
+ * ::cudaErrorJitCompilerNotFound,
+ * ::cudaErrorJitCompilationDisabled
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetLastError, ::cudaGetErrorName, ::cudaGetErrorString, ::cudaError
  */
@@ -1189,22 +1390,20 @@ extern __host__ __cudart_builtin__ const char* CUDARTAPI cudaGetErrorString(cuda
  * \brief Returns the number of compute-capable devices
  *
  * Returns in \p *count the number of devices with compute capability greater
- * or equal to 2.0 that are available for execution.  If there is no such
- * device then ::cudaGetDeviceCount() will return ::cudaErrorNoDevice.
- * If no driver can be loaded to determine if any such devices exist then
- * ::cudaGetDeviceCount() will return ::cudaErrorInsufficientDriver.
+ * or equal to 2.0 that are available for execution.
  *
  * \param count - Returns the number of devices with compute capability
  * greater or equal to 2.0
  *
  * \return
- * ::cudaSuccess,
- * ::cudaErrorNoDevice,
- * ::cudaErrorInsufficientDriver
+ * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDevice, ::cudaSetDevice, ::cudaGetDeviceProperties,
- * ::cudaChooseDevice,
+ * ::cudaChooseDevice, 
+ * ::cudaInitDevice,
  * ::cuDeviceGetCount
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int *count);
@@ -1217,6 +1416,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  * \code
     struct cudaDeviceProp {
         char name[256];
+        cudaUUID_t uuid;
         size_t totalGlobalMem;
         size_t sharedMemPerBlock;
         int regsPerBlock;
@@ -1269,6 +1469,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
         int memoryClockRate;
         int memoryBusWidth;
         int l2CacheSize;
+        int persistingL2CacheMaxSize;
         int maxThreadsPerMultiProcessor;
         int streamPrioritiesSupported;
         int globalL1CacheSupported;
@@ -1287,46 +1488,48 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
         int cooperativeMultiDeviceLaunch;
         int pageableMemoryAccessUsesHostPageTables;
         int directManagedMemAccessFromHost;
+        int accessPolicyMaxWindowSize;
     }
  \endcode
  * where:
  * - \ref ::cudaDeviceProp::name "name[256]" is an ASCII string identifying
- *   the device;
+ *   the device.
+ * - \ref ::cudaDeviceProp::uuid "uuid" is a 16-byte unique identifier.
  * - \ref ::cudaDeviceProp::totalGlobalMem "totalGlobalMem" is the total
- *   amount of global memory available on the device in bytes;
+ *   amount of global memory available on the device in bytes.
  * - \ref ::cudaDeviceProp::sharedMemPerBlock "sharedMemPerBlock" is the
- *   maximum amount of shared memory available to a thread block in bytes;
+ *   maximum amount of shared memory available to a thread block in bytes.
  * - \ref ::cudaDeviceProp::regsPerBlock "regsPerBlock" is the maximum number
- *   of 32-bit registers available to a thread block;
- * - \ref ::cudaDeviceProp::warpSize "warpSize" is the warp size in threads;
+ *   of 32-bit registers available to a thread block.
+ * - \ref ::cudaDeviceProp::warpSize "warpSize" is the warp size in threads.
  * - \ref ::cudaDeviceProp::memPitch "memPitch" is the maximum pitch in
  *   bytes allowed by the memory copy functions that involve memory regions
- *   allocated through ::cudaMallocPitch();
+ *   allocated through ::cudaMallocPitch().
  * - \ref ::cudaDeviceProp::maxThreadsPerBlock "maxThreadsPerBlock" is the
- *   maximum number of threads per block;
+ *   maximum number of threads per block.
  * - \ref ::cudaDeviceProp::maxThreadsDim "maxThreadsDim[3]" contains the
- *   maximum size of each dimension of a block;
+ *   maximum size of each dimension of a block.
  * - \ref ::cudaDeviceProp::maxGridSize "maxGridSize[3]" contains the
- *   maximum size of each dimension of a grid;
+ *   maximum size of each dimension of a grid.
  * - \ref ::cudaDeviceProp::clockRate "clockRate" is the clock frequency in
- *   kilohertz;
+ *   kilohertz.
  * - \ref ::cudaDeviceProp::totalConstMem "totalConstMem" is the total amount
- *   of constant memory available on the device in bytes;
+ *   of constant memory available on the device in bytes.
  * - \ref ::cudaDeviceProp::major "major",
  *   \ref ::cudaDeviceProp::minor "minor" are the major and minor revision
- *   numbers defining the device's compute capability;
+ *   numbers defining the device's compute capability.
  * - \ref ::cudaDeviceProp::textureAlignment "textureAlignment" is the
  *   alignment requirement; texture base addresses that are aligned to
  *   \ref ::cudaDeviceProp::textureAlignment "textureAlignment" bytes do not
- *   need an offset applied to texture fetches;
+ *   need an offset applied to texture fetches.
  * - \ref ::cudaDeviceProp::texturePitchAlignment "texturePitchAlignment" is the
  *   pitch alignment requirement for 2D texture references that are bound to 
- *   pitched memory;
+ *   pitched memory.
  * - \ref ::cudaDeviceProp::deviceOverlap "deviceOverlap" is 1 if the device
  *   can concurrently copy memory between host and device while executing a
  *   kernel, or 0 if not.  Deprecated, use instead asyncEngineCount.
  * - \ref ::cudaDeviceProp::multiProcessorCount "multiProcessorCount" is the
- *   number of multiprocessors on the device;
+ *   number of multiprocessors on the device.
  * - \ref ::cudaDeviceProp::kernelExecTimeoutEnabled "kernelExecTimeoutEnabled"
  *   is 1 if there is a run time limit for kernels executed on the device, or
  *   0 if not.
@@ -1334,21 +1537,16 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  *   integrated (motherboard) GPU and 0 if it is a discrete (card) component.
  * - \ref ::cudaDeviceProp::canMapHostMemory "canMapHostMemory" is 1 if the
  *   device can map host memory into the CUDA address space for use with
- *   ::cudaHostAlloc()/::cudaHostGetDevicePointer(), or 0 if not;
+ *   ::cudaHostAlloc()/::cudaHostGetDevicePointer(), or 0 if not.
  * - \ref ::cudaDeviceProp::computeMode "computeMode" is the compute mode
  *   that the device is currently in. Available modes are as follows:
  *   - cudaComputeModeDefault: Default mode - Device is not restricted and
  *     multiple threads can use ::cudaSetDevice() with this device.
- *   - cudaComputeModeExclusive: Compute-exclusive mode - Only one thread will
- *     be able to use ::cudaSetDevice() with this device.
  *   - cudaComputeModeProhibited: Compute-prohibited mode - No threads can use
  *     ::cudaSetDevice() with this device.
  *   - cudaComputeModeExclusiveProcess: Compute-exclusive-process mode - Many 
  *     threads in one process will be able to use ::cudaSetDevice() with this device.
- *   <br> If ::cudaSetDevice() is called on an already occupied \p device with 
- *   computeMode ::cudaComputeModeExclusive, ::cudaErrorDeviceAlreadyInUse
- *   will be immediately returned indicating the device cannot be used.
- *   When an occupied exclusive mode device is chosen with ::cudaSetDevice,
+ *   <br> When an occupied exclusive mode device is chosen with ::cudaSetDevice,
  *   all subsequent non-device management runtime functions will return
  *   ::cudaErrorDevicesUnavailable.
  * - \ref ::cudaDeviceProp::maxTexture1D "maxTexture1D" is the maximum 1D
@@ -1397,7 +1595,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  *   device supports executing multiple kernels within the same context
  *   simultaneously, or 0 if not. It is not guaranteed that multiple kernels
  *   will be resident on the device concurrently so this feature should not be
- *   relied upon for correctness;
+ *   relied upon for correctness.
  * - \ref ::cudaDeviceProp::ECCEnabled "ECCEnabled" is 1 if the device has ECC
  *   support turned on, or 0 if not.
  * - \ref ::cudaDeviceProp::pciBusID "pciBusID" is the PCI bus identifier of
@@ -1420,6 +1618,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  * - \ref ::cudaDeviceProp::memoryBusWidth "memoryBusWidth" is the memory bus width  
  *   in bits.
  * - \ref ::cudaDeviceProp::l2CacheSize "l2CacheSize" is L2 cache size in bytes. 
+ * - \ref ::cudaDeviceProp::persistingL2CacheMaxSize "persistingL2CacheMaxSize" is L2 cache's maximum persisting lines size in bytes.
  * - \ref ::cudaDeviceProp::maxThreadsPerMultiProcessor "maxThreadsPerMultiProcessor"  
  *   is the number of maximum resident threads per multiprocessor.
  * - \ref ::cudaDeviceProp::streamPrioritiesSupported "streamPrioritiesSupported"
@@ -1430,17 +1629,19 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  *   is 1 if the device supports caching of locals in L1 cache, or 0 if it is not supported.
  * - \ref ::cudaDeviceProp::sharedMemPerMultiprocessor "sharedMemPerMultiprocessor" is the
  *   maximum amount of shared memory available to a multiprocessor in bytes; this amount is
- *   shared by all thread blocks simultaneously resident on a multiprocessor;
+ *   shared by all thread blocks simultaneously resident on a multiprocessor.
  * - \ref ::cudaDeviceProp::regsPerMultiprocessor "regsPerMultiprocessor" is the maximum number
  *   of 32-bit registers available to a multiprocessor; this number is shared
- *   by all thread blocks simultaneously resident on a multiprocessor;
+ *   by all thread blocks simultaneously resident on a multiprocessor.
  * - \ref ::cudaDeviceProp::managedMemory "managedMemory"
  *   is 1 if the device supports allocating managed memory on this system, or 0 if it is not supported.
  * - \ref ::cudaDeviceProp::isMultiGpuBoard "isMultiGpuBoard"
  *   is 1 if the device is on a multi-GPU board (e.g. Gemini cards), and 0 if not;
  * - \ref ::cudaDeviceProp::multiGpuBoardGroupID "multiGpuBoardGroupID" is a unique identifier
  *   for a group of devices associated with the same board.
- *   Devices on the same multi-GPU board will share the same identifier;
+ *   Devices on the same multi-GPU board will share the same identifier.
+ * - \ref ::cudaDeviceProp::hostNativeAtomicSupported "hostNativeAtomicSupported"
+ *   is 1 if the link between the device and the host supports native atomic operations, or 0 if it is not supported.
  * - \ref ::cudaDeviceProp::singleToDoublePrecisionPerfRatio "singleToDoublePrecisionPerfRatio"  
  *   is the ratio of single precision performance (in floating-point operations per second)
  *   to double precision performance.
@@ -1456,10 +1657,43 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  *   cooperative kernels via ::cudaLaunchCooperativeKernel, and 0 otherwise.
  * - \ref ::cudaDeviceProp::cooperativeMultiDeviceLaunch "cooperativeMultiDeviceLaunch" is 1 if the device
  *   supports launching cooperative kernels via ::cudaLaunchCooperativeKernelMultiDevice, and 0 otherwise.
+ * - \ref ::cudaDeviceProp::sharedMemPerBlockOptin "sharedMemPerBlockOptin"
+ *   is the per device maximum shared memory per block usable by special opt in
  * - \ref ::cudaDeviceProp::pageableMemoryAccessUsesHostPageTables "pageableMemoryAccessUsesHostPageTables" is 1 if the device accesses
  *   pageable memory via the host's page tables, and 0 otherwise.
  * - \ref ::cudaDeviceProp::directManagedMemAccessFromHost "directManagedMemAccessFromHost" is 1 if the host can directly access managed
  *   memory on the device without migration, and 0 otherwise.
+ * - \ref ::cudaDeviceProp::maxBlocksPerMultiProcessor "maxBlocksPerMultiProcessor" is the maximum number of thread blocks
+ *   that can reside on a multiprocessor.
+ * - \ref ::cudaDeviceProp::accessPolicyMaxWindowSize "accessPolicyMaxWindowSize" is
+ *   the maximum value of ::cudaAccessPolicyWindow::num_bytes.
+ * - \ref ::cudaDeviceProp::reservedSharedMemPerBlock "reservedSharedMemPerBlock"
+ *   is the shared memory reserved by CUDA driver per block in bytes
+ * - \ref ::cudaDeviceProp::hostRegisterSupported "hostRegisterSupported"
+ *  is 1 if the device supports host memory registration via ::cudaHostRegister, and 0 otherwise.
+ * - \ref ::cudaDeviceProp::sparseCudaArraySupported "sparseCudaArraySupported"
+ *  is 1 if the device supports sparse CUDA arrays and sparse CUDA mipmapped arrays, 0 otherwise
+ * - \ref ::cudaDeviceProp::hostRegisterReadOnlySupported "hostRegisterReadOnlySupported"
+ *  is 1 if the device supports using the ::cudaHostRegister flag cudaHostRegisterReadOnly to register memory that must be mapped as
+ *  read-only to the GPU
+ * - \ref ::cudaDeviceProp::timelineSemaphoreInteropSupported "timelineSemaphoreInteropSupported"
+ *  is 1 if external timeline semaphore interop is supported on the device, 0 otherwise
+ * - \ref ::cudaDeviceProp::memoryPoolsSupported "memoryPoolsSupported"
+ *  is 1 if the device supports using the cudaMallocAsync and cudaMemPool family of APIs, 0 otherwise
+ * - \ref ::cudaDeviceProp::gpuDirectRDMASupported "gpuDirectRDMASupported"
+ *  is 1 if the device supports GPUDirect RDMA APIs, 0 otherwise
+ * - \ref ::cudaDeviceProp::gpuDirectRDMAFlushWritesOptions "gpuDirectRDMAFlushWritesOptions"
+ *  is a bitmask to be interpreted according to the ::cudaFlushGPUDirectRDMAWritesOptions enum
+ * - \ref ::cudaDeviceProp::gpuDirectRDMAWritesOrdering "gpuDirectRDMAWritesOrdering"
+ *  See the ::cudaGPUDirectRDMAWritesOrdering enum for numerical values
+ * - \ref ::cudaDeviceProp::memoryPoolSupportedHandleTypes "memoryPoolSupportedHandleTypes"
+ *  is a bitmask of handle types supported with mempool-based IPC
+ * - \ref ::cudaDeviceProp::deferredMappingCudaArraySupported "deferredMappingCudaArraySupported"
+ *  is 1 if the device supports deferred mapping CUDA arrays and CUDA mipmapped arrays
+ * - \ref ::cudaDeviceProp::ipcEventSupported "ipcEventSupported"
+ *  is 1 if the device supports IPC Events, and 0 otherwise
+ * - \ref ::cudaDeviceProp::unifiedFunctionPointers "unifiedFunctionPointers"
+ *  is 1 if the device support unified pointers, and 0 otherwise
  *
  * \param prop   - Properties for the specified device
  * \param device - Device number to get properties for
@@ -1467,9 +1701,13 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceCount(int 
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidDevice
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice, ::cudaChooseDevice,
- * ::cudaDeviceGetAttribute,
+ * ::cudaDeviceGetAttribute, 
+ * ::cudaInitDevice,
  * ::cuDeviceGetAttribute,
  * ::cuDeviceGetName
  */
@@ -1480,99 +1718,97 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceProperties
  *
  * Returns in \p *value the integer value of the attribute \p attr on device
  * \p device. The supported attributes are:
- * - ::cudaDevAttrMaxThreadsPerBlock: Maximum number of threads per block;
- * - ::cudaDevAttrMaxBlockDimX: Maximum x-dimension of a block;
- * - ::cudaDevAttrMaxBlockDimY: Maximum y-dimension of a block;
- * - ::cudaDevAttrMaxBlockDimZ: Maximum z-dimension of a block;
- * - ::cudaDevAttrMaxGridDimX: Maximum x-dimension of a grid;
- * - ::cudaDevAttrMaxGridDimY: Maximum y-dimension of a grid;
- * - ::cudaDevAttrMaxGridDimZ: Maximum z-dimension of a grid;
+ * - ::cudaDevAttrMaxThreadsPerBlock: Maximum number of threads per block
+ * - ::cudaDevAttrMaxBlockDimX: Maximum x-dimension of a block
+ * - ::cudaDevAttrMaxBlockDimY: Maximum y-dimension of a block
+ * - ::cudaDevAttrMaxBlockDimZ: Maximum z-dimension of a block
+ * - ::cudaDevAttrMaxGridDimX: Maximum x-dimension of a grid
+ * - ::cudaDevAttrMaxGridDimY: Maximum y-dimension of a grid
+ * - ::cudaDevAttrMaxGridDimZ: Maximum z-dimension of a grid
  * - ::cudaDevAttrMaxSharedMemoryPerBlock: Maximum amount of shared memory
- *   available to a thread block in bytes;
+ *   available to a thread block in bytes
  * - ::cudaDevAttrTotalConstantMemory: Memory available on device for
- *   __constant__ variables in a CUDA C kernel in bytes;
- * - ::cudaDevAttrWarpSize: Warp size in threads;
+ *   __constant__ variables in a CUDA C kernel in bytes
+ * - ::cudaDevAttrWarpSize: Warp size in threads
  * - ::cudaDevAttrMaxPitch: Maximum pitch in bytes allowed by the memory copy
- *   functions that involve memory regions allocated through ::cudaMallocPitch();
- * - ::cudaDevAttrMaxTexture1DWidth: Maximum 1D texture width;
+ *   functions that involve memory regions allocated through ::cudaMallocPitch()
+ * - ::cudaDevAttrMaxTexture1DWidth: Maximum 1D texture width
  * - ::cudaDevAttrMaxTexture1DLinearWidth: Maximum width for a 1D texture bound
- *   to linear memory;
- * - ::cudaDevAttrMaxTexture1DMipmappedWidth: Maximum mipmapped 1D texture width;
- * - ::cudaDevAttrMaxTexture2DWidth: Maximum 2D texture width;
- * - ::cudaDevAttrMaxTexture2DHeight: Maximum 2D texture height;
+ *   to linear memory
+ * - ::cudaDevAttrMaxTexture1DMipmappedWidth: Maximum mipmapped 1D texture width
+ * - ::cudaDevAttrMaxTexture2DWidth: Maximum 2D texture width
+ * - ::cudaDevAttrMaxTexture2DHeight: Maximum 2D texture height
  * - ::cudaDevAttrMaxTexture2DLinearWidth: Maximum width for a 2D texture
- *   bound to linear memory;
+ *   bound to linear memory
  * - ::cudaDevAttrMaxTexture2DLinearHeight: Maximum height for a 2D texture
- *   bound to linear memory;
+ *   bound to linear memory
  * - ::cudaDevAttrMaxTexture2DLinearPitch: Maximum pitch in bytes for a 2D
- *   texture bound to linear memory;
+ *   texture bound to linear memory
  * - ::cudaDevAttrMaxTexture2DMipmappedWidth: Maximum mipmapped 2D texture
- *   width;
+ *   width
  * - ::cudaDevAttrMaxTexture2DMipmappedHeight: Maximum mipmapped 2D texture
- *   height;
- * - ::cudaDevAttrMaxTexture3DWidth: Maximum 3D texture width;
- * - ::cudaDevAttrMaxTexture3DHeight: Maximum 3D texture height;
- * - ::cudaDevAttrMaxTexture3DDepth: Maximum 3D texture depth;
+ *   height
+ * - ::cudaDevAttrMaxTexture3DWidth: Maximum 3D texture width
+ * - ::cudaDevAttrMaxTexture3DHeight: Maximum 3D texture height
+ * - ::cudaDevAttrMaxTexture3DDepth: Maximum 3D texture depth
  * - ::cudaDevAttrMaxTexture3DWidthAlt: Alternate maximum 3D texture width,
- *   0 if no alternate maximum 3D texture size is supported;
+ *   0 if no alternate maximum 3D texture size is supported
  * - ::cudaDevAttrMaxTexture3DHeightAlt: Alternate maximum 3D texture height,
- *   0 if no alternate maximum 3D texture size is supported;
+ *   0 if no alternate maximum 3D texture size is supported
  * - ::cudaDevAttrMaxTexture3DDepthAlt: Alternate maximum 3D texture depth,
- *   0 if no alternate maximum 3D texture size is supported;
+ *   0 if no alternate maximum 3D texture size is supported
  * - ::cudaDevAttrMaxTextureCubemapWidth: Maximum cubemap texture width or
- *   height;
- * - ::cudaDevAttrMaxTexture1DLayeredWidth: Maximum 1D layered texture width;
+ *   height
+ * - ::cudaDevAttrMaxTexture1DLayeredWidth: Maximum 1D layered texture width
  * - ::cudaDevAttrMaxTexture1DLayeredLayers: Maximum layers in a 1D layered
- *   texture;
- * - ::cudaDevAttrMaxTexture2DLayeredWidth: Maximum 2D layered texture width;
- * - ::cudaDevAttrMaxTexture2DLayeredHeight: Maximum 2D layered texture height;
+ *   texture
+ * - ::cudaDevAttrMaxTexture2DLayeredWidth: Maximum 2D layered texture width
+ * - ::cudaDevAttrMaxTexture2DLayeredHeight: Maximum 2D layered texture height
  * - ::cudaDevAttrMaxTexture2DLayeredLayers: Maximum layers in a 2D layered
- *   texture;
+ *   texture
  * - ::cudaDevAttrMaxTextureCubemapLayeredWidth: Maximum cubemap layered
- *   texture width or height;
+ *   texture width or height
  * - ::cudaDevAttrMaxTextureCubemapLayeredLayers: Maximum layers in a cubemap
- *   layered texture;
- * - ::cudaDevAttrMaxSurface1DWidth: Maximum 1D surface width;
- * - ::cudaDevAttrMaxSurface2DWidth: Maximum 2D surface width;
- * - ::cudaDevAttrMaxSurface2DHeight: Maximum 2D surface height;
- * - ::cudaDevAttrMaxSurface3DWidth: Maximum 3D surface width;
- * - ::cudaDevAttrMaxSurface3DHeight: Maximum 3D surface height;
- * - ::cudaDevAttrMaxSurface3DDepth: Maximum 3D surface depth;
- * - ::cudaDevAttrMaxSurface1DLayeredWidth: Maximum 1D layered surface width;
+ *   layered texture
+ * - ::cudaDevAttrMaxSurface1DWidth: Maximum 1D surface width
+ * - ::cudaDevAttrMaxSurface2DWidth: Maximum 2D surface width
+ * - ::cudaDevAttrMaxSurface2DHeight: Maximum 2D surface height
+ * - ::cudaDevAttrMaxSurface3DWidth: Maximum 3D surface width
+ * - ::cudaDevAttrMaxSurface3DHeight: Maximum 3D surface height
+ * - ::cudaDevAttrMaxSurface3DDepth: Maximum 3D surface depth
+ * - ::cudaDevAttrMaxSurface1DLayeredWidth: Maximum 1D layered surface width
  * - ::cudaDevAttrMaxSurface1DLayeredLayers: Maximum layers in a 1D layered
- *   surface;
- * - ::cudaDevAttrMaxSurface2DLayeredWidth: Maximum 2D layered surface width;
- * - ::cudaDevAttrMaxSurface2DLayeredHeight: Maximum 2D layered surface height;
+ *   surface
+ * - ::cudaDevAttrMaxSurface2DLayeredWidth: Maximum 2D layered surface width
+ * - ::cudaDevAttrMaxSurface2DLayeredHeight: Maximum 2D layered surface height
  * - ::cudaDevAttrMaxSurface2DLayeredLayers: Maximum layers in a 2D layered
- *   surface;
- * - ::cudaDevAttrMaxSurfaceCubemapWidth: Maximum cubemap surface width;
+ *   surface
+ * - ::cudaDevAttrMaxSurfaceCubemapWidth: Maximum cubemap surface width
  * - ::cudaDevAttrMaxSurfaceCubemapLayeredWidth: Maximum cubemap layered
- *   surface width;
+ *   surface width
  * - ::cudaDevAttrMaxSurfaceCubemapLayeredLayers: Maximum layers in a cubemap
- *   layered surface;
+ *   layered surface
  * - ::cudaDevAttrMaxRegistersPerBlock: Maximum number of 32-bit registers 
- *   available to a thread block;
- * - ::cudaDevAttrClockRate: Peak clock frequency in kilohertz;
+ *   available to a thread block
+ * - ::cudaDevAttrClockRate: Peak clock frequency in kilohertz
  * - ::cudaDevAttrTextureAlignment: Alignment requirement; texture base
  *   addresses aligned to ::textureAlign bytes do not need an offset applied
- *   to texture fetches;
+ *   to texture fetches
  * - ::cudaDevAttrTexturePitchAlignment: Pitch alignment requirement for 2D
- *   texture references bound to pitched memory;
+ *   texture references bound to pitched memory
  * - ::cudaDevAttrGpuOverlap: 1 if the device can concurrently copy memory
- *   between host and device while executing a kernel, or 0 if not;
- * - ::cudaDevAttrMultiProcessorCount: Number of multiprocessors on the device;
+ *   between host and device while executing a kernel, or 0 if not
+ * - ::cudaDevAttrMultiProcessorCount: Number of multiprocessors on the device
  * - ::cudaDevAttrKernelExecTimeout: 1 if there is a run time limit for kernels
- *   executed on the device, or 0 if not;
+ *   executed on the device, or 0 if not
  * - ::cudaDevAttrIntegrated: 1 if the device is integrated with the memory
- *   subsystem, or 0 if not;
+ *   subsystem, or 0 if not
  * - ::cudaDevAttrCanMapHostMemory: 1 if the device can map host memory into
- *   the CUDA address space, or 0 if not;
+ *   the CUDA address space, or 0 if not
  * - ::cudaDevAttrComputeMode: Compute mode is the compute mode that the device
  *   is currently in. Available modes are as follows:
  *   - ::cudaComputeModeDefault: Default mode - Device is not restricted and
  *     multiple threads can use ::cudaSetDevice() with this device.
- *   - ::cudaComputeModeExclusive: Compute-exclusive mode - Only one thread will
- *     be able to use ::cudaSetDevice() with this device.
  *   - ::cudaComputeModeProhibited: Compute-prohibited mode - No threads can use
  *     ::cudaSetDevice() with this device.
  *   - ::cudaComputeModeExclusiveProcess: Compute-exclusive-process mode - Many 
@@ -1582,67 +1818,83 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceProperties
  *   multiple kernels within the same context simultaneously, or 0 if
  *   not. It is not guaranteed that multiple kernels will be resident on the
  *   device concurrently so this feature should not be relied upon for
- *   correctness;
+ *   correctness.
  * - ::cudaDevAttrEccEnabled: 1 if error correction is enabled on the device,
- *   0 if error correction is disabled or not supported by the device;
- * - ::cudaDevAttrPciBusId: PCI bus identifier of the device;
+ *   0 if error correction is disabled or not supported by the device
+ * - ::cudaDevAttrPciBusId: PCI bus identifier of the device
  * - ::cudaDevAttrPciDeviceId: PCI device (also known as slot) identifier of
- *   the device;
+ *   the device
  * - ::cudaDevAttrTccDriver: 1 if the device is using a TCC driver. TCC is only
- *   available on Tesla hardware running Windows Vista or later;
- * - ::cudaDevAttrMemoryClockRate: Peak memory clock frequency in kilohertz;
- * - ::cudaDevAttrGlobalMemoryBusWidth: Global memory bus width in bits;
+ *   available on Tesla hardware running Windows Vista or later.
+ * - ::cudaDevAttrMemoryClockRate: Peak memory clock frequency in kilohertz
+ * - ::cudaDevAttrGlobalMemoryBusWidth: Global memory bus width in bits
  * - ::cudaDevAttrL2CacheSize: Size of L2 cache in bytes. 0 if the device
- *   doesn't have L2 cache;
+ *   doesn't have L2 cache.
  * - ::cudaDevAttrMaxThreadsPerMultiProcessor: Maximum resident threads per 
- *   multiprocessor;
+ *   multiprocessor
  * - ::cudaDevAttrUnifiedAddressing: 1 if the device shares a unified address
- *   space with the host, or 0 if not;
+ *   space with the host, or 0 if not
  * - ::cudaDevAttrComputeCapabilityMajor: Major compute capability version
- *   number;
+ *   number
  * - ::cudaDevAttrComputeCapabilityMinor: Minor compute capability version
- *   number;
+ *   number
  * - ::cudaDevAttrStreamPrioritiesSupported: 1 if the device supports stream
- *   priorities, or 0 if not;
+ *   priorities, or 0 if not
  * - ::cudaDevAttrGlobalL1CacheSupported: 1 if device supports caching globals 
- *    in L1 cache, 0 if not;
+ *    in L1 cache, 0 if not
  * - ::cudaDevAttrLocalL1CacheSupported: 1 if device supports caching locals 
- *    in L1 cache, 0 if not;
+ *    in L1 cache, 0 if not
  * - ::cudaDevAttrMaxSharedMemoryPerMultiprocessor: Maximum amount of shared memory
  *   available to a multiprocessor in bytes; this amount is shared by all 
- *   thread blocks simultaneously resident on a multiprocessor;
+ *   thread blocks simultaneously resident on a multiprocessor
  * - ::cudaDevAttrMaxRegistersPerMultiprocessor: Maximum number of 32-bit registers 
  *   available to a multiprocessor; this number is shared by all thread blocks
- *   simultaneously resident on a multiprocessor;
+ *   simultaneously resident on a multiprocessor
  * - ::cudaDevAttrManagedMemory: 1 if device supports allocating
- *   managed memory, 0 if not;
- * - ::cudaDevAttrIsMultiGpuBoard: 1 if device is on a multi-GPU board, 0 if not;
+ *   managed memory, 0 if not
+ * - ::cudaDevAttrIsMultiGpuBoard: 1 if device is on a multi-GPU board, 0 if not
  * - ::cudaDevAttrMultiGpuBoardGroupID: Unique identifier for a group of devices on the
- *   same multi-GPU board;
+ *   same multi-GPU board
  * - ::cudaDevAttrHostNativeAtomicSupported: 1 if the link between the device and the
- *   host supports native atomic operations;
+ *   host supports native atomic operations
  * - ::cudaDevAttrSingleToDoublePrecisionPerfRatio: Ratio of single precision performance
- *   (in floating-point operations per second) to double precision performance;
+ *   (in floating-point operations per second) to double precision performance
  * - ::cudaDevAttrPageableMemoryAccess: 1 if the device supports coherently accessing
- *   pageable memory without calling cudaHostRegister on it, and 0 otherwise.
+ *   pageable memory without calling cudaHostRegister on it, and 0 otherwise
  * - ::cudaDevAttrConcurrentManagedAccess: 1 if the device can coherently access managed
- *   memory concurrently with the CPU, and 0 otherwise.
+ *   memory concurrently with the CPU, and 0 otherwise
  * - ::cudaDevAttrComputePreemptionSupported: 1 if the device supports
- *   Compute Preemption, 0 if not.
+ *   Compute Preemption, 0 if not
  * - ::cudaDevAttrCanUseHostPointerForRegisteredMem: 1 if the device can access host
- *   registered memory at the same virtual address as the CPU, and 0 otherwise.
+ *   registered memory at the same virtual address as the CPU, and 0 otherwise
  * - ::cudaDevAttrCooperativeLaunch: 1 if the device supports launching cooperative kernels
- *   via ::cudaLaunchCooperativeKernel, and 0 otherwise.
+ *   via ::cudaLaunchCooperativeKernel, and 0 otherwise
  * - ::cudaDevAttrCooperativeMultiDeviceLaunch: 1 if the device supports launching cooperative
- *   kernels via ::cudaLaunchCooperativeKernelMultiDevice, and 0 otherwise.
+ *   kernels via ::cudaLaunchCooperativeKernelMultiDevice, and 0 otherwise
  * - ::cudaDevAttrCanFlushRemoteWrites: 1 if the device supports flushing of outstanding 
- *   remote writes, and 0 otherwise.
+ *   remote writes, and 0 otherwise
  * - ::cudaDevAttrHostRegisterSupported: 1 if the device supports host memory registration
- *   via ::cudaHostRegister, and 0 otherwise.
+ *   via ::cudaHostRegister, and 0 otherwise
  * - ::cudaDevAttrPageableMemoryAccessUsesHostPageTables: 1 if the device accesses pageable memory via the
- *   host's page tables, and 0 otherwise.
+ *   host's page tables, and 0 otherwise
  * - ::cudaDevAttrDirectManagedMemAccessFromHost: 1 if the host can directly access managed memory on the device
- *   without migration, and 0 otherwise.
+ *   without migration, and 0 otherwise
+ * - ::cudaDevAttrMaxSharedMemoryPerBlockOptin: Maximum per block shared memory size on the device. This value can
+ *   be opted into when using ::cudaFuncSetAttribute
+ * - ::cudaDevAttrMaxBlocksPerMultiprocessor: Maximum number of thread blocks that can reside on a multiprocessor
+ * - ::cudaDevAttrMaxPersistingL2CacheSize: Maximum L2 persisting lines capacity setting in bytes
+ * - ::cudaDevAttrMaxAccessPolicyWindowSize: Maximum value of cudaAccessPolicyWindow::num_bytes
+ * - ::cudaDevAttrReservedSharedMemoryPerBlock: Shared memory reserved by CUDA driver per block in bytes
+ * - ::cudaDevAttrSparseCudaArraySupported: 1 if the device supports sparse CUDA arrays and sparse CUDA mipmapped arrays.
+ * - ::cudaDevAttrHostRegisterReadOnlySupported: Device supports using the ::cudaHostRegister flag cudaHostRegisterReadOnly
+ *   to register memory that must be mapped as read-only to the GPU
+ * - ::cudaDevAttrMemoryPoolsSupported: 1 if the device supports using the cudaMallocAsync and cudaMemPool family of APIs, and 0 otherwise
+ * - ::cudaDevAttrGPUDirectRDMASupported: 1 if the device supports GPUDirect RDMA APIs, and 0 otherwise
+ * - ::cudaDevAttrGPUDirectRDMAFlushWritesOptions: bitmask to be interpreted according to the ::cudaFlushGPUDirectRDMAWritesOptions enum 
+ * - ::cudaDevAttrGPUDirectRDMAWritesOrdering: see the ::cudaGPUDirectRDMAWritesOrdering enum for numerical values
+ * - ::cudaDevAttrMemoryPoolSupportedHandleTypes: Bitmask of handle types supported with mempool based IPC
+ * - ::cudaDevAttrDeferredMappingCudaArraySupported : 1 if the device supports deferred mapping CUDA arrays and CUDA mipmapped arrays.
+ * - ::cudaDevAttrIpcEventSupport: 1 if the device supports IPC Events.
  *
  * \param value  - Returned device attribute value
  * \param attr   - Device attribute to query
@@ -1653,12 +1905,125 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceProperties
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice, ::cudaChooseDevice,
- * ::cudaGetDeviceProperties,
+ * ::cudaGetDeviceProperties, 
+ * ::cudaInitDevice,
  * ::cuDeviceGetAttribute
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetAttribute(int *value, enum cudaDeviceAttr attr, int device);
+
+/**
+ * \brief Returns the default mempool of a device
+ *
+ * The default mempool of a device contains device memory from that device.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDevice,
+ * ::cudaErrorInvalidValue
+ * ::cudaErrorNotSupported
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cuDeviceGetDefaultMemPool, ::cudaMallocAsync, ::cudaMemPoolTrimTo, ::cudaMemPoolGetAttribute, ::cudaDeviceSetMemPool, ::cudaMemPoolSetAttribute, ::cudaMemPoolSetAccess
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDeviceGetDefaultMemPool(cudaMemPool_t *memPool, int device);
+
+
+/**
+ * \brief Sets the current memory pool of a device
+ *
+ * The memory pool must be local to the specified device.
+ * Unless a mempool is specified in the ::cudaMallocAsync call,
+ * ::cudaMallocAsync allocates from the current mempool of the provided stream's device.
+ * By default, a device's current memory pool is its default memory pool.
+ *
+ * \note Use ::cudaMallocFromPoolAsync to specify asynchronous allocations from a device different
+ * than the one the stream runs on.
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * ::cudaErrorInvalidDevice
+ * ::cudaErrorNotSupported
+ * \notefnerr
+ * \note_callback
+ *
+ * \sa ::cuDeviceSetMemPool, ::cudaDeviceGetMemPool, ::cudaDeviceGetDefaultMemPool, ::cudaMemPoolCreate, ::cudaMemPoolDestroy, ::cudaMallocFromPoolAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDeviceSetMemPool(int device, cudaMemPool_t memPool);
+
+/**
+ * \brief Gets the current mempool for a device
+ *
+ * Returns the last pool provided to ::cudaDeviceSetMemPool for this device
+ * or the device's default memory pool if ::cudaDeviceSetMemPool has never been called.
+ * By default the current mempool is the default mempool for a device,
+ * otherwise the returned pool must have been set with ::cuDeviceSetMemPool or ::cudaDeviceSetMemPool.
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * ::cudaErrorNotSupported
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cuDeviceGetMemPool, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceSetMemPool
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDeviceGetMemPool(cudaMemPool_t *memPool, int device);
+
+/**
+ * \brief Return NvSciSync attributes that this device can support.
+ *
+ * Returns in \p nvSciSyncAttrList, the properties of NvSciSync that
+ * this CUDA device, \p dev can support. The returned \p nvSciSyncAttrList
+ * can be used to create an NvSciSync that matches this device's capabilities.
+ * 
+ * If NvSciSyncAttrKey_RequiredPerm field in \p nvSciSyncAttrList is
+ * already set this API will return ::cudaErrorInvalidValue.
+ * 
+ * The applications should set \p nvSciSyncAttrList to a valid 
+ * NvSciSyncAttrList failing which this API will return
+ * ::cudaErrorInvalidHandle.
+ * 
+ * The \p flags controls how applications intends to use
+ * the NvSciSync created from the \p nvSciSyncAttrList. The valid flags are:
+ * - ::cudaNvSciSyncAttrSignal, specifies that the applications intends to 
+ * signal an NvSciSync on this CUDA device.
+ * - ::cudaNvSciSyncAttrWait, specifies that the applications intends to 
+ * wait on an NvSciSync on this CUDA device.
+ *
+ * At least one of these flags must be set, failing which the API
+ * returns ::cudaErrorInvalidValue. Both the flags are orthogonal
+ * to one another: a developer may set both these flags that allows to
+ * set both wait and signal specific attributes in the same \p nvSciSyncAttrList.
+ *
+ * \param nvSciSyncAttrList     - Return NvSciSync attributes supported.
+ * \param device                - Valid Cuda Device to get NvSciSync attributes for.
+ * \param flags                 - flags describing NvSciSync usage.
+ *
+ * \return
+ *
+ * ::cudaSuccess,
+ * ::cudaErrorDeviceUninitialized,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidHandle,
+ * ::cudaErrorInvalidDevice,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorMemoryAllocation
+ *
+ * \sa
+ * ::cudaImportExternalSemaphore,
+ * ::cudaDestroyExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDeviceGetNvSciSyncAttributes(void *nvSciSyncAttrList, int device, int flags);
 
 /**
  * \brief Queries attributes of the link between two devices.
@@ -1690,10 +2055,12 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetAttribute(
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaCtxEnablePeerAccess,
- * ::cudaCtxDisablePeerAccess,
- * ::cudaCtxCanAccessPeer,
+ * \sa ::cudaDeviceEnablePeerAccess,
+ * ::cudaDeviceDisablePeerAccess,
+ * ::cudaDeviceCanAccessPeer,
  * ::cuDeviceGetP2PAttribute
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetP2PAttribute(int *value, enum cudaDeviceP2PAttr attr, int srcDevice, int dstDevice);
@@ -1711,12 +2078,43 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaDeviceGetP2PAttribu
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice,
- * ::cudaGetDeviceProperties
+ * ::cudaGetDeviceProperties, 
+ * ::cudaInitDevice
  */
 extern __host__ cudaError_t CUDARTAPI cudaChooseDevice(int *device, const struct cudaDeviceProp *prop);
-
+/**
+ * \brief Initialize device to be used for GPU executions
+ *
+ * This function will initialize the CUDA Runtime structures and primary context on \p device when called,
+ * but the context will not be made current to \p device.
+ *
+ * When ::cudaInitDeviceFlagsAreValid is set in \p flags, deviceFlags are applied to the requested device.
+ * The values of deviceFlags match those of the flags parameters in ::cudaSetDeviceFlags. 
+ * The effect may be verified by ::cudaGetDeviceFlags.
+ *
+ * This function will return an error if the device is in ::cudaComputeModeExclusiveProcess
+ * and is occupied by another process or if the device is in ::cudaComputeModeProhibited.
+ *
+ * \param device - Device on which the runtime will initialize itself.
+ * \param deviceFlags - Parameters for device operation.
+ * \param flags - Flags for controlling the device initialization.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDevice,
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaGetDeviceProperties,
+ * ::cudaChooseDevice, ::cudaSetDevice
+ * ::cuCtxSetCurrent
+ */
+extern __host__ cudaError_t CUDARTAPI cudaInitDevice(int device, unsigned int deviceFlags, unsigned int flags);
 /**
  * \brief Set device to be used for GPU executions
  *
@@ -1735,19 +2133,31 @@ extern __host__ cudaError_t CUDARTAPI cudaChooseDevice(int *device, const struct
  *
  * This call may be made from any host thread, to any device, and at 
  * any time.  This function will do no synchronization with the previous 
- * or new device, and should be considered a very low overhead call.
- *
+ * or new device, 
+ * and should only take significant time when it initializes the runtime's context state.
+ * This call will bind the primary context of the specified device to the calling thread and all the
+ * subsequent memory allocations, stream and event creations, and kernel launches
+ * will be associated with the primary context. 
+ * This function will also immediately initialize the runtime state on the primary context, 
+ * and the context will be current on \p device immediately. This function will return an 
+ * error if the device is in ::cudaComputeModeExclusiveProcess and is occupied by another 
+ * process or if the device is in ::cudaComputeModeProhibited.
+ * 
+ * It is not required to call ::cudaInitDevice before using this function.
  * \param device - Device on which the active host thread should execute the
  * device code.
  *
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidDevice,
- * ::cudaErrorDeviceAlreadyInUse
+ * ::cudaErrorDeviceUnavailable,
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaGetDeviceProperties,
  * ::cudaChooseDevice,
+ * ::cudaInitDevice,
  * ::cuCtxSetCurrent
  */
 extern __host__ cudaError_t CUDARTAPI cudaSetDevice(int device);
@@ -1762,8 +2172,11 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDevice(int device);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorDeviceUnavailable,
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaSetDevice, ::cudaGetDeviceProperties,
  * ::cudaChooseDevice,
@@ -1793,6 +2206,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDevice(int *devi
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidDevice
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaSetDevice, ::cudaGetDeviceProperties,
  * ::cudaSetDeviceFlags,
@@ -1802,19 +2217,14 @@ extern __host__ cudaError_t CUDARTAPI cudaSetValidDevices(int *device_arr, int l
 
 /**
  * \brief Sets flags to be used for device executions
- *
- * Records \p flags as the flags to use when initializing the current 
- * device.  If no device has been made current to the calling thread,
- * then \p flags will be applied to the initialization of any device
- * initialized by the calling host thread, unless that device has had
- * its initialization flags set explicitly by this or any host thread.
  * 
- * If the current device has been set and that device has already been 
- * initialized then this call will fail with the error 
- * ::cudaErrorSetOnActiveProcess.  In this case it is necessary 
- * to reset \p device using ::cudaDeviceReset() before the device's
- * initialization flags may be set.
- *
+ * Records \p flags as the flags for the current device. If the current device
+ * has been set and that device has already been initialized, the previous flags
+ * are overwritten. If the current device has not been initialized, it is
+ * initialized with the provided flags. If no device has been made current to
+ * the calling thread, a default device is selected and initialized with the
+ * provided flags.
+ * 
  * The two LSBs of the \p flags parameter can be used to control how the CPU
  * thread interacts with the OS scheduler when waiting for results from the
  * device.
@@ -1824,7 +2234,10 @@ extern __host__ cudaError_t CUDARTAPI cudaSetValidDevices(int *device_arr, int l
  * process \p C and the number of logical processors in the system \p P. If
  * \p C \> \p P, then CUDA will yield to other OS threads when waiting for the
  * device, otherwise CUDA will not yield while waiting for results and
- * actively spin on the processor.
+ * actively spin on the processor. Additionally, on Tegra devices,
+ * ::cudaDeviceScheduleAuto uses a heuristic based on the power profile of
+ * the platform and may choose ::cudaDeviceScheduleBlockingSync for low-powered
+ * devices.
  * - ::cudaDeviceScheduleSpin: Instruct CUDA to actively spin when waiting for
  * results from the device. This can decrease latency when waiting for the
  * device, but may lower the performance of CPU threads if they are performing
@@ -1847,17 +2260,22 @@ extern __host__ cudaError_t CUDARTAPI cudaSetValidDevices(int *device_arr, int l
  * - ::cudaDeviceLmemResizeToMax: Instruct CUDA to not reduce local memory
  * after resizing local memory for a kernel. This can prevent thrashing by
  * local memory allocations when launching many kernels with high local
- * memory usage at the cost of potentially increased memory usage.
+ * memory usage at the cost of potentially increased memory usage. <br>
+ * \ref deprecated "Deprecated:" This flag is deprecated and the behavior enabled          
+ * by this flag is now the default and cannot be disabled.
  *
  * \param flags - Parameters for device operation
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorSetOnActiveProcess
+ * ::cudaErrorInvalidValue
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceFlags, ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaGetDeviceProperties,
  * ::cudaSetDevice, ::cudaSetValidDevices,
+ * ::cudaInitDevice,
  * ::cudaChooseDevice,
  * ::cuDevicePrimaryCtxSetFlags
  */
@@ -1866,14 +2284,12 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDeviceFlags( unsigned int flags );
 /**
  * \brief Gets the flags for the current device
  *
- * Returns in \p flags the flags for the current device.  If there is a
- * current device for the calling thread, and the device has been initialized
- * or flags have been set on that device specifically, the flags for the
- * device are returned.  If there is no current device, but flags have been
- * set for the thread with ::cudaSetDeviceFlags, the thread flags are returned.
- * Finally, if there is no current device and no thread flags, the flags for
- * the first device are returned, which may be the default flags.  Compare
- * to the behavior of ::cudaSetDeviceFlags.
+ * 
+ * Returns in \p flags the flags for the current device. If there is a current
+ * device for the calling thread, the flags for the device are returned. If
+ * there is no current device, the flags for the first device are returned,
+ * which may be the default flags.  Compare to the behavior of
+ * ::cudaSetDeviceFlags.
  *
  * Typically, the flags returned should match the behavior that will be seen
  * if the calling thread uses a device after this call, without any change to
@@ -1898,9 +2314,13 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDeviceFlags( unsigned int flags );
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidDevice
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDevice, ::cudaGetDeviceProperties,
  * ::cudaSetDevice, ::cudaSetDeviceFlags,
+ * ::cudaInitDevice,
  * ::cuCtxGetFlags,
  * ::cuDevicePrimaryCtxGetState
  */
@@ -1930,6 +2350,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetDeviceFlags( unsigned int *flags );
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreateWithPriority,
  * ::cudaStreamCreateWithFlags,
@@ -1961,6 +2383,8 @@ extern __host__ cudaError_t CUDARTAPI cudaStreamCreate(cudaStream_t *pStream);
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate,
  * ::cudaStreamCreateWithPriority,
@@ -1997,6 +2421,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamCreateWithFla
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \note Stream priorities are supported only on GPUs
  * with compute capability 3.5 or higher.
@@ -2035,6 +2461,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamCreateWithPri
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreateWithPriority,
  * ::cudaDeviceGetStreamPriorityRange,
@@ -2058,6 +2486,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetPriority(c
  * ::cudaErrorInvalidResourceHandle
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreateWithPriority,
  * ::cudaStreamCreateWithFlags,
@@ -2067,6 +2497,123 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetPriority(c
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetFlags(cudaStream_t hStream, unsigned int *flags);
 
 /**
+ * \brief Query the Id of a stream
+ *
+ * Query the Id of a stream. The Id is returned in \p streamId.
+ * The stream handle \p hStream can refer to any of the following:
+ * <ul>
+ *   <li>a stream created via any of the CUDA runtime APIs such as ::cudaStreamCreate, 
+ *   ::cudaStreamCreateWithFlags and ::cudaStreamCreateWithPriority, or their driver 
+ *   API equivalents such as ::cuStreamCreate or ::cuStreamCreateWithPriority.
+ *   Passing an invalid handle will result in undefined behavior.</li>
+ *   <li>any of the special streams such as the NULL stream, ::cudaStreamLegacy 
+ *   and ::cudaStreamPerThread respectively.  The driver API equivalents of these 
+ *   are also accepted which are NULL, ::CU_STREAM_LEGACY and ::CU_STREAM_PER_THREAD.</li>
+ * </ul>
+ * 
+ * \param hStream    - Handle to the stream to be queried
+ * \param streamId   - Pointer to an unsigned long long in which the stream Id is returned
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \note_null_stream
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaStreamCreateWithPriority,
+ * ::cudaStreamCreateWithFlags,
+ * ::cudaStreamGetPriority,
+ * ::cudaStreamGetFlags,
+ * ::cuStreamGetId
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetId(cudaStream_t hStream, unsigned long long *streamId);
+
+/**
+ * \brief Resets all persisting lines in cache to normal status.
+ *
+ * Resets all persisting lines in cache to normal status.
+ * Takes effect on function return.
+ *
+ * \return
+ * ::cudaSuccess,
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ cudaError_t CUDARTAPI cudaCtxResetPersistingL2Cache(void);
+
+/**
+ * \brief Copies attributes from source stream to destination stream.
+ *
+ * Copies attributes from source stream \p src to destination stream \p dst.
+ * Both streams must have the same context.
+ *
+ * \param[out] dst Destination stream
+ * \param[in] src Source stream
+ * For attributes see ::cudaStreamAttrID
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorNotSupported
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamCopyAttributes(cudaStream_t dst, cudaStream_t src);
+
+ /**
+ * \brief Queries stream attribute.
+ *
+ * Queries attribute \p attr from \p hStream and stores it in corresponding
+ * member of \p value_out.
+ *
+ * \param[in] hStream
+ * \param[in] attr
+ * \param[out] value_out
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetAttribute(
+        cudaStream_t hStream, cudaStreamAttrID attr,
+        cudaStreamAttrValue *value_out);
+
+ /**
+ * \brief Sets stream attribute.
+ *
+ * Sets attribute \p attr on \p hStream from corresponding attribute of
+ * \p value. The updated attribute will be applied to subsequent work
+ * submitted to the stream. It will not affect previously submitted work.
+ *
+ * \param[out] hStream
+ * \param[in] attr
+ * \param[in] value
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamSetAttribute(
+        cudaStream_t hStream, cudaStreamAttrID attr,
+        const cudaStreamAttrValue *value);
+
+ /**
  * \brief Destroys and cleans up an asynchronous stream
  *
  * Destroys and cleans up the asynchronous stream specified by \p stream.
@@ -2084,6 +2631,9 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetFlags(cuda
  * ::cudaErrorInvalidResourceHandle
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
  *
  * \sa ::cudaStreamCreate,
  * ::cudaStreamCreateWithFlags,
@@ -2103,9 +2653,14 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamDestroy(cudaS
  * The synchronization will be performed efficiently on the device when applicable.
  * \p event may be from a different device than \p stream.
  *
+ * flags include:
+ * - ::cudaEventWaitDefault: Default event creation flag.
+ * - ::cudaEventWaitExternal: Event is captured in the graph as an external
+ *   event node when performing stream capture.
+ *
  * \param stream - Stream to wait
  * \param event  - Event to wait on
- * \param flags  - Parameters for the operation (must be 0)
+ * \param flags  - Parameters for the operation(See above)
  *
  * \return
  * ::cudaSuccess,
@@ -2113,17 +2668,13 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamDestroy(cudaS
  * ::cudaErrorInvalidResourceHandle
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamQuery, ::cudaStreamSynchronize, ::cudaStreamAddCallback, ::cudaStreamDestroy,
  * ::cuStreamWaitEvent
  */
-extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamWaitEvent(cudaStream_t stream, cudaEvent_t event, unsigned int flags);
-
-#ifdef _WIN32
-#define CUDART_CB __stdcall
-#else
-#define CUDART_CB
-#endif
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamWaitEvent(cudaStream_t stream, cudaEvent_t event, unsigned int flags __dv(0));
 
 /**
  * Type of stream callback functions.
@@ -2136,6 +2687,12 @@ typedef void (CUDART_CB *cudaStreamCallback_t)(cudaStream_t stream, cudaError_t 
 /**
  * \brief Add a callback to a compute stream
  *
+ * \note This function is slated for eventual deprecation and removal. If
+ * you do not require the callback to execute in case of a device error,
+ * consider using ::cudaLaunchHostFunc. Additionally, this function is not
+ * supported with ::cudaStreamBeginCapture and ::cudaStreamEndCapture, unlike
+ * ::cudaLaunchHostFunc.
+ *
  * Adds a callback to be called on the host after all currently enqueued
  * items in the stream have completed.  For each 
  * cudaStreamAddCallback call, a callback will be executed exactly once.
@@ -2146,7 +2703,7 @@ typedef void (CUDART_CB *cudaStreamCallback_t)(cudaStream_t stream, cudaError_t 
  * appropriate ::cudaError_t.
  *
  * Callbacks must not make any CUDA API calls.  Attempting to use CUDA APIs
- * will result in ::cudaErrorNotPermitted.  Callbacks must not perform any
+ * may result in ::cudaErrorNotPermitted.  Callbacks must not perform any
  * synchronization that may depend on outstanding device work or other callbacks
  * that are not mandated to run earlier.  Callbacks without a mandated order
  * (in independent streams) execute in undefined order and may be serialized.
@@ -2186,9 +2743,11 @@ typedef void (CUDART_CB *cudaStreamCallback_t)(cudaStream_t stream, cudaError_t 
  * ::cudaErrorNotSupported
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamQuery, ::cudaStreamSynchronize, ::cudaStreamWaitEvent, ::cudaStreamDestroy, ::cudaMallocManaged, ::cudaStreamAttachMemAsync,
- * ::cuStreamAddCallback
+ * ::cudaLaunchHostFunc, ::cuStreamAddCallback
  */
 extern __host__ cudaError_t CUDARTAPI cudaStreamAddCallback(cudaStream_t stream,
         cudaStreamCallback_t callback, void *userData, unsigned int flags);
@@ -2208,6 +2767,8 @@ extern __host__ cudaError_t CUDARTAPI cudaStreamAddCallback(cudaStream_t stream,
  * ::cudaErrorInvalidResourceHandle
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamQuery, ::cudaStreamWaitEvent, ::cudaStreamAddCallback, ::cudaStreamDestroy,
  * ::cuStreamSynchronize
@@ -2231,6 +2792,8 @@ extern __host__ cudaError_t CUDARTAPI cudaStreamSynchronize(cudaStream_t stream)
  * ::cudaErrorInvalidResourceHandle
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamWaitEvent, ::cudaStreamSynchronize, ::cudaStreamAddCallback, ::cudaStreamDestroy,
  * ::cuStreamQuery
@@ -2312,12 +2875,250 @@ extern __host__ cudaError_t CUDARTAPI cudaStreamQuery(cudaStream_t stream);
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaStreamCreate, ::cudaStreamCreateWithFlags, ::cudaStreamWaitEvent, ::cudaStreamSynchronize, ::cudaStreamAddCallback, ::cudaStreamDestroy, ::cudaMallocManaged,
  * ::cuStreamAttachMemAsync
  */
-extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamAttachMemAsync(cudaStream_t stream, void *devPtr, size_t length __dv(0), unsigned int flags __dv(cudaMemAttachSingle));
+#if defined(__cplusplus)
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamAttachMemAsync(cudaStream_t stream, void *devPtr, size_t length __dv(0), unsigned int flags = cudaMemAttachSingle);
+#else
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamAttachMemAsync(cudaStream_t stream, void *devPtr, size_t length __dv(0), unsigned int flags);
+#endif
 
+/**
+ * \brief Begins graph capture on a stream
+ *
+ * Begin graph capture on \p stream. When a stream is in capture mode, all operations
+ * pushed into the stream will not be executed, but will instead be captured into
+ * a graph, which will be returned via ::cudaStreamEndCapture. Capture may not be initiated
+ * if \p stream is ::cudaStreamLegacy. Capture must be ended on the same stream in which
+ * it was initiated, and it may only be initiated if the stream is not already in capture
+ * mode. The capture mode may be queried via ::cudaStreamIsCapturing. A unique id
+ * representing the capture sequence may be queried via ::cudaStreamGetCaptureInfo.
+ *
+ * If \p mode is not ::cudaStreamCaptureModeRelaxed, ::cudaStreamEndCapture must be
+ * called on this stream from the same thread.
+ *
+ * \note Kernels captured using this API must not use texture and surface references.
+ *       Reading or writing through any texture or surface reference is undefined
+ *       behavior. This restriction does not apply to texture and surface objects.
+ *
+ * \param stream - Stream in which to initiate capture
+ * \param mode    - Controls the interaction of this capture sequence with other API
+ *                  calls that are potentially unsafe. For more details see
+ *                  ::cudaThreadExchangeStreamCaptureMode.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamCreate,
+ * ::cudaStreamIsCapturing,
+ * ::cudaStreamEndCapture,
+ * ::cudaThreadExchangeStreamCaptureMode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaStreamBeginCapture(cudaStream_t stream, enum cudaStreamCaptureMode mode);
+
+/**
+ * \brief Swaps the stream capture interaction mode for a thread
+ *
+ * Sets the calling thread's stream capture interaction mode to the value contained
+ * in \p *mode, and overwrites \p *mode with the previous mode for the thread. To
+ * facilitate deterministic behavior across function or module boundaries, callers
+ * are encouraged to use this API in a push-pop fashion: \code
+     cudaStreamCaptureMode mode = desiredMode;
+     cudaThreadExchangeStreamCaptureMode(&mode);
+     ...
+     cudaThreadExchangeStreamCaptureMode(&mode); // restore previous mode
+ * \endcode
+ *
+ * During stream capture (see ::cudaStreamBeginCapture), some actions, such as a call
+ * to ::cudaMalloc, may be unsafe. In the case of ::cudaMalloc, the operation is
+ * not enqueued asynchronously to a stream, and is not observed by stream capture.
+ * Therefore, if the sequence of operations captured via ::cudaStreamBeginCapture
+ * depended on the allocation being replayed whenever the graph is launched, the
+ * captured graph would be invalid.
+ *
+ * Therefore, stream capture places restrictions on API calls that can be made within
+ * or concurrently to a ::cudaStreamBeginCapture-::cudaStreamEndCapture sequence. This
+ * behavior can be controlled via this API and flags to ::cudaStreamBeginCapture.
+ *
+ * A thread's mode is one of the following:
+ * - \p cudaStreamCaptureModeGlobal: This is the default mode. If the local thread has
+ *   an ongoing capture sequence that was not initiated with
+ *   \p cudaStreamCaptureModeRelaxed at \p cuStreamBeginCapture, or if any other thread
+ *   has a concurrent capture sequence initiated with \p cudaStreamCaptureModeGlobal,
+ *   this thread is prohibited from potentially unsafe API calls.
+ * - \p cudaStreamCaptureModeThreadLocal: If the local thread has an ongoing capture
+ *   sequence not initiated with \p cudaStreamCaptureModeRelaxed, it is prohibited
+ *   from potentially unsafe API calls. Concurrent capture sequences in other threads
+ *   are ignored.
+ * - \p cudaStreamCaptureModeRelaxed: The local thread is not prohibited from potentially
+ *   unsafe API calls. Note that the thread is still prohibited from API calls which
+ *   necessarily conflict with stream capture, for example, attempting ::cudaEventQuery
+ *   on an event that was last recorded inside a capture sequence.
+ *
+ * \param mode - Pointer to mode value to swap with the current mode
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamBeginCapture
+ */
+extern __host__ cudaError_t CUDARTAPI cudaThreadExchangeStreamCaptureMode(enum cudaStreamCaptureMode *mode);
+
+/**
+ * \brief Ends capture on a stream, returning the captured graph
+ *
+ * End capture on \p stream, returning the captured graph via \p pGraph.
+ * Capture must have been initiated on \p stream via a call to ::cudaStreamBeginCapture.
+ * If capture was invalidated, due to a violation of the rules of stream capture, then
+ * a NULL graph will be returned.
+ *
+ * If the \p mode argument to ::cudaStreamBeginCapture was not
+ * ::cudaStreamCaptureModeRelaxed, this call must be from the same thread as
+ * ::cudaStreamBeginCapture.
+ *
+ * \param stream - Stream to query
+ * \param pGraph - The captured graph
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorStreamCaptureWrongThread
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamCreate,
+ * ::cudaStreamBeginCapture,
+ * ::cudaStreamIsCapturing
+ */
+extern __host__ cudaError_t CUDARTAPI cudaStreamEndCapture(cudaStream_t stream, cudaGraph_t *pGraph);
+
+/**
+ * \brief Returns a stream's capture status
+ *
+ * Return the capture status of \p stream via \p pCaptureStatus. After a successful
+ * call, \p *pCaptureStatus will contain one of the following:
+ * - ::cudaStreamCaptureStatusNone: The stream is not capturing.
+ * - ::cudaStreamCaptureStatusActive: The stream is capturing.
+ * - ::cudaStreamCaptureStatusInvalidated: The stream was capturing but an error
+ *   has invalidated the capture sequence. The capture sequence must be terminated
+ *   with ::cudaStreamEndCapture on the stream where it was initiated in order to
+ *   continue using \p stream.
+ *
+ * Note that, if this is called on ::cudaStreamLegacy (the "null stream") while
+ * a blocking stream on the same device is capturing, it will return
+ * ::cudaErrorStreamCaptureImplicit and \p *pCaptureStatus is unspecified
+ * after the call. The blocking stream capture is not invalidated.
+ *
+ * When a blocking stream is capturing, the legacy stream is in an
+ * unusable state until the blocking stream capture is terminated. The legacy
+ * stream is not supported for stream capture, but attempted use would have an
+ * implicit dependency on the capturing stream(s).
+ *
+ * \param stream         - Stream to query
+ * \param pCaptureStatus - Returns the stream's capture status
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorStreamCaptureImplicit
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamCreate,
+ * ::cudaStreamBeginCapture,
+ * ::cudaStreamEndCapture
+ */
+extern __host__ cudaError_t CUDARTAPI cudaStreamIsCapturing(cudaStream_t stream, enum cudaStreamCaptureStatus *pCaptureStatus);
+
+/**
+ * \brief Query a stream's capture state
+ *
+ * Query stream state related to stream capture.
+ *
+ * If called on ::cudaStreamLegacy (the "null stream") while a stream not created 
+ * with ::cudaStreamNonBlocking is capturing, returns ::cudaErrorStreamCaptureImplicit.
+ *
+ * Valid data (other than capture status) is returned only if both of the following are true:
+ * - the call returns cudaSuccess
+ * - the returned capture status is ::cudaStreamCaptureStatusActive
+ *
+ * \param stream - The stream to query
+ * \param captureStatus_out - Location to return the capture status of the stream; required
+ * \param id_out - Optional location to return an id for the capture sequence, which is
+ *           unique over the lifetime of the process
+ * \param graph_out - Optional location to return the graph being captured into. All
+ *           operations other than destroy and node removal are permitted on the graph
+ *           while the capture sequence is in progress. This API does not transfer
+ *           ownership of the graph, which is transferred or destroyed at
+ *           ::cudaStreamEndCapture. Note that the graph handle may be invalidated before
+ *           end of capture for certain errors. Nodes that are or become
+ *           unreachable from the original stream at ::cudaStreamEndCapture due to direct
+ *           actions on the graph do not trigger ::cudaErrorStreamCaptureUnjoined.
+ * \param dependencies_out - Optional location to store a pointer to an array of nodes.
+ *           The next node to be captured in the stream will depend on this set of nodes,
+ *           absent operations such as event wait which modify this set. The array pointer
+ *           is valid until the next API call which operates on the stream or until end of
+ *           capture. The node handles may be copied out and are valid until they or the
+ *           graph is destroyed. The driver-owned array may also be passed directly to
+ *           APIs that operate on the graph (not the stream) without copying.
+ * \param numDependencies_out - Optional location to store the size of the array
+ *           returned in dependencies_out.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorStreamCaptureImplicit
+ * \note_graph_thread_safety
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamBeginCapture,
+ * ::cudaStreamIsCapturing,
+ * ::cudaStreamUpdateCaptureDependencies
+ */
+extern __host__ cudaError_t CUDARTAPI cudaStreamGetCaptureInfo(cudaStream_t stream, enum cudaStreamCaptureStatus *captureStatus_out, unsigned long long *id_out __dv(0), cudaGraph_t *graph_out __dv(0), const cudaGraphNode_t **dependencies_out __dv(0), size_t *numDependencies_out __dv(0));
+
+/**
+ * \brief Update the set of dependencies in a capturing stream (11.3+)
+ *
+ * Modifies the dependency set of a capturing stream. The dependency set is the set
+ * of nodes that the next captured node in the stream will depend on.
+ *
+ * Valid flags are ::cudaStreamAddCaptureDependencies and
+ * ::cudaStreamSetCaptureDependencies. These control whether the set passed to
+ * the API is added to the existing set or replaces it. A flags value of 0 defaults
+ * to ::cudaStreamAddCaptureDependencies.
+ *
+ * Nodes that are removed from the dependency set via this API do not result in
+ * ::cudaErrorStreamCaptureUnjoined if they are unreachable from the stream at
+ * ::cudaStreamEndCapture.
+ *
+ * Returns ::cudaErrorIllegalState if the stream is not capturing.
+ *
+ * This API is new in CUDA 11.3. Developers requiring compatibility across minor
+ * versions of the CUDA driver to 11.0 should not use this API or provide a fallback.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorIllegalState
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaStreamBeginCapture,
+ * ::cudaStreamGetCaptureInfo,
+ */
+extern __host__ cudaError_t CUDARTAPI cudaStreamUpdateCaptureDependencies(cudaStream_t stream, cudaGraphNode_t *dependencies, size_t numDependencies, unsigned int flags __dv(0));
 /** @} */ /* END CUDART_STREAM */
 
 /**
@@ -2341,11 +3142,12 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamAttachMemAsyn
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorLaunchFailure,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*, unsigned int) "cudaEventCreate (C++ API)",
  * ::cudaEventCreateWithFlags, ::cudaEventRecord, ::cudaEventQuery,
@@ -2378,11 +3180,12 @@ extern __host__ cudaError_t CUDARTAPI cudaEventCreate(cudaEvent_t *event);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorLaunchFailure,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventSynchronize, ::cudaEventDestroy, ::cudaEventElapsedTime,
@@ -2395,7 +3198,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventCreateWithFlag
  * \brief Records an event
  *
  * Captures in \p event the contents of \p stream at the time of this call.
- * \p event and \p stream must be on the same device.
+ * \p event and \p stream must be on the same CUDA context.
  * Calls such as ::cudaEventQuery() or ::cudaStreamWaitEvent() will then
  * examine or wait for completion of the work that was captured. Uses of
  * \p stream after this call do not modify \p event. See note on default
@@ -2415,19 +3218,69 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventCreateWithFlag
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorLaunchFailure
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventCreateWithFlags, ::cudaEventQuery,
  * ::cudaEventSynchronize, ::cudaEventDestroy, ::cudaEventElapsedTime,
  * ::cudaStreamWaitEvent,
+ * ::cudaEventRecordWithFlags,
  * ::cuEventRecord
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventRecord(cudaEvent_t event, cudaStream_t stream __dv(0));
+
+/**
+ * \brief Records an event
+ *
+ * Captures in \p event the contents of \p stream at the time of this call.
+ * \p event and \p stream must be on the same CUDA context.
+ * Calls such as ::cudaEventQuery() or ::cudaStreamWaitEvent() will then
+ * examine or wait for completion of the work that was captured. Uses of
+ * \p stream after this call do not modify \p event. See note on default
+ * stream behavior for what is captured in the default case.
+ *
+ * ::cudaEventRecordWithFlags() can be called multiple times on the same event and
+ * will overwrite the previously captured state. Other APIs such as
+ * ::cudaStreamWaitEvent() use the most recently captured state at the time
+ * of the API call, and are not affected by later calls to
+ * ::cudaEventRecordWithFlags(). Before the first call to ::cudaEventRecordWithFlags(), an
+ * event represents an empty set of work, so for example ::cudaEventQuery()
+ * would return ::cudaSuccess.
+ *
+ * flags include:
+ * - ::cudaEventRecordDefault: Default event creation flag.
+ * - ::cudaEventRecordExternal: Event is captured in the graph as an external
+ *   event node when performing stream capture.
+ *
+ * \param event  - Event to record
+ * \param stream - Stream in which to record event
+ * \param flags  - Parameters for the operation(See above)
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorLaunchFailure
+ * \note_null_stream
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
+ * ::cudaEventCreateWithFlags, ::cudaEventQuery,
+ * ::cudaEventSynchronize, ::cudaEventDestroy, ::cudaEventElapsedTime,
+ * ::cudaStreamWaitEvent,
+ * ::cudaEventRecord,
+ * ::cuEventRecord,
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventRecordWithFlags(cudaEvent_t event, cudaStream_t stream __dv(0), unsigned int flags __dv(0));
+#endif
 
 /**
  * \brief Queries an event's status
@@ -2446,11 +3299,12 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventRecord(cudaEve
  * \return
  * ::cudaSuccess,
  * ::cudaErrorNotReady,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorLaunchFailure
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventCreateWithFlags, ::cudaEventRecord,
@@ -2475,11 +3329,12 @@ extern __host__ cudaError_t CUDARTAPI cudaEventQuery(cudaEvent_t event);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorLaunchFailure
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventCreateWithFlags, ::cudaEventRecord,
@@ -2502,10 +3357,13 @@ extern __host__ cudaError_t CUDARTAPI cudaEventSynchronize(cudaEvent_t event);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorLaunchFailure
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventCreateWithFlags, ::cudaEventQuery,
@@ -2544,10 +3402,12 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventDestroy(cudaEv
  * ::cudaSuccess,
  * ::cudaErrorNotReady,
  * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidResourceHandle,
- * ::cudaErrorLaunchFailure
+ * ::cudaErrorLaunchFailure,
+ * ::cudaErrorUnknown
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaEventCreate(cudaEvent_t*) "cudaEventCreate (C API)",
  * ::cudaEventCreateWithFlags, ::cudaEventQuery,
@@ -2557,6 +3417,662 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventDestroy(cudaEv
 extern __host__ cudaError_t CUDARTAPI cudaEventElapsedTime(float *ms, cudaEvent_t start, cudaEvent_t end);
 
 /** @} */ /* END CUDART_EVENT */
+
+/**
+ * \defgroup CUDART_EXTRES_INTEROP External Resource Interoperability
+ *
+ * ___MANBRIEF___ External resource interoperability functions of the CUDA runtime API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ *
+ * This section describes the external resource interoperability functions of the CUDA
+ * runtime application programming interface.
+ *
+ * @{
+ */
+
+/**
+ * \brief Imports an external memory object
+ *
+ * Imports an externally allocated memory object and returns
+ * a handle to that in \p extMem_out.
+ *
+ * The properties of the handle being imported must be described in
+ * \p memHandleDesc. The ::cudaExternalMemoryHandleDesc structure
+ * is defined as follows:
+ *
+ * \code
+        typedef struct cudaExternalMemoryHandleDesc_st {
+            cudaExternalMemoryHandleType type;
+            union {
+                int fd;
+                struct {
+                    void *handle;
+                    const void *name;
+                } win32;
+                const void *nvSciBufObject;
+            } handle;
+            unsigned long long size;
+            unsigned int flags;
+        } cudaExternalMemoryHandleDesc;
+ * \endcode
+ *
+ * where ::cudaExternalMemoryHandleDesc::type specifies the type
+ * of handle being imported. ::cudaExternalMemoryHandleType is
+ * defined as:
+ *
+ * \code
+        typedef enum cudaExternalMemoryHandleType_enum {
+            cudaExternalMemoryHandleTypeOpaqueFd         = 1,
+            cudaExternalMemoryHandleTypeOpaqueWin32      = 2,
+            cudaExternalMemoryHandleTypeOpaqueWin32Kmt   = 3,
+            cudaExternalMemoryHandleTypeD3D12Heap        = 4,
+            cudaExternalMemoryHandleTypeD3D12Resource    = 5,
+	        cudaExternalMemoryHandleTypeD3D11Resource    = 6,
+		    cudaExternalMemoryHandleTypeD3D11ResourceKmt = 7,
+            cudaExternalMemoryHandleTypeNvSciBuf         = 8
+        } cudaExternalMemoryHandleType;
+ * \endcode
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeOpaqueFd, then
+ * ::cudaExternalMemoryHandleDesc::handle::fd must be a valid
+ * file descriptor referencing a memory object. Ownership of
+ * the file descriptor is transferred to the CUDA driver when the
+ * handle is imported successfully. Performing any operations on the
+ * file descriptor after it is imported results in undefined behavior.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeOpaqueWin32, then exactly one
+ * of ::cudaExternalMemoryHandleDesc::handle::win32::handle and
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalMemoryHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * references a memory object. Ownership of this handle is
+ * not transferred to CUDA after the import operation, so the
+ * application must release the handle using the appropriate system
+ * call. If ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * is not NULL, then it must point to a NULL-terminated array of
+ * UTF-16 characters that refers to a memory object.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeOpaqueWin32Kmt, then
+ * ::cudaExternalMemoryHandleDesc::handle::win32::handle must
+ * be non-NULL and
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * must be NULL. The handle specified must be a globally shared KMT
+ * handle. This handle does not hold a reference to the underlying
+ * object, and thus will be invalid when all references to the
+ * memory object are destroyed.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeD3D12Heap, then exactly one
+ * of ::cudaExternalMemoryHandleDesc::handle::win32::handle and
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalMemoryHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * is returned by ID3D12Device::CreateSharedHandle when referring to a
+ * ID3D12Heap object. This handle holds a reference to the underlying
+ * object. If ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * is not NULL, then it must point to a NULL-terminated array of
+ * UTF-16 characters that refers to a ID3D12Heap object.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeD3D12Resource, then exactly one
+ * of ::cudaExternalMemoryHandleDesc::handle::win32::handle and
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalMemoryHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * is returned by ID3D12Device::CreateSharedHandle when referring to a
+ * ID3D12Resource object. This handle holds a reference to the
+ * underlying object. If
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * is not NULL, then it must point to a NULL-terminated array of
+ * UTF-16 characters that refers to a ID3D12Resource object.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeD3D11Resource,then exactly one
+ * of ::cudaExternalMemoryHandleDesc::handle::win32::handle and
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalMemoryHandleDesc::handle::win32::handle is    
+ * not NULL, then it must represent a valid shared NT handle that is  
+ * returned by  IDXGIResource1::CreateSharedHandle when referring to a 
+ * ID3D11Resource object. If
+ * ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * is not NULL, then it must point to a NULL-terminated array of
+ * UTF-16 characters that refers to a ID3D11Resource object.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeD3D11ResourceKmt, then
+ * ::cudaExternalMemoryHandleDesc::handle::win32::handle must
+ * be non-NULL and ::cudaExternalMemoryHandleDesc::handle::win32::name
+ * must be NULL. The handle specified must be a valid shared KMT
+ * handle that is returned by IDXGIResource::GetSharedHandle when
+ * referring to a ID3D11Resource object.
+ *
+ * If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeNvSciBuf, then
+ * ::cudaExternalMemoryHandleDesc::handle::nvSciBufObject must be NON-NULL
+ * and reference a valid NvSciBuf object.
+ * If the NvSciBuf object imported into CUDA is also mapped by other drivers, then the
+ * application must use ::cudaWaitExternalSemaphoresAsync or ::cudaSignalExternalSemaphoresAsync
+ * as approprriate barriers to maintain coherence between CUDA and the other drivers.
+ * See ::cudaExternalSemaphoreWaitSkipNvSciBufMemSync and ::cudaExternalSemaphoreSignalSkipNvSciBufMemSync 
+ * for memory synchronization.
+ *
+ * The size of the memory object must be specified in
+ * ::cudaExternalMemoryHandleDesc::size.
+ *
+ * Specifying the flag ::cudaExternalMemoryDedicated in
+ * ::cudaExternalMemoryHandleDesc::flags indicates that the
+ * resource is a dedicated resource. The definition of what a
+ * dedicated resource is outside the scope of this extension.
+ * This flag must be set if ::cudaExternalMemoryHandleDesc::type
+ * is one of the following:
+ * ::cudaExternalMemoryHandleTypeD3D12Resource
+ * ::cudaExternalMemoryHandleTypeD3D11Resource
+ * ::cudaExternalMemoryHandleTypeD3D11ResourceKmt
+ *
+ * \param extMem_out    - Returned handle to an external memory object
+ * \param memHandleDesc - Memory import handle descriptor
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorOperatingSystem
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \note If the Vulkan memory imported into CUDA is mapped on the CPU then the
+ * application must use vkInvalidateMappedMemoryRanges/vkFlushMappedMemoryRanges
+ * as well as appropriate Vulkan pipeline barriers to maintain coherence between
+ * CPU and GPU. For more information on these APIs, please refer to "Synchronization
+ * and Cache Control" chapter from Vulkan specification.
+ *
+ *
+ * \sa ::cudaDestroyExternalMemory,
+ * ::cudaExternalMemoryGetMappedBuffer,
+ * ::cudaExternalMemoryGetMappedMipmappedArray
+ */
+extern __host__ cudaError_t CUDARTAPI cudaImportExternalMemory(cudaExternalMemory_t *extMem_out, const struct cudaExternalMemoryHandleDesc *memHandleDesc);
+
+/**
+ * \brief Maps a buffer onto an imported memory object
+ *
+ * Maps a buffer onto an imported memory object and returns a device
+ * pointer in \p devPtr.
+ *
+ * The properties of the buffer being mapped must be described in
+ * \p bufferDesc. The ::cudaExternalMemoryBufferDesc structure is
+ * defined as follows:
+ *
+ * \code
+        typedef struct cudaExternalMemoryBufferDesc_st {
+            unsigned long long offset;
+            unsigned long long size;
+            unsigned int flags;
+        } cudaExternalMemoryBufferDesc;
+ * \endcode
+ *
+ * where ::cudaExternalMemoryBufferDesc::offset is the offset in
+ * the memory object where the buffer's base address is.
+ * ::cudaExternalMemoryBufferDesc::size is the size of the buffer.
+ * ::cudaExternalMemoryBufferDesc::flags must be zero.
+ *
+ * The offset and size have to be suitably aligned to match the
+ * requirements of the external API. Mapping two buffers whose ranges
+ * overlap may or may not result in the same virtual address being
+ * returned for the overlapped portion. In such cases, the application
+ * must ensure that all accesses to that region from the GPU are
+ * volatile. Otherwise writes made via one address are not guaranteed
+ * to be visible via the other address, even if they're issued by the
+ * same thread. It is recommended that applications map the combined
+ * range instead of mapping separate buffers and then apply the
+ * appropriate offsets to the returned pointer to derive the
+ * individual buffers.
+ *
+ * The returned pointer \p devPtr must be freed using ::cudaFree.
+ *
+ * \param devPtr     - Returned device pointer to buffer
+ * \param extMem     - Handle to external memory object
+ * \param bufferDesc - Buffer descriptor
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaImportExternalMemory,
+ * ::cudaDestroyExternalMemory,
+ * ::cudaExternalMemoryGetMappedMipmappedArray
+ */
+extern __host__ cudaError_t CUDARTAPI cudaExternalMemoryGetMappedBuffer(void **devPtr, cudaExternalMemory_t extMem, const struct cudaExternalMemoryBufferDesc *bufferDesc);
+
+/**
+ * \brief Maps a CUDA mipmapped array onto an external memory object
+ *
+ * Maps a CUDA mipmapped array onto an external object and returns a
+ * handle to it in \p mipmap.
+ *
+ * The properties of the CUDA mipmapped array being mapped must be
+ * described in \p mipmapDesc. The structure
+ * ::cudaExternalMemoryMipmappedArrayDesc is defined as follows:
+ *
+ * \code
+        typedef struct cudaExternalMemoryMipmappedArrayDesc_st {
+            unsigned long long offset;
+            cudaChannelFormatDesc formatDesc;
+            cudaExtent extent;
+            unsigned int flags;
+            unsigned int numLevels;
+        } cudaExternalMemoryMipmappedArrayDesc;
+ * \endcode
+ *
+ * where ::cudaExternalMemoryMipmappedArrayDesc::offset is the
+ * offset in the memory object where the base level of the mipmap
+ * chain is.
+ * ::cudaExternalMemoryMipmappedArrayDesc::formatDesc describes the
+ * format of the data.
+ * ::cudaExternalMemoryMipmappedArrayDesc::extent specifies the
+ * dimensions of the base level of the mipmap chain.
+ * ::cudaExternalMemoryMipmappedArrayDesc::flags are flags associated
+ * with CUDA mipmapped arrays. For further details, please refer to
+ * the documentation for ::cudaMalloc3DArray. Note that if the mipmapped
+ * array is bound as a color target in the graphics API, then the flag
+ * ::cudaArrayColorAttachment must be specified in 
+ * ::cudaExternalMemoryMipmappedArrayDesc::flags.
+ * ::cudaExternalMemoryMipmappedArrayDesc::numLevels specifies
+ * the total number of levels in the mipmap chain.
+ *
+ * The returned CUDA mipmapped array must be freed using ::cudaFreeMipmappedArray.
+ *
+ * \param mipmap     - Returned CUDA mipmapped array
+ * \param extMem     - Handle to external memory object
+ * \param mipmapDesc - CUDA array descriptor
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaImportExternalMemory,
+ * ::cudaDestroyExternalMemory,
+ * ::cudaExternalMemoryGetMappedBuffer
+ *
+ * \note If ::cudaExternalMemoryHandleDesc::type is
+ * ::cudaExternalMemoryHandleTypeNvSciBuf, then
+ * ::cudaExternalMemoryMipmappedArrayDesc::numLevels must not be greater than 1.
+ */
+extern __host__ cudaError_t CUDARTAPI cudaExternalMemoryGetMappedMipmappedArray(cudaMipmappedArray_t *mipmap, cudaExternalMemory_t extMem, const struct cudaExternalMemoryMipmappedArrayDesc *mipmapDesc);
+
+/**
+ * \brief Destroys an external memory object.
+ *
+ * Destroys the specified external memory object. Any existing buffers
+ * and CUDA mipmapped arrays mapped onto this object must no longer be
+ * used and must be explicitly freed using ::cudaFree and
+ * ::cudaFreeMipmappedArray respectively.
+ *
+ * \param extMem - External memory object to be destroyed
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
+ *
+ * \sa ::cudaImportExternalMemory,
+ * ::cudaExternalMemoryGetMappedBuffer,
+ * ::cudaExternalMemoryGetMappedMipmappedArray
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDestroyExternalMemory(cudaExternalMemory_t extMem);
+
+/**
+ * \brief Imports an external semaphore
+ *
+ * Imports an externally allocated synchronization object and returns
+ * a handle to that in \p extSem_out.
+ *
+ * The properties of the handle being imported must be described in
+ * \p semHandleDesc. The ::cudaExternalSemaphoreHandleDesc is defined
+ * as follows:
+ *
+ * \code
+        typedef struct cudaExternalSemaphoreHandleDesc_st {
+            cudaExternalSemaphoreHandleType type;
+            union {
+                int fd;
+                struct {
+                    void *handle;
+                    const void *name;
+                } win32;
+                const void* NvSciSyncObj;
+            } handle;
+            unsigned int flags;
+        } cudaExternalSemaphoreHandleDesc;
+ * \endcode
+ *
+ * where ::cudaExternalSemaphoreHandleDesc::type specifies the type of
+ * handle being imported. ::cudaExternalSemaphoreHandleType is defined
+ * as:
+ *
+ * \code
+        typedef enum cudaExternalSemaphoreHandleType_enum {
+            cudaExternalSemaphoreHandleTypeOpaqueFd                = 1,
+            cudaExternalSemaphoreHandleTypeOpaqueWin32             = 2,
+            cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt          = 3,
+            cudaExternalSemaphoreHandleTypeD3D12Fence              = 4,
+            cudaExternalSemaphoreHandleTypeD3D11Fence              = 5,
+            cudaExternalSemaphoreHandleTypeNvSciSync               = 6,
+            cudaExternalSemaphoreHandleTypeKeyedMutex              = 7,
+            cudaExternalSemaphoreHandleTypeKeyedMutexKmt           = 8,
+            cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd     = 9,
+            cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32  = 10
+        } cudaExternalSemaphoreHandleType;
+ * \endcode
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeOpaqueFd, then
+ * ::cudaExternalSemaphoreHandleDesc::handle::fd must be a valid file
+ * descriptor referencing a synchronization object. Ownership of the
+ * file descriptor is transferred to the CUDA driver when the handle
+ * is imported successfully. Performing any operations on the file
+ * descriptor after it is imported results in undefined behavior.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32, then exactly one of
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * references a synchronization object. Ownership of this handle is
+ * not transferred to CUDA after the import operation, so the
+ * application must release the handle using the appropriate system
+ * call. If ::cudaExternalSemaphoreHandleDesc::handle::win32::name is
+ * not NULL, then it must name a valid synchronization object.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt, then
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle must be
+ * non-NULL and ::cudaExternalSemaphoreHandleDesc::handle::win32::name
+ * must be NULL. The handle specified must be a globally shared KMT
+ * handle. This handle does not hold a reference to the underlying
+ * object, and thus will be invalid when all references to the
+ * synchronization object are destroyed.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeD3D12Fence, then exactly one of
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * is returned by ID3D12Device::CreateSharedHandle when referring to a
+ * ID3D12Fence object. This handle holds a reference to the underlying
+ * object. If ::cudaExternalSemaphoreHandleDesc::handle::win32::name
+ * is not NULL, then it must name a valid synchronization object that
+ * refers to a valid ID3D12Fence object.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeD3D11Fence, then exactly one of
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * is returned by ID3D11Fence::CreateSharedHandle. If 
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name
+ * is not NULL, then it must name a valid synchronization object that
+ * refers to a valid ID3D11Fence object.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeNvSciSync, then
+ * ::cudaExternalSemaphoreHandleDesc::handle::nvSciSyncObj
+ * represents a valid NvSciSyncObj.
+ *
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutex, then exactly one of
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle
+ * is not NULL, then it represent a valid shared NT handle that
+ * is returned by IDXGIResource1::CreateSharedHandle when referring to
+ * a IDXGIKeyedMutex object.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt, then
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle must be
+ * non-NULL and ::cudaExternalSemaphoreHandleDesc::handle::win32::name
+ * must be NULL. The handle specified must represent a valid KMT
+ * handle that is returned by IDXGIResource::GetSharedHandle when
+ * referring to a IDXGIKeyedMutex object.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd, then
+ * ::cudaExternalSemaphoreHandleDesc::handle::fd must be a valid file
+ * descriptor referencing a synchronization object. Ownership of the
+ * file descriptor is transferred to the CUDA driver when the handle
+ * is imported successfully. Performing any operations on the file
+ * descriptor after it is imported results in undefined behavior.
+ *
+ * If ::cudaExternalSemaphoreHandleDesc::type is
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32, then exactly one of
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::handle and
+ * ::cudaExternalSemaphoreHandleDesc::handle::win32::name must not be
+ * NULL. If ::cudaExternalSemaphoreHandleDesc::handle::win32::handle
+ * is not NULL, then it must represent a valid shared NT handle that
+ * references a synchronization object. Ownership of this handle is
+ * not transferred to CUDA after the import operation, so the
+ * application must release the handle using the appropriate system
+ * call. If ::cudaExternalSemaphoreHandleDesc::handle::win32::name is
+ * not NULL, then it must name a valid synchronization object.
+ *
+ * \param extSem_out    - Returned handle to an external semaphore
+ * \param semHandleDesc - Semaphore import handle descriptor
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorOperatingSystem
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaDestroyExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaImportExternalSemaphore(cudaExternalSemaphore_t *extSem_out, const struct cudaExternalSemaphoreHandleDesc *semHandleDesc);
+
+/**
+ * \brief Signals a set of external semaphore objects
+ *
+ * Enqueues a signal operation on a set of externally allocated
+ * semaphore object in the specified stream. The operations will be
+ * executed when all prior operations in the stream complete.
+ *
+ * The exact semantics of signaling a semaphore depends on the type of
+ * the object.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeOpaqueFd,
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32,
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt
+ * then signaling the semaphore will set it to the signaled state.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeD3D12Fence,
+ * ::cudaExternalSemaphoreHandleTypeD3D11Fence,
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd,
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32
+ * then the semaphore will be set to the value specified in
+ * ::cudaExternalSemaphoreSignalParams::params::fence::value.
+ *
+ * If the semaphore object is of the type ::cudaExternalSemaphoreHandleTypeNvSciSync
+ * this API sets ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence to a
+ * value that can be used by subsequent waiters of the same NvSciSync object to
+ * order operations with those currently submitted in \p stream. Such an update
+ * will overwrite previous contents of
+ * ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence. By default,
+ * signaling such an external semaphore object causes appropriate memory synchronization
+ * operations to be performed over all the external memory objects that are imported as
+ * ::cudaExternalMemoryHandleTypeNvSciBuf. This ensures that any subsequent accesses
+ * made by other importers of the same set of NvSciBuf memory object(s) are coherent.
+ * These operations can be skipped by specifying the flag
+ * ::cudaExternalSemaphoreSignalSkipNvSciBufMemSync, which can be used as a
+ * performance optimization when data coherency is not required. But specifying this
+ * flag in scenarios where data coherency is required results in undefined behavior.
+ * Also, for semaphore object of the type ::cudaExternalSemaphoreHandleTypeNvSciSync,
+ * if the NvSciSyncAttrList used to create the NvSciSyncObj had not set the flags in
+ * ::cudaDeviceGetNvSciSyncAttributes to cudaNvSciSyncAttrSignal, this API will return
+ * cudaErrorNotSupported.
+ * 
+ * ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence associated with 
+ * semaphore object of the type ::cudaExternalSemaphoreHandleTypeNvSciSync can be 
+ * deterministic. For this the NvSciSyncAttrList used to create the semaphore object 
+ * must have value of NvSciSyncAttrKey_RequireDeterministicFences key set to true. 
+ * Deterministic fences allow users to enqueue a wait over the semaphore object even 
+ * before corresponding signal is enqueued. For such a semaphore object, CUDA guarantees 
+ * that each signal operation will increment the fence value by '1'. Users are expected 
+ * to track count of signals enqueued on the semaphore object and insert waits accordingly. 
+ * When such a semaphore object is signaled from multiple streams, due to concurrent 
+ * stream execution, it is possible that the order in which the semaphore gets signaled 
+ * is indeterministic. This could lead to waiters of the semaphore getting unblocked 
+ * incorrectly. Users are expected to handle such situations, either by not using the 
+ * same semaphore object with deterministic fence support enabled in different streams 
+ * or by adding explicit dependency amongst such streams so that the semaphore is 
+ * signaled in order.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutex,
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt,
+ * then the keyed mutex will be released with the key specified in
+ * ::cudaExternalSemaphoreSignalParams::params::keyedmutex::key.
+ *
+ * \param extSemArray - Set of external semaphores to be signaled
+ * \param paramsArray - Array of semaphore parameters
+ * \param numExtSems  - Number of semaphores to signal
+ * \param stream     - Stream to enqueue the signal operations in
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaImportExternalSemaphore,
+ * ::cudaDestroyExternalSemaphore,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaSignalExternalSemaphoresAsync(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreSignalParams *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+
+/**
+ * \brief Waits on a set of external semaphore objects
+ *
+ * Enqueues a wait operation on a set of externally allocated
+ * semaphore object in the specified stream. The operations will be
+ * executed when all prior operations in the stream complete.
+ *
+ * The exact semantics of waiting on a semaphore depends on the type
+ * of the object.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeOpaqueFd,
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32,
+ * ::cudaExternalSemaphoreHandleTypeOpaqueWin32Kmt
+ * then waiting on the semaphore will wait until the semaphore reaches
+ * the signaled state. The semaphore will then be reset to the
+ * unsignaled state. Therefore for every signal operation, there can
+ * only be one wait operation.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeD3D12Fence,
+ * ::cudaExternalSemaphoreHandleTypeD3D11Fence,
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreFd,
+ * ::cudaExternalSemaphoreHandleTypeTimelineSemaphoreWin32
+ * then waiting on the semaphore will wait until the value of the
+ * semaphore is greater than or equal to
+ * ::cudaExternalSemaphoreWaitParams::params::fence::value.
+ *
+ * If the semaphore object is of the type ::cudaExternalSemaphoreHandleTypeNvSciSync
+ * then, waiting on the semaphore will wait until the
+ * ::cudaExternalSemaphoreSignalParams::params::nvSciSync::fence is signaled by the
+ * signaler of the NvSciSyncObj that was associated with this semaphore object.
+ * By default, waiting on such an external semaphore object causes appropriate
+ * memory synchronization operations to be performed over all external memory objects
+ * that are imported as ::cudaExternalMemoryHandleTypeNvSciBuf. This ensures that
+ * any subsequent accesses made by other importers of the same set of NvSciBuf memory
+ * object(s) are coherent. These operations can be skipped by specifying the flag
+ * ::cudaExternalSemaphoreWaitSkipNvSciBufMemSync, which can be used as a
+ * performance optimization when data coherency is not required. But specifying this
+ * flag in scenarios where data coherency is required results in undefined behavior.
+ * Also, for semaphore object of the type ::cudaExternalSemaphoreHandleTypeNvSciSync,
+ * if the NvSciSyncAttrList used to create the NvSciSyncObj had not set the flags in
+ * ::cudaDeviceGetNvSciSyncAttributes to cudaNvSciSyncAttrWait, this API will return
+ * cudaErrorNotSupported.
+ *
+ * If the semaphore object is any one of the following types:
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutex,
+ * ::cudaExternalSemaphoreHandleTypeKeyedMutexKmt,
+ * then the keyed mutex will be acquired when it is released with the key specified 
+ * in ::cudaExternalSemaphoreSignalParams::params::keyedmutex::key or
+ * until the timeout specified by
+ * ::cudaExternalSemaphoreSignalParams::params::keyedmutex::timeoutMs
+ * has lapsed. The timeout interval can either be a finite value
+ * specified in milliseconds or an infinite value. In case an infinite
+ * value is specified the timeout never elapses. The windows INFINITE
+ * macro must be used to specify infinite timeout
+ *
+ * \param extSemArray - External semaphores to be waited on
+ * \param paramsArray - Array of semaphore parameters
+ * \param numExtSems  - Number of semaphores to wait on
+ * \param stream      - Stream to enqueue the wait operations in
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle
+ * ::cudaErrorTimeout
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaImportExternalSemaphore,
+ * ::cudaDestroyExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaWaitExternalSemaphoresAsync(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreWaitParams *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+
+/**
+ * \brief Destroys an external semaphore
+ *
+ * Destroys an external semaphore object and releases any references
+ * to the underlying resource. Any outstanding signals or waits must
+ * have completed before the semaphore is destroyed.
+ *
+ * \param extSem - External semaphore to be destroyed
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
+ *
+ * \sa ::cudaImportExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaDestroyExternalSemaphore(cudaExternalSemaphore_t extSem);
+
+/** @} */ /* END CUDART_EXTRES_INTEROP */
 
 /**
  * \defgroup CUDART_EXECUTION Execution Control
@@ -2576,9 +4092,9 @@ extern __host__ cudaError_t CUDARTAPI cudaEventElapsedTime(float *ms, cudaEvent_
 /**
  * \brief Launches a device function
  *
- * The function invokes kernel \p func on \p gridDim (\p gridDim.x × \p gridDim.y
- * × \p gridDim.z) grid of blocks. Each block contains \p blockDim (\p blockDim.x ×
- * \p blockDim.y × \p blockDim.z) threads.
+ * The function invokes kernel \p func on \p gridDim (\p gridDim.x &times; \p gridDim.y
+ * &times; \p gridDim.z) grid of blocks. Each block contains \p blockDim (\p blockDim.x &times;
+ * \p blockDim.y &times; \p blockDim.z) threads.
  *
  * If the kernel has N parameters the \p args should point to array of N pointers.
  * Each pointer, from <tt>args[0]</tt> to <tt>args[N - 1]</tt>, point to the region
@@ -2608,10 +4124,14 @@ extern __host__ cudaError_t CUDARTAPI cudaEventElapsedTime(float *ms, cudaEvent_
  * ::cudaErrorLaunchOutOfResources,
  * ::cudaErrorSharedObjectInitFailed,
  * ::cudaErrorInvalidPtx,
+ * ::cudaErrorUnsupportedPtxVersion,
  * ::cudaErrorNoKernelImageForDevice,
- * ::cudaErrorJitCompilerNotFound
+ * ::cudaErrorJitCompilerNotFound,
+ * ::cudaErrorJitCompilationDisabled
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * \ref ::cudaLaunchKernel(const T *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C++ API)",
@@ -2620,11 +4140,73 @@ extern __host__ cudaError_t CUDARTAPI cudaEventElapsedTime(float *ms, cudaEvent_
 extern __host__ cudaError_t CUDARTAPI cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream);
 
 /**
+ * \brief Launches a CUDA function with launch-time configuration
+ *
+ * Note that the functionally equivalent variadic template ::cudaLaunchKernelEx
+ * is available for C++11 and newer.
+ *
+ * Invokes the kernel \p func on \p config->gridDim (\p config->gridDim.x
+ * &times; \p config->gridDim.y &times; \p config->gridDim.z) grid of blocks.
+ * Each block contains \p config->blockDim (\p config->blockDim.x &times;
+ * \p config->blockDim.y &times; \p config->blockDim.z) threads.
+ *
+ * \p config->dynamicSmemBytes sets the amount of dynamic shared memory that
+ * will be available to each thread block.
+ *
+ * \p config->stream specifies a stream the invocation is associated to.
+ *
+ * Configuration beyond grid and block dimensions, dynamic shared memory size,
+ * and stream can be provided with the following two fields of \p config:
+ *
+ * \p config->attrs is an array of \p config->numAttrs contiguous
+ * ::cudaLaunchAttribute elements. The value of this pointer is not considered
+ * if \p config->numAttrs is zero. However, in that case, it is recommended to
+ * set the pointer to NULL.                                  
+ * \p config->numAttrs is the number of attributes populating the first
+ * \p config->numAttrs positions of the \p config->attrs array.
+ *
+ * If the kernel has N parameters the \p args should point to array of N
+ * pointers. Each pointer, from <tt>args[0]</tt> to <tt>args[N - 1]</tt>, point
+ * to the region of memory from which the actual parameter will be copied.
+ *
+ * N.B. This function is so named to avoid unintentionally invoking the
+ *      templated version, \p cudaLaunchKernelEx, for kernels taking a single
+ *      void** or void* parameter.
+ *
+ * \param config - Launch configuration
+ * \param func   - Kernel to launch
+ * \param args   - Array of pointers to kernel parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDeviceFunction,
+ * ::cudaErrorInvalidConfiguration,
+ * ::cudaErrorLaunchFailure,
+ * ::cudaErrorLaunchTimeout,
+ * ::cudaErrorLaunchOutOfResources,
+ * ::cudaErrorSharedObjectInitFailed,
+ * ::cudaErrorInvalidPtx,
+ * ::cudaErrorUnsupportedPtxVersion,
+ * ::cudaErrorNoKernelImageForDevice,
+ * ::cudaErrorJitCompilerNotFound,
+ * ::cudaErrorJitCompilationDisabled
+ * \note_null_stream
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * \ref ::cudaLaunchKernelEx(const cudaLaunchConfig_t *config, void (*kernel)(ExpTypes...), ActTypes &&... args) "cudaLaunchKernelEx (C++ API)",
+ * ::cuLaunchKernelEx
+ */
+extern __host__ cudaError_t CUDARTAPI cudaLaunchKernelExC(const cudaLaunchConfig_t *config, const void *func, void **args);
+
+/**
  * \brief Launches a device function where thread blocks can cooperate and synchronize as they execute
  *
- * The function invokes kernel \p func on \p gridDim (\p gridDim.x × \p gridDim.y
- * × \p gridDim.z) grid of blocks. Each block contains \p blockDim (\p blockDim.x ×
- * \p blockDim.y × \p blockDim.z) threads.
+ * The function invokes kernel \p func on \p gridDim (\p gridDim.x &times; \p gridDim.y
+ * &times; \p gridDim.z) grid of blocks. Each block contains \p blockDim (\p blockDim.x &times;
+ * \p blockDim.y &times; \p blockDim.z) threads.
  *
  * The device on which this kernel is invoked must have a non-zero value for
  * the device attribute ::cudaDevAttrCooperativeLaunch.
@@ -2666,6 +4248,8 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunchKernel(const void *func, dim3 gr
  * ::cudaErrorSharedObjectInitFailed
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * \ref ::cudaLaunchCooperativeKernel(const T *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchCooperativeKernel (C++ API)",
@@ -2676,6 +4260,8 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernel(const void *fu
 
 /**
  * \brief Launches device functions on multiple devices where thread blocks can cooperate and synchronize as they execute
+ *
+ * \deprecated This function is deprecated as of CUDA 11.3.
  *
  * Invokes kernels as specified in the \p launchParamsList array where each element
  * of the array specifies all the parameters required to perform a single kernel launch.
@@ -2763,13 +4349,15 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernel(const void *fu
  * ::cudaErrorSharedObjectInitFailed
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * \ref ::cudaLaunchCooperativeKernel(const T *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchCooperativeKernel (C++ API)",
  * ::cudaLaunchCooperativeKernel,
  * ::cuLaunchCooperativeKernelMultiDevice
  */
-extern __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernelMultiDevice(struct cudaLaunchParams *launchParamsList, unsigned int numDevices, unsigned int flags  __dv(0));
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernelMultiDevice(struct cudaLaunchParams *launchParamsList, unsigned int numDevices, unsigned int flags  __dv(0));
 
 /**
  * \brief Sets the preferred cache configuration for a device function
@@ -2802,20 +4390,16 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernelMultiDevice(str
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDeviceFunction
  * \notefnerr
  * \note_string_api_deprecation2
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaConfigureCall,
+ * \sa 
  * \ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C++ API)",
  * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
  * \ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)",
- * ::cudaThreadGetCacheConfig,
- * ::cudaThreadSetCacheConfig,
  * ::cuFuncSetCacheConfig
  */
 extern __host__ cudaError_t CUDARTAPI cudaFuncSetCacheConfig(const void *func, enum cudaFuncCache cacheConfig);
@@ -2859,14 +4443,14 @@ extern __host__ cudaError_t CUDARTAPI cudaFuncSetCacheConfig(const void *func, e
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDeviceFunction,
  * ::cudaErrorInvalidValue,
  * \notefnerr
  * \note_string_api_deprecation2
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaConfigureCall,
- * ::cudaDeviceSetSharedMemConfig,
+ * \sa ::cudaDeviceSetSharedMemConfig,
  * ::cudaDeviceGetSharedMemConfig,
  * ::cudaDeviceSetCacheConfig,
  * ::cudaDeviceGetCacheConfig,
@@ -2894,18 +4478,16 @@ extern __host__ cudaError_t CUDARTAPI cudaFuncSetSharedMemConfig(const void *fun
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDeviceFunction
  * \notefnerr
  * \note_string_api_deprecation2
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaConfigureCall,
+ * \sa 
  * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
  * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, T*) "cudaFuncGetAttributes (C++ API)",
  * \ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)",
  * ::cuFuncGetAttribute
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFuncGetAttributes(struct cudaFuncAttributes *attr, const void *func);
@@ -2923,8 +4505,11 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFuncGetAttributes(s
  * then ::cudaErrorInvalidValue is returned.
  *
  * Valid values for \p attr are:
- * - ::cudaFuncAttributeMaxDynamicSharedMemorySize - Maximum size of dynamic shared memory per block
- * - ::cudaFuncAttributePreferredSharedMemoryCarveout - Preferred shared memory-L1 cache split ratio in percent of maximum shared memory
+ * - ::cudaFuncAttributeMaxDynamicSharedMemorySize - The requested maximum size in bytes of dynamically-allocated shared memory. The sum of this value and the function attribute ::sharedSizeBytes
+ *   cannot exceed the device attribute ::cudaDevAttrMaxSharedMemoryPerBlockOptin. The maximal size of requestable dynamic shared memory may differ by GPU architecture.
+ * - ::cudaFuncAttributePreferredSharedMemoryCarveout - On devices where the L1 cache and shared memory use the same hardware resources, 
+ *   this sets the shared memory carveout preference, in percent of the total shared memory. See ::cudaDevAttrMaxSharedMemoryPerMultiprocessor.
+ *   This is only a hint, and the driver can choose a different ratio if required to execute the function.
  *
  * \param func  - Function to get attributes of
  * \param attr  - Attribute to set
@@ -2932,17 +4517,15 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFuncGetAttributes(s
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDeviceFunction,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \ref ::cudaLaunchKernel(const T *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C++ API)",
  * \ref ::cudaFuncSetCacheConfig(T*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C++ API)",
  * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(T, size_t) "cudaSetupArgument (C++ API)"
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFuncSetAttribute(const void *func, enum cudaFuncAttribute attr, int value);
 
@@ -2960,15 +4543,15 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFuncSetAttribute(co
  * \return
  * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
- * \ref ::cudaLaunch(const void*) "cudaLaunch (C API)",
  * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
  * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)"
+ * ::cudaSetDoubleForHost
  */
-extern __host__ cudaError_t CUDARTAPI cudaSetDoubleForDevice(double *d);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaSetDoubleForDevice(double *d);
 
 /**
  * \brief Converts a double argument after execution on a device
@@ -2984,15 +4567,81 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDoubleForDevice(double *d);
  * \return
  * ::cudaSuccess
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
- * \ref ::cudaLaunch(const void*) "cudaLaunch (C API)",
  * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
  * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * ::cudaSetDoubleForDevice,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)"
+ * ::cudaSetDoubleForDevice
  */
-extern __host__ cudaError_t CUDARTAPI cudaSetDoubleForHost(double *d);
+extern __CUDA_DEPRECATED  __host__ cudaError_t CUDARTAPI cudaSetDoubleForHost(double *d);
+
+/**
+ * \brief Enqueues a host function call in a stream
+ *
+ * Enqueues a host function to run in a stream.  The function will be called
+ * after currently enqueued work and will block work added after it.
+ *
+ * The host function must not make any CUDA API calls.  Attempting to use a
+ * CUDA API may result in ::cudaErrorNotPermitted, but this is not required.
+ * The host function must not perform any synchronization that may depend on
+ * outstanding CUDA work not mandated to run earlier.  Host functions without a
+ * mandated order (such as in independent streams) execute in undefined order
+ * and may be serialized.
+ *
+ * For the purposes of Unified Memory, execution makes a number of guarantees:
+ * <ul>
+ *   <li>The stream is considered idle for the duration of the function's
+ *   execution.  Thus, for example, the function may always use memory attached
+ *   to the stream it was enqueued in.</li>
+ *   <li>The start of execution of the function has the same effect as
+ *   synchronizing an event recorded in the same stream immediately prior to
+ *   the function.  It thus synchronizes streams which have been "joined"
+ *   prior to the function.</li>
+ *   <li>Adding device work to any stream does not have the effect of making
+ *   the stream active until all preceding host functions and stream callbacks
+ *   have executed.  Thus, for
+ *   example, a function might use global attached memory even if work has
+ *   been added to another stream, if the work has been ordered behind the
+ *   function call with an event.</li>
+ *   <li>Completion of the function does not cause a stream to become
+ *   active except as described above.  The stream will remain idle
+ *   if no device work follows the function, and will remain idle across
+ *   consecutive host functions or stream callbacks without device work in
+ *   between.  Thus, for example,
+ *   stream synchronization can be done by signaling from a host function at the
+ *   end of the stream.</li>
+ * </ul>
+ *
+ * Note that, in constrast to ::cuStreamAddCallback, the function will not be
+ * called in the event of an error in the CUDA context.
+ *
+ * \param hStream  - Stream to enqueue function call in
+ * \param fn       - The function to call once preceding stream operations are complete
+ * \param userData - User-specified data to be passed to the function
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported
+ * \note_null_stream
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaStreamCreate,
+ * ::cudaStreamQuery,
+ * ::cudaStreamSynchronize,
+ * ::cudaStreamWaitEvent,
+ * ::cudaStreamDestroy,
+ * ::cudaMallocManaged,
+ * ::cudaStreamAttachMemAsync,
+ * ::cudaStreamAddCallback,
+ * ::cuLaunchHostFunc
+ */
+extern __host__ cudaError_t CUDARTAPI cudaLaunchHostFunc(cudaStream_t stream, cudaHostFn_t fn, void *userData);
 
 /** @} */ /* END CUDART_EXECUTION */
 
@@ -3015,6 +4664,7 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDoubleForHost(double *d);
  * \ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) "cudaOccupancyMaxPotentialBlockSize (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) "cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)"
+ * \ref ::cudaOccupancyAvailableDynamicSMemPerBlock(size_t*, T, int, int) "cudaOccupancyAvailableDynamicSMemPerBlock (C++ API)",
  *
  * @{
  */
@@ -3032,22 +4682,52 @@ extern __host__ cudaError_t CUDARTAPI cudaSetDoubleForHost(double *d);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorCudartUnloading,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidDeviceFunction,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorUnknown,
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags,
  * \ref ::cudaOccupancyMaxPotentialBlockSize(int*, int*, T, size_t, int) "cudaOccupancyMaxPotentialBlockSize (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) "cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)",
+ * \ref ::cudaOccupancyAvailableDynamicSMemPerBlock(size_t*, T, int, int) "cudaOccupancyAvailableDynamicSMemPerBlock (C++ API)",
  * ::cuOccupancyMaxActiveBlocksPerMultiprocessor
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyMaxActiveBlocksPerMultiprocessor(int *numBlocks, const void *func, int blockSize, size_t dynamicSMemSize);
+
+/**
+ * \brief Returns dynamic shared memory available per block when launching \p numBlocks blocks on SM.
+ *
+ * Returns in \p *dynamicSmemSize the maximum size of dynamic shared memory to allow \p numBlocks blocks per SM. 
+ *
+ * \param dynamicSmemSize - Returned maximum dynamic shared memory 
+ * \param func            - Kernel function for which occupancy is calculated
+ * \param numBlocks       - Number of blocks to fit on SM 
+ * \param blockSize       - Size of the block
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDevice,
+ * ::cudaErrorInvalidDeviceFunction,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorUnknown,
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags,
+ * \ref ::cudaOccupancyMaxPotentialBlockSize(int*, int*, T, size_t, int) "cudaOccupancyMaxPotentialBlockSize (C++ API)",
+ * \ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)",
+ * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) "cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)",
+ * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)",
+ * ::cudaOccupancyAvailableDynamicSMemPerBlock
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyAvailableDynamicSMemPerBlock(size_t *dynamicSmemSize, const void *func, int numBlocks, int blockSize);
 
 /**
  * \brief Returns occupancy for a device function with the specified flags
@@ -3076,146 +4756,98 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyMaxActiveB
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorCudartUnloading,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidDeviceFunction,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorUnknown,
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaOccupancyMaxActiveBlocksPerMultiprocessor,
  * \ref ::cudaOccupancyMaxPotentialBlockSize(int*, int*, T, size_t, int) "cudaOccupancyMaxPotentialBlockSize (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeWithFlags(int*, int*, T, size_t, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeWithFlags (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMem(int*, int*, T, UnaryFunction, int) "cudaOccupancyMaxPotentialBlockSizeVariableSMem (C++ API)",
  * \ref ::cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags(int*, int*, T, UnaryFunction, int, unsigned int) "cudaOccupancyMaxPotentialBlockSizeVariableSMemWithFlags (C++ API)",
+ * \ref ::cudaOccupancyAvailableDynamicSMemPerBlock(size_t*, T, int, int) "cudaOccupancyAvailableDynamicSMemPerBlock (C++ API)",
  * ::cuOccupancyMaxActiveBlocksPerMultiprocessorWithFlags
  */
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyMaxActiveBlocksPerMultiprocessorWithFlags(int *numBlocks, const void *func, int blockSize, size_t dynamicSMemSize, unsigned int flags);
 
-/** @} */ /* END CUDA_OCCUPANCY */
-
 /**
- * \defgroup CUDART_EXECUTION_DEPRECATED Execution Control [DEPRECATED]
+ * \brief Given the kernel function (\p func) and launch configuration
+ * (\p config), return the maximum cluster size in \p *clusterSize.
  *
- * ___MANBRIEF___ deprecated execution control functions of the CUDA runtime API
- * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ * The cluster dimensions in \p config are ignored. If func has a required
+ * cluster size set (see ::cudaFuncGetAttributes),\p *clusterSize will reflect 
+ * the required cluster size.
  *
- * This section describes the deprecated execution control functions of the CUDA runtime
- * application programming interface.
+ * By default this function will always return a value that's portable on
+ * future hardware. A higher value may be returned if the kernel function
+ * allows non-portable cluster sizes.
  *
- * Some functions have overloaded C++ API template versions documented separately in the
- * \ref CUDART_HIGHLEVEL "C++ API Routines" module.
+ * This function will respect the compile time launch bounds.
  *
- * @{
- */
-
-/**
- * \brief Configure a device-launch
- *
- * \deprecated This function is deprecated as of CUDA 7.0
- *
- * Specifies the grid and block dimensions for the device call to be executed
- * similar to the execution configuration syntax. ::cudaConfigureCall() is
- * stack based. Each call pushes data on top of an execution stack. This data
- * contains the dimension for the grid and thread blocks, together with any
- * arguments for the call.
- *
- * \param gridDim   - Grid dimensions
- * \param blockDim  - Block dimensions
- * \param sharedMem - Shared memory
- * \param stream    - Stream identifier
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidConfiguration
- * \note_null_stream
- * \notefnerr
- *
- * \sa
- * \ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C API)",
- * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
- * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * \ref ::cudaLaunch(const void*) "cudaLaunch (C API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)",
- */
-extern __host__ cudaError_t CUDARTAPI cudaConfigureCall(dim3 gridDim, dim3 blockDim, size_t sharedMem __dv(0), cudaStream_t stream __dv(0));
-
-/**
- * \brief Configure a device launch
- *
- * \deprecated This function is deprecated as of CUDA 7.0
- *
- * Pushes \p size bytes of the argument pointed to by \p arg at \p offset
- * bytes from the start of the parameter passing area, which starts at
- * offset 0. The arguments are stored in the top of the execution stack.
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument()"
- * must be preceded by a call to ::cudaConfigureCall().
- *
- * \param arg    - Argument to push for a kernel launch
- * \param size   - Size of argument
- * \param offset - Offset in argument stack to push new arg
- *
- * \return
- * ::cudaSuccess
- * \notefnerr
- *
- * \ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C API)",
- * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
- * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * \ref ::cudaLaunch(const void*) "cudaLaunch (C API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(T, size_t) "cudaSetupArgument (C++ API)",
- */
-extern __host__ cudaError_t CUDARTAPI cudaSetupArgument(const void *arg, size_t size, size_t offset);
-
-/**
- * \brief Launches a device function
- *
- * \deprecated This function is deprecated as of CUDA 7.0
- *
- * Launches the function \p func on the device. The parameter \p func must
- * be a device function symbol. The parameter specified by \p func must be
- * declared as a \p __global__ function. For templated functions, pass the
- * function symbol as follows: func_name<template_arg_0,...,template_arg_N>
- * \ref ::cudaLaunch(const void*) "cudaLaunch()" must be preceded by a call to
- * ::cudaConfigureCall() since it pops the data that was pushed by
- * ::cudaConfigureCall() from the execution stack.
- *
- * \param func - Device function symbol
+ * \param clusterSize - Returned maximum cluster size that can be launched
+ *                      for the given kernel function and launch configuration
+ * \param func        - Kernel function for which maximum cluster
+ *                      size is calculated
+ * \param config      - Launch configuration for the given kernel function
  *
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidDeviceFunction,
- * ::cudaErrorInvalidConfiguration,
- * ::cudaErrorLaunchFailure,
- * ::cudaErrorLaunchTimeout,
- * ::cudaErrorLaunchOutOfResources,
- * ::cudaErrorSharedObjectInitFailed,
- * ::cudaErrorInvalidPtx,
- * ::cudaErrorNoKernelImageForDevice,
- * ::cudaErrorJitCompilerNotFound
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorUnknown,
  * \notefnerr
- * \note_string_api_deprecation_50
+ * \note_init_rt
+ * \note_callback
  *
- * \ref ::cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream) "cudaLaunchKernel (C API)",
- * \ref ::cudaFuncSetCacheConfig(const void*, enum cudaFuncCache) "cudaFuncSetCacheConfig (C API)",
- * \ref ::cudaFuncGetAttributes(struct cudaFuncAttributes*, const void*) "cudaFuncGetAttributes (C API)",
- * \ref ::cudaLaunch(T*) "cudaLaunch (C++ API)",
- * ::cudaSetDoubleForDevice,
- * ::cudaSetDoubleForHost,
- * \ref ::cudaSetupArgument(const void*, size_t, size_t) "cudaSetupArgument (C API)",
- * ::cudaThreadGetCacheConfig,
- * ::cudaThreadSetCacheConfig
+ * \sa ::cudaFuncGetAttributes
+ * \ref ::cudaOccupancyMaxPotentialClusterSize(int*, T, const cudaLaunchConfig_t*) "cudaOccupancyMaxPotentialClusterSize (C++ API)",
+ * ::cuOccupancyMaxPotentialClusterSize
  */
-extern __host__ cudaError_t CUDARTAPI cudaLaunch(const void *func);
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyMaxPotentialClusterSize(int *clusterSize, const void *func, const cudaLaunchConfig_t *launchConfig);
 
 
-/** @} */ /* END CUDART_EXECUTION_DEPRECATED */
-
+/**
+ * \brief Given the kernel function (\p func) and launch configuration
+ * (\p config), return the maximum number of clusters that could co-exist
+ * on the target device in \p *numClusters.
+ *
+ * If the function has required cluster size already set (see
+ * ::cudaFuncGetAttributes), the cluster size from config must either be
+ * unspecified or match the required size.
+ * Without required sizes, the cluster size must be specified in config,
+ * else the function will return an error.
+ *
+ * Note that various attributes of the kernel function may affect occupancy
+ * calculation. Runtime environment may affect how the hardware schedules
+ * the clusters, so the calculated occupancy is not guaranteed to be achievable.
+ *
+ * \param numClusters - Returned maximum number of clusters that
+ *                      could co-exist on the target device
+ * \param func        - Kernel function for which maximum number
+ *                      of clusters are calculated
+ * \param config      - Launch configuration for the given kernel function
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDeviceFunction,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidClusterSize,
+ * ::cudaErrorUnknown,
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaFuncGetAttributes
+ * \ref ::cudaOccupancyMaxActiveClusters(int*, T, const cudaLaunchConfig_t*) "cudaOccupancyMaxActiveClusters (C++ API)",
+ * ::cuOccupancyMaxActiveClusters
+ */
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaOccupancyMaxActiveClusters(int *numClusters, const void *func, const cudaLaunchConfig_t *launchConfig);
+/** @} */ /* END CUDA_OCCUPANCY */
 
 /**
  * \defgroup CUDART_MEMORY Memory Management
@@ -3323,6 +4955,9 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunch(const void *func);
  * ::cudaErrorMemoryAllocation,
  * ::cudaErrorNotSupported,
  * ::cudaErrorInvalidValue
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,
  * ::cudaMalloc3D, ::cudaMalloc3DArray,
@@ -3330,8 +4965,11 @@ extern __host__ cudaError_t CUDARTAPI cudaLaunch(const void *func);
  * ::cudaFreeHost, ::cudaHostAlloc, ::cudaDeviceGetAttribute, ::cudaStreamAttachMemAsync,
  * ::cuMemAllocManaged
  */
-extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMallocManaged(void **devPtr, size_t size, unsigned int flags __dv(cudaMemAttachGlobal));
-
+#if defined(__cplusplus)
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMallocManaged(void **devPtr, size_t size, unsigned int flags = cudaMemAttachGlobal);
+#else
+extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMallocManaged(void **devPtr, size_t size, unsigned int flags);
+#endif
 
 /**
  * \brief Allocate memory on the device
@@ -3351,6 +4989,9 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMallocManaged(void 
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,
  * ::cudaMalloc3D, ::cudaMalloc3DArray,
@@ -3382,6 +5023,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMalloc(void **devPt
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaMallocArray, ::cudaMalloc3D,
  * ::cudaMalloc3DArray, ::cudaHostAlloc, ::cudaFree, ::cudaFreeArray,
@@ -3423,6 +5066,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocHost(void **ptr, size_t size);
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaFree, ::cudaMallocArray, ::cudaFreeArray,
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
@@ -3453,6 +5098,12 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocPitch(void **devPtr, size_t *pit
  * - ::cudaArrayDefault: This flag's value is defined to be 0 and provides default array allocation
  * - ::cudaArraySurfaceLoadStore: Allocates an array that can be read from or written to using a surface reference
  * - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the array.
+ * - ::cudaArraySparse: Allocates a CUDA array without physical backing memory. The subregions within this sparse array
+ *   can later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. 
+ *   The physical backing memory must be allocated via ::cuMemCreate.
+ * - ::cudaArrayDeferredMapping: Allocates a CUDA array without physical backing memory. The entire array can 
+ *   later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. 
+ *   The physical backing memory must be allocated via ::cuMemCreate.
  *
  * \p width and \p height must meet certain size requirements. See ::cudaMalloc3DArray() for more details.
  *
@@ -3467,6 +5118,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocPitch(void **devPtr, size_t *pit
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaFree, ::cudaFreeArray,
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
@@ -3480,10 +5133,19 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocArray(cudaArray_t *array, const 
  * \brief Frees memory on the device
  *
  * Frees the memory space pointed to by \p devPtr, which must have been
- * returned by a previous call to ::cudaMalloc() or ::cudaMallocPitch().
- * Otherwise, or if ::cudaFree(\p devPtr) has already been called before,
+ * returned by a previous call to one of the following memory allocation APIs -
+ * ::cudaMalloc(), ::cudaMallocPitch(), ::cudaMallocManaged(), ::cudaMallocAsync(),
+ * ::cudaMallocFromPoolAsync().
+ * 
+ * Note - This API will not perform any implicit synchronization when the pointer was
+ * allocated with ::cudaMallocAsync or ::cudaMallocFromPoolAsync. Callers must ensure
+ * that all accesses to the pointer have completed before invoking ::cudaFree. For
+ * best performance and memory reuse, users should use ::cudaFreeAsync to free memory
+ * allocated via the stream ordered memory allocator.
+ * 
+ * If ::cudaFree(\p devPtr) has already been called before,
  * an error is returned. If \p devPtr is 0, no operation is performed.
- * ::cudaFree() returns ::cudaErrorInvalidDevicePointer in case of failure.
+ * ::cudaFree() returns ::cudaErrorValue in case of failure.
  *
  * The device version of ::cudaFree cannot be used with a \p *devPtr
  * allocated using the host API, and vice versa.
@@ -3492,13 +5154,14 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocArray(cudaArray_t *array, const 
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidDevicePointer,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaMallocArray, ::cudaFreeArray,
+ * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaMallocManaged, ::cudaMallocArray, ::cudaFreeArray, ::cudaMallocAsync, ::cudaMallocFromPoolAsync
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
- * ::cudaFreeHost, ::cudaMalloc3D, ::cudaMalloc3DArray,
+ * ::cudaFreeHost, ::cudaMalloc3D, ::cudaMalloc3DArray, ::cudaFreeAsync
  * ::cudaHostAlloc,
  * ::cuMemFree
  */
@@ -3514,9 +5177,10 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaFree(void *devPtr);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray,
  * ::cudaFreeArray,
@@ -3537,9 +5201,10 @@ extern __host__ cudaError_t CUDARTAPI cudaFreeHost(void *ptr);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray,
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
@@ -3559,9 +5224,10 @@ extern __host__ cudaError_t CUDARTAPI cudaFreeArray(cudaArray_t array);
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInitializationError
+ * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc, ::cudaMallocPitch, ::cudaFree, ::cudaMallocArray,
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
@@ -3625,6 +5291,8 @@ extern __host__ cudaError_t CUDARTAPI cudaFreeMipmappedArray(cudaMipmappedArray_
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaSetDeviceFlags,
  * \ref ::cudaMallocHost(void**, size_t) "cudaMallocHost (C API)",
@@ -3671,6 +5339,15 @@ extern __host__ cudaError_t CUDARTAPI cudaHostAlloc(void **pHost, size_t size, u
  *   third-party PCIe device, and it will marked as non cache-coherent and
  *   contiguous.
  *
+ * - ::cudaHostRegisterReadOnly: The passed memory pointer is treated as
+ *   pointing to memory that is considered read-only by the device.  On
+ *   platforms without ::cudaDevAttrPageableMemoryAccessUsesHostPageTables, this
+ *   flag is required in order to register memory mapped to the CPU as
+ *   read-only.  Support for the use of this flag can be queried from the device
+ *   attribute cudaDeviceAttrReadOnlyHostRegisterSupported.  Using this flag with
+ *   a current context associated with a device that does not have this attribute
+ *   set will cause ::cudaHostRegister to error with cudaErrorNotSupported.
+ *
  * All of these flags are orthogonal to one another: a developer may page-lock
  * memory that is portable or mapped with no restrictions.
  *
@@ -3710,6 +5387,8 @@ extern __host__ cudaError_t CUDARTAPI cudaHostAlloc(void **pHost, size_t size, u
  * ::cudaErrorHostMemoryAlreadyRegistered,
  * ::cudaErrorNotSupported
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaHostUnregister, ::cudaHostGetFlags, ::cudaHostGetDevicePointer,
  * ::cuMemHostRegister
@@ -3731,6 +5410,8 @@ extern __host__ cudaError_t CUDARTAPI cudaHostRegister(void *ptr, size_t size, u
  * ::cudaErrorInvalidValue,
  * ::cudaErrorHostMemoryNotRegistered
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaHostUnregister,
  * ::cuMemHostUnregister
@@ -3774,6 +5455,8 @@ extern __host__ cudaError_t CUDARTAPI cudaHostUnregister(void *ptr);
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaSetDeviceFlags, ::cudaHostAlloc,
  * ::cuMemHostGetDevicePointer
@@ -3794,6 +5477,8 @@ extern __host__ cudaError_t CUDARTAPI cudaHostGetDevicePointer(void **pDevice, v
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaHostAlloc,
  * ::cuMemHostGetFlags
@@ -3828,6 +5513,8 @@ extern __host__ cudaError_t CUDARTAPI cudaHostGetFlags(unsigned int *pFlags, voi
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMallocPitch, ::cudaFree, ::cudaMemcpy3D, ::cudaMemset3D,
  * ::cudaMalloc3DArray, ::cudaMallocArray, ::cudaFreeArray,
@@ -3885,6 +5572,12 @@ extern __host__ cudaError_t CUDARTAPI cudaMalloc3D(struct cudaPitchedPtr* pitche
  *   reference.
  * - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the CUDA 
  *   array. Texture gather can only be performed on 2D CUDA arrays.
+ * - ::cudaArraySparse: Allocates a CUDA array without physical backing memory. The subregions within this sparse array 
+ *   can later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. This flag can only be used for 
+ *   creating 2D, 3D or 2D layered sparse CUDA arrays. The physical backing memory must be allocated via ::cuMemCreate.
+ * - ::cudaArrayDeferredMapping: Allocates a CUDA array without physical backing memory. The entire array can
+ *   later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. The physical backing memory must be allocated
+ *   via ::cuMemCreate.
  *
  * The width, height and depth extents must meet certain size requirements as listed in the following table.
  * All values are specified in elements.
@@ -3964,6 +5657,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMalloc3D(struct cudaPitchedPtr* pitche
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc3D, ::cudaMalloc, ::cudaMallocPitch, ::cudaFree,
  * ::cudaFreeArray,
@@ -4024,6 +5719,12 @@ extern __host__ cudaError_t CUDARTAPI cudaMalloc3DArray(cudaArray_t *array, cons
  * - ::cudaArrayTextureGather: This flag indicates that texture gather operations will be performed on the CUDA 
  *   array. Texture gather can only be performed on 2D CUDA mipmapped arrays, and the gather operations are
  *   performed only on the most detailed mipmap level.
+ * - ::cudaArraySparse: Allocates a CUDA mipmapped array without physical backing memory. The subregions within this sparse array
+ *   can later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. This flag can only be used for creating 
+ *   2D, 3D or 2D layered sparse CUDA mipmapped arrays. The physical backing memory must be allocated via ::cuMemCreate.
+ * - ::cudaArrayDeferredMapping: Allocates a CUDA mipmapped array without physical backing memory. The entire array can
+ *   later be mapped onto a physical memory allocation by calling ::cuMemMapArrayAsync. The physical backing memory must be allocated
+ *   via ::cuMemCreate.
  *
  * The width, height and depth extents must meet certain size requirements as listed in the following table.
  * All values are specified in elements.
@@ -4101,6 +5802,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMalloc3DArray(cudaArray_t *array, cons
  * ::cudaErrorInvalidValue,
  * ::cudaErrorMemoryAllocation
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc3D, ::cudaMalloc, ::cudaMallocPitch, ::cudaFree,
  * ::cudaFreeArray,
@@ -4120,6 +5823,9 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocMipmappedArray(cudaMipmappedArra
  * If \p level is greater than the maximum number of levels in this mipmapped array,
  * ::cudaErrorInvalidValue is returned.
  *
+ * If \p mipmappedArray is NULL,
+ * ::cudaErrorInvalidResourceHandle is returned.
+ *
  * \param levelArray     - Returned mipmap level CUDA array
  * \param mipmappedArray - CUDA mipmapped array
  * \param level          - Mipmap level
@@ -4127,7 +5833,10 @@ extern __host__ cudaError_t CUDARTAPI cudaMallocMipmappedArray(cudaMipmappedArra
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * ::cudaErrorInvalidResourceHandle
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc3D, ::cudaMalloc, ::cudaMallocPitch, ::cudaFree,
  * ::cudaFreeArray,
@@ -4210,8 +5919,8 @@ cudaMemcpy3DParms myParms = {0};
  * The source and destination object may not overlap. If overlapping source
  * and destination objects are specified, undefined behavior will result.
  *
- * The source object must lie entirely within the region defined by \p srcPos
- * and \p extent. The destination object must lie entirely within the region
+ * The source object must entirely contain the region defined by \p srcPos
+ * and \p extent. The destination object must entirely contain the region
  * defined by \p dstPos and \p extent.
  *
  * ::cudaMemcpy3D() returns an error if the pitch of \p srcPtr or \p dstPtr
@@ -4227,14 +5936,16 @@ cudaMemcpy3DParms myParms = {0};
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc3D, ::cudaMalloc3DArray, ::cudaMemset3D, ::cudaMemcpy3DAsync,
- * ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::make_cudaExtent, ::make_cudaPos,
  * ::cuMemcpy3D
@@ -4260,9 +5971,12 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy3D(const struct cudaMemcpy3DParm
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidDevice
+ * ::cudaErrorInvalidDevice,
+ * ::cudaErrorInvalidPitchValue
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync, ::cudaMemcpyPeerAsync,
  * ::cudaMemcpy3DPeerAsync,
@@ -4372,14 +6086,16 @@ cudaMemcpy3DParms myParms = {0};
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMalloc3D, ::cudaMalloc3DArray, ::cudaMemset3D, ::cudaMemcpy3D,
- * ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, :::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::make_cudaExtent, ::make_cudaPos,
  * ::cuMemcpy3DAsync
@@ -4399,10 +6115,13 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemcpy3DAsync(const
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidDevice
+ * ::cudaErrorInvalidDevice,
+ * ::cudaErrorInvalidPitchValue
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync, ::cudaMemcpyPeerAsync,
  * ::cudaMemcpy3DPeerAsync,
@@ -4413,18 +6132,31 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy3DPeerAsync(const struct cudaMem
 /**
  * \brief Gets free and total device memory
  *
- * Returns in \p *free and \p *total respectively, the free and total amount of
- * memory available for allocation by the device in bytes.
+ * Returns in \p *total the total amount of memory available to the the current context.
+ * Returns in \p *free the amount of memory on the device that is free according to the OS.
+ * CUDA is not guaranteed to be able to allocate all of the memory that the OS reports as free.
+ * In a multi-tenet situation, free estimate returned is prone to race condition where
+ * a new allocation/free done by a different process or a different thread in the same
+ * process between the time when free memory was estimated and reported, will result in
+ * deviation in free value reported and actual free memory.
+ *
+ * The integrated GPU on Tegra shares memory with CPU and other component
+ * of the SoC. The free and total values returned by the API excludes
+ * the SWAP memory space maintained by the OS on some platforms.
+ * The OS may move some of the memory pages into swap area as the GPU or
+ * CPU allocate or access memory. See Tegra app note on how to calculate
+ * total and free memory on Tegra.
  *
  * \param free  - Returned free memory in bytes
  * \param total - Returned total memory in bytes
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInitializationError,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorLaunchFailure
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cuMemGetInfo
@@ -4448,12 +6180,149 @@ extern __host__ cudaError_t CUDARTAPI cudaMemGetInfo(size_t *free, size_t *total
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cuArrayGetDescriptor,
  * ::cuArray3DGetDescriptor
  */
 extern __host__ cudaError_t CUDARTAPI cudaArrayGetInfo(struct cudaChannelFormatDesc *desc, struct cudaExtent *extent, unsigned int *flags, cudaArray_t array);
+
+/**
+ * \brief Gets a CUDA array plane from a CUDA array
+ *
+ * Returns in \p pPlaneArray a CUDA array that represents a single format plane
+ * of the CUDA array \p hArray.
+ *
+ * If \p planeIdx is greater than the maximum number of planes in this array or if the array does
+ * not have a multi-planar format e.g: ::cudaChannelFormatKindNV12, then ::cudaErrorInvalidValue is returned.
+ *
+ * Note that if the \p hArray has format ::cudaChannelFormatKindNV12, then passing in 0 for \p planeIdx returns
+ * a CUDA array of the same size as \p hArray but with one 8-bit channel and ::cudaChannelFormatKindUnsigned as its format kind.
+ * If 1 is passed for \p planeIdx, then the returned CUDA array has half the height and width
+ * of \p hArray with two 8-bit channels and ::cudaChannelFormatKindUnsigned as its format kind.
+ *
+ * \param pPlaneArray   - Returned CUDA array referenced by the \p planeIdx
+ * \param hArray        - CUDA array
+ * \param planeIdx      - Plane index
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ *
+ * \sa
+ * ::cuArrayGetPlane
+ */
+extern __host__ cudaError_t CUDARTAPI cudaArrayGetPlane(cudaArray_t *pPlaneArray, cudaArray_t hArray, unsigned int planeIdx);
+
+/**
+ * \brief Returns the memory requirements of a CUDA array
+ *
+ * Returns the memory requirements of a CUDA array in \p memoryRequirements
+ * If the CUDA array is not allocated with flag ::cudaArrayDeferredMapping
+ * ::cudaErrorInvalidValue will be returned.
+ *
+ * The returned value in ::cudaArrayMemoryRequirements::size
+ * represents the total size of the CUDA array.
+ * The returned value in ::cudaArrayMemoryRequirements::alignment
+ * represents the alignment necessary for mapping the CUDA array.
+ *
+ * \return
+ * ::cudaSuccess
+ * ::cudaErrorInvalidValue
+ *
+ * \param[out] memoryRequirements - Pointer to ::cudaArrayMemoryRequirements
+ * \param[in] array - CUDA array to get the memory requirements of
+ * \param[in] device - Device to get the memory requirements for
+ * \sa ::cudaMipmappedArrayGetMemoryRequirements
+ */
+extern __host__ cudaError_t CUDARTAPI cudaArrayGetMemoryRequirements(struct cudaArrayMemoryRequirements  *memoryRequirements, cudaArray_t array, int device);
+
+/**
+ * \brief Returns the memory requirements of a CUDA mipmapped array
+ *
+ * Returns the memory requirements of a CUDA mipmapped array in \p memoryRequirements
+ * If the CUDA mipmapped array is not allocated with flag ::cudaArrayDeferredMapping
+ * ::cudaErrorInvalidValue will be returned.
+ *
+ * The returned value in ::cudaArrayMemoryRequirements::size
+ * represents the total size of the CUDA mipmapped array.
+ * The returned value in ::cudaArrayMemoryRequirements::alignment
+ * represents the alignment necessary for mapping the CUDA mipmapped
+ * array.
+ *
+ * \return
+ * ::cudaSuccess
+ * ::cudaErrorInvalidValue
+ *
+ * \param[out] memoryRequirements - Pointer to ::cudaArrayMemoryRequirements
+ * \param[in] mipmap - CUDA mipmapped array to get the memory requirements of
+ * \param[in] device - Device to get the memory requirements for
+ * \sa ::cudaArrayGetMemoryRequirements
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMipmappedArrayGetMemoryRequirements(struct cudaArrayMemoryRequirements *memoryRequirements, cudaMipmappedArray_t mipmap, int device);
+
+/**
+ * \brief Returns the layout properties of a sparse CUDA array
+ *
+ * Returns the layout properties of a sparse CUDA array in \p sparseProperties.
+ * If the CUDA array is not allocated with flag ::cudaArraySparse
+ * ::cudaErrorInvalidValue will be returned.
+ *
+ * If the returned value in ::cudaArraySparseProperties::flags contains ::cudaArraySparsePropertiesSingleMipTail,
+ * then ::cudaArraySparseProperties::miptailSize represents the total size of the array. Otherwise, it will be zero.
+ * Also, the returned value in ::cudaArraySparseProperties::miptailFirstLevel is always zero.
+ * Note that the \p array must have been allocated using ::cudaMallocArray or ::cudaMalloc3DArray. For CUDA arrays obtained
+ * using ::cudaMipmappedArrayGetLevel, ::cudaErrorInvalidValue will be returned. Instead, ::cudaMipmappedArrayGetSparseProperties
+ * must be used to obtain the sparse properties of the entire CUDA mipmapped array to which \p array belongs to.
+ *
+ * \return
+ * ::cudaSuccess
+ * ::cudaErrorInvalidValue
+ *
+ * \param[out] sparseProperties - Pointer to return the ::cudaArraySparseProperties
+ * \param[in] array             - The CUDA array to get the sparse properties of 
+ *
+ * \sa
+ * ::cudaMipmappedArrayGetSparseProperties,
+ * ::cuMemMapArrayAsync
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaArrayGetSparseProperties(struct cudaArraySparseProperties *sparseProperties, cudaArray_t array);
+#endif
+
+/**
+ * \brief Returns the layout properties of a sparse CUDA mipmapped array
+ *
+ * Returns the sparse array layout properties in \p sparseProperties.
+ * If the CUDA mipmapped array is not allocated with flag ::cudaArraySparse
+ * ::cudaErrorInvalidValue will be returned.
+ *
+ * For non-layered CUDA mipmapped arrays, ::cudaArraySparseProperties::miptailSize returns the
+ * size of the mip tail region. The mip tail region includes all mip levels whose width, height or depth
+ * is less than that of the tile.
+ * For layered CUDA mipmapped arrays, if ::cudaArraySparseProperties::flags contains ::cudaArraySparsePropertiesSingleMipTail,
+ * then ::cudaArraySparseProperties::miptailSize specifies the size of the mip tail of all layers combined.
+ * Otherwise, ::cudaArraySparseProperties::miptailSize specifies mip tail size per layer.
+ * The returned value of ::cudaArraySparseProperties::miptailFirstLevel is valid only if ::cudaArraySparseProperties::miptailSize is non-zero.
+ *
+ * \return
+ * ::cudaSuccess
+ * ::cudaErrorInvalidValue
+ *
+ * \param[out] sparseProperties - Pointer to return ::cudaArraySparseProperties
+ * \param[in] mipmap            - The CUDA mipmapped array to get the sparse properties of
+ *
+ * \sa
+ * ::cudaArrayGetSparseProperties,
+ * ::cuMemMapArrayAsync
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaMipmappedArrayGetSparseProperties(struct cudaArraySparseProperties *sparseProperties, cudaMipmappedArray_t mipmap);
+#endif
 
 /**
  * \brief Copies data between host and device
@@ -4479,15 +6348,18 @@ extern __host__ cudaError_t CUDARTAPI cudaArrayGetInfo(struct cudaChannelFormatD
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \note_sync
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpyDtoH,
  * ::cuMemcpyHtoD,
@@ -4522,128 +6394,14 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy(void *dst, const void *src, siz
  * ::cudaErrorInvalidDevice
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyAsync, ::cudaMemcpyPeerAsync,
  * ::cudaMemcpy3DPeerAsync,
  * ::cuMemcpyPeer
  */
 extern __host__ cudaError_t CUDARTAPI cudaMemcpyPeer(void *dst, int dstDevice, const void *src, int srcDevice, size_t count);
-
-/**
- * \brief Copies data between host and device
- *
- * Copies \p count bytes from the memory area pointed to by \p src to the
- * CUDA array \p dst starting at the upper left corner
- * (\p wOffset, \p hOffset), where \p kind specifies the direction
- * of the copy, and must be one of ::cudaMemcpyHostToHost,
- * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
- * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
- * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
- * inferred from the pointer values. However, ::cudaMemcpyDefault is only
- * allowed on systems that support unified virtual addressing.
- *
- * \param dst     - Destination memory address
- * \param wOffset - Destination starting X offset
- * \param hOffset - Destination starting Y offset
- * \param src     - Source memory address
- * \param count   - Size in bytes to copy
- * \param kind    - Type of transfer
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidMemcpyDirection
- * \notefnerr
- * \note_sync
- *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
- * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
- * ::cuMemcpyHtoA,
- * ::cuMemcpyDtoA
- */
-extern __host__ cudaError_t CUDARTAPI cudaMemcpyToArray(cudaArray_t dst, size_t wOffset, size_t hOffset, const void *src, size_t count, enum cudaMemcpyKind kind);
-
-/**
- * \brief Copies data between host and device
- *
- * Copies \p count bytes from the CUDA array \p src starting at the upper
- * left corner (\p wOffset, hOffset) to the memory area pointed to by \p dst,
- * where \p kind specifies the direction of the copy, and must be one of
- * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
- * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
- * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
- * inferred from the pointer values. However, ::cudaMemcpyDefault is only
- * allowed on systems that support unified virtual addressing.
- *
- * \param dst     - Destination memory address
- * \param src     - Source memory address
- * \param wOffset - Source starting X offset
- * \param hOffset - Source starting Y offset
- * \param count   - Size in bytes to copy
- * \param kind    - Type of transfer
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidMemcpyDirection
- * \notefnerr
- * \note_sync
- *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
- * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
- * ::cuMemcpyAtoH,
- * ::cuMemcpyAtoD
- */
-extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromArray(void *dst, cudaArray_const_t src, size_t wOffset, size_t hOffset, size_t count, enum cudaMemcpyKind kind);
-
-/**
- * \brief Copies data between host and device
- *
- * Copies \p count bytes from the CUDA array \p src starting at the upper
- * left corner (\p wOffsetSrc, \p hOffsetSrc) to the CUDA array \p dst
- * starting at the upper left corner (\p wOffsetDst, \p hOffsetDst) where
- * \p kind specifies the direction of the copy, and must be one of
- * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
- * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
- * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
- * inferred from the pointer values. However, ::cudaMemcpyDefault is only
- * allowed on systems that support unified virtual addressing.
- *
- * \param dst        - Destination memory address
- * \param wOffsetDst - Destination starting X offset
- * \param hOffsetDst - Destination starting Y offset
- * \param src        - Source memory address
- * \param wOffsetSrc - Source starting X offset
- * \param hOffsetSrc - Source starting Y offset
- * \param count      - Size in bytes to copy
- * \param kind       - Type of transfer
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidMemcpyDirection
- * \notefnerr
- *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
- * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
- * ::cuMemcpyAtoA
- */
-extern __host__ cudaError_t CUDARTAPI cudaMemcpyArrayToArray(cudaArray_t dst, size_t wOffsetDst, size_t hOffsetDst, cudaArray_const_t src, size_t wOffsetSrc, size_t hOffsetSrc, size_t count, enum cudaMemcpyKind kind __dv(cudaMemcpyDeviceToDevice));
 
 /**
  * \brief Copies data between host and device
@@ -4678,13 +6436,16 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyArrayToArray(cudaArray_t dst, si
  * ::cudaErrorInvalidPitchValue,
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2D,
  * ::cuMemcpy2DUnaligned
@@ -4695,10 +6456,10 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2D(void *dst, size_t dpitch, con
  * \brief Copies data between host and device
  *
  * Copies a matrix (\p height rows of \p width bytes each) from the memory
- * area pointed to by \p src to the CUDA array \p dst starting at the
- * upper left corner (\p wOffset, \p hOffset) where \p kind specifies the
- * direction of the copy, and must be one of ::cudaMemcpyHostToHost,
- * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * area pointed to by \p src to the CUDA array \p dst starting at
+ * \p hOffset rows and \p wOffset bytes from the upper left corner,
+ * where \p kind specifies the direction of the copy, and must be one
+ * of ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
  * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
  * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
  * inferred from the pointer values. However, ::cudaMemcpyDefault is only
@@ -4710,8 +6471,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2D(void *dst, size_t dpitch, con
  * exceeds the maximum allowed.
  *
  * \param dst     - Destination memory address
- * \param wOffset - Destination starting X offset
- * \param hOffset - Destination starting Y offset
+ * \param wOffset - Destination starting X offset (columns in bytes)
+ * \param hOffset - Destination starting Y offset (rows)
  * \param src     - Source memory address
  * \param spitch  - Pitch of source memory
  * \param width   - Width of matrix transfer (columns in bytes)
@@ -4725,13 +6486,16 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2D(void *dst, size_t dpitch, con
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2D,
  * ::cuMemcpy2DUnaligned
@@ -4742,8 +6506,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArray(cudaArray_t dst, size_
  * \brief Copies data between host and device
  *
  * Copies a matrix (\p height rows of \p width bytes each) from the CUDA
- * array \p srcArray starting at the upper left corner
- * (\p wOffset, \p hOffset) to the memory area pointed to by \p dst, where
+ * array \p src starting at \p hOffset rows and \p wOffset bytes from the
+ * upper left corner to the memory area pointed to by \p dst, where
  * \p kind specifies the direction of the copy, and must be one of
  * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
  * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
@@ -4759,8 +6523,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArray(cudaArray_t dst, size_
  * \param dst     - Destination memory address
  * \param dpitch  - Pitch of destination memory
  * \param src     - Source memory address
- * \param wOffset - Source starting X offset
- * \param hOffset - Source starting Y offset
+ * \param wOffset - Source starting X offset (columns in bytes)
+ * \param hOffset - Source starting Y offset (rows)
  * \param width   - Width of matrix transfer (columns in bytes)
  * \param height  - Height of matrix transfer (rows)
  * \param kind    - Type of transfer
@@ -4772,13 +6536,16 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArray(cudaArray_t dst, size_
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2D,
  * ::cuMemcpy2DUnaligned
@@ -4789,9 +6556,9 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DFromArray(void *dst, size_t dp
  * \brief Copies data between host and device
  *
  * Copies a matrix (\p height rows of \p width bytes each) from the CUDA
- * array \p srcArray starting at the upper left corner
- * (\p wOffsetSrc, \p hOffsetSrc) to the CUDA array \p dst starting at
- * the upper left corner (\p wOffsetDst, \p hOffsetDst), where \p kind
+ * array \p src starting at \p hOffsetSrc rows and \p wOffsetSrc bytes from the
+ * upper left corner to the CUDA array \p dst starting at \p hOffsetDst rows
+ * and \p wOffsetDst bytes from the upper left corner, where \p kind
  * specifies the direction of the copy, and must be one of
  * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
  * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
@@ -4802,11 +6569,11 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DFromArray(void *dst, size_t dp
  * \p wOffsetSrc + \p width must not exceed the width of the CUDA array \p src.
  *
  * \param dst        - Destination memory address
- * \param wOffsetDst - Destination starting X offset
- * \param hOffsetDst - Destination starting Y offset
+ * \param wOffsetDst - Destination starting X offset (columns in bytes)
+ * \param hOffsetDst - Destination starting Y offset (rows)
  * \param src        - Source memory address
- * \param wOffsetSrc - Source starting X offset
- * \param hOffsetSrc - Source starting Y offset
+ * \param wOffsetSrc - Source starting X offset (columns in bytes)
+ * \param hOffsetSrc - Source starting Y offset (rows)
  * \param width      - Width of matrix transfer (columns in bytes)
  * \param height     - Height of matrix transfer (rows)
  * \param kind       - Type of transfer
@@ -4817,13 +6584,15 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DFromArray(void *dst, size_t dp
  * ::cudaErrorInvalidMemcpyDirection
  * \notefnerr
  * \note_sync
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2D,
  * ::cuMemcpy2DUnaligned
@@ -4857,13 +6626,15 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DArrayToArray(cudaArray_t dst, 
  * \notefnerr
  * \note_sync
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray,  ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy,
  * ::cuMemcpyHtoD,
@@ -4898,13 +6669,15 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyToSymbol(const void *symbol, con
  * \notefnerr
  * \note_sync
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy,
  * ::cuMemcpyDtoH,
@@ -4951,14 +6724,17 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromSymbol(void *dst, const void
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpyAsync,
  * ::cuMemcpyDtoHAsync,
  * ::cuMemcpyHtoDAsync,
@@ -4992,105 +6768,14 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemcpyAsync(void *d
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync,
  * ::cudaMemcpy3DPeerAsync,
  * ::cuMemcpyPeerAsync
  */
 extern __host__ cudaError_t CUDARTAPI cudaMemcpyPeerAsync(void *dst, int dstDevice, const void *src, int srcDevice, size_t count, cudaStream_t stream __dv(0));
-
-/**
- * \brief Copies data between host and device
- *
- * Copies \p count bytes from the memory area pointed to by \p src to the
- * CUDA array \p dst starting at the upper left corner
- * (\p wOffset, \p hOffset), where \p kind specifies the
- * direction of the copy, and must be one of ::cudaMemcpyHostToHost,
- * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
- * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
- * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
- * inferred from the pointer values. However, ::cudaMemcpyDefault is only
- * allowed on systems that support unified virtual addressing.
- *
- * ::cudaMemcpyToArrayAsync() is asynchronous with respect to the host, so
- * the call may return before the copy is complete. The copy can optionally
- * be associated to a stream by passing a non-zero \p stream argument. If \p
- * kind is ::cudaMemcpyHostToDevice or ::cudaMemcpyDeviceToHost and \p stream
- * is non-zero, the copy may overlap with operations in other streams.
- *
- * \param dst     - Destination memory address
- * \param wOffset - Destination starting X offset
- * \param hOffset - Destination starting Y offset
- * \param src     - Source memory address
- * \param count   - Size in bytes to copy
- * \param kind    - Type of transfer
- * \param stream  - Stream identifier
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidMemcpyDirection
- * \notefnerr
- * \note_async
- * \note_null_stream
- *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
- * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
- * ::cuMemcpyHtoAAsync,
- * ::cuMemcpy2DAsync
- */
-extern __host__ cudaError_t CUDARTAPI cudaMemcpyToArrayAsync(cudaArray_t dst, size_t wOffset, size_t hOffset, const void *src, size_t count, enum cudaMemcpyKind kind, cudaStream_t stream __dv(0));
-
-/**
- * \brief Copies data between host and device
- *
- * Copies \p count bytes from the CUDA array \p src starting at the upper
- * left corner (\p wOffset, hOffset) to the memory area pointed to by \p dst,
- * where \p kind specifies the direction of the copy, and must be one of
- * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
- * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
- * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
- * inferred from the pointer values. However, ::cudaMemcpyDefault is only
- * allowed on systems that support unified virtual addressing.
- *
- * ::cudaMemcpyFromArrayAsync() is asynchronous with respect to the host, so
- * the call may return before the copy is complete. The copy can optionally
- * be associated to a stream by passing a non-zero \p stream argument. If \p
- * kind is ::cudaMemcpyHostToDevice or ::cudaMemcpyDeviceToHost and \p stream
- * is non-zero, the copy may overlap with operations in other streams.
- *
- * \param dst     - Destination memory address
- * \param src     - Source memory address
- * \param wOffset - Source starting X offset
- * \param hOffset - Source starting Y offset
- * \param count   - Size in bytes to copy
- * \param kind    - Type of transfer
- * \param stream  - Stream identifier
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidMemcpyDirection
- * \notefnerr
- * \note_async
- * \note_null_stream
- *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
- * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpy2DFromArrayAsync,
- * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
- * ::cuMemcpyAtoHAsync,
- * ::cuMemcpy2DAsync
- */
-extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromArrayAsync(void *dst, cudaArray_const_t src, size_t wOffset, size_t hOffset, size_t count, enum cudaMemcpyKind kind, cudaStream_t stream __dv(0));
 
 /**
  * \brief Copies data between host and device
@@ -5140,13 +6825,16 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromArrayAsync(void *dst, cudaAr
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2DAsync
  */
@@ -5156,9 +6844,9 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemcpy2DAsync(void 
  * \brief Copies data between host and device
  *
  * Copies a matrix (\p height rows of \p width bytes each) from the memory
- * area pointed to by \p src to the CUDA array \p dst starting at the
- * upper left corner (\p wOffset, \p hOffset) where \p kind specifies the
- * direction of the copy, and must be one of ::cudaMemcpyHostToHost,
+ * area pointed to by \p src to the CUDA array \p dst starting at \p hOffset
+ * rows and \p wOffset bytes from the upper left corner, where \p kind specifies
+ * the direction of the copy, and must be one of ::cudaMemcpyHostToHost,
  * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
  * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
  * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
@@ -5178,8 +6866,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemcpy2DAsync(void 
  * streams.
  *
  * \param dst     - Destination memory address
- * \param wOffset - Destination starting X offset
- * \param hOffset - Destination starting Y offset
+ * \param wOffset - Destination starting X offset (columns in bytes)
+ * \param hOffset - Destination starting Y offset (rows)
  * \param src     - Source memory address
  * \param spitch  - Pitch of source memory
  * \param width   - Width of matrix transfer (columns in bytes)
@@ -5195,13 +6883,16 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemcpy2DAsync(void 
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ *
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2DAsync
  */
@@ -5211,9 +6902,9 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArrayAsync(cudaArray_t dst, 
  * \brief Copies data between host and device
  *
  * Copies a matrix (\p height rows of \p width bytes each) from the CUDA
- * array \p srcArray starting at the upper left corner
- * (\p wOffset, \p hOffset) to the memory area pointed to by \p dst, where
- * \p kind specifies the direction of the copy, and must be one of
+ * array \p src starting at \p hOffset rows and \p wOffset bytes from the
+ * upper left corner to the memory area pointed to by \p dst,
+ * where \p kind specifies the direction of the copy, and must be one of
  * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
  * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
  * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
@@ -5234,8 +6925,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArrayAsync(cudaArray_t dst, 
  * \param dst     - Destination memory address
  * \param dpitch  - Pitch of destination memory
  * \param src     - Source memory address
- * \param wOffset - Source starting X offset
- * \param hOffset - Source starting Y offset
+ * \param wOffset - Source starting X offset (columns in bytes)
+ * \param hOffset - Source starting Y offset (rows)
  * \param width   - Width of matrix transfer (columns in bytes)
  * \param height  - Height of matrix transfer (rows)
  * \param kind    - Type of transfer
@@ -5249,13 +6940,16 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DToArrayAsync(cudaArray_t dst, 
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ * \note_memcpy
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ *
  * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpy2DAsync
  */
@@ -5296,13 +6990,15 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpy2DFromArrayAsync(void *dst, size
  * \note_async
  * \note_null_stream
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyFromSymbolAsync,
  * ::cuMemcpyAsync,
  * ::cuMemcpyHtoDAsync,
@@ -5345,13 +7041,15 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyToSymbolAsync(const void *symbol
  * \note_async
  * \note_null_stream
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
- * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
- * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
  * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
- * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
- * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
  * ::cudaMemcpyToSymbolAsync,
  * ::cuMemcpyAsync,
  * ::cuMemcpyDtoHAsync,
@@ -5378,6 +7076,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromSymbolAsync(void *dst, const
  * ::cudaErrorInvalidValue,
  * \notefnerr
  * \note_memset
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cuMemsetD8,
@@ -5399,7 +7099,7 @@ extern __host__ cudaError_t CUDARTAPI cudaMemset(void *devPtr, int value, size_t
  * \p devPtr refers to pinned host memory.
  *
  * \param devPtr - Pointer to 2D device memory
- * \param pitch  - Pitch in bytes of 2D device memory
+ * \param pitch  - Pitch in bytes of 2D device memory(Unused if \p height is 1)
  * \param value  - Value to set for each byte of specified memory
  * \param width  - Width of matrix set (columns in bytes)
  * \param height - Height of matrix set (rows)
@@ -5409,6 +7109,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemset(void *devPtr, int value, size_t
  * ::cudaErrorInvalidValue,
  * \notefnerr
  * \note_memset
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemset, ::cudaMemset3D, ::cudaMemsetAsync,
  * ::cudaMemset2DAsync, ::cudaMemset3DAsync,
@@ -5427,6 +7129,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemset2D(void *devPtr, size_t pitch, i
  * to by \p pitchedDevPtr, including any padding added to the end of each row.
  * The \p xsize field specifies the logical width of each row in bytes, while
  * the \p ysize field specifies the height of each 2D slice in rows.
+ * The \p pitch field of \p pitchedDevPtr is ignored when \p height and \p depth 
+ * are both equal to 1. 
  *
  * The extents of the initialized region are specified as a \p width in bytes,
  * a \p height in rows, and a \p depth in slices.
@@ -5452,6 +7156,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemset2D(void *devPtr, size_t pitch, i
  * ::cudaErrorInvalidValue,
  * \notefnerr
  * \note_memset
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemset, ::cudaMemset2D,
  * ::cudaMemsetAsync, ::cudaMemset2DAsync, ::cudaMemset3DAsync,
@@ -5485,6 +7191,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemset3D(struct cudaPitchedPtr pitched
  * \notefnerr
  * \note_memset
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemset, ::cudaMemset2D, ::cudaMemset3D,
  * ::cudaMemset2DAsync, ::cudaMemset3DAsync,
@@ -5512,7 +7220,7 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemsetAsync(void *d
  * cannot be given local or shared pointers.
  *
  * \param devPtr - Pointer to 2D device memory
- * \param pitch  - Pitch in bytes of 2D device memory
+ * \param pitch  - Pitch in bytes of 2D device memory(Unused if \p height is 1)
  * \param value  - Value to set for each byte of specified memory
  * \param width  - Width of matrix set (columns in bytes)
  * \param height - Height of matrix set (rows)
@@ -5524,6 +7232,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemsetAsync(void *d
  * \notefnerr
  * \note_memset
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemset, ::cudaMemset2D, ::cudaMemset3D,
  * ::cudaMemsetAsync, ::cudaMemset3DAsync,
@@ -5542,6 +7252,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemset2DAsync(void 
  * to by \p pitchedDevPtr, including any padding added to the end of each row.
  * The \p xsize field specifies the logical width of each row in bytes, while
  * the \p ysize field specifies the height of each 2D slice in rows.
+ * The \p pitch field of \p pitchedDevPtr is ignored when \p height and \p depth 
+ * are both equal to 1. 
  *
  * The extents of the initialized region are specified as a \p width in bytes,
  * a \p height in rows, and a \p depth in slices.
@@ -5574,6 +7286,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemset2DAsync(void 
  * \notefnerr
  * \note_memset
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemset, ::cudaMemset2D, ::cudaMemset3D,
  * ::cudaMemsetAsync, ::cudaMemset2DAsync,
@@ -5600,6 +7314,8 @@ extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemset3DAsync(struc
  * ::cudaErrorNoKernelImageForDevice
  * \notefnerr
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * \ref ::cudaGetSymbolAddress(void**, const T&) "cudaGetSymbolAddress (C++ API)",
@@ -5625,6 +7341,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSymbolAddress(void **devPtr, const 
  * ::cudaErrorNoKernelImageForDevice
  * \notefnerr
  * \note_string_api_deprecation
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * \ref ::cudaGetSymbolAddress(void**, const void*) "cudaGetSymbolAddress (C API)",
@@ -5694,6 +7412,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSymbolSize(size_t *size, const void
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync,
  * ::cudaMemcpy3DPeerAsync, ::cudaMemAdvise,
@@ -5808,6 +7528,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemPrefetchAsync(const void *devPtr, s
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemcpy, ::cudaMemcpyPeer, ::cudaMemcpyAsync,
  * ::cudaMemcpy3DPeerAsync, ::cudaMemPrefetchAsync,
@@ -5865,6 +7587,8 @@ extern __host__ cudaError_t CUDARTAPI cudaMemAdvise(const void *devPtr, size_t c
  * \notefnerr
  * \note_async
  * \note_null_stream
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaMemRangeGetAttributes, ::cudaMemPrefetchAsync,
  * ::cudaMemAdvise,
@@ -5902,14 +7626,684 @@ extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttribute(void *data, size_
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
- * \sa ::cudaMemRangeGetAttribute, ::cudaMemAdvise
+ * \sa ::cudaMemRangeGetAttribute, ::cudaMemAdvise,
  * ::cudaMemPrefetchAsync,
  * ::cuMemRangeGetAttributes
  */
 extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttributes(void **data, size_t *dataSizes, enum cudaMemRangeAttribute *attributes, size_t numAttributes, const void *devPtr, size_t count);
 
 /** @} */ /* END CUDART_MEMORY */
+
+/**
+ * \defgroup CUDART_MEMORY_DEPRECATED Memory Management [DEPRECATED]
+ *
+ * ___MANBRIEF___ deprecated memory management functions of the CUDA runtime API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ *
+ * This section describes deprecated memory management functions of the CUDA runtime
+ * application programming interface.
+ *
+ * Some functions have overloaded C++ API template versions documented separately in the
+ * \ref CUDART_HIGHLEVEL "C++ API Routines" module.
+ *
+ * @{
+ */
+
+/**
+ * \brief Copies data between host and device
+ *
+ * \deprecated
+ *
+ * Copies \p count bytes from the memory area pointed to by \p src to the
+ * CUDA array \p dst starting at \p hOffset rows and \p wOffset bytes from
+ * the upper left corner, where \p kind specifies the direction
+ * of the copy, and must be one of ::cudaMemcpyHostToHost,
+ * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * \param dst     - Destination memory address
+ * \param wOffset - Destination starting X offset (columns in bytes)
+ * \param hOffset - Destination starting Y offset (rows)
+ * \param src     - Source memory address
+ * \param count   - Size in bytes to copy
+ * \param kind    - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidMemcpyDirection
+ * \notefnerr
+ * \note_sync
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
+ * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
+ * ::cuMemcpyHtoA,
+ * ::cuMemcpyDtoA
+ */
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaMemcpyToArray(cudaArray_t dst, size_t wOffset, size_t hOffset, const void *src, size_t count, enum cudaMemcpyKind kind);
+
+/**
+ * \brief Copies data between host and device
+ *
+ * \deprecated
+ *
+ * Copies \p count bytes from the CUDA array \p src starting at \p hOffset rows
+ * and \p wOffset bytes from the upper left corner to the memory area pointed to
+ * by \p dst, where \p kind specifies the direction of the copy, and must be one of
+ * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * \param dst     - Destination memory address
+ * \param src     - Source memory address
+ * \param wOffset - Source starting X offset (columns in bytes)
+ * \param hOffset - Source starting Y offset (rows)
+ * \param count   - Size in bytes to copy
+ * \param kind    - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidMemcpyDirection
+ * \notefnerr
+ * \note_sync
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
+ * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
+ * ::cuMemcpyAtoH,
+ * ::cuMemcpyAtoD
+ */
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaMemcpyFromArray(void *dst, cudaArray_const_t src, size_t wOffset, size_t hOffset, size_t count, enum cudaMemcpyKind kind);
+
+/**
+ * \brief Copies data between host and device
+ *
+ * \deprecated
+ *
+ * Copies \p count bytes from the CUDA array \p src starting at \p hOffsetSrc
+ * rows and \p wOffsetSrc bytes from the upper left corner to the CUDA array
+ * \p dst starting at \p hOffsetDst rows and \p wOffsetDst bytes from the upper
+ * left corner, where \p kind specifies the direction of the copy, and must be one of
+ * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * \param dst        - Destination memory address
+ * \param wOffsetDst - Destination starting X offset (columns in bytes)
+ * \param hOffsetDst - Destination starting Y offset (rows)
+ * \param src        - Source memory address
+ * \param wOffsetSrc - Source starting X offset (columns in bytes)
+ * \param hOffsetSrc - Source starting Y offset (rows)
+ * \param count      - Size in bytes to copy
+ * \param kind       - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidMemcpyDirection
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
+ * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
+ * ::cuMemcpyAtoA
+ */
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaMemcpyArrayToArray(cudaArray_t dst, size_t wOffsetDst, size_t hOffsetDst, cudaArray_const_t src, size_t wOffsetSrc, size_t hOffsetSrc, size_t count, enum cudaMemcpyKind kind __dv(cudaMemcpyDeviceToDevice));
+
+/**
+ * \brief Copies data between host and device
+ *
+ * \deprecated
+ *
+ * Copies \p count bytes from the memory area pointed to by \p src to the
+ * CUDA array \p dst starting at \p hOffset rows and \p wOffset bytes from
+ * the upper left corner, where \p kind specifies the
+ * direction of the copy, and must be one of ::cudaMemcpyHostToHost,
+ * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * ::cudaMemcpyToArrayAsync() is asynchronous with respect to the host, so
+ * the call may return before the copy is complete. The copy can optionally
+ * be associated to a stream by passing a non-zero \p stream argument. If \p
+ * kind is ::cudaMemcpyHostToDevice or ::cudaMemcpyDeviceToHost and \p stream
+ * is non-zero, the copy may overlap with operations in other streams.
+ *
+ * \param dst     - Destination memory address
+ * \param wOffset - Destination starting X offset (columns in bytes)
+ * \param hOffset - Destination starting Y offset (rows)
+ * \param src     - Source memory address
+ * \param count   - Size in bytes to copy
+ * \param kind    - Type of transfer
+ * \param stream  - Stream identifier
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidMemcpyDirection
+ * \notefnerr
+ * \note_async
+ * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
+ * ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpyFromArrayAsync, ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
+ * ::cuMemcpyHtoAAsync,
+ * ::cuMemcpy2DAsync
+ */
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaMemcpyToArrayAsync(cudaArray_t dst, size_t wOffset, size_t hOffset, const void *src, size_t count, enum cudaMemcpyKind kind, cudaStream_t stream __dv(0));
+
+/**
+ * \brief Copies data between host and device
+ *
+ * \deprecated
+ *
+ * Copies \p count bytes from the CUDA array \p src starting at \p hOffset rows
+ * and \p wOffset bytes from the upper left corner to the memory area pointed to
+ * by \p dst, where \p kind specifies the direction of the copy, and must be one of
+ * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * ::cudaMemcpyFromArrayAsync() is asynchronous with respect to the host, so
+ * the call may return before the copy is complete. The copy can optionally
+ * be associated to a stream by passing a non-zero \p stream argument. If \p
+ * kind is ::cudaMemcpyHostToDevice or ::cudaMemcpyDeviceToHost and \p stream
+ * is non-zero, the copy may overlap with operations in other streams.
+ *
+ * \param dst     - Destination memory address
+ * \param src     - Source memory address
+ * \param wOffset - Source starting X offset (columns in bytes)
+ * \param hOffset - Source starting Y offset (rows)
+ * \param count   - Size in bytes to copy
+ * \param kind    - Type of transfer
+ * \param stream  - Stream identifier
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidMemcpyDirection
+ * \notefnerr
+ * \note_async
+ * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cudaMemcpy, ::cudaMemcpy2D, ::cudaMemcpyToArray,
+ * ::cudaMemcpy2DToArray, ::cudaMemcpyFromArray, ::cudaMemcpy2DFromArray,
+ * ::cudaMemcpyArrayToArray, ::cudaMemcpy2DArrayToArray, ::cudaMemcpyToSymbol,
+ * ::cudaMemcpyFromSymbol, ::cudaMemcpyAsync, ::cudaMemcpy2DAsync,
+ * ::cudaMemcpyToArrayAsync, ::cudaMemcpy2DToArrayAsync,
+ * ::cudaMemcpy2DFromArrayAsync,
+ * ::cudaMemcpyToSymbolAsync, ::cudaMemcpyFromSymbolAsync,
+ * ::cuMemcpyAtoHAsync,
+ * ::cuMemcpy2DAsync
+ */
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaMemcpyFromArrayAsync(void *dst, cudaArray_const_t src, size_t wOffset, size_t hOffset, size_t count, enum cudaMemcpyKind kind, cudaStream_t stream __dv(0));
+
+/** @} */ /* END CUDART_MEMORY_DEPRECATED */
+
+/**
+ * \defgroup CUDART_MEMORY_POOLS Stream Ordered Memory Allocator 
+ *
+ * ___MANBRIEF___ Functions for performing allocation and free operations in stream order.
+ *                Functions for controlling the behavior of the underlying allocator.
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ * 
+ *
+ * @{
+ *
+ * \section CUDART_MEMORY_POOLS_overview overview
+ *
+ * The asynchronous allocator allows the user to allocate and free in stream order.
+ * All asynchronous accesses of the allocation must happen between
+ * the stream executions of the allocation and the free. If the memory is accessed
+ * outside of the promised stream order, a use before allocation / use after free error
+ * will cause undefined behavior.
+ *
+ * The allocator is free to reallocate the memory as long as it can guarantee
+ * that compliant memory accesses will not overlap temporally.
+ * The allocator may refer to internal stream ordering as well as inter-stream dependencies
+ * (such as CUDA events and null stream dependencies) when establishing the temporal guarantee.
+ * The allocator may also insert inter-stream dependencies to establish the temporal guarantee.
+ *
+ * \section CUDART_MEMORY_POOLS_support Supported Platforms
+ *
+ * Whether or not a device supports the integrated stream ordered memory allocator
+ * may be queried by calling ::cudaDeviceGetAttribute() with the device attribute
+ * ::cudaDevAttrMemoryPoolsSupported.
+ */
+
+/**
+ * \brief Allocates memory with stream ordered semantics
+ *
+ * Inserts an allocation operation into \p hStream.
+ * A pointer to the allocated memory is returned immediately in *dptr.
+ * The allocation must not be accessed until the the allocation operation completes.
+ * The allocation comes from the memory pool associated with the stream's device.
+ *
+ * \note The default memory pool of a device contains device memory from that device.
+ * \note Basic stream ordering allows future work submitted into the same stream to use the allocation.
+ *       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation
+ *       operation completes before work submitted in a separate stream runs.
+ * \note During stream capture, this function results in the creation of an allocation node.  In this case,
+ *       the allocation is owned by the graph instead of the memory pool. The memory pool's properties
+ *       are used to set the node's creation parameters.
+ *
+ * \param[out] devPtr  - Returned device pointer
+ * \param[in] size     - Number of bytes to allocate
+ * \param[in] hStream  - The stream establishing the stream ordering contract and the memory pool to allocate from
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorOutOfMemory,
+ * \notefnerr
+ * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cuMemAllocAsync,
+ * \ref ::cudaMallocAsync(void** ptr, size_t size, cudaMemPool_t memPool, cudaStream_t stream)  "cudaMallocAsync (C++ API)", 
+ * ::cudaMallocFromPoolAsync, ::cudaFreeAsync, ::cudaDeviceSetMemPool, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolSetAccess, ::cudaMemPoolSetAttribute, ::cudaMemPoolGetAttribute
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMallocAsync(void **devPtr, size_t size, cudaStream_t hStream);
+
+/**
+ * \brief Frees memory with stream ordered semantics
+ *
+ * Inserts a free operation into \p hStream.
+ * The allocation must not be accessed after stream execution reaches the free.
+ * After this API returns, accessing the memory from any subsequent work launched on the GPU
+ * or querying its pointer attributes results in undefined behavior.
+ *
+ * \note During stream capture, this function results in the creation of a free node and
+ *       must therefore be passed the address of a graph allocation.
+ *
+ * \param dptr - memory to free
+ * \param hStream - The stream establishing the stream ordering promise
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported
+ * \notefnerr
+ * \note_null_stream
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa ::cuMemFreeAsync, ::cudaMallocAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaFreeAsync(void *devPtr, cudaStream_t hStream);
+
+/**
+ * \brief Tries to release memory back to the OS
+ *
+ * Releases memory back to the OS until the pool contains fewer than minBytesToKeep
+ * reserved bytes, or there is no more memory that the allocator can safely release.
+ * The allocator cannot release OS allocations that back outstanding asynchronous allocations.
+ * The OS allocations may happen at different granularity from the user allocations.
+ *
+ * \note: Allocations that have not been freed count as outstanding.
+ * \note: Allocations that have been asynchronously freed but whose completion has
+ *        not been observed on the host (eg. by a synchronize) can count as outstanding.
+ *
+ * \param[in] pool           - The memory pool to trim
+ * \param[in] minBytesToKeep - If the pool has less than minBytesToKeep reserved,
+ * the TrimTo operation is a no-op.  Otherwise the pool will be guaranteed to have
+ * at least minBytesToKeep bytes reserved after the operation.
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_callback
+ *
+ * \sa ::cuMemPoolTrimTo, ::cudaMallocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolTrimTo(cudaMemPool_t memPool, size_t minBytesToKeep);
+
+/**
+ * \brief Sets attributes of a memory pool
+ *
+ * Supported attributes are:
+ * - ::cudaMemPoolAttrReleaseThreshold: (value type = cuuint64_t)
+ *                    Amount of reserved memory in bytes to hold onto before trying
+ *                    to release memory back to the OS. When more than the release
+ *                    threshold bytes of memory are held by the memory pool, the
+ *                    allocator will try to release memory back to the OS on the
+ *                    next call to stream, event or context synchronize. (default 0)
+ * - ::cudaMemPoolReuseFollowEventDependencies: (value type = int)
+ *                    Allow ::cudaMallocAsync to use memory asynchronously freed
+ *                    in another stream as long as a stream ordering dependency
+ *                    of the allocating stream on the free action exists.
+ *                    Cuda events and null stream interactions can create the required
+ *                    stream ordered dependencies. (default enabled)
+ * - ::cudaMemPoolReuseAllowOpportunistic: (value type = int)
+ *                    Allow reuse of already completed frees when there is no dependency
+ *                    between the free and allocation. (default enabled)
+ * - ::cudaMemPoolReuseAllowInternalDependencies: (value type = int)
+ *                    Allow ::cudaMallocAsync to insert new stream dependencies
+ *                    in order to establish the stream ordering required to reuse
+ *                    a piece of memory released by ::cudaFreeAsync (default enabled).
+ * - ::cudaMemPoolAttrReservedMemHigh: (value type = cuuint64_t)
+ *                    Reset the high watermark that tracks the amount of backing memory that was
+ *                    allocated for the memory pool. It is illegal to set this attribute to a non-zero value.
+ * - ::cudaMemPoolAttrUsedMemHigh: (value type = cuuint64_t)
+ *                    Reset the high watermark that tracks the amount of used memory that was
+ *                    allocated for the memory pool. It is illegal to set this attribute to a non-zero value.
+ *
+ * \param[in] pool  - The memory pool to modify
+ * \param[in] attr  - The attribute to modify
+ * \param[in] value - Pointer to the value to assign
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_callback
+ *
+ * \sa ::cuMemPoolSetAttribute, ::cudaMallocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolCreate
+
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolSetAttribute(cudaMemPool_t memPool, enum cudaMemPoolAttr attr, void *value );
+
+/**
+ * \brief Gets attributes of a memory pool
+ *
+ * Supported attributes are:
+ * - ::cudaMemPoolAttrReleaseThreshold: (value type = cuuint64_t)
+ *                    Amount of reserved memory in bytes to hold onto before trying
+ *                    to release memory back to the OS. When more than the release
+ *                    threshold bytes of memory are held by the memory pool, the
+ *                    allocator will try to release memory back to the OS on the
+ *                    next call to stream, event or context synchronize. (default 0)
+ * - ::cudaMemPoolReuseFollowEventDependencies: (value type = int)
+ *                    Allow ::cudaMallocAsync to use memory asynchronously freed
+ *                    in another stream as long as a stream ordering dependency
+ *                    of the allocating stream on the free action exists.
+ *                    Cuda events and null stream interactions can create the required
+ *                    stream ordered dependencies. (default enabled)
+ * - ::cudaMemPoolReuseAllowOpportunistic: (value type = int)
+ *                    Allow reuse of already completed frees when there is no dependency
+ *                    between the free and allocation. (default enabled)
+ * - ::cudaMemPoolReuseAllowInternalDependencies: (value type = int)
+ *                    Allow ::cudaMallocAsync to insert new stream dependencies
+ *                    in order to establish the stream ordering required to reuse
+ *                    a piece of memory released by ::cudaFreeAsync (default enabled).
+ * - ::cudaMemPoolAttrReservedMemCurrent: (value type = cuuint64_t)
+ *                    Amount of backing memory currently allocated for the mempool.
+ * - ::cudaMemPoolAttrReservedMemHigh: (value type = cuuint64_t)
+ *                    High watermark of backing memory allocated for the mempool since
+ *                    the last time it was reset.
+ * - ::cudaMemPoolAttrUsedMemCurrent: (value type = cuuint64_t)
+ *                    Amount of memory from the pool that is currently in use by the application.
+ * - ::cudaMemPoolAttrUsedMemHigh: (value type = cuuint64_t)
+ *                    High watermark of the amount of memory from the pool that was in use by the
+ *                    application since the last time it was reset.
+ *
+ * \param[in] pool  - The memory pool to get attributes of 
+ * \param[in] attr  - The attribute to get
+ * \param[in] value - Retrieved value 
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_callback
+ *
+ * \sa ::cuMemPoolGetAttribute, ::cudaMallocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolCreate
+
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolGetAttribute(cudaMemPool_t memPool, enum cudaMemPoolAttr attr, void *value );
+
+/**
+ * \brief Controls visibility of pools between devices
+ *
+ * \param[in] pool  - The pool being modified
+ * \param[in] map   - Array of access descriptors. Each descriptor instructs the access to enable for a single gpu
+ * \param[in] count - Number of descriptors in the map array.
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa ::cuMemPoolSetAccess, ::cudaMemPoolGetAccess, ::cudaMallocAsync, cudaFreeAsync
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolSetAccess(cudaMemPool_t memPool, const struct cudaMemAccessDesc *descList, size_t count);
+
+/**
+ * \brief Returns the accessibility of a pool from a device
+ *
+ * Returns the accessibility of the pool's memory from the specified location.
+ *
+ * \param[out] flags   - the accessibility of the pool from the specified location
+ * \param[in] memPool  - the pool being queried
+ * \param[in] location - the location accessing the pool
+ *
+ * \sa ::cuMemPoolGetAccess, ::cudaMemPoolSetAccess
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolGetAccess(enum cudaMemAccessFlags *flags, cudaMemPool_t memPool, struct cudaMemLocation *location);
+
+/**
+ * \brief Creates a memory pool
+ *
+ * Creates a CUDA memory pool and returns the handle in \p pool.  The \p poolProps determines
+ * the properties of the pool such as the backing device and IPC capabilities.
+ *
+ * By default, the pool's memory will be accessible from the device it is allocated on.
+ *
+ * \note Specifying cudaMemHandleTypeNone creates a memory pool that will not support IPC.
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported
+ *
+ * \sa ::cuMemPoolCreate, ::cudaDeviceSetMemPool, ::cudaMallocFromPoolAsync, ::cudaMemPoolExportToShareableHandle, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool
+
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolCreate(cudaMemPool_t *memPool, const struct cudaMemPoolProps *poolProps);
+
+/**
+ * \brief Destroys the specified memory pool 
+ *
+ * If any pointers obtained from this pool haven't been freed or
+ * the pool has free operations that haven't completed
+ * when ::cudaMemPoolDestroy is invoked, the function will return immediately and the
+ * resources associated with the pool will be released automatically
+ * once there are no more outstanding allocations.
+ *
+ * Destroying the current mempool of a device sets the default mempool of
+ * that device as the current mempool for that device.
+ *
+ * \note A device's default memory pool cannot be destroyed.
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa cuMemPoolDestroy, ::cudaFreeAsync, ::cudaDeviceSetMemPool, ::cudaDeviceGetDefaultMemPool, ::cudaDeviceGetMemPool, ::cudaMemPoolCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolDestroy(cudaMemPool_t memPool);
+
+/**
+ * \brief Allocates memory from a specified pool with stream ordered semantics.
+ *
+ * Inserts an allocation operation into \p hStream.
+ * A pointer to the allocated memory is returned immediately in *dptr.
+ * The allocation must not be accessed until the the allocation operation completes.
+ * The allocation comes from the specified memory pool.
+ *
+ * \note
+ *    -  The specified memory pool may be from a device different than that of the specified \p hStream.
+ *
+ *    -  Basic stream ordering allows future work submitted into the same stream to use the allocation.
+ *       Stream query, stream synchronize, and CUDA events can be used to guarantee that the allocation
+ *       operation completes before work submitted in a separate stream runs.
+ *
+ * \note During stream capture, this function results in the creation of an allocation node.  In this case,
+ *       the allocation is owned by the graph instead of the memory pool. The memory pool's properties
+ *       are used to set the node's creation parameters.
+ *
+ * \param[out] ptr     - Returned device pointer
+ * \param[in] bytesize - Number of bytes to allocate
+ * \param[in] memPool  - The pool to allocate from
+ * \param[in] stream   - The stream establishing the stream ordering semantic
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorOutOfMemory
+ *
+ * \sa ::cuMemAllocFromPoolAsync,
+ * \ref ::cudaMallocAsync(void** ptr, size_t size, cudaMemPool_t memPool, cudaStream_t stream)  "cudaMallocAsync (C++ API)", 
+ * ::cudaMallocAsync, ::cudaFreeAsync, ::cudaDeviceGetDefaultMemPool, ::cudaMemPoolCreate, ::cudaMemPoolSetAccess, ::cudaMemPoolSetAttribute
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMallocFromPoolAsync(void **ptr, size_t size, cudaMemPool_t memPool, cudaStream_t stream);
+
+/**
+ * \brief Exports a memory pool to the requested handle type.
+ *
+ * Given an IPC capable mempool, create an OS handle to share the pool with another process.
+ * A recipient process can convert the shareable handle into a mempool with ::cudaMemPoolImportFromShareableHandle.
+ * Individual pointers can then be shared with the ::cudaMemPoolExportPointer and ::cudaMemPoolImportPointer APIs.
+ * The implementation of what the shareable handle is and how it can be transferred is defined by the requested
+ * handle type.
+ *
+ * \note: To create an IPC capable mempool, create a mempool with a CUmemAllocationHandleType other than cudaMemHandleTypeNone.
+ *
+ * \param[out] handle_out  - pointer to the location in which to store the requested handle 
+ * \param[in] pool         - pool to export
+ * \param[in] handleType   - the type of handle to create
+ * \param[in] flags        - must be 0
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOutOfMemory
+ *
+ * \sa ::cuMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolExportPointer, ::cudaMemPoolImportPointer
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolExportToShareableHandle(
+    void                            *shareableHandle,
+    cudaMemPool_t                    memPool,
+    enum cudaMemAllocationHandleType handleType,
+    unsigned int                     flags);
+
+/**
+ * \brief imports a memory pool from a shared handle.
+ *
+ * Specific allocations can be imported from the imported pool with ::cudaMemPoolImportPointer.
+ *
+ * \note Imported memory pools do not support creating new allocations.
+ *       As such imported memory pools may not be used in ::cudaDeviceSetMemPool
+ *       or ::cudaMallocFromPoolAsync calls.
+ *
+ * \param[out] pool_out    - Returned memory pool
+ * \param[in] handle       - OS handle of the pool to open
+ * \param[in] handleType   - The type of handle being imported
+ * \param[in] flags        - must be 0
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOutOfMemory
+ *
+ * \sa ::cuMemPoolImportFromShareableHandle, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolExportPointer, ::cudaMemPoolImportPointer
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolImportFromShareableHandle(
+    cudaMemPool_t                   *memPool,
+    void                            *shareableHandle,
+    enum cudaMemAllocationHandleType handleType,
+    unsigned int                     flags);
+
+/**
+ * \brief Export data to share a memory pool allocation between processes.
+ *
+ * Constructs \p shareData_out for sharing a specific allocation from an already shared memory pool.
+ * The recipient process can import the allocation with the ::cudaMemPoolImportPointer api.
+ * The data is not a handle and may be shared through any IPC mechanism.
+ *
+ * \param[out] shareData_out - Returned export data
+ * \param[in] ptr            - pointer to memory being exported
+ *
+ * \returns
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOutOfMemory
+ *
+ * \sa ::cuMemPoolExportPointer, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolImportPointer
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolExportPointer(struct cudaMemPoolPtrExportData *exportData, void *ptr);
+
+/**
+ * \brief Import a memory pool allocation from another process.
+ *
+ * Returns in \p ptr_out a pointer to the imported memory.
+ * The imported memory must not be accessed before the allocation operation completes
+ * in the exporting process. The imported memory must be freed from all importing processes before
+ * being freed in the exporting process. The pointer may be freed with cudaFree
+ * or cudaFreeAsync.  If ::cudaFreeAsync is used, the free must be completed
+ * on the importing process before the free operation on the exporting process.
+ *
+ * \note The ::cudaFreeAsync api may be used in the exporting process before
+ *       the ::cudaFreeAsync operation completes in its stream as long as the
+ *       ::cudaFreeAsync in the exporting process specifies a stream with
+ *       a stream dependency on the importing process's ::cudaFreeAsync.
+ *
+ * \param[out] ptr_out  - pointer to imported memory
+ * \param[in] pool      - pool from which to import
+ * \param[in] shareData - data specifying the memory to import
+ *
+ * \returns
+ * ::CUDA_SUCCESS,
+ * ::CUDA_ERROR_INVALID_VALUE,
+ * ::CUDA_ERROR_NOT_INITIALIZED,
+ * ::CUDA_ERROR_OUT_OF_MEMORY
+ *
+ * \sa ::cuMemPoolImportPointer, ::cudaMemPoolExportToShareableHandle, ::cudaMemPoolImportFromShareableHandle, ::cudaMemPoolExportPointer
+ */
+extern __host__ cudaError_t CUDARTAPI cudaMemPoolImportPointer(void **ptr, cudaMemPool_t memPool, struct cudaMemPoolPtrExportData *exportData);
+
+/** @} */ /* END CUDART_MEMORY_POOLS */
 
 /**
  * \defgroup CUDART_UNIFIED Unified Addressing
@@ -5937,9 +8331,6 @@ extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttributes(void **data, siz
  * property ::cudaDeviceProp::unifiedAddressing.
  *
  * Unified addressing is automatically enabled in 64-bit processes .
- *
- * Unified addressing is not yet supported on Windows Vista or
- * Windows 7 for devices that do not use the TCC driver model.
  *
  * \section CUDART_UNIFIED_lookup Looking Up Information from Pointer Values
  *
@@ -6009,22 +8400,24 @@ extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttributes(void **data, siz
  * If pointer was not allocated in, mapped by or registered with context
  * supporting unified addressing ::cudaErrorInvalidValue is returned.
  *
+ * \note In CUDA 11.0 forward passing host pointer will return ::cudaMemoryTypeUnregistered
+ * in ::cudaPointerAttributes::type and call will return ::cudaSuccess.
+ *
  * The ::cudaPointerAttributes structure is defined as:
  * \code
     struct cudaPointerAttributes {
-        enum cudaMemoryType memoryType;
+        enum cudaMemoryType type;
         int device;
         void *devicePointer;
         void *hostPointer;
-        int isManaged;
     }
     \endcode
  * In this structure, the individual fields mean
  *
- * - \ref ::cudaPointerAttributes::memoryType "memoryType" identifies the physical 
- *   location of the memory associated with pointer \p ptr.  It can be
- *   ::cudaMemoryTypeHost for host memory or ::cudaMemoryTypeDevice for device
- *   memory.
+ * - \ref ::cudaPointerAttributes::type identifies type of memory. It can be
+ *    ::cudaMemoryTypeUnregistered for unregistered host memory,
+ *    ::cudaMemoryTypeHost for registered host memory, ::cudaMemoryTypeDevice for device
+ *    memory or  ::cudaMemoryTypeManaged for managed memory.
  *
  * - \ref ::cudaPointerAttributes::device "device" is the device against which
  *   \p ptr was allocated.  If \p ptr has memory type ::cudaMemoryTypeDevice
@@ -6046,9 +8439,6 @@ extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttributes(void **data, siz
  *   If the memory referred to by \p ptr cannot be accessed directly by the
  *   host then this is NULL.
  *
- * - \ref ::cudaPointerAttributes::isManaged "isManaged" indicates if
- *   the pointer \p ptr points to managed memory or not.
- *
  * \param attributes - Attributes for the specified pointer
  * \param ptr        - Pointer to get attributes for
  *
@@ -6056,9 +8446,12 @@ extern __host__ cudaError_t CUDARTAPI cudaMemRangeGetAttributes(void **data, siz
  * ::cudaSuccess,
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaGetDeviceCount, ::cudaGetDevice, ::cudaSetDevice,
  * ::cudaChooseDevice,
+ * ::cudaInitDevice,
  * ::cuPointerGetAttributes
  */
 extern __host__ cudaError_t CUDARTAPI cudaPointerGetAttributes(struct cudaPointerAttributes *attributes, const void *ptr);
@@ -6095,6 +8488,8 @@ extern __host__ cudaError_t CUDARTAPI cudaPointerGetAttributes(struct cudaPointe
  * ::cudaSuccess,
  * ::cudaErrorInvalidDevice
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceEnablePeerAccess,
  * ::cudaDeviceDisablePeerAccess,
@@ -6114,9 +8509,9 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceCanAccessPeer(int *canAccessPeer
  * memory on the current device from \p peerDevice, a separate symmetric call 
  * to ::cudaDeviceEnablePeerAccess() is required.
  *
- * Each device can support a system-wide maximum of eight peer connections.
- *
- * Peer access is not supported in 32 bit applications.
+ * Note that there are both device-wide and system-wide limitations per system
+ * configuration, as noted in the CUDA Programming Guide under the section
+ * "Peer-to-Peer Memory Access".
  *
  * Returns ::cudaErrorInvalidDevice if ::cudaDeviceCanAccessPeer() indicates
  * that the current device cannot directly access memory from \p peerDevice.
@@ -6135,6 +8530,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceCanAccessPeer(int *canAccessPeer
  * ::cudaErrorPeerAccessAlreadyEnabled,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceCanAccessPeer,
  * ::cudaDeviceDisablePeerAccess,
@@ -6155,6 +8552,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceEnablePeerAccess(int peerDevice,
  * ::cudaErrorPeerAccessNotEnabled,
  * ::cudaErrorInvalidDevice
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa ::cudaDeviceCanAccessPeer,
  * ::cudaDeviceEnablePeerAccess,
@@ -6212,6 +8611,9 @@ extern __host__ cudaError_t CUDARTAPI cudaDeviceDisablePeerAccess(int peerDevice
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorUnknown
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
  *
  * \sa
  * ::cudaGraphicsD3D9RegisterResource,
@@ -6249,6 +8651,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsUnregisterResource(cudaGraphic
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorUnknown,
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsMapResources,
@@ -6284,6 +8688,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsResourceSetMapFlags(cudaGraphi
  * ::cudaErrorUnknown
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsResourceGetMappedPointer,
@@ -6319,6 +8725,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsMapResources(int count, cudaGr
  * ::cudaErrorUnknown
  * \note_null_stream
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsMapResources,
@@ -6348,6 +8756,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsUnmapResources(int count, cuda
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorUnknown
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsMapResources,
@@ -6385,6 +8795,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsResourceGetMappedPointer(void 
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorUnknown
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsResourceGetMappedPointer,
@@ -6412,6 +8824,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsSubResourceGetMappedArray(cuda
  * ::cudaErrorInvalidResourceHandle,
  * ::cudaErrorUnknown
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaGraphicsResourceGetMappedPointer,
@@ -6422,16 +8836,14 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsResourceGetMappedMipmappedArra
 /** @} */ /* END CUDART_INTEROP */
 
 /**
- * \defgroup CUDART_TEXTURE Texture Reference Management
+ * \defgroup CUDART_TEXTURE_OBJECT Texture Object Management
  *
- * ___MANBRIEF___ texture reference management functions of the CUDA runtime
- * API (___CURRENT_FILE___) ___ENDMANBRIEF___
+ * ___MANBRIEF___ texture object management functions of the CUDA runtime API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
  *
- * This section describes the low level texture reference management functions
- * of the CUDA runtime application programming interface.
- *
- * Some functions have overloaded C++ API template versions documented separately in the
- * \ref CUDART_HIGHLEVEL "C++ API Routines" module.
+ * This section describes the low level texture object management functions
+ * of the CUDA runtime application programming interface. The texture
+ * object API is only supported on devices of compute capability 3.0 or higher.
  *
  * @{
  */
@@ -6448,14 +8860,11 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsResourceGetMappedMipmappedArra
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)"
+ * ::cudaCreateTextureObject, ::cudaCreateSurfaceObject
  */
 extern __host__ cudaError_t CUDARTAPI cudaGetChannelDesc(struct cudaChannelFormatDesc *desc, cudaArray_const_t array);
 
@@ -6485,341 +8894,9 @@ extern __host__ cudaError_t CUDARTAPI cudaGetChannelDesc(struct cudaChannelForma
  * Channel descriptor with format \p f
  *
  * \sa \ref ::cudaCreateChannelDesc(void) "cudaCreateChannelDesc (C++ API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * ::cuTexRefSetFormat
+ * ::cudaGetChannelDesc, ::cudaCreateTextureObject, ::cudaCreateSurfaceObject
  */
 extern __host__ struct cudaChannelFormatDesc CUDARTAPI cudaCreateChannelDesc(int x, int y, int z, int w, enum cudaChannelFormatKind f);
-
-
-/**
- * \brief Binds a memory area to a texture
- *
- * Binds \p size bytes of the memory area pointed to by \p devPtr to the
- * texture reference \p texref. \p desc describes how the memory is interpreted
- * when fetching values from the texture. Any memory previously bound to
- * \p texref is unbound.
- *
- * Since the hardware enforces an alignment requirement on texture base
- * addresses,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture()"
- * returns in \p *offset a byte offset that
- * must be applied to texture fetches in order to read from the desired memory.
- * This offset must be divided by the texel size and passed to kernels that
- * read from the texture so they can be applied to the ::tex1Dfetch() function.
- * If the device memory pointer was returned from ::cudaMalloc(), the offset is
- * guaranteed to be 0 and NULL may be passed as the \p offset parameter.
- *
- * The total number of elements (or texels) in the linear address range
- * cannot exceed ::cudaDeviceProp::maxTexture1DLinear[0].
- * The number of elements is computed as (\p size / elementSize),
- * where elementSize is determined from \p desc.
- *
- * \param offset - Offset in bytes
- * \param texref - Texture to bind
- * \param devPtr - Memory area on device
- * \param desc   - Channel format
- * \param size   - Size of the memory area pointed to by devPtr
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct texture< T, dim, readMode>&, const void*, const struct cudaChannelFormatDesc&, size_t) "cudaBindTexture (C++ API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * ::cuTexRefSetAddress,
- * ::cuTexRefSetAddressMode,
- * ::cuTexRefSetFormat,
- * ::cuTexRefSetFlags,
- * ::cuTexRefSetBorderColor
- */
-extern __host__ cudaError_t CUDARTAPI cudaBindTexture(size_t *offset, const struct textureReference *texref, const void *devPtr, const struct cudaChannelFormatDesc *desc, size_t size __dv(UINT_MAX));
-
-/**
- * \brief Binds a 2D memory area to a texture
- *
- * Binds the 2D memory area pointed to by \p devPtr to the
- * texture reference \p texref. The size of the area is constrained by
- * \p width in texel units, \p height in texel units, and \p pitch in byte
- * units. \p desc describes how the memory is interpreted when fetching values
- * from the texture. Any memory previously bound to \p texref is unbound.
- *
- * Since the hardware enforces an alignment requirement on texture base
- * addresses, ::cudaBindTexture2D() returns in \p *offset a byte offset that
- * must be applied to texture fetches in order to read from the desired memory.
- * This offset must be divided by the texel size and passed to kernels that
- * read from the texture so they can be applied to the ::tex2D() function.
- * If the device memory pointer was returned from ::cudaMalloc(), the offset is
- * guaranteed to be 0 and NULL may be passed as the \p offset parameter.
- *
- * \p width and \p height, which are specified in elements (or texels), cannot
- * exceed ::cudaDeviceProp::maxTexture2DLinear[0] and ::cudaDeviceProp::maxTexture2DLinear[1]
- * respectively. \p pitch, which is specified in bytes, cannot exceed
- * ::cudaDeviceProp::maxTexture2DLinear[2].
- *
- * The driver returns ::cudaErrorInvalidValue if \p pitch is not a multiple of
- * ::cudaDeviceProp::texturePitchAlignment.
- *
- * \param offset - Offset in bytes
- * \param texref - Texture reference to bind
- * \param devPtr - 2D memory area on device
- * \param desc   - Channel format
- * \param width  - Width in texel units
- * \param height - Height in texel units
- * \param pitch  - Pitch in bytes
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct texture< T, dim, readMode>&, const void*, const struct cudaChannelFormatDesc&, size_t, size_t, size_t) "cudaBindTexture2D (C++ API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct texture<T, dim, readMode>&, const void*, size_t, size_t, size_t) "cudaBindTexture2D (C++ API, inherited channel descriptor)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * ::cuTexRefSetAddress2D,
- * ::cuTexRefSetFormat,
- * ::cuTexRefSetFlags,
- * ::cuTexRefSetAddressMode,
- * ::cuTexRefSetBorderColor
- */
-extern __host__ cudaError_t CUDARTAPI cudaBindTexture2D(size_t *offset, const struct textureReference *texref, const void *devPtr, const struct cudaChannelFormatDesc *desc, size_t width, size_t height, size_t pitch);
-
-/**
- * \brief Binds an array to a texture
- *
- * Binds the CUDA array \p array to the texture reference \p texref.
- * \p desc describes how the memory is interpreted when fetching values from
- * the texture. Any CUDA array previously bound to \p texref is unbound.
- *
- * \param texref - Texture to bind
- * \param array  - Memory array on device
- * \param desc   - Channel format
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct texture< T, dim, readMode>&, cudaArray_const_t, const struct cudaChannelFormatDesc&) "cudaBindTextureToArray (C++ API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * ::cuTexRefSetArray,
- * ::cuTexRefSetFormat,
- * ::cuTexRefSetFlags,
- * ::cuTexRefSetAddressMode,
- * ::cuTexRefSetFilterMode,
- * ::cuTexRefSetBorderColor,
- * ::cuTexRefSetMaxAnisotropy
- */
-extern __host__ cudaError_t CUDARTAPI cudaBindTextureToArray(const struct textureReference *texref, cudaArray_const_t array, const struct cudaChannelFormatDesc *desc);
-
-/**
- * \brief Binds a mipmapped array to a texture
- *
- * Binds the CUDA mipmapped array \p mipmappedArray to the texture reference \p texref.
- * \p desc describes how the memory is interpreted when fetching values from
- * the texture. Any CUDA mipmapped array previously bound to \p texref is unbound.
- *
- * \param texref         - Texture to bind
- * \param mipmappedArray - Memory mipmapped array on device
- * \param desc           - Channel format
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct texture< T, dim, readMode>&, cudaArray_const_t, const struct cudaChannelFormatDesc&) "cudaBindTextureToArray (C++ API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * ::cuTexRefSetMipmappedArray,
- * ::cuTexRefSetMipmapFilterMode
- * ::cuTexRefSetMipmapLevelClamp,
- * ::cuTexRefSetMipmapLevelBias,
- * ::cuTexRefSetFormat,
- * ::cuTexRefSetFlags,
- * ::cuTexRefSetAddressMode,
- * ::cuTexRefSetBorderColor,
- * ::cuTexRefSetMaxAnisotropy
- */
-extern __host__ cudaError_t CUDARTAPI cudaBindTextureToMipmappedArray(const struct textureReference *texref, cudaMipmappedArray_const_t mipmappedArray, const struct cudaChannelFormatDesc *desc);
-
-/**
- * \brief Unbinds a texture
- *
- * Unbinds the texture bound to \p texref. If \p texref is not currently bound, no operation is performed.
- *
- * \param texref - Texture to unbind
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct texture< T, dim, readMode>&) "cudaUnbindTexture (C++ API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)"
- */
-extern __host__ cudaError_t CUDARTAPI cudaUnbindTexture(const struct textureReference *texref);
-
-/**
- * \brief Get the alignment offset of a texture
- *
- * Returns in \p *offset the offset that was returned when texture reference
- * \p texref was bound.
- *
- * \param offset - Offset of texture reference in bytes
- * \param texref - Texture to get offset of
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidTexture,
- * ::cudaErrorInvalidTextureBinding
- * \notefnerr
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc, ::cudaGetTextureReference,
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct texture< T, dim, readMode>&) "cudaGetTextureAlignmentOffset (C++ API)"
- */
-extern __host__ cudaError_t CUDARTAPI cudaGetTextureAlignmentOffset(size_t *offset, const struct textureReference *texref);
-
-/**
- * \brief Get the texture reference associated with a symbol
- *
- * Returns in \p *texref the structure associated to the texture reference
- * defined by symbol \p symbol.
- *
- * \param texref - Texture reference associated with symbol
- * \param symbol - Texture to get reference for
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidTexture
- * \notefnerr
- * \note_string_api_deprecation_50
- *
- * \sa \ref ::cudaCreateChannelDesc(int, int, int, int, cudaChannelFormatKind) "cudaCreateChannelDesc (C API)",
- * ::cudaGetChannelDesc,
- * \ref ::cudaGetTextureAlignmentOffset(size_t*, const struct textureReference*) "cudaGetTextureAlignmentOffset (C API)",
- * \ref ::cudaBindTexture(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t) "cudaBindTexture (C API)",
- * \ref ::cudaBindTexture2D(size_t*, const struct textureReference*, const void*, const struct cudaChannelFormatDesc*, size_t, size_t, size_t) "cudaBindTexture2D (C API)",
- * \ref ::cudaBindTextureToArray(const struct textureReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindTextureToArray (C API)",
- * \ref ::cudaUnbindTexture(const struct textureReference*) "cudaUnbindTexture (C API)",
- * ::cuModuleGetTexRef
- */
-extern __host__ cudaError_t CUDARTAPI cudaGetTextureReference(const struct textureReference **texref, const void *symbol);
-
-/** @} */ /* END CUDART_TEXTURE */
-
-/**
- * \defgroup CUDART_SURFACE Surface Reference Management
- *
- * ___MANBRIEF___ surface reference management functions of the CUDA runtime
- * API (___CURRENT_FILE___) ___ENDMANBRIEF___
- *
- * This section describes the low level surface reference management functions
- * of the CUDA runtime application programming interface.
- *
- * Some functions have overloaded C++ API template versions documented separately in the
- * \ref CUDART_HIGHLEVEL "C++ API Routines" module.
- *
- * @{
- */
-
-/**
- * \brief Binds an array to a surface
- *
- * Binds the CUDA array \p array to the surface reference \p surfref.
- * \p desc describes how the memory is interpreted when fetching values from
- * the surface. Any CUDA array previously bound to \p surfref is unbound.
- *
- * \param surfref - Surface to bind
- * \param array  - Memory array on device
- * \param desc   - Channel format
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidValue,
- * ::cudaErrorInvalidSurface
- * \notefnerr
- *
- * \sa \ref ::cudaBindSurfaceToArray(const struct surface< T, dim>&, cudaArray_const_t, const struct cudaChannelFormatDesc&) "cudaBindSurfaceToArray (C++ API)",
- * \ref ::cudaBindSurfaceToArray(const struct surface< T, dim>&, cudaArray_const_t) "cudaBindSurfaceToArray (C++ API, inherited channel descriptor)",
- * ::cudaGetSurfaceReference,
- * ::cuSurfRefSetArray
- */
-extern __host__ cudaError_t CUDARTAPI cudaBindSurfaceToArray(const struct surfaceReference *surfref, cudaArray_const_t array, const struct cudaChannelFormatDesc *desc);
-
-/**
- * \brief Get the surface reference associated with a symbol
- *
- * Returns in \p *surfref the structure associated to the surface reference
- * defined by symbol \p symbol.
- *
- * \param surfref - Surface reference associated with symbol
- * \param symbol - Surface to get reference for
- *
- * \return
- * ::cudaSuccess,
- * ::cudaErrorInvalidSurface
- * \notefnerr
- * \note_string_api_deprecation_50
- *
- * \sa
- * \ref ::cudaBindSurfaceToArray(const struct surfaceReference*, cudaArray_const_t, const struct cudaChannelFormatDesc*) "cudaBindSurfaceToArray (C API)",
- * ::cuModuleGetSurfRef
- */
-extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceReference(const struct surfaceReference **surfref, const void *symbol);
-
-/** @} */ /* END CUDART_SURFACE */
-
-/**
- * \defgroup CUDART_TEXTURE_OBJECT Texture Object Management
- *
- * ___MANBRIEF___ texture object management functions of the CUDA runtime API
- * (___CURRENT_FILE___) ___ENDMANBRIEF___
- *
- * This section describes the low level texture object management functions
- * of the CUDA runtime application programming interface. The texture
- * object API is only supported on devices of compute capability 3.0 or higher.
- *
- * @{
- */
 
 /**
  * \brief Creates a texture object
@@ -6838,28 +8915,28 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceReference(const struct surfa
  * The ::cudaResourceDesc structure is defined as:
  * \code
         struct cudaResourceDesc {
-	        enum cudaResourceType resType;
-        	
-	        union {
-		        struct {
-			        cudaArray_t array;
-		        } array;
+            enum cudaResourceType resType;
+            
+            union {
+                struct {
+                    cudaArray_t array;
+                } array;
                 struct {
                     cudaMipmappedArray_t mipmap;
                 } mipmap;
-		        struct {
-			        void *devPtr;
-			        struct cudaChannelFormatDesc desc;
-			        size_t sizeInBytes;
-		        } linear;
-		        struct {
-			        void *devPtr;
-			        struct cudaChannelFormatDesc desc;
-			        size_t width;
-			        size_t height;
-			        size_t pitchInBytes;
-		        } pitch2D;
-	        } res;
+                struct {
+                    void *devPtr;
+                    struct cudaChannelFormatDesc desc;
+                    size_t sizeInBytes;
+                } linear;
+                struct {
+                    void *devPtr;
+                    struct cudaChannelFormatDesc desc;
+                    size_t width;
+                    size_t height;
+                    size_t pitchInBytes;
+                } pitch2D;
+            } res;
         };
  * \endcode
  * where:
@@ -6913,6 +8990,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceReference(const struct surfa
             float                       mipmapLevelBias;
             float                       minMipmapLevelClamp;
             float                       maxMipmapLevelClamp;
+            int                         disableTrilinearOptimization;
+            int                         seamlessCubemap;
         };
  * \endcode
  * where
@@ -6970,6 +9049,13 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceReference(const struct surfa
  *
  * - ::cudaTextureDesc::maxMipmapLevelClamp specifies the upper end of the mipmap level range to clamp access to.
  *
+ * - ::cudaTextureDesc::disableTrilinearOptimization specifies whether the trilinear filtering optimizations will be disabled.
+ *
+ * - ::cudaTextureDesc::seamlessCubemap specifies whether seamless cube map filtering is enabled. This flag can only be specified if the 
+ *   underlying resource is a CUDA array or a CUDA mipmapped array that was created with the flag ::cudaArrayCubemap.
+ *   When seamless cube map filtering is enabled, texture address modes specified by ::cudaTextureDesc::addressMode are ignored.
+ *   Instead, if the ::cudaTextureDesc::filterMode is set to ::cudaFilterModePoint the address mode ::cudaAddressModeClamp will be applied for all dimensions.
+ *   If the ::cudaTextureDesc::filterMode is set to ::cudaFilterModeLinear seamless cube map filtering will be performed when sampling along the cube face borders.
  *
  * The ::cudaResourceViewDesc struct is defined as
  * \code
@@ -7026,6 +9112,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceReference(const struct surfa
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDestroyTextureObject,
@@ -7044,6 +9132,9 @@ extern __host__ cudaError_t CUDARTAPI cudaCreateTextureObject(cudaTextureObject_
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
  *
  * \sa
  * ::cudaCreateTextureObject,
@@ -7062,6 +9153,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDestroyTextureObject(cudaTextureObject
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaCreateTextureObject,
@@ -7080,6 +9173,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetTextureObjectResourceDesc(struct cu
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaCreateTextureObject,
@@ -7099,6 +9194,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetTextureObjectTextureDesc(struct cud
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaCreateTextureObject,
@@ -7138,7 +9235,11 @@ extern __host__ cudaError_t CUDARTAPI cudaGetTextureObjectResourceViewDesc(struc
  *
  * \return
  * ::cudaSuccess,
- * ::cudaErrorInvalidValue
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidChannelDescriptor,
+ * ::cudaErrorInvalidResourceHandle
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDestroySurfaceObject,
@@ -7157,6 +9258,9 @@ extern __host__ cudaError_t CUDARTAPI cudaCreateSurfaceObject(cudaSurfaceObject_
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
  *
  * \sa
  * ::cudaCreateSurfaceObject,
@@ -7174,6 +9278,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDestroySurfaceObject(cudaSurfaceObject
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaCreateSurfaceObject,
@@ -7190,12 +9296,15 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceObjectResourceDesc(struct cu
  */
 
 /**
- * \brief Returns the CUDA driver version
+ * \brief Returns the latest version of CUDA supported by the driver
  *
- * Returns in \p *driverVersion the version number of the installed CUDA
- * driver. If no driver is installed, then 0 is returned as the driver
- * version (via \p driverVersion). This function automatically returns
- * ::cudaErrorInvalidValue if the \p driverVersion argument is NULL.
+ * Returns in \p *driverVersion the latest version of CUDA supported by
+ * the driver. The version is returned as (1000 &times; major + 10 &times; minor).
+ * For example, CUDA 9.2 would be represented by 9020. If no driver is installed,
+ * then 0 is returned as the driver version.
+ *
+ * This function automatically returns ::cudaErrorInvalidValue
+ * if \p driverVersion is NULL.
  *
  * \param driverVersion - Returns the CUDA driver version.
  *
@@ -7203,6 +9312,8 @@ extern __host__ cudaError_t CUDARTAPI cudaGetSurfaceObjectResourceDesc(struct cu
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
  * \notefnerr
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaRuntimeGetVersion,
@@ -7213,8 +9324,16 @@ extern __host__ cudaError_t CUDARTAPI cudaDriverGetVersion(int *driverVersion);
 /**
  * \brief Returns the CUDA Runtime version
  *
- * Returns in \p *runtimeVersion the version number of the installed CUDA
- * Runtime. This function automatically returns ::cudaErrorInvalidValue if
+ * Returns in \p *runtimeVersion the version number of the current CUDA
+ * Runtime instance. The version is returned as
+ * (1000 &times; major + 10 &times; minor). For example,
+ * CUDA 9.2 would be represented by 9020.
+ *
+ * As of CUDA 12.0, this function no longer initializes CUDA. The purpose
+ * of this API is solely to return a compile-time constant stating the
+ * CUDA Toolkit version in the above format.
+ *
+ * This function automatically returns ::cudaErrorInvalidValue if
  * the \p runtimeVersion argument is NULL.
  *
  * \param runtimeVersion - Returns the CUDA Runtime version.
@@ -7222,6 +9341,8 @@ extern __host__ cudaError_t CUDARTAPI cudaDriverGetVersion(int *driverVersion);
  * \return
  * ::cudaSuccess,
  * ::cudaErrorInvalidValue
+ * \note_init_rt
+ * \note_callback
  *
  * \sa
  * ::cudaDriverGetVersion,
@@ -7230,6 +9351,3398 @@ extern __host__ cudaError_t CUDARTAPI cudaDriverGetVersion(int *driverVersion);
 extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaRuntimeGetVersion(int *runtimeVersion);
 
 /** @} */ /* END CUDART__VERSION */
+
+/**
+ * \defgroup CUDART_GRAPH Graph Management
+ *
+ * ___MANBRIEF___ graph management functions of the CUDA runtime API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ *
+ * This section describes the graph management functions of CUDA
+ * runtime application programming interface.
+ *
+ * @{
+ */
+
+/**
+ * \brief Creates a graph
+ *
+ * Creates an empty graph, which is returned via \p pGraph.
+ *
+ * \param pGraph - Returns newly created graph
+ * \param flags   - Graph creation flags, must be 0
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorMemoryAllocation
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode,
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphDestroy,
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphClone
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphCreate(cudaGraph_t *pGraph, unsigned int flags);
+
+/**
+ * \brief Creates a kernel execution node and adds it to a graph
+ *
+ * Creates a new kernel execution node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies and arguments specified in \p pNodeParams.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * The cudaKernelNodeParams structure is defined as:
+ *
+ * \code
+ *  struct cudaKernelNodeParams
+ *  {
+ *      void* func;
+ *      dim3 gridDim;
+ *      dim3 blockDim;
+ *      unsigned int sharedMemBytes;
+ *      void **kernelParams;
+ *      void **extra;
+ *  };
+ * \endcode
+ *
+ * When the graph is launched, the node will invoke kernel \p func on a (\p gridDim.x x
+ * \p gridDim.y x \p gridDim.z) grid of blocks. Each block contains
+ * (\p blockDim.x x \p blockDim.y x \p blockDim.z) threads.
+ *
+ * \p sharedMem sets the amount of dynamic shared memory that will be
+ * available to each thread block.
+ *
+ * Kernel parameters to \p func can be specified in one of two ways:
+ *
+ * 1) Kernel parameters can be specified via \p kernelParams. If the kernel has N
+ * parameters, then \p kernelParams needs to be an array of N pointers. Each pointer,
+ * from \p kernelParams[0] to \p kernelParams[N-1], points to the region of memory from which the actual
+ * parameter will be copied. The number of kernel parameters and their offsets and sizes do not need
+ * to be specified as that information is retrieved directly from the kernel's image.
+ *
+ * 2) Kernel parameters can also be packaged by the application into a single buffer that is passed in
+ * via \p extra. This places the burden on the application of knowing each kernel
+ * parameter's size and alignment/padding within the buffer. The \p extra parameter exists
+ * to allow this function to take additional less commonly used arguments. \p extra specifies
+ * a list of names of extra settings and their corresponding values. Each extra setting name is
+ * immediately followed by the corresponding value. The list must be terminated with either NULL or
+ * CU_LAUNCH_PARAM_END.
+ *
+ * - ::CU_LAUNCH_PARAM_END, which indicates the end of the \p extra
+ *   array;
+ * - ::CU_LAUNCH_PARAM_BUFFER_POINTER, which specifies that the next
+ *   value in \p extra will be a pointer to a buffer
+ *   containing all the kernel parameters for launching kernel
+ *   \p func;
+ * - ::CU_LAUNCH_PARAM_BUFFER_SIZE, which specifies that the next
+ *   value in \p extra will be a pointer to a size_t
+ *   containing the size of the buffer specified with
+ *   ::CU_LAUNCH_PARAM_BUFFER_POINTER;
+ *
+ * The error ::cudaErrorInvalidValue will be returned if kernel parameters are specified with both
+ * \p kernelParams and \p extra (i.e. both \p kernelParams and
+ * \p extra are non-NULL).
+ *
+ * The \p kernelParams or \p extra array, as well as the argument values it points to,
+ * are copied during this call.
+ *
+ * \note Kernels launched using graphs must not use texture and surface references. Reading or
+ *       writing through any texture or surface reference is undefined behavior.
+ *       This restriction does not apply to texture and surface objects.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param pNodeParams      - Parameters for the GPU execution node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidDeviceFunction
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchKernel,
+ * ::cudaGraphKernelNodeGetParams,
+ * ::cudaGraphKernelNodeSetParams,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddKernelNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaKernelNodeParams *pNodeParams);
+
+/**
+ * \brief Returns a kernel node's parameters
+ *
+ * Returns the parameters of kernel node \p node in \p pNodeParams.
+ * The \p kernelParams or \p extra array returned in \p pNodeParams,
+ * as well as the argument values it points to, are owned by the node.
+ * This memory remains valid until the node is destroyed or its
+ * parameters are modified, and should not be modified
+ * directly. Use ::cudaGraphKernelNodeSetParams to update the
+ * parameters of this node.
+ *
+ * The params will contain either \p kernelParams or \p extra,
+ * according to which of these was most recently set on the node.
+ *
+ * \param node        - Node to get the parameters for
+ * \param pNodeParams - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidDeviceFunction
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchKernel,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphKernelNodeSetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphKernelNodeGetParams(cudaGraphNode_t node, struct cudaKernelNodeParams *pNodeParams);
+
+/**
+ * \brief Sets a kernel node's parameters
+ *
+ * Sets the parameters of kernel node \p node to \p pNodeParams.
+ *
+ * \param node        - Node to set the parameters for
+ * \param pNodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorMemoryAllocation
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchKernel,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphKernelNodeGetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphKernelNodeSetParams(cudaGraphNode_t node, const struct cudaKernelNodeParams *pNodeParams);
+
+/**
+ * \brief Copies attributes from source node to destination node.
+ *
+ * Copies attributes from source node \p src to destination node \p dst.
+ * Both node must have the same context.
+ *
+ * \param[out] dst Destination node
+ * \param[in] src Source node
+ * For list of attributes see ::cudaKernelNodeAttrID
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidContext
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphKernelNodeCopyAttributes(
+        cudaGraphNode_t hSrc,
+        cudaGraphNode_t hDst);
+
+/**
+ * \brief Queries node attribute.
+ *
+ * Queries attribute \p attr from node \p hNode and stores it in corresponding
+ * member of \p value_out.
+ *
+ * \param[in] hNode
+ * \param[in] attr
+ * \param[out] value_out
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphKernelNodeGetAttribute(
+    cudaGraphNode_t hNode,
+    cudaKernelNodeAttrID attr,
+    cudaKernelNodeAttrValue *value_out);
+
+/**
+ * \brief Sets node attribute.
+ *
+ * Sets attribute \p attr on node \p hNode from corresponding attribute of
+ * \p value.
+ *
+ * \param[out] hNode
+ * \param[in] attr
+ * \param[out] value
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidResourceHandle
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaAccessPolicyWindow
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphKernelNodeSetAttribute(
+    cudaGraphNode_t hNode,
+    cudaKernelNodeAttrID attr,
+    const cudaKernelNodeAttrValue *value);
+
+/**
+ * \brief Creates a memcpy node and adds it to a graph
+ *
+ * Creates a new memcpy node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * When the graph is launched, the node will perform the memcpy described by \p pCopyParams.
+ * See ::cudaMemcpy3D() for a description of the structure and its restrictions.
+ *
+ * Memcpy nodes have some additional restrictions with regards to managed memory, if the
+ * system contains at least one device which has a zero value for the device attribute
+ * ::cudaDevAttrConcurrentManagedAccess.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param pCopyParams      - Parameters for the memory copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpy3D,
+ * ::cudaGraphAddMemcpyNodeToSymbol,
+ * ::cudaGraphAddMemcpyNodeFromSymbol,
+ * ::cudaGraphAddMemcpyNode1D,
+ * ::cudaGraphMemcpyNodeGetParams,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemsetNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemcpyNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaMemcpy3DParms *pCopyParams);
+
+/**
+ * \brief Creates a memcpy node to copy to a symbol on the device and adds it to a graph
+ *
+ * Creates a new memcpy node to copy to \p symbol and adds it to \p graph with
+ * \p numDependencies dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory area
+ * pointed to by \p src to the memory area pointed to by \p offset bytes from the start
+ * of symbol \p symbol. The memory areas may not overlap. \p symbol is a variable that
+ * resides in global or constant memory space. \p kind can be either
+ * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+ * Passing ::cudaMemcpyDefault is recommended, in which case the type of
+ * transfer is inferred from the pointer values. However, ::cudaMemcpyDefault
+ * is only allowed on systems that support unified virtual addressing.
+ *
+ * Memcpy nodes have some additional restrictions with regards to managed memory, if the
+ * system contains at least one device which has a zero value for the device attribute
+ * ::cudaDevAttrConcurrentManagedAccess.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param symbol          - Device symbol address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpyToSymbol,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemcpyNodeFromSymbol,
+ * ::cudaGraphMemcpyNodeGetParams,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemcpyNodeToSymbol(
+    cudaGraphNode_t *pGraphNode,
+    cudaGraph_t graph,
+    const cudaGraphNode_t *pDependencies,
+    size_t numDependencies,
+    const void* symbol,
+    const void* src,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Creates a memcpy node to copy from a symbol on the device and adds it to a graph
+ *
+ * Creates a new memcpy node to copy from \p symbol and adds it to \p graph with
+ * \p numDependencies dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory area
+ * pointed to by \p offset bytes from the start of symbol \p symbol to the memory area
+ *  pointed to by \p dst. The memory areas may not overlap. \p symbol is a variable
+ *  that resides in global or constant memory space. \p kind can be either
+ * ::cudaMemcpyDeviceToHost, ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+ * Passing ::cudaMemcpyDefault is recommended, in which case the type of transfer
+ * is inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * Memcpy nodes have some additional restrictions with regards to managed memory, if the
+ * system contains at least one device which has a zero value for the device attribute
+ * ::cudaDevAttrConcurrentManagedAccess.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param dst             - Destination memory address
+ * \param symbol          - Device symbol address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpyFromSymbol,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemcpyNodeToSymbol,
+ * ::cudaGraphMemcpyNodeGetParams,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemcpyNodeFromSymbol(
+    cudaGraphNode_t* pGraphNode,
+    cudaGraph_t graph,
+    const cudaGraphNode_t* pDependencies,
+    size_t numDependencies,
+    void* dst,
+    const void* symbol,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Creates a 1D memcpy node and adds it to a graph
+ *
+ * Creates a new 1D memcpy node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory
+ * area pointed to by \p src to the memory area pointed to by \p dst, where
+ * \p kind specifies the direction of the copy, and must be one of
+ * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing. Launching a
+ * memcpy node with dst and src pointers that do not match the direction of
+ * the copy results in an undefined behavior.
+ *
+ * Memcpy nodes have some additional restrictions with regards to managed memory, if the
+ * system contains at least one device which has a zero value for the device attribute
+ * ::cudaDevAttrConcurrentManagedAccess.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param dst             - Destination memory address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpy,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeGetParams,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParams1D,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemcpyNode1D(
+    cudaGraphNode_t *pGraphNode,
+    cudaGraph_t graph,
+    const cudaGraphNode_t *pDependencies,
+    size_t numDependencies,
+    void* dst,
+    const void* src,
+    size_t count,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Returns a memcpy node's parameters
+ *
+ * Returns the parameters of memcpy node \p node in \p pNodeParams.
+ *
+ * \param node        - Node to get the parameters for
+ * \param pNodeParams - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpy3D,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeSetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemcpyNodeGetParams(cudaGraphNode_t node, struct cudaMemcpy3DParms *pNodeParams);
+
+/**
+ * \brief Sets a memcpy node's parameters
+ *
+ * Sets the parameters of memcpy node \p node to \p pNodeParams.
+ *
+ * \param node        - Node to set the parameters for
+ * \param pNodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpy3D,
+ * ::cudaGraphMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphMemcpyNodeSetParams1D,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeGetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemcpyNodeSetParams(cudaGraphNode_t node, const struct cudaMemcpy3DParms *pNodeParams);
+
+/**
+ * \brief Sets a memcpy node's parameters to copy to a symbol on the device
+ *
+ * Sets the parameters of memcpy node \p node to the copy described by the provided parameters.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory area
+ * pointed to by \p src to the memory area pointed to by \p offset bytes from the start
+ * of symbol \p symbol. The memory areas may not overlap. \p symbol is a variable that
+ * resides in global or constant memory space. \p kind can be either
+ * ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+ * Passing ::cudaMemcpyDefault is recommended, in which case the type of
+ * transfer is inferred from the pointer values. However, ::cudaMemcpyDefault
+ * is only allowed on systems that support unified virtual addressing.
+ *
+ * \param node            - Node to set the parameters for
+ * \param symbol          - Device symbol address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpyToSymbol,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeGetParams
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphMemcpyNodeSetParamsToSymbol(
+    cudaGraphNode_t node,
+    const void* symbol,
+    const void* src,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Sets a memcpy node's parameters to copy from a symbol on the device
+ *
+ * Sets the parameters of memcpy node \p node to the copy described by the provided parameters.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory area
+ * pointed to by \p offset bytes from the start of symbol \p symbol to the memory area
+ *  pointed to by \p dst. The memory areas may not overlap. \p symbol is a variable
+ *  that resides in global or constant memory space. \p kind can be either
+ * ::cudaMemcpyDeviceToHost, ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault.
+ * Passing ::cudaMemcpyDefault is recommended, in which case the type of transfer
+ * is inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing.
+ *
+ * \param node            - Node to set the parameters for
+ * \param dst             - Destination memory address
+ * \param symbol          - Device symbol address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpyFromSymbol,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeGetParams
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphMemcpyNodeSetParamsFromSymbol(
+    cudaGraphNode_t node,
+    void* dst,
+    const void* symbol,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Sets a memcpy node's parameters to perform a 1-dimensional copy
+ *
+ * Sets the parameters of memcpy node \p node to the copy described by the provided parameters.
+ *
+ * When the graph is launched, the node will copy \p count bytes from the memory
+ * area pointed to by \p src to the memory area pointed to by \p dst, where
+ * \p kind specifies the direction of the copy, and must be one of
+ * ::cudaMemcpyHostToHost, ::cudaMemcpyHostToDevice, ::cudaMemcpyDeviceToHost,
+ * ::cudaMemcpyDeviceToDevice, or ::cudaMemcpyDefault. Passing
+ * ::cudaMemcpyDefault is recommended, in which case the type of transfer is
+ * inferred from the pointer values. However, ::cudaMemcpyDefault is only
+ * allowed on systems that support unified virtual addressing. Launching a
+ * memcpy node with dst and src pointers that do not match the direction of
+ * the copy results in an undefined behavior.
+ *
+ * \param node            - Node to set the parameters for
+ * \param dst             - Destination memory address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemcpy,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeGetParams
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphMemcpyNodeSetParams1D(
+    cudaGraphNode_t node,
+    void* dst,
+    const void* src,
+    size_t count,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Creates a memset node and adds it to a graph
+ *
+ * Creates a new memset node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * The element size must be 1, 2, or 4 bytes.
+ * When the graph is launched, the node will perform the memset described by \p pMemsetParams.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param pMemsetParams    - Parameters for the memory set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorInvalidDevice
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemset2D,
+ * ::cudaGraphMemsetNodeGetParams,
+ * ::cudaGraphMemsetNodeSetParams,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemsetNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaMemsetParams *pMemsetParams);
+
+/**
+ * \brief Returns a memset node's parameters
+ *
+ * Returns the parameters of memset node \p node in \p pNodeParams.
+ *
+ * \param node        - Node to get the parameters for
+ * \param pNodeParams - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemset2D,
+ * ::cudaGraphAddMemsetNode,
+ * ::cudaGraphMemsetNodeSetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemsetNodeGetParams(cudaGraphNode_t node, struct cudaMemsetParams *pNodeParams);
+
+/**
+ * \brief Sets a memset node's parameters
+ *
+ * Sets the parameters of memset node \p node to \p pNodeParams.
+ *
+ * \param node        - Node to set the parameters for
+ * \param pNodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaMemset2D,
+ * ::cudaGraphAddMemsetNode,
+ * ::cudaGraphMemsetNodeGetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemsetNodeSetParams(cudaGraphNode_t node, const struct cudaMemsetParams *pNodeParams);
+
+/**
+ * \brief Creates a host execution node and adds it to a graph
+ *
+ * Creates a new CPU execution node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies and arguments specified in \p pNodeParams.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * When the graph is launched, the node will invoke the specified CPU function.
+ * Host nodes are not supported under MPS with pre-Volta GPUs.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param pNodeParams      - Parameters for the host node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchHostFunc,
+ * ::cudaGraphHostNodeGetParams,
+ * ::cudaGraphHostNodeSetParams,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddHostNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaHostNodeParams *pNodeParams);
+
+/**
+ * \brief Returns a host node's parameters
+ *
+ * Returns the parameters of host node \p node in \p pNodeParams.
+ *
+ * \param node        - Node to get the parameters for
+ * \param pNodeParams - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchHostFunc,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphHostNodeSetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphHostNodeGetParams(cudaGraphNode_t node, struct cudaHostNodeParams *pNodeParams);
+
+/**
+ * \brief Sets a host node's parameters
+ *
+ * Sets the parameters of host node \p node to \p nodeParams.
+ *
+ * \param node        - Node to set the parameters for
+ * \param pNodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchHostFunc,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphHostNodeGetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphHostNodeSetParams(cudaGraphNode_t node, const struct cudaHostNodeParams *pNodeParams);
+
+/**
+ * \brief Creates a child graph node and adds it to a graph
+ *
+ * Creates a new node which executes an embedded graph, and adds it to \p graph with
+ * \p numDependencies dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * If \p hGraph contains allocation or free nodes, this call will return an error.
+ *
+ * The node executes an embedded child graph. The child graph is cloned in this call.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param childGraph      - The graph to clone into this node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphChildGraphNodeGetGraph,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode,
+ * ::cudaGraphClone
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddChildGraphNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, cudaGraph_t childGraph);
+
+/**
+ * \brief Gets a handle to the embedded graph of a child graph node
+ *
+ * Gets a handle to the embedded graph in a child graph node. This call
+ * does not clone the graph. Changes to the graph will be reflected in
+ * the node, and the node retains ownership of the graph.
+ *
+ * Allocation and free nodes cannot be added to the returned graph.
+ * Attempting to do so will return an error.
+ *
+ * \param node   - Node to get the embedded graph for
+ * \param pGraph - Location to store a handle to the graph
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphNodeFindInClone
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphChildGraphNodeGetGraph(cudaGraphNode_t node, cudaGraph_t *pGraph);
+
+/**
+ * \brief Creates an empty node and adds it to a graph
+ *
+ * Creates a new node which performs no operation, and adds it to \p graph with
+ * \p numDependencies dependencies specified via \p pDependencies.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p pGraphNode.
+ *
+ * An empty node performs no operation during execution, but can be used for
+ * transitive ordering. For example, a phased execution graph with 2 groups of n
+ * nodes with a barrier between them can be represented using an empty node and
+ * 2*n dependency edges, rather than no empty node and n^2 dependency edges.
+ *
+ * \param pGraphNode     - Returns newly created node
+ * \param graph          - Graph to which to add the node
+ * \param pDependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddEmptyNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies);
+
+/**
+ * \brief Creates an event record node and adds it to a graph
+ *
+ * Creates a new event record node and adds it to \p hGraph with \p numDependencies
+ * dependencies specified via \p dependencies and event specified in \p event.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p dependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p phGraphNode.
+ *
+ * Each launch of the graph will record \p event to capture execution of the
+ * node's dependencies.
+ *
+ * These nodes may not be used in loops or conditionals.
+ *
+ * \param phGraphNode     - Returns newly created node
+ * \param hGraph          - Graph to which to add the node
+ * \param dependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param event           - Event for the node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphAddEventRecordNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Returns the event associated with an event record node
+ *
+ * Returns the event of event record node \p hNode in \p event_out.
+ *
+ * \param hNode     - Node to get the event for
+ * \param event_out - Pointer to return the event
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphEventRecordNodeSetEvent,
+ * ::cudaGraphEventWaitNodeGetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphEventRecordNodeGetEvent(cudaGraphNode_t node, cudaEvent_t *event_out);
+#endif
+
+/**
+ * \brief Sets an event record node's event
+ *
+ * Sets the event of event record node \p hNode to \p event.
+ *
+ * \param hNode - Node to set the event for
+ * \param event - Event to use
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphEventRecordNodeGetEvent,
+ * ::cudaGraphEventWaitNodeSetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphEventRecordNodeSetEvent(cudaGraphNode_t node, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Creates an event wait node and adds it to a graph
+ *
+ * Creates a new event wait node and adds it to \p hGraph with \p numDependencies
+ * dependencies specified via \p dependencies and event specified in \p event.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p dependencies may not have any duplicate entries.
+ * A handle to the new node will be returned in \p phGraphNode.
+ *
+ * The graph node will wait for all work captured in \p event.  See ::cuEventRecord()
+ * for details on what is captured by an event.  The synchronization will be performed
+ * efficiently on the device when applicable.  \p event may be from a different context
+ * or device than the launch stream.
+ *
+ * These nodes may not be used in loops or conditionals.
+ *
+ * \param phGraphNode     - Returns newly created node
+ * \param hGraph          - Graph to which to add the node
+ * \param dependencies    - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param event           - Event for the node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphAddEventWaitNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Returns the event associated with an event wait node
+ *
+ * Returns the event of event wait node \p hNode in \p event_out.
+ *
+ * \param hNode     - Node to get the event for
+ * \param event_out - Pointer to return the event
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphEventWaitNodeSetEvent,
+ * ::cudaGraphEventRecordNodeGetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphEventWaitNodeGetEvent(cudaGraphNode_t node, cudaEvent_t *event_out);
+#endif
+
+/**
+ * \brief Sets an event wait node's event
+ *
+ * Sets the event of event wait node \p hNode to \p event.
+ *
+ * \param hNode - Node to set the event for
+ * \param event - Event to use
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphEventWaitNodeGetEvent,
+ * ::cudaGraphEventRecordNodeSetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphEventWaitNodeSetEvent(cudaGraphNode_t node, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Creates an external semaphore signal node and adds it to a graph
+ *
+ * Creates a new external semaphore signal node and adds it to \p graph with \p
+ * numDependencies dependencies specified via \p dependencies and arguments specified
+ * in \p nodeParams. It is possible for \p numDependencies to be 0, in which case the
+ * node will be placed at the root of the graph. \p dependencies may not have any
+ * duplicate entries. A handle to the new node will be returned in \p pGraphNode.
+ *
+ * Performs a signal operation on a set of externally allocated semaphore objects
+ * when the node is launched.  The operation(s) will occur after all of the node's
+ * dependencies have completed.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param nodeParams      - Parameters for the node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphExternalSemaphoresSignalNodeGetParams,
+ * ::cudaGraphExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaImportExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddExternalSemaphoresSignalNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaExternalSemaphoreSignalNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Returns an external semaphore signal node's parameters
+ *
+ * Returns the parameters of an external semaphore signal node \p hNode in \p params_out.
+ * The \p extSemArray and \p paramsArray returned in \p params_out,
+ * are owned by the node.  This memory remains valid until the node is destroyed or its
+ * parameters are modified, and should not be modified
+ * directly. Use ::cudaGraphExternalSemaphoresSignalNodeSetParams to update the
+ * parameters of this node.
+ *
+ * \param hNode      - Node to get the parameters for
+ * \param params_out - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchKernel,
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaGraphExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExternalSemaphoresSignalNodeGetParams(cudaGraphNode_t hNode, struct cudaExternalSemaphoreSignalNodeParams *params_out);
+#endif
+
+/**
+ * \brief Sets an external semaphore signal node's parameters
+ *
+ * Sets the parameters of an external semaphore signal node \p hNode to \p nodeParams.
+ *
+ * \param hNode      - Node to set the parameters for
+ * \param nodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaGraphExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExternalSemaphoresSignalNodeSetParams(cudaGraphNode_t hNode, const struct cudaExternalSemaphoreSignalNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Creates an external semaphore wait node and adds it to a graph
+ *
+ * Creates a new external semaphore wait node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p dependencies and arguments specified in \p nodeParams.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p dependencies may not have any duplicate entries. A handle
+ * to the new node will be returned in \p pGraphNode.
+ *
+ * Performs a wait operation on a set of externally allocated semaphore objects
+ * when the node is launched.  The node's dependencies will not be launched until
+ * the wait operation has completed.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param nodeParams      - Parameters for the node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphExternalSemaphoresWaitNodeGetParams,
+ * ::cudaGraphExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaImportExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddExternalSemaphoresWaitNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, const struct cudaExternalSemaphoreWaitNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Returns an external semaphore wait node's parameters
+ *
+ * Returns the parameters of an external semaphore wait node \p hNode in \p params_out.
+ * The \p extSemArray and \p paramsArray returned in \p params_out,
+ * are owned by the node.  This memory remains valid until the node is destroyed or its
+ * parameters are modified, and should not be modified
+ * directly. Use ::cudaGraphExternalSemaphoresSignalNodeSetParams to update the
+ * parameters of this node.
+ *
+ * \param hNode      - Node to get the parameters for
+ * \param params_out - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaLaunchKernel,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaGraphExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExternalSemaphoresWaitNodeGetParams(cudaGraphNode_t hNode, struct cudaExternalSemaphoreWaitNodeParams *params_out);
+#endif
+
+/**
+ * \brief Sets an external semaphore wait node's parameters
+ *
+ * Sets the parameters of an external semaphore wait node \p hNode to \p nodeParams.
+ *
+ * \param hNode      - Node to set the parameters for
+ * \param nodeParams - Parameters to copy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaGraphExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExternalSemaphoresWaitNodeSetParams(cudaGraphNode_t hNode, const struct cudaExternalSemaphoreWaitNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Creates an allocation node and adds it to a graph
+ *
+ * Creates a new allocation node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies and arguments specified in \p nodeParams.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries. A handle
+ * to the new node will be returned in \p pGraphNode.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param nodeParams      - Parameters for the node
+ *
+ * When ::cudaGraphAddMemAllocNode creates an allocation node, it returns the address of the allocation in
+ * \p nodeParams.dptr.  The allocation's address remains fixed across instantiations and launches.
+ *
+ * If the allocation is freed in the same graph, by creating a free node using ::cudaGraphAddMemFreeNode,
+ * the allocation can be accessed by nodes ordered after the allocation node but before the free node.
+ * These allocations cannot be freed outside the owning graph, and they can only be freed once in the
+ * owning graph.
+ *
+ * If the allocation is not freed in the same graph, then it can be accessed not only by nodes in the
+ * graph which are ordered after the allocation node, but also by stream operations ordered after the
+ * graph's execution but before the allocation is freed.
+ *
+ * Allocations which are not freed in the same graph can be freed by:
+ * - passing the allocation to ::cudaMemFreeAsync or ::cudaMemFree;
+ * - launching a graph with a free node for that allocation; or
+ * - specifying ::cudaGraphInstantiateFlagAutoFreeOnLaunch during instantiation, which makes
+ *   each launch behave as though it called ::cudaMemFreeAsync for every unfreed allocation.
+ *
+ * It is not possible to free an allocation in both the owning graph and another graph.  If the allocation
+ * is freed in the same graph, a free node cannot be added to another graph.  If the allocation is freed
+ * in another graph, a free node can no longer be added to the owning graph.
+ *
+ * The following restrictions apply to graphs which contain allocation and/or memory free nodes:
+ * - Nodes and edges of the graph cannot be deleted.
+ * - The graph cannot be used in a child node.
+ * - Only one instantiation of the graph may exist at any point in time.
+ * - The graph cannot be cloned.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorCudartUnloading,
+ * ::cudaErrorInitializationError,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOutOfMemory
+ * \note_graph_thread_safety
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaGraphAddMemFreeNode,
+ * ::cudaGraphMemAllocNodeGetParams,
+ * ::cudaDeviceGraphMemTrim,
+ * ::cudaDeviceGetGraphMemAttribute,
+ * ::cudaDeviceSetGraphMemAttribute,
+ * ::cudaMallocAsync,
+ * ::cudaFreeAsync,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemAllocNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, struct cudaMemAllocNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Returns a memory alloc node's parameters
+ *
+ * Returns the parameters of a memory alloc node \p hNode in \p params_out.
+ * The \p poolProps and \p accessDescs returned in \p params_out, are owned by the
+ * node.  This memory remains valid until the node is destroyed.  The returned
+ * parameters must not be modified.
+ *
+ * \param node       - Node to get the parameters for
+ * \param params_out - Pointer to return the parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemAllocNode,
+ * ::cudaGraphMemFreeNodeGetParams
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemAllocNodeGetParams(cudaGraphNode_t node, struct cudaMemAllocNodeParams *params_out);
+#endif
+
+/**
+ * \brief Creates a memory free node and adds it to a graph
+ *
+ * Creates a new memory free node and adds it to \p graph with \p numDependencies
+ * dependencies specified via \p pDependencies and address specified in \p dptr.
+ * It is possible for \p numDependencies to be 0, in which case the node will be placed
+ * at the root of the graph. \p pDependencies may not have any duplicate entries. A handle
+ * to the new node will be returned in \p pGraphNode.
+ *
+ * \param pGraphNode      - Returns newly created node
+ * \param graph           - Graph to which to add the node
+ * \param pDependencies   - Dependencies of the node
+ * \param numDependencies - Number of dependencies
+ * \param dptr            - Address of memory to free
+ *
+ * ::cudaGraphAddMemFreeNode will return ::cudaErrorInvalidValue if the user attempts to free:
+ * - an allocation twice in the same graph.
+ * - an address that was not returned by an allocation node.
+ * - an invalid address.
+ *
+ * The following restrictions apply to graphs which contain allocation and/or memory free nodes:
+ * - Nodes and edges of the graph cannot be deleted.
+ * - The graph cannot be used in a child node.
+ * - Only one instantiation of the graph may exist at any point in time.
+ * - The graph cannot be cloned.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorCudartUnloading,
+ * ::cudaErrorInitializationError,
+ * ::cudaErrorNotSupported,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOutOfMemory
+ * \note_graph_thread_safety
+ * \notefnerr
+ *
+ * \sa
+ * ::cudaGraphAddMemAllocNode,
+ * ::cudaGraphMemFreeNodeGetParams,
+ * ::cudaDeviceGraphMemTrim,
+ * ::cudaDeviceGetGraphMemAttribute,
+ * ::cudaDeviceSetGraphMemAttribute,
+ * ::cudaMallocAsync,
+ * ::cudaFreeAsync,
+ * ::cudaGraphCreate,
+ * ::cudaGraphDestroyNode,
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddMemFreeNode(cudaGraphNode_t *pGraphNode, cudaGraph_t graph, const cudaGraphNode_t *pDependencies, size_t numDependencies, void *dptr);
+#endif
+
+/**
+ * \brief Returns a memory free node's parameters
+ *
+ * Returns the address of a memory free node \p hNode in \p dptr_out.
+ *
+ * \param node     - Node to get the parameters for
+ * \param dptr_out - Pointer to return the device address
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemFreeNode,
+ * ::cudaGraphMemFreeNodeGetParams
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaGraphMemFreeNodeGetParams(cudaGraphNode_t node, void *dptr_out);
+#endif
+
+/**
+ * \brief Free unused memory that was cached on the specified device for use with graphs back to the OS.
+ *
+ * Blocks which are not in use by a graph that is either currently executing or scheduled to execute are
+ * freed back to the operating system.
+ *
+ * \param device - The device for which cached memory should be freed.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemAllocNode,
+ * ::cudaGraphAddMemFreeNode,
+ * ::cudaDeviceGetGraphMemAttribute,
+ * ::cudaDeviceSetGraphMemAttribute,
+ * ::cudaMallocAsync,
+ * ::cudaFreeAsync
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaDeviceGraphMemTrim(int device);
+#endif
+
+/**
+ * \brief Query asynchronous allocation attributes related to graphs
+ *
+ * Valid attributes are:
+ *
+ * - ::cudaGraphMemAttrUsedMemCurrent: Amount of memory, in bytes, currently associated with graphs
+ * - ::cudaGraphMemAttrUsedMemHigh: High watermark of memory, in bytes, associated with graphs since the
+ *   last time it was reset.  High watermark can only be reset to zero.
+ * - ::cudaGraphMemAttrReservedMemCurrent: Amount of memory, in bytes, currently allocated for use by
+ *   the CUDA graphs asynchronous allocator.
+ * - ::cudaGraphMemAttrReservedMemHigh: High watermark of memory, in bytes, currently allocated for use by
+ *   the CUDA graphs asynchronous allocator.
+ *
+ * \param device - Specifies the scope of the query
+ * \param attr - attribute to get
+ * \param value - retrieved value
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDevice
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaDeviceSetGraphMemAttribute,
+ * ::cudaGraphAddMemAllocNode,
+ * ::cudaGraphAddMemFreeNode,
+ * ::cudaDeviceGraphMemTrim,
+ * ::cudaMallocAsync,
+ * ::cudaFreeAsync
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaDeviceGetGraphMemAttribute(int device, enum cudaGraphMemAttributeType attr, void* value);
+#endif
+
+/**
+ * \brief Set asynchronous allocation attributes related to graphs
+ *
+ * Valid attributes are:
+ *
+ * - ::cudaGraphMemAttrUsedMemHigh: High watermark of memory, in bytes, associated with graphs since the
+ *   last time it was reset.  High watermark can only be reset to zero.
+ * - ::cudaGraphMemAttrReservedMemHigh: High watermark of memory, in bytes, currently allocated for use by
+ *   the CUDA graphs asynchronous allocator.
+ *
+ * \param device - Specifies the scope of the query
+ * \param attr - attribute to get
+ * \param value - pointer to value to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidDevice
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaDeviceGetGraphMemAttribute,
+ * ::cudaGraphAddMemAllocNode,
+ * ::cudaGraphAddMemFreeNode,
+ * ::cudaDeviceGraphMemTrim,
+ * ::cudaMallocAsync,
+ * ::cudaFreeAsync
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaDeviceSetGraphMemAttribute(int device, enum cudaGraphMemAttributeType attr, void* value);
+#endif
+
+/**
+ * \brief Clones a graph
+ *
+ * This function creates a copy of \p originalGraph and returns it in \p pGraphClone.
+ * All parameters are copied into the cloned graph. The original graph may be modified 
+ * after this call without affecting the clone.
+ *
+ * Child graph nodes in the original graph are recursively copied into the clone.
+ *
+ * \param pGraphClone  - Returns newly created cloned graph
+ * \param originalGraph - Graph to clone
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorMemoryAllocation
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphCreate,
+ * ::cudaGraphNodeFindInClone
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphClone(cudaGraph_t *pGraphClone, cudaGraph_t originalGraph);
+
+/**
+ * \brief Finds a cloned version of a node
+ *
+ * This function returns the node in \p clonedGraph corresponding to \p originalNode 
+ * in the original graph.
+ *
+ * \p clonedGraph must have been cloned from \p originalGraph via ::cudaGraphClone. 
+ * \p originalNode must have been in \p originalGraph at the time of the call to 
+ * ::cudaGraphClone, and the corresponding cloned node in \p clonedGraph must not have 
+ * been removed. The cloned node is then returned via \p pClonedNode.
+ *
+ * \param pNode  - Returns handle to the cloned node
+ * \param originalNode - Handle to the original node
+ * \param clonedGraph - Cloned graph to query
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphClone
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeFindInClone(cudaGraphNode_t *pNode, cudaGraphNode_t originalNode, cudaGraph_t clonedGraph);
+
+/**
+ * \brief Returns a node's type
+ *
+ * Returns the node type of \p node in \p pType.
+ *
+ * \param node - Node to query
+ * \param pType  - Pointer to return the node type
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphChildGraphNodeGetGraph,
+ * ::cudaGraphKernelNodeGetParams,
+ * ::cudaGraphKernelNodeSetParams,
+ * ::cudaGraphHostNodeGetParams,
+ * ::cudaGraphHostNodeSetParams,
+ * ::cudaGraphMemcpyNodeGetParams,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemsetNodeGetParams,
+ * ::cudaGraphMemsetNodeSetParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeGetType(cudaGraphNode_t node, enum cudaGraphNodeType *pType);
+
+/**
+ * \brief Returns a graph's nodes
+ *
+ * Returns a list of \p graph's nodes. \p nodes may be NULL, in which case this
+ * function will return the number of nodes in \p numNodes. Otherwise,
+ * \p numNodes entries will be filled in. If \p numNodes is higher than the actual
+ * number of nodes, the remaining entries in \p nodes will be set to NULL, and the
+ * number of nodes actually obtained will be returned in \p numNodes.
+ *
+ * \param graph    - Graph to query
+ * \param nodes    - Pointer to return the nodes
+ * \param numNodes - See description
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphCreate,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphNodeGetType,
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphNodeGetDependentNodes
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphGetNodes(cudaGraph_t graph, cudaGraphNode_t *nodes, size_t *numNodes);
+
+/**
+ * \brief Returns a graph's root nodes
+ *
+ * Returns a list of \p graph's root nodes. \p pRootNodes may be NULL, in which case this
+ * function will return the number of root nodes in \p pNumRootNodes. Otherwise,
+ * \p pNumRootNodes entries will be filled in. If \p pNumRootNodes is higher than the actual
+ * number of root nodes, the remaining entries in \p pRootNodes will be set to NULL, and the
+ * number of nodes actually obtained will be returned in \p pNumRootNodes.
+ *
+ * \param graph       - Graph to query
+ * \param pRootNodes    - Pointer to return the root nodes
+ * \param pNumRootNodes - See description
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphCreate,
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphNodeGetType,
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphNodeGetDependentNodes
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphGetRootNodes(cudaGraph_t graph, cudaGraphNode_t *pRootNodes, size_t *pNumRootNodes);
+
+/**
+ * \brief Returns a graph's dependency edges
+ *
+ * Returns a list of \p graph's dependency edges. Edges are returned via corresponding
+ * indices in \p from and \p to; that is, the node in \p to[i] has a dependency on the
+ * node in \p from[i]. \p from and \p to may both be NULL, in which
+ * case this function only returns the number of edges in \p numEdges. Otherwise,
+ * \p numEdges entries will be filled in. If \p numEdges is higher than the actual
+ * number of edges, the remaining entries in \p from and \p to will be set to NULL, and
+ * the number of edges actually returned will be written to \p numEdges.
+ *
+ * \param graph    - Graph to get the edges from
+ * \param from     - Location to return edge endpoints
+ * \param to       - Location to return edge endpoints
+ * \param numEdges - See description
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphAddDependencies,
+ * ::cudaGraphRemoveDependencies,
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphNodeGetDependentNodes
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphGetEdges(cudaGraph_t graph, cudaGraphNode_t *from, cudaGraphNode_t *to, size_t *numEdges);
+
+/**
+ * \brief Returns a node's dependencies
+ *
+ * Returns a list of \p node's dependencies. \p pDependencies may be NULL, in which case this
+ * function will return the number of dependencies in \p pNumDependencies. Otherwise,
+ * \p pNumDependencies entries will be filled in. If \p pNumDependencies is higher than the actual
+ * number of dependencies, the remaining entries in \p pDependencies will be set to NULL, and the
+ * number of nodes actually obtained will be returned in \p pNumDependencies.
+ *
+ * \param node           - Node to query
+ * \param pDependencies    - Pointer to return the dependencies
+ * \param pNumDependencies - See description
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphNodeGetDependentNodes,
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphAddDependencies,
+ * ::cudaGraphRemoveDependencies
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeGetDependencies(cudaGraphNode_t node, cudaGraphNode_t *pDependencies, size_t *pNumDependencies);
+
+/**
+ * \brief Returns a node's dependent nodes
+ *
+ * Returns a list of \p node's dependent nodes. \p pDependentNodes may be NULL, in which
+ * case this function will return the number of dependent nodes in \p pNumDependentNodes.
+ * Otherwise, \p pNumDependentNodes entries will be filled in. If \p pNumDependentNodes is
+ * higher than the actual number of dependent nodes, the remaining entries in
+ * \p pDependentNodes will be set to NULL, and the number of nodes actually obtained will
+ * be returned in \p pNumDependentNodes.
+ *
+ * \param node             - Node to query
+ * \param pDependentNodes    - Pointer to return the dependent nodes
+ * \param pNumDependentNodes - See description
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphGetNodes,
+ * ::cudaGraphGetRootNodes,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphAddDependencies,
+ * ::cudaGraphRemoveDependencies
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeGetDependentNodes(cudaGraphNode_t node, cudaGraphNode_t *pDependentNodes, size_t *pNumDependentNodes);
+
+/**
+ * \brief Adds dependency edges to a graph.
+ *
+ * The number of dependencies to be added is defined by \p numDependencies
+ * Elements in \p pFrom and \p pTo at corresponding indices define a dependency.
+ * Each node in \p pFrom and \p pTo must belong to \p graph.
+ *
+ * If \p numDependencies is 0, elements in \p pFrom and \p pTo will be ignored.
+ * Specifying an existing dependency will return an error.
+ *
+ * \param graph - Graph to which dependencies are added
+ * \param from - Array of nodes that provide the dependencies
+ * \param to - Array of dependent nodes
+ * \param numDependencies - Number of dependencies to be added
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphRemoveDependencies,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphNodeGetDependentNodes
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphAddDependencies(cudaGraph_t graph, const cudaGraphNode_t *from, const cudaGraphNode_t *to, size_t numDependencies);
+
+/**
+ * \brief Removes dependency edges from a graph.
+ *
+ * The number of \p pDependencies to be removed is defined by \p numDependencies.
+ * Elements in \p pFrom and \p pTo at corresponding indices define a dependency.
+ * Each node in \p pFrom and \p pTo must belong to \p graph.
+ *
+ * If \p numDependencies is 0, elements in \p pFrom and \p pTo will be ignored.
+ * Specifying a non-existing dependency will return an error.
+ *
+ * \param graph - Graph from which to remove dependencies
+ * \param from - Array of nodes that provide the dependencies
+ * \param to - Array of dependent nodes
+ * \param numDependencies - Number of dependencies to be removed
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddDependencies,
+ * ::cudaGraphGetEdges,
+ * ::cudaGraphNodeGetDependencies,
+ * ::cudaGraphNodeGetDependentNodes
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphRemoveDependencies(cudaGraph_t graph, const cudaGraphNode_t *from, const cudaGraphNode_t *to, size_t numDependencies);
+
+/**
+ * \brief Remove a node from the graph
+ *
+ * Removes \p node from its graph. This operation also severs any dependencies of other nodes 
+ * on \p node and vice versa.
+ *
+ * Dependencies cannot be removed from graphs which contain allocation or free nodes.
+ * Any attempt to do so will return an error.
+ *
+ * \param node  - Node to remove
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
+ *
+ * \sa
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphAddEmptyNode,
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemsetNode
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphDestroyNode(cudaGraphNode_t node);
+
+/**
+ * \brief Creates an executable graph from a graph
+ *
+ * Instantiates \p graph as an executable graph. The graph is validated for any
+ * structural constraints or intra-node constraints which were not previously
+ * validated. If instantiation is successful, a handle to the instantiated graph
+ * is returned in \p pGraphExec.
+ *
+ * The \p flags parameter controls the behavior of instantiation and subsequent
+ * graph launches.  Valid flags are:
+ *
+ * - ::cudaGraphInstantiateFlagAutoFreeOnLaunch, which configures a
+ * graph containing memory allocation nodes to automatically free any
+ * unfreed memory allocations before the graph is relaunched.
+ *
+ * - ::cudaGraphInstantiateFlagDeviceLaunch, which configures the graph for launch
+ * from the device. If this flag is passed, the executable graph handle returned can be
+ * used to launch the graph from both the host and device. This flag cannot be used in
+ * conjunction with ::cudaGraphInstantiateFlagAutoFreeOnLaunch.
+ *
+ * - ::cudaGraphInstantiateFlagUseNodePriority, which causes the graph
+ * to use the priorities from the per-node attributes rather than the priority
+ * of the launch stream during execution. Note that priorities are only available
+ * on kernel nodes, and are copied from stream priority during stream capture.
+ *
+ * If \p graph contains any allocation or free nodes, there can be at most one
+ * executable graph in existence for that graph at a time. An attempt to
+ * instantiate a second executable graph before destroying the first with
+ * ::cudaGraphExecDestroy will result in an error.
+ * 
+ * Graphs instantiated for launch on the device have additional restrictions which do not
+ * apply to host graphs:
+ *
+ * - The graph's nodes must reside on a single device.
+ *
+ * - The graph can only contain kernel nodes. Furthermore, use of CUDA Dynamic Parallelism
+ * is not permitted. Cooperative launches are permitted as long as MPS is not in use.
+ *
+ * If \p graph is not instantiated for launch on the device but contains kernels which
+ * call device-side cudaGraphLaunch() from multiple devices, this will result in an error.
+ *
+ * \param pGraphExec - Returns instantiated graph
+ * \param graph      - Graph to instantiate
+ * \param flags      - Flags to control instantiation.  See ::CUgraphInstantiate_flags.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphInstantiateWithFlags,
+ * ::cudaGraphCreate,
+ * ::cudaGraphUpload,
+ * ::cudaGraphLaunch,
+ * ::cudaGraphExecDestroy
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphInstantiate(cudaGraphExec_t *pGraphExec, cudaGraph_t graph, unsigned long long flags __dv(0));
+
+/**
+ * \brief Creates an executable graph from a graph
+ *
+ * Instantiates \p graph as an executable graph. The graph is validated for any
+ * structural constraints or intra-node constraints which were not previously
+ * validated. If instantiation is successful, a handle to the instantiated graph
+ * is returned in \p pGraphExec.
+ *
+ * The \p flags parameter controls the behavior of instantiation and subsequent
+ * graph launches.  Valid flags are:
+ *
+ * - ::cudaGraphInstantiateFlagAutoFreeOnLaunch, which configures a
+ * graph containing memory allocation nodes to automatically free any
+ * unfreed memory allocations before the graph is relaunched.
+ *
+ * - ::cudaGraphInstantiateFlagDeviceLaunch, which configures the graph for launch
+ * from the device. If this flag is passed, the executable graph handle returned can be
+ * used to launch the graph from both the host and device. This flag can only be used
+ * on platforms which support unified addressing. This flag cannot be used in
+ * conjunction with ::cudaGraphInstantiateFlagAutoFreeOnLaunch.
+ *
+ * - ::cudaGraphInstantiateFlagUseNodePriority, which causes the graph
+ * to use the priorities from the per-node attributes rather than the priority
+ * of the launch stream during execution. Note that priorities are only available
+ * on kernel nodes, and are copied from stream priority during stream capture.
+ *
+ * If \p graph contains any allocation or free nodes, there can be at most one
+ * executable graph in existence for that graph at a time. An attempt to
+ * instantiate a second executable graph before destroying the first with
+ * ::cudaGraphExecDestroy will result in an error.
+ *
+ * If \p graph contains kernels which call device-side cudaGraphLaunch() from multiple
+ * devices, this will result in an error.
+ *
+ * Graphs instantiated for launch on the device have additional restrictions which do not
+ * apply to host graphs:
+ *
+ * - The graph's nodes must reside on a single device.
+ * - The graph can only contain kernel nodes, memcpy nodes, memset nodes, and child graph nodes.
+ *   Operation-specific restrictions are outlined below.
+ * - Kernel nodes:
+ *   - Use of CUDA Dynamic Parallelism is not permitted.
+ *   - Cooperative launches are permitted as long as MPS is not in use.
+ * - Memcpy nodes:
+ *   - Only copies involving device memory and/or pinned device-mapped host memory are permitted.
+ *   - Copies involving CUDA arrays are not permitted.
+ *   - Both operands must be accessible from the current device, and the current device must
+ *     match the device of other nodes in the graph.
+ *
+ * \param pGraphExec - Returns instantiated graph
+ * \param graph      - Graph to instantiate
+ * \param flags      - Flags to control instantiation.  See ::CUgraphInstantiate_flags.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphCreate,
+ * ::cudaGraphUpload,
+ * ::cudaGraphLaunch,
+ * ::cudaGraphExecDestroy
+ */
+#if __CUDART_API_VERSION >= 11040
+extern __host__ cudaError_t CUDARTAPI cudaGraphInstantiateWithFlags(cudaGraphExec_t *pGraphExec, cudaGraph_t graph, unsigned long long flags __dv(0));
+#endif
+
+/**
+ * \brief Creates an executable graph from a graph
+ *
+ * Instantiates \p graph as an executable graph according to the \p instantiateParams structure.
+ * The graph is validated for any structural constraints or intra-node constraints
+ * which were not previously validated. If instantiation is successful, a handle to
+ * the instantiated graph is returned in \p pGraphExec.
+ *
+ * \p instantiateParams controls the behavior of instantiation and subsequent
+ * graph launches, as well as returning more detailed information in the event of an error.
+ * ::cudaGraphInstantiateParams is defined as:
+ *
+ * \code
+    typedef struct {
+        unsigned long long flags;
+        cudaStream_t uploadStream;
+        cudaGraphNode_t errNode_out;
+        cudaGraphInstantiateResult result_out;
+    } cudaGraphInstantiateParams;
+ * \endcode
+ *
+ * The \p flags field controls the behavior of instantiation and subsequent
+ * graph launches. Valid flags are:
+ *
+ * - ::cudaGraphInstantiateFlagAutoFreeOnLaunch, which configures a
+ * graph containing memory allocation nodes to automatically free any
+ * unfreed memory allocations before the graph is relaunched.
+ *
+ * - ::cudaGraphInstantiateFlagUpload, which will perform an upload of the graph
+ * into \p uploadStream once the graph has been instantiated.
+ *
+ * - ::cudaGraphInstantiateFlagDeviceLaunch, which configures the graph for launch
+ * from the device. If this flag is passed, the executable graph handle returned can be
+ * used to launch the graph from both the host and device. This flag can only be used
+ * on platforms which support unified addressing. This flag cannot be used in
+ * conjunction with ::cudaGraphInstantiateFlagAutoFreeOnLaunch.
+ *
+ * - ::cudaGraphInstantiateFlagUseNodePriority, which causes the graph
+ * to use the priorities from the per-node attributes rather than the priority
+ * of the launch stream during execution. Note that priorities are only available
+ * on kernel nodes, and are copied from stream priority during stream capture.
+ *
+ * If \p graph contains any allocation or free nodes, there can be at most one
+ * executable graph in existence for that graph at a time. An attempt to instantiate a
+ * second executable graph before destroying the first with ::cudaGraphExecDestroy will
+ * result in an error.
+ *
+ * If \p graph contains kernels which call device-side cudaGraphLaunch() from multiple
+ * devices, this will result in an error.
+ *
+ * Graphs instantiated for launch on the device have additional restrictions which do not
+ * apply to host graphs:
+ *
+ * - The graph's nodes must reside on a single device.
+ * - The graph can only contain kernel nodes, memcpy nodes, memset nodes, and child graph nodes.
+ *   Operation-specific restrictions are outlined below.
+ * - Kernel nodes:
+ *   - Use of CUDA Dynamic Parallelism is not permitted.
+ *   - Cooperative launches are permitted as long as MPS is not in use.
+ * - Memcpy nodes:
+ *   - Only copies involving device memory and/or pinned device-mapped host memory are permitted.
+ *   - Copies involving CUDA arrays are not permitted.
+ *   - Both operands must be accessible from the current device, and the current device must
+ *     match the device of other nodes in the graph.
+ *
+ * In the event of an error, the \p result_out and \p errNode_out fields will contain more
+ * information about the nature of the error. Possible error reporting includes:
+ *
+ * - ::cudaGraphInstantiateError, if passed an invalid value or if an unexpected error occurred
+ *   which is described by the return value of the function. \p errNode_out will be set to NULL.
+ * - ::cudaGraphInstantiateInvalidStructure, if the graph structure is invalid. \p errNode_out
+ *   will be set to one of the offending nodes.
+ * - ::cudaGraphInstantiateNodeOperationNotSupported, if the graph is instantiated for device
+ *   launch but contains a node of an unsupported node type, or a node which performs unsupported
+ *   operations, such as use of CUDA dynamic parallelism within a kernel node. \p errNode_out will
+ *   be set to this node.
+ * - ::cudaGraphInstantiateMultipleDevicesNotSupported, if the graph is instantiated for device
+ *   launch but a node’s device differs from that of another node. This error can also be returned
+ *   if a graph is not instantiated for device launch and it contains kernels which call device-side
+ *   cudaGraphLaunch() from multiple devices. \p errNode_out will be set to this node.
+ *
+ * If instantiation is successful, \p result_out will be set to ::cudaGraphInstantiateSuccess,
+ * and \p hErrNode_out will be set to NULL.
+ *
+ * \param pGraphExec       - Returns instantiated graph
+ * \param graph            - Graph to instantiate
+ * \param instantiateParams - Instantiation parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphCreate,
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphInstantiateWithFlags,
+ * ::cudaGraphExecDestroy
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphInstantiateWithParams(cudaGraphExec_t *pGraphExec, cudaGraph_t graph, cudaGraphInstantiateParams *instantiateParams);
+
+/**
+ * \brief Query the instantiation flags of an executable graph
+ *
+ * Returns the flags that were passed to instantiation for the given executable graph.
+ * ::cudaGraphInstantiateFlagUpload will not be returned by this API as it does
+ * not affect the resulting executable graph.
+ *
+ * \param graphExec - The executable graph to query
+ * \param flags     - Returns the instantiation flags
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphInstantiateWithFlags,
+ * ::cudaGraphInstantiateWithParams
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecGetFlags(cudaGraphExec_t graphExec, unsigned long long *flags);
+
+/**
+ * \brief Sets the parameters for a kernel node in the given graphExec
+ *
+ * Sets the parameters of a kernel node in an executable graph \p hGraphExec. 
+ * The node is identified by the corresponding node \p node in the 
+ * non-executable graph, from which the executable graph was instantiated. 
+ *
+ * \p hNode must not have been removed from the original graph. All \p nodeParams 
+ * fields may change, but the following restrictions apply to \p func updates: 
+ *
+ *   - The owning device of the function cannot change.
+ *   - A node whose function originally did not use CUDA dynamic parallelism cannot be updated
+ *     to a function which uses CDP
+ *   - If \p hGraphExec was not instantiated for device launch, a node whose function originally
+ *     did not use device-side cudaGraphLaunch() cannot be updated to a function which uses
+ *     device-side cudaGraphLaunch() unless the node resides on the same device as nodes which
+ *     contained such calls at instantiate-time. If no such calls were present at instantiation,
+ *     these updates cannot be performed at all.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already 
+ * enqueued or running launches of \p hGraphExec are not affected by this call. 
+ * \p node is also not modified by this call.
+ *
+ * \param hGraphExec  - The executable graph in which to set the specified node
+ * \param node        - kernel node from the graph from which graphExec was instantiated
+ * \param pNodeParams - Updated Parameters to set
+ * 
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddKernelNode,
+ * ::cudaGraphKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecKernelNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t node, const struct cudaKernelNodeParams *pNodeParams);
+
+/**
+ * \brief Sets the parameters for a memcpy node in the given graphExec.
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained \p pNodeParams at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * The source and destination memory in \p pNodeParams must be allocated from the same 
+ * contexts as the original source and destination memory.  Both the instantiation-time 
+ * memory operands and the memory operands in \p pNodeParams must be 1-dimensional.
+ * Zero-length operations are not supported.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * Returns ::cudaErrorInvalidValue if the memory operands' mappings changed or
+ * either the original or new memory operands are multidimensional.
+ *
+ * \param hGraphExec  - The executable graph in which to set the specified node
+ * \param node        - Memcpy node from the graph which was used to instantiate graphExec
+ * \param pNodeParams - Updated Parameters to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphExecMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphExecMemcpyNodeSetParams1D,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecMemcpyNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t node, const struct cudaMemcpy3DParms *pNodeParams);
+
+/**
+ * \brief Sets the parameters for a memcpy node in the given graphExec to copy to a symbol on the device
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained the given params at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * \p src and \p symbol must be allocated from the same contexts as the original source and
+ * destination memory.  The instantiation-time memory operands must be 1-dimensional.
+ * Zero-length operations are not supported.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * Returns ::cudaErrorInvalidValue if the memory operands' mappings changed or
+ * the original memory operands are multidimensional.
+ *
+ * \param hGraphExec      - The executable graph in which to set the specified node
+ * \param node            - Memcpy node from the graph which was used to instantiate graphExec
+ * \param symbol          - Device symbol address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemcpyNodeToSymbol,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecMemcpyNodeSetParamsToSymbol(
+    cudaGraphExec_t hGraphExec,
+    cudaGraphNode_t node,
+    const void* symbol,
+    const void* src,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Sets the parameters for a memcpy node in the given graphExec to copy from a symbol on the device
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained the given params at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * \p symbol and \p dst must be allocated from the same contexts as the original source and
+ * destination memory.  The instantiation-time memory operands must be 1-dimensional.
+ * Zero-length operations are not supported.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * Returns ::cudaErrorInvalidValue if the memory operands' mappings changed or
+ * the original memory operands are multidimensional.
+ *
+ * \param hGraphExec      - The executable graph in which to set the specified node
+ * \param node            - Memcpy node from the graph which was used to instantiate graphExec
+ * \param dst             - Destination memory address
+ * \param symbol          - Device symbol address
+ * \param count           - Size in bytes to copy
+ * \param offset          - Offset from start of symbol in bytes
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemcpyNodeFromSymbol,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParamsFromSymbol,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParamsToSymbol,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecMemcpyNodeSetParamsFromSymbol(
+    cudaGraphExec_t hGraphExec,
+    cudaGraphNode_t node,
+    void* dst,
+    const void* symbol,
+    size_t count,
+    size_t offset,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Sets the parameters for a memcpy node in the given graphExec to perform a 1-dimensional copy
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained the given params at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * \p src and \p dst must be allocated from the same contexts as the original source
+ * and destination memory.  The instantiation-time memory operands must be 1-dimensional.
+ * Zero-length operations are not supported.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * Returns ::cudaErrorInvalidValue if the memory operands' mappings changed or
+ * the original memory operands are multidimensional.
+ *
+ * \param hGraphExec      - The executable graph in which to set the specified node
+ * \param node            - Memcpy node from the graph which was used to instantiate graphExec
+ * \param dst             - Destination memory address
+ * \param src             - Source memory address
+ * \param count           - Size in bytes to copy
+ * \param kind            - Type of transfer
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemcpyNode,
+ * ::cudaGraphAddMemcpyNode1D,
+ * ::cudaGraphMemcpyNodeSetParams,
+ * ::cudaGraphMemcpyNodeSetParams1D,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecMemcpyNodeSetParams1D(
+    cudaGraphExec_t hGraphExec,
+    cudaGraphNode_t node,
+    void* dst,
+    const void* src,
+    size_t count,
+    enum cudaMemcpyKind kind);
+#endif
+
+/**
+ * \brief Sets the parameters for a memset node in the given graphExec.
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained \p pNodeParams at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * The destination memory in \p pNodeParams must be allocated from the same 
+ * context as the original destination memory.  Both the instantiation-time 
+ * memory operand and the memory operand in \p pNodeParams must be 1-dimensional.
+ * Zero-length operations are not supported.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * Returns cudaErrorInvalidValue if the memory operand's mappings changed or
+ * either the original or new memory operand are multidimensional.
+ *
+ * \param hGraphExec  - The executable graph in which to set the specified node
+ * \param node        - Memset node from the graph which was used to instantiate graphExec
+ * \param pNodeParams - Updated Parameters to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddMemsetNode,
+ * ::cudaGraphMemsetNodeSetParams,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecMemsetNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t node, const struct cudaMemsetParams *pNodeParams);
+
+/**
+ * \brief Sets the parameters for a host node in the given graphExec.
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though \p node had 
+ * contained \p pNodeParams at instantiation.  \p node must remain in the graph which was 
+ * used to instantiate \p hGraphExec.  Changed edges to and from \p node are ignored.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued 
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also 
+ * not modified by this call.
+ *
+ * \param hGraphExec  - The executable graph in which to set the specified node
+ * \param node        - Host node from the graph which was used to instantiate graphExec
+ * \param pNodeParams - Updated Parameters to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddHostNode,
+ * ::cudaGraphHostNodeSetParams,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecHostNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t node, const struct cudaHostNodeParams *pNodeParams);
+
+/**
+ * \brief Updates node parameters in the child graph node in the given graphExec.
+ *
+ * Updates the work represented by \p node in \p hGraphExec as though the nodes contained
+ * in \p node's graph had the parameters contained in \p childGraph's nodes at instantiation.
+ * \p node must remain in the graph which was used to instantiate \p hGraphExec.
+ * Changed edges to and from \p node are ignored.
+ *
+ * The modifications only affect future launches of \p hGraphExec.  Already enqueued
+ * or running launches of \p hGraphExec are not affected by this call.  \p node is also
+ * not modified by this call.
+ *
+ * The topology of \p childGraph, as well as the node insertion order,  must match that
+ * of the graph contained in \p node.  See ::cudaGraphExecUpdate() for a list of restrictions
+ * on what can be updated in an instantiated graph.  The update is recursive, so child graph
+ * nodes contained within the top level child graph will also be updated.
+
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param node       - Host node from the graph which was used to instantiate graphExec
+ * \param childGraph - The graph supplying the updated parameters
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddChildGraphNode,
+ * ::cudaGraphChildGraphNodeGetGraph,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecChildGraphNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t node, cudaGraph_t childGraph);
+#endif
+
+/**
+ * \brief Sets the event for an event record node in the given graphExec
+ *
+ * Sets the event of an event record node in an executable graph \p hGraphExec.
+ * The node is identified by the corresponding node \p hNode in the
+ * non-executable graph, from which the executable graph was instantiated.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already
+ * enqueued or running launches of \p hGraphExec are not affected by this call.
+ * \p hNode is also not modified by this call.
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - Event record node from the graph from which graphExec was instantiated
+ * \param event      - Updated event to use
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventRecordNode,
+ * ::cudaGraphEventRecordNodeGetEvent,
+ * ::cudaGraphEventWaitNodeSetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecEventRecordNodeSetEvent(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Sets the event for an event wait node in the given graphExec
+ *
+ * Sets the event of an event wait node in an executable graph \p hGraphExec.
+ * The node is identified by the corresponding node \p hNode in the
+ * non-executable graph, from which the executable graph was instantiated.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already
+ * enqueued or running launches of \p hGraphExec are not affected by this call.
+ * \p hNode is also not modified by this call.
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - Event wait node from the graph from which graphExec was instantiated
+ * \param event      - Updated event to use
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddEventWaitNode,
+ * ::cudaGraphEventWaitNodeGetEvent,
+ * ::cudaGraphEventRecordNodeSetEvent,
+ * ::cudaEventRecordWithFlags,
+ * ::cudaStreamWaitEvent,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphExecEventWaitNodeSetEvent(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, cudaEvent_t event);
+#endif
+
+/**
+ * \brief Sets the parameters for an external semaphore signal node in the given graphExec
+ *
+ * Sets the parameters of an external semaphore signal node in an executable graph \p hGraphExec.
+ * The node is identified by the corresponding node \p hNode in the
+ * non-executable graph, from which the executable graph was instantiated.
+ *
+ * \p hNode must not have been removed from the original graph.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already
+ * enqueued or running launches of \p hGraphExec are not affected by this call.
+ * \p hNode is also not modified by this call.
+ *
+ * Changing \p nodeParams->numExtSems is not supported.
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - semaphore signal node from the graph from which graphExec was instantiated
+ * \param nodeParams - Updated Parameters to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddExternalSemaphoresSignalNode,
+ * ::cudaImportExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresWaitNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecExternalSemaphoresSignalNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, const struct cudaExternalSemaphoreSignalNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Sets the parameters for an external semaphore wait node in the given graphExec
+ *
+ * Sets the parameters of an external semaphore wait node in an executable graph \p hGraphExec.
+ * The node is identified by the corresponding node \p hNode in the
+ * non-executable graph, from which the executable graph was instantiated.
+ *
+ * \p hNode must not have been removed from the original graph.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already
+ * enqueued or running launches of \p hGraphExec are not affected by this call.
+ * \p hNode is also not modified by this call.
+ *
+ * Changing \p nodeParams->numExtSems is not supported.
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - semaphore wait node from the graph from which graphExec was instantiated
+ * \param nodeParams - Updated Parameters to set
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphAddExternalSemaphoresWaitNode,
+ * ::cudaImportExternalSemaphore,
+ * ::cudaSignalExternalSemaphoresAsync,
+ * ::cudaWaitExternalSemaphoresAsync,
+ * ::cudaGraphExecKernelNodeSetParams,
+ * ::cudaGraphExecMemcpyNodeSetParams,
+ * ::cudaGraphExecMemsetNodeSetParams,
+ * ::cudaGraphExecHostNodeSetParams,
+ * ::cudaGraphExecChildGraphNodeSetParams,
+ * ::cudaGraphExecEventRecordNodeSetEvent,
+ * ::cudaGraphExecEventWaitNodeSetEvent,
+ * ::cudaGraphExecExternalSemaphoresSignalNodeSetParams,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ */
+#if __CUDART_API_VERSION >= 11020
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecExternalSemaphoresWaitNodeSetParams(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, const struct cudaExternalSemaphoreWaitNodeParams *nodeParams);
+#endif
+
+/**
+ * \brief Enables or disables the specified node in the given graphExec
+ *
+ * Sets \p hNode to be either enabled or disabled. Disabled nodes are functionally equivalent 
+ * to empty nodes until they are reenabled. Existing node parameters are not affected by 
+ * disabling/enabling the node.
+ *  
+ * The node is identified by the corresponding node \p hNode in the non-executable 
+ * graph, from which the executable graph was instantiated.   
+ *
+ * \p hNode must not have been removed from the original graph.
+ *
+ * The modifications only affect future launches of \p hGraphExec. Already
+ * enqueued or running launches of \p hGraphExec are not affected by this call.
+ * \p hNode is also not modified by this call.
+ *
+ * \note Currently only kernel, memset and memcpy nodes are supported. 
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - Node from the graph from which graphExec was instantiated
+ * \param isEnabled  - Node is enabled if != 0, otherwise the node is disabled
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphNodeGetEnabled,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ * ::cudaGraphLaunch
+ */
+#if __CUDART_API_VERSION >= 11060
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeSetEnabled(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, unsigned int isEnabled);
+#endif
+
+/**
+ * \brief Query whether a node in the given graphExec is enabled
+ *
+ * Sets isEnabled to 1 if \p hNode is enabled, or 0 if \p hNode is disabled.
+ *
+ * The node is identified by the corresponding node \p hNode in the non-executable 
+ * graph, from which the executable graph was instantiated.   
+ *
+ * \p hNode must not have been removed from the original graph.
+ *
+ * \note Currently only kernel, memset and memcpy nodes are supported. 
+ *
+ * \param hGraphExec - The executable graph in which to set the specified node
+ * \param hNode      - Node from the graph from which graphExec was instantiated
+ * \param isEnabled  - Location to return the enabled status of the node
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphNodeSetEnabled,
+ * ::cudaGraphExecUpdate,
+ * ::cudaGraphInstantiate
+ * ::cudaGraphLaunch
+ */
+#if __CUDART_API_VERSION >= 11060
+extern __host__ cudaError_t CUDARTAPI cudaGraphNodeGetEnabled(cudaGraphExec_t hGraphExec, cudaGraphNode_t hNode, unsigned int *isEnabled);
+#endif
+
+/**
+ * \brief Check whether an executable graph can be updated with a graph and perform the update if possible
+ *
+ * Updates the node parameters in the instantiated graph specified by \p hGraphExec with the
+ * node parameters in a topologically identical graph specified by \p hGraph.
+ *
+ * Limitations:
+ *
+ * - Kernel nodes:
+ *   - The owning context of the function cannot change.
+ *   - A node whose function originally did not use CUDA dynamic parallelism cannot be updated
+ *     to a function which uses CDP.
+ *   - A cooperative node cannot be updated to a non-cooperative node, and vice-versa.
+ *   - If the graph was instantiated with cudaGraphInstantiateFlagUseNodePriority, the
+ *     priority attribute cannot change. Equality is checked on the originally requested
+ *     priority values, before they are clamped to the device's supported range.
+ *   - If \p hGraphExec was not instantiated for device launch, a node whose function originally
+ *     did not use device-side cudaGraphLaunch() cannot be updated to a function which uses
+ *     device-side cudaGraphLaunch() unless the node resides on the same device as nodes which
+ *     contained such calls at instantiate-time. If no such calls were present at instantiation,
+ *     these updates cannot be performed at all.
+ * - Memset and memcpy nodes:
+ *   - The CUDA device(s) to which the operand(s) was allocated/mapped cannot change.
+ *   - The source/destination memory must be allocated from the same contexts as the original
+ *     source/destination memory.
+ *   - Only 1D memsets can be changed.
+ * - Additional memcpy node restrictions:
+ *   - Changing either the source or destination memory type(i.e. CU_MEMORYTYPE_DEVICE,
+ *     CU_MEMORYTYPE_ARRAY, etc.) is not supported.
+ *
+ * Note:  The API may add further restrictions in future releases.  The return code should always be checked.
+ *
+ * cudaGraphExecUpdate sets the result member of \p resultInfo to cudaGraphExecUpdateErrorTopologyChanged
+ * under the following conditions:
+ * - The count of nodes directly in \p hGraphExec and \p hGraph differ, in which case resultInfo->errorNode
+ *   is set to NULL.
+ * - \p hGraph has more exit nodes than \p hGraph, in which case resultInfo->errorNode is set to one of
+ *   the exit nodes in hGraph. 
+ * - A node in \p hGraph has a different number of dependencies than the node from \p hGraphExec it is paired with,
+ *   in which case resultInfo->errorNode is set to the node from \p hGraph.
+ * - A node in \p hGraph has a dependency that does not match with the corresponding dependency of the paired node
+ *   from \p hGraphExec. resultInfo->errorNode will be set to the node from \p hGraph. resultInfo->errorFromNode
+ *   will be set to the mismatched dependency. The dependencies are paired based on edge order and a dependency
+ *   does not match when the nodes are already paired based on other edges examined in the graph.
+ *
+ * cudaGraphExecUpdate sets \p the result member of \p resultInfo to:
+ * - cudaGraphExecUpdateError if passed an invalid value.
+ * - cudaGraphExecUpdateErrorTopologyChanged if the graph topology changed
+ * - cudaGraphExecUpdateErrorNodeTypeChanged if the type of a node changed, in which case
+ *   \p hErrorNode_out is set to the node from \p hGraph.
+ * - cudaGraphExecUpdateErrorFunctionChanged if the function of a kernel node changed (CUDA driver < 11.2)
+ * - cudaGraphExecUpdateErrorUnsupportedFunctionChange if the func field of a kernel changed in an
+ *   unsupported way(see note above), in which case \p hErrorNode_out is set to the node from \p hGraph
+ * - cudaGraphExecUpdateErrorParametersChanged if any parameters to a node changed in a way 
+ *   that is not supported, in which case \p hErrorNode_out is set to the node from \p hGraph
+ * - cudaGraphExecUpdateErrorAttributesChanged if any attributes of a node changed in a way 
+ *   that is not supported, in which case \p hErrorNode_out is set to the node from \p hGraph
+ * - cudaGraphExecUpdateErrorNotSupported if something about a node is unsupported, like 
+ *   the node's type or configuration, in which case \p hErrorNode_out is set to the node from \p hGraph
+ *
+ * If the update fails for a reason not listed above, the result member of \p resultInfo will be set
+ * to cudaGraphExecUpdateError. If the update succeeds, the result member will be set to cudaGraphExecUpdateSuccess.
+ *
+ * cudaGraphExecUpdate returns cudaSuccess when the updated was performed successfully.  It returns
+ * cudaErrorGraphExecUpdateFailure if the graph update was not performed because it included 
+ * changes which violated constraints specific to instantiated graph update.
+ *
+ * \param hGraphExec The instantiated graph to be updated
+ * \param hGraph The graph containing the updated parameters
+   \param resultInfo the error info structure
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorGraphExecUpdateFailure,
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphInstantiate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecUpdate(cudaGraphExec_t hGraphExec, cudaGraph_t hGraph, cudaGraphExecUpdateResultInfo *resultInfo);
+
+/**
+ * \brief Uploads an executable graph in a stream
+ *
+ * Uploads \p hGraphExec to the device in \p hStream without executing it. Uploads of
+ * the same \p hGraphExec will be serialized. Each upload is ordered behind both any
+ * previous work in \p hStream and any previous launches of \p hGraphExec.
+ * Uses memory cached by \p stream to back the allocations owned by \p graphExec.
+ *
+ * \param hGraphExec - Executable graph to upload
+ * \param hStream    - Stream in which to upload the graph
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * \notefnerr
+ * \note_init_rt
+ *
+ * \sa
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphLaunch,
+ * ::cudaGraphExecDestroy
+ */
+#if __CUDART_API_VERSION >= 11010
+ extern __host__ cudaError_t CUDARTAPI cudaGraphUpload(cudaGraphExec_t graphExec, cudaStream_t stream);
+#endif
+
+/**
+ * \brief Launches an executable graph in a stream
+ *
+ * Executes \p graphExec in \p stream. Only one instance of \p graphExec may be executing
+ * at a time. Each launch is ordered behind both any previous work in \p stream
+ * and any previous launches of \p graphExec. To execute a graph concurrently, it must be
+ * instantiated multiple times into multiple executable graphs.
+ *
+ * If any allocations created by \p graphExec remain unfreed (from a previous launch) and
+ * \p graphExec was not instantiated with ::cudaGraphInstantiateFlagAutoFreeOnLaunch,
+ * the launch will fail with ::cudaErrorInvalidValue.
+ *
+ * \param graphExec - Executable graph to launch
+ * \param stream    - Stream in which to launch the graph
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphUpload,
+ * ::cudaGraphExecDestroy
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphLaunch(cudaGraphExec_t graphExec, cudaStream_t stream);
+
+/**
+ * \brief Destroys an executable graph
+ *
+ * Destroys the executable graph specified by \p graphExec.
+ *
+ * \param graphExec - Executable graph to destroy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
+ *
+ * \sa
+ * ::cudaGraphInstantiate,
+ * ::cudaGraphUpload,
+ * ::cudaGraphLaunch
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphExecDestroy(cudaGraphExec_t graphExec);
+
+/**
+ * \brief Destroys a graph
+ *
+ * Destroys the graph specified by \p graph, as well as all of its nodes.
+ *
+ * \param graph - Graph to destroy
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ * \note_graph_thread_safety
+ * \notefnerr
+ * \note_init_rt
+ * \note_callback
+ * \note_destroy_ub
+ *
+ * \sa
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphDestroy(cudaGraph_t graph);
+
+/**
+ * \brief Write a DOT file describing graph structure
+ *
+ * Using the provided \p graph, write to \p path a DOT formatted description of the graph.
+ * By default this includes the graph topology, node types, node id, kernel names and memcpy direction.
+ * \p flags can be specified to write more detailed information about each node type such as
+ * parameter values, kernel attributes, node and function handles.
+ *
+ * \param graph - The graph to create a DOT file from
+ * \param path  - The path to write the DOT file to
+ * \param flags - Flags from cudaGraphDebugDotFlags for specifying which additional node information to write
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorOperatingSystem
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphDebugDotPrint(cudaGraph_t graph, const char *path, unsigned int flags);
+
+/**
+ * \brief Create a user object
+ *
+ * Create a user object with the specified destructor callback and initial reference count. The
+ * initial references are owned by the caller.
+ *
+ * Destructor callbacks cannot make CUDA API calls and should avoid blocking behavior, as they
+ * are executed by a shared internal thread. Another thread may be signaled to perform such
+ * actions, if it does not block forward progress of tasks scheduled through CUDA.
+ *
+ * See CUDA User Objects in the CUDA C++ Programming Guide for more information on user objects.
+ *
+ * \param object_out      - Location to return the user object handle
+ * \param ptr             - The pointer to pass to the destroy function
+ * \param destroy         - Callback to free the user object when it is no longer in use
+ * \param initialRefcount - The initial refcount to create the object with, typically 1. The
+ *                          initial references are owned by the calling thread.
+ * \param flags           - Currently it is required to pass ::cudaUserObjectNoDestructorSync,
+ *                          which is the only defined flag. This indicates that the destroy
+ *                          callback cannot be waited on by any CUDA API. Users requiring
+ *                          synchronization of the callback should signal its completion
+ *                          manually.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa
+ * ::cudaUserObjectRetain,
+ * ::cudaUserObjectRelease,
+ * ::cudaGraphRetainUserObject,
+ * ::cudaGraphReleaseUserObject,
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaUserObjectCreate(cudaUserObject_t *object_out, void *ptr, cudaHostFn_t destroy, unsigned int initialRefcount, unsigned int flags);
+
+/**
+ * \brief Retain a reference to a user object
+ *
+ * Retains new references to a user object. The new references are owned by the caller.
+ *
+ * See CUDA User Objects in the CUDA C++ Programming Guide for more information on user objects.
+ *
+ * \param object - The object to retain
+ * \param count  - The number of references to retain, typically 1. Must be nonzero
+ *                 and not larger than INT_MAX.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa
+ * ::cudaUserObjectCreate,
+ * ::cudaUserObjectRelease,
+ * ::cudaGraphRetainUserObject,
+ * ::cudaGraphReleaseUserObject,
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaUserObjectRetain(cudaUserObject_t object, unsigned int count __dv(1));
+
+/**
+ * \brief Release a reference to a user object
+ *
+ * Releases user object references owned by the caller. The object's destructor is invoked if
+ * the reference count reaches zero.
+ *
+ * It is undefined behavior to release references not owned by the caller, or to use a user
+ * object handle after all references are released.
+ *
+ * See CUDA User Objects in the CUDA C++ Programming Guide for more information on user objects.
+ *
+ * \param object - The object to release
+ * \param count  - The number of references to release, typically 1. Must be nonzero
+ *                 and not larger than INT_MAX.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa
+ * ::cudaUserObjectCreate,
+ * ::cudaUserObjectRetain,
+ * ::cudaGraphRetainUserObject,
+ * ::cudaGraphReleaseUserObject,
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaUserObjectRelease(cudaUserObject_t object, unsigned int count __dv(1));
+
+/**
+ * \brief Retain a reference to a user object from a graph
+ *
+ * Creates or moves user object references that will be owned by a CUDA graph.
+ *
+ * See CUDA User Objects in the CUDA C++ Programming Guide for more information on user objects.
+ *
+ * \param graph  - The graph to associate the reference with
+ * \param object - The user object to retain a reference for
+ * \param count  - The number of references to add to the graph, typically 1. Must be
+ *                 nonzero and not larger than INT_MAX.
+ * \param flags  - The optional flag ::cudaGraphUserObjectMove transfers references
+ *                 from the calling thread, rather than create new references. Pass 0
+ *                 to create new references.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa
+ * ::cudaUserObjectCreate
+ * ::cudaUserObjectRetain,
+ * ::cudaUserObjectRelease,
+ * ::cudaGraphReleaseUserObject,
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphRetainUserObject(cudaGraph_t graph, cudaUserObject_t object, unsigned int count __dv(1), unsigned int flags __dv(0));
+
+/**
+ * \brief Release a user object reference from a graph
+ *
+ * Releases user object references owned by a graph.
+ *
+ * See CUDA User Objects in the CUDA C++ Programming Guide for more information on user objects.
+ *
+ * \param graph  - The graph that will release the reference
+ * \param object - The user object to release a reference for
+ * \param count  - The number of references to release, typically 1. Must be nonzero
+ *                 and not larger than INT_MAX.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue
+ *
+ * \sa
+ * ::cudaUserObjectCreate
+ * ::cudaUserObjectRetain,
+ * ::cudaUserObjectRelease,
+ * ::cudaGraphRetainUserObject,
+ * ::cudaGraphCreate
+ */
+extern __host__ cudaError_t CUDARTAPI cudaGraphReleaseUserObject(cudaGraph_t graph, cudaUserObject_t object, unsigned int count __dv(1));
+
+/** @} */ /* END CUDART_GRAPH */
+
+/**
+ * \defgroup CUDART_DRIVER_ENTRY_POINT Driver Entry Point Access
+ *
+ * ___MANBRIEF___ driver entry point access functions of the CUDA runtime API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ *
+ * This section describes the driver entry point access functions of CUDA
+ * runtime application programming interface.
+ *
+ * @{
+ */
+
+/**
+ * \brief Returns the requested driver API function pointer
+ *
+ * Returns in \p **funcPtr the address of the CUDA driver function for the requested flags.
+ *
+ * For a requested driver symbol, if the CUDA version in which the driver symbol was
+ * introduced is less than or equal to the CUDA runtime version, the API will return
+ * the function pointer to the corresponding versioned driver function.
+ *
+ * The pointer returned by the API should be cast to a function pointer matching the
+ * requested driver function's definition in the API header file. The function pointer
+ * typedef can be picked up from the corresponding typedefs header file. For example,
+ * cudaTypedefs.h consists of function pointer typedefs for driver APIs defined in cuda.h.
+ *
+ * The API will return ::cudaSuccess and set the returned \p funcPtr to NULL if the
+ * requested driver function is not supported on the platform, no ABI
+ * compatible driver function exists for the CUDA runtime version or if the
+ * driver symbol is invalid.
+ *
+ * It will also set the optional \p driverStatus to one of the values in 
+ * ::cudaDriverEntryPointQueryResult with the following meanings:
+ * - ::cudaDriverEntryPointSuccess - The requested symbol was succesfully found based
+ *   on input arguments and \p pfn is valid
+ * - ::cudaDriverEntryPointSymbolNotFound - The requested symbol was not found
+ * - ::cudaDriverEntryPointVersionNotSufficent - The requested symbol was found but is
+ *   not supported by the current runtime version (CUDART_VERSION)
+ *
+ * The requested flags can be:
+ * - ::cudaEnableDefault: This is the default mode. This is equivalent to
+ *   ::cudaEnablePerThreadDefaultStream if the code is compiled with
+ *   --default-stream per-thread compilation flag or the macro CUDA_API_PER_THREAD_DEFAULT_STREAM
+ *   is defined; ::cudaEnableLegacyStream otherwise.
+ * - ::cudaEnableLegacyStream: This will enable the search for all driver symbols
+ *   that match the requested driver symbol name except the corresponding per-thread versions.
+ * - ::cudaEnablePerThreadDefaultStream: This will enable the search for all
+ *   driver symbols that match the requested driver symbol name including the per-thread
+ *   versions. If a per-thread version is not found, the API will return the legacy version
+ *   of the driver function.
+ *
+ * \param symbol - The base name of the driver API function to look for. As an example,
+ *                 for the driver API ::cuMemAlloc_v2, \p symbol would be cuMemAlloc.
+ *                 Note that the API will use the CUDA runtime version to return the
+ *                 address to the most recent ABI compatible driver symbol, ::cuMemAlloc
+ *                 or ::cuMemAlloc_v2.
+ * \param funcPtr - Location to return the function pointer to the requested driver function
+ * \param flags -  Flags to specify search options.
+ * \param driverStatus - Optional location to store the status of finding the symbol from
+ *                       the driver. See ::cudaDriverEntryPointQueryResult for 
+ *                       possible values.
+ *
+ * \return
+ * ::cudaSuccess,
+ * ::cudaErrorInvalidValue,
+ * ::cudaErrorNotSupported
+ * \note_version_mixing
+ * \note_init_rt
+ * \note_callback
+ *
+ * \sa
+ * ::cuGetProcAddress
+ */
+#if defined(__cplusplus)
+extern __host__ cudaError_t CUDARTAPI cudaGetDriverEntryPoint(const char *symbol, void **funcPtr, unsigned long long flags, enum cudaDriverEntryPointQueryResult *driverStatus = NULL);
+#else
+extern __host__ cudaError_t CUDARTAPI cudaGetDriverEntryPoint(const char *symbol, void **funcPtr, unsigned long long flags, enum cudaDriverEntryPointQueryResult *driverStatus);
+#endif
+
+/** @} */ /* END CUDART_DRIVER_ENTRY_POINT */
 
 /** \cond impl_private */
 extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTable, const cudaUUID_t *pExportTableId);
@@ -7269,10 +12782,13 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
  * \section CUDART_CUDA_init Initialization and Tear-Down
  *
  * CUDA Runtime API calls operate on the CUDA Driver API ::CUcontext which is current to
- * to the calling host thread.  
+ * to the calling host thread.
+ * 
+ * The function ::cudaInitDevice() ensures that the primary context is initialized
+ * for the requested device but does not make it current to the calling thread. 
  *
- * The function ::cudaSetDevice() makes the primary context for the
- * specified device current to the calling thread by calling ::cuCtxSetCurrent().
+ * The function ::cudaSetDevice() initializes the primary context for the
+ * specified device and makes it current to the calling thread by calling ::cuCtxSetCurrent().
  *
  * The CUDA Runtime API will automatically initialize the primary context for
  * a device at the first CUDA Runtime API call which requires an active context.
@@ -7300,9 +12816,9 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
  * Runtime API call on any thread which requires an active context will trigger the 
  * reinitialization of that device's primary context.
  *
- * Note that there is no reference counting of the primary context's lifetime.  It is
- * recommended that the primary context not be deinitialized except just before exit
- * or to recover from an unspecified launch failure.
+ * Note that primary contexts are shared resources. It is recommended that
+ * the primary context not be reset except just before exit or to recover from an
+ * unspecified launch failure.
  * 
  * \section CUDART_CUDA_context Context Interoperability
  *
@@ -7364,8 +12880,53 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
  * ::CUgraphicsResource, it is necessary to explicitly cast the ::cudaGraphicsResource_t 
  * to a ::CUgraphicsResource.
  *
- * @}
+ * \section CUDART_CUDA_texture_objects Interactions between CUtexObject and cudaTextureObject_t
+ *
+ * The types ::CUtexObject and ::cudaTextureObject_t represent the same data type and may be used
+ * interchangeably by casting the two types between each other.
+ *
+ * In order to use a ::CUtexObject in a CUDA Runtime API function which takes a ::cudaTextureObject_t,
+ * it is necessary to explicitly cast the ::CUtexObject to a ::cudaTextureObject_t.
+ *
+ * In order to use a ::cudaTextureObject_t in a CUDA Driver API function which takes a ::CUtexObject,
+ * it is necessary to explicitly cast the ::cudaTextureObject_t to a ::CUtexObject.
+ *
+ * \section CUDART_CUDA_surface_objects Interactions between CUsurfObject and cudaSurfaceObject_t
+ *
+ * The types ::CUsurfObject and ::cudaSurfaceObject_t represent the same data type and may be used
+ * interchangeably by casting the two types between each other.
+ *
+ * In order to use a ::CUsurfObject in a CUDA Runtime API function which takes a ::cudaSurfaceObject_t,
+ * it is necessary to explicitly cast the ::CUsurfObject to a ::cudaSurfaceObject_t.
+ *
+ * In order to use a ::cudaSurfaceObject_t in a CUDA Driver API function which takes a ::CUsurfObject,
+ * it is necessary to explicitly cast the ::cudaSurfaceObject_t to a ::CUsurfObject.
+ *
+ * \section CUDART_CUDA_module Interactions between CUfunction and cudaFunction_t
+ *
+ * The types ::CUfunction and ::cudaFunction_t represent the same data type and may be used
+ * interchangeably by casting the two types between each other.
+ *
+ * In order to use a ::cudaFunction_t in a CUDA Driver API function which takes a ::CUfunction,
+ * it is necessary to explicitly cast the ::cudaFunction_t to a ::CUfunction.
+ *
  */
+
+ /**
+  * \brief Get pointer to device entry function that matches entry function \p symbolPtr
+  *
+  * Returns in \p functionPtr the device entry function corresponding to the symbol \p symbolPtr.
+  *
+  * \param functionPtr     - Returns the device entry function
+  * \param symbolPtr       - Pointer to device entry function to search for
+  *
+  * \return
+  * ::cudaSuccess
+  *
+  */
+extern __host__ cudaError_t cudaGetFuncBySymbol(cudaFunction_t* functionPtr, const void* symbolPtr);
+
+/** @} */ /* END CUDART_DRIVER */
 
 #if defined(__CUDA_API_VERSION_INTERNAL)
     #undef cudaMemcpy
@@ -7398,16 +12959,39 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
     #undef cudaMemset3DAsync
     #undef cudaStreamQuery
     #undef cudaStreamGetFlags
+    #undef cudaStreamGetId
     #undef cudaStreamGetPriority
     #undef cudaEventRecord
+    #undef cudaEventRecordWithFlags
     #undef cudaStreamWaitEvent
     #undef cudaStreamAddCallback
     #undef cudaStreamAttachMemAsync
     #undef cudaStreamSynchronize
-    #undef cudaLaunch
     #undef cudaLaunchKernel
+    #undef cudaLaunchKernelExC
+    #undef cudaLaunchHostFunc
     #undef cudaMemPrefetchAsync
     #undef cudaLaunchCooperativeKernel
+    #undef cudaSignalExternalSemaphoresAsync
+    #undef cudaWaitExternalSemaphoresAsync
+    #undef cudaGraphInstantiateWithParams
+    #undef cudaGraphUpload
+    #undef cudaGraphLaunch
+    #undef cudaStreamBeginCapture
+    #undef cudaStreamEndCapture
+    #undef cudaStreamIsCapturing
+    #undef cudaStreamGetCaptureInfo
+    #undef cudaStreamGetCaptureInfo_v2
+    #undef cudaStreamCopyAttributes
+    #undef cudaStreamGetAttribute
+    #undef cudaStreamSetAttribute
+    #undef cudaMallocAsync
+    #undef cudaFreeAsync
+    #undef cudaMallocFromPoolAsync
+    #undef cudaGetDriverEntryPoint
+
+    #undef cudaGetDeviceProperties
+
     extern __host__ cudaError_t CUDARTAPI cudaMemcpy(void *dst, const void *src, size_t count, enum cudaMemcpyKind kind);
     extern __host__ cudaError_t CUDARTAPI cudaMemcpyToSymbol(const void *symbol, const void *src, size_t count, size_t offset __dv(0), enum cudaMemcpyKind kind __dv(cudaMemcpyHostToDevice));
     extern __host__ cudaError_t CUDARTAPI cudaMemcpyFromSymbol(void *dst, const void *symbol, size_t count, size_t offset __dv(0), enum cudaMemcpyKind kind __dv(cudaMemcpyDeviceToHost));
@@ -7438,25 +13022,50 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaMemset3DAsync(struct cudaPitchedPtr pitchedDevPtr, int value, struct cudaExtent extent, cudaStream_t stream __dv(0));
     extern __host__ cudaError_t CUDARTAPI cudaStreamQuery(cudaStream_t stream);
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetFlags(cudaStream_t hStream, unsigned int *flags);
+    extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetId(cudaStream_t hStream, unsigned long long *streamId);
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamGetPriority(cudaStream_t hStream, int *priority);
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventRecord(cudaEvent_t event, cudaStream_t stream __dv(0));
+    extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaEventRecordWithFlags(cudaEvent_t event, cudaStream_t stream __dv(0), unsigned int flags __dv(0));
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamWaitEvent(cudaStream_t stream, cudaEvent_t event, unsigned int flags);
     extern __host__ cudaError_t CUDARTAPI cudaStreamAddCallback(cudaStream_t stream, cudaStreamCallback_t callback, void *userData, unsigned int flags);
     extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaStreamAttachMemAsync(cudaStream_t stream, void *devPtr, size_t length, unsigned int flags);
     extern __host__ cudaError_t CUDARTAPI cudaStreamSynchronize(cudaStream_t stream);
-    extern __host__ cudaError_t CUDARTAPI cudaLaunch(const void *func);
     extern __host__ cudaError_t CUDARTAPI cudaLaunchKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaLaunchKernelExC(const cudaLaunchConfig_t *config, const void *func, void **args);
     extern __host__ cudaError_t CUDARTAPI cudaLaunchCooperativeKernel(const void *func, dim3 gridDim, dim3 blockDim, void **args, size_t sharedMem, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaLaunchHostFunc(cudaStream_t stream, cudaHostFn_t fn, void *userData);
     extern __host__ cudaError_t CUDARTAPI cudaMemPrefetchAsync(const void *devPtr, size_t count, int dstDevice, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaSignalExternalSemaphoresAsync(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreSignalParams_v1 *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaSignalExternalSemaphoresAsync_ptsz(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreSignalParams_v1 *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaSignalExternalSemaphoresAsync_v2(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreSignalParams *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaWaitExternalSemaphoresAsync(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreWaitParams_v1 *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaWaitExternalSemaphoresAsync_ptsz(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreWaitParams_v1 *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaWaitExternalSemaphoresAsync_v2(const cudaExternalSemaphore_t *extSemArray, const struct cudaExternalSemaphoreWaitParams *paramsArray, unsigned int numExtSems, cudaStream_t stream __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaGraphInstantiateWithParams(cudaGraphExec_t *pGraphExec, cudaGraph_t graph, cudaGraphInstantiateParams *instantiateParams);
+    extern __host__ cudaError_t CUDARTAPI cudaGraphUpload(cudaGraphExec_t graphExec, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaGraphLaunch(cudaGraphExec_t graphExec, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamBeginCapture(cudaStream_t stream, enum cudaStreamCaptureMode mode);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamEndCapture(cudaStream_t stream, cudaGraph_t *pGraph);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamIsCapturing(cudaStream_t stream, enum cudaStreamCaptureStatus *pCaptureStatus);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamGetCaptureInfo(cudaStream_t stream, enum cudaStreamCaptureStatus *captureStatus_out, unsigned long long *id_out);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamGetCaptureInfo_ptsz(cudaStream_t stream, enum cudaStreamCaptureStatus *captureStatus_out, unsigned long long *id_out);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamGetCaptureInfo_v2(cudaStream_t stream, enum cudaStreamCaptureStatus *captureStatus_out, unsigned long long *id_out __dv(0), cudaGraph_t *graph_out __dv(0), const cudaGraphNode_t **dependencies_out __dv(0), size_t *numDependencies_out __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaStreamUpdateCaptureDependencies_ptsz(cudaStream_t stream, cudaGraphNode_t *dependencies, size_t numDependencies, unsigned int flags __dv(0));
+    extern __host__ cudaError_t CUDARTAPI cudaStreamCopyAttributes(cudaStream_t dstStream, cudaStream_t srcStream);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamGetAttribute(cudaStream_t stream, cudaStreamAttrID attr, cudaStreamAttrValue *value);
+    extern __host__ cudaError_t CUDARTAPI cudaStreamSetAttribute(cudaStream_t stream, cudaStreamAttrID attr, const cudaStreamAttrValue *param);
+
+    extern __host__ cudaError_t CUDARTAPI cudaMallocAsync(void **devPtr, size_t size, cudaStream_t hStream);
+    extern __host__ cudaError_t CUDARTAPI cudaFreeAsync(void *devPtr, cudaStream_t hStream);
+    extern __host__ cudaError_t CUDARTAPI cudaMallocFromPoolAsync(void **ptr, size_t size, cudaMemPool_t memPool, cudaStream_t stream);
+    extern __host__ cudaError_t CUDARTAPI cudaGetDriverEntryPoint(const char *symbol, void **funcPtr, unsigned long long flags, enum cudaDriverEntryPointQueryResult *driverStatus);
+
+    extern __host__ __cudart_builtin__ cudaError_t CUDARTAPI cudaGetDeviceProperties(struct cudaDeviceProp *prop, int device);
+
 #elif defined(__CUDART_API_PER_THREAD_DEFAULT_STREAM)
     // nvcc stubs reference the 'cudaLaunch'/'cudaLaunchKernel' identifier even if it was defined
     // to 'cudaLaunch_ptsz'/'cudaLaunchKernel_ptsz'. Redirect through a static inline function.
-    #undef cudaLaunch
     #undef cudaLaunchKernel
-    static __inline__ __host__ cudaError_t cudaLaunch(const void *func)
-    {
-        return cudaLaunch_ptsz(func);
-    }
     static __inline__ __host__ cudaError_t cudaLaunchKernel(const void *func, 
                                                             dim3 gridDim, dim3 blockDim, 
                                                             void **args, size_t sharedMem, 
@@ -7464,8 +13073,15 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
     {
         return cudaLaunchKernel_ptsz(func, gridDim, blockDim, args, sharedMem, stream);
     }
-    #define cudaLaunch __CUDART_API_PTSZ(cudaLaunch)
     #define cudaLaunchKernel __CUDART_API_PTSZ(cudaLaunchKernel)
+    #undef cudaLaunchKernelExC
+    static __inline__ __host__ cudaError_t cudaLaunchKernelExC(const cudaLaunchConfig_t *config,
+                                                               const void *func,
+                                                                  void **args)
+    {
+        return cudaLaunchKernelExC_ptsz(config, func, args);
+    }
+    #define cudaLaunchKernelExC __CUDART_API_PTSZ(cudaLaunchKernelExC)
 #endif
 
 #if defined(__cplusplus)
@@ -7473,6 +13089,15 @@ extern __host__ cudaError_t CUDARTAPI cudaGetExportTable(const void **ppExportTa
 
 #endif /* __cplusplus */
 
+#undef EXCLUDE_FROM_RTC
+#endif /* !__CUDACC_RTC__ */
+
 #undef __dv
+#undef __CUDA_DEPRECATED
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_CUDA_RUNTIME_API_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_CUDA_RUNTIME_API_H__
+#endif
 
 #endif /* !__CUDA_RUNTIME_API_H__ */

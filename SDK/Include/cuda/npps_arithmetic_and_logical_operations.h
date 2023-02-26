@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -64,14 +64,14 @@ extern "C" {
 /** 
  * @defgroup signal_arithmetic_and_logical_operations Arithmetic and Logical Operations
  * @ingroup npps
- *
+ * Functions that provide common arithmetic and logical operations.
  * @{
  *
  */
 
 /** 
  * @defgroup signal_arithmetic Arithmetic Operations
- *
+ * The set of arithmetic operations for signal processing available in the library.
  * @{
  *
  */
@@ -91,8 +91,12 @@ extern "C" {
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_8u_ISfs_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -103,8 +107,12 @@ nppsAddC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -114,8 +122,12 @@ nppsAddC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16u_ISfs_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -126,8 +138,12 @@ nppsAddC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -137,8 +153,12 @@ nppsAddC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength,
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16s_ISfs_Ctx(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -149,8 +169,12 @@ nppsAddC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -161,8 +185,12 @@ nppsAddC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength,
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16sc_ISfs_Ctx(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -174,8 +202,12 @@ nppsAddC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -185,8 +217,12 @@ nppsAddC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLen
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32s_ISfs_Ctx(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -197,8 +233,12 @@ nppsAddC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -209,8 +249,12 @@ nppsAddC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength,
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32sc_ISfs_Ctx(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -222,8 +266,12 @@ nppsAddC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32sc_Sfs_Ctx(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -232,8 +280,12 @@ nppsAddC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLen
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -243,8 +295,12 @@ nppsAddC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value to be added to each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -254,8 +310,12 @@ nppsAddC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32fc_I_Ctx(Npp32fc nValue, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
 
@@ -266,8 +326,12 @@ nppsAddC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
  * \param nValue Constant value to be added to each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_32fc_Ctx(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -276,8 +340,12 @@ nppsAddC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength)
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be added to each vector element
  * \param nLength Length of the vectors, number of items.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_64f_I_Ctx(Npp64f nValue, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
 
@@ -287,8 +355,12 @@ nppsAddC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
  * \param nValue Constant value to be added to each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_64f_Ctx(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -298,8 +370,12 @@ nppsAddC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be added to each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_64fc_I_Ctx(Npp64fc nValue, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
 
@@ -310,8 +386,12 @@ nppsAddC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
  * \param nValue Constant value to be added to each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddC_64fc_Ctx(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -331,8 +411,12 @@ nppsAddC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength)
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProductC_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProductC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -354,8 +438,12 @@ nppsAddProductC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLeng
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_8u_ISfs_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -366,8 +454,12 @@ nppsMulC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -377,8 +469,12 @@ nppsMulC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16u_ISfs_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -389,8 +485,12 @@ nppsMulC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -400,8 +500,12 @@ nppsMulC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength,
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16s_ISfs_Ctx(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -412,8 +516,12 @@ nppsMulC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -424,8 +532,12 @@ nppsMulC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength,
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16sc_ISfs_Ctx(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -437,8 +549,12 @@ nppsMulC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -448,8 +564,12 @@ nppsMulC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLen
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32s_ISfs_Ctx(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -460,8 +580,12 @@ nppsMulC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -472,8 +596,12 @@ nppsMulC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength,
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32sc_ISfs_Ctx(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -485,8 +613,12 @@ nppsMulC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32sc_Sfs_Ctx(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -495,8 +627,12 @@ nppsMulC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLen
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -506,8 +642,12 @@ nppsMulC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -517,8 +657,12 @@ nppsMulC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_Low_32f16s_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_Low_32f16s(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLength);
 
@@ -530,8 +674,12 @@ nppsMulC_Low_32f16s(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLeng
  * \param pDst \ref destination_signal_pointer.
  * \param nScaleFactor \ref integer_result_scaling.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32f16s_Sfs_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32f16s_Sfs(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -541,8 +689,12 @@ nppsMulC_32f16s_Sfs(const Npp32f * pSrc, Npp32f nValue, Npp16s * pDst, int nLeng
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32fc_I_Ctx(Npp32fc nValue, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
 
@@ -553,8 +705,12 @@ nppsMulC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_32fc_Ctx(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -563,8 +719,12 @@ nppsMulC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength)
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength Length of the vectors, number of items.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_64f_I_Ctx(Npp64f nValue, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
 
@@ -574,8 +734,12 @@ nppsMulC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_64f_Ctx(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -586,8 +750,12 @@ nppsMulC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_64f64s_ISfs_Ctx(Npp64f nValue, Npp64s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_64f64s_ISfs(Npp64f nValue, Npp64s * pDst, int nLength, int nScaleFactor);
 
@@ -597,8 +765,12 @@ nppsMulC_64f64s_ISfs(Npp64f nValue, Npp64s * pDst, int nLength, int nScaleFactor
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be multiplied by each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_64fc_I_Ctx(Npp64fc nValue, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
 
@@ -609,8 +781,12 @@ nppsMulC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
  * \param nValue Constant value to be multiplied by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMulC_64fc_Ctx(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMulC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -632,8 +808,12 @@ nppsMulC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength)
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_8u_ISfs_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -644,8 +824,12 @@ nppsSubC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -655,8 +839,12 @@ nppsSubC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16u_ISfs_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -667,8 +855,12 @@ nppsSubC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -678,8 +870,12 @@ nppsSubC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength,
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16s_ISfs_Ctx(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -690,8 +886,12 @@ nppsSubC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -702,8 +902,12 @@ nppsSubC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength,
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16sc_ISfs_Ctx(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -715,8 +919,12 @@ nppsSubC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -726,8 +934,12 @@ nppsSubC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLen
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32s_ISfs_Ctx(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -738,8 +950,12 @@ nppsSubC_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -750,8 +966,12 @@ nppsSubC_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength,
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32sc_ISfs_Ctx(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -763,8 +983,12 @@ nppsSubC_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32sc_Sfs_Ctx(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -773,8 +997,12 @@ nppsSubC_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLen
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -784,8 +1012,12 @@ nppsSubC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value to be subtracted from each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -795,8 +1027,12 @@ nppsSubC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32fc_I_Ctx(Npp32fc nValue, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
 
@@ -807,8 +1043,12 @@ nppsSubC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
  * \param nValue Constant value to be subtracted from each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_32fc_Ctx(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -817,8 +1057,12 @@ nppsSubC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength)
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength Length of the vectors, number of items.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_64f_I_Ctx(Npp64f nValue, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
 
@@ -828,8 +1072,12 @@ nppsSubC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
  * \param nValue Constant value to be subtracted from each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_64f_Ctx(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -839,8 +1087,12 @@ nppsSubC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be subtracted from each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_64fc_I_Ctx(Npp64fc nValue, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
 
@@ -851,8 +1103,12 @@ nppsSubC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
  * \param nValue Constant value to be subtracted from each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubC_64fc_Ctx(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -874,8 +1130,12 @@ nppsSubC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength)
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_8u_ISfs_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -886,8 +1146,12 @@ nppsSubCRev_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -897,8 +1161,12 @@ nppsSubCRev_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, 
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16u_ISfs_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -909,8 +1177,12 @@ nppsSubCRev_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -920,8 +1192,12 @@ nppsSubCRev_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLeng
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16s_ISfs_Ctx(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -932,8 +1208,12 @@ nppsSubCRev_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -944,8 +1224,12 @@ nppsSubCRev_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLeng
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16sc_ISfs_Ctx(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -957,8 +1241,12 @@ nppsSubCRev_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScale
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -968,8 +1256,12 @@ nppsSubCRev_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int n
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32s_ISfs_Ctx(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -980,8 +1272,12 @@ nppsSubCRev_32s_ISfs(Npp32s nValue, Npp32s * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -992,8 +1288,12 @@ nppsSubCRev_32s_Sfs(const Npp32s * pSrc, Npp32s nValue, Npp32s * pDst, int nLeng
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32sc_ISfs_Ctx(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1005,8 +1305,12 @@ nppsSubCRev_32sc_ISfs(Npp32sc nValue, Npp32sc * pSrcDst, int nLength, int nScale
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32sc_Sfs_Ctx(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -1015,8 +1319,12 @@ nppsSubCRev_32sc_Sfs(const Npp32sc * pSrc, Npp32sc nValue, Npp32sc * pDst, int n
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -1026,8 +1334,12 @@ nppsSubCRev_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value each vector element is to be subtracted from
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -1037,8 +1349,12 @@ nppsSubCRev_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32fc_I_Ctx(Npp32fc nValue, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
 
@@ -1049,8 +1365,12 @@ nppsSubCRev_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
  * \param nValue Constant value each vector element is to be subtracted from
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_32fc_Ctx(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -1059,8 +1379,12 @@ nppsSubCRev_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLeng
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength Length of the vectors, number of items.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_64f_I_Ctx(Npp64f nValue, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
 
@@ -1070,8 +1394,12 @@ nppsSubCRev_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
  * \param nValue Constant value each vector element is to be subtracted from
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_64f_Ctx(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -1081,8 +1409,12 @@ nppsSubCRev_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value each vector element is to be subtracted from
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_64fc_I_Ctx(Npp64fc nValue, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
 
@@ -1093,8 +1425,12 @@ nppsSubCRev_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
  * \param nValue Constant value each vector element is to be subtracted from
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSubCRev_64fc_Ctx(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSubCRev_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -1116,8 +1452,12 @@ nppsSubCRev_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLeng
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_8u_ISfs_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1128,8 +1468,12 @@ nppsDivC_8u_ISfs(Npp8u nValue, Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -1139,8 +1483,12 @@ nppsDivC_8u_Sfs(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, int
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16u_ISfs_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1151,8 +1499,12 @@ nppsDivC_16u_ISfs(Npp16u nValue, Npp16u * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -1162,8 +1514,12 @@ nppsDivC_16u_Sfs(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength,
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16s_ISfs_Ctx(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1174,8 +1530,12 @@ nppsDivC_16s_ISfs(Npp16s nValue, Npp16s * pSrcDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -1186,8 +1546,12 @@ nppsDivC_16s_Sfs(const Npp16s * pSrc, Npp16s nValue, Npp16s * pDst, int nLength,
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16sc_ISfs_Ctx(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1199,8 +1563,12 @@ nppsDivC_16sc_ISfs(Npp16sc nValue, Npp16sc * pSrcDst, int nLength, int nScaleFac
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -1209,8 +1577,12 @@ nppsDivC_16sc_Sfs(const Npp16sc * pSrc, Npp16sc nValue, Npp16sc * pDst, int nLen
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -1220,8 +1592,12 @@ nppsDivC_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value to be divided into each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -1231,8 +1607,12 @@ nppsDivC_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_32fc_I_Ctx(Npp32fc nValue, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
 
@@ -1243,8 +1623,12 @@ nppsDivC_32fc_I(Npp32fc nValue, Npp32fc * pSrcDst, int nLength);
  * \param nValue Constant value to be divided into each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_32fc_Ctx(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength);
 
@@ -1253,8 +1637,12 @@ nppsDivC_32fc(const Npp32fc * pSrc, Npp32fc nValue, Npp32fc * pDst, int nLength)
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided into each vector element
  * \param nLength Length of the vectors, number of items.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_64f_I_Ctx(Npp64f nValue, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
 
@@ -1264,8 +1652,12 @@ nppsDivC_64f_I(Npp64f nValue, Npp64f * pSrcDst, int nLength);
  * \param nValue Constant value to be divided into each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_64f_Ctx(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
 
@@ -1275,8 +1667,12 @@ nppsDivC_64f(const Npp64f * pSrc, Npp64f nValue, Npp64f * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided into each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_64fc_I_Ctx(Npp64fc nValue, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
 
@@ -1287,8 +1683,12 @@ nppsDivC_64fc_I(Npp64fc nValue, Npp64fc * pSrcDst, int nLength);
  * \param nValue Constant value to be divided into each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivC_64fc_Ctx(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength);
 
@@ -1308,8 +1708,12 @@ nppsDivC_64fc(const Npp64fc * pSrc, Npp64fc nValue, Npp64fc * pDst, int nLength)
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided by each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivCRev_16u_I_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivCRev_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
 
@@ -1319,8 +1723,12 @@ nppsDivCRev_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
  * \param nValue Constant value to be divided by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivCRev_16u_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivCRev_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
 
@@ -1329,8 +1737,12 @@ nppsDivCRev_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be divided by each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivCRev_32f_I_Ctx(Npp32f nValue, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivCRev_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
 
@@ -1340,8 +1752,12 @@ nppsDivCRev_32f_I(Npp32f nValue, Npp32f * pSrcDst, int nLength);
  * \param nValue Constant value to be divided by each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDivCRev_32f_Ctx(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDivCRev_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
 
@@ -1363,8 +1779,12 @@ nppsDivCRev_32f(const Npp32f * pSrc, Npp32f nValue, Npp32f * pDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength);
 
@@ -1375,8 +1795,12 @@ nppsAdd_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -1387,8 +1811,12 @@ nppsAdd_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength);
 
@@ -1399,8 +1827,12 @@ nppsAdd_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength);
 
@@ -1411,8 +1843,12 @@ nppsAdd_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength);
 
@@ -1423,8 +1859,12 @@ nppsAdd_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -1435,8 +1875,12 @@ nppsAdd_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength);
 
@@ -1447,8 +1891,12 @@ nppsAdd_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_8u16u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_8u16u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -1459,8 +1907,12 @@ nppsAdd_8u16u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be added to signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength);
 
@@ -1471,8 +1923,12 @@ nppsAdd_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nL
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_8u_Sfs_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -1483,8 +1939,12 @@ nppsAdd_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLeng
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16u_Sfs_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -1495,8 +1955,12 @@ nppsAdd_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -1507,8 +1971,12 @@ nppsAdd_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -1519,8 +1987,12 @@ nppsAdd_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_64s_Sfs_Ctx(const Npp64s * pSrc1, const Npp64s * pSrc2, Npp64s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_64s_Sfs(const Npp64s * pSrc1, const Npp64s * pSrc2, Npp64s * pDst, int nLength, int nScaleFactor);
 
@@ -1531,8 +2003,12 @@ nppsAdd_64s_Sfs(const Npp64s * pSrc1, const Npp64s * pSrc2, Npp64s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -1543,8 +2019,12 @@ nppsAdd_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, i
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32sc_Sfs_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -1554,8 +2034,12 @@ nppsAdd_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, i
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s_I_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
 
@@ -1565,8 +2049,12 @@ nppsAdd_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -1576,8 +2064,12 @@ nppsAdd_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_64f_I_Ctx(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
 
@@ -1587,8 +2079,12 @@ nppsAdd_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32fc_I_Ctx(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
 
@@ -1598,8 +2094,12 @@ nppsAdd_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_64fc_I_Ctx(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
 
@@ -1609,8 +2109,12 @@ nppsAdd_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s32s_I_Ctx(const Npp16s * pSrc, Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s32s_I(const Npp16s * pSrc, Npp32s * pSrcDst, int nLength);
 
@@ -1621,8 +2125,12 @@ nppsAdd_16s32s_I(const Npp16s * pSrc, Npp32s * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_8u_ISfs_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1633,8 +2141,12 @@ nppsAdd_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFact
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16u_ISfs_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1645,8 +2157,12 @@ nppsAdd_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16s_ISfs_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1657,8 +2173,12 @@ nppsAdd_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32s_ISfs_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1669,8 +2189,12 @@ nppsAdd_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_16sc_ISfs_Ctx(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1681,8 +2205,12 @@ nppsAdd_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nSca
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be added to signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAdd_32sc_ISfs_Ctx(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAdd_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -1704,8 +2232,12 @@ nppsAdd_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nSca
  * \param pSrc2 \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength);
 
@@ -1716,8 +2248,12 @@ nppsAddProduct_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, in
  * \param pSrc2 \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength);
 
@@ -1728,8 +2264,12 @@ nppsAddProduct_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, in
  * \param pSrc2 \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -1740,8 +2280,12 @@ nppsAddProduct_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst
  * \param pSrc2 \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength);
 
@@ -1753,8 +2297,12 @@ nppsAddProduct_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -1766,8 +2314,12 @@ nppsAddProduct_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -1779,8 +2331,12 @@ nppsAddProduct_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst
  * \param pDst \ref destination_signal_pointer. product of source1 and source2 signal elements to be added to destination elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAddProduct_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAddProduct_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -1802,8 +2358,12 @@ nppsAddProduct_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * p
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength);
 
@@ -1814,8 +2374,12 @@ nppsMul_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength);
 
@@ -1826,8 +2390,12 @@ nppsMul_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength);
 
@@ -1838,8 +2406,12 @@ nppsMul_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -1850,8 +2422,12 @@ nppsMul_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength);
 
@@ -1862,8 +2438,12 @@ nppsMul_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_8u16u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_8u16u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -1874,8 +2454,12 @@ nppsMul_8u16u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp16u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength);
 
@@ -1886,8 +2470,12 @@ nppsMul_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nL
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32f32fc_Ctx(const Npp32f * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32f32fc(const Npp32f * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -1898,8 +2486,12 @@ nppsMul_32f32fc(const Npp32f * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_8u_Sfs_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -1910,8 +2502,12 @@ nppsMul_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLeng
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16u_Sfs_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -1922,8 +2518,12 @@ nppsMul_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -1934,8 +2534,12 @@ nppsMul_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -1946,8 +2550,12 @@ nppsMul_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -1958,8 +2566,12 @@ nppsMul_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, i
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32sc_Sfs_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -1970,8 +2582,12 @@ nppsMul_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, i
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16u16s_Sfs_Ctx(const Npp16u * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16u16s_Sfs(const Npp16u * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -1982,8 +2598,12 @@ nppsMul_16u16s_Sfs(const Npp16u * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, in
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -1994,8 +2614,12 @@ nppsMul_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32s * pDst, in
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32s32sc_Sfs_Ctx(const Npp32s * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32s32sc_Sfs(const Npp32s * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -2006,8 +2630,12 @@ nppsMul_32s32sc_Sfs(const Npp32s * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst,
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_Low_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_Low_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -2017,8 +2645,12 @@ nppsMul_Low_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, i
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s_I_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
 
@@ -2028,8 +2660,12 @@ nppsMul_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -2039,8 +2675,12 @@ nppsMul_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_64f_I_Ctx(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
 
@@ -2050,8 +2690,12 @@ nppsMul_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32fc_I_Ctx(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
 
@@ -2061,8 +2705,12 @@ nppsMul_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_64fc_I_Ctx(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
 
@@ -2072,8 +2720,12 @@ nppsMul_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32f32fc_I_Ctx(const Npp32f * pSrc, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32f32fc_I(const Npp32f * pSrc, Npp32fc * pSrcDst, int nLength);
 
@@ -2084,8 +2736,12 @@ nppsMul_32f32fc_I(const Npp32f * pSrc, Npp32fc * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_8u_ISfs_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2096,8 +2752,12 @@ nppsMul_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFact
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16u_ISfs_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2108,8 +2768,12 @@ nppsMul_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16s_ISfs_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2120,8 +2784,12 @@ nppsMul_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32s_ISfs_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2132,8 +2800,12 @@ nppsMul_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_16sc_ISfs_Ctx(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2144,8 +2816,12 @@ nppsMul_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nSca
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32sc_ISfs_Ctx(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2154,10 +2830,14 @@ nppsMul_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nSca
  * then clamp to saturated value.
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be multiplied by signal1 elements
- * \param nLength \ref length_specification.
+ * \param nLength \ref length_specification. 
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMul_32s32sc_ISfs_Ctx(const Npp32s * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMul_32s32sc_ISfs(const Npp32s * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2179,8 +2859,12 @@ nppsMul_32s32sc_ISfs(const Npp32s * pSrc, Npp32sc * pSrcDst, int nLength, int nS
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength);
 
@@ -2191,8 +2875,12 @@ nppsSub_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength);
 
@@ -2203,8 +2891,12 @@ nppsSub_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength);
 
@@ -2215,8 +2907,12 @@ nppsSub_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -2227,8 +2923,12 @@ nppsSub_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength);
 
@@ -2239,8 +2939,12 @@ nppsSub_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nLength);
 
@@ -2251,8 +2955,12 @@ nppsSub_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp32f * pDst, int nL
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_8u_Sfs_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -2263,8 +2971,12 @@ nppsSub_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLeng
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16u_Sfs_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -2275,8 +2987,12 @@ nppsSub_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -2287,8 +3003,12 @@ nppsSub_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -2299,8 +3019,12 @@ nppsSub_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -2311,8 +3035,12 @@ nppsSub_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, i
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32sc_Sfs_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, int nLength, int nScaleFactor);
 
@@ -2322,8 +3050,12 @@ nppsSub_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, Npp32sc * pDst, i
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16s_I_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
 
@@ -2333,8 +3065,12 @@ nppsSub_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -2344,8 +3080,12 @@ nppsSub_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_64f_I_Ctx(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
 
@@ -2355,8 +3095,12 @@ nppsSub_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32fc_I_Ctx(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
 
@@ -2366,8 +3110,12 @@ nppsSub_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_64fc_I_Ctx(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
 
@@ -2378,8 +3126,12 @@ nppsSub_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_8u_ISfs_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2390,8 +3142,12 @@ nppsSub_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFact
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16u_ISfs_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2402,8 +3158,12 @@ nppsSub_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16s_ISfs_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2414,8 +3174,12 @@ nppsSub_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32s_ISfs_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2426,8 +3190,12 @@ nppsSub_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_16sc_ISfs_Ctx(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2438,8 +3206,12 @@ nppsSub_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nSca
  * \param pSrcDst \ref in_place_signal_pointer. signal1 elements to be subtracted from signal2 elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSub_32sc_ISfs_Ctx(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSub_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2461,8 +3233,12 @@ nppsSub_32sc_ISfs(const Npp32sc * pSrc, Npp32sc * pSrcDst, int nLength, int nSca
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_8u_Sfs_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -2473,8 +3249,12 @@ nppsDiv_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLeng
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16u_Sfs_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -2485,8 +3265,12 @@ nppsDiv_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -2497,8 +3281,12 @@ nppsDiv_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -2509,8 +3297,12 @@ nppsDiv_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, Npp32s * pDst, int n
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -2521,8 +3313,12 @@ nppsDiv_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, Npp16sc * pDst, i
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32s16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp32s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32s16s_Sfs(const Npp16s * pSrc1, const Npp32s * pSrc2, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -2533,8 +3329,12 @@ nppsDiv_32s16s_Sfs(const Npp16s * pSrc1, const Npp32s * pSrc2, Npp16s * pDst, in
  * \param pSrc2 \ref source_signal_pointer, signal1 divisor elements to be divided into signal2 dividend elements.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLength);
 
@@ -2545,8 +3345,12 @@ nppsDiv_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, Npp32f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer, signal1 divisor elements to be divided into signal2 dividend elements.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLength);
 
@@ -2557,8 +3361,12 @@ nppsDiv_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, Npp64f * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer, signal1 divisor elements to be divided into signal2 dividend elements.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int nLength);
 
@@ -2569,8 +3377,12 @@ nppsDiv_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, Npp32fc * pDst, int n
  * \param pSrc2 \ref source_signal_pointer, signal1 divisor elements to be divided into signal2 dividend elements.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int nLength);
 
@@ -2581,8 +3393,12 @@ nppsDiv_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, Npp64fc * pDst, int n
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_8u_ISfs_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2593,8 +3409,12 @@ nppsDiv_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, int nScaleFact
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16u_ISfs_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2605,8 +3425,12 @@ nppsDiv_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16s_ISfs_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2617,8 +3441,12 @@ nppsDiv_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_16sc_ISfs_Ctx(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2629,8 +3457,12 @@ nppsDiv_16sc_ISfs(const Npp16sc * pSrc, Npp16sc * pSrcDst, int nLength, int nSca
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32s_ISfs_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -2640,8 +3472,12 @@ nppsDiv_32s_ISfs(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, int nScaleF
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -2651,8 +3487,12 @@ nppsDiv_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_64f_I_Ctx(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
 
@@ -2662,8 +3502,12 @@ nppsDiv_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_32fc_I_Ctx(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
 
@@ -2673,8 +3517,12 @@ nppsDiv_32fc_I(const Npp32fc * pSrc, Npp32fc * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal1 divisor elements to be divided into signal2 dividend elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_64fc_I_Ctx(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
 
@@ -2697,8 +3545,12 @@ nppsDiv_64fc_I(const Npp64fc * pSrc, Npp64fc * pSrcDst, int nLength);
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_8u_Sfs_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2710,8 +3562,12 @@ nppsDiv_Round_8u_Sfs(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_16u_Sfs_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2723,8 +3579,12 @@ nppsDiv_Round_16u_Sfs(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst,
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2736,8 +3596,12 @@ nppsDiv_Round_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, Npp16s * pDst,
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_8u_ISfs_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2749,8 +3613,12 @@ nppsDiv_Round_8u_ISfs(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppRound
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_16u_ISfs_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2762,8 +3630,12 @@ nppsDiv_Round_16u_ISfs(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppRo
  * \param nLength \ref length_specification.
  * \param nRndMode various rounding modes.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDiv_Round_16s_ISfs_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDiv_Round_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppRoundMode nRndMode, int nScaleFactor);
 
@@ -2783,8 +3655,12 @@ nppsDiv_Round_16s_ISfs(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppRo
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength);
 
@@ -2793,8 +3669,12 @@ nppsAbs_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_32s_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_32s(const Npp32s * pSrc, Npp32s * pDst, int nLength);
 
@@ -2803,8 +3683,12 @@ nppsAbs_32s(const Npp32s * pSrc, Npp32s * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -2813,8 +3697,12 @@ nppsAbs_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -2822,8 +3710,12 @@ nppsAbs_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * 16-bit signed short signal absolute value.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_16s_I_Ctx(Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_16s_I(Npp16s * pSrcDst, int nLength);
 
@@ -2831,8 +3723,12 @@ nppsAbs_16s_I(Npp16s * pSrcDst, int nLength);
  * 32-bit signed integer signal absolute value.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_32s_I_Ctx(Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_32s_I(Npp32s * pSrcDst, int nLength);
 
@@ -2840,8 +3736,12 @@ nppsAbs_32s_I(Npp32s * pSrcDst, int nLength);
  * 32-bit floating point signal absolute value.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -2849,8 +3749,12 @@ nppsAbs_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal absolute value.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAbs_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAbs_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -2870,8 +3774,12 @@ nppsAbs_64f_I(Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -2880,8 +3788,12 @@ nppsSqr_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -2890,8 +3802,12 @@ nppsSqr_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
 
@@ -2900,8 +3816,12 @@ nppsSqr_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength);
 
@@ -2909,8 +3829,12 @@ nppsSqr_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength);
  * 32-bit floating point signal squared.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -2918,8 +3842,12 @@ nppsSqr_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal squared.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -2927,8 +3855,12 @@ nppsSqr_64f_I(Npp64f * pSrcDst, int nLength);
  * 32-bit complex floating point signal squared.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_32fc_I(Npp32fc * pSrcDst, int nLength);
 
@@ -2936,8 +3868,12 @@ nppsSqr_32fc_I(Npp32fc * pSrcDst, int nLength);
  * 64-bit complex floating point signal squared.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_64fc_I(Npp64fc * pSrcDst, int nLength);
 
@@ -2947,8 +3883,12 @@ nppsSqr_64fc_I(Npp64fc * pSrcDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_8u_Sfs(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -2958,8 +3898,12 @@ nppsSqr_8u_Sfs(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16u_Sfs(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -2969,8 +3913,12 @@ nppsSqr_16u_Sfs(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFacto
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -2980,8 +3928,12 @@ nppsSqr_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFacto
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -2990,8 +3942,12 @@ nppsSqr_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleFa
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_8u_ISfs_Ctx(Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_8u_ISfs(Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3000,8 +3956,12 @@ nppsSqr_8u_ISfs(Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16u_ISfs_Ctx(Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16u_ISfs(Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3010,8 +3970,12 @@ nppsSqr_16u_ISfs(Npp16u * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16s_ISfs_Ctx(Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3020,8 +3984,12 @@ nppsSqr_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqr_16sc_ISfs_Ctx(Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqr_16sc_ISfs(Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3041,8 +4009,12 @@ nppsSqr_16sc_ISfs(Npp16sc * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3051,8 +4023,12 @@ nppsSqrt_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -3061,8 +4037,12 @@ nppsSqrt_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
 
@@ -3071,8 +4051,12 @@ nppsSqrt_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength);
 
@@ -3080,8 +4064,12 @@ nppsSqrt_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength);
  * 32-bit floating point signal square root.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -3089,8 +4077,12 @@ nppsSqrt_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal square root.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -3098,8 +4090,12 @@ nppsSqrt_64f_I(Npp64f * pSrcDst, int nLength);
  * 32-bit complex floating point signal square root.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_32fc_I(Npp32fc * pSrcDst, int nLength);
 
@@ -3107,8 +4103,12 @@ nppsSqrt_32fc_I(Npp32fc * pSrcDst, int nLength);
  * 64-bit complex floating point signal square root.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64fc_I(Npp64fc * pSrcDst, int nLength);
 
@@ -3118,8 +4118,12 @@ nppsSqrt_64fc_I(Npp64fc * pSrcDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_8u_Sfs_Ctx(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_8u_Sfs(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor);
 
@@ -3129,8 +4133,12 @@ nppsSqrt_8u_Sfs(const Npp8u * pSrc, Npp8u * pDst, int nLength, int nScaleFactor)
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16u_Sfs_Ctx(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16u_Sfs(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFactor);
 
@@ -3140,8 +4148,12 @@ nppsSqrt_16u_Sfs(const Npp16u * pSrc, Npp16u * pDst, int nLength, int nScaleFact
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3151,8 +4163,12 @@ nppsSqrt_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFact
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleFactor);
 
@@ -3162,8 +4178,12 @@ nppsSqrt_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, int nScaleF
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64s_Sfs_Ctx(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64s_Sfs(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFactor);
 
@@ -3173,8 +4193,12 @@ nppsSqrt_64s_Sfs(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFact
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_32s16s_Sfs_Ctx(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3184,8 +4208,12 @@ nppsSqrt_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleF
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64s16s_Sfs_Ctx(const Npp64s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64s16s_Sfs(const Npp64s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3194,8 +4222,12 @@ nppsSqrt_64s16s_Sfs(const Npp64s * pSrc, Npp16s * pDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_8u_ISfs_Ctx(Npp8u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_8u_ISfs(Npp8u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3204,8 +4236,12 @@ nppsSqrt_8u_ISfs(Npp8u * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16u_ISfs_Ctx(Npp16u * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16u_ISfs(Npp16u * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3214,8 +4250,12 @@ nppsSqrt_16u_ISfs(Npp16u * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16s_ISfs_Ctx(Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3224,8 +4264,12 @@ nppsSqrt_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_16sc_ISfs_Ctx(Npp16sc * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_16sc_ISfs(Npp16sc * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3234,8 +4278,12 @@ nppsSqrt_16sc_ISfs(Npp16sc * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSqrt_64s_ISfs_Ctx(Npp64s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSqrt_64s_ISfs(Npp64s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3255,8 +4303,12 @@ nppsSqrt_64s_ISfs(Npp64s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCubrt_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCubrt_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3266,8 +4318,12 @@ nppsCubrt_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCubrt_32s16s_Sfs_Ctx(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCubrt_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3287,8 +4343,12 @@ nppsCubrt_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScale
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3297,8 +4357,12 @@ nppsExp_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -3307,8 +4371,12 @@ nppsExp_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_32f64f_Ctx(const Npp32f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_32f64f(const Npp32f * pSrc, Npp64f * pDst, int nLength);
 
@@ -3316,8 +4384,12 @@ nppsExp_32f64f(const Npp32f * pSrc, Npp64f * pDst, int nLength);
  * 32-bit floating point signal exponent.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -3325,8 +4397,12 @@ nppsExp_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal exponent.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -3336,8 +4412,12 @@ nppsExp_64f_I(Npp64f * pSrcDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3347,8 +4427,12 @@ nppsExp_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFacto
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -3358,8 +4442,12 @@ nppsExp_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFacto
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_64s_Sfs_Ctx(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_64s_Sfs(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFactor);
 
@@ -3368,8 +4456,12 @@ nppsExp_64s_Sfs(const Npp64s * pSrc, Npp64s * pDst, int nLength, int nScaleFacto
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_16s_ISfs_Ctx(Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3378,8 +4470,12 @@ nppsExp_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_32s_ISfs_Ctx(Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3388,8 +4484,12 @@ nppsExp_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsExp_64s_ISfs_Ctx(Npp64s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsExp_64s_ISfs(Npp64s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3409,8 +4509,12 @@ nppsExp_64s_ISfs(Npp64s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3419,8 +4523,12 @@ nppsLn_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -3429,8 +4537,12 @@ nppsLn_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_64f32f_Ctx(const Npp64f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_64f32f(const Npp64f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3438,8 +4550,12 @@ nppsLn_64f32f(const Npp64f * pSrc, Npp32f * pDst, int nLength);
  * 32-bit floating point signal natural logarithm.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -3447,8 +4563,12 @@ nppsLn_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal natural logarithm.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -3458,8 +4578,12 @@ nppsLn_64f_I(Npp64f * pSrcDst, int nLength);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3469,8 +4593,12 @@ nppsLn_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -3480,8 +4608,12 @@ nppsLn_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_32s16s_Sfs_Ctx(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
@@ -3490,8 +4622,12 @@ nppsLn_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFac
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_16s_ISfs_Ctx(Npp16s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3500,8 +4636,12 @@ nppsLn_16s_ISfs(Npp16s * pSrcDst, int nLength, int nScaleFactor);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLn_32s_ISfs_Ctx(Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLn_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3522,8 +4662,12 @@ nppsLn_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+npps10Log10_32s_Sfs_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 npps10Log10_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleFactor);
 
@@ -3532,8 +4676,12 @@ npps10Log10_32s_Sfs(const Npp32s * pSrc, Npp32s * pDst, int nLength, int nScaleF
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+npps10Log10_32s_ISfs_Ctx(Npp32s * pSrcDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 npps10Log10_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
 
@@ -3554,8 +4702,12 @@ npps10Log10_32s_ISfs(Npp32s * pSrcDst, int nLength, int nScaleFactor);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumLnGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLnGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -3565,8 +4717,12 @@ nppsSumLnGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param pDst Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSumLn_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLn_32f(const Npp32f * pSrc, int nLength, Npp32f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3576,8 +4732,12 @@ nppsSumLn_32f(const Npp32f * pSrc, int nLength, Npp32f * pDst, Npp8u * pDeviceBu
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumLnGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLnGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -3587,8 +4747,12 @@ nppsSumLnGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param pDst Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSumLn_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLn_64f(const Npp64f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3598,8 +4762,12 @@ nppsSumLn_64f(const Npp64f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDeviceBu
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumLnGetBufferSize_32f64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLnGetBufferSize_32f64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -3609,8 +4777,12 @@ nppsSumLnGetBufferSize_32f64f(int nLength, int * hpBufferSize /* host pointer */
  * \param nLength \ref length_specification.
  * \param pDst Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSumLn_32f64f_Ctx(const Npp32f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLn_32f64f(const Npp32f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3620,8 +4792,12 @@ nppsSumLn_32f64f(const Npp32f * pSrc, int nLength, Npp64f * pDst, Npp8u * pDevic
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumLnGetBufferSize_16s32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLnGetBufferSize_16s32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -3631,8 +4807,12 @@ nppsSumLnGetBufferSize_16s32f(int nLength, int * hpBufferSize /* host pointer */
  * \param nLength \ref length_specification.
  * \param pDst Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSumLn_16s32f_Ctx(const Npp16s * pSrc, int nLength, Npp32f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumLn_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3652,8 +4832,12 @@ nppsSumLn_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pDst, Npp8u * pDevic
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsArctan_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsArctan_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
 
@@ -3662,8 +4846,12 @@ nppsArctan_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsArctan_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsArctan_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
 
@@ -3671,8 +4859,12 @@ nppsArctan_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength);
  * 32-bit floating point signal inverse tangent.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsArctan_32f_I_Ctx(Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsArctan_32f_I(Npp32f * pSrcDst, int nLength);
 
@@ -3680,8 +4872,12 @@ nppsArctan_32f_I(Npp32f * pSrcDst, int nLength);
  * 64-bit floating point signal inverse tangent.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsArctan_64f_I_Ctx(Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsArctan_64f_I(Npp64f * pSrcDst, int nLength);
 
@@ -3703,8 +4899,12 @@ nppsArctan_64f_I(Npp64f * pSrcDst, int nLength);
  * \param nLength \ref length_specification.
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f vSub, Npp32f vDiv, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f vSub, Npp32f vDiv);
 
@@ -3715,8 +4915,12 @@ nppsNormalize_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f vSub, 
  * \param nLength \ref length_specification.
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32fc vSub, Npp32f vDiv, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32fc vSub, Npp32f vDiv);
 
@@ -3727,8 +4931,12 @@ nppsNormalize_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32fc vS
  * \param nLength \ref length_specification.
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f vSub, Npp64f vDiv, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f vSub, Npp64f vDiv);
 
@@ -3739,8 +4947,12 @@ nppsNormalize_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f vSub, 
  * \param nLength \ref length_specification.
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64fc vSub, Npp64f vDiv, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64fc vSub, Npp64f vDiv);
 
@@ -3752,8 +4964,12 @@ nppsNormalize_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64fc vS
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_16s_Sfs_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s vSub, int vDiv, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s vSub, int vDiv, int nScaleFactor);
 
@@ -3765,8 +4981,12 @@ nppsNormalize_16s_Sfs(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s vS
  * \param vSub value subtracted from each signal element before division
  * \param vDiv divisor of post-subtracted signal element dividend
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNormalize_16sc_Sfs_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16sc vSub, int vDiv, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNormalize_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16sc vSub, int vDiv, int nScaleFactor);
 
@@ -3786,8 +5006,12 @@ nppsNormalize_16sc_Sfs(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nParam constant used in Cauchy formula
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCauchy_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nParam, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCauchy_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nParam);
 
@@ -3796,8 +5020,12 @@ nppsCauchy_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nParam);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nParam constant used in Cauchy formula
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCauchyD_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nParam, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCauchyD_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nParam);
 
@@ -3808,8 +5036,12 @@ nppsCauchyD_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nParam);
  *      of the source signal.
  * \param nLength \ref length_specification.
  * \param nParam constant used in Cauchy formula
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsCauchyDD2_32f_I_Ctx(Npp32f * pSrcDst, Npp32f * pD2FVal, int nLength, Npp32f nParam, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsCauchyDD2_32f_I(Npp32f * pSrcDst, Npp32f * pD2FVal, int nLength, Npp32f nParam);
 
@@ -3819,7 +5051,7 @@ nppsCauchyDD2_32f_I(Npp32f * pSrcDst, Npp32f * pD2FVal, int nLength, Npp32f nPar
 
 /** 
  * @defgroup signal_logical_and_shift_operations Logical And Shift Operations
- *
+ * The set of logical and shift operations for signal processing available in the library.
  * @{
  *
  */
@@ -3839,8 +5071,12 @@ nppsCauchyDD2_32f_I(Npp32f * pSrcDst, Npp32f * pD2FVal, int nLength, Npp32f nPar
  * \param nValue Constant value to be anded with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_8u_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
 
@@ -3850,8 +5086,12 @@ nppsAndC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
  * \param nValue Constant value to be anded with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_16u_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
 
@@ -3861,8 +5101,12 @@ nppsAndC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
  * \param nValue Constant value to be anded with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_32u_Ctx(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
 
@@ -3871,8 +5115,12 @@ nppsAndC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be anded with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_8u_I_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
 
@@ -3881,8 +5129,12 @@ nppsAndC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be anded with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_16u_I_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
 
@@ -3891,8 +5143,12 @@ nppsAndC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be anded with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAndC_32u_I_Ctx(Npp32u nValue, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAndC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
 
@@ -3913,8 +5169,12 @@ nppsAndC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
 
@@ -3924,8 +5184,12 @@ nppsAnd_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -3935,8 +5199,12 @@ nppsAnd_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength);
 
@@ -3945,8 +5213,12 @@ nppsAnd_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLeng
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_8u_I_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
 
@@ -3955,8 +5227,12 @@ nppsAnd_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_16u_I_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
 
@@ -3965,8 +5241,12 @@ nppsAnd_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be anded with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAnd_32u_I_Ctx(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAnd_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
 
@@ -3987,8 +5267,12 @@ nppsAnd_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
  * \param nValue Constant value to be ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_8u_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
 
@@ -3998,8 +5282,12 @@ nppsOrC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
  * \param nValue Constant value to be ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_16u_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
 
@@ -4009,8 +5297,12 @@ nppsOrC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
  * \param nValue Constant value to be ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_32u_Ctx(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
 
@@ -4019,8 +5311,12 @@ nppsOrC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_8u_I_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
 
@@ -4029,8 +5325,12 @@ nppsOrC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_16u_I_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
 
@@ -4039,8 +5339,12 @@ nppsOrC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOrC_32u_I_Ctx(Npp32u nValue, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOrC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
 
@@ -4061,8 +5365,12 @@ nppsOrC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
 
@@ -4072,8 +5380,12 @@ nppsOr_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -4083,8 +5395,12 @@ nppsOr_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLengt
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength);
 
@@ -4093,8 +5409,12 @@ nppsOr_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLengt
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_8u_I_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
 
@@ -4103,8 +5423,12 @@ nppsOr_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_16u_I_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
 
@@ -4113,8 +5437,12 @@ nppsOr_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsOr_32u_I_Ctx(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsOr_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
 
@@ -4135,8 +5463,12 @@ nppsOr_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_8u_Ctx(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
 
@@ -4146,8 +5478,12 @@ nppsXorC_8u(const Npp8u * pSrc, Npp8u nValue, Npp8u * pDst, int nLength);
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_16u_Ctx(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
 
@@ -4157,8 +5493,12 @@ nppsXorC_16u(const Npp16u * pSrc, Npp16u nValue, Npp16u * pDst, int nLength);
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_32u_Ctx(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
 
@@ -4167,8 +5507,12 @@ nppsXorC_32u(const Npp32u * pSrc, Npp32u nValue, Npp32u * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_8u_I_Ctx(Npp8u nValue, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
 
@@ -4177,8 +5521,12 @@ nppsXorC_8u_I(Npp8u nValue, Npp8u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_16u_I_Ctx(Npp16u nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
 
@@ -4187,8 +5535,12 @@ nppsXorC_16u_I(Npp16u nValue, Npp16u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be exclusive ored with each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXorC_32u_I_Ctx(Npp32u nValue, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXorC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
 
@@ -4209,8 +5561,12 @@ nppsXorC_32u_I(Npp32u nValue, Npp32u * pSrcDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
 
@@ -4220,8 +5576,12 @@ nppsXor_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, Npp8u * pDst, int nLength);
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLength);
 
@@ -4231,8 +5591,12 @@ nppsXor_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, Npp16u * pDst, int nLeng
  * \param pSrc2 \ref source_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLength);
 
@@ -4241,8 +5605,12 @@ nppsXor_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, Npp32u * pDst, int nLeng
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_8u_I_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
 
@@ -4251,8 +5619,12 @@ nppsXor_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_16u_I_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
 
@@ -4261,8 +5633,12 @@ nppsXor_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer. signal2 elements to be exclusive ored with signal1 elements
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsXor_32u_I_Ctx(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsXor_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
 
@@ -4282,8 +5658,12 @@ nppsXor_32u_I(const Npp32u * pSrc, Npp32u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_8u_Ctx(const Npp8u * pSrc, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_8u(const Npp8u * pSrc, Npp8u * pDst, int nLength);
 
@@ -4292,8 +5672,12 @@ nppsNot_8u(const Npp8u * pSrc, Npp8u * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_16u_Ctx(const Npp16u * pSrc, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_16u(const Npp16u * pSrc, Npp16u * pDst, int nLength);
 
@@ -4302,8 +5686,12 @@ nppsNot_16u(const Npp16u * pSrc, Npp16u * pDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_32u_Ctx(const Npp32u * pSrc, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_32u(const Npp32u * pSrc, Npp32u * pDst, int nLength);
 
@@ -4311,8 +5699,12 @@ nppsNot_32u(const Npp32u * pSrc, Npp32u * pDst, int nLength);
  * 8-bit unsigned char in place not signal.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_8u_I_Ctx(Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_8u_I(Npp8u * pSrcDst, int nLength);
 
@@ -4320,8 +5712,12 @@ nppsNot_8u_I(Npp8u * pSrcDst, int nLength);
  * 16-bit unsigned short in place not signal.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_16u_I_Ctx(Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_16u_I(Npp16u * pSrcDst, int nLength);
 
@@ -4329,8 +5725,12 @@ nppsNot_16u_I(Npp16u * pSrcDst, int nLength);
  * 32-bit unsigned signed integer in place not signal.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNot_32u_I_Ctx(Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNot_32u_I(Npp32u * pSrcDst, int nLength);
 
@@ -4351,8 +5751,12 @@ nppsNot_32u_I(Npp32u * pSrcDst, int nLength);
  * \param nValue Constant value to be used to left shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_8u_Ctx(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_8u(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength);
 
@@ -4362,8 +5766,12 @@ nppsLShiftC_8u(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength);
  * \param nValue Constant value to be used to left shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_16u_Ctx(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_16u(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength);
 
@@ -4373,8 +5781,12 @@ nppsLShiftC_16u(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength);
  * \param nValue Constant value to be used to left shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_16s_Ctx(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_16s(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength);
 
@@ -4384,8 +5796,12 @@ nppsLShiftC_16s(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength);
  * \param nValue Constant value to be used to left shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_32u_Ctx(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_32u(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength);
 
@@ -4395,8 +5811,12 @@ nppsLShiftC_32u(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength);
  * \param nValue Constant value to be used to left shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_32s_Ctx(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_32s(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength);
 
@@ -4405,8 +5825,12 @@ nppsLShiftC_32s(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to left shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_8u_I_Ctx(int nValue, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_8u_I(int nValue, Npp8u * pSrcDst, int nLength);
 
@@ -4415,8 +5839,12 @@ nppsLShiftC_8u_I(int nValue, Npp8u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to left shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_16u_I_Ctx(int nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_16u_I(int nValue, Npp16u * pSrcDst, int nLength);
 
@@ -4425,8 +5853,12 @@ nppsLShiftC_16u_I(int nValue, Npp16u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to left shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_16s_I_Ctx(int nValue, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_16s_I(int nValue, Npp16s * pSrcDst, int nLength);
 
@@ -4435,8 +5867,12 @@ nppsLShiftC_16s_I(int nValue, Npp16s * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to left shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_32u_I_Ctx(int nValue, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_32u_I(int nValue, Npp32u * pSrcDst, int nLength);
 
@@ -4445,8 +5881,12 @@ nppsLShiftC_32u_I(int nValue, Npp32u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to left shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsLShiftC_32s_I_Ctx(int nValue, Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsLShiftC_32s_I(int nValue, Npp32s * pSrcDst, int nLength);
 
@@ -4467,8 +5907,12 @@ nppsLShiftC_32s_I(int nValue, Npp32s * pSrcDst, int nLength);
  * \param nValue Constant value to be used to right shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_8u_Ctx(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_8u(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength);
 
@@ -4478,8 +5922,12 @@ nppsRShiftC_8u(const Npp8u * pSrc, int nValue, Npp8u * pDst, int nLength);
  * \param nValue Constant value to be used to right shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_16u_Ctx(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_16u(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength);
 
@@ -4489,8 +5937,12 @@ nppsRShiftC_16u(const Npp16u * pSrc, int nValue, Npp16u * pDst, int nLength);
  * \param nValue Constant value to be used to right shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_16s_Ctx(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_16s(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength);
 
@@ -4500,8 +5952,12 @@ nppsRShiftC_16s(const Npp16s * pSrc, int nValue, Npp16s * pDst, int nLength);
  * \param nValue Constant value to be used to right shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_32u_Ctx(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_32u(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength);
 
@@ -4511,8 +5967,12 @@ nppsRShiftC_32u(const Npp32u * pSrc, int nValue, Npp32u * pDst, int nLength);
  * \param nValue Constant value to be used to right shift each vector element
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_32s_Ctx(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_32s(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength);
 
@@ -4521,8 +5981,12 @@ nppsRShiftC_32s(const Npp32s * pSrc, int nValue, Npp32s * pDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to right shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_8u_I_Ctx(int nValue, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_8u_I(int nValue, Npp8u * pSrcDst, int nLength);
 
@@ -4531,8 +5995,12 @@ nppsRShiftC_8u_I(int nValue, Npp8u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to right shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_16u_I_Ctx(int nValue, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_16u_I(int nValue, Npp16u * pSrcDst, int nLength);
 
@@ -4541,8 +6009,12 @@ nppsRShiftC_16u_I(int nValue, Npp16u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to right shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_16s_I_Ctx(int nValue, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_16s_I(int nValue, Npp16s * pSrcDst, int nLength);
 
@@ -4551,8 +6023,12 @@ nppsRShiftC_16s_I(int nValue, Npp16s * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to right shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_32u_I_Ctx(int nValue, Npp32u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_32u_I(int nValue, Npp32u * pSrcDst, int nLength);
 
@@ -4561,8 +6037,12 @@ nppsRShiftC_32u_I(int nValue, Npp32u * pSrcDst, int nLength);
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nValue Constant value to be used to right shift each vector element
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsRShiftC_32s_I_Ctx(int nValue, Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsRShiftC_32s_I(int nValue, Npp32s * pSrcDst, int nLength);
 

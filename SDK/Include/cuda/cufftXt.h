@@ -1,5 +1,5 @@
 
- /* Copyright 2005-2014 NVIDIA Corporation.  All rights reserved.
+ /* Copyright 2005-2021 NVIDIA Corporation.  All rights reserved.
   *
   * NOTICE TO LICENSEE:
   *
@@ -48,9 +48,9 @@
   */
 
 /*!
-* \file cufftXt.h  
-* \brief Public header file for the NVIDIA CUDA FFT library (CUFFT)  
-*/ 
+* \file cufftXt.h
+* \brief Public header file for the NVIDIA CUDA FFT library (CUFFT)
+*/
 
 #ifndef _CUFFTXT_H_
 #define _CUFFTXT_H_
@@ -62,7 +62,7 @@
 #ifdef _WIN32
 #define CUFFTAPI __stdcall
 #else
-#define CUFFTAPI 
+#define CUFFTAPI
 #endif
 #endif
 
@@ -71,7 +71,7 @@ extern "C" {
 #endif
 
 //
-// cufftXtSubFormat identifies the data layout of 
+// cufftXtSubFormat identifies the data layout of
 // a memory descriptor owned by cufft.
 // note that multi GPU cufft does not yet support out-of-place transforms
 //
@@ -82,7 +82,9 @@ typedef enum cufftXtSubFormat_t {
     CUFFT_XT_FORMAT_INPLACE = 0x02,            //by default inplace is input order, which is linear across GPUs
     CUFFT_XT_FORMAT_INPLACE_SHUFFLED = 0x03,   //shuffled output order after execution of the transform
     CUFFT_XT_FORMAT_1D_INPUT_SHUFFLED = 0x04,  //shuffled input order prior to execution of 1D transforms
-    CUFFT_FORMAT_UNDEFINED = 0x05
+    CUFFT_XT_FORMAT_DISTRIBUTED_INPUT = 0x05,
+    CUFFT_XT_FORMAT_DISTRIBUTED_OUTPUT = 0x06,
+    CUFFT_FORMAT_UNDEFINED = 0x07
 } cufftXtSubFormat;
 
 //
@@ -132,47 +134,47 @@ typedef enum cufftXtWorkAreaPolicy_t {
 // multi-GPU routines
 cufftResult CUFFTAPI cufftXtSetGPUs(cufftHandle handle, int nGPUs, int *whichGPUs);
 
-cufftResult CUFFTAPI cufftXtMalloc(cufftHandle plan, 
+cufftResult CUFFTAPI cufftXtMalloc(cufftHandle plan,
                                    cudaLibXtDesc ** descriptor,
                                    cufftXtSubFormat format);
 
-cufftResult CUFFTAPI cufftXtMemcpy(cufftHandle plan, 
-                                   void *dstPointer, 
+cufftResult CUFFTAPI cufftXtMemcpy(cufftHandle plan,
+                                   void *dstPointer,
                                    void *srcPointer,
                                    cufftXtCopyType type);
-                                   
+
 cufftResult CUFFTAPI cufftXtFree(cudaLibXtDesc *descriptor);
 
 cufftResult CUFFTAPI cufftXtSetWorkArea(cufftHandle plan, void **workArea);
 
-cufftResult CUFFTAPI cufftXtExecDescriptorC2C(cufftHandle plan, 
+cufftResult CUFFTAPI cufftXtExecDescriptorC2C(cufftHandle plan,
                                               cudaLibXtDesc *input,
-                                              cudaLibXtDesc *output, 
+                                              cudaLibXtDesc *output,
                                               int direction);
 
-cufftResult CUFFTAPI cufftXtExecDescriptorR2C(cufftHandle plan, 
-                                              cudaLibXtDesc *input,
-                                              cudaLibXtDesc *output);     
-                                        
-cufftResult CUFFTAPI cufftXtExecDescriptorC2R(cufftHandle plan, 
+cufftResult CUFFTAPI cufftXtExecDescriptorR2C(cufftHandle plan,
                                               cudaLibXtDesc *input,
                                               cudaLibXtDesc *output);
-                                  
-cufftResult CUFFTAPI cufftXtExecDescriptorZ2Z(cufftHandle plan, 
+
+cufftResult CUFFTAPI cufftXtExecDescriptorC2R(cufftHandle plan,
                                               cudaLibXtDesc *input,
-                                              cudaLibXtDesc *output, 
+                                              cudaLibXtDesc *output);
+
+cufftResult CUFFTAPI cufftXtExecDescriptorZ2Z(cufftHandle plan,
+                                              cudaLibXtDesc *input,
+                                              cudaLibXtDesc *output,
                                               int direction);
 
-cufftResult CUFFTAPI cufftXtExecDescriptorD2Z(cufftHandle plan, 
-                                              cudaLibXtDesc *input,
-                                              cudaLibXtDesc *output);     
-                                        
-cufftResult CUFFTAPI cufftXtExecDescriptorZ2D(cufftHandle plan, 
+cufftResult CUFFTAPI cufftXtExecDescriptorD2Z(cufftHandle plan,
                                               cudaLibXtDesc *input,
                                               cudaLibXtDesc *output);
-   
+
+cufftResult CUFFTAPI cufftXtExecDescriptorZ2D(cufftHandle plan,
+                                              cudaLibXtDesc *input,
+                                              cudaLibXtDesc *output);
+
 // Utility functions
-                                              
+
 cufftResult CUFFTAPI cufftXtQueryPlan(cufftHandle plan, void *queryStruct, cufftXtQueryType queryType);
 
 
@@ -225,17 +227,18 @@ cufftResult CUFFTAPI cufftXtMakePlanMany(cufftHandle plan,
 cufftResult CUFFTAPI cufftXtGetSizeMany(cufftHandle plan,
                                         int rank,
                                         long long int *n,
-                                        long long int *inembed, 
-                                        long long int istride, 
+                                        long long int *inembed,
+                                        long long int istride,
                                         long long int idist,
                                         cudaDataType inputtype,
-                                        long long int *onembed, 
-                                        long long int ostride, 
+                                        long long int *onembed,
+                                        long long int ostride,
                                         long long int odist,
                                         cudaDataType outputtype,
                                         long long int batch,
                                         size_t *workSize,
                                         cudaDataType executiontype);
+
 
 cufftResult CUFFTAPI cufftXtExec(cufftHandle plan,
                                  void *input,
@@ -248,6 +251,16 @@ cufftResult CUFFTAPI cufftXtExecDescriptor(cufftHandle plan,
                                            int direction);
 
 cufftResult CUFFTAPI cufftXtSetWorkAreaPolicy(cufftHandle plan, cufftXtWorkAreaPolicy policy, size_t *workSize);
+
+typedef struct cufftBox3d_t {
+    size_t lower[3];
+    size_t upper[3];
+    size_t strides[3];
+} cufftBox3d;
+
+cufftResult CUFFTAPI cufftXtSetDistribution(cufftHandle plan,
+                                            const cufftBox3d *box_in,
+                                            const cufftBox3d *box_out);
 
 #ifdef __cplusplus
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -51,11 +51,9 @@
 #ifndef __SURFACE_INDIRECT_FUNCTIONS_H__
 #define __SURFACE_INDIRECT_FUNCTIONS_H__
 
-
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 template<typename T> struct __nv_isurf_trait { };
 template<> struct __nv_isurf_trait<char> { typedef void type; };
@@ -100,184 +98,142 @@ template<> struct __nv_isurf_trait<float4> { typedef void type; };
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type  surf1Dread(T *ptr, cudaSurfaceObject_t obj, int x, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf1Dread", ptr, obj, x, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surf1Dread(cudaSurfaceObject_t surfObject, int x, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__  
    T ret;
    surf1Dread(&ret, surfObject, x, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type  surf2Dread(T *ptr, cudaSurfaceObject_t obj, int x, int y, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf2Dread", ptr, obj, x, y, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surf2Dread(cudaSurfaceObject_t surfObject, int x, int y, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surf2Dread(&ret, surfObject, x, y, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 
 template <typename T>
 static __device__ typename  __nv_isurf_trait<T>::type  surf3Dread(T *ptr, cudaSurfaceObject_t obj, int x, int y, int z, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf3Dread", ptr, obj, x, y, z, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surf3Dread(cudaSurfaceObject_t surfObject, int x, int y, int z, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surf3Dread(&ret, surfObject, x, y, z, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__ typename  __nv_isurf_trait<T>::type  surf1DLayeredread(T *ptr, cudaSurfaceObject_t obj, int x, int layer, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf1DLayeredread", ptr, obj, x, layer, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surf1DLayeredread(cudaSurfaceObject_t surfObject, int x, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surf1DLayeredread(&ret, surfObject, x, layer, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__  typename __nv_isurf_trait<T>::type  surf2DLayeredread(T *ptr, cudaSurfaceObject_t obj, int x, int y, int layer, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf2DLayeredread", ptr, obj, x, y, layer, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surf2DLayeredread(cudaSurfaceObject_t surfObject, int x, int y, int layer, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surf2DLayeredread(&ret, surfObject, x, y, layer, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type  surfCubemapread(T *ptr, cudaSurfaceObject_t obj, int x, int y, int face, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurfCubemapread", ptr, obj, x, y, face, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surfCubemapread(cudaSurfaceObject_t surfObject, int x, int y, int face, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surfCubemapread(&ret, surfObject, x, y, face, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__  typename __nv_isurf_trait<T>::type  surfCubemapLayeredread(T *ptr, cudaSurfaceObject_t obj, int x, int y, int layerface, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurfCubemapLayeredread", ptr, obj, x, y, layerface, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <class T>
 static __device__ T surfCubemapLayeredread(cudaSurfaceObject_t surfObject, int x, int y, int layerface, cudaSurfaceBoundaryMode boundaryMode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__   
    T ret;
    surfCubemapLayeredread(&ret, surfObject, x, y, layerface, boundaryMode);
    return ret;
-#endif /* __CUDA_ARCH__ */   
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surf1Dwrite(T val, cudaSurfaceObject_t obj, int x, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf1Dwrite_v2", &val, obj, x, mode);
-#endif /* __CUDA_ARCH__ */  
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surf2Dwrite(T val, cudaSurfaceObject_t obj, int x, int y, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf2Dwrite_v2", &val, obj, x, y, mode);
-#endif /* __CUDA_ARCH__ */ 
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surf3Dwrite(T val, cudaSurfaceObject_t obj, int x, int y, int z, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf3Dwrite_v2", &val, obj, x, y, z, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surf1DLayeredwrite(T val, cudaSurfaceObject_t obj, int x, int layer, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf1DLayeredwrite_v2", &val, obj, x, layer, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surf2DLayeredwrite(T val, cudaSurfaceObject_t obj, int x, int y, int layer, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurf2DLayeredwrite_v2", &val, obj, x, y, layer, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surfCubemapwrite(T val, cudaSurfaceObject_t obj, int x, int y, int face, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurfCubemapwrite_v2", &val, obj, x, y, face, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 template <typename T>
 static __device__ typename __nv_isurf_trait<T>::type surfCubemapLayeredwrite(T val, cudaSurfaceObject_t obj, int x, int y, int layerface, cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__isurfCubemapLayeredwrite_v2", &val, obj, x, y, layerface, mode);
-#endif /* __CUDA_ARCH__ */
 }
 
 #endif // __cplusplus && __CUDACC__

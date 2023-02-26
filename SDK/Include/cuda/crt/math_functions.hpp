@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2021 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/math_functions.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/math_functions.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_HPP__
+#endif
+
 #if !defined(__MATH_FUNCTIONS_HPP__)
 #define __MATH_FUNCTIONS_HPP__
 
@@ -75,53 +85,53 @@
 
 #if defined(__CUDACC_RTC__)
 
-__host__ __device__ __cudart_builtin__ int signbit(float x) { return __signbitf(x); }
-__host__ __device__ __cudart_builtin__ int signbit(double x) { return __signbit(x); }
-__host__ __device__ __cudart_builtin__ int signbit(long double x) { return __signbitl((double)x);}
+__host__ __device__ __cudart_builtin__ int signbit(const float x) { return __signbitf(x); }
+__host__ __device__ __cudart_builtin__ int signbit(const double x) { return __signbit(x); }
+__host__ __device__ __cudart_builtin__ int signbit(const long double x) { return __signbitl(static_cast<double>(x));}
 
-__host__ __device__ __cudart_builtin__ int isfinite(float x) { return __finitef(x); } 
-__host__ __device__ __cudart_builtin__ int isfinite(double x) { return __finite(x); }
-__host__ __device__ __cudart_builtin__ int isfinite(long double x) { return __finitel((double)x); }
+__host__ __device__ __cudart_builtin__ int isfinite(const float x) { return __finitef(x); }
+__host__ __device__ __cudart_builtin__ int isfinite(const double x) { return __finite(x); }
+__host__ __device__ __cudart_builtin__ int isfinite(const long double x) { return __finitel(static_cast<double>(x)); }
 
-__host__ __device__ __cudart_builtin__ int isnan(float x) { return __isnanf(x); }
-__host__ __device__ __cudart_builtin__ int isnan(double x) { return __isnan(x); }
-__host__ __device__ __cudart_builtin__ int isnan(long double x) { return __isnanl((double)x); }
+__host__ __device__ __cudart_builtin__ int isnan(const float x) { return __isnanf(x); }
+__host__ __device__ __cudart_builtin__ int isnan(const double x) { return __isnan(x); }
+__host__ __device__ __cudart_builtin__ int isnan(const long double x) { return __isnanl(static_cast<double>(x)); }
 
-__host__ __device__ __cudart_builtin__ int isinf(float x) { return __isinff(x); }
-__host__ __device__ __cudart_builtin__ int isinf(double x) { return __isinf(x); }
-__host__ __device__ __cudart_builtin__ int isinf(long double x) { return __isinfl((double)x); }
+__host__ __device__ __cudart_builtin__ int isinf(const float x) { return __isinff(x); }
+__host__ __device__ __cudart_builtin__ int isinf(const double x) { return __isinf(x); }
+__host__ __device__ __cudart_builtin__ int isinf(const long double x) { return __isinfl(static_cast<double>(x)); }
 
-__host__ __device__ __cudart_builtin__ long long int abs(long long int a) { return llabs(a); }
+__host__ __device__ __cudart_builtin__ long long int abs(const long long int a) { return llabs(a); }
 
-__host__ __device__ __cudart_builtin__ long int  abs(long int in)        { return llabs(in); }
-__host__ __device__ __cudart_builtin__ float     abs(float in)           { return fabsf(in); }
-__host__ __device__ __cudart_builtin__ double    abs(double in)          { return fabs(in); }
-__host__ __device__ __cudart_builtin__ float     fabs(float in)          { return fabsf(in); }
-__host__ __device__ __cudart_builtin__ float     ceil(float in)          { return ceilf(in); }
-__host__ __device__ __cudart_builtin__ float     floor(float in)         { return floorf(in); }
-__host__ __device__ __cudart_builtin__ float     sqrt(float in)          { return sqrtf(in); }
-__host__ __device__ __cudart_builtin__ float     pow(float a, float b)   { return powf(a, b); }
-__host__ __device__ float powif(float, int); 
-__host__ __device__ __cudart_builtin__ float     pow(float a, int b)     { return powif(a, b); }
-__host__ __device__ double powi(double, int);
-__host__ __device__ __cudart_builtin__ double    pow(double a, int b)    { return powi(a, b); }
-__host__ __device__ __cudart_builtin__ float     log(float in)           { return logf(in); }
-__host__ __device__ __cudart_builtin__ float     log10(float in)         { return log10f(in); }
-__host__ __device__ __cudart_builtin__ float     fmod(float a, float b)  { return fmodf(a, b); }
-__host__ __device__ __cudart_builtin__ float     modf(float a, float*b)  { return modff(a, b); }
-__host__ __device__ __cudart_builtin__ float     exp(float in)           { return expf(in); }
-__host__ __device__ __cudart_builtin__ float     frexp(float a, int*b)   { return frexpf(a, b); }
-__host__ __device__ __cudart_builtin__ float     ldexp(float a, int b)   { return ldexpf(a, b); }
-__host__ __device__ __cudart_builtin__ float     asin(float in)          { return asinf(in); }
-__host__ __device__ __cudart_builtin__ float     sin(float in)           { return sinf(in); }
-__host__ __device__ __cudart_builtin__ float     sinh(float in)          { return sinhf(in); }
-__host__ __device__ __cudart_builtin__ float     acos(float in)          { return acosf(in); }
-__host__ __device__ __cudart_builtin__ float     cos(float in)           { return cosf(in); }
-__host__ __device__ __cudart_builtin__ float     cosh(float in)          { return coshf(in); }
-__host__ __device__ __cudart_builtin__ float     atan(float in)          { return atanf(in); }
-__host__ __device__ __cudart_builtin__ float     atan2(float a, float b) { return atan2f(a, b); }
-__host__ __device__ __cudart_builtin__ float     tan(float in)           { return tanf(in); }
-__host__ __device__ __cudart_builtin__ float     tanh(float in)          { return tanhf(in); }
+__host__ __device__ __cudart_builtin__ long int  abs(const long int in)        { return llabs(in); }
+__host__ __device__ __cudart_builtin__ float     abs(const float in)           { return fabsf(in); }
+__host__ __device__ __cudart_builtin__ double    abs(const double in)          { return fabs(in); }
+__host__ __device__ __cudart_builtin__ float     fabs(const float in)          { return fabsf(in); }
+__host__ __device__ __cudart_builtin__ float     ceil(const float in)          { return ceilf(in); }
+__host__ __device__ __cudart_builtin__ float     floor(const float in)         { return floorf(in); }
+__host__ __device__ __cudart_builtin__ float     sqrt(const float in)          { return sqrtf(in); }
+__host__ __device__ __cudart_builtin__ float     pow(const float a, const float b)   { return powf(a, b); }
+__device__ float powif(float, int); 
+__host__ __device__ __cudart_builtin__ float     pow(const float a, const int b)     { return powif(a, b); }
+__device__ double powi(double, int);
+__host__ __device__ __cudart_builtin__ double    pow(const double a, const int b)    { return powi(a, b); }
+__host__ __device__ __cudart_builtin__ float     log(const float in)           { return logf(in); }
+__host__ __device__ __cudart_builtin__ float     log10(const float in)         { return log10f(in); }
+__host__ __device__ __cudart_builtin__ float     fmod(const float a, const float b)  { return fmodf(a, b); }
+__host__ __device__ __cudart_builtin__ float     modf(const float a, float*b)  { return modff(a, b); }
+__host__ __device__ __cudart_builtin__ float     exp(const float in)           { return expf(in); }
+__host__ __device__ __cudart_builtin__ float     frexp(const float a, int*b)   { return frexpf(a, b); }
+__host__ __device__ __cudart_builtin__ float     ldexp(const float a, int b)   { return ldexpf(a, b); }
+__host__ __device__ __cudart_builtin__ float     asin(const float in)          { return asinf(in); }
+__host__ __device__ __cudart_builtin__ float     sin(const float in)           { return sinf(in); }
+__host__ __device__ __cudart_builtin__ float     sinh(const float in)          { return sinhf(in); }
+__host__ __device__ __cudart_builtin__ float     acos(const float in)          { return acosf(in); }
+__host__ __device__ __cudart_builtin__ float     cos(const float in)           { return cosf(in); }
+__host__ __device__ __cudart_builtin__ float     cosh(const float in)          { return coshf(in); }
+__host__ __device__ __cudart_builtin__ float     atan(const float in)          { return atanf(in); }
+__host__ __device__ __cudart_builtin__ float     atan2(const float a, const float b) { return atan2f(a, b); }
+__host__ __device__ __cudart_builtin__ float     tan(const float in)           { return tanf(in); }
+__host__ __device__ __cudart_builtin__ float     tanh(const float in)          { return tanhf(in); }
 
 #elif defined(__GNUC__)
 
@@ -130,53 +140,47 @@ __host__ __device__ __cudart_builtin__ float     tanh(float in)          { retur
 #undef isnan
 #undef isinf
 
-#if defined(__APPLE__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(float x) { return __signbitf(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(double x) { return __signbitd(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(long double x) { return __signbitl(x);}
-
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) { return __isfinitef(x); } 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x) { return __isfinited(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double x) { return __isfinite(x); }
-
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(float x) { return __isnanf(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(double x) throw()  { return __isnand(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(long double x) { return __isnan(x); }
-
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(float x) { return __isinff(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(double x) throw()  { return __isinfd(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(long double x) { return __isinf(x); }
-
 #if defined(_LIBCPP_VERSION)
-extern "C" __host__ __device__ float powif(float, int);
-extern "C" __host__ __device__ double powi(double, int);
+extern "C" __device__ float powif(float, int);
+extern "C" __device__ double powi(double, int);
 #endif /* _LIBCPP_VERSION */
 
+#if defined(__APPLE__)
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const float x) { return __signbitf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const double x) { return __signbitd(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const long double x) { return __signbitl(x);}
+
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const float x) { return __isfinitef(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x) { return __isfinited(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double x) { return __isfinite(x); }
+
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const double x) throw()  { return __isnand(x); }
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 7000
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const float x) { return __isnanf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const long double x) { return __isnan(x); }
+#endif /* defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 7000 */
+
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const double x) throw()  { return __isinfd(x); }
+#if defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 7000
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const float x) { return __isinff(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const long double x) { return __isinf(x); }
+#endif /* defined(_LIBCPP_VERSION) && _LIBCPP_VERSION < 7000 */
 #else /* __APPLE__ */
 
-#if _GLIBCXX_MATH_H && __cplusplus >= 201103L
+#if ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)
 #if defined(__CUDA_ARCH__)
 #define __NV_BUILTIN_FUNC_DECL__ __forceinline__ __host__ __device__ __cudart_builtin__
 #if _GLIBCXX_HAVE_OBSOLETE_ISNAN && !_GLIBCXX_NO_OBSOLETE_ISINF_ISNAN_DYNAMIC
-__NV_BUILTIN_FUNC_DECL__ int  isnan(double a) throw() { return __isnan(a); }
-__NV_BUILTIN_FUNC_DECL__ int  isinf(double x) throw() { return __isinf(x); }
+__NV_BUILTIN_FUNC_DECL__ int  isnan(const double a) throw() { return __isnan(a); }
+__NV_BUILTIN_FUNC_DECL__ int  isinf(const double x) throw() { return __isinf(x); }
 #endif /* _GLIBCXX_HAVE_OBSOLETE_ISNAN && !_GLIBCXX_NO_OBSOLETE_ISINF_ISNAN_DYNAMIC */
 #undef __NV_BUILTIN_FUNC_DECL__
 #endif /* __CUDA_ARCH */
-#else /* !(_GLIBCXX_MATH_H && __cplusplus >= 201103L) */
+#else /* !(((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)) */
 
-#if defined(__QNX__) || defined(__HORIZON__)
 #if defined(__QNX__)
-extern "C" __host__ __device__ float powif(float, int); 
-extern "C" __host__ __device__ double powi(double, int); 
-#if !defined(_LIBCPP_VERSION)
-__forceinline__ __host__ __device__ __cudart_builtin__ float     pow(float a, int b)     { return powif(a, b); }
-__forceinline__ __host__ __device__ __cudart_builtin__ double pow(double a, int b)     { return powi(a, b); }
-#endif /* !_LIBCPP_VERSION */
-#endif /* __QNX__ */
-
-#if (defined(__QNX__) && defined(_LIBCPP_VERSION)) || defined(__HORIZON__)
-static __inline__ __host__ __device__ bool signbit(float x)
+#if defined(__QNX__) && defined(_LIBCPP_VERSION)
+static __inline__ __host__ __device__ __cudart_builtin__ bool signbit(const float x)
 {
 #if defined(__CUDA_ARCH__)
   return (__signbitf(x) != 0);
@@ -184,7 +188,7 @@ static __inline__ __host__ __device__ bool signbit(float x)
   return signbit<float>(x);
 #endif /* __CUDA_ARCH__ */
 }
-static __inline__ __host__ __device__ bool signbit(double x)
+static __inline__ __host__ __device__ __cudart_builtin__ bool signbit(const double x)
 {
 #if defined(__CUDA_ARCH__)
   return (__signbit(x) != 0);
@@ -192,7 +196,7 @@ static __inline__ __host__ __device__ bool signbit(double x)
   return signbit<double>(x);
 #endif /* __CUDA_ARCH__ */
 }
-static __inline__ __host__ __device__ bool signbit(long double x)
+static __inline__ __host__ __device__ __cudart_builtin__ bool signbit(const long double x)
 {
 #if defined(__CUDA_ARCH__)
   return (__signbitl(x) != 0);
@@ -200,9 +204,9 @@ static __inline__ __host__ __device__ bool signbit(long double x)
   return signbit<long double>(x);
 #endif /* __CUDA_ARCH__ */
 }
-#endif /* (__QNX__ && _LIBCPP_VERSION) || __HORIZON__ */
+#endif /* (__QNX__ && _LIBCPP_VERSION) */
 
-static __inline__ __host__ __device__ bool isfinite(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finitel(a) != 0);
@@ -210,7 +214,7 @@ static __inline__ __host__ __device__ bool isfinite(long double a)
   return isfinite<long double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isfinite(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finite(a) != 0);
@@ -218,7 +222,7 @@ static __inline__ __host__ __device__ bool isfinite(double a)
   return isfinite<double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isfinite(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finitef(a) != 0);
@@ -227,7 +231,7 @@ static __inline__ __host__ __device__ bool isfinite(float a)
 #endif /* defined(__CUDA_ARCH__) */
 }
 
-static __inline__ __host__ __device__ bool isnan(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnanl(a) != 0);
@@ -235,7 +239,7 @@ static __inline__ __host__ __device__ bool isnan(long double a)
   return isnan<long double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isnan(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnan(a) != 0);
@@ -243,7 +247,7 @@ static __inline__ __host__ __device__ bool isnan(double a)
   return isnan<double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isnan(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnanf(a) != 0);
@@ -252,7 +256,7 @@ static __inline__ __host__ __device__ bool isnan(float a)
 #endif /* defined(__CUDA_ARCH__) */
 }
 
-static __inline__ __host__ __device__ bool isinf(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isinf(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinfl(a) != 0);
@@ -260,7 +264,7 @@ static __inline__ __host__ __device__ bool isinf(long double a)
   return isinf<long double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isinf(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isinf(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinf(a) != 0);
@@ -268,7 +272,7 @@ static __inline__ __host__ __device__ bool isinf(double a)
   return isinf<double>(a);
 #endif /* defined(__CUDA_ARCH__) */
 }
-static __inline__ __host__ __device__ bool isinf(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isinf(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinff(a) != 0);
@@ -277,52 +281,59 @@ static __inline__ __host__ __device__ bool isinf(float a)
 #endif /* defined(__CUDA_ARCH__) */
 }
 
-#elif (defined(__ANDROID__) && defined(_LIBCPP_VERSION))
+#elif ( (defined(__ANDROID__) || defined(__HORIZON__)) && defined(_LIBCPP_VERSION))
 #if defined(__CUDA_ARCH__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(float x) { return __signbitf(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(double x) { return __signbit(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(long double x) { return __signbitl(x);}
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const float x) { return __signbitf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const double x) { return __signbit(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const long double x) { return __signbitl(x);}
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) { return __finitef(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x) { return __finite(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double x) { return __finitel(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const float x) { return __finitef(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x) { return __finite(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double x) { return __finitel(x); }
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(float x) { return __isnanf(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(double x)  { return __isnan(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(long double x) { return __isnanl(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const double x)  { return __isnan(x); }
+#if _LIBCPP_VERSION < 8000
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const float x) { return __isnanf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const long double x) { return __isnanl(x); }
+#endif  /* _LIBCPP_VERSION < 8000 */
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(float x) { return __isinff(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(double x) { return __isinf(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(long double x) { return __isinfl(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const double x) { return __isinf(x); }
+#if _LIBCPP_VERSION < 8000
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const float x) { return __isinff(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const long double x) { return __isinfl(x); }
+#endif /* _LIBCPP_VERSION < 8000 */
 #else /* !defined(__CUDA_ARCH__) */
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(float x) { return signbit<float>(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(double x) { return signbit<double>(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(long double x) { return signbit<long double>(x);}
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const float x) { return signbit<float>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const double x) { return signbit<double>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const long double x) { return signbit<long double>(x);}
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) { return isfinite<float>(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x) { return isfinite<double>(x); }
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double x) { return isfinite<long double>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const float x) { return isfinite<float>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x) { return isfinite<double>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double x) { return isfinite<long double>(x); }
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(float x) { return isnan<float>(x); }
+#if _LIBCPP_VERSION < 8000
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const float x) { return isnan<float>(x); }
 /* int isnan(double) provided by math.h */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(long double x) { return isnan<long double>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const long double x) { return isnan<long double>(x); }
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(float x) { return isinf<float>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const float x) { return isinf<float>(x); }
 /* int isinf(double) provided by math.h */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(long double x) { return isinf<long double>(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const long double x) { return isinf<long double>(x); }
+#endif /* _LIBCPP_VERSION < 8000 */
+
 #endif  /* defined(__CUDA_ARCH__) */
 
-#else /* !(__QNX__ || __HORIZON__) */
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(float x) { return __signbitf(x); }
+#else /* !__QNX__ */
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const float x) { return __signbitf(x); }
 #if defined(__ICC)
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(double x) throw() { return __signbit(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const double x) throw() { return __signbit(x); }
 #else /* !__ICC */
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(double x) { return __signbit(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const double x) { return __signbit(x); }
 #endif /* __ICC */
-__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(long double x) { return __signbitl(x);}
+__forceinline__ __host__ __device__ __cudart_builtin__ int signbit(const long double x) { return __signbitl(x);}
 
 #if defined(__ANDROID__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) {
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const float x) {
 #if defined(__CUDA_ARCH__)
   return __finitef(x);
 #else	/* !__CUDA_ARCH__ */
@@ -330,11 +341,11 @@ __forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) {
 #endif /* __CUDA_ARCH__ */
 }
 #else /* !__ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(float x) { return __finitef(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const float x) { return __finitef(x); }
 #endif  /* __ANDROID__ */
 
 #if defined(__ANDROID__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x)
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x)
 {
 #ifdef __CUDA_ARCH__
   return __finite(x);
@@ -343,13 +354,13 @@ __forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x)
 #endif  /* __CUDA_ARCH__ */
 }
 #elif defined(__ICC)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x) throw() { return __finite(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x) throw() { return __finite(x); }
 #else
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(double x) { return __finite(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const double x) { return __finite(x); }
 #endif /* __ANDROID__ */
 
 #if defined(__ANDROID__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double x) 
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double x)
 {
 #ifdef __CUDA_ARCH__
    return __finitel(x);
@@ -358,34 +369,34 @@ __forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double 
 #endif  /* __CUDA_ARCH__ */
 }
 #else /* !__ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(long double x) { return __finitel(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double x) { return __finitel(x); }
 #endif  /* __ANDROID__ */
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(float x) { return __isnanf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const float x) { return __isnanf(x); }
 #if defined(__ANDROID__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(double x) { return __isnan(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const double x) { return __isnan(x); }
 #else /* !__ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(double x) throw()  { return __isnan(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const double x) throw()  { return __isnan(x); }
 #endif /* __ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(long double x) { return __isnanl(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isnan(const long double x) { return __isnanl(x); }
 
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(float x) { return __isinff(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const float x) { return __isinff(x); }
 #if defined(__ANDROID__)
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(double x) { return __isinf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const double x) { return __isinf(x); }
 #else /* !__ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(double x) throw()  { return __isinf(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const double x) throw()  { return __isinf(x); }
 #endif /* __ANDROID__ */
-__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(long double x) { return __isinfl(x); }
+__forceinline__ __host__ __device__ __cudart_builtin__ int isinf(const long double x) { return __isinfl(x); }
 #endif /* __QNX__ || __HORIZON__ */
 
-#endif /* _GLIBCXX_MATH_H && __cplusplus >= 201103L */
+#endif /* ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L) */
 #endif /* __APPLE__ */
 
 #if defined(__arm__) && !defined(_STLPORT_VERSION) && !_GLIBCXX_USE_C99
 #if !defined(__ANDROID__) || (!defined(_LIBCPP_VERSION) && (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 8)))
 
 #if !defined(__QNX__) && !defined(__HORIZON__)
-static __inline__ __host__ __device__ __cudart_builtin__ long long int abs(long long int a)
+static __inline__ __host__ __device__ __cudart_builtin__ long long int abs(const long long int a)
 {
   return llabs(a);
 }
@@ -397,29 +408,29 @@ static __inline__ __host__ __device__ __cudart_builtin__ long long int abs(long 
 #elif defined(_WIN32)
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int signbit(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int signbit(const long double a)
 {
   return __signbitl(a);
 }
 
-static __inline__ __host__ __device__ int signbit(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int signbit(const double a)
 {
   return __signbit(a);
 }
 
-static __inline__ __host__ __device__ int signbit(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ int signbit(const float a)
 {
   return __signbitf(a);
 }
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isinf(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isinf(const long double a)
 {
   return __isinfl(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isinf(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isinf(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinfl(a) != 0);
@@ -430,12 +441,12 @@ static __inline__ __host__ __device__ bool isinf(long double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isinf(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isinf(const double a)
 {
   return __isinf(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isinf(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isinf(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinf(a) != 0);
@@ -446,12 +457,12 @@ static __inline__ __host__ __device__ bool isinf(double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isinf(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isinf(const float a)
 {
   return __isinff(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isinf(float a)
+static __inline__ __host__ __device__ bool isinf(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isinff(a) != 0);
@@ -462,12 +473,12 @@ static __inline__ __host__ __device__ bool isinf(float a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isnan(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isnan(const long double a)
 {
   return __isnanl(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isnan(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnanl(a) != 0);
@@ -478,12 +489,12 @@ static __inline__ __host__ __device__ bool isnan(long double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isnan(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isnan(const double a)
 {
   return __isnan(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isnan(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnan(a) != 0);
@@ -494,12 +505,12 @@ static __inline__ __host__ __device__ bool isnan(double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isnan(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isnan(const float a)
 {
   return __isnanf(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isnan(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isnan(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__isnanf(a) != 0);
@@ -510,12 +521,12 @@ static __inline__ __host__ __device__ bool isnan(float a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isfinite(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isfinite(const long double a)
 {
   return __finitel(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isfinite(long double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const long double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finitel(a) != 0);
@@ -526,12 +537,12 @@ static __inline__ __host__ __device__ bool isfinite(long double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isfinite(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isfinite(const double a)
 {
   return __finite(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isfinite(double a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const double a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finite(a) != 0);
@@ -542,12 +553,12 @@ static __inline__ __host__ __device__ bool isfinite(double a)
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-static __inline__ __host__ __device__ int isfinite(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ int isfinite(const float a)
 {
   return __finitef(a);
 }
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-static __inline__ __host__ __device__ bool isfinite(float a)
+static __inline__ __host__ __device__ __cudart_builtin__ bool isfinite(const float a)
 {
 #if defined(__CUDA_ARCH__)
   return (__finitef(a) != 0);
@@ -561,548 +572,546 @@ static __inline__ __host__ __device__ bool isfinite(float a)
 
 #if defined(__CUDACC_RTC__)
 #define __MATH_FUNCTIONS_DECL__ __host__ __device__
+#define __MATH_FUNCTIONS_DEVICE_DECL__ __device__
 #else /* __CUDACC_RTC__ */
 #define __MATH_FUNCTIONS_DECL__ static inline __host__ __device__
+#define __MATH_FUNCTIONS_DEVICE_DECL__ static inline __device__
 #endif /* __CUDACC_RTC__ */
 
 #if defined(__CUDACC_RTC__) || (!defined(_MSC_VER) || _MSC_VER < 1800)
 #if defined(__QNX__) && defined(_LIBCPP_VERSION)
 _LIBCPP_BEGIN_NAMESPACE_STD
-
-__inline__ __host__ __device__ float norm3d(float a, float b, float c) _NOEXCEPT
-{
-  return norm3df(a, b, c);
-}
-
-__inline__ __host__ __device__ float norm4d(float a, float b, float c, float d) _NOEXCEPT
-{
-  return norm4df(a, b, c, d);
-}
-#endif
+#endif /* __QNX__ && _LIBCPP_VERSION */
 #if !defined(__QNX__) && !(defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 3800)
-#if !(_GLIBCXX_MATH_H && __cplusplus >= 201103L)
-__MATH_FUNCTIONS_DECL__ float logb(float a)
+#if !(((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L))
+__MATH_FUNCTIONS_DECL__ float logb(const float a)
 {
   return logbf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ int ilogb(float a)
+__MATH_FUNCTIONS_DECL__ int ilogb(const float a)
 {
   return ilogbf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float scalbn(float a, int b)
+__MATH_FUNCTIONS_DECL__ float scalbn(const float a, const int b)
 {
   return scalbnf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float scalbln(float a, long int b)
+__MATH_FUNCTIONS_DECL__ float scalbln(const float a, const long int b)
 {
   return scalblnf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float exp2(float a)
+__MATH_FUNCTIONS_DECL__ float exp2(const float a)
 {
   return exp2f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float expm1(float a)
+__MATH_FUNCTIONS_DECL__ float expm1(const float a)
 {
   return expm1f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float log2(float a)
+__MATH_FUNCTIONS_DECL__ float log2(const float a)
 {
   return log2f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float log1p(float a)
+__MATH_FUNCTIONS_DECL__ float log1p(const float a)
 {
   return log1pf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float acosh(float a)
+__MATH_FUNCTIONS_DECL__ float acosh(const float a)
 {
   return acoshf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float asinh(float a)
+__MATH_FUNCTIONS_DECL__ float asinh(const float a)
 {
   return asinhf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float atanh(float a)
+__MATH_FUNCTIONS_DECL__ float atanh(const float a)
 {
   return atanhf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float hypot(float a, float b)
+__MATH_FUNCTIONS_DECL__ float hypot(const float a, const float b)
 {
   return hypotf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float norm3d(float a, float b, float c)
-{
-  return norm3df(a, b, c);
-}
-
-__MATH_FUNCTIONS_DECL__ float norm4d(float a, float b, float c, float d)
-{
-  return norm4df(a, b, c, d);
-}
-
-__MATH_FUNCTIONS_DECL__ float cbrt(float a)
+__MATH_FUNCTIONS_DECL__ float cbrt(const float a)
 {
   return cbrtf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float erf(float a)
+__MATH_FUNCTIONS_DECL__ float erf(const float a)
 {
   return erff(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float erfc(float a)
+__MATH_FUNCTIONS_DECL__ float erfc(const float a)
 {
   return erfcf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float lgamma(float a)
+__MATH_FUNCTIONS_DECL__ float lgamma(const float a)
 {
   return lgammaf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float tgamma(float a)
+__MATH_FUNCTIONS_DECL__ float tgamma(const float a)
 {
   return tgammaf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float copysign(float a, float b)
+__MATH_FUNCTIONS_DECL__ float copysign(const float a, const float b)
 {
   return copysignf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float nextafter(float a, float b)
+__MATH_FUNCTIONS_DECL__ float nextafter(const float a, const float b)
 {
   return nextafterf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float remainder(float a, float b)
+__MATH_FUNCTIONS_DECL__ float remainder(const float a, const float b)
 {
   return remainderf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float remquo(float a, float b, int *quo)
+__MATH_FUNCTIONS_DECL__ float remquo(const float a, const float b, int *quo)
 {
   return remquof(a, b, quo);
 }
 
-__MATH_FUNCTIONS_DECL__ float round(float a)
+__MATH_FUNCTIONS_DECL__ float round(const float a)
 {
   return roundf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ long int lround(float a)
+__MATH_FUNCTIONS_DECL__ long int lround(const float a)
 {
   return lroundf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ long long int llround(float a)
+__MATH_FUNCTIONS_DECL__ long long int llround(const float a)
 {
   return llroundf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float trunc(float a)
+__MATH_FUNCTIONS_DECL__ float trunc(const float a)
 {
   return truncf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float rint(float a)
+__MATH_FUNCTIONS_DECL__ float rint(const float a)
 {
   return rintf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ long int lrint(float a)
+__MATH_FUNCTIONS_DECL__ long int lrint(const float a)
 {
   return lrintf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ long long int llrint(float a)
+__MATH_FUNCTIONS_DECL__ long long int llrint(const float a)
 {
   return llrintf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float nearbyint(float a)
+__MATH_FUNCTIONS_DECL__ float nearbyint(const float a)
 {
   return nearbyintf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float fdim(float a, float b)
+__MATH_FUNCTIONS_DECL__ float fdim(const float a, const float b)
 {
   return fdimf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float fma(float a, float b, float c)
+__MATH_FUNCTIONS_DECL__ float fma(const float a, const float b, const float c)
 {
   return fmaf(a, b, c);
 }
 
-__MATH_FUNCTIONS_DECL__ float fmax(float a, float b)
+__MATH_FUNCTIONS_DECL__ float fmax(const float a, const float b)
 {
   return fmaxf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ float fmin(float a, float b)
+__MATH_FUNCTIONS_DECL__ float fmin(const float a, const float b)
 {
   return fminf(a, b);
 }
-#endif /* !(_GLIBCXX_MATH_H && __cplusplus >= 201103L) */
+#endif /* !(((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)) */
 #endif /* !(!defined(__QNX__) && !(defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 3800)) */
 #if defined(__QNX__) && defined(_LIBCPP_VERSION)
 _LIBCPP_END_NAMESPACE_STD
 #endif
 #endif /* __CUDACC_RTC__ || (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
-__MATH_FUNCTIONS_DECL__ float exp10(float a)
+__MATH_FUNCTIONS_DECL__ float exp10(const float a)
 {
   return exp10f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float rsqrt(float a)
+__MATH_FUNCTIONS_DECL__ float rsqrt(const float a)
 {
   return rsqrtf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float rcbrt(float a)
+__MATH_FUNCTIONS_DECL__ float rcbrt(const float a)
 {
   return rcbrtf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float sinpi(float a)
+__MATH_FUNCTIONS_DECL__ float sinpi(const float a)
 {
   return sinpif(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float cospi(float a)
+__MATH_FUNCTIONS_DECL__ float cospi(const float a)
 {
   return cospif(a);
 }
 
-__MATH_FUNCTIONS_DECL__ void sincospi(float a, float *sptr, float *cptr)
+__MATH_FUNCTIONS_DECL__ void sincospi(const float a, float *const sptr, float *const cptr)
 {
   sincospif(a, sptr, cptr);
 }
 
-__MATH_FUNCTIONS_DECL__ void sincos(float a, float *sptr, float *cptr)
+__MATH_FUNCTIONS_DECL__ void sincos(const float a, float *const sptr, float *const cptr)
 {
   sincosf(a, sptr, cptr);
 }
 
-__MATH_FUNCTIONS_DECL__ float j0(float a)
+__MATH_FUNCTIONS_DECL__ float j0(const float a)
 {
   return j0f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float j1(float a)
+__MATH_FUNCTIONS_DECL__ float j1(const float a)
 {
   return j1f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float jn(int n, float a)
+__MATH_FUNCTIONS_DECL__ float jn(const int n, const float a)
 {
   return jnf(n, a);
 }
 
-__MATH_FUNCTIONS_DECL__ float y0(float a)
+__MATH_FUNCTIONS_DECL__ float y0(const float a)
 {
   return y0f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float y1(float a)
+__MATH_FUNCTIONS_DECL__ float y1(const float a)
 {
   return y1f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float yn(int n, float a)
+__MATH_FUNCTIONS_DECL__ float yn(const int n, const float a)
 { 
   return ynf(n, a);
 }
 
-__MATH_FUNCTIONS_DECL__ float cyl_bessel_i0(float a)
+__MATH_FUNCTIONS_DEVICE_DECL__ float cyl_bessel_i0(const float a)
 {
   return cyl_bessel_i0f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float cyl_bessel_i1(float a)
+__MATH_FUNCTIONS_DEVICE_DECL__ float cyl_bessel_i1(const float a)
 {
   return cyl_bessel_i1f(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float erfinv(float a)
+__MATH_FUNCTIONS_DECL__ float erfinv(const float a)
 {
   return erfinvf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float erfcinv(float a)
+__MATH_FUNCTIONS_DECL__ float erfcinv(const float a)
 {
   return erfcinvf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float normcdfinv(float a)
+__MATH_FUNCTIONS_DECL__ float normcdfinv(const float a)
 {
   return normcdfinvf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float normcdf(float a)
+__MATH_FUNCTIONS_DECL__ float normcdf(const float a)
 {
   return normcdff(a);
 }
 
-__MATH_FUNCTIONS_DECL__ float erfcx(float a)
+__MATH_FUNCTIONS_DECL__ float erfcx(const float a)
 {
   return erfcxf(a);
 }
 
-__MATH_FUNCTIONS_DECL__ double copysign(double a, float b)
+__MATH_FUNCTIONS_DECL__ double copysign(const double a, const float b)
 {
-  return copysign(a, (double)b);
+  return copysign(a, static_cast<double>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ double copysign(float a, double b)
+__MATH_FUNCTIONS_DECL__ double copysign(const float a, const double b)
 {
-  return copysign((double)a, b);
+  return copysign(static_cast<double>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(unsigned int a, unsigned int b)
+__MATH_FUNCTIONS_DECL__ unsigned int min(const unsigned int a, const unsigned int b)
 {
   return umin(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(int a, unsigned int b)
+__MATH_FUNCTIONS_DECL__ unsigned int min(const int a, const unsigned int b)
 {
-  return umin((unsigned int)a, b);
+  return umin(static_cast<unsigned int>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(unsigned int a, int b)
+__MATH_FUNCTIONS_DECL__ unsigned int min(const unsigned int a, const int b)
 {
-  return umin(a, (unsigned int)b);
+  return umin(a, static_cast<unsigned int>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ long int min(long int a, long int b)
+__MATH_FUNCTIONS_DECL__ long int min(const long int a, const long int b)
 {
+  long int retval;
   /* Suppress VS warning: warning C4127: conditional expression is constant */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   /* long can be of 32-bit type on some systems. */
   if (sizeof(long int) == sizeof(int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (long int)min((int)a, (int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<long int>(min(static_cast<int>(a), static_cast<int>(b)));
   } else {
-    return (long int)llmin((long long int)a, (long long int)b);
+    retval = static_cast<long int>(llmin(static_cast<long long int>(a), static_cast<long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(unsigned long int a, unsigned long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const unsigned long int a, const unsigned long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umin((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umin(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmin((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmin(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(long int a, unsigned long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const long int a, const unsigned long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umin((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umin(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmin((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmin(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(unsigned long int a, long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const unsigned long int a, const long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umin((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umin(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmin((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmin(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ long long int min(long long int a, long long int b)
+__MATH_FUNCTIONS_DECL__ long long int min(const long long int a, const long long int b)
 {
   return llmin(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(unsigned long long int a, unsigned long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const unsigned long long int a, const unsigned long long int b)
 {
   return ullmin(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(long long int a, unsigned long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const long long int a, const unsigned long long int b)
 {
-  return ullmin((unsigned long long int)a, b);
+  return ullmin(static_cast<unsigned long long int>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(unsigned long long int a, long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const unsigned long long int a, const long long int b)
 {
-  return ullmin(a, (unsigned long long int)b);
+  return ullmin(a, static_cast<unsigned long long int>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ float min(float a, float b)
+__MATH_FUNCTIONS_DECL__ float min(const float a, const float b)
 {
   return fminf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ double min(double a, double b)
+__MATH_FUNCTIONS_DECL__ double min(const double a, const double b)
 {
   return fmin(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ double min(float a, double b)
+__MATH_FUNCTIONS_DECL__ double min(const float a, const double b)
 {
-  return fmin((double)a, b);
+  return fmin(static_cast<double>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ double min(double a, float b)
+__MATH_FUNCTIONS_DECL__ double min(const double a, const float b)
 {
-  return fmin(a, (double)b);
+  return fmin(a, static_cast<double>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(unsigned int a, unsigned int b)
+__MATH_FUNCTIONS_DECL__ unsigned int max(const unsigned int a, const unsigned int b)
 {
   return umax(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(int a, unsigned int b)
+__MATH_FUNCTIONS_DECL__ unsigned int max(const int a, const unsigned int b)
 {
-  return umax((unsigned int)a, b);
+  return umax(static_cast<unsigned int>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(unsigned int a, int b)
+__MATH_FUNCTIONS_DECL__ unsigned int max(const unsigned int a, const int b)
 {
-  return umax(a, (unsigned int)b);
+  return umax(a, static_cast<unsigned int>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ long int max(long int a, long int b)
+__MATH_FUNCTIONS_DECL__ long int max(const long int a, const long int b)
 {
+  long int retval;
   /* long can be of 32-bit type on some systems. */
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(long int) == sizeof(int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (long int)max((int)a, (int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<long int>(max(static_cast<int>(a), static_cast<int>(b)));
   } else {
-    return (long int)llmax((long long int)a, (long long int)b);
+    retval = static_cast<long int>(llmax(static_cast<long long int>(a), static_cast<long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(unsigned long int a, unsigned long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const unsigned long int a, const unsigned long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umax((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umax(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmax((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmax(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(long int a, unsigned long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const long int a, const unsigned long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umax((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umax(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmax((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmax(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(unsigned long int a, long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const unsigned long int a, const long int b)
 {
-#if defined(_MSC_VER)
+  unsigned long int retval;
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (disable: 4127)
-#endif /* _MSC_VER */
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
   if (sizeof(unsigned long int) == sizeof(unsigned int)) {
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__CUDA_ARCH__)
 #pragma warning (default: 4127)
-#endif /* _MSC_VER */
-    return (unsigned long int)umax((unsigned int)a, (unsigned int)b);
+#endif /* _MSC_VER && !defined(__CUDA_ARCH__) */
+    retval = static_cast<unsigned long int>(umax(static_cast<unsigned int>(a), static_cast<unsigned int>(b)));
   } else {
-    return (unsigned long int)ullmax((unsigned long long int)a, (unsigned long long int)b);
+    retval = static_cast<unsigned long int>(ullmax(static_cast<unsigned long long int>(a), static_cast<unsigned long long int>(b)));
   }
+  return retval;
 }
 
-__MATH_FUNCTIONS_DECL__ long long int max(long long int a, long long int b)
+__MATH_FUNCTIONS_DECL__ long long int max(const long long int a, const long long int b)
 {
   return llmax(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(unsigned long long int a, unsigned long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const unsigned long long int a, const unsigned long long int b)
 {
   return ullmax(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(long long int a, unsigned long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const long long int a, const unsigned long long int b)
 {
-  return ullmax((unsigned long long int)a, b);
+  return ullmax(static_cast<unsigned long long int>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(unsigned long long int a, long long int b)
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const unsigned long long int a, const long long int b)
 {
-  return ullmax(a, (unsigned long long int)b);
+  return ullmax(a, static_cast<unsigned long long int>(b));
 }
 
-__MATH_FUNCTIONS_DECL__ float max(float a, float b)
+__MATH_FUNCTIONS_DECL__ float max(const float a, const float b)
 {
   return fmaxf(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ double max(double a, double b)
+__MATH_FUNCTIONS_DECL__ double max(const double a, const double b)
 {
   return fmax(a, b);
 }
 
-__MATH_FUNCTIONS_DECL__ double max(float a, double b)
+__MATH_FUNCTIONS_DECL__ double max(const float a, const double b)
 {
-  return fmax((double)a, b);
+  return fmax(static_cast<double>(a), b);
 }
 
-__MATH_FUNCTIONS_DECL__ double max(double a, float b)
+__MATH_FUNCTIONS_DECL__ double max(const double a, const float b)
 {
-  return fmax(a, (double)b);
+  return fmax(a, static_cast<double>(b));
 }
 
 
@@ -1114,46 +1123,46 @@ __MATH_FUNCTIONS_DECL__ double max(double a, float b)
 #define __HELPER_FUNC_LINKAGE inline __host__ __device__
 #endif  /* defined(_WIN32) */
 
-__HELPER_FUNC_LINKAGE int min(int a, int b)
+__HELPER_FUNC_LINKAGE int min(const int a, const int b)
 {
-  return a < b ? a : b;
+  return (a < b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE unsigned umin(unsigned int a, unsigned int b)
+__HELPER_FUNC_LINKAGE unsigned int umin(const unsigned int a, const unsigned int b)
 {
-  return a < b ? a : b;
+  return (a < b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE long long int llmin(long long int a, long long int b)
+__HELPER_FUNC_LINKAGE long long int llmin(const long long int a, const long long int b)
 {
-  return a < b ? a : b;
+  return (a < b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE unsigned long long int ullmin(unsigned long long int a,
-						                                        unsigned long long int b)
+__HELPER_FUNC_LINKAGE unsigned long long int ullmin(const unsigned long long int a,
+                                                    const unsigned long long int b)
 {
-  return a < b ? a : b;
+  return (a < b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE int max(int a, int b)
+__HELPER_FUNC_LINKAGE int max(const int a, const int b)
 {
-  return a > b ? a : b;
+  return (a > b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE unsigned int umax(unsigned int a, unsigned int b)
+__HELPER_FUNC_LINKAGE unsigned int umax(const unsigned int a, const unsigned int b)
 {
-  return a > b ? a : b;
+  return (a > b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE long long int llmax(long long int a, long long int b)
+__HELPER_FUNC_LINKAGE long long int llmax(const long long int a, const long long int b)
 {
-  return a > b ? a : b;
+  return (a > b) ? a : b;
 }
 
-__HELPER_FUNC_LINKAGE unsigned long long int ullmax(unsigned long long int a,
-                                                    unsigned long long int b)
+__HELPER_FUNC_LINKAGE unsigned long long int ullmax(const unsigned long long int a,
+                                                    const unsigned long long int b)
 {
-  return a > b ? a : b;
+  return (a > b) ? a : b;
 }
 
 #if defined(_WIN32)
@@ -1165,6 +1174,7 @@ __HELPER_FUNC_LINKAGE unsigned long long int ullmax(unsigned long long int a,
 #endif /* !defined(__CUDA_ARCH__) */
 
 #undef __MATH_FUNCTIONS_DECL__
+#undef __MATH_FUNCTIONS_DEVICE_DECL__
 
 /*******************************************************************************
 *                                                                              *
@@ -1197,11 +1207,11 @@ __HELPER_FUNC_LINKAGE unsigned long long int ullmax(unsigned long long int a,
 
 #if defined(_WIN32) || defined(__APPLE__) || defined (__ANDROID__) || defined(__QNX__)
 
-__func__(int __isnan(double a))
+__func__(int __isnan(const double a))
 {
   unsigned long long int l;
   memcpy(&l, &a, sizeof(double));
-  return l << 1 > 0xffe0000000000000ull;
+  return (l << 1ULL) > 0xffe0000000000000ULL;
 }
 
 #endif /* _WIN32 || __APPLE__ || __ANDROID__ || __QNX__ */
@@ -1214,36 +1224,36 @@ __func__(int __isnan(double a))
 *                                                                              *
 *******************************************************************************/
 
-__func__(double exp10(double a))
+__func__(double exp10(const double a))
 {
   return pow(10.0, a);
 }
 
-__func__(float exp10f(float a))
+__func__(float exp10f(const float a))
 {
-    return (float)exp10((double)a);
+    return static_cast<float>(exp10(static_cast<double>(a)));
 }
 
-__func__(void sincos(double a, double *sptr, double *cptr))
+__func__(void sincos(const double a, double *sptr, double *cptr))
 {
   *sptr = sin(a);
   *cptr = cos(a);
 }
 
-__func__(void sincosf(float a, float *sptr, float *cptr))
+__func__(void sincosf(const float a, float *sptr, float *cptr))
 {
   double s, c;
 
-  sincos((double)a, &s, &c);
-  *sptr = (float)s;
-  *cptr = (float)c;
+  sincos(static_cast<double>(a), &s, &c);
+  *sptr = static_cast<float>(s);
+  *cptr = static_cast<float>(c);
 }
 
-__func__(int __isinf(double a))
+__func__(int __isinf(const double a))
 {
   unsigned long long int l;
   memcpy(&l, &a, sizeof(double));
-  return l << 1 == 0xffe0000000000000ull;
+  return (l << 1ULL) == 0xffe0000000000000ULL;
 }
 
 #endif /* _WIN32 || __APPLE__ */
@@ -1251,7 +1261,7 @@ __func__(int __isinf(double a))
 #if defined(_WIN32) || defined (__ANDROID__)
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-__func__(double log2(double a))
+__func__(double log2(const double a))
 {
   return log(a) * 1.44269504088896340;
 }
@@ -1271,7 +1281,7 @@ __func__(int __signbit(double a))
 {
   signed long long int l;
   memcpy(&l, &a, sizeof(double));
-  return l < 0ll;
+  return l < 0LL;
 }
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
@@ -1290,7 +1300,7 @@ __func__(int __finite(double a))
 {
   unsigned long long int l;
   memcpy(&l, &a, sizeof(double));
-  return l << 1 < 0xffe0000000000000ull;
+  return (l << 1ULL) < 0xffe0000000000000ULL;
 }
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
@@ -1333,12 +1343,12 @@ __func__(double round(double a))
 
 __func__(long int lround(double a))
 {
-  return (long int)round(a);
+  return static_cast<long int>(round(a));
 }
 
 __func__(long long int llround(double a))
 {
-  return (long long int)round(a);
+  return static_cast<long long int>(round(a));
 }
 
 __func__(double rint(double a))
@@ -1361,12 +1371,12 @@ __func__(double nearbyint(double a))
 
 __func__(long int lrint(double a))
 {
-  return (long int)rint(a);
+  return static_cast<long int>(rint(a));
 }
 
 __func__(long long int llrint(double a))
 {
-  return (long long int)rint(a);
+  return static_cast<long long int>(rint(a));
 }
 
 __func__(double fdim(double a, double b))
@@ -1396,7 +1406,7 @@ __func__(double scalbln(double a, long int b))
   } else if (b < (-2147483647 - 1)) {
     t = (-2147483647 - 1);
   } else {
-    t = (int)b;
+    t = static_cast<int>(b);
   }
   return scalbn(a, t);
 }
@@ -1521,12 +1531,12 @@ __func__(int ilogb(double a))
   if (__isnan(a)) return -__cuda_INT_MAX-1;
   if (__isinf(a)) return __cuda_INT_MAX;
   memcpy(&i, &a, sizeof(double));
-  i = i & 0x7fffffffffffffffull;
+  i = i & 0x7fffffffffffffffULL;
   if (i == 0) return -__cuda_INT_MAX-1;
-  if (i >= 0x0010000000000000ull) {
-    return (int)(((i >> 52) & 0x7ff) - 1023);
+  if (i >= 0x0010000000000000ULL) {
+    return (int)(((i >> 52ULL) & 0x7ffU) - 1023);
   }
-  while (i < 0x0010000000000000ull) {
+  while (i < 0x0010000000000000ULL) {
     expo--;
     i <<= 1;
   }
@@ -1541,16 +1551,16 @@ __func__(double logb(double a))
   if (__isnan(a)) return a + a;
   if (__isinf(a)) return fabs(a);
   memcpy(&i, &a, sizeof(double));
-  i = i & 0x7fffffffffffffffull;
+  i = i & 0x7fffffffffffffffULL;
   if (i == 0) return -1.0/fabs(a);
-  if (i >= 0x0010000000000000ull) {
-    return (double)((int)((i >> 52) & 0x7ff) - 1023);
+  if (i >= 0x0010000000000000ULL) {
+    return (double)((int)((i >> 52ULL) & 0x7ffU) - 1023);
   }
-  while (i < 0x0010000000000000ull) {
+  while (i < 0x0010000000000000ULL) {
     expo--;
     i <<= 1;
   }
-  return (double)expo;
+  return static_cast<double>(expo);
 }
 
 __func__(double remquo(double a, double b, int *quo))
@@ -1573,14 +1583,14 @@ __func__(double remquo(double a, double b, int *quo))
   int iter;
 
   memcpy(&aa, &a, sizeof(double));
-  mant_a = (aa << 11) | 0x8000000000000000ULL;
-  expo_a = (int)((aa >> 52) & 0x7ff) - 1023;
-  sign_a = (int)(aa >> 63);
+  mant_a = (aa << 11ULL) | 0x8000000000000000ULL;
+  expo_a = (int)((aa >> 52ULL) & 0x7ffU) - 1023;
+  sign_a = (int)(aa >> 63ULL);
 
   memcpy(&bb, &b, sizeof(double));
-  mant_b = (bb << 11) | 0x8000000000000000ULL;
-  expo_b = (int)((bb >> 52) & 0x7ff) - 1023;
-  sign_b = (int)(bb >> 63);
+  mant_b = (bb << 11ULL) | 0x8000000000000000ULL;
+  expo_b = (int)((bb >> 52ULL) & 0x7ffU) - 1023;
+  sign_b = (int)(bb >> 63ULL);
 
   sign_c = sign_a;  /* remainder has sign of dividend */
   expo_c = expo_a;  /* default */
@@ -1625,8 +1635,8 @@ __func__(double remquo(double a, double b, int *quo))
   /* Shift dividend and divisor right by one bit to prevent overflow
      during the division algorithm.
    */
-  mant_a = mant_a >> 1;
-  mant_b = mant_b >> 1;
+  mant_a = mant_a >> 1ULL;
+  mant_b = mant_b >> 1ULL;
   expo_c = expo_a - iter; /* default exponent of result   */
 
   /* Use binary longhand division (restoring) */
@@ -1647,7 +1657,7 @@ __func__(double remquo(double a, double b, int *quo))
   if (mant_c == 0) {
     quot = quot & 7;
     *quo = (sign_a ^ sign_b) ? -quot : quot;
-    aa = (unsigned long long int)sign_c << 63;
+    aa = static_cast<unsigned long long int>(sign_c) << 63ULL;
     memcpy(&a, &aa, sizeof(double));
     return a;
   }
@@ -1664,7 +1674,7 @@ __func__(double remquo(double a, double b, int *quo))
     /* round quotient to nearest even */
     if (((temp != 0ULL) && (!(temp & 0x8000000000000000ULL))) ||
         ((temp == 0ULL) && (quot & 1))) {
-      mant_a = mant_a >> 1;
+      mant_a = mant_a >> 1ULL;
       quot++;
       /* Since the divisor is greater than the remainder, the result will
          have opposite sign of the dividend. To avoid a negative mantissa
@@ -1682,12 +1692,12 @@ __func__(double remquo(double a, double b, int *quo))
   }
   /* package up result */
   if (expo_c >= -1022) { /* normal */
-    mant_c = ((mant_c >> 11) + 
-              ((((unsigned long long)sign_c) << 63) +
-               (((unsigned long long)(expo_c + 1022)) << 52)));
+    mant_c = ((mant_c >> 11ULL) +
+              (((static_cast<unsigned long long>(sign_c)) << 63ULL) +
+               (((unsigned long long)(expo_c + 1022)) << 52ULL)));
   } else { /* denormal */
-    mant_c = ((((unsigned long long)sign_c) << 63) + 
-              (mant_c >> (11 - expo_c - 1022)));
+    mant_c = (((static_cast<unsigned long long>(sign_c)) << 63ULL) +
+              (mant_c >> (unsigned long long)(11 - expo_c - 1022)));
   }
   quot = quot & 7; /* mask quotient down to least significant three bits */
   *quo = (sign_a ^ sign_b) ? -quot : quot;
@@ -1714,7 +1724,7 @@ __func__(double fma (double a, double b, double c))
   memcpy(&yy, &b, sizeof(double));
   memcpy(&zz, &c, sizeof(double));
 
-  expo_z = 0x7FF;
+  expo_z = 0x7FFU;
   t =  xx.hi >> 20;
   expo_x = expo_z & t;
   expo_x = expo_x - 1;    /* expo(x) - 1 */
@@ -1725,26 +1735,26 @@ __func__(double fma (double a, double b, double c))
   expo_z = expo_z & t;
   expo_z = expo_z - 1;    /* expo(z) - 1 */
 
-  if (!((expo_x <= 0x7FD) &&
-        (expo_y <= 0x7FD) &&
-        (expo_z <= 0x7FD))) {
+  if (!((expo_x <= 0x7FDU) &&
+        (expo_y <= 0x7FDU) &&
+        (expo_z <= 0x7FDU))) {
     
     /* fma (nan, y, z) --> nan
        fma (x, nan, z) --> nan
        fma (x, y, nan) --> nan 
     */
-    if (((yy.hi << 1) | (yy.lo != 0)) > 0xffe00000) {
-      yy.hi |= 0x00080000;
+    if (((yy.hi << 1) | (yy.lo != 0)) > 0xffe00000U) {
+      yy.hi |= 0x00080000U;
       memcpy(&d, &yy, sizeof(double));
       return d;
     }
-    if (((zz.hi << 1) | (zz.lo != 0)) > 0xffe00000) {
-      zz.hi |= 0x00080000;
+    if (((zz.hi << 1) | (zz.lo != 0)) > 0xffe00000U) {
+      zz.hi |= 0x00080000U;
       memcpy(&d, &zz, sizeof(double));
       return d;
     }
-    if (((xx.hi << 1) | (xx.lo != 0)) > 0xffe00000) {
-      xx.hi |= 0x00080000;
+    if (((xx.hi << 1) | (xx.lo != 0)) > 0xffe00000U) {
+      xx.hi |= 0x00080000U;
       memcpy(&d, &xx, sizeof(double));
       return d;
     }
@@ -1761,20 +1771,20 @@ __func__(double fma (double a, double b, double c))
        fma (+x,+inf,-inf) --> INDEFINITE
     */
     if (((((xx.hi << 1) | xx.lo) == 0) && 
-         (((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000)) ||
+         (((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000U)) ||
         ((((yy.hi << 1) | yy.lo) == 0) && 
-         (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000))) {
-      xx.hi = 0xfff80000;
-      xx.lo = 0x00000000;
+         (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000U))) {
+      xx.hi = 0xfff80000U;
+      xx.lo = 0x00000000U;
       memcpy(&d, &xx, sizeof(double));
       return d;
     }
-    if (((zz.hi << 1) | (zz.lo != 0)) == 0xffe00000) {
-      if ((((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000) ||
-          (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000)) {
+    if (((zz.hi << 1) | (zz.lo != 0)) == 0xffe00000U) {
+      if ((((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000U) ||
+          (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000U)) {
         if ((int)(xx.hi ^ yy.hi ^ zz.hi) < 0) {
-          xx.hi = 0xfff80000;
-          xx.lo = 0x00000000;
+          xx.hi = 0xfff80000U;
+          xx.lo = 0x00000000U;
           memcpy(&d, &xx, sizeof(double));
           return d;
         }
@@ -1784,17 +1794,17 @@ __func__(double fma (double a, double b, double c))
        fma (x, inf, z) --> inf
        fma (x, y, inf) --> inf
     */
-    if (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000) {
-      xx.hi = xx.hi ^ (yy.hi & 0x80000000);
+    if (((xx.hi << 1) | (xx.lo != 0)) == 0xffe00000U) {
+      xx.hi = xx.hi ^ (yy.hi & 0x80000000U);
       memcpy(&d, &xx, sizeof(double));
       return d;
     }
-    if (((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000) {
-      yy.hi = yy.hi ^ (xx.hi & 0x80000000);
+    if (((yy.hi << 1) | (yy.lo != 0)) == 0xffe00000U) {
+      yy.hi = yy.hi ^ (xx.hi & 0x80000000U);
       memcpy(&d, &yy, sizeof(double));
       return d;
     }
-    if (((zz.hi << 1) | (zz.lo != 0)) == 0xffe00000) {
+    if (((zz.hi << 1) | (zz.lo != 0)) == 0xffe00000U) {
       memcpy(&d, &zz, sizeof(double));
       return d;
     }
@@ -1803,7 +1813,7 @@ __func__(double fma (double a, double b, double c))
        fma (+x, -0, -0) --> -0
        fma (-x, +0, -0) --> -0
     */
-    if ((zz.hi == 0x80000000) && (zz.lo == 0)) {
+    if ((zz.hi == 0x80000000U) && (zz.lo == 0)) {
       if ((((xx.hi << 1) | xx.lo) == 0) ||
           (((yy.hi << 1) | yy.lo) == 0)) {
         if ((int)(xx.hi ^ yy.hi) < 0) {
@@ -1818,7 +1828,7 @@ __func__(double fma (double a, double b, double c))
     if ((((zz.hi << 1) | zz.lo) == 0) &&
         ((((xx.hi << 1) | xx.lo) == 0) ||
          (((yy.hi << 1) | yy.lo) == 0))) {
-      zz.hi &= 0x7fffffff;
+      zz.hi &= 0x7fffffffU;
       memcpy(&d, &zz, sizeof(double));
       return d;
     }
@@ -1832,9 +1842,9 @@ __func__(double fma (double a, double b, double c))
       return d;
     }
     
-    if (expo_x == 0xffffffff) {
+    if (expo_x == 0xffffffffU) {
       expo_x++;
-      t = xx.hi & 0x80000000;
+      t = xx.hi & 0x80000000U;
       s = xx.lo >> 21;
       xx.lo = xx.lo << 11;
       xx.hi = xx.hi << 11;
@@ -1844,7 +1854,7 @@ __func__(double fma (double a, double b, double c))
         xx.lo = 0;
         expo_x -= 32;
       }
-      while ((int)xx.hi > 0) {
+      while (static_cast<int>(xx.hi) > 0) {
         s = xx.lo >> 31;
         xx.lo = xx.lo + xx.lo;
         xx.hi = xx.hi + xx.hi;
@@ -1855,9 +1865,9 @@ __func__(double fma (double a, double b, double c))
       xx.lo |= (xx.hi << 21);
       xx.hi = (xx.hi >> 11) | t;
     }
-    if (expo_y == 0xffffffff) {
+    if (expo_y == 0xffffffffU) {
       expo_y++;
-      t = yy.hi & 0x80000000;
+      t = yy.hi & 0x80000000U;
       s = yy.lo >> 21;
       yy.lo = yy.lo << 11;
       yy.hi = yy.hi << 11;
@@ -1867,7 +1877,7 @@ __func__(double fma (double a, double b, double c))
         yy.lo = 0;
         expo_y -= 32;
       }
-      while ((int)yy.hi > 0) {
+      while (static_cast<int>(yy.hi) > 0) {
         s = yy.lo >> 31;
         yy.lo = yy.lo + yy.lo;
         yy.hi = yy.hi + yy.hi;
@@ -1878,9 +1888,9 @@ __func__(double fma (double a, double b, double c))
       yy.lo |= (yy.hi << 21);
       yy.hi = (yy.hi >> 11) | t;
     }
-    if (expo_z == 0xffffffff) {
+    if (expo_z == 0xffffffffU) {
       expo_z++;
-      t = zz.hi & 0x80000000;
+      t = zz.hi & 0x80000000U;
       s = zz.lo >> 21;
       zz.lo = zz.lo << 11;
       zz.hi = zz.hi << 11;
@@ -1890,7 +1900,7 @@ __func__(double fma (double a, double b, double c))
         zz.lo = 0;
         expo_z -= 32;
       }
-      while ((int)zz.hi > 0) {
+      while (static_cast<int>(zz.hi) > 0) {
         s = zz.lo >> 31;
         zz.lo = zz.lo + zz.lo;
         zz.hi = zz.hi + zz.hi;
@@ -1909,20 +1919,20 @@ __func__(double fma (double a, double b, double c))
   xx.lo = xx.lo << 11;
   xx.hi = xx.hi << 11;
   xx.hi = xx.hi | t;
-  yy.hi = yy.hi & 0x000fffff;
-  xx.hi = xx.hi | 0x80000000; /* set mantissa hidden bit */
-  yy.hi = yy.hi | 0x00100000; /* set mantissa hidden bit */
+  yy.hi = yy.hi & 0x000fffffU;
+  xx.hi = xx.hi | 0x80000000U; /* set mantissa hidden bit */
+  yy.hi = yy.hi | 0x00100000U; /* set mantissa hidden bit */
 
   prod0 = xx.lo * yy.lo;
-  prod1 =(unsigned)(((unsigned long long)xx.lo*(unsigned long long)yy.lo)>>32);
+  prod1 =(unsigned)((static_cast<unsigned long long>(xx.lo)*static_cast<unsigned long long>(yy.lo))>>32ULL);
   prod2 = xx.hi * yy.lo;
   prod3 = xx.lo * yy.hi;
   prod1 += prod2;
   t = (unsigned)(prod1 < prod2);
   prod1 += prod3;
   t += prod1 < prod3;
-  prod2 =(unsigned)(((unsigned long long)xx.hi*(unsigned long long)yy.lo)>>32);
-  prod3 =(unsigned)(((unsigned long long)xx.lo*(unsigned long long)yy.hi)>>32);
+  prod2 =(unsigned)((static_cast<unsigned long long>(xx.hi)*static_cast<unsigned long long>(yy.lo))>>32ULL);
+  prod3 =(unsigned)((static_cast<unsigned long long>(xx.lo)*static_cast<unsigned long long>(yy.hi))>>32ULL);
   prod2 += prod3;
   s = (unsigned)(prod2 < prod3);
   prod3 = xx.hi * yy.hi;
@@ -1930,7 +1940,7 @@ __func__(double fma (double a, double b, double c))
   s += prod2 < prod3;
   prod2 += t;
   s += prod2 < t;
-  prod3 =(unsigned)(((unsigned long long)xx.hi*(unsigned long long)yy.hi)>>32);
+  prod3 =(unsigned)((static_cast<unsigned long long>(xx.hi)*static_cast<unsigned long long>(yy.hi))>>32ULL);
   prod3 = prod3 + s;
   
   yy.lo = prod0;                 /* mantissa */
@@ -1938,9 +1948,9 @@ __func__(double fma (double a, double b, double c))
   xx.lo = prod2;                 /* mantissa */
   xx.hi = prod3;                 /* mantissa */
   expo_x = expo_x - (1023 - 2);  /* expo-1 */
-  expo_y = expo_y & 0x80000000;  /* sign */
+  expo_y = expo_y & 0x80000000U;  /* sign */
 
-  if (xx.hi < 0x00100000) {
+  if (xx.hi < 0x00100000U) {
     s = xx.lo >> 31;
     s = (xx.hi << 1) + s;
     xx.hi = s;
@@ -1958,15 +1968,15 @@ __func__(double fma (double a, double b, double c))
   t = 0;
   if (((zz.hi << 1) | zz.lo) != 0) { /* z is not zero */
     
-    s = zz.hi & 0x80000000;
+    s = zz.hi & 0x80000000U;
     
-    zz.hi &= 0x000fffff;
-    zz.hi |= 0x00100000;
+    zz.hi &= 0x000fffffU;
+    zz.hi |= 0x00100000U;
     ww.hi = 0;
     ww.lo = 0;
     
     /* compare and swap. put augend into xx:yy */
-    if ((int)expo_z > (int)expo_x) {
+    if (static_cast<int>(expo_z) > static_cast<int>(expo_x)) {
       t = expo_z;
       expo_z = expo_x;
       expo_x = t;
@@ -2017,9 +2027,9 @@ __func__(double fma (double a, double b, double c))
       zz.lo = 0;
       zz.hi = 0;
     }
-    if ((int)u < 0) {
+    if (static_cast<int>(u) < 0) {
       /* signs differ, effective subtraction */
-      t = (unsigned)(-(int)t);
+      t = (unsigned)(-static_cast<int>(t));
       s = (unsigned)(t != 0);
       u = yy.lo - s;
       s = (unsigned)(u > yy.lo);
@@ -2039,7 +2049,7 @@ __func__(double fma (double a, double b, double c))
         memcpy(&d, &xx, sizeof(double));
         return d;
       }
-      if ((int)xx.hi < 0) {
+      if (static_cast<int>(xx.hi) < 0) {
         /* Oops, augend had smaller mantissa. Negate mantissa and flip
            sign of result
         */
@@ -2057,11 +2067,11 @@ __func__(double fma (double a, double b, double c))
             }
           }
         }
-        expo_y ^= 0x80000000;
+        expo_y ^= 0x80000000U;
       }
         
       /* normalize mantissa, if necessary */
-      while (!(xx.hi & 0x00100000)) {
+      while (!(xx.hi & 0x00100000U)) {
         xx.hi = (xx.hi << 1) | (xx.lo >> 31);
         xx.lo = (xx.lo << 1) | (yy.hi >> 31);
         yy.hi = (yy.hi << 1) | (yy.lo >> 31);
@@ -2081,12 +2091,12 @@ __func__(double fma (double a, double b, double c))
       xx.lo = xx.lo + zz.lo;
       s += xx.lo < zz.lo;
       xx.hi = xx.hi + zz.hi + s;
-      if (xx.hi & 0x00200000) {
+      if (xx.hi & 0x00200000U) {
         t = t | (yy.lo << 31);
         yy.lo = (yy.lo >> 1) | (yy.hi << 31);
         yy.hi = (yy.hi >> 1) | (xx.lo << 31);
         xx.lo = (xx.lo >> 1) | (xx.hi << 31);
-        xx.hi = ((xx.hi & 0x80000000) | (xx.hi >> 1)) & ~0x40000000;
+        xx.hi = ((xx.hi & 0x80000000U) | (xx.hi >> 1)) & ~0x40000000U;
         expo_x++;
       }
     }
@@ -2095,33 +2105,33 @@ __func__(double fma (double a, double b, double c))
   t = yy.hi | (t != 0);
         
   xx.hi |= expo_y; /* or in sign bit */
-  if (expo_x <= 0x7FD) {
+  if (expo_x <= 0x7FDU) {
     /* normal */
-    xx.hi = xx.hi & ~0x00100000; /* lop off integer bit */
+    xx.hi = xx.hi & ~0x00100000U; /* lop off integer bit */
     s = xx.lo & 1; /* mantissa lsb */
     u = xx.lo;
-    xx.lo += (t == 0x80000000) ? s : (t >> 31);
+    xx.lo += (t == 0x80000000U) ? s : (t >> 31);
     xx.hi += (u > xx.lo);
     xx.hi += ((expo_x + 1) << 20);
     memcpy(&d, &xx, sizeof(double));
     return d;
-  } else if ((int)expo_x >= 2046) {      
+  } else if (static_cast<int>(expo_x) >= 2046) {
     /* overflow */
-    xx.hi = (xx.hi & 0x80000000) | 0x7ff00000;
+    xx.hi = (xx.hi & 0x80000000U) | 0x7ff00000U;
     xx.lo = 0;
     memcpy(&d, &xx, sizeof(double));
     return d;
   }
   /* subnormal */
-  expo_x = (unsigned)(-(int)expo_x);
+  expo_x = (unsigned)(-static_cast<int>(expo_x));
   if (expo_x > 54) {
-    xx.hi = xx.hi & 0x80000000;
+    xx.hi = xx.hi & 0x80000000U;
     xx.lo = 0;
     memcpy(&d, &xx, sizeof(double));
     return d;
   }  
-  yy.hi = xx.hi &  0x80000000;   /* save sign bit */
-  xx.hi = xx.hi & ~0xffe00000;
+  yy.hi = xx.hi &  0x80000000U;   /* save sign bit */
+  xx.hi = xx.hi & ~0xffe00000U;
   if (expo_x >= 32) {
     t = xx.lo | (t != 0);
     xx.lo = xx.hi;
@@ -2133,9 +2143,9 @@ __func__(double fma (double a, double b, double c))
     xx.lo = (xx.lo >> expo_x) | (xx.hi << (32 - expo_x));
     xx.hi = (xx.hi >> expo_x);
   }
-  expo_x = xx.lo & 1; 
+  expo_x = xx.lo & 1;
   u = xx.lo;
-  xx.lo += (t == 0x80000000) ? expo_x : (t >> 31);
+  xx.lo += (t == 0x80000000U) ? expo_x : (t >> 31);
   xx.hi += (u > xx.lo);
   xx.hi |= yy.hi;
   memcpy(&d, &xx, sizeof(double));
@@ -2149,7 +2159,7 @@ __func__(double nextafter(double a, double b))
   memcpy(&ia, &a, sizeof(double));
   memcpy(&ib, &b, sizeof(double));
   if (__isnan(a) || __isnan(b)) return a + b; /* NaN */
-  if (((ia | ib) << 1) == 0ULL) return b;
+  if (((ia | ib) << 1ULL) == 0ULL) return b;
   if (a == 0.0) {
     return copysign (4.9406564584124654e-324, b); /* crossover */
   }
@@ -2409,7 +2419,7 @@ __func__(double lgamma(double a))
   i = floor(fa);       
   if (fa == i) return 1.0 / (fa - i); /* a is an integer: return infinity */
   i = rint (2.0 * fa);
-  quot = (long long int)i;
+  quot = static_cast<long long int>(i);
   i = fa - 0.5 * i;
   i = i * CUDART_PI;
   if (quot & 1) {
@@ -2614,7 +2624,7 @@ __func__(double tgamma(double a))
       }
       /* compute sin(pi*x) accurately */
       xx = rint (2.0 * x);
-      quot = (int)xx;
+      quot = static_cast<int>(xx);
       xx = -0.5 * xx + x;
       xx = xx * CUDART_PI;
       if (quot & 1) {
@@ -2650,197 +2660,230 @@ __func__(double tgamma(double a))
 *                                                                              *
 *******************************************************************************/
 
-__func__(int __signbitl(long double a))
+__func__(int __signbitl(const long double a))
 {
-  return __signbit((double)a);
+  return __signbit(static_cast<double>(a));
 }
 
-__func__(int __signbitf(float a))
+__func__(int __signbitf(const float a))
 {
-  return __signbit((double)a);
+  return __signbit(static_cast<double>(a));
 }
 
-__func__(int __finitel(long double a))
+__func__(int __finitel(const long double a))
 {
-  return __finite((double)a);
+  return __finite(static_cast<double>(a));
 }
 
-__func__(int __finitef(float a))
+__func__(int __finitef(const float a))
 {
-  return __finite((double)a);
+  return __finite(static_cast<double>(a));
 }
 
-__func__(int __isinfl(long double a))
+__func__(int __isinfl(const long double a))
 {
-  return __isinf((double)a);
+  return __isinf(static_cast<double>(a));
 }
 
-__func__(int __isinff(float a))
+__func__(int __isinff(const float a))
 {
-  return __isinf((double)a);
+  return __isinf(static_cast<double>(a));
 }
 
-__func__(int __isnanl(long double a))
+__func__(int __isnanl(const long double a))
 {
-  return __isnan((double)a);
+  return __isnan(static_cast<double>(a));
 }
 
-__func__(int __isnanf(float a))
+__func__(int __isnanf(const float a))
 {
-  return __isnan((double)a);
+  return __isnan(static_cast<double>(a));
 }
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-__func__(float fmaxf(float a, float b))
+__func__(float fmaxf(const float a, const float b))
 {
-  return (float)fmax((double)a, (double)b);
+  return static_cast<float>(fmax(static_cast<double>(a), static_cast<double>(b)));
 }
 
-__func__(float fminf(float a, float b))
+__func__(float fminf(const float a, const float b))
 {
-  return (float)fmin((double)a, (double)b);
+  return static_cast<float>(fmin(static_cast<double>(a), static_cast<double>(b)));
 }
 
-__func__(float roundf(float a))
+__func__(float roundf(const float a))
 {
-  return (float)round((double)a);
+  return static_cast<float>(round(static_cast<double>(a)));
 }
 
-__func__(long int lroundf(float a))
+__func__(long int lroundf(const float a))
 {
-  return lround((double)a);
+  return lround(static_cast<double>(a));
 }
 
-__func__(long long int llroundf(float a))
+__func__(long long int llroundf(const float a))
 {
-  return llround((double)a);
+  return llround(static_cast<double>(a));
 }
 
-__func__(float truncf(float a))
+__func__(float truncf(const float a))
 {
-  return (float)trunc((double)a);
+  return static_cast<float>(trunc(static_cast<double>(a)));
 }
 
-__func__(float rintf(float a))
+__func__(float rintf(const float a))
 {
-  return (float)rint((double)a);
+  return static_cast<float>(rint(static_cast<double>(a)));
 }
 
-__func__(float nearbyintf(float a))
+__func__(float nearbyintf(const float a))
 {
-  return (float)nearbyint((double)a);
+  return static_cast<float>(nearbyint(static_cast<double>(a)));
 }
 
-__func__(long int lrintf(float a))
+__func__(long int lrintf(const float a))
 {
-  return lrint((double)a);
+  return lrint(static_cast<double>(a));
 }
 
-__func__(long long int llrintf(float a))
+__func__(long long int llrintf(const float a))
 {
-  return llrint((double)a);
+  return llrint(static_cast<double>(a));
 }
 
-__func__(float logbf(float a))
+__func__(float logbf(const float a))
 {
-  return (float)logb((double)a);
+  return static_cast<float>(logb(static_cast<double>(a)));
 }
 
-__func__(float scalblnf(float a, long int b))
+__func__(float scalblnf(const float a, const long int b))
 {
-  return (float)scalbln((double)a, b);
+  return static_cast<float>(scalbln(static_cast<double>(a), b));
 }
 
-__func__(float log2f(float a))
+__func__(float log2f(const float a))
 {
-  return (float)log2((double)a);
+  return static_cast<float>(log2(static_cast<double>(a)));
 }
 
-__func__(float exp2f(float a))
+__func__(float exp2f(const float a))
 {
-  return (float)exp2((double)a);
+  return static_cast<float>(exp2(static_cast<double>(a)));
 }
 
-__func__(float acoshf(float a))
+__func__(float acoshf(const float a))
 {
-  return (float)acosh((double)a);
+  return static_cast<float>(acosh(static_cast<double>(a)));
 }
 
-__func__(float asinhf(float a))
+__func__(float asinhf(const float a))
 {
-  return (float)asinh((double)a);
+  return static_cast<float>(asinh(static_cast<double>(a)));
 }
 
-__func__(float atanhf(float a))
+__func__(float atanhf(const float a))
 {
-  return (float)atanh((double)a);
+  return static_cast<float>(atanh(static_cast<double>(a)));
 }
 
-__func__(float cbrtf(float a))
+__func__(float cbrtf(const float a))
 {
-  return (float)cbrt((double)a);
+  return static_cast<float>(cbrt(static_cast<double>(a)));
 }
 
-__func__(float expm1f(float a))
+__func__(float expm1f(const float a))
 {
-  return (float)expm1((double)a);
+  return static_cast<float>(expm1(static_cast<double>(a)));
 }
 
-__func__(float fdimf(float a, float b))
+__func__(float fdimf(const float a, const float b))
 {
-  return (float)fdim((double)a, (double)b);
+  return static_cast<float>(fdim(static_cast<double>(a), static_cast<double>(b)));
 }
 
-__func__(float log1pf(float a))
+__func__(float log1pf(const float a))
 {
-  return (float)log1p((double)a);
+  return static_cast<float>(log1p(static_cast<double>(a)));
 }
 
-__func__(float scalbnf(float a, int b))
+__func__(float scalbnf(const float a, const int b))
 {
-  return (float)scalbn((double)a, b);
+  return static_cast<float>(scalbn(static_cast<double>(a), b));
 }
 
-__func__(float fmaf(float a, float b, float c))
+__func__(float fmaf(const float a, const float b, const float c))
 {
-  return (float)fma((double)a, (double)b, (double)c);
+  return static_cast<float>(fma(static_cast<double>(a), static_cast<double>(b), static_cast<double>(c)));
 }
 
-__func__(int ilogbf(float a))
+__func__(int ilogbf(const float a))
 {
-  return ilogb((double)a);
+  return ilogb(static_cast<double>(a));
 }
 
-__func__(float erff(float a))
+__func__(float erff(const float a))
 {
-  return (float)erf((double)a);
+  return static_cast<float>(erf(static_cast<double>(a)));
 }
 
-__func__(float erfcf(float a))
+__func__(float erfcf(const float a))
 {
-  return (float)erfc((double)a);
+  return static_cast<float>(erfc(static_cast<double>(a)));
 }
 
-__func__(float lgammaf(float a))
+__func__(float lgammaf(const float a))
 {
-  return (float)lgamma((double)a);
+  return static_cast<float>(lgamma(static_cast<double>(a)));
 }
 
-__func__(float tgammaf(float a))
+__func__(float tgammaf(const float a))
 {
-  return (float)tgamma((double)a);
+  return static_cast<float>(tgamma(static_cast<double>(a)));
 }
 
-__func__(float remquof(float a, float b, int *quo))
+__func__(float remquof(const float a, const float b, int *quo))
 {
-  return (float)remquo((double)a, (double)b, quo);
+  return static_cast<float>(remquo(static_cast<double>(a), static_cast<double>(b), quo));
 }
 
-__func__(float remainderf(float a, float b))
+__func__(float remainderf(const float a, const float b))
 {
-  return (float)remainder((double)a, (double)b);
+  return static_cast<float>(remainder(static_cast<double>(a), static_cast<double>(b)));
 }
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
+
+#if (defined _MSC_VER) && (_MSC_VER >= 1700)
+__func__(float j0f(const float a))
+{
+  return static_cast<float>(_j0(static_cast<double>(a)));
+}
+
+__func__(float j1f(const float a))
+{
+  return static_cast<float>(_j1(static_cast<double>(a)));
+}
+
+__func__(float jnf(const int n, const float a))
+{
+  return static_cast<float>(_jn(n, static_cast<double>(a)));
+}
+
+__func__(float y0f(const float a))
+{
+  return static_cast<float>(_y0(static_cast<double>(a)));
+}
+
+__func__(float y1f(const float a))
+{
+  return static_cast<float>(_y1(static_cast<double>(a)));
+}
+
+__func__(float ynf(const int n, const float a))
+{
+  return static_cast<float>(_yn(n, static_cast<double>(a)));
+}
+#endif /* (defined _MSC_VER) && (_MSC_VER >= 1700) */
+
 
 /*******************************************************************************
 *                                                                              *
@@ -2849,31 +2892,31 @@ __func__(float remainderf(float a, float b))
 *******************************************************************************/
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
-__func__(float copysignf(float a, float b))
+__func__(float copysignf(float a, const float b))
 {
   unsigned int aa, bb;
   memcpy(&aa, &a, sizeof(float));
   memcpy(&bb, &b, sizeof(float));
-  aa = (aa & ~0x80000000) | (bb & 0x80000000);
+  aa = (aa & ~0x80000000U) | (bb & 0x80000000U);
   memcpy(&a, &aa, sizeof(float));
   return a;
 }
 
-__func__(float nextafterf(float a, float b))
+__func__(float nextafterf(float a, const float b))
 {
   unsigned int ia;
   unsigned int ib;
   memcpy(&ia, &a, sizeof(float));
   memcpy(&ib, &b, sizeof(float));
   if (__isnanf(a) || __isnanf(b)) return a + b; /*NaN*/
-  if (((ia | ib) << 1) == 0) return b;
-  if (a == 0.0f) {
-    return copysignf(1.401298464e-045f, b); /*crossover*/
+  if (((ia | ib) << 1U) == 0U) return b;
+  if (a == 0.0F) {
+    return copysignf(1.401298464e-045F, b); /*crossover*/
   }
-  if ((a < b) && (a < 0.0f)) ia--;
-  if ((a < b) && (a > 0.0f)) ia++;
-  if ((a > b) && (a < 0.0f)) ia++;
-  if ((a > b) && (a > 0.0f)) ia--;
+  if ((a < b) && (a < 0.0F)) ia--;
+  if ((a < b) && (a > 0.0F)) ia++;
+  if ((a > b) && (a < 0.0F)) ia++;
+  if ((a > b) && (a > 0.0F)) ia--;
   memcpy(&a, &ia, sizeof(float));
   return a;
 }
@@ -2882,8 +2925,8 @@ __func__(float nanf(const char *tagp))
 {
   float f;
   unsigned int i;
-  i = (unsigned int)__internal_host_nan_kernel(tagp);
-  i = (i & 0x007fffff) | 0x7fc00000;
+  i = static_cast<unsigned int>(__internal_host_nan_kernel(tagp));
+  i = (i & 0x007fffffU) | 0x7fc00000U;
   memcpy(&f, &i, sizeof(float));
   return f;
 }
@@ -2898,12 +2941,12 @@ __func__(float nanf(const char *tagp))
 *                                                                              *
 *******************************************************************************/
 
-__func__(double rsqrt(double a))
+__func__(double rsqrt(const double a))
 {
   return 1.0 / sqrt(a);
 }
 
-__func__(double rcbrt(double a))
+__func__(double rcbrt(const double a))
 {
   double s, t;
 
@@ -2940,7 +2983,11 @@ __func__(double sinpi(double a))
   if (a == floor(a)) {
     return ((a / 1.0e308) / 1.0e308) / 1.0e308;
   }
-  a = remquo (a, 0.5, &n);
+  double twoa = a + a;
+  double rtwoa = round(twoa);
+  long long int l = (long long int)rtwoa;
+  n = (int)l;
+  a -= rtwoa * 0.5;
   a = a * CUDART_PI;
   if (n & 1) {
     a = cos (a);
@@ -2966,7 +3013,11 @@ __func__(double cospi(double a))
   if (fabs(a) > 9.0071992547409920e+015) {
     a = 0.0;
   }
-  a = remquo (a, 0.5, &n);
+  double twoa = a + a;
+  double rtwoa = round(twoa);
+  long long int l = (long long int)rtwoa;
+  n = (int)l;
+  a -= rtwoa * 0.5;
   a = a * CUDART_PI;
   n++;
   if (n & 1) {
@@ -2983,20 +3034,20 @@ __func__(double cospi(double a))
   return a;
 }
 
-__func__(void sincospi(double a, double *sptr, double *cptr))
+__func__(void sincospi(const double a, double *sptr, double *cptr))
 {
   *sptr = sinpi(a);
   *cptr = cospi(a);
 }
 
-__func__(double erfinv(double a))
+__func__(double erfinv(const double a))
 {
   double p, q, t, fa;
   unsigned long long int l;
 
   fa = fabs(a);
   if (fa >= 1.0) {
-    l = 0xfff8000000000000ull;
+    l = 0xfff8000000000000ULL;
     memcpy(&t, &l, sizeof(double)); /* INDEFINITE */
     if (fa == 1.0) {
       t = a * exp(1000.0);          /* Infinity */
@@ -3082,7 +3133,7 @@ __func__(double erfinv(double a))
   return t;
 }
 
-__func__(double erfcinv(double a))
+__func__(double erfcinv(const double a))
 {
   double t;
   unsigned long long int l;
@@ -3091,7 +3142,7 @@ __func__(double erfcinv(double a))
     return a + a;
   }
   if (a <= 0.0) {
-    l = 0xfff8000000000000ull;
+    l = 0xfff8000000000000ULL;
     memcpy(&t, &l, sizeof(double));   /* INDEFINITE */
     if (a == 0.0) {
         t = (1.0 - a) * exp(1000.0);  /* Infinity */
@@ -3162,7 +3213,7 @@ __func__(double erfcinv(double a))
   return t;
 }
 
-__func__(double normcdfinv(double a))
+__func__(double normcdfinv(const double a))
 {
   return -1.4142135623730951 * erfcinv(a + a);
 }
@@ -3189,7 +3240,7 @@ __func__(double normcdf(double a))
   return 0.5 * z;
 }
 
-__func__(double erfcx(double a))
+__func__(double erfcx(const double a))
 {
   double x, t1, t2, t3;
 
@@ -3207,8 +3258,10 @@ __func__(double erfcx(double a))
      * a precision-dependent constant. Here, we choose k = 4.0, so the input 
      * domain [0, 27.3] is transformed into the core approximation domain 
      * [-1, 0.744409].   
-     */  
-    /* (1+2*x)*exp(x*x)*erfc(x) */ 
+     */
+    /*
+    // Compute (1+2*x)*exp(x*x)*erfc(x)
+    */
     /* t2 = (x-4.0)/(x+4.0), transforming [0,INF] to [-1,+1] */ 
     t1 = x - 4.0; 
     t2 = x + 4.0; 
@@ -3237,7 +3290,9 @@ __func__(double erfcx(double a))
     t1 = t1 * t2 + 1.5379652102605428E-002; 
     t1 = t1 * t2 - 1.3962111684056291E-001; 
     t1 = t1 * t2 + 1.2329951186255526E+000; 
-    /* (1+2*x)*exp(x*x)*erfc(x) / (1+2*x) = exp(x*x)*erfc(x) */  
+    /*
+    // Note: (1+2*x)*exp(x*x)*erfc(x) / (1+2*x) = exp(x*x)*erfc(x)
+    */
     t2 = 2.0 * x + 1.0; 
     t1 = t1 / t2;
   } else {
@@ -3254,8 +3309,10 @@ __func__(double erfcx(double a))
     t1 = t1 * t2;
   }
   if (a < 0.0) {
-    /* erfcx(x) = 2*exp(x^2) - erfcx(|x|) */
-    t2 = ((int)(x * 16.0)) * 0.0625;
+    /*
+    // Note: erfcx(x) = 2*exp(x^2) - erfcx(|x|)
+    */
+    t2 = (static_cast<int>(x * 16.0)) * 0.0625;
     t3 = (x - t2) * (x + t2);
     t3 = exp(t2 * t2) * exp(t3);
     t3 = t3 + t3;
@@ -3264,58 +3321,58 @@ __func__(double erfcx(double a))
   return t1;
 }
 
-__func__(float rsqrtf(float a))
+__func__(float rsqrtf(const float a))
 {
-  return (float)rsqrt((double)a);
+  return static_cast<float>(rsqrt(static_cast<double>(a)));
 }
 
-__func__(float rcbrtf(float a))
+__func__(float rcbrtf(const float a))
 {
-  return (float)rcbrt((double)a);
+  return static_cast<float>(rcbrt(static_cast<double>(a)));
 }
 
-__func__(float sinpif(float a))
+__func__(float sinpif(const float a))
 {
-  return (float)sinpi((double)a);
+  return static_cast<float>(sinpi(static_cast<double>(a)));
 }
 
-__func__(float cospif(float a))
+__func__(float cospif(const float a))
 {
-  return (float)cospi((double)a);
+  return static_cast<float>(cospi(static_cast<double>(a)));
 }
 
-__func__(void sincospif(float a, float *sptr, float *cptr))
+__func__(void sincospif(const float a, float *sptr, float *cptr))
 {
   double s, c;
 
-  sincospi((double)a, &s, &c);
-  *sptr = (float)s;
-  *cptr = (float)c;
+  sincospi(static_cast<double>(a), &s, &c);
+  *sptr = static_cast<float>(s);
+  *cptr = static_cast<float>(c);
 }
 
-__func__(float erfinvf(float a))
+__func__(float erfinvf(const float a))
 {
-  return (float)erfinv((double)a);
+  return static_cast<float>(erfinv(static_cast<double>(a)));
 }
 
-__func__(float erfcinvf(float a))
+__func__(float erfcinvf(const float a))
 {
-  return (float)erfcinv((double)a);
+  return static_cast<float>(erfcinv(static_cast<double>(a)));
 }
 
-__func__(float normcdfinvf(float a))
+__func__(float normcdfinvf(const float a))
 {
-  return (float)normcdfinv((double)a);
+  return static_cast<float>(normcdfinv(static_cast<double>(a)));
 }
 
-__func__(float normcdff(float a))
+__func__(float normcdff(const float a))
 {
-  return (float)normcdf((double)a);
+  return static_cast<float>(normcdf(static_cast<double>(a)));
 }
 
-__func__(float erfcxf(float a))
+__func__(float erfcxf(const float a))
 {
-  return (float)erfcx((double)a);
+  return static_cast<float>(erfcx(static_cast<double>(a)));
 }
 
 #if defined(_WIN32)
@@ -3328,3 +3385,7 @@ __func__(float erfcxf(float a))
 
 #endif /* !__MATH_FUNCTIONS_HPP__ */
 
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_HPP__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_HPP__
+#endif

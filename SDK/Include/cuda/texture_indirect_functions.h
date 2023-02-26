@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -54,9 +54,13 @@
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#include "builtin_types.h"
-#include "host_defines.h"
 
+#include "cuda_runtime_api.h"
+
+
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 600)
+#define __NV_TEX_SPARSE 1
+#endif  /* endif */
 
 template <typename T> struct __nv_itex_trait {   };
 template<> struct __nv_itex_trait<char> { typedef void type; };
@@ -104,435 +108,531 @@ template<> struct __nv_itex_trait<float4> { typedef void type; };
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1Dfetch(T *ptr, cudaTextureObject_t obj, int x)
 {
-#ifdef __CUDA_ARCH__
    __nv_tex_surf_handler("__itex1Dfetch", ptr, obj, x);
-#endif   
 }
 
 template <class T>
 static __device__ T tex1Dfetch(cudaTextureObject_t texObject, int x)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1Dfetch(&ret, texObject, x);
   return ret;
-#endif  
 }
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1D(T *ptr, cudaTextureObject_t obj, float x)
 {
-#ifdef __CUDA_ARCH__
    __nv_tex_surf_handler("__itex1D", ptr, obj, x);
-#endif
 }
 
 
 template <class T>
 static __device__  T tex1D(cudaTextureObject_t texObject, float x)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1D(&ret, texObject, x);
   return ret;
-#endif
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2D(T *ptr, cudaTextureObject_t obj, float x, float y)
 {
-#ifdef __CUDA_ARCH__
    __nv_tex_surf_handler("__itex2D", ptr, obj, x, y);
-#endif
 }
 
 template <class T>
 static __device__  T tex2D(cudaTextureObject_t texObject, float x, float y)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2D(&ret, texObject, x, y);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2D(T *ptr, cudaTextureObject_t obj, float x, float y, 
+                                                          bool* isResident)
+{
+  unsigned char res;
+   __nv_tex_surf_handler("__itex2D_sparse", ptr, obj, x, y, &res);
+   *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2D(cudaTextureObject_t texObject, float x, float y, bool* isResident)
+{
+  T ret;
+  tex2D(&ret, texObject, x, y, isResident);
+  return ret;
+}
+
+#endif  /* __NV_TEX_SPARSE */
+
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex3D(T *ptr, cudaTextureObject_t obj, float x, float y, float z)
 {
-#ifdef __CUDA_ARCH__
    __nv_tex_surf_handler("__itex3D", ptr, obj, x, y, z);
-#endif
 }
 
 template <class T>
 static __device__  T tex3D(cudaTextureObject_t texObject, float x, float y, float z)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex3D(&ret, texObject, x, y, z);
   return ret;
-#endif
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex3D(T *ptr, cudaTextureObject_t obj, float x, float y, float z, 
+                                                          bool* isResident)
+{
+  unsigned char res;
+   __nv_tex_surf_handler("__itex3D_sparse", ptr, obj, x, y, z, &res);
+   *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex3D(cudaTextureObject_t texObject, float x, float y, float z, bool* isResident)
+{
+  T ret;
+  tex3D(&ret, texObject, x, y, z, isResident);
+  return ret;
+}
+#endif  /* __NV_TEX_SPARSE */
+
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1DLayered(T *ptr, cudaTextureObject_t obj, float x, int layer)
 {
-#ifdef __CUDA_ARCH__
    __nv_tex_surf_handler("__itex1DLayered", ptr, obj, x, layer);
-#endif
 }
 
 template <class T>
 static __device__  T tex1DLayered(cudaTextureObject_t texObject, float x, int layer)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1DLayered(&ret, texObject, x, layer);
   return ret;
-#endif
 }
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2DLayered(T *ptr, cudaTextureObject_t obj, float x, float y, int layer)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2DLayered", ptr, obj, x, y, layer);
-#endif
 }
 
 template <class T>
 static __device__  T tex2DLayered(cudaTextureObject_t texObject, float x, float y, int layer)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2DLayered(&ret, texObject, x, y, layer);
   return ret;
-#endif
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2DLayered(T *ptr, cudaTextureObject_t obj, float x, float y, int layer, bool* isResident)
+{
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2DLayered_sparse", ptr, obj, x, y, layer, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2DLayered(cudaTextureObject_t texObject, float x, float y, int layer, bool* isResident)
+{
+  T ret;
+  tex2DLayered(&ret, texObject, x, y, layer, isResident);
+  return ret;
+}
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemap(T *ptr, cudaTextureObject_t obj, float x, float y, float z)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemap", ptr, obj, x, y, z);
-#endif
 }
 
 
 template <class T>
 static __device__  T texCubemap(cudaTextureObject_t texObject, float x, float y, float z)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemap(&ret, texObject, x, y, z);
   return ret;
-#endif
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemapLayered(T *ptr, cudaTextureObject_t obj, float x, float y, float z, int layer)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemapLayered", ptr, obj, x, y, z, layer);
-#endif
 }
 
 template <class T>
 static __device__  T texCubemapLayered(cudaTextureObject_t texObject, float x, float y, float z, int layer)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemapLayered(&ret, texObject, x, y, z, layer);
   return ret;
-#endif  
 }
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2Dgather(T *ptr, cudaTextureObject_t obj, float x, float y, int comp = 0)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2Dgather", ptr, obj, x, y, comp);
-#endif
 }
 
 template <class T>
 static __device__  T tex2Dgather(cudaTextureObject_t to, float x, float y, int comp = 0)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2Dgather(&ret, to, x, y, comp);
   return ret;
-#endif
 }
 
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2Dgather(T *ptr, cudaTextureObject_t obj, float x, float y, bool* isResident, int comp = 0)
+{
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2Dgather_sparse", ptr, obj, x, y, comp,  &res);
+  *isResident = (res != 0);
+}
 
+template <class T>
+static __device__  T tex2Dgather(cudaTextureObject_t to, float x, float y, bool* isResident, int comp = 0)
+{
+  T ret;
+  tex2Dgather(&ret, to, x, y,  isResident, comp);
+  return ret;
+}
+
+#endif  /* __NV_TEX_SPARSE */
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1DLod(T *ptr, cudaTextureObject_t obj, float x, float level)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex1DLod", ptr, obj, x, level);
-#endif
 }
 
 template <class T>
 static __device__  T tex1DLod(cudaTextureObject_t texObject, float x, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1DLod(&ret, texObject, x, level);
   return ret;
-#endif  
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2DLod(T *ptr, cudaTextureObject_t obj, float x, float y, float level)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2DLod", ptr, obj, x, y, level);
-#endif
 }
 
 template <class T>
 static __device__  T tex2DLod(cudaTextureObject_t texObject, float x, float y, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2DLod(&ret, texObject, x, y, level);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2DLod(T *ptr, cudaTextureObject_t obj, float x, float y, float level, bool* isResident)
+{
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2DLod_sparse", ptr, obj, x, y, level, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2DLod(cudaTextureObject_t texObject, float x, float y, float level, bool* isResident)
+{
+  T ret;
+  tex2DLod(&ret, texObject, x, y, level, isResident);
+  return ret;
+}
+
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex3DLod(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float level)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex3DLod", ptr, obj, x, y, z, level);
-#endif
 }
 
 template <class T>
 static __device__  T tex3DLod(cudaTextureObject_t texObject, float x, float y, float z, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex3DLod(&ret, texObject, x, y, z, level);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex3DLod(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float level, bool* isResident)
+{ 
+  unsigned char res;
+  __nv_tex_surf_handler("__itex3DLod_sparse", ptr, obj, x, y, z, level, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex3DLod(cudaTextureObject_t texObject, float x, float y, float z, float level, bool* isResident)
+{
+  T ret;
+  tex3DLod(&ret, texObject, x, y, z, level, isResident);
+  return ret;
+}
+
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1DLayeredLod(T *ptr, cudaTextureObject_t obj, float x, int layer, float level)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex1DLayeredLod", ptr, obj, x, layer, level);
-#endif
 }
 
 template <class T>
 static __device__  T tex1DLayeredLod(cudaTextureObject_t texObject, float x, int layer, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1DLayeredLod(&ret, texObject, x, layer, level);
   return ret;
-#endif  
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2DLayeredLod(T *ptr, cudaTextureObject_t obj, float x, float y, int layer, float level)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2DLayeredLod", ptr, obj, x, y, layer, level);
-#endif
 }
 
 template <class T>
 static __device__  T tex2DLayeredLod(cudaTextureObject_t texObject, float x, float y, int layer, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2DLayeredLod(&ret, texObject, x, y, layer, level);
   return ret;
-#endif  
 }
 
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2DLayeredLod(T *ptr, cudaTextureObject_t obj, float x, float y, int layer, float level, bool* isResident)
+{ 
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2DLayeredLod_sparse", ptr, obj, x, y, layer, level, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2DLayeredLod(cudaTextureObject_t texObject, float x, float y, int layer, float level, bool* isResident)
+{
+  T ret;
+  tex2DLayeredLod(&ret, texObject, x, y, layer, level, isResident);
+  return ret;
+}
+#endif  /* __NV_TEX_SPARSE */
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemapLod(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float level)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemapLod", ptr, obj, x, y, z, level);
-#endif
 }
 
 template <class T>
 static __device__  T texCubemapLod(cudaTextureObject_t texObject, float x, float y, float z, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemapLod(&ret, texObject, x, y, z, level);
   return ret;
-#endif  
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemapGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float4 dPdx, float4 dPdy)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemapGrad_v2", ptr, obj, x, y, z, &dPdx, &dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T texCubemapGrad(cudaTextureObject_t texObject, float x, float y, float z, float4 dPdx, float4 dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemapGrad(&ret, texObject, x, y, z, dPdx, dPdy);
   return ret;
-#endif  
 }
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemapLayeredLod(T *ptr, cudaTextureObject_t obj, float x, float y, float z, int layer, float level)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemapLayeredLod", ptr, obj, x, y, z, layer, level);
-#endif
 }
 
 template <class T>
 static __device__  T texCubemapLayeredLod(cudaTextureObject_t texObject, float x, float y, float z, int layer, float level)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemapLayeredLod(&ret, texObject, x, y, z, layer, level);
   return ret;
-#endif  
 }
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1DGrad(T *ptr, cudaTextureObject_t obj, float x, float dPdx, float dPdy)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex1DGrad", ptr, obj, x, dPdx, dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T tex1DGrad(cudaTextureObject_t texObject, float x, float dPdx, float dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1DGrad(&ret, texObject, x, dPdx, dPdy);
   return ret;
-#endif  
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2DGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float2 dPdx, float2 dPdy)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2DGrad_v2", ptr, obj, x, y, &dPdx, &dPdy);
-#endif
-
 }
 
 template <class T>
 static __device__  T tex2DGrad(cudaTextureObject_t texObject, float x, float y, float2 dPdx, float2 dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2DGrad(&ret, texObject, x, y, dPdx, dPdy);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2DGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float2 dPdx, float2 dPdy, bool* isResident)
+{ 
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2DGrad_sparse", ptr, obj, x, y, &dPdx, &dPdy, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2DGrad(cudaTextureObject_t texObject, float x, float y, float2 dPdx, float2 dPdy, bool* isResident)
+{
+  T ret;
+  tex2DGrad(&ret, texObject, x, y, dPdx, dPdy, isResident);
+  return ret;
+}
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex3DGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float4 dPdx, float4 dPdy)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex3DGrad_v2", ptr, obj, x, y, z, &dPdx, &dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T tex3DGrad(cudaTextureObject_t texObject, float x, float y, float z, float4 dPdx, float4 dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex3DGrad(&ret, texObject, x, y, z, dPdx, dPdy);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex3DGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float z, float4 dPdx, float4 dPdy, bool* isResident)
+{ 
+  unsigned char res;
+  __nv_tex_surf_handler("__itex3DGrad_sparse", ptr, obj, x, y, z, &dPdx, &dPdy, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex3DGrad(cudaTextureObject_t texObject, float x, float y, float z, float4 dPdx, float4 dPdy, bool* isResident)
+{
+  T ret;
+  tex3DGrad(&ret, texObject, x, y, z, dPdx, dPdy, isResident);
+  return ret;
+}
+
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex1DLayeredGrad(T *ptr, cudaTextureObject_t obj, float x, int layer, float dPdx, float dPdy)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex1DLayeredGrad", ptr, obj, x, layer, dPdx, dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T tex1DLayeredGrad(cudaTextureObject_t texObject, float x, int layer, float dPdx, float dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex1DLayeredGrad(&ret, texObject, x, layer, dPdx, dPdy);
   return ret;
-#endif  
 }
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type tex2DLayeredGrad(T * ptr, cudaTextureObject_t obj, float x, float y, int layer, float2 dPdx, float2 dPdy)
 { 
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itex2DLayeredGrad_v2", ptr, obj, x, y, layer, &dPdx, &dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T tex2DLayeredGrad(cudaTextureObject_t texObject, float x, float y, int layer, float2 dPdx, float2 dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   tex2DLayeredGrad(&ret, texObject, x, y, layer, dPdx, dPdy);
   return ret;
-#endif  
 }
+
+#if __NV_TEX_SPARSE
+template <typename T>
+static __device__ typename __nv_itex_trait<T>::type tex2DLayeredGrad(T * ptr, cudaTextureObject_t obj, float x, float y, int layer, float2 dPdx, float2 dPdy, bool* isResident)
+{ 
+  unsigned char res;
+  __nv_tex_surf_handler("__itex2DLayeredGrad_sparse", ptr, obj, x, y, layer, &dPdx, &dPdy, &res);
+  *isResident = (res != 0);
+}
+
+template <class T>
+static __device__  T tex2DLayeredGrad(cudaTextureObject_t texObject, float x, float y, int layer, float2 dPdx, float2 dPdy, bool* isResident)
+{
+  T ret;
+  tex2DLayeredGrad(&ret, texObject, x, y, layer, dPdx, dPdy, isResident);
+  return ret;
+}
+#endif  /* __NV_TEX_SPARSE */
 
 
 template <typename T>
 static __device__ typename __nv_itex_trait<T>::type texCubemapLayeredGrad(T *ptr, cudaTextureObject_t obj, float x, float y, float z, int layer, float4 dPdx, float4 dPdy)
 {
-#ifdef __CUDA_ARCH__
   __nv_tex_surf_handler("__itexCubemapLayeredGrad_v2", ptr, obj, x, y, z, layer, &dPdx, &dPdy);
-#endif
 }
 
 template <class T>
 static __device__  T texCubemapLayeredGrad(cudaTextureObject_t texObject, float x, float y, float z, int layer, float4 dPdx, float4 dPdy)
 {
-#ifdef __CUDA_ARCH__
   T ret;
   texCubemapLayeredGrad(&ret, texObject, x, y, z, layer, dPdx, dPdy);
   return ret;
-#endif  
 }
+
+#undef __NV_TEX_SPARSE
 
 #endif // __cplusplus && __CUDACC__
 #endif // __TEXTURE_INDIRECT_FUNCTIONS_H__

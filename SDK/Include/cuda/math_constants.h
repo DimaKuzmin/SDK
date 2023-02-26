@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2012 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2021 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -51,41 +51,41 @@
 #define __MATH_CONSTANTS_H__
 
 /* single precision constants */
-#define CUDART_INF_F            __int_as_float(0x7f800000)
-#define CUDART_NAN_F            __int_as_float(0x7fffffff)
-#define CUDART_MIN_DENORM_F     __int_as_float(0x00000001)
-#define CUDART_MAX_NORMAL_F     __int_as_float(0x7f7fffff)
-#define CUDART_NEG_ZERO_F       __int_as_float(0x80000000)
-#define CUDART_ZERO_F           0.0f
-#define CUDART_ONE_F            1.0f
-#define CUDART_SQRT_HALF_F      0.707106781f
-#define CUDART_SQRT_HALF_HI_F   0.707106781f
-#define CUDART_SQRT_HALF_LO_F   1.210161749e-08f
-#define CUDART_SQRT_TWO_F       1.414213562f
-#define CUDART_THIRD_F          0.333333333f
-#define CUDART_PIO4_F           0.785398163f
-#define CUDART_PIO2_F           1.570796327f
-#define CUDART_3PIO4_F          2.356194490f
-#define CUDART_2_OVER_PI_F      0.636619772f
-#define CUDART_SQRT_2_OVER_PI_F 0.797884561f
-#define CUDART_PI_F             3.141592654f
-#define CUDART_L2E_F            1.442695041f
-#define CUDART_L2T_F            3.321928094f
-#define CUDART_LG2_F            0.301029996f
-#define CUDART_LGE_F            0.434294482f
-#define CUDART_LN2_F            0.693147181f
-#define CUDART_LNT_F            2.302585093f 
-#define CUDART_LNPI_F           1.144729886f
-#define CUDART_TWO_TO_M126_F    1.175494351e-38f
-#define CUDART_TWO_TO_126_F     8.507059173e37f
-#define CUDART_NORM_HUGE_F      3.402823466e38f
-#define CUDART_TWO_TO_23_F      8388608.0f
-#define CUDART_TWO_TO_24_F      16777216.0f
-#define CUDART_TWO_TO_31_F      2147483648.0f
-#define CUDART_TWO_TO_32_F      4294967296.0f
-#define CUDART_REMQUO_BITS_F    3
-#define CUDART_REMQUO_MASK_F    (~((~0)<<CUDART_REMQUO_BITS_F))
-#define CUDART_TRIG_PLOSS_F     105615.0f
+#define CUDART_INF_F            __int_as_float(0x7f800000U)
+#define CUDART_NAN_F            __int_as_float(0x7fffffffU)
+#define CUDART_MIN_DENORM_F     __int_as_float(0x00000001U)
+#define CUDART_MAX_NORMAL_F     __int_as_float(0x7f7fffffU)
+#define CUDART_NEG_ZERO_F       __int_as_float(0x80000000U)
+#define CUDART_ZERO_F           0.0F
+#define CUDART_ONE_F            1.0F
+#define CUDART_SQRT_HALF_F      0.707106781F
+#define CUDART_SQRT_HALF_HI_F   0.707106781F
+#define CUDART_SQRT_HALF_LO_F   1.210161749e-08F
+#define CUDART_SQRT_TWO_F       1.414213562F
+#define CUDART_THIRD_F          0.333333333F
+#define CUDART_PIO4_F           0.785398163F
+#define CUDART_PIO2_F           1.570796327F
+#define CUDART_3PIO4_F          2.356194490F
+#define CUDART_2_OVER_PI_F      0.636619772F
+#define CUDART_SQRT_2_OVER_PI_F 0.797884561F
+#define CUDART_PI_F             3.141592654F
+#define CUDART_L2E_F            1.442695041F
+#define CUDART_L2T_F            3.321928094F
+#define CUDART_LG2_F            0.301029996F
+#define CUDART_LGE_F            0.434294482F
+#define CUDART_LN2_F            0.693147181F
+#define CUDART_LNT_F            2.302585093F
+#define CUDART_LNPI_F           1.144729886F
+#define CUDART_TWO_TO_M126_F    1.175494351e-38F
+#define CUDART_TWO_TO_126_F     8.507059173e37F
+#define CUDART_NORM_HUGE_F      3.402823466e38F
+#define CUDART_TWO_TO_23_F      8388608.0F
+#define CUDART_TWO_TO_24_F      16777216.0F
+#define CUDART_TWO_TO_31_F      2147483648.0F
+#define CUDART_TWO_TO_32_F      4294967296.0F
+#define CUDART_REMQUO_BITS_F    3U
+#define CUDART_REMQUO_MASK_F    (~((~0U)<<CUDART_REMQUO_BITS_F))
+#define CUDART_TRIG_PLOSS_F     105615.0F
 
 /* double precision constants */
 #define CUDART_INF              __longlong_as_double(0x7ff0000000000000ULL)

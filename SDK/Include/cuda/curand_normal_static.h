@@ -50,9 +50,16 @@
 
 #define QUALIFIERS_STATIC __host__ __device__ __forceinline__
 
+#include <nv/target>
+#if defined(HOST_HAVE_ERFCINVF)
+  #define IF_DEVICE_OR_HAVE_ERFCINVF(t, f) _NV_BLOCK_EXPAND(t)
+#else
+  #define IF_DEVICE_OR_HAVE_ERFCINVF(t, f) NV_IF_ELSE_TARGET(NV_IS_DEVICE, t, f)
+#endif
+
 QUALIFIERS_STATIC float _curand_normal_icdf(unsigned int x)
 {
-#if __CUDA_ARCH__ > 0 || defined(HOST_HAVE_ERFCINVF)
+IF_DEVICE_OR_HAVE_ERFCINVF(
     float s = CURAND_SQRT2;
     // Mirror to avoid loss of precision
     if(x > 0x80000000UL) {
@@ -62,15 +69,15 @@ QUALIFIERS_STATIC float _curand_normal_icdf(unsigned int x)
     float p = x * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
     // p is in (0, 0.5], 2p is in (0, 1]
     return s * erfcinvf(2.0f * p);
-#else
+,
     x++;    //suppress warnings
     return 0.0f;
-#endif
+)
 }
 
 QUALIFIERS_STATIC float _curand_normal_icdf(unsigned long long x)
 {
-#if __CUDA_ARCH__ > 0 || defined(HOST_HAVE_ERFCINVF)
+IF_DEVICE_OR_HAVE_ERFCINVF(
     unsigned int t = (unsigned int)(x >> 32);
     float s = CURAND_SQRT2;
     // Mirror to avoid loss of precision
@@ -79,17 +86,17 @@ QUALIFIERS_STATIC float _curand_normal_icdf(unsigned long long x)
         s = -s;
     }
     float p = t * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
-    // p is in (0, 0.5], 2p is in (0, 1]
+    // p is in (0 - 0.5] 2p is in (0 - 1]
     return s * erfcinvf(2.0f * p);
-#else
+,
     x++;
     return 0.0f;
-#endif
+)
 }
 
 QUALIFIERS_STATIC double _curand_normal_icdf_double(unsigned int x)
 {
-#if __CUDA_ARCH__ > 0 || defined(HOST_HAVE_ERFCINVF)
+IF_DEVICE_OR_HAVE_ERFCINVF(
     double s = CURAND_SQRT2_DOUBLE;
     // Mirror to avoid loss of precision
     if(x > 0x80000000UL) {
@@ -97,17 +104,17 @@ QUALIFIERS_STATIC double _curand_normal_icdf_double(unsigned int x)
         s = -s;
     }
     double p = x * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
-    // p is in (0, 0.5], 2p is in (0, 1]
+    // p is in (0 - 0.5] 2p is in (0 - 1]
     return s * erfcinv(2.0 * p);
-#else
+,
     x++;
     return 0.0;
-#endif
+)
 }
 
 QUALIFIERS_STATIC double _curand_normal_icdf_double(unsigned long long x)
 {
-#if __CUDA_ARCH__ > 0 || defined(HOST_HAVE_ERFCINVF)
+IF_DEVICE_OR_HAVE_ERFCINVF(
     double s = CURAND_SQRT2_DOUBLE;
     x >>= 11;
     // Mirror to avoid loss of precision
@@ -116,12 +123,12 @@ QUALIFIERS_STATIC double _curand_normal_icdf_double(unsigned long long x)
         s = -s;
     }
     double p = x * CURAND_2POW53_INV_DOUBLE + (CURAND_2POW53_INV_DOUBLE/2.0);
-    // p is in (0, 0.5], 2p is in (0, 1]
+    // p is in (0 - 0.5] 2p is in (0 - 1]
     return s * erfcinv(2.0 * p);
-#else
+,
     x++;
     return 0.0;
-#endif
+)
 }
 #undef QUALIFIERS_STATIC
 #endif

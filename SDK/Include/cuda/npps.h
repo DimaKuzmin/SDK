@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2022 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -53,17 +53,32 @@
  * NPP Signal Processing Functionality.
  */
  
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "nppdefs.h"
 
+#ifdef __cplusplus
+#ifdef NPP_PLUS
+using namespace nppPlusV;
+#else
+extern "C" {
+#endif
+#endif
+
 /** @defgroup npps NPP Signal Processing
- *
+ * The set of signal processing functions available in the library.
  * @{
  *
  */
+
+#ifdef NPP_PLUS
+
+#include "nppPlus/nppsPlus_support_functions.h"
+#include "nppPlus/nppsPlus_initialization.h"
+#include "nppPlus/nppsPlus_conversion_functions.h"
+#include "nppPlus/nppsPlus_arithmetic_and_logical_operations.h"
+#include "nppPlus/nppsPlus_statistics_functions.h"
+#include "nppPlus/nppsPlus_filtering_functions.h"
+
+#else
 
 #include "npps_support_functions.h"
 #include "npps_initialization.h"
@@ -72,10 +87,14 @@ extern "C" {
 #include "npps_statistics_functions.h"
 #include "npps_filtering_functions.h"
 
+#endif
+
 /** @} end of Signal Processing module */
  
 #ifdef __cplusplus
+#ifndef NPP_PLUS
 } /* extern "C" */
+#endif
 #endif
 
 #endif /* NV_NPPS_H */

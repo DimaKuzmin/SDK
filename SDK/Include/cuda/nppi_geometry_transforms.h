@@ -1,4 +1,4 @@
- /* Copyright 2009-2017 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -107,7 +107,19 @@ extern "C" {
 
 /** @defgroup image_resize_square_pixel ResizeSqrPixel
  *
- * ResizeSqrPixel supports the following interpolation modes:
+ * ResizeSqrPixel functions attempt to choose source pixels that would approximately represent the center of the destination pixels.
+ * It does so by using the following scaling formula to select source pixels for interpolation:
+ *
+ * \code
+ *   nAdjustedXFactor = 1.0 / nXFactor;
+ *   nAdjustedYFactor = 1.0 / nYFactor;
+ *   nAdjustedXShift = nXShift * nAdjustedXFactor + ((1.0 - nAdjustedXFactor) * 0.5);
+ *   nAdjustedYShift = nYShift * nAdjustedYFactor + ((1.0 - nAdjustedYFactor) * 0.5);
+ *   nSrcX = nAdjustedXFactor * nDstX - nAdjustedXShift;
+ *   nSrcY = nAdjustedYFactor * nDstY - nAdjustedYShift;
+ * \endcode
+ *
+ * ResizeSqrPixel functions support the following interpolation modes:
  *
  * \code
  *   NPPI_INTER_NN
@@ -118,18 +130,6 @@ extern "C" {
  *   NPPI_INTER_CUBIC2P_B05C03
  *   NPPI_INTER_SUPER
  *   NPPI_INTER_LANCZOS
- * \endcode
- *
- * ResizeSqrPixel attempts to choose source pixels that would approximately represent the center of the destination pixels.
- * It does so by using the following scaling formula to select source pixels for interpolation:
- *
- * \code
- *   nAdjustedXFactor = 1.0 / nXFactor;
- *   nAdjustedYFactor = 1.0 / nYFactor;
- *   nAdjustedXShift = nXShift * nAdjustedXFactor + ((1.0 - nAdjustedXFactor) * 0.5);
- *   nAdjustedYShift = nYShift * nAdjustedYFactor + ((1.0 - nAdjustedYFactor) * 0.5);
- *   nSrcX = nAdjustedXFactor * nDstX - nAdjustedXShift;
- *   nSrcY = nAdjustedYFactor * nDstY - nAdjustedYShift;
  * \endcode
  *
  * In the ResizeSqrPixel functions below source image clip checking is handled as follows:
@@ -196,6 +196,7 @@ nppiGetResizeRect(NppiRect oSrcROI, NppiRect *pDstRect,
  * \param nXShift Source pixel shift in x-direction.
  * \param nYShift Source pixel shift in y-direction.
  * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  *
  * <h3><a name="CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions include:</a></h3>
@@ -212,6 +213,7 @@ nppiGetResizeRect(NppiRect oSrcROI, NppiRect *pDstRect,
  * \param nXShift Source pixel shift in x-direction.
  * \param nYShift Source pixel shift in y-direction.
  * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  *
  * @{
@@ -225,6 +227,11 @@ nppiGetResizeRect(NppiRect oSrcROI, NppiRect *pDstRect,
  *
  */
 NppStatus 
+nppiResizeSqrPixel_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                              double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -235,6 +242,11 @@ nppiResizeSqrPixel_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                              double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI,
@@ -247,6 +259,11 @@ nppiResizeSqrPixel_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  *
  */
 NppStatus 
+nppiResizeSqrPixel_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                              double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -257,6 +274,11 @@ nppiResizeSqrPixel_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI,
@@ -269,6 +291,11 @@ nppiResizeSqrPixel_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiResizeSqrPixel_8u_P3R_Ctx(const Npp8u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst[3], int nDstStep, NppiRect oDstROI,
+                              double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_8u_P3R(const Npp8u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst[3], int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -279,6 +306,11 @@ nppiResizeSqrPixel_8u_P3R(const Npp8u * const pSrc[3], NppiSize oSrcSize, int nS
  * For common parameter descriptions, see <a href="#CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_8u_P4R_Ctx(const Npp8u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst[4], int nDstStep, NppiRect oDstROI,
+                              double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_8u_P4R(const Npp8u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst[4], int nDstStep, NppiRect oDstROI,
@@ -291,6 +323,11 @@ nppiResizeSqrPixel_8u_P4R(const Npp8u * const pSrc[4], NppiSize oSrcSize, int nS
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -301,6 +338,11 @@ nppiResizeSqrPixel_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI,
@@ -313,6 +355,11 @@ nppiResizeSqrPixel_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -323,6 +370,11 @@ nppiResizeSqrPixel_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                                double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI,
@@ -335,6 +387,11 @@ nppiResizeSqrPixel_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16u_P3R_Ctx(const Npp16u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst[3], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16u_P3R(const Npp16u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst[3], int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -345,6 +402,11 @@ nppiResizeSqrPixel_16u_P3R(const Npp16u * const pSrc[3], NppiSize oSrcSize, int 
  * For common parameter descriptions, see <a href="#CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16u_P4R_Ctx(const Npp16u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst[4], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16u_P4R(const Npp16u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst[4], int nDstStep, NppiRect oDstROI,
@@ -357,6 +419,11 @@ nppiResizeSqrPixel_16u_P4R(const Npp16u * const pSrc[4], NppiSize oSrcSize, int 
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16s_C1R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16s * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16s_C1R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16s * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -367,6 +434,11 @@ nppiResizeSqrPixel_16s_C1R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16s_C3R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16s * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16s_C3R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16s * pDst, int nDstStep, NppiRect oDstROI,
@@ -379,6 +451,11 @@ nppiResizeSqrPixel_16s_C3R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16s_C4R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16s * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16s_C4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16s * pDst, int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -389,6 +466,11 @@ nppiResizeSqrPixel_16s_C4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16s_AC4R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16s * pDst, int nDstStep, NppiRect oDstROI,
+                                double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16s_AC4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16s * pDst, int nDstStep, NppiRect oDstROI,
@@ -401,6 +483,11 @@ nppiResizeSqrPixel_16s_AC4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiResizeSqrPixel_16s_P3R_Ctx(const Npp16s * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16s * pDst[3], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_16s_P3R(const Npp16s * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16s * pDst[3], int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -411,6 +498,11 @@ nppiResizeSqrPixel_16s_P3R(const Npp16s * const pSrc[3], NppiSize oSrcSize, int 
  * For common parameter descriptions, see <a href="#CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_16s_P4R_Ctx(const Npp16s * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16s * pDst[4], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_16s_P4R(const Npp16s * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16s * pDst[4], int nDstStep, NppiRect oDstROI,
@@ -423,6 +515,11 @@ nppiResizeSqrPixel_16s_P4R(const Npp16s * const pSrc[4], NppiSize oSrcSize, int 
  *
  */
 NppStatus 
+nppiResizeSqrPixel_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -433,6 +530,11 @@ nppiResizeSqrPixel_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI,
@@ -445,6 +547,11 @@ nppiResizeSqrPixel_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiResizeSqrPixel_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -455,6 +562,11 @@ nppiResizeSqrPixel_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                                double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI,
@@ -467,6 +579,11 @@ nppiResizeSqrPixel_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiResizeSqrPixel_32f_P3R_Ctx(const Npp32f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst[3], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_32f_P3R(const Npp32f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst[3], int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -477,6 +594,11 @@ nppiResizeSqrPixel_32f_P3R(const Npp32f * const pSrc[3], NppiSize oSrcSize, int 
  * For common parameter descriptions, see <a href="#CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_32f_P4R_Ctx(const Npp32f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst[4], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_32f_P4R(const Npp32f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst[4], int nDstStep, NppiRect oDstROI,
@@ -489,6 +611,11 @@ nppiResizeSqrPixel_32f_P4R(const Npp32f * const pSrc[4], NppiSize oSrcSize, int 
  *
  */
 NppStatus 
+nppiResizeSqrPixel_64f_C1R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp64f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp64f * pDst, int nDstStep, NppiRect oDstROI,
                           double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -499,6 +626,11 @@ nppiResizeSqrPixel_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep,
   * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
 */
+NppStatus 
+nppiResizeSqrPixel_64f_C3R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp64f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp64f * pDst, int nDstStep, NppiRect oDstROI,
@@ -511,6 +643,11 @@ nppiResizeSqrPixel_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiResizeSqrPixel_64f_C4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp64f * pDst, int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp64f * pDst, int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -521,6 +658,11 @@ nppiResizeSqrPixel_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonResizeSqrPackedPixelParameters">Common parameters for nppiResizeSqrPixel packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_64f_AC4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp64f * pDst, int nDstStep, NppiRect oDstROI,
+                                double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp64f * pDst, int nDstStep, NppiRect oDstROI,
@@ -533,6 +675,11 @@ nppiResizeSqrPixel_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiResizeSqrPixel_64f_P3R_Ctx(const Npp64f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp64f * pDst[3], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_64f_P3R(const Npp64f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp64f * pDst[3], int nDstStep, NppiRect oDstROI,
                            double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation);
@@ -543,6 +690,11 @@ nppiResizeSqrPixel_64f_P3R(const Npp64f * const pSrc[3], NppiSize oSrcSize, int 
  * For common parameter descriptions, see <a href="#CommonResizeSqrPlanarPixelParameters">Common parameters for nppiResizeSqrPixel planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResizeSqrPixel_64f_P4R_Ctx(const Npp64f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp64f * pDst[4], int nDstStep, NppiRect oDstROI,
+                               double nXFactor, double nYFactor, double nXShift, double nYShift, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeSqrPixel_64f_P4R(const Npp64f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp64f * pDst[4], int nDstStep, NppiRect oDstROI,
@@ -574,17 +726,25 @@ nppiResizeAdvancedGetBufferHostSize_8u_C1R(NppiSize oSrcROI, NppiSize oDstROI, i
  * \param nYFactor Factor by which y dimension is changed. 
  * \param pBuffer Device buffer that is used during calculations.
  * \param eInterpolationMode The type of eInterpolation to perform resampling. Currently only supports NPPI_INTER_LANCZOS3_Advanced.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  */
 NppStatus 
+nppiResizeSqrPixel_8u_C1R_Advanced_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                             Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                                       double nXFactor, double nYFactor, Npp8u * pBuffer, int eInterpolationMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeSqrPixel_8u_C1R_Advanced(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI,
-                                  double nXFactor, double nYFactor, Npp8u * pBuffer, int eInterpolationMode);
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                                   double nXFactor, double nYFactor, Npp8u * pBuffer, int eInterpolationMode);
 /** @} */
 
 /** @} image_resize_square_pixel */
 
 /** @defgroup image_resize Resize
+ *
+ * Resize functions use scale factor automatically determined by the width and height ratios of input and output \ref roi_specification. 
  *
  * This simplified function replaces the previous version which was deprecated in an earlier release. In this function the resize
  * scale factor is automatically determined by the width and height ratios of oSrcRectROI and oDstRectROI.  If either of those 
@@ -650,7 +810,8 @@ nppiGetResizeTiledSourceOffset(NppiRect oSrcRectROI, NppiRect oDstRectROI, NppiP
  * \param nDstStep \ref destination_image_line_step.
  * \param oDstSize Size in pixels of the entire destination image.
  * \param oDstRectROI Region of interest in the destination image (may overlap destination image size width and height).
- * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param eInterpolation The type of eInterpolation to perform resampling (16f versions do not support Lanczos interpolation).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  *
  * <h3><a name="CommonResizePlanarPixelParameters">Common parameters for nppiResize planar pixel functions include:</a></h3>
@@ -664,6 +825,7 @@ nppiGetResizeTiledSourceOffset(NppiRect oSrcRectROI, NppiRect oDstRectROI, NppiP
  * \param oDstSize Size in pixels of the entire destination image.
  * \param oDstRectROI Region of interest in the destination image (may overlap destination image size width and height).
  * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  * 
  * @{
@@ -677,6 +839,10 @@ nppiGetResizeTiledSourceOffset(NppiRect oSrcRectROI, NppiRect oDstRectROI, NppiP
  *
  */
 NppStatus 
+nppiResize_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                            Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                         Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -686,6 +852,10 @@ nppiResize_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect 
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                            Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                         Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -697,6 +867,10 @@ nppiResize_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect 
  *
  */
 NppStatus 
+nppiResize_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                            Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                         Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -706,6 +880,10 @@ nppiResize_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect 
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp8u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -717,6 +895,10 @@ nppiResize_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect
  *
  */
 NppStatus 
+nppiResize_8u_P3R_Ctx(const Npp8u * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                            Npp8u * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_8u_P3R(const Npp8u * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                         Npp8u * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -726,6 +908,10 @@ nppiResize_8u_P3R(const Npp8u * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRe
  * For common parameter descriptions, see <a href="#CommonResizePlanarPixelParameters">Common parameters for nppiResize planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_8u_P4R_Ctx(const Npp8u * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                            Npp8u * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_8u_P4R(const Npp8u * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                         Npp8u * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -737,6 +923,10 @@ nppiResize_8u_P4R(const Npp8u * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRe
  *
  */
 NppStatus 
+nppiResize_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -746,6 +936,10 @@ nppiResize_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_16u_C3R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -757,6 +951,10 @@ nppiResize_16u_C3R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  *
  */
 NppStatus 
+nppiResize_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -766,6 +964,10 @@ nppiResize_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                              Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                           Npp16u * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -777,6 +979,10 @@ nppiResize_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRe
  *
  */
 NppStatus 
+nppiResize_16u_P3R_Ctx(const Npp16u * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16u * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16u_P3R(const Npp16u * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16u * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -786,6 +992,10 @@ nppiResize_16u_P3R(const Npp16u * pSrc[3], int nSrcStep, NppiSize oSrcSize, Nppi
  * For common parameter descriptions, see <a href="#CommonResizePlanarPixelParameters">Common parameters for nppiResize planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_16u_P4R_Ctx(const Npp16u * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16u * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_16u_P4R(const Npp16u * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16u * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -797,6 +1007,10 @@ nppiResize_16u_P4R(const Npp16u * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
  *
  */
 NppStatus 
+nppiResize_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -806,6 +1020,10 @@ nppiResize_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_16s_C3R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -817,6 +1035,10 @@ nppiResize_16s_C3R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  *
  */
 NppStatus 
+nppiResize_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16s_C4R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -826,6 +1048,10 @@ nppiResize_16s_C4R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                              Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_16s_AC4R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                           Npp16s * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -837,6 +1063,10 @@ nppiResize_16s_AC4R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRe
  *
  */
 NppStatus 
+nppiResize_16s_P3R_Ctx(const Npp16s * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16s * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16s_P3R(const Npp16s * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16s * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -847,8 +1077,54 @@ nppiResize_16s_P3R(const Npp16s * pSrc[3], int nSrcStep, NppiSize oSrcSize, Nppi
  *
  */
 NppStatus 
+nppiResize_16s_P4R_Ctx(const Npp16s * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16s * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_16s_P4R(const Npp16s * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp16s * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
+
+/**
+ * 1 channel 16-bit floating point image resize.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiResize_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResize_16f_C1R(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                         Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
+
+/**
+ * 3 channel 16-bit floating point image resize.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiResize_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResize_16f_C3R(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                         Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
+
+/**
+ * 4 channel 16-bit floating point image resize.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiResize_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResize_16f_C4R(const Npp16f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                         Npp16f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
 /**
  * 1 channel 32-bit floating point image resize.
@@ -856,6 +1132,10 @@ nppiResize_16s_P4R(const Npp16s * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -867,6 +1147,10 @@ nppiResize_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  *
  */
 NppStatus 
+nppiResize_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -876,6 +1160,10 @@ nppiResize_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  * For common parameter descriptions, see <a href="#CommonResizePackedPixelParameters">Common parameters for nppiResize packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -887,6 +1175,10 @@ nppiResize_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRec
  *
  */
 NppStatus 
+nppiResize_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                              Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                           Npp32f * pDst, int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -896,6 +1188,10 @@ nppiResize_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRe
  * For common parameter descriptions, see <a href="#CommonResizePlanarPixelParameters">Common parameters for nppiResize planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiResize_32f_P3R_Ctx(const Npp32f * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp32f * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResize_32f_P3R(const Npp32f * pSrc[3], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp32f * pDst[3], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
@@ -907,6 +1203,10 @@ nppiResize_32f_P3R(const Npp32f * pSrc[3], int nSrcStep, NppiSize oSrcSize, Nppi
  *
  */
 NppStatus 
+nppiResize_32f_P4R_Ctx(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
+                             Npp32f * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResize_32f_P4R(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, NppiRect oSrcRectROI, 
                          Npp32f * pDst[4], int nDstStep, NppiSize oDstSize, NppiRect oDstRectROI, int eInterpolation);
 
@@ -915,6 +1215,8 @@ nppiResize_32f_P4R(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
 /** @} image_resize */
 
 /** @defgroup image_resize_batch ResizeBatch
+ *
+ * ResizeBatch functions use scale factor automatically determined by the width and height ratios for each pair of input / output images in provided batches.
  *
  * In this function as in nppiResize the resize scale factor is automatically determined by the width and height ratios of oSrcRectROI and oDstRectROI.  If either of those 
  * parameters intersect their respective image sizes then pixels outside the image size width and height will not be processed.
@@ -925,11 +1227,13 @@ nppiResize_32f_P4R(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
  * in the batch.  The primary purpose of this function is to provide improved performance for batches of smaller images as long as GPU 
  * resources are available.  Therefore it is recommended that the function not be used for very large images as there may not be resources 
  * available for processing several large images simultaneously.  
- * A single set of oSrcRectROI and oDstRectROI values are applied to each source image and destination image in the batch.
+ * A single set of oSrcRectROI and oDstRectROI values are applied to each source image and destination image in the batch in the nppiResizeBatch 
+ * version of the function while per image specific oSrcRectROI and oDstRectROI values can be used in the nppiResizeBatch_Advanced version of the function.
  * Source and destination image sizes may vary but oSmallestSrcSize and oSmallestDstSize must be set to the smallest
  * source and destination image sizes in the batch. The parameters in the NppiResizeBatchCXR structure represent the corresponding
- * per-image nppiResize parameters for each image in the batch.  The NppiResizeBatchCXR array must be in device memory.
- *
+ * per-image nppiResize parameters for each image in the nppiResizeBatch functions and the NppiImageDescriptor and NppiResizeBatchROI_Advanced structures represent 
+ * the corresponding per-image nppiResize parameters for the nppiResizeBatch_Advanced functions.  The NppiResizeBatchCXR or 
+ * NppiImageDescriptor and NppiResizeBatchROI_Advanced arrays must be in device memory.
  *
  * ResizeBatch supports the following interpolation modes:
  *
@@ -939,6 +1243,11 @@ nppiResize_32f_P4R(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
  *   NPPI_INTER_CUBIC
  *   NPPI_INTER_SUPER
  * \endcode
+ *
+ * Below is the diagram of batch resize functions for variable ROIs. Figure shows the flexibility that the API can handle.
+ * The ROIs for source and destination images can be any rectangular width and height that reflects the needed resize factors, inside or beyond the image boundary.
+ *
+ * \image html resize.png
  *
  * \section resize_error_codes Error Codes
  * The resize primitives return the following error codes:
@@ -956,7 +1265,23 @@ nppiResize_32f_P4R(const Npp32f * pSrc[4], int nSrcStep, NppiSize oSrcSize, Nppi
  * \param oDstRectROI Region of interest in the destination images (may overlap destination image size width and height).
  * \param eInterpolation The type of eInterpolation to perform resampling. Currently limited to NPPI_INTER_NN, NPPI_INTER_LINEAR, NPPI_INTER_CUBIC, or NPPI_INTER_SUPER. 
  * \param pBatchList Device memory pointer to nBatchSize list of NppiResizeBatchCXR structures.
+ * \param pBatchSrc Device pointer to NppiImageDescriptor list of source image descriptors. User needs to intialize this structure and copy it to device.
+ * \param pBatchDst Device pointer to NppiImageDescriptor list of destination image descriptors. User needs to intialize this structure and copy it to device. 
+ * \param pBatchROI Device pointer to NppiResizeBatchROI_Advanced list of per-image variable ROIs. User needs to initialize this structure and copy it to device. 
  * \param nBatchSize Number of NppiResizeBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
+ *
+ * <h3><a name="CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions include:</a></h3>
+ *
+ * \param nMaxWidth The maximum width of all destination ROIs
+ * \param nMaxHeight The maximum height of all destination ROIs
+ * \param pBatchSrc Device pointer to NppiImageDescriptor list of source image descriptors. User needs to intialize this structure and copy it to device.
+ * \param pBatchDst Device pointer to NppiImageDescriptor list of destination image descriptors. User needs to intialize this structure and copy it to device. 
+ * \param pBatchROI Device pointer to NppiResizeBatchROI_Advanced list of per-image variable ROIs. User needs to initialize this structure and copy it to device. 
+ * \param nBatchSize Number of images in a batch.
+ * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref resize_error_codes
  *
  * @{
@@ -972,11 +1297,80 @@ typedef struct
 } NppiResizeBatchCXR;
 
 /**
+ * Data structure for variable ROI image resizing.
+ * 
+ */
+typedef struct
+{
+    NppiRect oSrcRectROI;    
+    NppiRect oDstRectROI;
+} NppiResizeBatchROI_Advanced; 
+ 
+/**
+ * 1 channel 8-bit image resize batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiResizeBatch_8u_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_8u_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                       int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 3 channel 8-bit image resize batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiResizeBatch_8u_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_8u_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                       int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit image resize batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiResizeBatch_8u_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_8u_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                       int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit image resize batch not affecting alpha.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiResizeBatch_8u_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+                         
+NppStatus 
+nppiResizeBatch_8u_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                        int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
+                         
+/**
  * 1 channel 32-bit floating point image resize batch.
  *
  * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
  *
  */
+NppStatus 
+nppiResizeBatch_32f_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiResizeBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
                         int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
@@ -988,6 +1382,10 @@ nppiResizeBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSiz
  *
  */
 NppStatus 
+nppiResizeBatch_32f_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
                         int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
 
@@ -997,6 +1395,10 @@ nppiResizeBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSiz
  * For common parameter descriptions, see <a href="#CommonResizeBatchParameters">Common parameters for nppiResizeBatch functions</a>.
  *
  */
+NppStatus 
+nppiResizeBatch_32f_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiResizeBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
                         int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
@@ -1008,12 +1410,172 @@ nppiResizeBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSiz
  *
  */
 NppStatus 
+nppiResizeBatch_32f_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
+                             int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiResizeBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSize oSmallestDstSize, NppiRect oDstRectROI, 
                          int eInterpolation, NppiResizeBatchCXR * pBatchList, unsigned int nBatchSize);
 
+/**
+ * 1 channel 8-bit image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */ 
+NppStatus 
+nppiResizeBatch_8u_C1R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                    NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_8u_C1R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+
+/**
+ * 3 channel 8-bit image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */ 
+NppStatus 
+nppiResizeBatch_8u_C3R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                    NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+                                 
+NppStatus 
+nppiResizeBatch_8u_C3R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+                                 
+/**
+ * 4 channel 8-bit image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_8u_C4R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                    NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);                                
+
+NppStatus 
+nppiResizeBatch_8u_C4R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);                                
+
+/**
+ * 4 channel 8-bit image resize batch for variable ROI not affecting alpha.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_8u_AC4R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+                                                                         
+NppStatus 
+nppiResizeBatch_8u_AC4R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+                                                                         
+/**
+ * 1 channel 16-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_16f_C1R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_16f_C1R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+
+/**
+ * 3 channel 16-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_16f_C3R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+                                 
+NppStatus 
+nppiResizeBatch_16f_C3R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+                                 
+/**
+ * 4 channel 16-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_16f_C4R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);                                 
+
+NppStatus 
+nppiResizeBatch_16f_C4R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);                                 
+
+/**
+ * 1 channel 32-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_32f_C1R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiResizeBatch_32f_C1R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+
+/**
+ * 3 channel 32-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_32f_C3R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+                                 
+NppStatus 
+nppiResizeBatch_32f_C3R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+                                 
+/**
+ * 4 channel 32-bit floating point image resize batch for variable ROI.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_32f_C4R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                     NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);                                 
+
+NppStatus 
+nppiResizeBatch_32f_C4R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                 NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);                                 
+
+/**
+ * 4 channel 32-bit floating point image resize batch for variable ROI not affecting alpha.
+ *
+ * For common parameter descriptions, see <a href="#CommonResizeBatchAdvancedParameters">Common parameters for nppiResizeBatchAdvanced functions</a>.
+ *  
+ */
+NppStatus 
+nppiResizeBatch_32f_AC4R_Advanced_Ctx(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                      NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation, NppStreamContext nppStreamCtx);
+                                                                                          
+NppStatus 
+nppiResizeBatch_32f_AC4R_Advanced(int nMaxWidth, int nMaxHeight, NppiImageDescriptor * pBatchSrc, NppiImageDescriptor * pBatchDst,
+                                  NppiResizeBatchROI_Advanced * pBatchROI, unsigned int nBatchSize, int eInterpolation);
+                                                                                          
 /** @} image_resize_batch */
 
 /** @defgroup image_remap Remap
+ *
+ * Routines providing remap functionality.
  *
  * Remap supports the following interpolation modes:
  *
@@ -1027,7 +1589,7 @@ nppiResizeBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSi
  *
  * Remap chooses source pixels using pixel coordinates explicitely supplied in two 2D device memory image arrays pointed to by the pXMap and pYMap pointers.
  * The pXMap array contains the X coordinated and the pYMap array contains the Y coordinate of the corresponding source image pixel to
- * use as input.   These coordinates are in floating point format so fraction pixel positions can be used. The coordinates of the source
+ * use as input. These coordinates are in floating point format so fraction pixel positions can be used. The coordinates of the source
  * pixel to sample are determined as follows:
  *
  *   nSrcX = pxMap[nDstX, nDstY]
@@ -1061,6 +1623,7 @@ nppiResizeBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSi
  * \param nDstStep \ref destination_image_line_step.
  * \param oDstSizeROI Region of interest size in the destination image.
  * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref remap_error_codes
  *
  * <h3><a name="CommonRemapPlanarPixelParameters">Common parameters for nppiRemap planar pixel functions include:</a></h3>
@@ -1077,6 +1640,7 @@ nppiResizeBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSi
  * \param nDstStep \ref destination_image_line_step.
  * \param oDstSizeROI Region of interest size in the destination image.
  * \param eInterpolation The type of eInterpolation to perform resampling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref remap_error_codes
  *
  * @{
@@ -1097,9 +1661,14 @@ nppiResizeBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiSi
  *
  */
 NppStatus 
+nppiRemap_8u_C1R_Ctx(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                     const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                           Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_C1R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                        Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                 const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                       Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 8-bit unsigned image remap.
@@ -1108,9 +1677,14 @@ nppiRemap_8u_C1R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  *
  */
 NppStatus 
+nppiRemap_8u_C3R_Ctx(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                     const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                           Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_C3R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                        Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                 const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                       Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 8-bit unsigned image remap.
@@ -1119,9 +1693,14 @@ nppiRemap_8u_C3R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  *
  */
 NppStatus 
+nppiRemap_8u_C4R_Ctx(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                     const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                           Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_C4R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                        Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                 const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                       Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 8-bit unsigned image remap not affecting alpha.
@@ -1130,9 +1709,14 @@ nppiRemap_8u_C4R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  *
  */
 NppStatus 
+nppiRemap_8u_AC4R_Ctx(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_AC4R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp8u  * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 8-bit unsigned planar image remap.
@@ -1141,9 +1725,14 @@ nppiRemap_8u_AC4R(const Npp8u  * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_8u_P3R_Ctx(const Npp8u  * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                     const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                           Npp8u  * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_P3R(const Npp8u  * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                        Npp8u  * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                 const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                       Npp8u  * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 8-bit unsigned planar image remap.
@@ -1152,9 +1741,14 @@ nppiRemap_8u_P3R(const Npp8u  * const pSrc[3], NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiRemap_8u_P4R_Ctx(const Npp8u  * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                     const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                           Npp8u  * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_8u_P4R(const Npp8u  * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                        Npp8u  * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                 const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                       Npp8u  * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 1 channel 16-bit unsigned image remap.
@@ -1163,9 +1757,14 @@ nppiRemap_8u_P4R(const Npp8u  * const pSrc[4], NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiRemap_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 16-bit unsigned image remap.
@@ -1174,9 +1773,14 @@ nppiRemap_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit unsigned image remap.
@@ -1185,9 +1789,14 @@ nppiRemap_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit unsigned image remap not affecting alpha.
@@ -1196,9 +1805,14 @@ nppiRemap_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                       const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                             Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                    const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                          Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                         Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 16-bit unsigned planar image remap.
@@ -1207,9 +1821,14 @@ nppiRemap_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRemap_16u_P3R_Ctx(const Npp16u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16u * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_P3R(const Npp16u * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16u * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16u * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit unsigned planar image remap.
@@ -1218,9 +1837,14 @@ nppiRemap_16u_P3R(const Npp16u * const pSrc[3], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_16u_P4R_Ctx(const Npp16u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16u * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16u_P4R(const Npp16u * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16u * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16u * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 1 channel 16-bit signed image remap.
@@ -1229,9 +1853,14 @@ nppiRemap_16u_P4R(const Npp16u * const pSrc[4], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_16s_C1R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_C1R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 16-bit signed image remap.
@@ -1240,9 +1869,14 @@ nppiRemap_16s_C1R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16s_C3R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_C3R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit signed image remap.
@@ -1251,9 +1885,14 @@ nppiRemap_16s_C3R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16s_C4R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_C4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit signed image remap not affecting alpha.
@@ -1262,9 +1901,14 @@ nppiRemap_16s_C4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_16s_AC4R_Ctx(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                       const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                             Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_AC4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                    const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                          Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                         Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 16-bit signed planar image remap.
@@ -1273,9 +1917,14 @@ nppiRemap_16s_AC4R(const Npp16s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRemap_16s_P3R_Ctx(const Npp16s * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16s * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_P3R(const Npp16s * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16s * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16s * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 16-bit signed planar image remap.
@@ -1284,9 +1933,14 @@ nppiRemap_16s_P3R(const Npp16s * const pSrc[3], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_16s_P4R_Ctx(const Npp16s * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp16s * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_16s_P4R(const Npp16s * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp16s * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp16s * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 1 channel 32-bit floating point image remap.
@@ -1295,9 +1949,14 @@ nppiRemap_16s_P4R(const Npp16s * const pSrc[4], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 32-bit floating point image remap.
@@ -1306,9 +1965,14 @@ nppiRemap_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 32-bit floating point image remap.
@@ -1317,9 +1981,14 @@ nppiRemap_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 32-bit floating point image remap not affecting alpha.
@@ -1328,9 +1997,14 @@ nppiRemap_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                       const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                             Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                    const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                          Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                         Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 32-bit floating point planar image remap.
@@ -1339,9 +2013,14 @@ nppiRemap_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRemap_32f_P3R_Ctx(const Npp32f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp32f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_P3R(const Npp32f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp32f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp32f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 32-bit floating point planar image remap.
@@ -1350,9 +2029,14 @@ nppiRemap_32f_P3R(const Npp32f * const pSrc[3], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_32f_P4R_Ctx(const Npp32f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                            Npp32f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_32f_P4R(const Npp32f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
-                         Npp32f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp32f * pXMap, int nXMapStep, const Npp32f * pYMap, int nYMapStep,
+                        Npp32f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 1 channel 64-bit floating point image remap.
@@ -1361,9 +2045,14 @@ nppiRemap_32f_P4R(const Npp32f * const pSrc[4], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_64f_C1R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                            Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
-                         Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                        Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 3 channel 64-bit floating point image remap.
@@ -1372,9 +2061,14 @@ nppiRemap_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_64f_C3R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                            Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
-                         Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                        Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 64-bit floating point image remap.
@@ -1383,9 +2077,14 @@ nppiRemap_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRemap_64f_C4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                            Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
-                         Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                        Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 64-bit floating point image remap not affecting alpha.
@@ -1393,6 +2092,11 @@ nppiRemap_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  * For common parameter descriptions, see <a href="#CommonRemapPackedPixelParameters">Common parameters for nppiRemap packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiRemap_64f_AC4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                       const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                             Npp64f * pDst, int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRemap_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                     const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
@@ -1405,9 +2109,14 @@ nppiRemap_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRemap_64f_P3R_Ctx(const Npp64f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                            Npp64f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_64f_P3R(const Npp64f * const pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
-                         Npp64f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                        Npp64f * pDst[3], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /**
  * 4 channel 64-bit floating point planar image remap.
@@ -1416,9 +2125,14 @@ nppiRemap_64f_P3R(const Npp64f * const pSrc[3], NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiRemap_64f_P4R_Ctx(const Npp64f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                      const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                            Npp64f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRemap_64f_P4R(const Npp64f * const pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
-                   const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
-                         Npp64f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
+                  const Npp64f * pXMap, int nXMapStep, const Npp64f * pYMap, int nYMapStep,
+                        Npp64f * pDst[4], int nDstStep, NppiSize oDstSizeROI, int eInterpolation);
 
 /** @} */
 
@@ -1444,7 +2158,7 @@ nppiRemap_64f_P4R(const Npp64f * const pSrc[4], NppiSize oSrcSize, int nSrcStep,
  */
 
 /** @defgroup rotate_utility_functions Rotate Utility Functions
- *
+ * The set of rotate utility functions.
  * @{
  *
  */
@@ -1481,7 +2195,8 @@ nppiGetRotateBound(NppiRect oSrcROI, double aBoundingBox[2][2], double nAngle, d
 /** @} rotate_utility_functions */
 
 /** @defgroup rotate_ Rotate
- *
+ * The set of rotate functions available in the library.
+ * 
  * <h3><a name="CommonRotateParameters">Common parameters for nppiRotate functions include:</a></h3>
  *
  * \param pSrc \ref source_image_pointer.
@@ -1495,6 +2210,7 @@ nppiGetRotateBound(NppiRect oSrcROI, double aBoundingBox[2][2], double nAngle, d
  * \param nShiftX Shift along horizontal axis 
  * \param nShiftY Shift along vertical axis 
  * \param eInterpolation The type of interpolation to perform resampling
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref rotate_error_codes
  *
  * @{
@@ -1508,6 +2224,11 @@ nppiGetRotateBound(NppiRect oSrcROI, double aBoundingBox[2][2], double nAngle, d
  *
  */
 NppStatus 
+nppiRotate_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                            Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                      double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                         Npp8u * pDst, int nDstStep, NppiRect oDstROI,
                   double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1518,6 +2239,11 @@ nppiRotate_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                            Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                      double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                         Npp8u * pDst, int nDstStep, NppiRect oDstROI,
@@ -1530,6 +2256,11 @@ nppiRotate_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  *
  */
 NppStatus 
+nppiRotate_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                            Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                      double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                         Npp8u * pDst, int nDstStep, NppiRect oDstROI,
                   double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1540,6 +2271,11 @@ nppiRotate_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect 
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp8u * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp8u * pDst, int nDstStep, NppiRect oDstROI,
@@ -1552,6 +2288,11 @@ nppiRotate_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect
  *
  */
 NppStatus 
+nppiRotate_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp16u * pDst, int nDstStep, NppiRect oDstROI,
                    double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1562,6 +2303,11 @@ nppiRotate_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp16u * pDst, int nDstStep, NppiRect oDstROI,
@@ -1574,6 +2320,11 @@ nppiRotate_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRotate_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp16u * pDst, int nDstStep, NppiRect oDstROI,
                    double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1584,6 +2335,11 @@ nppiRotate_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                              Npp16u * pDst, int nDstStep, NppiRect oDstROI,
+                        double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                           Npp16u * pDst, int nDstStep, NppiRect oDstROI,
@@ -1596,6 +2352,11 @@ nppiRotate_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRe
  *
  */
 NppStatus 
+nppiRotate_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp32f * pDst, int nDstStep, NppiRect oDstROI,
                    double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1606,6 +2367,11 @@ nppiRotate_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp32f * pDst, int nDstStep, NppiRect oDstROI,
@@ -1618,6 +2384,11 @@ nppiRotate_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  *
  */
 NppStatus 
+nppiRotate_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                       double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiRotate_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                          Npp32f * pDst, int nDstStep, NppiRect oDstROI,
                    double nAngle, double nShiftX, double nShiftY, int eInterpolation);
@@ -1628,6 +2399,11 @@ nppiRotate_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRec
  * For common parameter descriptions, see <a href="#CommonRotateParameters">Common parameters for nppiRotate functions</a>.
  *
  */
+NppStatus 
+nppiRotate_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                              Npp32f * pDst, int nDstStep, NppiRect oDstROI,
+                        double nAngle, double nShiftX, double nShiftY, int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRotate_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                           Npp32f * pDst, int nDstStep, NppiRect oDstROI,
@@ -1641,6 +2417,7 @@ nppiRotate_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRe
  *
  * \section mirror_error_codes Mirror Error Codes
  *         - ::NPP_MIRROR_FLIP_ERROR if flip has an illegal value.
+ *         - ::NPP_SIZE_ERROR if in_place ROI width or height are not even numbers.
  *
  * <h3><a name="CommonMirrorParameters">Common parameters for nppiMirror non-inplace and inplace functions include:</a></h3>
  *
@@ -1650,8 +2427,9 @@ nppiRotate_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRe
  * \param nSrcStep \ref source_image_line_step for non-inplace functions.
  * \param pDst \ref destination_image_pointer for non-inplace functions.
  * \param nDstStep \ref destination_image_line_step for non-inplace functions.
- * \param oROI \ref roi_specification.
+ * \param oROI \ref roi_specification (in_place ROI widths and heights must be even numbers).
  * \param flip Specifies the axis about which the image is to be mirrored.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref mirror_error_codes
  *
  * @{
@@ -1665,9 +2443,10 @@ nppiRotate_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRe
  *
  */
 NppStatus 
-nppiMirror_8u_C1R(const Npp8u * pSrc, int nSrcStep, 
-                        Npp8u * pDst, int nDstStep, 
-                  NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 1 channel 8-bit unsigned in place image mirror.
@@ -1676,8 +2455,10 @@ nppiMirror_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
+nppiMirror_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
                               
 /**
  * 3 channel 8-bit unsigned image mirror.
@@ -1686,9 +2467,10 @@ nppiMirror_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_8u_C3R(const Npp8u * pSrc, int nSrcStep, 
-                        Npp8u * pDst, int nDstStep, 
-                  NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 8-bit unsigned in place image mirror.
@@ -1697,8 +2479,10 @@ nppiMirror_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 8-bit unsigned image mirror.
@@ -1707,9 +2491,10 @@ nppiMirror_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_8u_C4R(const Npp8u * pSrc, int nSrcStep, 
-                        Npp8u * pDst, int nDstStep, 
-                  NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 8-bit unsigned in place image mirror.
@@ -1718,8 +2503,10 @@ nppiMirror_8u_C4R(const Npp8u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_C4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 8-bit unsigned image mirror not affecting alpha.
@@ -1728,9 +2515,10 @@ nppiMirror_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_8u_AC4R(const Npp8u * pSrc, int nSrcStep, 
-                         Npp8u * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 8-bit unsigned in place image mirror not affecting alpha.
@@ -1739,8 +2527,11 @@ nppiMirror_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
+
 /**
  * 1 channel 16-bit unsigned image mirror.
  *
@@ -1748,9 +2539,10 @@ nppiMirror_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C1R(const Npp16u * pSrc, int nSrcStep, 
-                         Npp16u * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
+nppiMirror_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
                               
 /**
  * 1 channel 16-bit unsigned in place image mirror.
@@ -1759,8 +2551,10 @@ nppiMirror_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 16-bit unsigned image mirror.
@@ -1769,9 +2563,10 @@ nppiMirror_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C3R(const Npp16u * pSrc, int nSrcStep, 
-                         Npp16u * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 16-bit unsigned in place image mirror.
@@ -1780,8 +2575,10 @@ nppiMirror_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit unsigned image mirror.
@@ -1790,9 +2587,10 @@ nppiMirror_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C4R(const Npp16u * pSrc, int nSrcStep, 
-                         Npp16u * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit unsigned in place image mirror.
@@ -1801,8 +2599,10 @@ nppiMirror_16u_C4R(const Npp16u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16u_C4IR(Npp16u * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_C4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_C4IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit unsigned image mirror not affecting alpha.
@@ -1811,9 +2611,10 @@ nppiMirror_16u_C4IR(Npp16u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16u_AC4R(const Npp16u * pSrc, int nSrcStep, 
-                          Npp16u * pDst, int nDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit unsigned in place image mirror not affecting alpha.
@@ -1822,8 +2623,10 @@ nppiMirror_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
-                     NppiSize oROI, NppiAxis flip);
+nppiMirror_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 1 channel 16-bit signed image mirror.
@@ -1832,9 +2635,10 @@ nppiMirror_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C1R(const Npp16s * pSrc, int nSrcStep, 
-                         Npp16s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
+nppiMirror_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
                               
 /**
  * 1 channel 16-bit signed in place image mirror.
@@ -1843,8 +2647,10 @@ nppiMirror_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 16-bit signed image mirror.
@@ -1853,9 +2659,10 @@ nppiMirror_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C3R(const Npp16s * pSrc, int nSrcStep, 
-                         Npp16s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 16-bit signed in place image mirror.
@@ -1864,8 +2671,10 @@ nppiMirror_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit signed image mirror.
@@ -1874,9 +2683,10 @@ nppiMirror_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C4R(const Npp16s * pSrc, int nSrcStep, 
-                         Npp16s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit signed in place image mirror.
@@ -1885,8 +2695,10 @@ nppiMirror_16s_C4R(const Npp16s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16s_C4IR(Npp16s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_C4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_C4IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit signed image mirror not affecting alpha.
@@ -1895,9 +2707,10 @@ nppiMirror_16s_C4IR(Npp16s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_16s_AC4R(const Npp16s * pSrc, int nSrcStep, 
-                          Npp16s * pDst, int nDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 16-bit signed in place image mirror not affecting alpha.
@@ -1906,8 +2719,10 @@ nppiMirror_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
-                     NppiSize oROI, NppiAxis flip);
+nppiMirror_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 1 channel 32-bit image mirror.
@@ -1916,9 +2731,10 @@ nppiMirror_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C1R(const Npp32s * pSrc, int nSrcStep, 
-                         Npp32s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
+nppiMirror_32s_C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
                               
 /**
  * 1 channel 32-bit signed in place image mirror.
@@ -1927,8 +2743,10 @@ nppiMirror_32s_C1R(const Npp32s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C1IR(Npp32s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C1IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32s_C1IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 32-bit image mirror.
@@ -1937,9 +2755,10 @@ nppiMirror_32s_C1IR(Npp32s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C3R(const Npp32s * pSrc, int nSrcStep, 
-                         Npp32s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32s_C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 32-bit signed in place image mirror.
@@ -1948,8 +2767,10 @@ nppiMirror_32s_C3R(const Npp32s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C3IR(Npp32s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C3IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32s_C3IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit image mirror.
@@ -1958,9 +2779,10 @@ nppiMirror_32s_C3IR(Npp32s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C4R(const Npp32s * pSrc, int nSrcStep, 
-                         Npp32s * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32s_C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit signed in place image mirror.
@@ -1969,9 +2791,10 @@ nppiMirror_32s_C4R(const Npp32s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32s_C4IR(Npp32s * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_C4IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiMirror_32s_C4IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit image mirror not affecting alpha.
@@ -1980,9 +2803,10 @@ nppiMirror_32s_C4IR(Npp32s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32s_AC4R(const Npp32s * pSrc, int nSrcStep, 
-                          Npp32s * pDst, int nDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32s_AC4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit signed in place image mirror not affecting alpha.
@@ -1991,9 +2815,10 @@ nppiMirror_32s_AC4R(const Npp32s * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32s_AC4IR(Npp32s * pSrcDst, int nSrcDstStep, 
-                     NppiSize oROI, NppiAxis flip);
+nppiMirror_32s_AC4IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiMirror_32s_AC4IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 1 channel 32-bit float image mirror.
@@ -2002,9 +2827,10 @@ nppiMirror_32s_AC4IR(Npp32s * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C1R(const Npp32f * pSrc, int nSrcStep, 
-                         Npp32f * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
+nppiMirror_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
                               
 /**
  * 1 channel 32-bit float in place image mirror.
@@ -2013,9 +2839,10 @@ nppiMirror_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiMirror_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 32-bit float image mirror.
@@ -2024,9 +2851,10 @@ nppiMirror_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C3R(const Npp32f * pSrc, int nSrcStep, 
-                         Npp32f * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 3 channel 32-bit float in place image mirror.
@@ -2035,8 +2863,10 @@ nppiMirror_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit float image mirror.
@@ -2045,9 +2875,10 @@ nppiMirror_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C4R(const Npp32f * pSrc, int nSrcStep, 
-                         Npp32f * pDst, int nDstStep, 
-                   NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit float in place image mirror.
@@ -2056,8 +2887,10 @@ nppiMirror_32f_C4R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_C4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit float image mirror not affecting alpha.
@@ -2066,9 +2899,10 @@ nppiMirror_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep,
  *
  */
 NppStatus 
-nppiMirror_32f_AC4R(const Npp32f * pSrc, int nSrcStep, 
-                          Npp32f * pDst, int nDstStep, 
-                    NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oROI, NppiAxis flip);
 
 /**
  * 4 channel 32-bit float in place image mirror not affecting alpha.
@@ -2077,8 +2911,10 @@ nppiMirror_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
-nppiMirror_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
-                     NppiSize oROI, NppiAxis flip);
+nppiMirror_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMirror_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oROI, NppiAxis flip);
 
 /** @} image_mirror */
 
@@ -2099,6 +2935,7 @@ nppiMirror_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param flip Specifies the axis about which the images are to be mirrored.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiMirrorBatchCXR structures.
  * \param nBatchSize Number of NppiMirrorBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref mirror_error_codes
  *
  * @{
@@ -2120,6 +2957,9 @@ typedef struct
  *
  */
 NppStatus 
+nppiMirrorBatch_32f_C1R_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
 nppiMirrorBatch_32f_C1R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
                               
 /**
@@ -2128,6 +2968,9 @@ nppiMirrorBatch_32f_C1R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * p
  * For common parameter descriptions, see <a href="#CommonMirrorBatchParameters">Common parameters for nppiMirrorBatch functions</a>.
  *
  */
+NppStatus 
+nppiMirrorBatch_32f_C1IR_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMirrorBatch_32f_C1IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
 
@@ -2138,6 +2981,9 @@ nppiMirrorBatch_32f_C1IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * 
  *
  */
 NppStatus 
+nppiMirrorBatch_32f_C3R_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
 nppiMirrorBatch_32f_C3R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
                               
 /**
@@ -2146,6 +2992,9 @@ nppiMirrorBatch_32f_C3R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * p
  * For common parameter descriptions, see <a href="#CommonMirrorBatchParameters">Common parameters for nppiMirrorBatch functions</a>.
  *
  */
+NppStatus 
+nppiMirrorBatch_32f_C3IR_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMirrorBatch_32f_C3IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
 
@@ -2156,6 +3005,9 @@ nppiMirrorBatch_32f_C3IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * 
  *
  */
 NppStatus 
+nppiMirrorBatch_32f_C4R_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
 nppiMirrorBatch_32f_C4R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
                               
 /**
@@ -2164,6 +3016,9 @@ nppiMirrorBatch_32f_C4R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * p
  * For common parameter descriptions, see <a href="#CommonMirrorBatchParameters">Common parameters for nppiMirrorBatch functions</a>.
  *
  */
+NppStatus 
+nppiMirrorBatch_32f_C4IR_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMirrorBatch_32f_C4IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
 
@@ -2174,6 +3029,9 @@ nppiMirrorBatch_32f_C4IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * 
  *
  */
 NppStatus 
+nppiMirrorBatch_32f_AC4R_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+                              
+NppStatus 
 nppiMirrorBatch_32f_AC4R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
                               
 /**
@@ -2183,33 +3041,37 @@ nppiMirrorBatch_32f_AC4R(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * 
  *
  */
 NppStatus 
+nppiMirrorBatch_32f_AC4IR_Ctx(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMirrorBatch_32f_AC4IR(NppiSize oSizeROI, NppiAxis flip, NppiMirrorBatchCXR * pBatchList, int nBatchSize);
 
 /** @} mirror_batch */
 
 /** @defgroup image_affine_transform Affine Transforms
+ * The set of affine transform functions available in the library.
  *
  * \section affine_transform_error_codes Affine Transform Error Codes
  *
- *         - ::NPP_RECTANGLE_ERROR Indicates an error condition if width or height of
- *           the intersection of the oSrcROI and source image is less than or
- *           equal to 1
- *         - ::NPP_WRONG_INTERSECTION_ROI_ERROR Indicates an error condition if
- *           oSrcROI has no intersection with the source image
- *         - ::NPP_INTERPOLATION_ERROR Indicates an error condition if
- *           interpolation has an illegal value
- *         - ::NPP_COEFFICIENT_ERROR Indicates an error condition if coefficient values
- *           are invalid
- *         - ::NPP_WRONG_INTERSECTION_QUAD_WARNING Indicates a warning that no
- *           operation is performed if the transformed source ROI has no
- *           intersection with the destination ROI
+ * - ::NPP_RECTANGLE_ERROR Indicates an error condition if width or height of
+ *   the intersection of the oSrcROI and source image is less than or
+ *   equal to 1
+ * - ::NPP_WRONG_INTERSECTION_ROI_ERROR Indicates an error condition if
+ *   oSrcROI has no intersection with the source image
+ * - ::NPP_INTERPOLATION_ERROR Indicates an error condition if
+ *   interpolation has an illegal value
+ * - ::NPP_COEFFICIENT_ERROR Indicates an error condition if coefficient values
+ *   are invalid
+ * - ::NPP_WRONG_INTERSECTION_QUAD_WARNING Indicates a warning that no
+ *   operation is performed if the transformed source ROI has no
+ *   intersection with the destination ROI
  *
  * @{
  *
  */
 
 /** @defgroup affine_transform_utility_functions Affine Transform Utility Functions
- *
+ * The set of affine transform utility functions.
  * @{
  *
  */
@@ -2338,6 +3200,7 @@ nppiGetAffineBound(NppiRect oSrcROI, double aBound[2][2], const double aCoeffs[2
  * \param aCoeffs Affine transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * <h3><a name="CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions include:</a></h3>
@@ -2352,6 +3215,7 @@ nppiGetAffineBound(NppiRect oSrcROI, double aBound[2][2], const double aCoeffs[2
  * \param aCoeffs Affine transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * @{
@@ -2365,6 +3229,11 @@ nppiGetAffineBound(NppiRect oSrcROI, double aBound[2][2], const double aCoeffs[2
  *
  */
 NppStatus 
+nppiWarpAffine_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                          const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                             Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                       const double aCoeffs[2][3], int eInterpolation);
@@ -2376,10 +3245,14 @@ nppiWarpAffine_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiR
  *
  */
 NppStatus 
+nppiWarpAffine_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                          const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                             Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                       const double aCoeffs[2][3], int eInterpolation);
-
 
 /**
  * Four-channel 8-bit unsigned affine warp.
@@ -2388,10 +3261,14 @@ nppiWarpAffine_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiR
  *
  */
 NppStatus 
+nppiWarpAffine_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                          const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                             Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                       const double aCoeffs[2][3], int eInterpolation);
-
 
 /**
  * Four-channel 8-bit unsigned affine warp, ignoring alpha channel.
@@ -2400,10 +3277,14 @@ nppiWarpAffine_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiR
  *
  */
 NppStatus 
+nppiWarpAffine_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
-
 
 /**
  * Three-channel planar 8-bit unsigned affine warp.
@@ -2411,6 +3292,11 @@ nppiWarpAffine_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, Nppi
  * For common parameter descriptions, see <a href="#CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                          const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                             Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -2423,6 +3309,11 @@ nppiWarpAffine_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, Np
  *
  */
 NppStatus 
+nppiWarpAffine_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                          const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                             Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
                       const double aCoeffs[2][3], int eInterpolation);
@@ -2433,6 +3324,11 @@ nppiWarpAffine_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                 Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                              Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2445,6 +3341,11 @@ nppiWarpAffine_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2455,6 +3356,11 @@ nppiWarpAffine_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2467,6 +3373,11 @@ nppiWarpAffine_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                               Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                         const double aCoeffs[2][3], int eInterpolation);
@@ -2477,6 +3388,11 @@ nppiWarpAffine_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -2489,6 +3405,11 @@ nppiWarpAffine_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiWarpAffine_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2499,6 +3420,11 @@ nppiWarpAffine_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2511,6 +3437,11 @@ nppiWarpAffine_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2521,6 +3452,11 @@ nppiWarpAffine_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2533,6 +3469,11 @@ nppiWarpAffine_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                               Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                         const double aCoeffs[2][3], int eInterpolation);
@@ -2543,6 +3484,11 @@ nppiWarpAffine_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -2555,8 +3501,61 @@ nppiWarpAffine_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiWarpAffine_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                       const double aCoeffs[2][3], int eInterpolation);
+
+/**
+ * Single-channel 16-bit floating-point affine warp.
+ * 
+ * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffine_16f_C1R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffine_16f_C1R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                       const double aCoeffs[2][3], int eInterpolation);
+
+/**
+ * Three-channel 16-bit floating-point affine warp.
+ * 
+ * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffine_16f_C3R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffine_16f_C3R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                       const double aCoeffs[2][3], int eInterpolation);
+
+/**
+ * Four-channel 16-bit floating-point affine warp.
+ * 
+ * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffine_16f_C4R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffine_16f_C4R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                             Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
 
 /**
@@ -2565,6 +3564,11 @@ nppiWarpAffine_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2577,6 +3581,11 @@ nppiWarpAffine_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2587,6 +3596,11 @@ nppiWarpAffine_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2599,6 +3613,11 @@ nppiWarpAffine_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                               Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                         const double aCoeffs[2][3], int eInterpolation);
@@ -2609,6 +3628,11 @@ nppiWarpAffine_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -2621,10 +3645,14 @@ nppiWarpAffine_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiWarpAffine_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                 Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                              Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
-
 
 /**
  * Single-channel 64-bit floating-point affine warp.
@@ -2632,6 +3660,11 @@ nppiWarpAffine_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_64f_C1R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2644,6 +3677,11 @@ nppiWarpAffine_64f_C1R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_64f_C3R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2654,6 +3692,11 @@ nppiWarpAffine_64f_C3R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonWarpAffinePackedPixelParameters">Common parameters for nppiWarpAffine packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_64f_C4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                 Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                              Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2666,6 +3709,11 @@ nppiWarpAffine_64f_C4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, Npp
  *
  */
 NppStatus 
+nppiWarpAffine_64f_AC4R_Ctx(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                               Npp64f * pDst, int nDstStep, NppiRect oDstROI, 
                         const double aCoeffs[2][3], int eInterpolation);
@@ -2677,6 +3725,11 @@ nppiWarpAffine_64f_AC4R(const Npp64f * pSrc, NppiSize oSrcSize, int nSrcStep, Np
  *
  */
 NppStatus 
+nppiWarpAffine_64f_P3R_Ctx(const Npp64f * aSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                 Npp64f * aDst[3], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffine_64f_P3R(const Npp64f * aSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                              Npp64f * aDst[3], int nDstStep, NppiRect oDstROI, 
                        const double aCoeffs[2][3], int eInterpolation);
@@ -2687,6 +3740,11 @@ nppiWarpAffine_64f_P3R(const Npp64f * aSrc[3], NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpAffinePlanarPixelParameters">Common parameters for nppiWarpAffine planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffine_64f_P4R_Ctx(const Npp64f * aSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                 Npp64f * aDst[4], int nDstStep, NppiRect oDstROI, 
+                           const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffine_64f_P4R(const Npp64f * aSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                              Npp64f * aDst[4], int nDstStep, NppiRect oDstROI, 
@@ -2739,6 +3797,7 @@ nppiWarpAffine_64f_P4R(const Npp64f * aSrc[4], NppiSize oSrcSize, int nSrcStep, 
  * \param eInterpolation The type of eInterpolation to perform resampling. Currently limited to NPPI_INTER_NN, NPPI_INTER_LINEAR, or NPPI_INTER_CUBIC. 
  * \param pBatchList Device memory pointer to nBatchSize list of NppiWarpAffineBatchCXR structures.
  * \param nBatchSize Number of NppiWarpAffineBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2762,9 +3821,111 @@ typedef struct
  *
  * \param pBatchList Device memory pointer to nBatchSize list of NppiWarpAffineBatchCXR structures.
  * \param nBatchSize Number of NppiWarpAffineBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  */
 NppStatus 
+nppiWarpAffineBatchInit_Ctx(NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBatchInit(NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 1 channel 8-bit unsigned integer image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_8u_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                               int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_8u_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 3 channel 8-bit unsigned integer image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_8u_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                               int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_8u_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_8u_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                               int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_8u_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                           int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer image warp affine batch not affecting alpha.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_8u_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_8u_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 1 channel 16-bit floating point image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_16f_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_16f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 3 channel 16-bit floating point image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_16f_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_16f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 16-bit floating point image warp affine batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpAffineBatch_16f_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpAffineBatch_16f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                            int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /**
  * 1 channel 32-bit floating point image warp affine batch.
@@ -2772,6 +3933,10 @@ nppiWarpAffineBatchInit(NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatch
  * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBatch_32f_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
                             int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
@@ -2783,6 +3948,10 @@ nppiWarpAffineBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Npp
  *
  */
 NppStatus 
+nppiWarpAffineBatch_32f_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
                             int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
 
@@ -2793,6 +3962,10 @@ nppiWarpAffineBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Npp
  *
  */
 NppStatus 
+nppiWarpAffineBatch_32f_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
                             int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
 
@@ -2802,6 +3975,10 @@ nppiWarpAffineBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Npp
  * For common parameter descriptions, see <a href="#CommonWarpAffineBatchParameters">Common parameters for nppiWarpAffineBatch functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBatch_32f_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                 int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
                              int eInterpolation, NppiWarpAffineBatchCXR * pBatchList, unsigned int nBatchSize);
@@ -2841,6 +4018,7 @@ nppiWarpAffineBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Np
  * \param aCoeffs Affine transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * <h3><a name="CommonWarpAffineBackPlanarPixelParameters">Common parameters for nppiWarpAffineBack planar pixel functions include:</a></h3>
@@ -2855,6 +4033,7 @@ nppiWarpAffineBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Np
  * \param aCoeffs Affine transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * @{
@@ -2868,6 +4047,11 @@ nppiWarpAffineBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, Np
  *
  */
 NppStatus 
+nppiWarpAffineBack_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                              const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                           const double aCoeffs[2][3], int eInterpolation);
@@ -2878,6 +4062,11 @@ nppiWarpAffineBack_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                              const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2890,6 +4079,11 @@ nppiWarpAffineBack_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  *
  */
 NppStatus 
+nppiWarpAffineBack_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                              const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                           const double aCoeffs[2][3], int eInterpolation);
@@ -2900,6 +4094,11 @@ nppiWarpAffineBack_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2912,6 +4111,11 @@ nppiWarpAffineBack_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiWarpAffineBack_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                              const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
                           const double aCoeffs[2][3], int eInterpolation);
@@ -2922,6 +4126,11 @@ nppiWarpAffineBack_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPlanarPixelParameters">Common parameters for nppiWarpAffineBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                    Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                              const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                 Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -2934,6 +4143,11 @@ nppiWarpAffineBack_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpAffineBack_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -2944,6 +4158,11 @@ nppiWarpAffineBack_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2956,6 +4175,11 @@ nppiWarpAffineBack_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineBack_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -2966,6 +4190,11 @@ nppiWarpAffineBack_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -2978,6 +4207,11 @@ nppiWarpAffineBack_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpAffineBack_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -2988,6 +4222,11 @@ nppiWarpAffineBack_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPlanarPixelParameters">Common parameters for nppiWarpAffineBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -3000,6 +4239,11 @@ nppiWarpAffineBack_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineBack_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3010,6 +4254,11 @@ nppiWarpAffineBack_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3022,6 +4271,11 @@ nppiWarpAffineBack_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineBack_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3032,6 +4286,11 @@ nppiWarpAffineBack_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3044,6 +4303,11 @@ nppiWarpAffineBack_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpAffineBack_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3054,6 +4318,11 @@ nppiWarpAffineBack_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPlanarPixelParameters">Common parameters for nppiWarpAffineBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -3066,6 +4335,11 @@ nppiWarpAffineBack_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineBack_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3076,6 +4350,11 @@ nppiWarpAffineBack_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3088,6 +4367,11 @@ nppiWarpAffineBack_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineBack_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3098,6 +4382,11 @@ nppiWarpAffineBack_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineBackPackedPixelParameters">Common parameters for nppiWarpAffineBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineBack_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineBack_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3110,6 +4399,11 @@ nppiWarpAffineBack_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpAffineBack_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
@@ -3121,10 +4415,14 @@ nppiWarpAffineBack_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineBack_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[2][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[2][3], int eInterpolation);
-
 
 /** @} backwards_affine_transfrom */
 
@@ -3153,6 +4451,7 @@ nppiWarpAffineBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcSt
  * \param aDstQuad Destination quad.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * <h3><a name="CommonWarpAffineQuadPlanarPixelParameters">Common parameters for nppiWarpAffineQuad planar pixel functions include:</a></h3>
@@ -3168,6 +4467,7 @@ nppiWarpAffineBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcSt
  * \param aDstQuad Destination quad.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref affine_transform_error_codes
  *
  * @{
@@ -3181,6 +4481,11 @@ nppiWarpAffineBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineQuad_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                    Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                              int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                 Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                           int eInterpolation);
@@ -3193,6 +4498,11 @@ nppiWarpAffineQuad_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  *
  */
 NppStatus 
+nppiWarpAffineQuad_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                    Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                              int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                 Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                           int eInterpolation);
@@ -3203,6 +4513,11 @@ nppiWarpAffineQuad_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                    Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                              int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                 Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3215,6 +4530,11 @@ nppiWarpAffineQuad_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, N
  *
  */
 NppStatus 
+nppiWarpAffineQuad_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp8u * pDst,                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3225,6 +4545,11 @@ nppiWarpAffineQuad_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPlanarPixelParameters">Common parameters for nppiWarpAffineQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                    Npp8u * pDst[3],                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                              int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                 Npp8u * pDst[3],                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3237,6 +4562,11 @@ nppiWarpAffineQuad_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpAffineQuad_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                    Npp8u * pDst[4],                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                              int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                 Npp8u * pDst[4],                    int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                           int eInterpolation);
@@ -3247,6 +4577,11 @@ nppiWarpAffineQuad_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI,                    const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI,                    const double aDstQuad[4][2], 
@@ -3259,6 +4594,11 @@ nppiWarpAffineQuad_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3269,6 +4609,11 @@ nppiWarpAffineQuad_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3281,6 +4626,11 @@ nppiWarpAffineQuad_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                                int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                             int eInterpolation);
@@ -3291,6 +4641,11 @@ nppiWarpAffineQuad_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPlanarPixelParameters">Common parameters for nppiWarpAffineQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3303,6 +4658,11 @@ nppiWarpAffineQuad_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineQuad_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3313,6 +4673,11 @@ nppiWarpAffineQuad_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3325,6 +4690,11 @@ nppiWarpAffineQuad_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3335,6 +4705,11 @@ nppiWarpAffineQuad_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3347,6 +4722,11 @@ nppiWarpAffineQuad_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                      Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                                int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                   Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                             int eInterpolation);
@@ -3357,6 +4737,11 @@ nppiWarpAffineQuad_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPlanarPixelParameters">Common parameters for nppiWarpAffineQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3369,6 +4754,11 @@ nppiWarpAffineQuad_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3379,6 +4769,11 @@ nppiWarpAffineQuad_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3391,6 +4786,11 @@ nppiWarpAffineQuad_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3401,6 +4801,11 @@ nppiWarpAffineQuad_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPackedPixelParameters">Common parameters for nppiWarpAffineQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2],
+                                     Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2],
                                  Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3413,6 +4818,11 @@ nppiWarpAffineQuad_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                                int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                             int eInterpolation);
@@ -3423,6 +4833,11 @@ nppiWarpAffineQuad_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpAffineQuadPlanarPixelParameters">Common parameters for nppiWarpAffineQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpAffineQuad_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpAffineQuad_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
@@ -3435,6 +4850,11 @@ nppiWarpAffineQuad_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpAffineQuad_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                     Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
+                               int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpAffineQuad_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                  Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], 
                            int eInterpolation);
@@ -3445,28 +4865,29 @@ nppiWarpAffineQuad_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcSt
 /** @} image_affine_transforms */
 
 /** @defgroup image_perspective_transforms Perspective Transform
+ * The set of perspective transform functions available in the library.
  *
  * \section perspective_transform_error_codes Perspective Transform Error Codes
  *
- *         - ::NPP_RECTANGLE_ERROR Indicates an error condition if width or height of
- *           the intersection of the oSrcROI and source image is less than or
- *           equal to 1
- *         - ::NPP_WRONG_INTERSECTION_ROI_ERROR Indicates an error condition if
- *           oSrcROI has no intersection with the source image
- *         - ::NPP_INTERPOLATION_ERROR Indicates an error condition if
- *           interpolation has an illegal value
- *         - ::NPP_COEFFICIENT_ERROR Indicates an error condition if coefficient values
- *           are invalid
- *         - ::NPP_WRONG_INTERSECTION_QUAD_WARNING Indicates a warning that no
- *           operation is performed if the transformed source ROI has no
- *           intersection with the destination ROI
+ * - ::NPP_RECTANGLE_ERROR Indicates an error condition if width or height of
+ *   the intersection of the oSrcROI and source image is less than or
+ *   equal to 1
+ * - ::NPP_WRONG_INTERSECTION_ROI_ERROR Indicates an error condition if
+ *   oSrcROI has no intersection with the source image
+ * - ::NPP_INTERPOLATION_ERROR Indicates an error condition if
+ *   interpolation has an illegal value
+ * - ::NPP_COEFFICIENT_ERROR Indicates an error condition if coefficient values
+ *   are invalid
+ * - ::NPP_WRONG_INTERSECTION_QUAD_WARNING Indicates a warning that no
+ *   operation is performed if the transformed source ROI has no
+ *   intersection with the destination ROI
  *
  * @{
  *
  */
 
 /** @defgroup perspective_transform_utility_functions Perspective Transform Utility Functions
- *
+ * The set of perspective transform utility functions.
  * @{
  *
  */
@@ -3560,6 +4981,7 @@ nppiGetPerspectiveBound(NppiRect oSrcROI, double bound[2][2], const double aCoef
  * \param aCoeffs Perspective transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * <h3><a name="CommonWarpPerspectivePlanarPixelParameters">Common parameters for nppiWarpPerspective planar pixel functions include:</a></h3>
@@ -3574,6 +4996,7 @@ nppiGetPerspectiveBound(NppiRect oSrcROI, double bound[2][2], const double aCoef
  * \param aCoeffs Perspective transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * @{
@@ -3587,6 +5010,11 @@ nppiGetPerspectiveBound(NppiRect oSrcROI, double bound[2][2], const double aCoef
  *
  */
 NppStatus 
+nppiWarpPerspective_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[3][3], int eInterpolation);
@@ -3597,6 +5025,11 @@ nppiWarpPerspective_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3609,6 +5042,11 @@ nppiWarpPerspective_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  *
  */
 NppStatus 
+nppiWarpPerspective_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[3][3], int eInterpolation);
@@ -3619,6 +5057,11 @@ nppiWarpPerspective_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, 
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3631,6 +5074,11 @@ nppiWarpPerspective_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep,
  *
  */
 NppStatus 
+nppiWarpPerspective_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
                            const double aCoeffs[3][3], int eInterpolation);
@@ -3641,6 +5089,11 @@ nppiWarpPerspective_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcSte
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePlanarPixelParameters">Common parameters for nppiWarpPerspective planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                     Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                               const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                  Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -3653,6 +5106,11 @@ nppiWarpPerspective_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcSte
  *
  */
 NppStatus 
+nppiWarpPerspective_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3663,6 +5121,11 @@ nppiWarpPerspective_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3],int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3675,6 +5138,11 @@ nppiWarpPerspective_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpPerspective_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3685,6 +5153,11 @@ nppiWarpPerspective_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                 const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                    Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3697,6 +5170,11 @@ nppiWarpPerspective_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcSte
  *
  */
 NppStatus 
+nppiWarpPerspective_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3707,6 +5185,11 @@ nppiWarpPerspective_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcS
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePlanarPixelParameters">Common parameters for nppiWarpPerspective planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -3719,6 +5202,11 @@ nppiWarpPerspective_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcS
  *
  */
 NppStatus 
+nppiWarpPerspective_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3729,6 +5217,11 @@ nppiWarpPerspective_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3741,6 +5234,11 @@ nppiWarpPerspective_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpPerspective_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3751,6 +5249,11 @@ nppiWarpPerspective_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                 const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                    Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3763,6 +5266,11 @@ nppiWarpPerspective_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcSte
  *
  */
 NppStatus 
+nppiWarpPerspective_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3774,8 +5282,61 @@ nppiWarpPerspective_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcS
  *
  */
 NppStatus 
+nppiWarpPerspective_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[3][3], int eInterpolation);
+
+/**
+ * Single-channel 16-bit floating-point perspective warp.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspective_16f_C1R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspective_16f_C1R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[3][3], int eInterpolation);
+
+/**
+ * Three-channel 16-bit floating-point perspective warp.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspective_16f_C3R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspective_16f_C3R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                            const double aCoeffs[3][3], int eInterpolation);
+
+/**
+ * Four-channel 16-bit floating-point perspective warp.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspective_16f_C4R_Ctx(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspective_16f_C4R(const Npp16f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                  Npp16f * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
 
 /**
@@ -3784,6 +5345,11 @@ nppiWarpPerspective_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcS
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3796,6 +5362,11 @@ nppiWarpPerspective_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpPerspective_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3806,6 +5377,11 @@ nppiWarpPerspective_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePackedPixelParameters">Common parameters for nppiWarpPerspective packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -3818,6 +5394,11 @@ nppiWarpPerspective_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep
  *
  */
 NppStatus 
+nppiWarpPerspective_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                 const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                    Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                              const double aCoeffs[3][3], int eInterpolation);
@@ -3829,6 +5410,11 @@ nppiWarpPerspective_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcSte
  *
  */
 NppStatus 
+nppiWarpPerspective_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspective_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
                             const double aCoeffs[3][3], int eInterpolation);
@@ -3839,6 +5425,11 @@ nppiWarpPerspective_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcS
  * For common parameter descriptions, see <a href="#CommonWarpPerspectivePlanarPixelParameters">Common parameters for nppiWarpPerspective planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspective_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                      Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspective_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                   Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -3890,6 +5481,7 @@ nppiWarpPerspective_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcS
  * \param eInterpolation The type of eInterpolation to perform resampling. Currently limited to NPPI_INTER_NN, NPPI_INTER_LINEAR, or NPPI_INTER_CUBIC. 
  * \param pBatchList Device memory pointer to nBatchSize list of NppiWarpPerspectiveBatchCXR structures.
  * \param nBatchSize Number of NppiWarpPerspectiveBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -3913,9 +5505,111 @@ typedef struct
  *
  * \param pBatchList Device memory pointer to nBatchSize list of NppiWarpPerspectiveBatchCXR structures.
  * \param nBatchSize Number of NppiWarpPerspectiveBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  */
 NppStatus 
+nppiWarpPerspectiveBatchInit_Ctx(NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBatchInit(NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 1 channel 8-bit unsigned integer image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                    int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 3 channel 8-bit unsigned integer image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                    int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                    int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_8u_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer image warp perspective batch not affecting alpha.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_8u_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_8u_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 1 channel 16-bit floating point image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 3 channel 16-bit floating point image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+
+/**
+ * 4 channel 16-bit floating point image warp perspective batch.
+ *
+ * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBatchParameters">Common parameters for nppiWarpPerspectiveBatch functions</a>.
+ *
+ */
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiWarpPerspectiveBatch_16f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /**
  * 1 channel 32-bit floating point image warp perspective batch.
@@ -3924,8 +5618,12 @@ nppiWarpPerspectiveBatchInit(NppiWarpPerspectiveBatchCXR * pBatchList, unsigned 
  *
  */
 NppStatus 
+nppiWarpPerspectiveBatch_32f_C1R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
-                            int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /**
  * 3 channel 32-bit floating point image warp perspective batch.
@@ -3934,8 +5632,12 @@ nppiWarpPerspectiveBatch_32f_C1R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI
  *
  */
 NppStatus 
+nppiWarpPerspectiveBatch_32f_C3R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
-                            int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /**
  * 4 channel 32-bit floating point image warp perspective batch.
@@ -3944,8 +5646,12 @@ nppiWarpPerspectiveBatch_32f_C3R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI
  *
  */
 NppStatus 
+nppiWarpPerspectiveBatch_32f_C4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                     int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
-                            int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+                                 int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /**
  * 4 channel 32-bit floating point image warp perspective batch not affecting alpha.
@@ -3954,8 +5660,12 @@ nppiWarpPerspectiveBatch_32f_C4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI
  *
  */
 NppStatus 
+nppiWarpPerspectiveBatch_32f_AC4R_Ctx(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
+                                      int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectROI, NppiRect oDstRectROI, 
-                             int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
+                                  int eInterpolation, NppiWarpPerspectiveBatchCXR * pBatchList, unsigned int nBatchSize);
 
 /** @} perspective_transform_batch */
 
@@ -3997,6 +5707,7 @@ nppiWarpPerspectiveBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectRO
  * \param aCoeffs Perspective transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * <h3><a name="CommonWarpPerspectiveBackPlanarPixelParameters">Common parameters for nppiWarpPerspectiveBack planar pixel functions include:</a></h3>
@@ -4011,6 +5722,7 @@ nppiWarpPerspectiveBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectRO
  * \param aCoeffs Perspective transform coefficients.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * @{
@@ -4025,6 +5737,11 @@ nppiWarpPerspectiveBatch_32f_AC4R(NppiSize oSmallestSrcSize, NppiRect oSrcRectRO
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                                   const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                                const double aCoeffs[3][3], int eInterpolation);
@@ -4035,6 +5752,11 @@ nppiWarpPerspectiveBack_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                                   const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4047,6 +5769,11 @@ nppiWarpPerspectiveBack_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                                   const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
                                const double aCoeffs[3][3], int eInterpolation);
@@ -4057,6 +5784,11 @@ nppiWarpPerspectiveBack_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp8u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4069,6 +5801,11 @@ nppiWarpPerspectiveBack_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcS
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                         Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                   const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                      Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, 
                                const double aCoeffs[3][3], int eInterpolation);
@@ -4080,10 +5817,14 @@ nppiWarpPerspectiveBack_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                         Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                   const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                      Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, 
                                const double aCoeffs[3][3], int eInterpolation);
-
 
 /**
  * Single-channel 16-bit unsigned integer backwards perspective warp.
@@ -4091,6 +5832,11 @@ nppiWarpPerspectiveBack_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSr
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4103,6 +5849,11 @@ nppiWarpPerspectiveBack_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+                                            
+NppStatus 
 nppiWarpPerspectiveBack_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4113,6 +5864,11 @@ nppiWarpPerspectiveBack_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4125,6 +5881,11 @@ nppiWarpPerspectiveBack_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                           Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
+                                     const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                        Npp16u * pDst, int nDstStep, NppiRect oDstROI, 
                                  const double aCoeffs[3][3], int eInterpolation);
@@ -4135,6 +5896,11 @@ nppiWarpPerspectiveBack_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSr
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPlanarPixelParameters">Common parameters for nppiWarpPerspectiveBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -4147,6 +5913,11 @@ nppiWarpPerspectiveBack_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int n
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4157,6 +5928,11 @@ nppiWarpPerspectiveBack_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4169,6 +5945,11 @@ nppiWarpPerspectiveBack_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4179,6 +5960,11 @@ nppiWarpPerspectiveBack_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4191,6 +5977,11 @@ nppiWarpPerspectiveBack_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                           Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
+                                     const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                        Npp32s * pDst, int nDstStep, NppiRect oDstROI, 
                                  const double aCoeffs[3][3], int eInterpolation);
@@ -4201,6 +5992,11 @@ nppiWarpPerspectiveBack_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSr
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPlanarPixelParameters">Common parameters for nppiWarpPerspectiveBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, 
@@ -4213,6 +6009,11 @@ nppiWarpPerspectiveBack_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int n
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4223,6 +6024,11 @@ nppiWarpPerspectiveBack_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4235,6 +6041,11 @@ nppiWarpPerspectiveBack_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4245,6 +6056,11 @@ nppiWarpPerspectiveBack_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPackedPixelParameters">Common parameters for nppiWarpPerspectiveBack packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
@@ -4257,6 +6073,11 @@ nppiWarpPerspectiveBack_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                           Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
+                                     const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                        Npp32f * pDst, int nDstStep, NppiRect oDstROI, 
                                  const double aCoeffs[3][3], int eInterpolation);
@@ -4268,6 +6089,11 @@ nppiWarpPerspectiveBack_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveBack_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
+                                          Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveBack_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, 
                                       Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, 
                                 const double aCoeffs[3][3], int eInterpolation);
@@ -4278,6 +6104,11 @@ nppiWarpPerspectiveBack_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveBackPlanarPixelParameters">Common parameters for nppiWarpPerspectiveBack planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveBack_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
+                                          Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
+                                    const double aCoeffs[3][3], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI,
                                       Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, 
@@ -4304,6 +6135,7 @@ nppiWarpPerspectiveBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int n
  * \param aDstQuad Destination quad.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * <h3><a name="CommonWarpPerspectiveQuadPlanarPixelParameters">Common parameters for nppiWarpPerspectiveQuad planar pixel functions include:</a></h3>
@@ -4319,6 +6151,7 @@ nppiWarpPerspectiveBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int n
  * \param aDstQuad Destination quad.
  * \param eInterpolation Interpolation mode: can be NPPI_INTER_NN,
  *        NPPI_INTER_LINEAR or NPPI_INTER_CUBIC.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, \ref perspective_transform_error_codes
  *
  * @{
@@ -4331,7 +6164,11 @@ nppiWarpPerspectiveBack_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
- NppStatus 
+NppStatus 
+nppiWarpPerspectiveQuad_8u_C1R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4341,6 +6178,10 @@ nppiWarpPerspectiveQuad_8u_C1R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_8u_C3R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI,  const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI,  const double aDstQuad[4][2], int eInterpolation);
@@ -4352,6 +6193,10 @@ nppiWarpPerspectiveQuad_8u_C3R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_8u_C4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                         Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                      Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4361,6 +6206,10 @@ nppiWarpPerspectiveQuad_8u_C4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcSt
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_8u_AC4R_Ctx(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp8u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4372,6 +6221,10 @@ nppiWarpPerspectiveQuad_8u_AC4R(const Npp8u * pSrc, NppiSize oSrcSize, int nSrcS
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_8u_P3R_Ctx(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                         Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                      Npp8u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4381,6 +6234,10 @@ nppiWarpPerspectiveQuad_8u_P3R(const Npp8u * pSrc[3], NppiSize oSrcSize, int nSr
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPlanarPixelParameters">Common parameters for nppiWarpPerspectiveQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_8u_P4R_Ctx(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                         Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                      Npp8u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4392,6 +6249,10 @@ nppiWarpPerspectiveQuad_8u_P4R(const Npp8u * pSrc[4], NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_16u_C1R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4401,6 +6262,10 @@ nppiWarpPerspectiveQuad_16u_C1R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_16u_C3R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4412,6 +6277,10 @@ nppiWarpPerspectiveQuad_16u_C3R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_16u_C4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4421,6 +6290,10 @@ nppiWarpPerspectiveQuad_16u_C4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_16u_AC4R_Ctx(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                           Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                        Npp16u * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4432,6 +6305,10 @@ nppiWarpPerspectiveQuad_16u_AC4R(const Npp16u * pSrc, NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_16u_P3R_Ctx(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp16u * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4441,6 +6318,10 @@ nppiWarpPerspectiveQuad_16u_P3R(const Npp16u * pSrc[3], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPlanarPixelParameters">Common parameters for nppiWarpPerspectiveQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_16u_P4R_Ctx(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp16u * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4452,6 +6333,10 @@ nppiWarpPerspectiveQuad_16u_P4R(const Npp16u * pSrc[4], NppiSize oSrcSize, int n
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32s_C1R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4461,6 +6346,10 @@ nppiWarpPerspectiveQuad_32s_C1R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_32s_C3R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4472,6 +6361,10 @@ nppiWarpPerspectiveQuad_32s_C3R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32s_C4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4481,6 +6374,10 @@ nppiWarpPerspectiveQuad_32s_C4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_32s_AC4R_Ctx(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                           Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                        Npp32s * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4492,6 +6389,10 @@ nppiWarpPerspectiveQuad_32s_AC4R(const Npp32s * pSrc, NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32s_P3R_Ctx(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32s * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4501,6 +6402,10 @@ nppiWarpPerspectiveQuad_32s_P3R(const Npp32s * pSrc[3], NppiSize oSrcSize, int n
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPlanarPixelParameters">Common parameters for nppiWarpPerspectiveQuad planar pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_32s_P4R_Ctx(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+                                            
 NppStatus 
 nppiWarpPerspectiveQuad_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32s * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4512,6 +6417,10 @@ nppiWarpPerspectiveQuad_32s_P4R(const Npp32s * pSrc[4], NppiSize oSrcSize, int n
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32f_C1R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4521,6 +6430,10 @@ nppiWarpPerspectiveQuad_32f_C1R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_32f_C3R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4532,6 +6445,10 @@ nppiWarpPerspectiveQuad_32f_C3R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32f_C4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4541,6 +6458,10 @@ nppiWarpPerspectiveQuad_32f_C4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrc
  * For common parameter descriptions, see <a href="#CommonWarpPerspectiveQuadPackedPixelParameters">Common parameters for nppiWarpPerspectiveQuad packed pixel functions</a>.
  *
  */
+NppStatus 
+nppiWarpPerspectiveQuad_32f_AC4R_Ctx(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                           Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiWarpPerspectiveQuad_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                        Npp32f * pDst, int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
@@ -4552,6 +6473,10 @@ nppiWarpPerspectiveQuad_32f_AC4R(const Npp32f * pSrc, NppiSize oSrcSize, int nSr
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32f_P3R_Ctx(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32f * pDst[3], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
 
@@ -4562,9 +6487,12 @@ nppiWarpPerspectiveQuad_32f_P3R(const Npp32f * pSrc[3], NppiSize oSrcSize, int n
  *
  */
 NppStatus 
+nppiWarpPerspectiveQuad_32f_P4R_Ctx(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
+                                          Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiWarpPerspectiveQuad_32f_P4R(const Npp32f * pSrc[4], NppiSize oSrcSize, int nSrcStep, NppiRect oSrcROI, const double aSrcQuad[4][2], 
                                       Npp32f * pDst[4], int nDstStep, NppiRect oDstROI, const double aDstQuad[4][2], int eInterpolation);
-
 
 
 /** @} quad_based_perspective_transform */

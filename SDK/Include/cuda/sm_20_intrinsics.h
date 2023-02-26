@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2014 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2021 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -64,9 +64,12 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "device_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
+
+#if defined(_NVHPC_CUDA)
+#undef __device_builtin__
+#define __device_builtin__ __location__(device) __location__(host)
+#endif /* _NVHPC_CUDA */
 
 #ifndef __CUDA_ARCH__
 #define __DEF_IF_HOST { }
@@ -85,6 +88,8 @@
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 700
 #define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on compute_70 and above, and should be replaced with "#x"_sync()."\
     "To continue using "#x"(), specify virtual architecture compute_60 when targeting sm_70 and above, for example, using the pair of compiler options: -arch=compute_60 -code=sm_70."
+#elif defined(_NVHPC_CUDA)
+#define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on cc70 and above, and should be replaced with "#x"_sync()."
 #else
 #define __WSB_DEPRECATION_MESSAGE(x) #x"() is deprecated in favor of "#x"_sync() and may be removed in a future release (Use -Wno-deprecated-declarations to suppress this warning)."
 #endif
@@ -94,9 +99,9 @@ extern "C"
 extern __device__ __device_builtin__ void                   __threadfence_system(void);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Divide two floating point values in round-to-nearest-even mode.
+ * \brief Divide two floating-point values in round-to-nearest-even mode.
  *
- * Divides two floating point values \p x by \p y in round-to-nearest-even mode.
+ * Divides two floating-point values \p x by \p y in round-to-nearest-even mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -106,9 +111,9 @@ extern __device__ __device_builtin__ void                   __threadfence_system
 extern __device__ __device_builtin__ double                __ddiv_rn(double x, double y);
 /**      
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Divide two floating point values in round-towards-zero mode.
+ * \brief Divide two floating-point values in round-towards-zero mode.
  *
- * Divides two floating point values \p x by \p y in round-towards-zero mode.
+ * Divides two floating-point values \p x by \p y in round-towards-zero mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -118,9 +123,9 @@ extern __device__ __device_builtin__ double                __ddiv_rn(double x, d
 extern __device__ __device_builtin__ double                __ddiv_rz(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Divide two floating point values in round-up mode.
+ * \brief Divide two floating-point values in round-up mode.
  * 
- * Divides two floating point values \p x by \p y in round-up (to positive infinity) mode.
+ * Divides two floating-point values \p x by \p y in round-up (to positive infinity) mode.
  *    
  * \return Returns \p x / \p y.
  *
@@ -130,9 +135,9 @@ extern __device__ __device_builtin__ double                __ddiv_rz(double x, d
 extern __device__ __device_builtin__ double                __ddiv_ru(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Divide two floating point values in round-down mode.
+ * \brief Divide two floating-point values in round-down mode.
  *
- * Divides two floating point values \p x by \p y in round-down (to negative infinity) mode.
+ * Divides two floating-point values \p x by \p y in round-down (to negative infinity) mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -410,15 +415,43 @@ extern __device__ __device_builtin__ int                   __syncthreads_and(int
 extern __device__ __device_builtin__ int                   __syncthreads_or(int);
 extern __device__ __device_builtin__ long long int         clock64(void);
 
-/* The following intrinsics are special versions of __fmaf_r?() that always 
- * map to a single-precision FMA instruction in non-FTZ mode, regardless of
- * the compiler's -ftz flag setting. These are supported for NVIDIA internal 
- * library work only.
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SINGLE
+ * \brief Compute fused multiply-add operation in round-to-nearest-even mode, ignore \p -ftz=true compiler flag
+ *
+ * Behavior is the same as ::__fmaf_rn(\p x, \p y, \p z), the difference is in
+ * handling denormalized inputs and outputs: \p -ftz compiler flag has no effect.
  */
-extern __device__ __device_builtin__ float                 __fmaf_ieee_rn(float, float, float);
-extern __device__ __device_builtin__ float                 __fmaf_ieee_rz(float, float, float);
-extern __device__ __device_builtin__ float                 __fmaf_ieee_ru(float, float, float);
-extern __device__ __device_builtin__ float                 __fmaf_ieee_rd(float, float, float);
+extern __device__ __device_builtin__ float                  __fmaf_ieee_rn(float x, float y, float z);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SINGLE
+ * \brief Compute fused multiply-add operation in round-down mode, ignore \p -ftz=true compiler flag
+ *
+ * Behavior is the same as ::__fmaf_rd(\p x, \p y, \p z), the difference is in
+ * handling denormalized inputs and outputs: \p -ftz compiler flag has no effect.
+ */
+extern __device__ __device_builtin__ float                  __fmaf_ieee_rd(float x, float y, float z);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SINGLE
+ * \brief Compute fused multiply-add operation in round-up mode, ignore \p -ftz=true compiler flag
+ *
+ * Behavior is the same as ::__fmaf_ru(\p x, \p y, \p z), the difference is in
+ * handling denormalized inputs and outputs: \p -ftz compiler flag has no effect.
+ */
+extern __device__ __device_builtin__ float                  __fmaf_ieee_ru(float x, float y, float z);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SINGLE
+ * \brief Compute fused multiply-add operation in round-towards-zero mode, ignore \p -ftz=true compiler flag
+ *
+ * Behavior is the same as ::__fmaf_rz(\p x, \p y, \p z), the difference is in
+ * handling denormalized inputs and outputs: \p -ftz compiler flag has no effect.
+ */
+extern __device__ __device_builtin__ float                  __fmaf_ieee_rz(float x, float y, float z);
+
 
 // SM_13 intrinsics
 
@@ -426,7 +459,7 @@ extern __device__ __device_builtin__ float                 __fmaf_ieee_rd(float,
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Reinterpret bits in a double as a 64-bit signed integer.
  *
- * Reinterpret the bits in the double-precision floating point value \p x
+ * Reinterpret the bits in the double-precision floating-point value \p x
  * as a signed 64-bit integer.
  * \return Returns reinterpreted value.
  */
@@ -436,7 +469,7 @@ extern __device__ __device_builtin__ long long int         __double_as_longlong(
  * \brief Reinterpret bits in a 64-bit signed integer as a double.
  *
  * Reinterpret the bits in the 64-bit signed integer value \p x as
- * a double-precision floating point value.
+ * a double-precision floating-point value.
  * \return Returns reinterpreted value.
  */
 extern __device__ __device_builtin__ double                __longlong_as_double(long long int x);
@@ -448,7 +481,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -463,7 +496,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -479,7 +512,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -492,8 +525,8 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -502,7 +535,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -513,7 +546,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -523,8 +556,8 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -534,8 +567,8 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -545,7 +578,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -556,7 +589,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -567,7 +600,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -577,7 +610,7 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -587,8 +620,8 @@ extern __device__ __device_builtin__ double                __longlong_as_double(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -605,7 +638,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -620,7 +653,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -636,7 +669,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -649,8 +682,8 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -659,7 +692,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -670,7 +703,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -680,8 +713,8 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -691,8 +724,8 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -702,7 +735,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -713,7 +746,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -724,7 +757,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -734,7 +767,7 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -744,8 +777,8 @@ extern __device__ __device_builtin__ double                __fma_rn(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -762,7 +795,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -777,7 +810,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -793,7 +826,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -806,8 +839,8 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -816,7 +849,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -827,7 +860,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -837,8 +870,8 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -848,8 +881,8 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -859,7 +892,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -870,7 +903,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -881,7 +914,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -891,7 +924,7 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -901,8 +934,8 @@ extern __device__ __device_builtin__ double                __fma_rz(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -919,7 +952,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -934,7 +967,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -950,7 +983,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -963,8 +996,8 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -973,7 +1006,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -984,7 +1017,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -994,8 +1027,8 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus; --></m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1005,8 +1038,8 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1016,7 +1049,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1027,7 +1060,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1038,7 +1071,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1048,7 +1081,7 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply; --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1058,8 +1091,8 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>-</m:mo>
+ *   <m:mn>&#x221E;<!-- &Infinity; --></m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1070,9 +1103,9 @@ extern __device__ __device_builtin__ double                __fma_ru(double x, do
 extern __device__ __device_builtin__ double                __fma_rd(double x, double y, double z);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Add two floating point values in round-to-nearest-even mode.
+ * \brief Add two floating-point values in round-to-nearest-even mode.
  *
- * Adds two floating point values \p x and \p y in round-to-nearest-even mode.
+ * Adds two floating-point values \p x and \p y in round-to-nearest-even mode.
  *
  * \return Returns \p x + \p y.
  *
@@ -1082,9 +1115,9 @@ extern __device__ __device_builtin__ double                __fma_rd(double x, do
 extern __device__ __device_builtin__ double                __dadd_rn(double x, double y);
 /**      
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Add two floating point values in round-towards-zero mode.
+ * \brief Add two floating-point values in round-towards-zero mode.
  *
- * Adds two floating point values \p x and \p y in round-towards-zero mode.
+ * Adds two floating-point values \p x and \p y in round-towards-zero mode.
  *
  * \return Returns \p x + \p y.
  *
@@ -1094,9 +1127,9 @@ extern __device__ __device_builtin__ double                __dadd_rn(double x, d
 extern __device__ __device_builtin__ double                __dadd_rz(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Add two floating point values in round-up mode.
+ * \brief Add two floating-point values in round-up mode.
  * 
- * Adds two floating point values \p x and \p y in round-up (to positive infinity) mode.
+ * Adds two floating-point values \p x and \p y in round-up (to positive infinity) mode.
  *    
  * \return Returns \p x + \p y.
  *
@@ -1106,9 +1139,9 @@ extern __device__ __device_builtin__ double                __dadd_rz(double x, d
 extern __device__ __device_builtin__ double                __dadd_ru(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Add two floating point values in round-down mode.
+ * \brief Add two floating-point values in round-down mode.
  *
- * Adds two floating point values \p x and \p y in round-down (to negative infinity) mode.
+ * Adds two floating-point values \p x and \p y in round-down (to negative infinity) mode.
  *
  * \return Returns \p x + \p y.
  *
@@ -1118,9 +1151,9 @@ extern __device__ __device_builtin__ double                __dadd_ru(double x, d
 extern __device__ __device_builtin__ double                __dadd_rd(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Subtract two floating point values in round-to-nearest-even mode.
+ * \brief Subtract two floating-point values in round-to-nearest-even mode.
  *
- * Subtracts two floating point values \p x and \p y in round-to-nearest-even mode.
+ * Subtracts two floating-point values \p x and \p y in round-to-nearest-even mode.
  *
  * \return Returns \p x - \p y.
  *
@@ -1130,9 +1163,9 @@ extern __device__ __device_builtin__ double                __dadd_rd(double x, d
 extern __device__ __device_builtin__ double                __dsub_rn(double x, double y);
 /**      
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Subtract two floating point values in round-towards-zero mode.
+ * \brief Subtract two floating-point values in round-towards-zero mode.
  *
- * Subtracts two floating point values \p x and \p y in round-towards-zero mode.
+ * Subtracts two floating-point values \p x and \p y in round-towards-zero mode.
  *
  * \return Returns \p x - \p y.
  *
@@ -1142,9 +1175,9 @@ extern __device__ __device_builtin__ double                __dsub_rn(double x, d
 extern __device__ __device_builtin__ double                __dsub_rz(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Subtract two floating point values in round-up mode.
+ * \brief Subtract two floating-point values in round-up mode.
  * 
- * Subtracts two floating point values \p x and \p y in round-up (to positive infinity) mode.
+ * Subtracts two floating-point values \p x and \p y in round-up (to positive infinity) mode.
  *    
  * \return Returns \p x - \p y.
  *
@@ -1154,9 +1187,9 @@ extern __device__ __device_builtin__ double                __dsub_rz(double x, d
 extern __device__ __device_builtin__ double                __dsub_ru(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Subtract two floating point values in round-down mode.
+ * \brief Subtract two floating-point values in round-down mode.
  *
- * Subtracts two floating point values \p x and \p y in round-down (to negative infinity) mode.
+ * Subtracts two floating-point values \p x and \p y in round-down (to negative infinity) mode.
  *
  * \return Returns \p x - \p y.
  *
@@ -1166,9 +1199,9 @@ extern __device__ __device_builtin__ double                __dsub_ru(double x, d
 extern __device__ __device_builtin__ double                __dsub_rd(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Multiply two floating point values in round-to-nearest-even mode.
+ * \brief Multiply two floating-point values in round-to-nearest-even mode.
  *
- * Multiplies two floating point values \p x and \p y in round-to-nearest-even mode.
+ * Multiplies two floating-point values \p x and \p y in round-to-nearest-even mode.
  *
  * \return Returns \p x * \p y.
  *
@@ -1178,9 +1211,9 @@ extern __device__ __device_builtin__ double                __dsub_rd(double x, d
 extern __device__ __device_builtin__ double                __dmul_rn(double x, double y);
 /**      
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Multiply two floating point values in round-towards-zero mode.
+ * \brief Multiply two floating-point values in round-towards-zero mode.
  *
- * Multiplies two floating point values \p x and \p y in round-towards-zero mode.
+ * Multiplies two floating-point values \p x and \p y in round-towards-zero mode.
  *
  * \return Returns \p x * \p y.
  *
@@ -1190,9 +1223,9 @@ extern __device__ __device_builtin__ double                __dmul_rn(double x, d
 extern __device__ __device_builtin__ double                __dmul_rz(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Multiply two floating point values in round-up mode.
+ * \brief Multiply two floating-point values in round-up mode.
  * 
- * Multiplies two floating point values \p x and \p y in round-up (to positive infinity) mode.
+ * Multiplies two floating-point values \p x and \p y in round-up (to positive infinity) mode.
  *    
  * \return Returns \p x * \p y.
  *
@@ -1202,9 +1235,9 @@ extern __device__ __device_builtin__ double                __dmul_rz(double x, d
 extern __device__ __device_builtin__ double                __dmul_ru(double x, double y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_DOUBLE
- * \brief Multiply two floating point values in round-down mode.
+ * \brief Multiply two floating-point values in round-down mode.
  *
- * Multiplies two floating point values \p x and \p y in round-down (to negative infinity) mode.
+ * Multiplies two floating-point values \p x and \p y in round-down (to negative infinity) mode.
  *
  * \return Returns \p x * \p y.
  *
@@ -1216,8 +1249,8 @@ extern __device__ __device_builtin__ double                __dmul_rd(double x, d
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a float in round-to-nearest-even mode.
  *
- * Convert the double-precision floating point value \p x to a single-precision
- * floating point value in round-to-nearest-even mode.
+ * Convert the double-precision floating-point value \p x to a single-precision
+ * floating-point value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ float                 __double2float_rn(double x);
@@ -1225,8 +1258,8 @@ extern __device__ __device_builtin__ float                 __double2float_rn(dou
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a float in round-towards-zero mode.
  *
- * Convert the double-precision floating point value \p x to a single-precision
- * floating point value in round-towards-zero mode.
+ * Convert the double-precision floating-point value \p x to a single-precision
+ * floating-point value in round-towards-zero mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ float                 __double2float_rz(double x);
@@ -1234,8 +1267,8 @@ extern __device__ __device_builtin__ float                 __double2float_rz(dou
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a float in round-up mode.
  *
- * Convert the double-precision floating point value \p x to a single-precision
- * floating point value in round-up (to positive infinity) mode.
+ * Convert the double-precision floating-point value \p x to a single-precision
+ * floating-point value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ float                 __double2float_ru(double x);
@@ -1243,8 +1276,8 @@ extern __device__ __device_builtin__ float                 __double2float_ru(dou
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a float in round-down mode.
  *
- * Convert the double-precision floating point value \p x to a single-precision
- * floating point value in round-down (to negative infinity) mode.
+ * Convert the double-precision floating-point value \p x to a single-precision
+ * floating-point value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ float                 __double2float_rd(double x);
@@ -1252,7 +1285,7 @@ extern __device__ __device_builtin__ float                 __double2float_rd(dou
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed int in round-to-nearest-even mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed integer value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -1261,7 +1294,7 @@ extern __device__ __device_builtin__ int                   __double2int_rn(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed int in round-up mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed integer value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -1270,7 +1303,7 @@ extern __device__ __device_builtin__ int                   __double2int_ru(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed int in round-down mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed integer value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -1279,7 +1312,7 @@ extern __device__ __device_builtin__ int                   __double2int_rd(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned int in round-to-nearest-even mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned integer value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -1288,7 +1321,7 @@ extern __device__ __device_builtin__ unsigned int          __double2uint_rn(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned int in round-up mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned integer value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -1297,7 +1330,7 @@ extern __device__ __device_builtin__ unsigned int          __double2uint_ru(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned int in round-down mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned integer value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -1306,7 +1339,7 @@ extern __device__ __device_builtin__ unsigned int          __double2uint_rd(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed 64-bit int in round-to-nearest-even mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed 64-bit integer value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -1315,7 +1348,7 @@ extern __device__ __device_builtin__ long long int          __double2ll_rn(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed 64-bit int in round-up mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed 64-bit integer value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -1324,7 +1357,7 @@ extern __device__ __device_builtin__ long long int          __double2ll_ru(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed 64-bit int in round-down mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed 64-bit integer value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -1333,7 +1366,7 @@ extern __device__ __device_builtin__ long long int          __double2ll_rd(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned 64-bit int in round-to-nearest-even mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned 64-bit integer value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -1342,7 +1375,7 @@ extern __device__ __device_builtin__ unsigned long long int __double2ull_rn(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned 64-bit int in round-up mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned 64-bit integer value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -1351,7 +1384,7 @@ extern __device__ __device_builtin__ unsigned long long int __double2ull_ru(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned 64-bit int in round-down mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned 64-bit integer value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -1360,7 +1393,7 @@ extern __device__ __device_builtin__ unsigned long long int __double2ull_rd(doub
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed int to a double.
  *
- * Convert the signed integer value \p x to a double-precision floating point value.
+ * Convert the signed integer value \p x to a double-precision floating-point value.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __int2double_rn(int x);
@@ -1368,7 +1401,7 @@ extern __device__ __device_builtin__ double                 __int2double_rn(int 
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned int to a double.
  *
- * Convert the unsigned integer value \p x to a double-precision floating point value.
+ * Convert the unsigned integer value \p x to a double-precision floating-point value.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __uint2double_rn(unsigned int x);
@@ -1376,8 +1409,8 @@ extern __device__ __device_builtin__ double                 __uint2double_rn(uns
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed 64-bit int to a double in round-to-nearest-even mode.
  *
- * Convert the signed 64-bit integer value \p x to a double-precision floating
- * point value in round-to-nearest-even mode.
+ * Convert the signed 64-bit integer value \p x to a double-precision floating-point
+ * value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ll2double_rn(long long int x);
@@ -1385,8 +1418,8 @@ extern __device__ __device_builtin__ double                 __ll2double_rn(long 
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed 64-bit int to a double in round-towards-zero mode.
  *
- * Convert the signed 64-bit integer value \p x to a double-precision floating
- * point value in round-towards-zero mode.
+ * Convert the signed 64-bit integer value \p x to a double-precision floating-point
+ * value in round-towards-zero mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ll2double_rz(long long int x);
@@ -1394,8 +1427,8 @@ extern __device__ __device_builtin__ double                 __ll2double_rz(long 
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed 64-bit int to a double in round-up mode.
  *
- * Convert the signed 64-bit integer value \p x to a double-precision floating
- * point value in round-up (to positive infinity) mode.
+ * Convert the signed 64-bit integer value \p x to a double-precision floating-point
+ * value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ll2double_ru(long long int x);
@@ -1403,8 +1436,8 @@ extern __device__ __device_builtin__ double                 __ll2double_ru(long 
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed 64-bit int to a double in round-down mode.
  *
- * Convert the signed 64-bit integer value \p x to a double-precision floating
- * point value in round-down (to negative infinity) mode.
+ * Convert the signed 64-bit integer value \p x to a double-precision floating-point
+ * value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ll2double_rd(long long int x);
@@ -1412,8 +1445,8 @@ extern __device__ __device_builtin__ double                 __ll2double_rd(long 
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned 64-bit int to a double in round-to-nearest-even mode.
  *
- * Convert the unsigned 64-bit integer value \p x to a double-precision floating
- * point value in round-to-nearest-even mode.
+ * Convert the unsigned 64-bit integer value \p x to a double-precision floating-point
+ * value in round-to-nearest-even mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ull2double_rn(unsigned long long int x);
@@ -1421,8 +1454,8 @@ extern __device__ __device_builtin__ double                 __ull2double_rn(unsi
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned 64-bit int to a double in round-towards-zero mode.
  *
- * Convert the unsigned 64-bit integer value \p x to a double-precision floating
- * point value in round-towards-zero mode.
+ * Convert the unsigned 64-bit integer value \p x to a double-precision floating-point
+ * value in round-towards-zero mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ull2double_rz(unsigned long long int x);
@@ -1430,8 +1463,8 @@ extern __device__ __device_builtin__ double                 __ull2double_rz(unsi
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned 64-bit int to a double in round-up mode.
  *
- * Convert the unsigned 64-bit integer value \p x to a double-precision floating
- * point value in round-up (to positive infinity) mode.
+ * Convert the unsigned 64-bit integer value \p x to a double-precision floating-point
+ * value in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ull2double_ru(unsigned long long int x);
@@ -1439,8 +1472,8 @@ extern __device__ __device_builtin__ double                 __ull2double_ru(unsi
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned 64-bit int to a double in round-down mode.
  *
- * Convert the unsigned 64-bit integer value \p x to a double-precision floating
- * point value in round-down (to negative infinity) mode.
+ * Convert the unsigned 64-bit integer value \p x to a double-precision floating-point
+ * value in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
 extern __device__ __device_builtin__ double                 __ull2double_rd(unsigned long long int x);
@@ -1448,7 +1481,7 @@ extern __device__ __device_builtin__ double                 __ull2double_rd(unsi
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Reinterpret high 32 bits in a double as a signed integer.
  *
- * Reinterpret the high 32 bits in the double-precision floating point value \p x
+ * Reinterpret the high 32 bits in the double-precision floating-point value \p x
  * as a signed integer.
  * \return Returns reinterpreted value.
  */
@@ -1457,7 +1490,7 @@ extern __device__ __device_builtin__ int                    __double2hiint(doubl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Reinterpret low 32 bits in a double as a signed integer.
  *
- * Reinterpret the low 32 bits in the double-precision floating point value \p x
+ * Reinterpret the low 32 bits in the double-precision floating-point value \p x
  * as a signed integer.
  * \return Returns reinterpreted value.
  */
@@ -1467,14 +1500,19 @@ extern __device__ __device_builtin__ int                    __double2loint(doubl
  * \brief Reinterpret high and low 32-bit integer values as a double.
  *
  * Reinterpret the integer value of \p hi as the high 32 bits of a 
- * double-precision floating point value and the integer value of \p lo
- * as the low 32 bits of the same double-precision floating point value.
+ * double-precision floating-point value and the integer value of \p lo
+ * as the low 32 bits of the same double-precision floating-point value.
  * \return Returns reinterpreted value.
  */
 extern __device__ __device_builtin__ double                 __hiloint2double(int hi, int lo);
 
 
 }
+
+#if defined(_NVHPC_CUDA)
+#undef __device_builtin__
+#define __device_builtin__
+#endif /* _NVHPC_CUDA */
 
 /*******************************************************************************
 *                                                                              *
@@ -1492,10 +1530,28 @@ __SM_20_INTRINSICS_DECL__ bool syncthreads_or(bool pred) __DEF_IF_HOST
 #undef __DEPRECATED__
 #undef __WSB_DEPRECATION_MESSAGE
 
-// This function returns 1 if generic address "ptr" is in global memory space.
-// It returns 0 if "ptr" is in shared, local or constant memory space.
 __SM_20_INTRINSICS_DECL__ unsigned int __isGlobal(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ unsigned int __isShared(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ unsigned int __isConstant(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ unsigned int __isLocal(const void *ptr) __DEF_IF_HOST
+#if !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700)
+__SM_20_INTRINSICS_DECL__ unsigned int __isGridConstant(const void *ptr) __DEF_IF_HOST
+#endif  /* !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700) */
+__SM_20_INTRINSICS_DECL__ size_t __cvta_generic_to_global(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ size_t __cvta_generic_to_shared(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ size_t __cvta_generic_to_constant(const void *ptr) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ size_t __cvta_generic_to_local(const void *ptr) __DEF_IF_HOST
+#if !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700)
+__SM_20_INTRINSICS_DECL__ size_t __cvta_generic_to_grid_constant(const void *ptr) __DEF_IF_HOST
+#endif  /* !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700) */
 
+__SM_20_INTRINSICS_DECL__ void * __cvta_global_to_generic(size_t rawbits) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ void * __cvta_shared_to_generic(size_t rawbits) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ void * __cvta_constant_to_generic(size_t rawbits) __DEF_IF_HOST
+__SM_20_INTRINSICS_DECL__ void * __cvta_local_to_generic(size_t rawbits) __DEF_IF_HOST
+#if !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700)
+__SM_20_INTRINSICS_DECL__ void * __cvta_grid_constant_to_generic(size_t rawbits) __DEF_IF_HOST
+#endif  /* !defined(__CUDA_ARCH__) || (__CUDA_ARCH__ >= 700) */
 #endif /* __cplusplus && __CUDACC__ */
 
 #undef __DEF_IF_HOST

@@ -1,5 +1,4 @@
-
- /* Copyright 2005-2014 NVIDIA Corporation.  All rights reserved.
+ /* Copyright 2005-2021 NVIDIA Corporation.  All rights reserved.
   *
   * NOTICE TO LICENSEE:
   *
@@ -48,9 +47,9 @@
   */
 
 /*!
-* \file cufft.h  
-* \brief Public header file for the NVIDIA CUDA FFT library (CUFFT)  
-*/ 
+* \file cufft.h
+* \brief Public header file for the NVIDIA CUDA FFT library (CUFFT)
+*/
 
 #ifndef _CUFFT_H_
 #define _CUFFT_H_
@@ -66,7 +65,7 @@
 #elif __GNUC__ >= 4
 #define CUFFTAPI __attribute__ ((visibility ("default")))
 #else
-#define CUFFTAPI 
+#define CUFFTAPI
 #endif
 #endif
 
@@ -74,7 +73,19 @@
 extern "C" {
 #endif
 
-// CUFFT API function return values 
+#define CUFFT_VER_MAJOR 11
+#define CUFFT_VER_MINOR 0
+#define CUFFT_VER_PATCH 0
+#define CUFFT_VER_BUILD 21
+
+// cuFFT library version
+//
+// CUFFT_VERSION / 1000 - major version
+// CUFFT_VERSION / 100 % 100 - minor version
+// CUFFT_VERSION % 100 - patch level
+#define CUFFT_VERSION 11000
+
+// CUFFT API function return values
 typedef enum cufftResult_t {
   CUFFT_SUCCESS        = 0x0,
   CUFFT_INVALID_PLAN   = 0x1,
@@ -98,7 +109,7 @@ typedef enum cufftResult_t {
 
 #define MAX_CUFFT_ERROR 0x11
 
-    
+
 // CUFFT defines and supports the following data types
 
 
@@ -107,17 +118,17 @@ typedef enum cufftResult_t {
 typedef float cufftReal;
 typedef double cufftDoubleReal;
 
-// cufftComplex is a single-precision, floating-point complex data type that 
+// cufftComplex is a single-precision, floating-point complex data type that
 // consists of interleaved real and imaginary components.
 // cufftDoubleComplex is the double-precision equivalent.
 typedef cuComplex cufftComplex;
 typedef cuDoubleComplex cufftDoubleComplex;
 
-// CUFFT transform directions 
+// CUFFT transform directions
 #define CUFFT_FORWARD -1 // Forward FFT
 #define CUFFT_INVERSE  1 // Inverse FFT
 
-// CUFFT supports the following transform types 
+// CUFFT supports the following transform types
 typedef enum cufftType_t {
   CUFFT_R2C = 0x2a,     // Real to Complex (interleaved)
   CUFFT_C2R = 0x2c,     // Complex (interleaved) to Real
@@ -143,17 +154,17 @@ typedef enum cufftCompatibility_t {
 typedef int cufftHandle;
 
 
-cufftResult CUFFTAPI cufftPlan1d(cufftHandle *plan, 
-                                 int nx, 
-                                 cufftType type, 
+cufftResult CUFFTAPI cufftPlan1d(cufftHandle *plan,
+                                 int nx,
+                                 cufftType type,
                                  int batch);
 
-cufftResult CUFFTAPI cufftPlan2d(cufftHandle *plan, 
+cufftResult CUFFTAPI cufftPlan2d(cufftHandle *plan,
                                  int nx, int ny,
                                  cufftType type);
 
-cufftResult CUFFTAPI cufftPlan3d(cufftHandle *plan, 
-                                 int nx, int ny, int nz, 
+cufftResult CUFFTAPI cufftPlan3d(cufftHandle *plan,
+                                 int nx, int ny, int nz,
                                  cufftType type);
 
 cufftResult CUFFTAPI cufftPlanMany(cufftHandle *plan,
@@ -163,20 +174,20 @@ cufftResult CUFFTAPI cufftPlanMany(cufftHandle *plan,
                                    int *onembed, int ostride, int odist,
                                    cufftType type,
                                    int batch);
-                                   
-cufftResult CUFFTAPI cufftMakePlan1d(cufftHandle plan, 
-                                     int nx, 
-                                     cufftType type, 
+
+cufftResult CUFFTAPI cufftMakePlan1d(cufftHandle plan,
+                                     int nx,
+                                     cufftType type,
                                      int batch,
                                      size_t *workSize);
 
-cufftResult CUFFTAPI cufftMakePlan2d(cufftHandle plan, 
+cufftResult CUFFTAPI cufftMakePlan2d(cufftHandle plan,
                                      int nx, int ny,
                                      cufftType type,
                                      size_t *workSize);
 
-cufftResult CUFFTAPI cufftMakePlan3d(cufftHandle plan, 
-                                     int nx, int ny, int nz, 
+cufftResult CUFFTAPI cufftMakePlan3d(cufftHandle plan,
+                                     int nx, int ny, int nz,
                                      cufftType type,
                                      size_t *workSize);
 
@@ -188,35 +199,35 @@ cufftResult CUFFTAPI cufftMakePlanMany(cufftHandle plan,
                                        cufftType type,
                                        int batch,
                                        size_t *workSize);
-                                      
-cufftResult CUFFTAPI cufftMakePlanMany64(cufftHandle plan, 
-                                         int rank, 
+
+cufftResult CUFFTAPI cufftMakePlanMany64(cufftHandle plan,
+                                         int rank,
                                          long long int *n,
-                                         long long int *inembed, 
-                                         long long int istride, 
+                                         long long int *inembed,
+                                         long long int istride,
                                          long long int idist,
-                                         long long int *onembed, 
+                                         long long int *onembed,
                                          long long int ostride, long long int odist,
-                                         cufftType type, 
+                                         cufftType type,
                                          long long int batch,
                                          size_t * workSize);
 
 cufftResult CUFFTAPI cufftGetSizeMany64(cufftHandle plan,
                                         int rank,
                                         long long int *n,
-                                        long long int *inembed, 
+                                        long long int *inembed,
                                         long long int istride, long long int idist,
-                                        long long int *onembed, 
+                                        long long int *onembed,
                                         long long int ostride, long long int odist,
                                         cufftType type,
                                         long long int batch,
                                         size_t *workSize);
 
-                                         
-                                      
-                                   
-cufftResult CUFFTAPI cufftEstimate1d(int nx, 
-                                     cufftType type, 
+
+
+
+cufftResult CUFFTAPI cufftEstimate1d(int nx,
+                                     cufftType type,
                                      int batch,
                                      size_t *workSize);
 
@@ -224,7 +235,7 @@ cufftResult CUFFTAPI cufftEstimate2d(int nx, int ny,
                                      cufftType type,
                                      size_t *workSize);
 
-cufftResult CUFFTAPI cufftEstimate3d(int nx, int ny, int nz, 
+cufftResult CUFFTAPI cufftEstimate3d(int nx, int ny, int nz,
                                      cufftType type,
                                      size_t *workSize);
 
@@ -235,63 +246,63 @@ cufftResult CUFFTAPI cufftEstimateMany(int rank,
                                        cufftType type,
                                        int batch,
                                        size_t *workSize);
-                                     
-cufftResult CUFFTAPI cufftCreate(cufftHandle * handle);                                     
 
-cufftResult CUFFTAPI cufftGetSize1d(cufftHandle handle, 
-                                    int nx, 
-                                    cufftType type, 
+cufftResult CUFFTAPI cufftCreate(cufftHandle * handle);
+
+cufftResult CUFFTAPI cufftGetSize1d(cufftHandle handle,
+                                    int nx,
+                                    cufftType type,
                                     int batch,
                                     size_t *workSize );
-                                                                         
-cufftResult CUFFTAPI cufftGetSize2d(cufftHandle handle, 
+
+cufftResult CUFFTAPI cufftGetSize2d(cufftHandle handle,
                                     int nx, int ny,
                                     cufftType type,
                                     size_t *workSize);
 
 cufftResult CUFFTAPI cufftGetSize3d(cufftHandle handle,
-                                    int nx, int ny, int nz, 
+                                    int nx, int ny, int nz,
                                     cufftType type,
                                     size_t *workSize);
 
-cufftResult CUFFTAPI cufftGetSizeMany(cufftHandle handle, 
+cufftResult CUFFTAPI cufftGetSizeMany(cufftHandle handle,
                                       int rank, int *n,
                                       int *inembed, int istride, int idist,
                                       int *onembed, int ostride, int odist,
                                       cufftType type, int batch, size_t *workArea);
-                                     
+
 cufftResult CUFFTAPI cufftGetSize(cufftHandle handle, size_t *workSize);
-                                               
+
 cufftResult CUFFTAPI cufftSetWorkArea(cufftHandle plan, void *workArea);
 
 cufftResult CUFFTAPI cufftSetAutoAllocation(cufftHandle plan, int autoAllocate);
 
-cufftResult CUFFTAPI cufftExecC2C(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecC2C(cufftHandle plan,
                                   cufftComplex *idata,
                                   cufftComplex *odata,
                                   int direction);
 
-cufftResult CUFFTAPI cufftExecR2C(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecR2C(cufftHandle plan,
                                   cufftReal *idata,
                                   cufftComplex *odata);
 
-cufftResult CUFFTAPI cufftExecC2R(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecC2R(cufftHandle plan,
                                   cufftComplex *idata,
                                   cufftReal *odata);
 
-cufftResult CUFFTAPI cufftExecZ2Z(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecZ2Z(cufftHandle plan,
                                   cufftDoubleComplex *idata,
                                   cufftDoubleComplex *odata,
                                   int direction);
 
-cufftResult CUFFTAPI cufftExecD2Z(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecD2Z(cufftHandle plan,
                                   cufftDoubleReal *idata,
                                   cufftDoubleComplex *odata);
 
-cufftResult CUFFTAPI cufftExecZ2D(cufftHandle plan, 
+cufftResult CUFFTAPI cufftExecZ2D(cufftHandle plan,
                                   cufftDoubleComplex *idata,
                                   cufftDoubleReal *odata);
-                                  
+
 
 // utility functions
 cufftResult CUFFTAPI cufftSetStream(cufftHandle plan,

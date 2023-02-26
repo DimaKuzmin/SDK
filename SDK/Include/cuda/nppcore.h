@@ -1,4 +1,4 @@
- /* Copyright 2009-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2022 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -60,7 +60,11 @@
 #include "nppdefs.h"
 
 #ifdef __cplusplus
+#ifdef NPP_PLUS
+using namespace nppPlusV;
+#else
 extern "C" {
+#endif
 #endif
  
 /** \defgroup core_npp NPP Core
@@ -77,18 +81,6 @@ extern "C" {
  */
 const NppLibraryVersion * 
 nppGetLibVersion(void);
-
-/**
- * What CUDA compute model is supported by the active CUDA device?
- * 
- * Before trying to call any NPP functions, the user should make a call
- * this function to ensure that the current machine has a CUDA capable device.
- *
- * \return An enum value representing if a CUDA capable device was found and what
- *      level of compute capabilities it supports.
- */
-NppGpuComputeCapability 
-nppGetGpuComputeCapability(void);
 
 /**
  * Get the number of Streaming Multiprocessors (SM) on the active CUDA device.
@@ -142,6 +134,21 @@ cudaStream_t
 nppGetStream(void);
 
 /**
+ * Get the current NPP managed CUDA stream context as set by calls to nppSetStream().
+ * NPP enables concurrent device tasks via an NPP maintained global stream state context.
+ * The NPP stream by default is set to stream 0, i.e. non-concurrent mode.
+ * A user can set the NPP stream to any valid CUDA stream which will update the current NPP managed stream state context 
+ * or supply application initialized stream contexts to NPP calls. All CUDA commands
+ * issued by NPP (e.g. kernels launched by the NPP library) are then
+ * issed to the current NPP managed stream or to application supplied stream contexts depending on whether 
+ * the stream context is passed to the NPP function or not.  NPP managed stream context calls (those without stream context parameters) 
+ * can be intermixed with application managed stream context calls but any NPP managed stream context calls will always use the most recent 
+ * stream set by nppSetStream() or the NULL stream if nppSetStream() has never been called. 
+ */
+NppStatus
+nppGetStreamContext(NppStreamContext * pNppStreamContext);
+
+/**
  * Get the number of SMs on the device associated with the current NPP CUDA stream.
  * NPP enables concurrent device tasks via a global stream state varible.
  * The NPP stream by default is set to stream 0, i.e. non-concurrent mode.
@@ -164,10 +171,12 @@ unsigned int
 nppGetStreamMaxThreadsPerSM(void);
 
 /**
- * Set the NPP CUDA stream.
+ * Set the NPP CUDA stream.  This function now returns an error if a problem occurs with Cuda stream management. 
+ *   This function should only be called if a call to nppGetStream() returns a stream number which is different from
+ *   the desired stream since unnecessarily flushing the current stream can significantly affect performance.
  * \see nppGetStream()
  */
-void
+NppStatus
 nppSetStream(cudaStream_t hStream);
 
 
@@ -175,7 +184,9 @@ nppSetStream(cudaStream_t hStream);
 
 
 #ifdef __cplusplus
+#ifndef NPP_PLUS
 } /* extern "C" */
+#endif
 #endif
 
 #endif /* NV_NPPCORE_H */

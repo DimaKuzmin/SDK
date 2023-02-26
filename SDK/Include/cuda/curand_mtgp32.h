@@ -106,7 +106,6 @@
 #define MEXP 11213
 #define THREAD_NUM MTGPDC_FLOOR_2P
 #define LARGE_SIZE (THREAD_NUM * 3)
-#define BLOCK_NUM_MAX CURAND_NUM_MTGP32_PARAMS
 #define TBL_SIZE 16
 
 /**
@@ -196,7 +195,6 @@ struct curandStateMtgp32 {
     int offset;
     int pIdx;
     mtgp32_kernel_params_t * k;
-    int precise_double_flag;
 };
 
 /*

@@ -1,4 +1,4 @@
- /* Copyright 2009-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2022 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -72,13 +72,18 @@ extern "C" {
 
 /** 
  * @defgroup image_arithmetic_operations Arithmetic Operations
+ * The set of image processing arithmetic operations available in the library.
  * @{
  */
 
 /** 
  * @defgroup image_addc AddC
  *
- * Adds a constant value to each pixel of an image.
+ * Adds a constant value to each pixel of an image. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
  *
  * @{
  */
@@ -87,350 +92,806 @@ extern "C" {
  * One 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory Constant. 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
- * \param nScaleFactor \ref integer_result_scaling.
+ * \param nScaleFactor \ref integer_result_scaling. 
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant pointer to device memory Constant. 
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling. 
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstant, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+/** 
  * One 8-bit unsigned char channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory Constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_8u_C1IRSfs_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_8u_C1IRSfs(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 8-bit unsigned char channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstant pointer to device memory Constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C1IRSfs_Ctx(const Npp8u * pConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel..
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 8-bit unsigned char channel 8-bit unsigned char in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel..
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_8u_C3IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_8u_C3IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C3IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel with unmodified alpha image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel..
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel with unmodified alpha image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                    Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel..
+ * \param aConstants fixed size host memory array of constant values, one per channel..
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_8u_AC4IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_8u_AC4IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel..
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_AC4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel..
+ * \param aConstants fixed size host memory array of constant values, one per channel..
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel..
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+/** 
  * Four 8-bit unsigned char channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_8u_C4IRSfs_Ctx(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_8u_C4IRSfs(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_8u_C4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstant, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+
+/** 
  * One 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16u_C1IRSfs_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16u_C1IRSfs(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C1IRSfs_Ctx(const Npp16u * pConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16u_C3IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16u_C3IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C3IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel with unmodified alpha image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel with unmodified alpha image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                     Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16u_AC4IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16u_AC4IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_AC4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16u_C4IRSfs_Ctx(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16u_C4IRSfs(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16u_C4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit signed short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstant, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16s_C1IRSfs_Ctx(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16s_C1IRSfs(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C1IRSfs_Ctx(const Npp16s * pConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit signed short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit signed short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16s_C3IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16s_C3IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C3IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel with unmodified alpha image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                               Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                            Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel with unmodified alpha image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                     Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16s_AC4IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16s_AC4IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_AC4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAddC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+/** 
+ * Four 16-bit signed short channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16s_C4IRSfs_Ctx(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16s_C4IRSfs(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16s_C4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
- * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nSrc1Step \ref source_image_line_step. 
+ * \param nConstant host memory constant. 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16sc_C1IRSfs_Ctx(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -438,26 +899,35 @@ nppiAddC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstSte
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
-                          Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16sc_C3IRSfs_Ctx(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16sc_C3IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -465,26 +935,35 @@ nppiAddC_16sc_C3IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDs
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
+                                Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
-                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_16sc_AC4IRSfs_Ctx(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_16sc_AC4IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -492,80 +971,165 @@ nppiAddC_16sc_AC4IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcD
  * One 32-bit signed integer channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 32-bit signed integer channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstant, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 32-bit signed integer channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_32s_C1IRSfs_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32s_C1IRSfs(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 32-bit signed integer channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32s_C1IRSfs_Ctx(const Npp32s * pConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit signed integer channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 32-bit signed integer channel image add constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstants, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 32-bit signed integer channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_32s_C3IRSfs_Ctx(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32s_C3IRSfs(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 32-bit signed integer channel in place image add constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32s_C3IRSfs_Ctx(const Npp32s * pConstants, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image add constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32sc_C1IRSfs_Ctx(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -573,26 +1137,35 @@ nppiAddC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstSte
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32sc_C3IRSfs_Ctx(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32sc_C3IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -600,151 +1173,496 @@ nppiAddC_32sc_C3IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDs
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha image add constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
+                                Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
                             Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha in place image add constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddC_32sc_AC4IRSfs_Ctx(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32sc_AC4IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 16-bit floating point channel in place image add constant.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C1IR_Ctx(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C1IR(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image add constant.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C1IR_Ctx(const Npp32f * pConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel in place image add constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C3IR_Ctx(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C3IR(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image add constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C3IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel in place image add constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_16f_C4IR_Ctx(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddC_16f_C4IR(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image add constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_16f_C4IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit floating point channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 32-bit floating point channel in place image add constant.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 32-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddDeviceC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 32-bit floating point channel in place image add constant.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_32f_C1IR_Ctx(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32f_C1IR(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 32-bit floating point channel in place image add constant.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32f_C1IR_Ctx(const Npp32f * pConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit floating point channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 32-bit floating point channel in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 32-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddDeviceC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 32-bit floating point channel in place image add constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_32f_C3IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32f_C3IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 32-bit floating point channel in place image add constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32f_C3IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel with unmodified alpha image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                            Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                         Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel with unmodified alpha in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel with unmodified alpha image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddDeviceC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                  Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image add constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_32f_AC4IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32f_AC4IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image add constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32f_AC4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel image add constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddDeviceC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+
+/** 
+ * Four 32-bit floating point channel in place image add constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddC_32f_C4IR_Ctx(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddC_32f_C4IR(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel in place image add constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddDeviceC_32f_C4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image add constant.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C1IR_Ctx(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -752,24 +1670,32 @@ nppiAddC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[3], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAddC_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[3], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C3IR_Ctx(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_C3IR(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -777,24 +1703,33 @@ nppiAddC_32fc_C3IR(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstSt
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[3], 
+                             Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[3], 
                          Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_AC4IR_Ctx(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_AC4IR(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -802,24 +1737,33 @@ nppiAddC_32fc_AC4IR(const Npp32fc aConstants[3], Npp32fc * pSrcDst, int nSrcDstS
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image add constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[4], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc aConstants[4], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image add constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddC_32fc_C4IR_Ctx(const Npp32fc aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddC_32fc_C4IR(const Npp32fc aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -829,7 +1773,11 @@ nppiAddC_32fc_C4IR(const Npp32fc aConstants[4], Npp32fc * pSrcDst, int nSrcDstSt
 /** 
  * @defgroup image_mulc MulC
  *
- * Multiplies each pixel of an image by a constant value.
+ * Multiplies each pixel of an image by a constant value. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
  *
  * @{
  */
@@ -838,350 +1786,816 @@ nppiAddC_32fc_C4IR(const Npp32fc aConstants[4], Npp32fc * pSrcDst, int nSrcDstSt
  * One 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstant, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 8-bit unsigned char channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_8u_C1IRSfs_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_8u_C1IRSfs(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 8-bit unsigned char channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C1IRSfs_Ctx(const Npp8u * pConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 8-bit unsigned char channel 8-bit unsigned char in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_8u_C3IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_8u_C3IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C3IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                    Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_8u_AC4IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_8u_AC4IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_AC4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_8u_C4IRSfs_Ctx(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_8u_C4IRSfs(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_8u_C4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstant, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+
+/** 
  * One 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16u_C1IRSfs_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16u_C1IRSfs(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C1IRSfs_Ctx(const Npp16u * pConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16u_C3IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16u_C3IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C3IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                     Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16u_AC4IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16u_AC4IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_AC4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16u_C4IRSfs_Ctx(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16u_C4IRSfs(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16u_C4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstant, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16s_C1IRSfs_Ctx(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16s_C1IRSfs(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C1IRSfs_Ctx(const Npp16s * pConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16s_C3IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16s_C3IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C3IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                               Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                            Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                     Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16s_AC4IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16s_AC4IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_AC4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16s_C4IRSfs_Ctx(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16s_C4IRSfs(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16s_C4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16sc_C1IRSfs_Ctx(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -1189,26 +2603,35 @@ nppiMulC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstSte
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
-                          Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16sc_C3IRSfs_Ctx(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16sc_C3IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -1216,26 +2639,35 @@ nppiMulC_16sc_C3IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDs
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
+                                Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc aConstants[3], 
-                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_16sc_AC4IRSfs_Ctx(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_16sc_AC4IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -1243,80 +2675,164 @@ nppiMulC_16sc_AC4IRSfs(const Npp16sc aConstants[3], Npp16sc * pSrcDst, int nSrcD
  * One 32-bit signed integer channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiMulC_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 32-bit signed integer channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstant, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 32-bit signed integer channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_32s_C1IRSfs_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32s_C1IRSfs(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 32-bit signed integer channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32s_C1IRSfs_Ctx(const Npp32s * pConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit signed integer channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 32-bit signed integer channel image multiply by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstants, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 32-bit signed integer channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_32s_C3IRSfs_Ctx(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32s_C3IRSfs(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 32-bit signed integer channel in place image multiply by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32s_C3IRSfs_Ctx(const Npp32s * pConstants, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32sc_C1IRSfs_Ctx(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -1324,26 +2840,35 @@ nppiMulC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstSte
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32sc_C3IRSfs_Ctx(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32sc_C3IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -1351,151 +2876,498 @@ nppiMulC_32sc_C3IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDs
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha image multiply by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
+                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc aConstants[3], 
                             Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha in place image multiply by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulC_32sc_AC4IRSfs_Ctx(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32sc_AC4IRSfs(const Npp32sc aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param nConstant 32-bit floating point host memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant 32-bit floating point device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 16-bit floating point channel in place image multiply by constant.
+ * \param nConstant 32-bit floating point host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C1IR_Ctx(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C1IR(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image multiply by constant.
+ * \param pConstant 32-bit floating point device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C1IR_Ctx(const Npp32f * pConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel in place image multiply by constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C3IR_Ctx(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C3IR(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image multiply by constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C3IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel in place image multiply by constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_16f_C4IR_Ctx(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_16f_C4IR(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image multiply by constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_16f_C4IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit floating point channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 32-bit floating point channel in place image multiply by constant.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 32-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulDeviceC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 32-bit floating point channel in place image multiply by constant.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_32f_C1IR_Ctx(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32f_C1IR(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 32-bit floating point channel in place image multiply by constant.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32f_C1IR_Ctx(const Npp32f * pConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit floating point channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 32-bit floating point channel in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 32-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulDeviceC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 32-bit floating point channel in place image multiply by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_32f_C3IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32f_C3IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 32-bit floating point channel in place image multiply by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32f_C3IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel with unmodified alpha image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
+                            Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
                         Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel with unmodified alpha in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel with unmodified alpha image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulDeviceC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                  Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image multiply by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_32f_AC4IR_Ctx(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulC_32f_AC4IR(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image multiply by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32f_AC4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[4], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[4], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel image multiply by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulC_32f_C4IR(const Npp32f  aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+
+/** 
+ * Four 32-bit floating point channel in place image multiply by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulC_32f_C4IR_Ctx(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulC_32f_C4IR(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel in place image multiply by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceC_32f_C4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image multiply by constant.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C1IR_Ctx(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -1503,24 +3375,33 @@ nppiMulC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C3IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -1528,24 +3409,33 @@ nppiMulC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstS
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                             Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                          Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_AC4IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -1553,24 +3443,33 @@ nppiMulC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDst
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image multiply by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image multiply by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulC_32fc_C4IR_Ctx(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -1580,7 +3479,11 @@ nppiMulC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
  * @defgroup image_mulcscale MulCScale
  *
  * Multiplies each pixel of an image by a constant value then scales the result
- * by the maximum value for the data bit width.
+ * by the maximum value for the data bit width. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
  *
  * @{
  */
@@ -1589,206 +3492,500 @@ nppiMulC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
  * One 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulCScale_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulCScale_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulDeviceCScale_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstant, 
+                                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_8u_C1IR_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulCScale_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_8u_C1IR_Ctx(const Npp8u * pConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulCScale_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulCScale_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 8-bit unsigned char channel 8-bit unsigned char in place image multiply by constant and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image multiply by constant and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_8u_C3IR_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_8u_C3IR(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image multiply by constant and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_8u_C3IR_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel with unmodified alpha image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulCScale_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulCScale_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 8-bit unsigned char channel with unmodified alpha in place image multiply by constant, scale and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 8-bit unsigned char channel with unmodified alpha image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  * pConstants, 
+                                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image multiply by constant, scale and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_8u_AC4IR_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_8u_AC4IR(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image multiply by constant, scale and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_8u_AC4IR_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+nppiMulCScale_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
+                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 8-bit unsigned char channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_8u_C4IR_Ctx(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_8u_C4IR(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 8-bit unsigned char channel in place image multiply by constant and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_8u_C4IR_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulCScale_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulCScale_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMulDeviceCScale_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstant, 
+                                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_16u_C1IR_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMulCScale_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_16u_C1IR_Ctx(const Npp16u * pConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiMulCScale_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_16u_C3IR_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_C3IR(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_16u_C3IR_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel with unmodified alpha image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiMulCScale_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 16-bit unsigned short channel with unmodified alpha in place image multiply by constant and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 16-bit unsigned short channel with unmodified alpha image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image multiply by constant and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_16u_AC4IR_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_AC4IR(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image multiply by constant and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_16u_AC4IR_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+nppiMulCScale_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
+                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 16-bit unsigned short channel image multiply by constant and scale by max bit width value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiMulCScale_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiMulDeviceCScale_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulCScale_16u_C4IR_Ctx(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMulCScale_16u_C4IR(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit unsigned short channel in place image multiply by constant and scale by max bit width value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMulDeviceCScale_16u_C4IR_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** @} image_mulcscale */ 
 
 /** @defgroup image_subc SubC
- * Subtracts a constant value from each pixel of an image.
+ * Subtracts a constant value from each pixel of an image. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
+ *
  * @{
  */
 
@@ -1796,350 +3993,814 @@ nppiMulCScale_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDs
  * One 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstant, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 8-bit unsigned char channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_8u_C1IRSfs_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_8u_C1IRSfs(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 8-bit unsigned char channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C1IRSfs_Ctx(const Npp8u * pConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+nppiSubC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+NppStatus 
+nppiSubC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 8-bit unsigned char channel 8-bit unsigned char in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_C3IRSfs(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_8u_C3IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_8u_C3IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C3IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+nppiSubC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                    Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_AC4IRSfs(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_8u_AC4IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_8u_AC4IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_AC4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+nppiSubC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_8u_C4IRSfs(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_8u_C4IRSfs_Ctx(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_8u_C4IRSfs(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_8u_C4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstant, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_16u_C1IRSfs_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_16u_C1IRSfs(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C1IRSfs_Ctx(const Npp16u * pConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiSubC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_C3IRSfs(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16u_C3IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_C3IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C3IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiSubC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                     Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_AC4IRSfs(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16u_AC4IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_AC4IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_AC4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+nppiSubC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16u_C4IRSfs(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16u_C4IRSfs_Ctx(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16u_C4IRSfs(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16u_C4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstant, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_16s_C1IRSfs_Ctx(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_16s_C1IRSfs(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C1IRSfs_Ctx(const Npp16s * pConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[3], 
+nppiSubC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_C3IRSfs(const Npp16s  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16s_C3IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_C3IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C3IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[3], 
+nppiSubC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                               Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                            Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                     Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_AC4IRSfs(const Npp16s  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16s_AC4IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_AC4IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_AC4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[4], 
+nppiSubC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_16s_C4IRSfs(const Npp16s  aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_16s_C4IRSfs_Ctx(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16s_C4IRSfs(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16s_C4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16sc_C1IRSfs_Ctx(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2147,26 +4808,35 @@ nppiSubC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstSte
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
-                          Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16sc_C3IRSfs_Ctx(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16sc_C3IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2174,26 +4844,35 @@ nppiSubC_16sc_C3IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcD
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
+                                Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
-                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_16sc_AC4IRSfs_Ctx(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_16sc_AC4IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2201,80 +4880,165 @@ nppiSubC_16sc_AC4IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrc
  * One 32-bit signed integer channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 32-bit signed integer channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstant, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 32-bit signed integer channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_32s_C1IRSfs_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_32s_C1IRSfs(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 32-bit signed integer channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32s_C1IRSfs_Ctx(const Npp32s * pConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit signed integer channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+nppiSubC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 32-bit signed integer channel image subtract constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstants, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 32-bit signed integer channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32s_C3IRSfs(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiSubC_32s_C3IRSfs_Ctx(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32s_C3IRSfs(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 32-bit signed integer channel in place image subtract constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32s_C3IRSfs_Ctx(const Npp32s * pConstants, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image subtract constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32sc_C1IRSfs_Ctx(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2282,26 +5046,35 @@ nppiSubC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstSte
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32sc_C3IRSfs_Ctx(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32sc_C3IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2309,151 +5082,496 @@ nppiSubC_32sc_C3IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcD
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha image subtract constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
+                                Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
                             Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha in place image subtract constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubC_32sc_AC4IRSfs_Ctx(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_32sc_AC4IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 16-bit floating point channel in place image subtract constant.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C1IR_Ctx(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16f_C1IR(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image subtract constant.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C1IR_Ctx(const Npp32f * pConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel in place image subtract constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C3IR_Ctx(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
+NppStatus 
+nppiSubC_16f_C3IR(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image subtract constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C3IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+  
+/** 
+ * Four 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+  
+/** 
+ * Four 16-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel in place image subtract constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_16f_C4IR_Ctx(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_16f_C4IR(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image subtract constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_16f_C4IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit floating point channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 32-bit floating point channel in place image subtract constant.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 32-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSubDeviceC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 32-bit floating point channel in place image subtract constant.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_32f_C1IR_Ctx(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSubC_32f_C1IR(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 32-bit floating point channel in place image subtract constant.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32f_C1IR_Ctx(const Npp32f * pConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit floating point channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
+nppiSubC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 32-bit floating point channel in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 32-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_C3IR(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiSubDeviceC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 32-bit floating point channel in place image subtract constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_32f_C3IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_C3IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 32-bit floating point channel in place image subtract constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32f_C3IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel with unmodified alpha image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
+nppiSubC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                            Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                         Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel with unmodified alpha in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel with unmodified alpha image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_AC4IR(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiSubDeviceC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                  Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image subtract constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_32f_AC4IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_AC4IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image subtract constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32f_AC4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[4], 
+nppiSubC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel image subtract constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiSubC_32f_C4IR(const Npp32f  aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiSubDeviceC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 32-bit floating point channel in place image subtract constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubC_32f_C4IR_Ctx(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSubC_32f_C4IR(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel in place image subtract constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSubDeviceC_32f_C4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image subtract constant.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C1IR_Ctx(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -2461,24 +5579,33 @@ nppiSubC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C3IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -2486,24 +5613,33 @@ nppiSubC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstS
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                             Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                          Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_AC4IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -2511,24 +5647,33 @@ nppiSubC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDst
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image subtract constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image subtract constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSubC_32fc_C4IR_Ctx(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSubC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -2537,7 +5682,11 @@ nppiSubC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
 /** 
  * @defgroup image_divc DivC
  *
- * Divides each pixel of an image by a constant value.
+ * Divides each pixel of an image by a constant value. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
  *
  * @{
  */
@@ -2546,350 +5695,816 @@ nppiSubC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
  * One 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstant, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 8-bit unsigned char channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_8u_C1IRSfs_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_8u_C1IRSfs(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 8-bit unsigned char channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C1IRSfs_Ctx(const Npp8u * pConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+nppiDivC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 8-bit unsigned char channel 8-bit unsigned char in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_C3IRSfs(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_8u_C3IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_C3IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 8-bit unsigned char channel 8-bit unsigned char in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C3IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+nppiDivC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                    Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_AC4IRSfs(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_8u_AC4IRSfs_Ctx(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_AC4IRSfs(const Npp8u aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_AC4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+nppiDivC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 8-bit unsigned char channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pConstants, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 8-bit unsigned char channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_8u_C4IRSfs(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_8u_C4IRSfs_Ctx(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_8u_C4IRSfs(const Npp8u aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 8-bit unsigned char channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_8u_C4IRSfs_Ctx(const Npp8u * pConstants, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstant, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_16u_C1IRSfs_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_16u_C1IRSfs(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C1IRSfs_Ctx(const Npp16u * pConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiDivC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_C3IRSfs(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16u_C3IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_C3IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C3IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+nppiDivC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                     Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+
+/** 
  * Four 16-bit unsigned short channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_AC4IRSfs(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16u_AC4IRSfs_Ctx(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_AC4IRSfs(const Npp16u aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_AC4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+nppiDivC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit unsigned short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pConstants, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16u_C4IRSfs(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16u_C4IRSfs_Ctx(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16u_C4IRSfs(const Npp16u aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit unsigned short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16u_C4IRSfs_Ctx(const Npp16u * pConstants, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s nConstant, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstant, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_16s_C1IRSfs_Ctx(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_16s_C1IRSfs(const Npp16s nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C1IRSfs_Ctx(const Npp16s * pConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[3], 
+nppiDivC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_C3IRSfs(const Npp16s  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16s_C3IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_C3IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C3IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[3], 
+nppiDivC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
+                               Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[3], 
                            Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                     Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_AC4IRSfs(const Npp16s  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16s_AC4IRSfs_Ctx(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_AC4IRSfs(const Npp16s aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_AC4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s  aConstants[4], 
+nppiDivC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s aConstants[4], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Four 16-bit signed short channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pConstants, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Four 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_16s_C4IRSfs(const Npp16s  aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_16s_C4IRSfs_Ctx(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16s_C4IRSfs(const Npp16s aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Four 16-bit signed short channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16s_C4IRSfs_Ctx(const Npp16s * pConstants, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc nConstant, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16sc_C1IRSfs_Ctx(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2897,26 +6512,35 @@ nppiDivC_16sc_C1IRSfs(const Npp16sc nConstant, Npp16sc * pSrcDst, int nSrcDstSte
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
-                          Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16sc_C3IRSfs_Ctx(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16sc_C3IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2924,26 +6548,35 @@ nppiDivC_16sc_C3IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcD
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
+                                Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc  aConstants[3], 
-                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
+                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 16-bit signed short complex number (16-bit real, 16-bit imaginary) channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_16sc_AC4IRSfs_Ctx(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_16sc_AC4IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -2951,80 +6584,165 @@ nppiDivC_16sc_AC4IRSfs(const Npp16sc  aConstants[3], Npp16sc * pSrcDst, int nSrc
  * One 32-bit signed integer channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * One 32-bit signed integer channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstant, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * One 32-bit signed integer channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_32s_C1IRSfs_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_32s_C1IRSfs(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 32-bit signed integer channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32s_C1IRSfs_Ctx(const Npp32s * pConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit signed integer channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+nppiDivC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
+ * Three 32-bit signed integer channel image divided by constant, scale, then clamp to saturated value.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pConstants, 
+                                    Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+/** 
  * Three 32-bit signed integer channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32s_C3IRSfs(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+nppiDivC_32s_C3IRSfs_Ctx(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32s_C3IRSfs(const Npp32s aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * Three 32-bit signed integer channel in place image divided by constant, scale, then clamp to saturated value.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32s_C3IRSfs_Ctx(const Npp32s * pConstants, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc nConstant, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * One 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image divided by constant, scale, then clamp to saturated value.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32sc_C1IRSfs_Ctx(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -3032,26 +6750,35 @@ nppiDivC_32sc_C1IRSfs(const Npp32sc nConstant, Npp32sc * pSrcDst, int nSrcDstSte
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Three 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32sc_C3IRSfs_Ctx(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32sc_C3IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -3059,151 +6786,496 @@ nppiDivC_32sc_C3IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcD
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha image divided by constant, scale, then clamp to saturated value.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
+                                Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc  aConstants[3], 
                             Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
 /** 
  * Four 32-bit signed complex integer (32-bit real, 32-bit imaginary) channel with unmodified alpha in place image divided by constant, scale, then clamp to saturated value.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivC_32sc_AC4IRSfs_Ctx(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_32sc_AC4IRSfs(const Npp32sc  aConstants[3], Npp32sc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 16-bit floating point channel in place image divided by constant.
+ * \param nConstant host memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C1IR_Ctx(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C1IR(const Npp32f nConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image divided by constant.
+ * \param pConstant device memory 32-bit floating point constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C1IR_Ctx(const Npp32f * pConstant, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 16-bit floating point channel in place image divided by constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C3IR_Ctx(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C3IR(const Npp32f aConstants[3], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image divided by constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C3IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                       Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 16-bit floating point channel in place image divided by constant.
+ * \param aConstants fixed size host memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_16f_C4IR_Ctx(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_16f_C4IR(const Npp32f aConstants[4], Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image divided by constant.
+ * \param pConstants fixed size device memory array of 32-bit floating point constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_16f_C4IR_Ctx(const Npp32f * pConstants, Npp16f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit floating point channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f nConstant, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * One 32-bit floating point channel in place image divided by constant.
- * \param nConstant Constant.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * One 32-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDivDeviceC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstant, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * One 32-bit floating point channel in place image divided by constant.
+ * \param nConstant host memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_32f_C1IR_Ctx(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDivC_32f_C1IR(const Npp32f nConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 32-bit floating point channel in place image divided by constant.
+ * \param pConstant device memory constant.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32f_C1IR_Ctx(const Npp32f * pConstant, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Three 32-bit floating point channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
+nppiDivC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Three 32-bit floating point channel in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Three 32-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_C3IR(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiDivDeviceC_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Three 32-bit floating point channel in place image divided by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_32f_C3IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_C3IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 32-bit floating point channel in place image divided by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32f_C3IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel with unmodified alpha image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[3], 
+nppiDivC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
+                            Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[3], 
                         Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel with unmodified alpha in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel with unmodified alpha image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_AC4IR(const Npp32f  aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiDivDeviceC_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                  Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image divided by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_32f_AC4IR_Ctx(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_AC4IR(const Npp32f aConstants[3], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel with unmodified alpha in place image divided by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32f_AC4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * Four 32-bit floating point channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f  aConstants[4], 
+nppiDivC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f aConstants[4], 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
- * Four 32-bit floating point channel in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
- * \param pSrcDst \ref in_place_image_pointer.
- * \param nSrcDstStep \ref in_place_image_line_step.
+ * Four 32-bit floating point channel image divided by constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiDivC_32f_C4IR(const Npp32f  aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+nppiDivDeviceC_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pConstants, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+/** 
+ * Four 32-bit floating point channel in place image divided by constant.
+ * \param aConstants fixed size host memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivC_32f_C4IR_Ctx(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDivC_32f_C4IR(const Npp32f aConstants[4], Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 32-bit floating point channel in place image divided by constant.
+ * \param pConstants fixed size device memory array of constant values, one per channel.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDivDeviceC_32f_C4IR_Ctx(const Npp32f * pConstants, Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc nConstant, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * One 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image divided by constant.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C1IR_Ctx(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -3211,24 +7283,33 @@ nppiDivC_32fc_C1IR(const Npp32fc nConstant, Npp32fc * pSrcDst, int nSrcDstStep, 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Three 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C3IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -3236,24 +7317,33 @@ nppiDivC_32fc_C3IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstS
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
+                             Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[3], 
                          Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel with unmodified alpha in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_AC4IR_Ctx(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -3261,24 +7351,33 @@ nppiDivC_32fc_AC4IR(const Npp32fc  aConstants[3], Npp32fc * pSrcDst, int nSrcDst
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel image divided by constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc  aConstants[4], 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * Four 32-bit complex floating point (32-bit floating point real, 32-bit floating point imaginary) channel in place image divided by constant.
- * \param aConstants fixed size array of constant values, one per channel.
+ * \param aConstants fixed size array of host memory constant values, one per channel.
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDivC_32fc_C4IR_Ctx(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDivC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -3287,7 +7386,11 @@ nppiDivC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
 /** 
  * @defgroup image_absdiffc AbsDiffC
  *
- * Determines absolute difference between each pixel of an image and a constant value.
+ * Determines absolute difference between each pixel of an image and a constant value. 
+ *  
+ * Note: If you use one of the device constant versions of these functions and the function called immediately preceeding that 
+ * function generates that device constant you MUST either call cudaStreamSynchronize() or cudaDeviceSynchronize() before calling 
+ * the device constant function. 
  *
  * @{
  */
@@ -3296,40 +7399,94 @@ nppiDivC_32fc_C4IR(const Npp32fc  aConstants[4], Npp32fc * pSrcDst, int nSrcDstS
  * One 8-bit unsigned char channel image absolute difference with constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAbsDiffC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, Npp8u nConstant, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAbsDiffC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, Npp8u nConstant);
+
+/** 
+ * One 8-bit unsigned char channel image absolute difference with constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbsDiffDeviceC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, Npp8u * pConstant, NppStreamContext nppStreamCtx);
 
 /** 
  * One 16-bit unsigned short channel image absolute difference with constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiAbsDiffC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, Npp16u nConstant);
+nppiAbsDiffC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int nDstStep,  NppiSize oSizeROI, Npp16u nConstant, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbsDiffC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int nDstStep,  NppiSize oSizeROI, Npp16u nConstant);
+
+/** 
+ * One 16-bit unsigned short channel image absolute difference with constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbsDiffDeviceC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int nDstStep,  NppiSize oSizeROI, Npp16u * pConstant, NppStreamContext nppStreamCtx);
 
 /** 
  * One 32-bit floating point channel image absolute difference with constant.
  * \param pSrc1 \ref source_image_pointer.
  * \param nSrc1Step \ref source_image_line_step.
- * \param nConstant Constant.
+ * \param nConstant host memory constant.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
-nppiAbsDiffC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, Npp32f nConstant);
+nppiAbsDiffC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nConstant, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbsDiffC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nConstant);
+
+/** 
+ * One 32-bit floating point channel image absolute difference with constant.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pConstant device memory constant.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbsDiffDeviceC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f * pConstant, NppStreamContext nppStreamCtx);
 
 /** @} image_absdiffc */ 
 
@@ -3351,8 +7508,13 @@ nppiAbsDiffC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, Npp32f * pDst,  int nD
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3365,8 +7527,13 @@ nppiAdd_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C1IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3381,8 +7548,13 @@ nppiAdd_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3395,8 +7567,13 @@ nppiAdd_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C3IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3411,8 +7588,13 @@ nppiAdd_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3425,8 +7607,13 @@ nppiAdd_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_AC4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                              Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3441,8 +7628,13 @@ nppiAdd_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3455,8 +7647,13 @@ nppiAdd_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_8u_C4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3471,8 +7668,13 @@ nppiAdd_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3485,8 +7687,13 @@ nppiAdd_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C1IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3501,8 +7708,13 @@ nppiAdd_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3515,8 +7727,13 @@ nppiAdd_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C3IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3531,8 +7748,13 @@ nppiAdd_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3545,8 +7767,13 @@ nppiAdd_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_AC4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                               Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3561,8 +7788,13 @@ nppiAdd_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3575,8 +7807,13 @@ nppiAdd_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16u_C4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3591,8 +7828,13 @@ nppiAdd_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3605,8 +7847,13 @@ nppiAdd_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C1IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3621,8 +7868,13 @@ nppiAdd_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3635,8 +7887,13 @@ nppiAdd_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C3IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3651,8 +7908,13 @@ nppiAdd_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3665,8 +7927,13 @@ nppiAdd_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_AC4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                               Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                            Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3681,8 +7948,13 @@ nppiAdd_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3695,8 +7967,13 @@ nppiAdd_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16s_C4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3711,8 +7988,13 @@ nppiAdd_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3725,8 +8007,13 @@ nppiAdd_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_C1IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3741,8 +8028,13 @@ nppiAdd_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3755,8 +8047,13 @@ nppiAdd_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_C3IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3771,8 +8068,13 @@ nppiAdd_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3785,8 +8087,13 @@ nppiAdd_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_16sc_AC4IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                                Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                             Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3801,8 +8108,13 @@ nppiAdd_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3818,8 +8130,14 @@ nppiAdd_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiAdd_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, 
+                              const Npp32s * pSrc2, int nSrc2Step, 
+                                    Npp32s * pDst,  int nDstStep, 
+                                    NppiSize oSizeROI, NppStreamContext nppStreamCtx);                        
+
 NppStatus nppiAdd_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, 
                           const Npp32s * pSrc2, int nSrc2Step, 
                                 Npp32s * pDst,  int nDstStep, 
@@ -3833,8 +8151,13 @@ NppStatus nppiAdd_32s_C1R(const Npp32s * pSrc1, int nSrc1Step,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32s_C1IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3849,8 +8172,13 @@ nppiAdd_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3863,8 +8191,13 @@ nppiAdd_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32s_C3IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3879,8 +8212,13 @@ nppiAdd_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3893,8 +8231,13 @@ nppiAdd_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32sc_C1IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3909,8 +8252,13 @@ nppiAdd_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3923,8 +8271,13 @@ nppiAdd_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32sc_C3IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -3939,8 +8292,13 @@ nppiAdd_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -3953,11 +8311,130 @@ nppiAdd_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAdd_32sc_AC4IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                                Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAdd_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                             Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image addition.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image addition.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C1IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C1IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image addition.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image addition.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C3IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C3IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image addition.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image addition.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAdd_16f_C4IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAdd_16f_C4IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image addition.
@@ -3968,8 +8445,13 @@ nppiAdd_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -3981,8 +8463,13 @@ nppiAdd_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -3996,8 +8483,13 @@ nppiAdd_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4009,8 +8501,13 @@ nppiAdd_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C3IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C3IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4024,8 +8521,13 @@ nppiAdd_32f_C3IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4037,8 +8539,13 @@ nppiAdd_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_AC4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                            Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep, 
                         Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4052,8 +8559,13 @@ nppiAdd_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4065,8 +8577,13 @@ nppiAdd_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32f_C4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32f_C4IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4080,8 +8597,13 @@ nppiAdd_32f_C4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4093,8 +8615,13 @@ nppiAdd_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C1IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4108,8 +8635,13 @@ nppiAdd_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4121,8 +8653,13 @@ nppiAdd_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C3IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4136,8 +8673,13 @@ nppiAdd_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4149,8 +8691,13 @@ nppiAdd_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, i
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_AC4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                             Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep, 
                          Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4164,8 +8711,13 @@ nppiAdd_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -4177,8 +8729,13 @@ nppiAdd_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAdd_32fc_C4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAdd_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4203,8 +8760,13 @@ nppiAdd_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_8u32f_C1IMR_Ctx(const Npp8u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
+                                    Npp32f * pSrcDst, int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_8u32f_C1IMR(const Npp8u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
                                 Npp32f * pSrcDst, int nSrcDstStep,  NppiSize oSizeROI);
@@ -4216,8 +8778,13 @@ nppiAddSquare_8u32f_C1IMR(const Npp8u * pSrc,     int nSrcStep,     const Npp8u 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_8u32f_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                   Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_8u32f_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                                Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
@@ -4231,8 +8798,13 @@ nppiAddSquare_8u32f_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_16u32f_C1IMR_Ctx(const Npp16u * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
+                                     Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_16u32f_C1IMR(const Npp16u * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
                                  Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI);
@@ -4244,8 +8816,13 @@ nppiAddSquare_16u32f_C1IMR(const Npp16u * pSrc,     int nSrcStep, const Npp8u * 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_16u32f_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                    Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_16u32f_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                                 Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4259,8 +8836,13 @@ nppiAddSquare_16u32f_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_32f_C1IMR_Ctx(const Npp32f * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
+                                  Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_32f_C1IMR(const Npp32f * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
                               Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI);
@@ -4272,8 +8854,13 @@ nppiAddSquare_32f_C1IMR(const Npp32f * pSrc,     int nSrcStep, const Npp8u * pMa
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddSquare_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                                 Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddSquare_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                              Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4299,8 +8886,13 @@ nppiAddSquare_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddProduct_8u32f_C1IMR_Ctx(const Npp8u * pSrc1,  int nSrc1Step,    const Npp8u * pSrc2, int nSrc2Step,
+                               const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,    int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddProduct_8u32f_C1IMR(const Npp8u * pSrc1,  int nSrc1Step,    const Npp8u * pSrc2, int nSrc2Step,
                            const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,    int nSrcDstStep,  NppiSize oSizeROI);
@@ -4314,8 +8906,13 @@ nppiAddProduct_8u32f_C1IMR(const Npp8u * pSrc1,  int nSrc1Step,    const Npp8u *
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddProduct_8u32f_C1IR_Ctx(const Npp8u * pSrc1,    int nSrc1Step,   const Npp8u * pSrc2, int nSrc2Step,
+                                    Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddProduct_8u32f_C1IR(const Npp8u * pSrc1,    int nSrc1Step,   const Npp8u * pSrc2, int nSrc2Step,
                                 Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
@@ -4331,8 +8928,13 @@ nppiAddProduct_8u32f_C1IR(const Npp8u * pSrc1,    int nSrc1Step,   const Npp8u *
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddProduct_16u32f_C1IMR_Ctx(const Npp16u * pSrc1, int nSrc1Step,    const Npp16u * pSrc2, int nSrc2Step,
+                                const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,     int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddProduct_16u32f_C1IMR(const Npp16u * pSrc1, int nSrc1Step,    const Npp16u * pSrc2, int nSrc2Step,
                             const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,     int nSrcDstStep,  NppiSize oSizeROI);
@@ -4346,8 +8948,13 @@ nppiAddProduct_16u32f_C1IMR(const Npp16u * pSrc1, int nSrc1Step,    const Npp16u
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddProduct_16u32f_C1IR_Ctx(const Npp16u * pSrc1,    int nSrc1Step,   const Npp16u * pSrc2, int nSrc2Step,
+                                     Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddProduct_16u32f_C1IR(const Npp16u * pSrc1,    int nSrc1Step,   const Npp16u * pSrc2, int nSrc2Step,
                                  Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -4363,8 +8970,13 @@ nppiAddProduct_16u32f_C1IR(const Npp16u * pSrc1,    int nSrc1Step,   const Npp16
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddProduct_32f_C1IMR_Ctx(const Npp32f * pSrc1, int nSrc1Step,    const Npp32f * pSrc2, int nSrc2Step,
+                             const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,     int nSrcDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddProduct_32f_C1IMR(const Npp32f * pSrc1, int nSrc1Step,    const Npp32f * pSrc2, int nSrc2Step,
                          const Npp8u  * pMask, int nMaskStep,    Npp32f * pSrcDst,     int nSrcDstStep,  NppiSize oSizeROI);
@@ -4378,11 +8990,36 @@ nppiAddProduct_32f_C1IMR(const Npp32f * pSrc1, int nSrc1Step,    const Npp32f * 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAddProduct_32f_C1IR_Ctx(const Npp32f * pSrc1,    int nSrc1Step,   const Npp32f * pSrc2, int nSrc2Step,
+                                  Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAddProduct_32f_C1IR(const Npp32f * pSrc1,    int nSrc1Step,   const Npp32f * pSrc2, int nSrc2Step,
                               Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image product added to in place floating point destination image.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAddProduct_16f_C1IR_Ctx(const Npp16f * pSrc1,    int nSrc1Step,   const Npp16f * pSrc2, int nSrc2Step,
+                                  Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAddProduct_16f_C1IR(const Npp16f * pSrc1,    int nSrc1Step,   const Npp16f * pSrc2, int nSrc2Step,
+                              Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** @} image_addproduct */ 
 
@@ -4404,8 +9041,13 @@ nppiAddProduct_32f_C1IR(const Npp32f * pSrc1,    int nSrc1Step,   const Npp32f *
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_8u32f_C1IMR_Ctx(const Npp8u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
+                                      Npp32f * pSrcDst, int nSrcDstStep,  NppiSize oSizeROI,   Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_8u32f_C1IMR(const Npp8u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
                                   Npp32f * pSrcDst, int nSrcDstStep,  NppiSize oSizeROI,   Npp32f nAlpha);
@@ -4418,8 +9060,13 @@ nppiAddWeighted_8u32f_C1IMR(const Npp8u * pSrc,     int nSrcStep,     const Npp8
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_8u32f_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                     Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_8u32f_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                                  Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha);
@@ -4434,8 +9081,13 @@ nppiAddWeighted_8u32f_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_16u32f_C1IMR_Ctx(const Npp16u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
+                                       Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI,   Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_16u32f_C1IMR(const Npp16u * pSrc,     int nSrcStep,     const Npp8u * pMask, int nMaskStep, 
                                    Npp32f * pSrcDst,  int nSrcDstStep,  NppiSize oSizeROI,   Npp32f nAlpha);
@@ -4448,8 +9100,13 @@ nppiAddWeighted_16u32f_C1IMR(const Npp16u * pSrc,     int nSrcStep,     const Np
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_16u32f_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                      Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_16u32f_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                                   Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha);
@@ -4464,8 +9121,13 @@ nppiAddWeighted_16u32f_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_32f_C1IMR_Ctx(const Npp32f * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
+                                    Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_32f_C1IMR(const Npp32f * pSrc,     int nSrcStep, const Npp8u * pMask, int nMaskStep, 
                                 Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha);
@@ -4478,8 +9140,13 @@ nppiAddWeighted_32f_C1IMR(const Npp32f * pSrc,     int nSrcStep, const Npp8u * p
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAlpha Alpha weight to be applied to source image pixels (0.0F to 1.0F)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAddWeighted_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                                   Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAddWeighted_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                                Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, Npp32f nAlpha);
@@ -4504,8 +9171,13 @@ nppiAddWeighted_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4518,8 +9190,13 @@ nppiMul_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C1IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4534,8 +9211,13 @@ nppiMul_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4548,8 +9230,13 @@ nppiMul_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C3IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4564,8 +9251,13 @@ nppiMul_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4578,8 +9270,13 @@ nppiMul_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_AC4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                              Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4594,8 +9291,13 @@ nppiMul_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4608,8 +9310,13 @@ nppiMul_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_8u_C4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4624,8 +9331,13 @@ nppiMul_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4638,8 +9350,13 @@ nppiMul_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C1IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4654,8 +9371,13 @@ nppiMul_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4668,8 +9390,13 @@ nppiMul_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C3IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4684,8 +9411,13 @@ nppiMul_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4698,8 +9430,13 @@ nppiMul_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_AC4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                               Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4714,8 +9451,13 @@ nppiMul_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4728,8 +9470,13 @@ nppiMul_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16u_C4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4744,8 +9491,13 @@ nppiMul_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4758,8 +9510,13 @@ nppiMul_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C1IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4774,8 +9531,13 @@ nppiMul_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4788,8 +9550,13 @@ nppiMul_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C3IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4804,8 +9571,13 @@ nppiMul_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4818,8 +9590,13 @@ nppiMul_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_AC4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                               Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                            Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4834,8 +9611,13 @@ nppiMul_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4848,8 +9630,13 @@ nppiMul_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16s_C4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4864,8 +9651,13 @@ nppiMul_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4878,8 +9670,13 @@ nppiMul_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_C1IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4894,8 +9691,13 @@ nppiMul_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4908,8 +9710,13 @@ nppiMul_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_C3IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4924,8 +9731,13 @@ nppiMul_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4938,8 +9750,13 @@ nppiMul_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_16sc_AC4IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                                Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                             Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -4954,8 +9771,13 @@ nppiMul_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -4971,8 +9793,14 @@ nppiMul_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiMul_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, 
+                              const Npp32s * pSrc2, int nSrc2Step, 
+                                    Npp32s * pDst,  int nDstStep, 
+                                    NppiSize oSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiMul_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, 
                           const Npp32s * pSrc2, int nSrc2Step, 
                                 Npp32s * pDst,  int nDstStep, 
@@ -4986,8 +9814,13 @@ NppStatus nppiMul_32s_C1R(const Npp32s * pSrc1, int nSrc1Step,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32s_C1IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5002,8 +9835,13 @@ nppiMul_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5016,8 +9854,13 @@ nppiMul_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32s_C3IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5032,8 +9875,13 @@ nppiMul_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5046,8 +9894,13 @@ nppiMul_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32sc_C1IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5062,8 +9915,13 @@ nppiMul_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5076,8 +9934,13 @@ nppiMul_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32sc_C3IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5092,8 +9955,13 @@ nppiMul_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5106,11 +9974,130 @@ nppiMul_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiMul_32sc_AC4IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                                Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMul_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                             Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image multiplication.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image multiplication.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C1IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C1IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image multiplication.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image multiplication.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C3IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C3IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image multiplication.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image multiplication.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiMul_16f_C4IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiMul_16f_C4IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image multiplication.
@@ -5121,8 +10108,13 @@ nppiMul_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5134,8 +10126,13 @@ nppiMul_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5149,8 +10146,13 @@ nppiMul_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5162,8 +10164,13 @@ nppiMul_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C3IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C3IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5177,8 +10184,13 @@ nppiMul_32f_C3IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5190,8 +10202,13 @@ nppiMul_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_AC4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                            Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep, 
                         Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5205,8 +10222,13 @@ nppiMul_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5218,8 +10240,13 @@ nppiMul_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32f_C4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32f_C4IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5233,8 +10260,13 @@ nppiMul_32f_C4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5246,8 +10278,13 @@ nppiMul_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C1IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5261,8 +10298,13 @@ nppiMul_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5274,8 +10316,13 @@ nppiMul_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C3IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5289,8 +10336,13 @@ nppiMul_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5302,8 +10354,13 @@ nppiMul_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, i
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_AC4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                             Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep, 
                          Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5317,8 +10374,13 @@ nppiMul_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5330,8 +10392,13 @@ nppiMul_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMul_32fc_C4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMul_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5356,8 +10423,13 @@ nppiMul_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5369,8 +10441,13 @@ nppiMulScale_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                               Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                            Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5384,8 +10461,13 @@ nppiMulScale_8u_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5397,8 +10479,13 @@ nppiMulScale_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C3IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                               Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C3IR(const Npp8u * pSrc,     int nSrcStep, 
                            Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5412,8 +10499,13 @@ nppiMulScale_8u_C3IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5425,8 +10517,13 @@ nppiMulScale_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_AC4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep, 
                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5440,8 +10537,13 @@ nppiMulScale_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5453,8 +10555,13 @@ nppiMulScale_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_8u_C4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                               Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_8u_C4IR(const Npp8u * pSrc,     int nSrcStep, 
                            Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5468,8 +10575,13 @@ nppiMulScale_8u_C4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5481,8 +10593,13 @@ nppiMulScale_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                             Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5496,8 +10613,13 @@ nppiMulScale_16u_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5509,8 +10631,13 @@ nppiMulScale_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C3IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C3IR(const Npp16u * pSrc,     int nSrcStep, 
                             Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5524,8 +10651,13 @@ nppiMulScale_16u_C3IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5537,8 +10669,13 @@ nppiMulScale_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_AC4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                 Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep, 
                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5552,8 +10689,13 @@ nppiMulScale_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -5565,8 +10707,13 @@ nppiMulScale_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiMulScale_16u_C4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMulScale_16u_C4IR(const Npp16u * pSrc,     int nSrcStep, 
                             Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -5591,8 +10738,13 @@ nppiMulScale_16u_C4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5605,8 +10757,13 @@ nppiSub_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C1IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5621,8 +10778,13 @@ nppiSub_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5635,8 +10797,13 @@ nppiSub_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C3IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5651,8 +10818,13 @@ nppiSub_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5665,8 +10837,13 @@ nppiSub_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_AC4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                              Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5681,8 +10858,13 @@ nppiSub_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5695,8 +10877,12 @@ nppiSub_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_8u_C4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiSub_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5711,8 +10897,13 @@ nppiSub_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5725,8 +10916,13 @@ nppiSub_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C1IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5741,8 +10937,13 @@ nppiSub_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5755,8 +10956,13 @@ nppiSub_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C3IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5771,8 +10977,13 @@ nppiSub_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5785,8 +10996,13 @@ nppiSub_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_AC4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                               Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5801,8 +11017,13 @@ nppiSub_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5815,8 +11036,13 @@ nppiSub_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16u_C4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5831,8 +11057,13 @@ nppiSub_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5845,8 +11076,13 @@ nppiSub_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C1IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5861,8 +11097,13 @@ nppiSub_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5875,8 +11116,13 @@ nppiSub_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C3IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5891,8 +11137,13 @@ nppiSub_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5905,8 +11156,13 @@ nppiSub_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_AC4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                               Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                            Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5921,8 +11177,13 @@ nppiSub_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5935,8 +11196,13 @@ nppiSub_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16s_C4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5951,8 +11217,13 @@ nppiSub_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5965,8 +11236,13 @@ nppiSub_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_C1IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -5981,8 +11257,13 @@ nppiSub_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -5995,8 +11276,13 @@ nppiSub_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_C3IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6011,8 +11297,13 @@ nppiSub_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6025,8 +11316,13 @@ nppiSub_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_16sc_AC4IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                                Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                             Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6041,8 +11337,13 @@ nppiSub_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6058,8 +11359,14 @@ nppiSub_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSub_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, 
+                              const Npp32s * pSrc2, int nSrc2Step, 
+                                    Npp32s * pDst,  int nDstStep, 
+                                    NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSub_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, 
                           const Npp32s * pSrc2, int nSrc2Step, 
                                 Npp32s * pDst,  int nDstStep, 
@@ -6073,8 +11380,13 @@ NppStatus nppiSub_32s_C1R(const Npp32s * pSrc1, int nSrc1Step,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C1IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6089,8 +11401,13 @@ nppiSub_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6103,8 +11420,13 @@ nppiSub_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C3IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6119,8 +11441,13 @@ nppiSub_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C4RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C4RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6133,8 +11460,13 @@ nppiSub_32s_C4RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32s_C4IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32s_C4IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6149,8 +11481,13 @@ nppiSub_32s_C4IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6163,8 +11500,13 @@ nppiSub_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32sc_C1IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6179,8 +11521,13 @@ nppiSub_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6193,8 +11540,13 @@ nppiSub_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32sc_C3IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6209,8 +11561,13 @@ nppiSub_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6223,11 +11580,130 @@ nppiSub_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSub_32sc_AC4IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                                Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSub_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                             Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image subtraction.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image subtraction.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C1IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C1IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image subtraction.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image subtraction.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C3IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C3IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image subtraction.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image subtraction.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSub_16f_C4IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSub_16f_C4IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image subtraction.
@@ -6238,8 +11714,13 @@ nppiSub_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6251,8 +11732,13 @@ nppiSub_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6266,8 +11752,13 @@ nppiSub_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6279,8 +11770,13 @@ nppiSub_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C3IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_C3IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6294,8 +11790,13 @@ nppiSub_32f_C3IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6307,8 +11808,13 @@ nppiSub_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_AC4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                            Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep, 
                         Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6322,8 +11828,12 @@ nppiSub_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiSub_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6335,8 +11845,13 @@ nppiSub_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32f_C4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32f_C4IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6350,8 +11865,13 @@ nppiSub_32f_C4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6363,8 +11883,13 @@ nppiSub_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C1IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6378,8 +11903,13 @@ nppiSub_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6391,8 +11921,13 @@ nppiSub_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C3IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6406,8 +11941,13 @@ nppiSub_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6419,8 +11959,13 @@ nppiSub_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, i
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_AC4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                             Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep, 
                          Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6434,8 +11979,13 @@ nppiSub_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -6447,8 +11997,13 @@ nppiSub_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSub_32fc_C4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSub_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -6473,8 +12028,13 @@ nppiSub_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6487,8 +12047,13 @@ nppiDiv_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C1IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6503,8 +12068,13 @@ nppiDiv_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6517,8 +12087,13 @@ nppiDiv_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C3IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6533,8 +12108,13 @@ nppiDiv_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6547,8 +12127,13 @@ nppiDiv_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_AC4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                              Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6563,8 +12148,13 @@ nppiDiv_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                            Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6577,8 +12167,13 @@ nppiDiv_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int n
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_8u_C4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                             Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6593,8 +12188,13 @@ nppiDiv_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6607,8 +12207,13 @@ nppiDiv_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C1IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6623,8 +12228,13 @@ nppiDiv_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6637,8 +12247,13 @@ nppiDiv_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C3IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6653,8 +12268,13 @@ nppiDiv_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6667,8 +12287,13 @@ nppiDiv_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_AC4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                               Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6683,8 +12308,13 @@ nppiDiv_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                             Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6697,8 +12327,13 @@ nppiDiv_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16u_C4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                              Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6713,8 +12348,13 @@ nppiDiv_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6727,8 +12367,13 @@ nppiDiv_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C1IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6743,8 +12388,13 @@ nppiDiv_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6757,8 +12407,13 @@ nppiDiv_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C3IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6773,8 +12428,13 @@ nppiDiv_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6787,8 +12447,13 @@ nppiDiv_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, i
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_AC4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                               Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                            Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6803,8 +12468,13 @@ nppiDiv_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                             Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                          Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6817,8 +12487,13 @@ nppiDiv_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16s_C4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                              Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                           Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6833,8 +12508,13 @@ nppiDiv_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_C1RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6847,8 +12527,13 @@ nppiDiv_16sc_C1RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_C1IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6863,8 +12548,13 @@ nppiDiv_16sc_C1IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_C3RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                              Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                           Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6877,8 +12567,13 @@ nppiDiv_16sc_C3RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_C3IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                               Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                            Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6893,8 +12588,13 @@ nppiDiv_16sc_C3IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_AC4RSfs_Ctx(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
+                               Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2, int nSrc2Step, 
                            Npp16sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6907,8 +12607,13 @@ nppiDiv_16sc_AC4RSfs(const Npp16sc * pSrc1, int nSrc1Step, const Npp16sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_16sc_AC4IRSfs_Ctx(const Npp16sc * pSrc,     int nSrcStep, 
+                                Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep, 
                             Npp16sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6923,8 +12628,13 @@ nppiDiv_16sc_AC4IRSfs(const Npp16sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32s_C1RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6940,8 +12650,14 @@ nppiDiv_32s_C1RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiDiv_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, 
+                              const Npp32s * pSrc2, int nSrc2Step, 
+                                    Npp32s * pDst,  int nDstStep, 
+                                    NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDiv_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, 
                           const Npp32s * pSrc2, int nSrc2Step, 
                                 Npp32s * pDst,  int nDstStep, 
@@ -6955,8 +12671,13 @@ NppStatus nppiDiv_32s_C1R(const Npp32s * pSrc1, int nSrc1Step,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32s_C1IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -6971,8 +12692,13 @@ nppiDiv_32s_C1IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32s_C3RSfs_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                             Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -6985,8 +12711,13 @@ nppiDiv_32s_C3RSfs(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, in
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32s_C3IRSfs_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                              Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep, 
                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -7001,8 +12732,13 @@ nppiDiv_32s_C3IRSfs(const Npp32s * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32sc_C1RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -7015,8 +12751,13 @@ nppiDiv_32sc_C1RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32sc_C1IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -7031,8 +12772,13 @@ nppiDiv_32sc_C1IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32sc_C3RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                              Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                           Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -7045,8 +12791,13 @@ nppiDiv_32sc_C3RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32sc_C3IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                               Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                            Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
@@ -7061,8 +12812,13 @@ nppiDiv_32sc_C3IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32sc_AC4RSfs_Ctx(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
+                               Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2, int nSrc2Step, 
                            Npp32sc * pDst,  int nDstStep,  NppiSize oSizeROI,   int nScaleFactor);
@@ -7075,11 +12831,130 @@ nppiDiv_32sc_AC4RSfs(const Npp32sc * pSrc1, int nSrc1Step, const Npp32sc * pSrc2
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiDiv_32sc_AC4IRSfs_Ctx(const Npp32sc * pSrc,     int nSrcStep, 
+                                Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDiv_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep, 
                             Npp32sc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image division.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image division.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C1IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C1IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image division.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C3R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C3R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image division.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C3IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C3IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image division.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C4R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                          Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C4R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, 
+                      Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image division.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiDiv_16f_C4IR_Ctx(const Npp16f * pSrc,     int nSrcStep, 
+                           Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiDiv_16f_C4IR(const Npp16f * pSrc,     int nSrcStep, 
+                       Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image division.
@@ -7090,8 +12965,13 @@ nppiDiv_32sc_AC4IRSfs(const Npp32sc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7103,8 +12983,13 @@ nppiDiv_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C1IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C1IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7118,8 +13003,13 @@ nppiDiv_32f_C1IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7131,8 +13021,13 @@ nppiDiv_32f_C3R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C3IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C3IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7146,8 +13041,13 @@ nppiDiv_32f_C3IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                           Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                        Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7159,8 +13059,13 @@ nppiDiv_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_AC4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                            Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep, 
                         Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7174,8 +13079,13 @@ nppiDiv_32f_AC4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                          Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                       Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7187,8 +13097,13 @@ nppiDiv_32f_C4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32f_C4IR_Ctx(const Npp32f * pSrc,     int nSrcStep, 
+                           Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32f_C4IR(const Npp32f * pSrc,     int nSrcStep, 
                        Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7202,8 +13117,13 @@ nppiDiv_32f_C4IR(const Npp32f * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C1R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7215,8 +13135,13 @@ nppiDiv_32fc_C1R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C1IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7230,8 +13155,13 @@ nppiDiv_32fc_C1IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C3R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7243,8 +13173,13 @@ nppiDiv_32fc_C3R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C3IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7258,8 +13193,13 @@ nppiDiv_32fc_C3IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_AC4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                            Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                         Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7271,8 +13211,13 @@ nppiDiv_32fc_AC4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, i
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_AC4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                             Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep, 
                          Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7286,8 +13231,13 @@ nppiDiv_32fc_AC4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C4R_Ctx(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
+                           Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, int nSrc2Step, 
                        Npp32fc * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -7299,8 +13249,13 @@ nppiDiv_32fc_C4R(const Npp32fc * pSrc1, int nSrc1Step, const Npp32fc * pSrc2, in
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_32fc_C4IR_Ctx(const Npp32fc * pSrc,     int nSrcStep, 
+                            Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep, 
                         Npp32fc * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -7326,8 +13281,13 @@ nppiDiv_32fc_C4IR(const Npp32fc * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C1RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                  Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor);
@@ -7341,8 +13301,13 @@ nppiDiv_Round_8u_C1RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C1IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                   Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                                Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7358,8 +13323,13 @@ nppiDiv_Round_8u_C1IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C3RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                  Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7373,8 +13343,13 @@ nppiDiv_Round_8u_C3RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C3IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                   Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+                               
 NppStatus 
 nppiDiv_Round_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                                Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7390,8 +13365,13 @@ nppiDiv_Round_8u_C3IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_AC4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                   Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7405,8 +13385,13 @@ nppiDiv_Round_8u_AC4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_AC4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                    Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                                 Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7422,8 +13407,13 @@ nppiDiv_Round_8u_AC4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C4RSfs_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                  Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                               Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7437,8 +13427,13 @@ nppiDiv_Round_8u_C4RSfs(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_8u_C4IRSfs_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                                   Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep, 
                                Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7454,8 +13449,13 @@ nppiDiv_Round_8u_C4IRSfs(const Npp8u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C1RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                   Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor);
@@ -7469,8 +13469,13 @@ nppiDiv_Round_16u_C1RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C1IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                    Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                                 Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7486,8 +13491,13 @@ nppiDiv_Round_16u_C1IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C3RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                   Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7501,8 +13511,13 @@ nppiDiv_Round_16u_C3RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C3IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                    Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+                               
 NppStatus 
 nppiDiv_Round_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                                 Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7518,8 +13533,13 @@ nppiDiv_Round_16u_C3IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_AC4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                    Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7533,8 +13553,13 @@ nppiDiv_Round_16u_AC4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pS
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_AC4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                     Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                                  Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7550,8 +13575,13 @@ nppiDiv_Round_16u_AC4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C4RSfs_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                   Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                                Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7565,8 +13595,13 @@ nppiDiv_Round_16u_C4RSfs(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16u_C4IRSfs_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                                    Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep, 
                                 Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7582,8 +13617,13 @@ nppiDiv_Round_16u_C4IRSfs(const Npp16u * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C1RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                                   Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                                Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppRoundMode rndMode, int nScaleFactor);
@@ -7597,8 +13637,13 @@ nppiDiv_Round_16s_C1RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C1IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                                    Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                                 Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7614,8 +13659,13 @@ nppiDiv_Round_16s_C1IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C3RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                                   Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                                Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7629,8 +13679,13 @@ nppiDiv_Round_16s_C3RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C3IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                                    Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+                               
 NppStatus 
 nppiDiv_Round_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                                 Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7646,8 +13701,13 @@ nppiDiv_Round_16s_C3IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_AC4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                                    Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                                 Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7661,8 +13721,13 @@ nppiDiv_Round_16s_AC4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pS
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_AC4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                                     Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                                  Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7678,8 +13743,13 @@ nppiDiv_Round_16s_AC4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C4RSfs_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                                   Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                                Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,    NppRoundMode rndMode, int nScaleFactor);
@@ -7693,8 +13763,13 @@ nppiDiv_Round_16s_C4RSfs(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSr
  * \param oSizeROI \ref roi_specification.
  * \param rndMode Result Rounding mode to be used (NPP_RND_ZERO, NPP_RND_NEAR, or NP_RND_FINANCIAL)
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiDiv_Round_16s_C4IRSfs_Ctx(const Npp16s * pSrc,     int nSrcStep, 
+                                    Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDiv_Round_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep, 
                                 Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppRoundMode rndMode, int nScaleFactor);
@@ -7716,8 +13791,12 @@ nppiDiv_Round_16s_C4IRSfs(const Npp16s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7726,8 +13805,12 @@ nppiAbs_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_C1IR_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_C1IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7738,8 +13821,12 @@ nppiAbs_16s_C1IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7748,8 +13835,12 @@ nppiAbs_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_C3IR_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_C3IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7760,8 +13851,12 @@ nppiAbs_16s_C3IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7770,8 +13865,12 @@ nppiAbs_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_AC4IR_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_AC4IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7782,8 +13881,12 @@ nppiAbs_16s_AC4IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7792,10 +13895,104 @@ nppiAbs_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAbs_16s_C4IR_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAbs_16s_C4IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel image absolute value.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image absolute value.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C1IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C1IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image absolute value.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image absolute value.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C3IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C3IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image absolute value.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image absolute value.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbs_16f_C4IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbs_16f_C4IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image absolute value.
@@ -7804,8 +14001,12 @@ nppiAbs_16s_C4IR(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7814,8 +14015,12 @@ nppiAbs_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C1IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7826,8 +14031,12 @@ nppiAbs_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7836,8 +14045,12 @@ nppiAbs_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C3IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7848,8 +14061,12 @@ nppiAbs_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7858,8 +14075,12 @@ nppiAbs_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_AC4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7870,8 +14091,12 @@ nppiAbs_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7880,8 +14105,12 @@ nppiAbs_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbs_32f_C4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbs_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -7904,8 +14133,12 @@ nppiAbs_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbsDiff_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbsDiff_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7918,8 +14151,12 @@ nppiAbsDiff_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbsDiff_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbsDiff_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7932,8 +14169,12 @@ nppiAbsDiff_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbsDiff_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbsDiff_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7946,10 +14187,32 @@ nppiAbsDiff_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAbsDiff_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiAbsDiff_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel absolute difference of image1 minus image2.
+ * \param pSrc1 \ref source_image_pointer.
+ * \param nSrc1Step \ref source_image_line_step.
+ * \param pSrc2 \ref source_image_pointer.
+ * \param nSrc2Step \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiAbsDiff_16f_C1R_Ctx(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiAbsDiff_16f_C1R(const Npp16f * pSrc1, int nSrc1Step, const Npp16f * pSrc2, int nSrc2Step, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel absolute difference of image1 minus image2.
@@ -7960,8 +14223,12 @@ nppiAbsDiff_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAbsDiff_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAbsDiff_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -7983,8 +14250,12 @@ nppiAbsDiff_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, i
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C1RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -7994,8 +14265,12 @@ nppiSqr_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C1IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8007,8 +14282,12 @@ nppiSqr_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSc
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C3RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8018,8 +14297,12 @@ nppiSqr_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C3IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8031,8 +14314,12 @@ nppiSqr_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSc
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_AC4RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_AC4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8042,8 +14329,12 @@ nppiSqr_8u_AC4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_AC4IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_AC4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8055,8 +14346,12 @@ nppiSqr_8u_AC4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C4RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8066,8 +14361,12 @@ nppiSqr_8u_C4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_8u_C4IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_8u_C4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8079,8 +14378,12 @@ nppiSqr_8u_C4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSc
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8090,8 +14393,12 @@ nppiSqr_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C1IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8103,8 +14410,12 @@ nppiSqr_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C3RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8114,8 +14425,12 @@ nppiSqr_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C3IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8127,8 +14442,12 @@ nppiSqr_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_AC4RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_AC4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8138,8 +14457,12 @@ nppiSqr_16u_AC4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_AC4IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_AC4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8151,8 +14474,12 @@ nppiSqr_16u_AC4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C4RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8162,8 +14489,12 @@ nppiSqr_16u_C4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16u_C4IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16u_C4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8175,8 +14506,12 @@ nppiSqr_16u_C4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_C1RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8186,8 +14521,12 @@ nppiSqr_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_C1IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8199,8 +14538,12 @@ nppiSqr_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_C3RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8210,8 +14553,12 @@ nppiSqr_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_C3IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8223,8 +14570,12 @@ nppiSqr_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_AC4RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_AC4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8234,8 +14585,12 @@ nppiSqr_16s_AC4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_AC4IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_AC4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8247,8 +14602,12 @@ nppiSqr_16s_AC4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_16s_C4RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_16s_C4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8258,10 +14617,104 @@ nppiSqr_16s_C4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSqr_16s_C4IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSqr_16s_C4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image squared.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image squared.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C1IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C1IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image squared.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image squared.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C3IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C3IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image squared.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image squared.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqr_16f_C4IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqr_16f_C4IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image squared.
@@ -8270,8 +14723,12 @@ nppiSqr_16s_C4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8280,8 +14737,12 @@ nppiSqr_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C1IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8292,8 +14753,12 @@ nppiSqr_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8302,8 +14767,12 @@ nppiSqr_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C3IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8314,8 +14783,12 @@ nppiSqr_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8324,8 +14797,12 @@ nppiSqr_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_AC4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8336,8 +14813,12 @@ nppiSqr_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8346,8 +14827,12 @@ nppiSqr_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqr_32f_C4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqr_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8368,8 +14853,12 @@ nppiSqr_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_C1RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8379,8 +14868,12 @@ nppiSqrt_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_C1IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8392,8 +14885,12 @@ nppiSqrt_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_C3RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8403,8 +14900,12 @@ nppiSqrt_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_C3IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8416,8 +14917,12 @@ nppiSqrt_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_AC4RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_AC4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8427,8 +14932,12 @@ nppiSqrt_8u_AC4RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstSte
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_8u_AC4IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_8u_AC4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8440,8 +14949,12 @@ nppiSqrt_8u_AC4IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8451,8 +14964,12 @@ nppiSqrt_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_C1IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8464,8 +14981,12 @@ nppiSqrt_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_C3RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8475,8 +14996,12 @@ nppiSqrt_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_C3IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8488,8 +15013,12 @@ nppiSqrt_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_AC4RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_AC4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8499,8 +15028,12 @@ nppiSqrt_16u_AC4RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDst
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16u_AC4IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16u_AC4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8512,8 +15045,12 @@ nppiSqrt_16u_AC4IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16s_C1RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8523,8 +15060,12 @@ nppiSqrt_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16s_C1IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8536,8 +15077,12 @@ nppiSqrt_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16s_C3RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8547,8 +15092,12 @@ nppiSqrt_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstS
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16s_C3IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8558,10 +15107,14 @@ nppiSqrt_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int 
  * \param nSrcStep \ref source_image_line_step.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
- * \param oSizeROI \ref roi_specification.
+ * \param oSizeROI \ref roi_specification. 
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_16s_AC4RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_16s_AC4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8571,10 +15124,104 @@ nppiSqrt_16s_AC4RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDst
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiSqrt_16s_AC4IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSqrt_16s_AC4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image square root.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image square root.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C1IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C1IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image square root.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image square root.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C3IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C3IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel image square root.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Four 16-bit floating point channel in place image square root.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiSqrt_16f_C4IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSqrt_16f_C4IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image square root.
@@ -8583,8 +15230,12 @@ nppiSqrt_16s_AC4IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8593,8 +15244,12 @@ nppiSqrt_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C1IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8605,8 +15260,12 @@ nppiSqrt_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8615,8 +15274,12 @@ nppiSqrt_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C3IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8627,8 +15290,12 @@ nppiSqrt_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8637,8 +15304,12 @@ nppiSqrt_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstSte
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_AC4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8649,8 +15320,12 @@ nppiSqrt_32f_AC4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8659,8 +15334,12 @@ nppiSqrt_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiSqrt_32f_C4IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSqrt_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8681,8 +15360,12 @@ nppiSqrt_32f_C4IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_8u_C1RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8692,8 +15375,12 @@ nppiLn_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep, 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_8u_C1IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8705,8 +15392,12 @@ nppiLn_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSca
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_8u_C3RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8716,8 +15407,12 @@ nppiLn_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep, 
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_8u_C3IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8729,8 +15424,12 @@ nppiLn_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSca
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16u_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8740,8 +15439,12 @@ nppiLn_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSte
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16u_C1IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8753,8 +15456,12 @@ nppiLn_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16u_C3RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8764,8 +15471,12 @@ nppiLn_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSte
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16u_C3IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8777,8 +15488,12 @@ nppiLn_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16s_C1RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8788,8 +15503,12 @@ nppiLn_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSte
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16s_C1IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8801,8 +15520,12 @@ nppiLn_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_16s_C3RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8812,10 +15535,74 @@ nppiLn_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSte
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiLn_16s_C3IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLn_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
+
+/** 
+ * One 16-bit floating point channel image natural logarithm.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiLn_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiLn_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * One 16-bit floating point channel in place image natural logarithm.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiLn_16f_C1IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiLn_16f_C1IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel image natural logarithm.
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiLn_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiLn_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst,  int nDstStep,  NppiSize oSizeROI);
+
+/** 
+ * Three 16-bit floating point channel in place image natural logarithm.
+ * \param pSrcDst \ref in_place_image_pointer.
+ * \param nSrcDstStep \ref in_place_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiLn_16f_C3IR_Ctx(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiLn_16f_C3IR(Npp16f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * One 32-bit floating point channel image natural logarithm.
@@ -8824,8 +15611,12 @@ nppiLn_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8834,8 +15625,12 @@ nppiLn_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep, 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_32f_C1IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8846,8 +15641,12 @@ nppiLn_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -8856,8 +15655,12 @@ nppiLn_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep, 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLn_32f_C3IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLn_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -8879,8 +15682,12 @@ nppiLn_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_8u_C1RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8890,8 +15697,12 @@ nppiExp_8u_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_8u_C1IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8903,8 +15714,12 @@ nppiExp_8u_C1IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSc
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_8u_C3RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8914,8 +15729,12 @@ nppiExp_8u_C3RSfs(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_8u_C3IRSfs_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8927,8 +15746,12 @@ nppiExp_8u_C3IRSfs(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nSc
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16u_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8938,8 +15761,12 @@ nppiExp_16u_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16u_C1IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8951,8 +15778,12 @@ nppiExp_16u_C1IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16u_C3RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8962,8 +15793,12 @@ nppiExp_16u_C3RSfs(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16u_C3IRSfs_Ctx(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8975,8 +15810,12 @@ nppiExp_16u_C3IRSfs(Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16s_C1RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -8986,8 +15825,12 @@ nppiExp_16s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16s_C1IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -8999,8 +15842,12 @@ nppiExp_16s_C1IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16s_C3RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, int nScaleFactor);
 
@@ -9010,8 +15857,12 @@ nppiExp_16s_C3RSfs(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst,  int nDstSt
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_16s_C3IRSfs_Ctx(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int nScaleFactor);
 
@@ -9022,8 +15873,12 @@ nppiExp_16s_C3IRSfs(Npp16s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, int n
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -9032,8 +15887,12 @@ nppiExp_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_32f_C1IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9044,8 +15903,12 @@ nppiExp_32f_C1IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -9054,8 +15917,12 @@ nppiExp_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst,  int nDstStep,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiExp_32f_C3IR_Ctx(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiExp_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9065,7 +15932,7 @@ nppiExp_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * @defgroup image_logical_operations Logical Operations
- *
+ * The set of image processing logical operations available in the library.
  * @{
  */
 
@@ -9084,8 +15951,13 @@ nppiExp_32f_C3IR(Npp32f * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9096,8 +15968,12 @@ nppiAndC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C1IR_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9109,8 +15985,13 @@ nppiAndC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9121,8 +16002,12 @@ nppiAndC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C3IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9134,8 +16019,13 @@ nppiAndC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                        Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9146,8 +16036,12 @@ nppiAndC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_AC4IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9159,8 +16053,13 @@ nppiAndC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9171,8 +16070,12 @@ nppiAndC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_8u_C4IR_Ctx(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9184,8 +16087,13 @@ nppiAndC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9196,8 +16104,12 @@ nppiAndC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C1IR_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9209,8 +16121,13 @@ nppiAndC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9221,8 +16138,12 @@ nppiAndC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C3IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9234,8 +16155,13 @@ nppiAndC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                         Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9246,8 +16172,12 @@ nppiAndC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_AC4IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9259,8 +16189,13 @@ nppiAndC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9271,8 +16206,12 @@ nppiAndC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_16u_C4IR_Ctx(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9284,8 +16223,13 @@ nppiAndC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9296,8 +16240,12 @@ nppiAndC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C1IR_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9309,8 +16257,13 @@ nppiAndC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9321,8 +16274,12 @@ nppiAndC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C3IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9334,8 +16291,13 @@ nppiAndC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                            Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                         Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9346,8 +16308,12 @@ nppiAndC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_AC4IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9359,8 +16325,13 @@ nppiAndC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9371,8 +16342,12 @@ nppiAndC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAndC_32s_C4IR_Ctx(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAndC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9395,8 +16370,13 @@ nppiAndC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9407,8 +16387,12 @@ nppiOrC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C1IR_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9420,8 +16404,13 @@ nppiOrC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSiz
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9432,8 +16421,12 @@ nppiOrC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C3IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9445,8 +16438,13 @@ nppiOrC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9457,8 +16455,12 @@ nppiOrC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_AC4IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9470,8 +16472,13 @@ nppiOrC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9482,8 +16489,12 @@ nppiOrC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_8u_C4IR_Ctx(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9495,8 +16506,13 @@ nppiOrC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9507,8 +16523,12 @@ nppiOrC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C1IR_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9520,8 +16540,13 @@ nppiOrC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, Nppi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9532,8 +16557,12 @@ nppiOrC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3]
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C3IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9545,8 +16574,13 @@ nppiOrC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9557,8 +16591,12 @@ nppiOrC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_AC4IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9570,8 +16608,13 @@ nppiOrC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9582,8 +16625,12 @@ nppiOrC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4]
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_16u_C4IR_Ctx(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9595,8 +16642,13 @@ nppiOrC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9607,8 +16659,12 @@ nppiOrC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C1IR_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9620,8 +16676,13 @@ nppiOrC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, Nppi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9632,8 +16693,12 @@ nppiOrC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3]
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C3IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9645,8 +16710,13 @@ nppiOrC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9657,8 +16727,12 @@ nppiOrC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_AC4IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9670,8 +16744,13 @@ nppiOrC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9682,8 +16761,12 @@ nppiOrC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4]
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOrC_32s_C4IR_Ctx(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiOrC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9705,8 +16788,13 @@ nppiOrC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant, 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9717,8 +16805,12 @@ nppiXorC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C1IR_Ctx(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9730,8 +16822,13 @@ nppiXorC_8u_C1IR(const Npp8u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9742,8 +16839,12 @@ nppiXorC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C3IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9755,8 +16856,13 @@ nppiXorC_8u_C3IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
+                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3], 
                        Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9767,8 +16873,12 @@ nppiXorC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[3],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_AC4IR_Ctx(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9780,8 +16890,13 @@ nppiXorC_8u_AC4IR(const Npp8u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4], 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9792,8 +16907,12 @@ nppiXorC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u  aConstants[4],
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_8u_C4IR_Ctx(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9805,8 +16924,13 @@ nppiXorC_8u_C4IR(const Npp8u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant, 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9817,8 +16941,12 @@ nppiXorC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C1IR_Ctx(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9830,8 +16958,13 @@ nppiXorC_16u_C1IR(const Npp16u nConstant, Npp16u * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9842,8 +16975,12 @@ nppiXorC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C3IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9855,8 +16992,12 @@ nppiXorC_16u_C3IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
+                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXorC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[3], 
                         Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9867,8 +17008,12 @@ nppiXorC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_AC4IR_Ctx(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9880,8 +17025,13 @@ nppiXorC_16u_AC4IR(const Npp16u  aConstants[3], Npp16u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4], 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9892,8 +17042,12 @@ nppiXorC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u  aConstants[4
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_16u_C4IR_Ctx(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9905,8 +17059,13 @@ nppiXorC_16u_C4IR(const Npp16u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant, 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9917,8 +17076,12 @@ nppiXorC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C1IR_Ctx(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9930,8 +17093,13 @@ nppiXorC_32s_C1IR(const Npp32s nConstant, Npp32s * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9942,8 +17110,12 @@ nppiXorC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C3IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9955,8 +17127,13 @@ nppiXorC_32s_C3IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
+                            Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[3], 
                         Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9967,8 +17144,12 @@ nppiXorC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_AC4IR_Ctx(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -9980,8 +17161,13 @@ nppiXorC_32s_AC4IR(const Npp32s  aConstants[3], Npp32s * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4], 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -9992,8 +17178,12 @@ nppiXorC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s  aConstants[4
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXorC_32s_C4IR_Ctx(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiXorC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10015,8 +17205,13 @@ nppiXorC_32s_C4IR(const Npp32s  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10027,8 +17222,12 @@ nppiRShiftC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C1IR_Ctx(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C1IR(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10040,8 +17239,13 @@ nppiRShiftC_8u_C1IR(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10052,8 +17256,12 @@ nppiRShiftC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C3IR_Ctx(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C3IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10065,8 +17273,13 @@ nppiRShiftC_8u_C3IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10077,8 +17290,12 @@ nppiRShiftC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_AC4IR_Ctx(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_AC4IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10090,8 +17307,13 @@ nppiRShiftC_8u_AC4IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10102,8 +17324,12 @@ nppiRShiftC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8u_C4IR_Ctx(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8u_C4IR(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10115,8 +17341,13 @@ nppiRShiftC_8u_C4IR(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C1R_Ctx(const Npp8s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                             Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C1R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                          Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10127,8 +17358,12 @@ nppiRShiftC_8s_C1R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C1IR_Ctx(const Npp32u nConstant, Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C1IR(const Npp32u nConstant, Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10140,8 +17375,13 @@ nppiRShiftC_8s_C1IR(const Npp32u nConstant, Npp8s * pSrcDst, int nSrcDstStep, Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C3R_Ctx(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                             Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C3R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                          Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10152,8 +17392,12 @@ nppiRShiftC_8s_C3R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C3IR_Ctx(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C3IR(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10165,8 +17409,13 @@ nppiRShiftC_8s_C3IR(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_AC4R_Ctx(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_AC4R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10177,8 +17426,12 @@ nppiRShiftC_8s_AC4R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_AC4IR_Ctx(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_AC4IR(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10190,8 +17443,13 @@ nppiRShiftC_8s_AC4IR(const Npp32u  aConstants[3], Npp8s * pSrcDst, int nSrcDstSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C4R_Ctx(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                             Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C4R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                          Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10202,8 +17460,12 @@ nppiRShiftC_8s_C4R(const Npp8s * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_8s_C4IR_Ctx(const Npp32u  aConstants[4], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_8s_C4IR(const Npp32u  aConstants[4], Npp8s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10215,8 +17477,13 @@ nppiRShiftC_8s_C4IR(const Npp32u  aConstants[4], Npp8s * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10227,8 +17494,12 @@ nppiRShiftC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C1IR_Ctx(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C1IR(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10240,8 +17511,13 @@ nppiRShiftC_16u_C1IR(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10252,8 +17528,12 @@ nppiRShiftC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C3IR_Ctx(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C3IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10265,8 +17545,13 @@ nppiRShiftC_16u_C3IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10277,8 +17562,12 @@ nppiRShiftC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstan
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_AC4IR_Ctx(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_AC4IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10290,8 +17579,13 @@ nppiRShiftC_16u_AC4IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10302,8 +17596,12 @@ nppiRShiftC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16u_C4IR_Ctx(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16u_C4IR(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10315,8 +17613,13 @@ nppiRShiftC_16u_C4IR(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C1R_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C1R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10327,8 +17630,12 @@ nppiRShiftC_16s_C1R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C1IR_Ctx(const Npp32u nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C1IR(const Npp32u nConstant, Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10340,8 +17647,13 @@ nppiRShiftC_16s_C1IR(const Npp32u nConstant, Npp16s * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C3R_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C3R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10352,8 +17664,12 @@ nppiRShiftC_16s_C3R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C3IR_Ctx(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C3IR(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10365,8 +17681,13 @@ nppiRShiftC_16s_C3IR(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_AC4R_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                               Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_AC4R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                            Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10377,8 +17698,12 @@ nppiRShiftC_16s_AC4R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstan
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_AC4IR_Ctx(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_AC4IR(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10390,8 +17715,13 @@ nppiRShiftC_16s_AC4IR(const Npp32u  aConstants[3], Npp16s * pSrcDst, int nSrcDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C4R_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C4R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                           Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10402,8 +17732,12 @@ nppiRShiftC_16s_C4R(const Npp16s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_16s_C4IR_Ctx(const Npp32u  aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_16s_C4IR(const Npp32u  aConstants[4], Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10415,8 +17749,13 @@ nppiRShiftC_16s_C4IR(const Npp32u  aConstants[4], Npp16s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10427,8 +17766,12 @@ nppiRShiftC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C1IR_Ctx(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C1IR(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10440,8 +17783,13 @@ nppiRShiftC_32s_C1IR(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10452,8 +17800,12 @@ nppiRShiftC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C3IR_Ctx(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C3IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10465,8 +17817,13 @@ nppiRShiftC_32s_C3IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                               Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                            Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10477,8 +17834,12 @@ nppiRShiftC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstan
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_AC4IR_Ctx(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_AC4IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10490,8 +17851,13 @@ nppiRShiftC_32s_AC4IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10502,8 +17868,12 @@ nppiRShiftC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRShiftC_32s_C4IR_Ctx(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRShiftC_32s_C4IR(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10525,8 +17895,13 @@ nppiRShiftC_32s_C4IR(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10537,8 +17912,12 @@ nppiLShiftC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C1IR_Ctx(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C1IR(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10550,8 +17929,13 @@ nppiLShiftC_8u_C1IR(const Npp32u nConstant, Npp8u * pSrcDst, int nSrcDstStep, Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10562,8 +17946,12 @@ nppiLShiftC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C3IR_Ctx(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C3IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10575,8 +17963,13 @@ nppiLShiftC_8u_C3IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10587,8 +17980,12 @@ nppiLShiftC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_AC4IR_Ctx(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_AC4IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10600,8 +17997,13 @@ nppiLShiftC_8u_AC4IR(const Npp32u  aConstants[3], Npp8u * pSrcDst, int nSrcDstSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10612,8 +18014,12 @@ nppiLShiftC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp32u  aConstants[
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_8u_C4IR_Ctx(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_8u_C4IR(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10625,8 +18031,13 @@ nppiLShiftC_8u_C4IR(const Npp32u  aConstants[4], Npp8u * pSrcDst, int nSrcDstSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10637,8 +18048,12 @@ nppiLShiftC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C1IR_Ctx(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C1IR(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10650,8 +18065,13 @@ nppiLShiftC_16u_C1IR(const Npp32u nConstant, Npp16u * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10662,8 +18082,12 @@ nppiLShiftC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C3IR_Ctx(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C3IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10675,8 +18099,13 @@ nppiLShiftC_16u_C3IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                            Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10687,8 +18116,12 @@ nppiLShiftC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstan
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_AC4IR_Ctx(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_AC4IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10700,8 +18133,13 @@ nppiLShiftC_16u_AC4IR(const Npp32u  aConstants[3], Npp16u * pSrcDst, int nSrcDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10712,8 +18150,12 @@ nppiLShiftC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_16u_C4IR_Ctx(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_16u_C4IR(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10725,8 +18167,13 @@ nppiLShiftC_16u_C4IR(const Npp32u  aConstants[4], Npp16u * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant, 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10737,8 +18184,12 @@ nppiLShiftC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u nConstant,
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C1IR_Ctx(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C1IR(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10750,8 +18201,13 @@ nppiLShiftC_32s_C1IR(const Npp32u nConstant, Npp32s * pSrcDst, int nSrcDstStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10762,8 +18218,12 @@ nppiLShiftC_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C3IR_Ctx(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C3IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10775,8 +18235,13 @@ nppiLShiftC_32s_C3IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
+                               Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[3], 
                            Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10787,8 +18252,12 @@ nppiLShiftC_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstan
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_AC4IR_Ctx(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_AC4IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10800,8 +18269,13 @@ nppiLShiftC_32s_AC4IR(const Npp32u  aConstants[3], Npp32s * pSrcDst, int nSrcDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
+                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstants[4], 
                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10812,8 +18286,12 @@ nppiLShiftC_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32u  aConstant
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiLShiftC_32s_C4IR_Ctx(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLShiftC_32s_C4IR(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -10836,8 +18314,12 @@ nppiLShiftC_32s_C4IR(const Npp32u  aConstants[4], Npp32s * pSrcDst, int nSrcDstS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10848,12 +18330,15 @@ nppiAnd_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_8u_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_8u_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 8-bit unsigned char channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -10863,8 +18348,12 @@ nppiAnd_8u_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10875,12 +18364,15 @@ nppiAnd_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_8u_C3IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_8u_C3IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical and with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -10890,8 +18382,12 @@ nppiAnd_8u_C3IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10902,12 +18398,15 @@ nppiAnd_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSr
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_8u_AC4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep, 
                        Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -10917,8 +18416,12 @@ nppiAnd_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10929,12 +18432,15 @@ nppiAnd_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_8u_C4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_8u_C4IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 16-bit unsigned short channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -10944,8 +18450,12 @@ nppiAnd_8u_C4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10956,12 +18466,15 @@ nppiAnd_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_16u_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_16u_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 16-bit unsigned short channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -10971,8 +18484,12 @@ nppiAnd_16u_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -10983,12 +18500,15 @@ nppiAnd_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_16u_C3IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_16u_C3IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical and with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -10998,8 +18518,12 @@ nppiAnd_16u_C3IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11010,12 +18534,15 @@ nppiAnd_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_16u_AC4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep, 
                         Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -11025,8 +18552,12 @@ nppiAnd_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11037,12 +18568,15 @@ nppiAnd_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_16u_C4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_16u_C4IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 32-bit signed integer channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -11052,8 +18586,12 @@ nppiAnd_16u_C4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11064,12 +18602,15 @@ nppiAnd_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_32s_C1IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_32s_C1IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 32-bit signed integer channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -11079,8 +18620,12 @@ nppiAnd_32s_C1IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11091,12 +18636,15 @@ nppiAnd_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_32s_C3IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_32s_C3IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 32-bit signed integer channel image logical and with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11106,8 +18654,12 @@ nppiAnd_32s_C3IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11118,12 +18670,15 @@ nppiAnd_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiAnd_32s_AC4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                            Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiAnd_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep, 
                         Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 32-bit signed integer channel image logical and.
  * \param pSrc1 \ref source_image_pointer.
@@ -11133,8 +18688,12 @@ nppiAnd_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11145,8 +18704,12 @@ nppiAnd_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAnd_32s_C4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiAnd_32s_C4IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11170,8 +18733,12 @@ nppiAnd_32s_C4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                        Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11182,12 +18749,15 @@ nppiOr_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_8u_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                         Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_8u_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                      Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 8-bit unsigned char channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11197,8 +18767,12 @@ nppiOr_8u_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                        Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11209,12 +18783,15 @@ nppiOr_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_8u_C3IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                         Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_8u_C3IR(const Npp8u * pSrc,     int nSrcStep, 
                      Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical or with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11224,8 +18801,12 @@ nppiOr_8u_C3IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11236,12 +18817,15 @@ nppiOr_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_8u_AC4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11251,8 +18835,12 @@ nppiOr_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                        Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                     Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11263,12 +18851,15 @@ nppiOr_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_8u_C4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                         Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_8u_C4IR(const Npp8u * pSrc,     int nSrcStep, 
                      Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 16-bit unsigned short channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11278,8 +18869,12 @@ nppiOr_8u_C4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                         Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11290,12 +18885,15 @@ nppiOr_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_16u_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                          Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_16u_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                       Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 16-bit unsigned short channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11305,8 +18903,12 @@ nppiOr_16u_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                         Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11317,12 +18919,15 @@ nppiOr_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_16u_C3IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                          Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_16u_C3IR(const Npp16u * pSrc,     int nSrcStep, 
                       Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical or with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11332,8 +18937,12 @@ nppiOr_16u_C3IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11344,12 +18953,15 @@ nppiOr_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_16u_AC4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11359,8 +18971,12 @@ nppiOr_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                         Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                      Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11371,12 +18987,15 @@ nppiOr_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_16u_C4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                          Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_16u_C4IR(const Npp16u * pSrc,     int nSrcStep, 
                       Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 32-bit signed integer channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11386,8 +19005,12 @@ nppiOr_16u_C4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                         Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                      Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11398,8 +19021,12 @@ nppiOr_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_C1IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                          Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_C1IR(const Npp32s * pSrc,     int nSrcStep, 
                       Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11413,8 +19040,12 @@ nppiOr_32s_C1IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                         Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                      Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11425,12 +19056,15 @@ nppiOr_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_32s_C3IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                          Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_32s_C3IR(const Npp32s * pSrc,     int nSrcStep, 
                       Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 32-bit signed integer channel image logical or with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11440,8 +19074,12 @@ nppiOr_32s_C3IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11452,12 +19090,15 @@ nppiOr_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiOr_32s_AC4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiOr_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 32-bit signed integer channel image logical or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11467,8 +19108,12 @@ nppiOr_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                         Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                      Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11479,8 +19124,12 @@ nppiOr_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nS
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiOr_32s_C4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                          Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiOr_32s_C4IR(const Npp32s * pSrc,     int nSrcStep, 
                       Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11504,8 +19153,12 @@ nppiOr_32s_C4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11516,12 +19169,15 @@ nppiXor_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_8u_C1IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_8u_C1IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 8-bit unsigned char channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11531,8 +19187,12 @@ nppiXor_8u_C1IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11543,12 +19203,15 @@ nppiXor_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_8u_C3IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_8u_C3IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical exclusive or with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11558,8 +19221,12 @@ nppiXor_8u_C3IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                          Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                       Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11570,12 +19237,15 @@ nppiXor_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSr
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_8u_AC4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                           Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep, 
                        Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 8-bit unsigned char channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11585,8 +19255,12 @@ nppiXor_8u_AC4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                         Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                      Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11597,12 +19271,15 @@ nppiXor_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_8u_C4IR_Ctx(const Npp8u * pSrc,     int nSrcStep, 
+                          Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_8u_C4IR(const Npp8u * pSrc,     int nSrcStep, 
                       Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 16-bit unsigned short channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11612,8 +19289,12 @@ nppiXor_8u_C4IR(const Npp8u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11624,12 +19305,15 @@ nppiXor_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_16u_C1IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_16u_C1IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Three 16-bit unsigned short channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11639,8 +19323,12 @@ nppiXor_16u_C1IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11651,12 +19339,15 @@ nppiXor_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_16u_C3IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_16u_C3IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical exclusive or with unmodified alpha.
  * \param pSrc1 \ref source_image_pointer.
@@ -11666,8 +19357,12 @@ nppiXor_16u_C3IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                           Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                        Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11678,12 +19373,15 @@ nppiXor_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_16u_AC4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                            Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep, 
                         Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 16-bit unsigned short channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11693,8 +19391,12 @@ nppiXor_16u_AC4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                          Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                       Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11705,12 +19407,15 @@ nppiXor_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_16u_C4IR_Ctx(const Npp16u * pSrc,     int nSrcStep, 
+                           Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_16u_C4IR(const Npp16u * pSrc,     int nSrcStep, 
                        Npp16u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * One 32-bit signed integer channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11720,8 +19425,12 @@ nppiXor_16u_C4IR(const Npp16u * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11732,8 +19441,12 @@ nppiXor_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C1IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C1IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11747,8 +19460,12 @@ nppiXor_32s_C1IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C3R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11759,8 +19476,12 @@ nppiXor_32s_C3R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C3IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C3IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11774,8 +19495,12 @@ nppiXor_32s_C3IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                           Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                        Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11786,12 +19511,15 @@ nppiXor_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int 
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiXor_32s_AC4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                            Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+NppStatus 
 nppiXor_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep, 
                         Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
-
 /** 
  * Four 32-bit signed integer channel image logical exclusive or.
  * \param pSrc1 \ref source_image_pointer.
@@ -11801,8 +19529,12 @@ nppiXor_32s_AC4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                          Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                       Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI);
@@ -11813,8 +19545,12 @@ nppiXor_32s_C4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int n
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiXor_32s_C4IR_Ctx(const Npp32s * pSrc,     int nSrcStep, 
+                           Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 NppStatus 
 nppiXor_32s_C4IR(const Npp32s * pSrc,     int nSrcStep, 
                        Npp32s * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
@@ -11836,8 +19572,12 @@ nppiXor_32s_C4IR(const Npp32s * pSrc,     int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -11846,8 +19586,12 @@ nppiNot_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Npp
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C1IR_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C1IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -11858,8 +19602,12 @@ nppiNot_8u_C1IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -11868,8 +19616,12 @@ nppiNot_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  N
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C3IR_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C3IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -11880,8 +19632,12 @@ nppiNot_8u_C3IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI);
 
@@ -11890,8 +19646,12 @@ nppiNot_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,  int nDstStep,  
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_AC4IR_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_AC4IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -11902,8 +19662,12 @@ nppiNot_8u_AC4IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -11912,8 +19676,12 @@ nppiNot_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Npp
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiNot_8u_C4IR_Ctx(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiNot_8u_C4IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
@@ -11923,6 +19691,7 @@ nppiNot_8u_C4IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
 
 /** 
  * @defgroup image_alpha_composition_operations Alpha Composition
+ * The set of alpha composition operations available in the library.
  * @{
  */
 
@@ -11946,8 +19715,13 @@ nppiNot_8u_C4IR(Npp8u * pSrcDst,  int nSrcDstStep, NppiSize oSizeROI);
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2,
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2,
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -11964,8 +19738,13 @@ nppiAlphaCompC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -11982,8 +19761,13 @@ nppiAlphaCompC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12000,8 +19784,13 @@ nppiAlphaCompC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
+                                 Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, 
                              Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12018,8 +19807,13 @@ nppiAlphaCompC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_8s_C1R_Ctx(const Npp8s * pSrc1, int nSrc1Step, Npp8s nAlpha1, const Npp8s * pSrc2, int nSrc2Step, Npp8s nAlpha2,
+                                Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_8s_C1R(const Npp8s * pSrc1, int nSrc1Step, Npp8s nAlpha1, const Npp8s * pSrc2, int nSrc2Step, Npp8s nAlpha2,
                             Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12036,8 +19830,13 @@ nppiAlphaCompC_8s_C1R(const Npp8s * pSrc1, int nSrc1Step, Npp8s nAlpha1, const N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2,
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2,
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12054,8 +19853,13 @@ nppiAlphaCompC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12072,8 +19876,13 @@ nppiAlphaCompC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12090,8 +19899,13 @@ nppiAlphaCompC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
+                                  Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, const Npp16u * pSrc2, int nSrc2Step, Npp16u nAlpha2, 
                               Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12108,8 +19922,13 @@ nppiAlphaCompC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, con
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_16s_C1R_Ctx(const Npp16s * pSrc1, int nSrc1Step, Npp16s nAlpha1, const Npp16s * pSrc2, int nSrc2Step, Npp16s nAlpha2,
+                                 Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_16s_C1R(const Npp16s * pSrc1, int nSrc1Step, Npp16s nAlpha1, const Npp16s * pSrc2, int nSrc2Step, Npp16s nAlpha2,
                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12126,8 +19945,13 @@ nppiAlphaCompC_16s_C1R(const Npp16s * pSrc1, int nSrc1Step, Npp16s nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_32u_C1R_Ctx(const Npp32u * pSrc1, int nSrc1Step, Npp32u nAlpha1, const Npp32u * pSrc2, int nSrc2Step, Npp32u nAlpha2,
+                                 Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_32u_C1R(const Npp32u * pSrc1, int nSrc1Step, Npp32u nAlpha1, const Npp32u * pSrc2, int nSrc2Step, Npp32u nAlpha2,
                              Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12144,8 +19968,13 @@ nppiAlphaCompC_32u_C1R(const Npp32u * pSrc1, int nSrc1Step, Npp32u nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_32s_C1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, Npp32s nAlpha1, const Npp32s * pSrc2, int nSrc2Step, Npp32s nAlpha2,
+                                 Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, Npp32s nAlpha1, const Npp32s * pSrc2, int nSrc2Step, Npp32s nAlpha2,
                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12162,8 +19991,13 @@ nppiAlphaCompC_32s_C1R(const Npp32s * pSrc1, int nSrc1Step, Npp32s nAlpha1, cons
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaCompC_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, Npp32f nAlpha1, const Npp32f * pSrc2, int nSrc2Step, Npp32f nAlpha2,
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaCompC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, Npp32f nAlpha1, const Npp32f * pSrc2, int nSrc2Step, Npp32f nAlpha2,
                              Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI,   NppiAlphaOp eAlphaOp);
@@ -12186,8 +20020,12 @@ nppiAlphaCompC_32f_C1R(const Npp32f * pSrc1, int nSrc1Step, Npp32f nAlpha1, cons
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12197,8 +20035,12 @@ nppiAlphaPremulC_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C1IR_Ctx(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C1IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12210,8 +20052,12 @@ nppiAlphaPremulC_8u_C1IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12221,8 +20067,12 @@ nppiAlphaPremulC_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C3IR_Ctx(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C3IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12234,8 +20084,12 @@ nppiAlphaPremulC_8u_C3IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12245,8 +20099,12 @@ nppiAlphaPremulC_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_C4IR_Ctx(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_C4IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12258,8 +20116,12 @@ nppiAlphaPremulC_8u_C4IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12269,8 +20131,12 @@ nppiAlphaPremulC_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, Npp8
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_8u_AC4IR_Ctx(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_8u_AC4IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12282,8 +20148,12 @@ nppiAlphaPremulC_8u_AC4IR(Npp8u nAlpha1, Npp8u * pSrcDst, int nSrcDstStep, NppiS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12293,8 +20163,12 @@ nppiAlphaPremulC_16u_C1R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Np
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C1IR_Ctx(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C1IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12306,8 +20180,12 @@ nppiAlphaPremulC_16u_C1IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12317,8 +20195,12 @@ nppiAlphaPremulC_16u_C3R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Np
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C3IR_Ctx(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C3IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12330,8 +20212,12 @@ nppiAlphaPremulC_16u_C3IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12341,8 +20227,12 @@ nppiAlphaPremulC_16u_C4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Np
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_C4IR_Ctx(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_C4IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12354,8 +20244,12 @@ nppiAlphaPremulC_16u_C4IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12365,8 +20259,12 @@ nppiAlphaPremulC_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u nAlpha1, N
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremulC_16u_AC4IR_Ctx(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremulC_16u_AC4IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12390,8 +20288,13 @@ nppiAlphaPremulC_16u_AC4IR(Npp16u nAlpha1, Npp16u * pSrcDst, int nSrcDstStep, Np
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_8u_AC1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_8u_AC1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12406,8 +20309,13 @@ nppiAlphaComp_8u_AC1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, i
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
+                                Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, 
                             Npp8u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12422,8 +20330,13 @@ nppiAlphaComp_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, i
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_8s_AC1R_Ctx(const Npp8s * pSrc1, int nSrc1Step, const Npp8s * pSrc2, int nSrc2Step, 
+                                Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_8s_AC1R(const Npp8s * pSrc1, int nSrc1Step, const Npp8s * pSrc2, int nSrc2Step, 
                             Npp8s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12438,8 +20351,13 @@ nppiAlphaComp_8s_AC1R(const Npp8s * pSrc1, int nSrc1Step, const Npp8s * pSrc2, i
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_16u_AC1R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_16u_AC1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12454,8 +20372,13 @@ nppiAlphaComp_16u_AC1R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
+                                 Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2, int nSrc2Step, 
                              Npp16u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12470,8 +20393,13 @@ nppiAlphaComp_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, const Npp16u * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_16s_AC1R_Ctx(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
+                                 Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_16s_AC1R(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2, int nSrc2Step, 
                              Npp16s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12486,8 +20414,13 @@ nppiAlphaComp_16s_AC1R(const Npp16s * pSrc1, int nSrc1Step, const Npp16s * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32u_AC1R_Ctx(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2, int nSrc2Step, 
+                                 Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32u_AC1R(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2, int nSrc2Step, 
                              Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12502,8 +20435,13 @@ nppiAlphaComp_32u_AC1R(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32u_AC4R_Ctx(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2, int nSrc2Step, 
+                                 Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32u_AC4R(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2, int nSrc2Step, 
                              Npp32u * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12518,8 +20456,13 @@ nppiAlphaComp_32u_AC4R(const Npp32u * pSrc1, int nSrc1Step, const Npp32u * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32s_AC1R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                                 Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32s_AC1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12534,8 +20477,13 @@ nppiAlphaComp_32s_AC1R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32s_AC4R_Ctx(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
+                                 Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2, int nSrc2Step, 
                              Npp32s * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12550,8 +20498,13 @@ nppiAlphaComp_32s_AC4R(const Npp32s * pSrc1, int nSrc1Step, const Npp32s * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32f_AC1R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32f_AC1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                              Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12566,8 +20519,13 @@ nppiAlphaComp_32f_AC1R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eAlphaOp alpha-blending operation..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaComp_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
+                                 Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaComp_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2, int nSrc2Step, 
                              Npp32f * pDst,  int nDstStep,  NppiSize oSizeROI, NppiAlphaOp eAlphaOp);
@@ -12589,8 +20547,12 @@ nppiAlphaComp_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step, const Npp32f * pSrc2
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremul_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremul_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12599,8 +20561,12 @@ nppiAlphaPremul_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u * pDst, int nD
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremul_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremul_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
@@ -12611,8 +20577,12 @@ nppiAlphaPremul_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremul_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremul_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -12621,8 +20591,12 @@ nppiAlphaPremul_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step, Npp16u * pDst, int
  * \param pSrcDst \ref in_place_image_pointer.
  * \param nSrcDstStep \ref in_place_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiAlphaPremul_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiAlphaPremul_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 

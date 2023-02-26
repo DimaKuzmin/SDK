@@ -106,9 +106,9 @@ typedef struct {
 typedef fftw_iodim fftwf_iodim;
     
 typedef struct {
-    int n;
-    size_t is;
-    size_t os;
+    ptrdiff_t n;
+    ptrdiff_t is;
+    ptrdiff_t os;
 } fftw_iodim64;
 
 typedef fftw_iodim64 fftwf_iodim64;
@@ -385,6 +385,21 @@ void CUFFTAPI fftwf_execute_dft_c2r(const fftwf_plan plan,
                                     fftwf_complex *idata,
                                     float *odata);
 
+/// CUFFTW 64-bit Guru Interface
+/// dp
+fftw_plan CUFFTAPI fftw_plan_guru64_dft(int rank, const fftw_iodim64* dims, int batch_rank, const fftw_iodim64* batch_dims, fftw_complex* in, fftw_complex* out, int sign, unsigned flags);
+
+fftw_plan CUFFTAPI fftw_plan_guru64_dft_r2c(int rank, const fftw_iodim64* dims, int batch_rank, const fftw_iodim64* batch_dims, double* in, fftw_complex* out, unsigned flags);
+
+fftw_plan CUFFTAPI fftw_plan_guru64_dft_c2r(int rank, const fftw_iodim64* dims, int batch_rank, const fftw_iodim64* batch_dims, fftw_complex* in, double* out, unsigned flags);
+
+/// sp
+fftwf_plan CUFFTAPI fftwf_plan_guru64_dft(int rank, const fftwf_iodim64* dims, int batch_rank, const fftwf_iodim64* batch_dims, fftwf_complex* in, fftwf_complex* out, int sign, unsigned flags);
+
+fftwf_plan CUFFTAPI fftwf_plan_guru64_dft_r2c(int rank, const fftwf_iodim64* dims, int batch_rank, const fftwf_iodim64* batch_dims, float* in, fftwf_complex* out, unsigned flags);
+
+fftwf_plan CUFFTAPI fftwf_plan_guru64_dft_c2r(int rank, const fftwf_iodim64* dims, int batch_rank, const fftwf_iodim64* batch_dims, fftwf_complex* in, float* out, unsigned flags);
+
 #ifdef _WIN32
 #define _CUFFTAPI(T) T CUFFTAPI
 #else
@@ -410,7 +425,7 @@ void CUFFTAPI fftwf_import_wisdom_from_file(FILE * input_file);
 
 void CUFFTAPI fftw_print_plan(const fftw_plan plan);                                 
 
-void CUFFTAPI fftwf_print_plan(const fftwf_plan plan); 
+void CUFFTAPI fftwf_print_plan(const fftwf_plan plan);
 
 void CUFFTAPI fftw_set_timelimit(double seconds);
 

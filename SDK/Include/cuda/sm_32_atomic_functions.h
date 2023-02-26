@@ -58,7 +58,7 @@
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 320
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 320
 
 /*******************************************************************************
 *                                                                              *
@@ -66,8 +66,12 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
+
+#if defined(_NVHPC_CUDA)
+#undef __device_builtin__
+#define __device_builtin__ __location__(device) __location__(host)
+#endif /* _NVHPC_CUDA */
 
 #ifndef __CUDA_ARCH__
 #define __DEF_IF_HOST { }
@@ -91,6 +95,11 @@ extern __device__ __device_builtin__ unsigned long long __ullAtomicOr (unsigned 
 extern __device__ __device_builtin__ unsigned long long __ullAtomicXor(unsigned long long *address, unsigned long long val);
 }
 #endif /* __CUDA_ARCH__ */
+
+#if defined(_NVHPC_CUDA)
+#undef __device_builtin__
+#define __device_builtin__
+#endif /* _NVHPC_CUDA */
 
 /*******************************************************************************
 *                                                                              *

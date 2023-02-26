@@ -52,6 +52,8 @@
 
 #if defined(__CUDACC_RTC__)
 #define __DEVICE_ATOMIC_FUNCTIONS_DECL__ __device__
+#elif defined(_NVHPC_CUDA)
+# define __DEVICE_ATOMIC_FUNCTIONS_DECL__ extern __device__ __cudart_builtin__
 #else /* __CUDACC_RTC__ */
 #define __DEVICE_ATOMIC_FUNCTIONS_DECL__ static __inline__ __device__
 #endif /* __CUDACC_RTC__ */
@@ -64,16 +66,17 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
-#ifndef __CUDA_ARCH__
+/* Add !defined(_NVHPC_CUDA) to avoid empty function definition in PGI CUDA
+ * C++ compiler where the macro __CUDA_ARCH__ is not defined. */
+#if !defined(__CUDA_ARCH__) && !defined(_NVHPC_CUDA)
 #define __DEF_IF_HOST { }
 #else  /* !__CUDA_ARCH__ */
 #define __DEF_IF_HOST ;
 #endif /* __CUDA_ARCH__ */
 
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__)  || defined(_NVHPC_CUDA)  
 extern "C"
 {
 extern __device__ __device_builtin__ int          __iAtomicAdd(int *address, int val);
@@ -96,7 +99,7 @@ extern __device__ __device_builtin__ unsigned int __uAtomicXor(unsigned int *add
 extern __device__ __device_builtin__ int          __iAtomicCAS(int *address, int compare, int val);
 extern __device__ __device_builtin__ unsigned int __uAtomicCAS(unsigned int *address, unsigned int compare, unsigned int val);
 }
-#endif /* __CUDA_ARCH__ */
+#endif /* __CUDA_ARCH__ || defined(_NVHPC_CUDA) */
 
 /*******************************************************************************
 *                                                                              *
@@ -152,8 +155,7 @@ __DEVICE_ATOMIC_FUNCTIONS_DECL__ unsigned int atomicCAS(unsigned int *address, u
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 #if defined(_WIN32)
 # define __DEPRECATED__(msg) __declspec(deprecated(msg))
@@ -166,17 +168,19 @@ __DEVICE_ATOMIC_FUNCTIONS_DECL__ unsigned int atomicCAS(unsigned int *address, u
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 700
 #define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on compute_70 and above, and should be replaced with "#x"_sync()."\
     "To continue using "#x"(), specify virtual architecture compute_60 when targeting sm_70 and above, for example, using the pair of compiler options: -arch=compute_60 -code=sm_70."
+#elif defined(_NVHPC_CUDA)
+#define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on cc70 and above, and should be replaced with "#x"_sync()."
 #else
 #define __WSB_DEPRECATION_MESSAGE(x) #x"() is deprecated in favor of "#x"_sync() and may be removed in a future release (Use -Wno-deprecated-declarations to suppress this warning)."
 #endif
 
 extern "C"
 {
-#ifdef __CUDA_ARCH__
+#if defined(__CUDA_ARCH__) || defined(_NVHPC_CUDA)
 extern __device__ __device_builtin__ unsigned long long int __ullAtomicAdd(unsigned long long int *address, unsigned long long int val);
 extern __device__ __device_builtin__ unsigned long long int __ullAtomicExch(unsigned long long int *address, unsigned long long int val);
 extern __device__ __device_builtin__ unsigned long long int __ullAtomicCAS(unsigned long long int *address, unsigned long long int compare, unsigned long long int val);
-#endif  /* __CUDA_ARCH__ */
+#endif  /* __CUDA_ARCH__ || _NVHPC_CUDA */
 extern __device__ __device_builtin__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__any)) int __any(int cond);
 extern __device__ __device_builtin__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__all)) int __all(int cond);
 }

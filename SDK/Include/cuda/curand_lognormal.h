@@ -57,19 +57,20 @@
  * @{
  */
 
+#ifndef __CUDACC_RTC__
+#include <math.h>
+#endif // __CUDACC_RTC__
+
 #include "curand_mrg32k3a.h"
 #include "curand_mtgp32_kernel.h"
-#include <math.h>
-
-#include "curand_philox4x32_x.h" 
-
+#include "curand_philox4x32_x.h"
 
 /**
  * \brief Return a log-normally distributed float from an XORWOW generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
- * from the XORWOW generator in \p state, 
+ * distribution with mean \p mean and standard deviation \p stddev
+ * from the XORWOW generator in \p state,
  * increment position of generator by one.
  *
  * The implementation uses a Box-Muller transform to generate two
@@ -103,8 +104,8 @@ QUALIFIERS float curand_log_normal(curandStateXORWOW_t *state, float mean, float
  * \brief Return a log-normally distributed float from an Philox4_32_10 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
- * from the Philox4_32_10 generator in \p state, 
+ * distribution with mean \p mean and standard deviation \p stddev
+ * from the Philox4_32_10 generator in \p state,
  * increment position of generator by one.
  *
  * The implementation uses a Box-Muller transform to generate two
@@ -139,7 +140,7 @@ QUALIFIERS float curand_log_normal(curandStatePhilox4_32_10_t *state, float mean
  * \brief Return two normally distributed floats from an XORWOW generator.
  *
  * Return two log-normally distributed floats derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the XORWOW generator in \p state,
  * increment position of generator by two.
  *
@@ -165,7 +166,7 @@ QUALIFIERS float2 curand_log_normal2(curandStateXORWOW_t *state, float mean, flo
  * \brief Return two normally distributed floats from an Philox4_32_10 generator.
  *
  * Return two log-normally distributed floats derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Philox4_32_10 generator in \p state,
  * increment position of generator by two.
  *
@@ -190,7 +191,7 @@ QUALIFIERS float2 curand_log_normal2(curandStatePhilox4_32_10_t *state, float me
  * \brief Return four normally distributed floats from an Philox4_32_10 generator.
  *
  * Return four log-normally distributed floats derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Philox4_32_10 generator in \p state,
  * increment position of generator by four.
  *
@@ -218,8 +219,8 @@ QUALIFIERS float4 curand_log_normal4(curandStatePhilox4_32_10_t *state, float me
  * \brief Return a log-normally distributed float from an MRG32k3a generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
- * from the MRG32k3a generator in \p state, 
+ * distribution with mean \p mean and standard deviation \p stddev
+ * from the MRG32k3a generator in \p state,
  * increment position of generator by one.
  *
  * The implementation uses a Box-Muller transform to generate two
@@ -250,7 +251,7 @@ QUALIFIERS float curand_log_normal(curandStateMRG32k3a_t *state, float mean, flo
  * \brief Return two normally distributed floats from an MRG32k3a generator.
  *
  * Return two log-normally distributed floats derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the MRG32k3a generator in \p state,
  * increment position of generator by two.
  *
@@ -276,7 +277,7 @@ QUALIFIERS float2 curand_log_normal2(curandStateMRG32k3a_t *state, float mean, f
  * \brief Return a log-normally distributed float from an MTGP32 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the MTGP32 generator in \p state,
  * increment position of generator.
  *
@@ -299,7 +300,7 @@ QUALIFIERS float curand_log_normal(curandStateMtgp32_t *state, float mean, float
  * \brief Return a log-normally distributed float from a Sobol32 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Sobol32 generator in \p state,
  * increment position of generator by one.
  *
@@ -321,7 +322,7 @@ QUALIFIERS float curand_log_normal(curandStateSobol32_t *state, float mean, floa
  * \brief Return a log-normally distributed float from a scrambled Sobol32 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the scrambled Sobol32 generator in \p state,
  * increment position of generator by one.
  *
@@ -344,7 +345,7 @@ QUALIFIERS float curand_log_normal(curandStateScrambledSobol32_t *state, float m
  * \brief Return a log-normally distributed float from a Sobol64 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Sobol64 generator in \p state,
  * increment position of generator by one.
  *
@@ -367,7 +368,7 @@ QUALIFIERS float curand_log_normal(curandStateSobol64_t *state, float mean, floa
  * \brief Return a log-normally distributed float from a scrambled Sobol64 generator.
  *
  * Return a single log-normally distributed float derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the scrambled Sobol64 generator in \p state,
  * increment position of generator by one.
  *
@@ -390,7 +391,7 @@ QUALIFIERS float curand_log_normal(curandStateScrambledSobol64_t *state, float m
  * \brief Return a log-normally distributed double from an XORWOW generator.
  *
  * Return a single normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the XORWOW generator in \p state,
  * increment position of generator.
  *
@@ -428,7 +429,7 @@ QUALIFIERS double curand_log_normal_double(curandStateXORWOW_t *state, double me
  * \brief Return a log-normally distributed double from an Philox4_32_10 generator.
  *
  * Return a single normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Philox4_32_10 generator in \p state,
  * increment position of generator.
  *
@@ -464,7 +465,7 @@ QUALIFIERS double curand_log_normal_double(curandStatePhilox4_32_10_t *state, do
  * \brief Return two log-normally distributed doubles from an XORWOW generator.
  *
  * Return two log-normally distributed doubles derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the XORWOW generator in \p state,
  * increment position of generator by two.
  *
@@ -490,7 +491,7 @@ QUALIFIERS double2 curand_log_normal2_double(curandStateXORWOW_t *state, double 
  * \brief Return two log-normally distributed doubles from an Philox4_32_10 generator.
  *
  * Return two log-normally distributed doubles derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Philox4_32_10 generator in \p state,
  * increment position of generator by four.
  *
@@ -526,7 +527,7 @@ QUALIFIERS double4 curand_log_normal4_double(curandStatePhilox4_32_10_t *state, 
  * \brief Return a log-normally distributed double from an MRG32k3a generator.
  *
  * Return a single normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the MRG32k3a generator in \p state,
  * increment position of generator.
  *
@@ -558,7 +559,7 @@ QUALIFIERS double curand_log_normal_double(curandStateMRG32k3a_t *state, double 
  * \brief Return two log-normally distributed doubles from an MRG32k3a generator.
  *
  * Return two log-normally distributed doubles derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the MRG32k3a generator in \p state,
  * increment position of generator by two.
  *
@@ -584,7 +585,7 @@ QUALIFIERS double2 curand_log_normal2_double(curandStateMRG32k3a_t *state, doubl
  * \brief Return a log-normally distributed double from an MTGP32 generator.
  *
  * Return a single log-normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the MTGP32 generator in \p state,
  * increment position of generator.
  *
@@ -607,7 +608,7 @@ QUALIFIERS double curand_log_normal_double(curandStateMtgp32_t *state, double me
  * \brief Return a log-normally distributed double from a Sobol32 generator.
  *
  * Return a single log-normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Sobol32 generator in \p state,
  * increment position of generator by one.
  *
@@ -630,7 +631,7 @@ QUALIFIERS double curand_log_normal_double(curandStateSobol32_t *state, double m
  * \brief Return a log-normally distributed double from a scrambled Sobol32 generator.
  *
  * Return a single log-normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the scrambled Sobol32 generator in \p state,
  * increment position of generator by one.
  *
@@ -653,7 +654,7 @@ QUALIFIERS double curand_log_normal_double(curandStateScrambledSobol32_t *state,
  * \brief Return a log-normally distributed double from a Sobol64 generator.
  *
  * Return a single normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the Sobol64 generator in \p state,
  * increment position of generator by one.
  *
@@ -675,7 +676,7 @@ QUALIFIERS double curand_log_normal_double(curandStateSobol64_t *state, double m
  * \brief Return a log-normally distributed double from a scrambled Sobol64 generator.
  *
  * Return a single normally distributed double derived from a normal
- * distribution with mean \p mean and standard deviation \p stddev 
+ * distribution with mean \p mean and standard deviation \p stddev
  * from the scrambled Sobol64 generator in \p state,
  * increment position of generator by one.
  *

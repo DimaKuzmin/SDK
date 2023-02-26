@@ -52,13 +52,15 @@
 
 #if defined(__CUDACC_RTC__)
 #define __SM_30_INTRINSICS_DECL__ __device__
+#elif defined(_NVHPC_CUDA)
+#define __SM_30_INTRINSICS_DECL__ extern __device__ __cudart_builtin__
 #else /* !__CUDACC_RTC__ */
 #define __SM_30_INTRINSICS_DECL__ static __device__ __inline__
 #endif /* __CUDACC_RTC__ */
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 300
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 300
 
 /*******************************************************************************
 *                                                                              *
@@ -66,11 +68,11 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "device_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
-#ifndef __CUDA_ARCH__
+/* Add !defined(_NVHPC_CUDA) to avoid empty function definition in CUDA
+ * C++ compiler where the macro __CUDA_ARCH__ is not defined. */
+#if !defined(__CUDA_ARCH__) && !defined(_NVHPC_CUDA)
 #define __DEF_IF_HOST { }
 #else  /* !__CUDA_ARCH__ */
 #define __DEF_IF_HOST ;
@@ -97,11 +99,10 @@
 # define __DEPRECATED__(msg) __attribute__((deprecated(msg)))
 #endif
 
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 700
-#define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on compute_70 and above, and should be replaced with "#x"_sync()."\
-    "To continue using "#x"(), specify virtual architecture compute_60 when targeting sm_70 and above, for example, using the pair of compiler options: -arch=compute_60 -code=sm_70."
-#else
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700
 #define __WSB_DEPRECATION_MESSAGE(x) #x"() is deprecated in favor of "#x"_sync() and may be removed in a future release (Use -Wno-deprecated-declarations to suppress this warning)."
+#elif defined(_NVHPC_CUDA)
+#define __WSB_DEPRECATION_MESSAGE(x) #x"() is not valid on cc70 and above, and should be replaced with "#x"_sync()."
 #endif
 
 __SM_30_INTRINSICS_DECL__ unsigned  __fns(unsigned mask, unsigned base, int offset) __DEF_IF_HOST
@@ -120,103 +121,82 @@ __SM_30_INTRINSICS_DECL__ unsigned __activemask() __DEF_IF_HOST
 //    the "warpSize" constant at this time
 // b) we cannot map the float __shfl to the int __shfl because it'll mess with
 //    the register number (especially if you're doing two shfls to move a double).
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) int __shfl(int var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ int __shfl_sync(unsigned mask, int var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) unsigned int __shfl(unsigned int var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_sync(unsigned mask, unsigned int var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) int __shfl_up(int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ int __shfl_up_sync(unsigned mask, int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) unsigned int __shfl_up(unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_up_sync(unsigned mask, unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) int __shfl_down(int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ int __shfl_down_sync(unsigned mask, int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) unsigned int __shfl_down(unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_down_sync(unsigned mask, unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) int __shfl_xor(int var, int laneMask, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ int __shfl_xor_sync(unsigned mask, int var, int laneMask, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) unsigned int __shfl_xor(unsigned int var, int laneMask, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_xor_sync(unsigned mask, unsigned int var, int laneMask, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) float __shfl(float var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ float __shfl_sync(unsigned mask, float var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) float __shfl_up(float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ float __shfl_up_sync(unsigned mask, float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) float __shfl_down(float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ float __shfl_down_sync(unsigned mask, float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) float __shfl_xor(float var, int laneMask, int width=warpSize) __DEF_IF_HOST
+#endif
+
+__SM_30_INTRINSICS_DECL__ int __shfl_sync(unsigned mask, int var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_sync(unsigned mask, unsigned int var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ int __shfl_up_sync(unsigned mask, int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_up_sync(unsigned mask, unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ int __shfl_down_sync(unsigned mask, int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_down_sync(unsigned mask, unsigned int var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ int __shfl_xor_sync(unsigned mask, int var, int laneMask, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_xor_sync(unsigned mask, unsigned int var, int laneMask, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ float __shfl_sync(unsigned mask, float var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ float __shfl_up_sync(unsigned mask, float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ float __shfl_down_sync(unsigned mask, float var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
 __SM_30_INTRINSICS_DECL__ float __shfl_xor_sync(unsigned mask, float var, int laneMask, int width=warpSize) __DEF_IF_HOST
 
 // 64-bits SHFL
-__SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) long long __shfl(long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long long __shfl_sync(unsigned mask, long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) unsigned long long __shfl(unsigned long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_sync(unsigned mask, unsigned long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
+__SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) long long __shfl(long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) long long __shfl_up(long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long long __shfl_up_sync(unsigned mask, long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) unsigned long long __shfl_up(unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_up_sync(unsigned mask, unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) long long __shfl_down(long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long long __shfl_down_sync(unsigned mask, long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) unsigned long long __shfl_down(unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_down_sync(unsigned mask, unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) long long __shfl_xor(long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long long __shfl_xor_sync(unsigned mask, long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) unsigned long long __shfl_xor(unsigned long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_xor_sync(unsigned mask, unsigned long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) double __shfl(double var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ double __shfl_sync(unsigned mask, double var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) double __shfl_up(double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ double __shfl_up_sync(unsigned mask, double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) double __shfl_down(double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ double __shfl_down_sync(unsigned mask, double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) double __shfl_xor(double var, int laneMask, int width=warpSize) __DEF_IF_HOST
+#endif
+
+__SM_30_INTRINSICS_DECL__ long long __shfl_sync(unsigned mask, long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_sync(unsigned mask, unsigned long long var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long long __shfl_up_sync(unsigned mask, long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_up_sync(unsigned mask, unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long long __shfl_down_sync(unsigned mask, long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_down_sync(unsigned mask, unsigned long long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long long __shfl_xor_sync(unsigned mask, long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_xor_sync(unsigned mask, unsigned long long var, int laneMask, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ double __shfl_sync(unsigned mask, double var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ double __shfl_up_sync(unsigned mask, double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ double __shfl_down_sync(unsigned mask, double var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
 __SM_30_INTRINSICS_DECL__ double __shfl_xor_sync(unsigned mask, double var, int laneMask, int width=warpSize) __DEF_IF_HOST
 
 // long needs some help to choose between 32-bits and 64-bits
-
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) long __shfl(long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long __shfl_sync(unsigned mask, long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl)) unsigned long __shfl(unsigned long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_sync(unsigned mask, unsigned long var, int srcLane, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) long __shfl_up(long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long __shfl_up_sync(unsigned mask, long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_up)) unsigned long __shfl_up(unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_up_sync(unsigned mask, unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) long __shfl_down(long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long __shfl_down_sync(unsigned mask, long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_down)) unsigned long __shfl_down(unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_down_sync(unsigned mask, unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) long __shfl_xor(long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-__SM_30_INTRINSICS_DECL__ long __shfl_xor_sync(unsigned mask, long var, int laneMask, int width=warpSize) __DEF_IF_HOST
-
 __SM_30_INTRINSICS_DECL__ __DEPRECATED__(__WSB_DEPRECATION_MESSAGE(__shfl_xor)) unsigned long __shfl_xor(unsigned long var, int laneMask, int width=warpSize) __DEF_IF_HOST
+#endif
+
+__SM_30_INTRINSICS_DECL__ long __shfl_sync(unsigned mask, long var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_sync(unsigned mask, unsigned long var, int srcLane, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long __shfl_up_sync(unsigned mask, long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_up_sync(unsigned mask, unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long __shfl_down_sync(unsigned mask, long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_down_sync(unsigned mask, unsigned long var, unsigned int delta, int width=warpSize) __DEF_IF_HOST
+__SM_30_INTRINSICS_DECL__ long __shfl_xor_sync(unsigned mask, long var, int laneMask, int width=warpSize) __DEF_IF_HOST
 __SM_30_INTRINSICS_DECL__ unsigned long __shfl_xor_sync(unsigned mask, unsigned long var, int laneMask, int width=warpSize) __DEF_IF_HOST
 
 #undef __DEPRECATED__

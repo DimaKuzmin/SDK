@@ -58,7 +58,7 @@
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 610
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 610
 
 /*******************************************************************************
 *                                                                              *
@@ -66,9 +66,7 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "device_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 /*******************************************************************************
 *                                                                              *
@@ -153,7 +151,7 @@ __SM_61_INTRINSICS_DECL__ unsigned int __dp2a_hi(ushort2 srcA, uchar4 srcB, unsi
 }
 
 
-#endif /* !__CUDA_ARCH__ || __CUDA_ARCH__ >= 610 */
+#endif /* _NVHPC_CUDA || !__CUDA_ARCH__ || __CUDA_ARCH__ >= 610 */
 
 #endif /* __cplusplus && __CUDACC__ */
 

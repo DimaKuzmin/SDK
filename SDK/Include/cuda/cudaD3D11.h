@@ -50,9 +50,6 @@
 #ifndef CUDAD3D11_H
 #define CUDAD3D11_H
 
-/**
- * CUDA API versioning support
- */
 #if defined(__CUDA_API_VERSION_INTERNAL) || defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
 #define __CUDA_DEPRECATED
 #elif defined(_MSC_VER)
@@ -63,19 +60,11 @@
 #define __CUDA_DEPRECATED
 #endif
 
-#if defined(CUDA_FORCE_API_VERSION)
-    #if (CUDA_FORCE_API_VERSION == 3010)
-        #define __CUDA_API_VERSION 3010
-    #else
-        #error "Unsupported value of CUDA_FORCE_API_VERSION"
-    #endif
-#else
-    #define __CUDA_API_VERSION 9020
-#endif /* CUDA_FORCE_API_VERSION */
+#ifdef CUDA_FORCE_API_VERSION
+#error "CUDA_FORCE_API_VERSION is no longer supported."
+#endif
 
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION >= 3020
-    #define cuD3D11CtxCreate cuD3D11CtxCreate_v2
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION >= 3020 */
+#define cuD3D11CtxCreate cuD3D11CtxCreate_v2
 
 #ifdef __cplusplus
 extern "C" {
@@ -264,8 +253,6 @@ CUresult CUDAAPI cuGraphicsD3D11RegisterResource(CUgraphicsResource *pCudaResour
  * @{
  */
 
-#if __CUDA_API_VERSION >= 3020
-
 /**
  * \brief Create a CUDA context for interoperability with Direct3D 11
  *
@@ -350,30 +337,20 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuD3D11CtxCreateOnDevice(CUcontext *pCtx, uns
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuD3D11GetDirect3DDevice(ID3D11Device **ppD3DDevice);
 
-#endif /* __CUDA_API_VERSION >= 3020 */
-
 /** @} */ /* END CUDA_D3D11_DEPRECATED */
 /** @} */ /* END CUDA_D3D11 */
 
-/**
- * CUDA API versioning support
- */
+
 #if defined(__CUDA_API_VERSION_INTERNAL)
     #undef cuD3D11CtxCreate
-#endif /* __CUDA_API_VERSION_INTERNAL */
 
-/**
- * CUDA API made obselete at API version 3020
- */
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION < 3020
-CUresult CUDAAPI cuD3D11CtxCreate(CUcontext *pCtx, CUdevice *pCudaDevice, unsigned int Flags, ID3D11Device *pD3DDevice);
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION < 3020 */
+    CUresult CUDAAPI cuD3D11CtxCreate(CUcontext *pCtx, CUdevice *pCudaDevice, unsigned int Flags, ID3D11Device *pD3DDevice);
+#endif /* __CUDA_API_VERSION_INTERNAL */
 
 #ifdef __cplusplus
 };
 #endif
 
-#undef __CUDA_API_VERSION
 #undef __CUDA_DEPRECATED
 
 #endif

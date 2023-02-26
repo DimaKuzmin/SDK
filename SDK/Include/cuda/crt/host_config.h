@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2016 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/host_config.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/host_config.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_CONFIG_H__
+#endif
+
 #if !defined(__HOST_CONFIG_H__)
 #define __HOST_CONFIG_H__
 
@@ -72,40 +82,43 @@
 
 #endif /* !__GNUC__ && !_WIN32 */
 
-#if defined(__ICC)
-
-#if (__ICC != 1500 && __ICC != 1600 && __ICC != 1700) || !defined(__GNUC__) || !defined(__LP64__)
-
-#error -- unsupported ICC configuration! Only ICC 15.0, ICC 16.0, and ICC 17.0 on Linux x86_64 are supported!
-
-#endif /* (__ICC != 1500 && __ICC != 1600 && __ICC != 17.0) || !__GNUC__ || !__LP64__ */
-
-#endif /* __ICC */
-
+/* check invalid configurations */
 #if defined(__PGIC__)
-
 #if !defined(__GNUC__) || !defined(__LP64__) || !defined(__linux__)
 #error -- unsupported pgc++ configuration! pgc++ is supported only on Linux x86_64!
 #endif /* !defined(__GNUC__) || !defined(__LP64__) || !defined(__linux__) */
-
-#if (!(__PGIC__ == 17 || __PGIC__ == 18) && !(__PGIC__ == 99 && __PGIC_MINOR__ == 99))
-#error -- unsupported pgc++ configuration! Only pgc++ 17 and 18 on Linux x86_64 are supported!
-#endif
-
-#endif /* __PGIC__ */
+#endif  /* defined(__PGIC__) */
 
 #if defined(__powerpc__)
-
 #if !defined(__powerpc64__) || !defined(__LITTLE_ENDIAN__)
-
 #error -- unsupported PPC platform! Only 64-bit little endian PPC is supported!
-
 #endif /* !__powerpc64__ || !__LITTLE_ENDIAN__ */
+#endif /* __powerpc__ */
+
+#if defined(__APPLE__) && defined(__MACH__) && !defined(__clang__)
+#error -- clang and clang++ are the only supported host compilers on Mac OS X!
+#endif /* __APPLE__ && __MACH__ && !__clang__ */
+
+
+/* check host compiler version  */
+#if !__NV_NO_HOST_COMPILER_CHECK
+
+#if defined(__ICC)
+
+#if (__ICC != 1500 && __ICC != 1600 && __ICC != 1700 && __ICC != 1800 && !(__ICC >= 1900 && __ICC <= 2021)) || !defined(__GNUC__) || !defined(__LP64__)
+
+#error -- unsupported ICC configuration! Only ICC 15.0, ICC 16.0, ICC 17.0, ICC 18.0, ICC 19.x and 20.x on Linux x86_64 are supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.
+ 
+#endif /* (__ICC != 1500 && __ICC != 1600 && __ICC != 1700 && __ICC != 1800 && __ICC != 1900) || !__GNUC__ || !__LP64__ */
+
+#endif /* __ICC */
+
+#if defined(__powerpc__)
 
 #if defined(__ibmxl_vrm__) && !(__ibmxl_vrm__ >= 0x0d010000 && __ibmxl_vrm__ < 0x0d020000) && \
                               !(__ibmxl_vrm__ >= 0x10010000 && __ibmxl_vrm__ < 0x10020000)
 
-#error -- unsupported xlC version! only xlC 13.1 and 16.1 are supported
+#error -- unsupported xlC version! only xlC 13.1 and 16.1 are supported. The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.
 
 #endif /* __ibmxl_vrm__ && !(__ibmxl_vrm__ >= 0x0d010000 && __ibmxl_vrm__ < 0x0d020000) &&
                            !(__ibmxl_vrm__ >= 0x10010000 && __ibmxl_vrm__ < 0x10020000) */
@@ -114,31 +127,40 @@
 
 #if defined(__GNUC__)
 
-#if __GNUC__ > 7
+#if __GNUC__ > 12
 
-#error -- unsupported GNU version! gcc versions later than 7 are not supported!
+#error -- unsupported GNU version! gcc versions later than 12 are not supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.
 
-#endif /* __GNUC__ > 7 */
+#endif /* __GNUC__ > 12 */
 
-#if defined(__APPLE__) && defined(__MACH__) && !defined(__clang__)
-#error -- clang and clang++ are the only supported host compilers on Mac OS X!
-#endif /* __APPLE__ && __MACH__ && !__clang__ */
+
+#if defined(__clang__) && !defined(__ibmxl_vrm__) && !defined(__ICC) && !defined(__HORIZON__) && !defined(__APPLE__)
+
+#if (__clang_major__ >= 15) || (__clang_major__ < 3) || ((__clang_major__ == 3) &&  (__clang_minor__ < 3))
+#error -- unsupported clang version! clang version must be less than 15 and greater than 3.2 . The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.
+
+#endif  /* (__clang_major__ >=  15) || (__clang_major__ < 3) || ((__clang_major__ == 3) &&  (__clang_minor__ < 3)) */
+
+#endif /* defined(__clang__) && !defined(__ibmxl_vrm__) && !defined(__ICC) && !defined(__HORIZON__) && !defined(__APPLE__) */
+
 
 #endif /* __GNUC__ */
 
 #if defined(_WIN32)
 
-#if _MSC_VER < 1600 || _MSC_VER > 2014
+#if _MSC_VER < 1910 || _MSC_VER >= 1940
 
-#error -- unsupported Microsoft Visual Studio version! Only the versions 2012, 2013, 2015 and 2017 are supported!
+#error -- unsupported Microsoft Visual Studio version! Only the versions between 2017 and 2022 (inclusive) are supported! The nvcc flag '-allow-unsupported-compiler' can be used to override this version check; however, using an unsupported host compiler may cause compilation failure or incorrect run time execution. Use at your own risk.
 
-#elif _MSC_VER == 1600 /* _MSC_VERION == 1600 */
+#elif _MSC_VER >= 1910 && _MSC_VER < 1910
 
-#pragma message("support for Microsoft Visual Studio 2010 has been deprecated!")
+#pragma message("support for this version of Microsoft Visual Studio has been deprecated! Only the versions between 2017 and 2022 (inclusive) are supported!")
 
-#endif /* _MSC_VER < 1600 || _MSC_VER > 1800 || _MSC_VERSION == 1600 */
+#endif /* (_MSC_VER < 1910 || _MSC_VER >= 1940) || (_MSC_VER >= 1910 && _MSC_VER < 1910) */
 
 #endif /* _WIN32 */
+#endif  /* !__NV_NO_HOST_COMPILER_CHECK */
+
 
 /* configure host compiler */
 #if defined(__APPLE__)
@@ -264,3 +286,8 @@ typedef char *va_list;
 #endif /* __CUDACC__ */
 
 #endif /* !__HOST_CONFIG_H__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_CONFIG_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_CONFIG_H__
+#endif

@@ -1,4 +1,4 @@
- /* Copyright 2009-2017 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -13,7 +13,7 @@
   * accepted by Licensee.  Notwithstanding any terms or conditions to 
   * the contrary in the License Agreement, reproduction or disclosure 
   * of the Licensed Deliverables to any third party without the express 
-  * written consent of NVIDIA is prohibited. 
+  * written consent of NVIDIA is prohibited.
   * 
   * NOTWITHSTANDING ANY TERMS OR CONDITIONS TO THE CONTRARY IN THE 
   * LICENSE AGREEMENT, NVIDIA MAKES NO REPRESENTATION ABOUT THE 
@@ -55,7 +55,6 @@
  
 #include "nppdefs.h"
 
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -63,7 +62,7 @@ extern "C" {
 /** @defgroup image_data_exchange_and_initialization Data Exchange and Initialization
  *  @ingroup nppi
  *
- * Functions for initializting, copying and converting image data.
+ * Functions for initializing, copying and converting image data.
  *
  * @{
  *
@@ -90,6 +89,7 @@ extern "C" {
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -104,6 +104,9 @@ extern "C" {
  *
  */
 NppStatus 
+nppiSet_8s_C1R_Ctx(const Npp8s nValue, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8s_C1R(const Npp8s nValue, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -112,6 +115,9 @@ nppiSet_8s_C1R(const Npp8s nValue, Npp8s * pDst, int nDstStep, NppiSize oSizeROI
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_8s_C2R_Ctx(const Npp8s aValue[2], Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8s_C2R(const Npp8s aValue[2], Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -122,6 +128,9 @@ nppiSet_8s_C2R(const Npp8s aValue[2], Npp8s * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_8s_C3R_Ctx(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8s_C3R(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -130,6 +139,9 @@ nppiSet_8s_C3R(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_8s_C4R_Ctx(const Npp8s aValue[4], Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8s_C4R(const Npp8s aValue[4], Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -140,6 +152,9 @@ nppiSet_8s_C4R(const Npp8s aValue[4], Npp8s * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_8s_AC4R_Ctx(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8s_AC4R(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -148,6 +163,9 @@ nppiSet_8s_AC4R(const Npp8s aValue[3], Npp8s * pDst, int nDstStep, NppiSize oSiz
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_C1R_Ctx(const Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_C1R(const Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -158,6 +176,9 @@ nppiSet_8u_C1R(const Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI
  *
  */
 NppStatus 
+nppiSet_8u_C2R_Ctx(const Npp8u aValue[2], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8u_C2R(const Npp8u aValue[2], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -166,6 +187,9 @@ nppiSet_8u_C2R(const Npp8u aValue[2], Npp8u * pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_C3R_Ctx(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_C3R(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -176,6 +200,9 @@ nppiSet_8u_C3R(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_8u_C4R_Ctx(const Npp8u aValue[4], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8u_C4R(const Npp8u aValue[4], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -184,6 +211,9 @@ nppiSet_8u_C4R(const Npp8u aValue[4], Npp8u * pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_AC4R_Ctx(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_AC4R(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -194,6 +224,9 @@ nppiSet_8u_AC4R(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, NppiSize oSiz
  *
  */
 NppStatus 
+nppiSet_16u_C1R_Ctx(const Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16u_C1R(const Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -202,6 +235,9 @@ nppiSet_16u_C1R(const Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16u_C2R_Ctx(const Npp16u aValue[2], Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16u_C2R(const Npp16u aValue[2], Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -212,6 +248,9 @@ nppiSet_16u_C2R(const Npp16u aValue[2], Npp16u * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_16u_C3R_Ctx(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16u_C3R(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -220,6 +259,9 @@ nppiSet_16u_C3R(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16u_C4R_Ctx(const Npp16u aValue[4], Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16u_C4R(const Npp16u aValue[4], Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -230,6 +272,9 @@ nppiSet_16u_C4R(const Npp16u aValue[4], Npp16u * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_16u_AC4R_Ctx(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16u_AC4R(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -238,6 +283,9 @@ nppiSet_16u_AC4R(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, NppiSize o
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_C1R_Ctx(const Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16s_C1R(const Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -248,6 +296,9 @@ nppiSet_16s_C1R(const Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_16s_C2R_Ctx(const Npp16s aValue[2], Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16s_C2R(const Npp16s aValue[2], Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -256,6 +307,9 @@ nppiSet_16s_C2R(const Npp16s aValue[2], Npp16s * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_C3R_Ctx(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16s_C3R(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -266,6 +320,9 @@ nppiSet_16s_C3R(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_16s_C4R_Ctx(const Npp16s aValue[4], Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16s_C4R(const Npp16s aValue[4], Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -274,6 +331,9 @@ nppiSet_16s_C4R(const Npp16s aValue[4], Npp16s * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_AC4R_Ctx(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16s_AC4R(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -284,6 +344,9 @@ nppiSet_16s_AC4R(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, NppiSize o
  *
  */
 NppStatus 
+nppiSet_16sc_C1R_Ctx(const Npp16sc oValue, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16sc_C1R(const Npp16sc oValue, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -292,6 +355,9 @@ nppiSet_16sc_C1R(const Npp16sc oValue, Npp16sc * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16sc_C2R_Ctx(const Npp16sc aValue[2], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16sc_C2R(const Npp16sc aValue[2], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -302,6 +368,9 @@ nppiSet_16sc_C2R(const Npp16sc aValue[2], Npp16sc * pDst, int nDstStep, NppiSize
  *
  */
 NppStatus 
+nppiSet_16sc_C3R_Ctx(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16sc_C3R(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -310,6 +379,9 @@ nppiSet_16sc_C3R(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_16sc_C4R_Ctx(const Npp16sc aValue[4], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16sc_C4R(const Npp16sc aValue[4], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -320,6 +392,9 @@ nppiSet_16sc_C4R(const Npp16sc aValue[4], Npp16sc * pDst, int nDstStep, NppiSize
  *
  */
 NppStatus 
+nppiSet_16sc_AC4R_Ctx(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16sc_AC4R(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -328,6 +403,9 @@ nppiSet_16sc_AC4R(const Npp16sc aValue[3], Npp16sc * pDst, int nDstStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_C1R_Ctx(const Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32s_C1R(const Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -338,6 +416,9 @@ nppiSet_32s_C1R(const Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_32s_C2R_Ctx(const Npp32s aValue[2], Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32s_C2R(const Npp32s aValue[2], Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -346,6 +427,9 @@ nppiSet_32s_C2R(const Npp32s aValue[2], Npp32s * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_C3R_Ctx(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32s_C3R(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -356,6 +440,9 @@ nppiSet_32s_C3R(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32s_C4R_Ctx(const Npp32s aValue[4], Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32s_C4R(const Npp32s aValue[4], Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -364,6 +451,9 @@ nppiSet_32s_C4R(const Npp32s aValue[4], Npp32s * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_AC4R_Ctx(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32s_AC4R(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -374,6 +464,9 @@ nppiSet_32s_AC4R(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, NppiSize o
  *
  */
 NppStatus 
+nppiSet_32u_C1R_Ctx(const Npp32u nValue, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32u_C1R(const Npp32u nValue, Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -382,6 +475,9 @@ nppiSet_32u_C1R(const Npp32u nValue, Npp32u * pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32u_C2R_Ctx(const Npp32u aValue[2], Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32u_C2R(const Npp32u aValue[2], Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -392,6 +488,9 @@ nppiSet_32u_C2R(const Npp32u aValue[2], Npp32u * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32u_C3R_Ctx(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32u_C3R(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -400,6 +499,9 @@ nppiSet_32u_C3R(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32u_C4R_Ctx(const Npp32u aValue[4], Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32u_C4R(const Npp32u aValue[4], Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -410,6 +512,9 @@ nppiSet_32u_C4R(const Npp32u aValue[4], Npp32u * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32u_AC4R_Ctx(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32u_AC4R(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -418,6 +523,9 @@ nppiSet_32u_AC4R(const Npp32u aValue[3], Npp32u * pDst, int nDstStep, NppiSize o
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32sc_C1R_Ctx(const Npp32sc oValue, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32sc_C1R(const Npp32sc oValue, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -428,6 +536,9 @@ nppiSet_32sc_C1R(const Npp32sc oValue, Npp32sc * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32sc_C2R_Ctx(const Npp32sc aValue[2], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32sc_C2R(const Npp32sc aValue[2], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -436,6 +547,9 @@ nppiSet_32sc_C2R(const Npp32sc aValue[2], Npp32sc * pDst, int nDstStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32sc_C3R_Ctx(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32sc_C3R(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -446,6 +560,9 @@ nppiSet_32sc_C3R(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSize
  *
  */
 NppStatus 
+nppiSet_32sc_C4R_Ctx(const Npp32sc aValue[4], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32sc_C4R(const Npp32sc aValue[4], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -455,7 +572,58 @@ nppiSet_32sc_C4R(const Npp32sc aValue[4], Npp32sc * pDst, int nDstStep, NppiSize
  *
  */
 NppStatus 
+nppiSet_32sc_AC4R_Ctx(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32sc_AC4R(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * 16-bit floating point image set.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
+ *
+ */
+NppStatus 
+nppiSet_16f_C1R_Ctx(const Npp32f nValue, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSet_16f_C1R(const Npp32f nValue, Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * 2 channel 16-bit floating point image set.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
+ *
+ */
+NppStatus 
+nppiSet_16f_C2R_Ctx(const Npp32f aValues[2], Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSet_16f_C2R(const Npp32f aValues[2], Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * 3 channel 16-bit floating point image set.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
+ *
+ */
+NppStatus 
+nppiSet_16f_C3R_Ctx(const Npp32f aValues[3], Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSet_16f_C3R(const Npp32f aValues[3], Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * 4 channel 16-bit floating point image set.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
+ *
+ */
+NppStatus 
+nppiSet_16f_C4R_Ctx(const Npp32f aValues[4], Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSet_16f_C4R(const Npp32f aValues[4], Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * 32-bit floating point image set.
@@ -463,6 +631,9 @@ nppiSet_32sc_AC4R(const Npp32sc aValue[3], Npp32sc * pDst, int nDstStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32f_C1R_Ctx(const Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32f_C1R(const Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -473,6 +644,9 @@ nppiSet_32f_C1R(const Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_32f_C2R_Ctx(const Npp32f aValue[2], Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32f_C2R(const Npp32f aValue[2], Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -481,6 +655,9 @@ nppiSet_32f_C2R(const Npp32f aValue[2], Npp32f * pDst, int nDstStep, NppiSize oS
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32f_C3R_Ctx(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32f_C3R(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -491,6 +668,9 @@ nppiSet_32f_C3R(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32f_C4R_Ctx(const Npp32f aValue[4], Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32f_C4R(const Npp32f aValue[4], Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -500,8 +680,10 @@ nppiSet_32f_C4R(const Npp32f aValue[4], Npp32f * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
-nppiSet_32f_AC4R(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+nppiSet_32f_AC4R_Ctx(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiSet_32f_AC4R(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * Single channel 32-bit complex image set.
@@ -509,6 +691,9 @@ nppiSet_32f_AC4R(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, NppiSize o
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32fc_C1R_Ctx(const Npp32fc oValue, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32fc_C1R(const Npp32fc oValue, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -519,6 +704,9 @@ nppiSet_32fc_C1R(const Npp32fc oValue, Npp32fc * pDst, int nDstStep, NppiSize oS
  *
  */
 NppStatus 
+nppiSet_32fc_C2R_Ctx(const Npp32fc aValue[2], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32fc_C2R(const Npp32fc aValue[2], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -527,6 +715,9 @@ nppiSet_32fc_C2R(const Npp32fc aValue[2], Npp32fc * pDst, int nDstStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32fc_C3R_Ctx(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32fc_C3R(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -537,6 +728,9 @@ nppiSet_32fc_C3R(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSize
  *
  */
 NppStatus 
+nppiSet_32fc_C4R_Ctx(const Npp32fc aValue[4], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32fc_C4R(const Npp32fc aValue[4], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -545,6 +739,9 @@ nppiSet_32fc_C4R(const Npp32fc aValue[4], Npp32fc * pDst, int nDstStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageSetParameters">Common parameters for nppiSet functions</a>.
  *
  */
+NppStatus 
+nppiSet_32fc_AC4R_Ctx(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32fc_AC4R(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -564,6 +761,7 @@ nppiSet_32fc_AC4R(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSiz
  * \param oSizeROI \ref roi_specification.
  * \param pMask \ref mask_image_pointer.
  * \param nMaskStep \ref mask_image_line_step.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -577,6 +775,9 @@ nppiSet_32fc_AC4R(const Npp32fc aValue[3], Npp32fc * pDst, int nDstStep, NppiSiz
  *
  */
 NppStatus 
+nppiSet_8u_C1MR_Ctx(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8u_C1MR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
 
 /** 
@@ -585,6 +786,10 @@ nppiSet_8u_C1MR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, con
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_C3MR_Ctx(const Npp8u aValue[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI,
+                    const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_C3MR(const Npp8u aValue[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI,
                 const Npp8u * pMask, int nMaskStep);
@@ -596,6 +801,10 @@ nppiSet_8u_C3MR(const Npp8u aValue[3], Npp8u* pDst, int nDstStep, NppiSize oSize
  *
  */
 NppStatus 
+nppiSet_8u_C4MR_Ctx(const Npp8u aValue[4], Npp8u* pDst, int nDstStep, NppiSize oSizeROI,
+                    const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8u_C4MR(const Npp8u aValue[4], Npp8u* pDst, int nDstStep, NppiSize oSizeROI,
                 const Npp8u * pMask, int nMaskStep);
 
@@ -605,6 +814,11 @@ nppiSet_8u_C4MR(const Npp8u aValue[4], Npp8u* pDst, int nDstStep, NppiSize oSize
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_AC4MR_Ctx(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_AC4MR(const Npp8u aValue[3], Npp8u * pDst, int nDstStep, 
                  NppiSize oSizeROI,
@@ -617,7 +831,10 @@ nppiSet_8u_AC4MR(const Npp8u aValue[3], Npp8u * pDst, int nDstStep,
  *
  */
 NppStatus 
-nppiSet_16u_C1MR( Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
+nppiSet_16u_C1MR_Ctx(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiSet_16u_C1MR(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
 
 /** 
  * Masked 3 channel 16-bit unsigned image set.
@@ -625,6 +842,11 @@ nppiSet_16u_C1MR( Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_16u_C3MR_Ctx(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16u_C3MR(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, 
                  NppiSize oSizeROI,
@@ -637,6 +859,11 @@ nppiSet_16u_C3MR(const Npp16u aValue[3], Npp16u * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_16u_C4MR_Ctx(const Npp16u aValue[4], Npp16u * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16u_C4MR(const Npp16u aValue[4], Npp16u * pDst, int nDstStep, 
                  NppiSize oSizeROI,
                  const Npp8u * pMask, int nMaskStep);
@@ -647,6 +874,11 @@ nppiSet_16u_C4MR(const Npp16u aValue[4], Npp16u * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_16u_AC4MR_Ctx(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, 
+                      NppiSize oSizeROI,
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16u_AC4MR(const Npp16u aValue[3], Npp16u * pDst, int nDstStep, 
                   NppiSize oSizeROI,
@@ -659,6 +891,9 @@ nppiSet_16u_AC4MR(const Npp16u aValue[3], Npp16u * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_16s_C1MR_Ctx(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16s_C1MR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
 
 /** 
@@ -667,6 +902,11 @@ nppiSet_16s_C1MR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_C3MR_Ctx(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+                          
 NppStatus 
 nppiSet_16s_C3MR(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, 
                  NppiSize oSizeROI,
@@ -679,6 +919,11 @@ nppiSet_16s_C3MR(const Npp16s aValue[3], Npp16s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_16s_C4MR_Ctx(const Npp16s aValue[4], Npp16s * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+                          
+NppStatus 
 nppiSet_16s_C4MR(const Npp16s aValue[4], Npp16s * pDst, int nDstStep, 
                  NppiSize oSizeROI,
                  const Npp8u * pMask, int nMaskStep);
@@ -689,6 +934,11 @@ nppiSet_16s_C4MR(const Npp16s aValue[4], Npp16s * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_AC4MR_Ctx(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, 
+                      NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16s_AC4MR(const Npp16s aValue[3], Npp16s * pDst, int nDstStep, 
                   NppiSize oSizeROI, 
@@ -701,6 +951,9 @@ nppiSet_16s_AC4MR(const Npp16s aValue[3], Npp16s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_32s_C1MR_Ctx(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32s_C1MR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
 
 /** 
@@ -709,6 +962,11 @@ nppiSet_32s_C1MR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_C3MR_Ctx(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+                          
 NppStatus 
 nppiSet_32s_C3MR(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, 
                  NppiSize oSizeROI,
@@ -721,6 +979,11 @@ nppiSet_32s_C3MR(const Npp32s aValue[3], Npp32s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_32s_C4MR_Ctx(const Npp32s aValue[4], Npp32s * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+                          
+NppStatus 
 nppiSet_32s_C4MR(const Npp32s aValue[4], Npp32s * pDst, int nDstStep, 
                  NppiSize oSizeROI,
                  const Npp8u * pMask, int nMaskStep);
@@ -731,6 +994,11 @@ nppiSet_32s_C4MR(const Npp32s aValue[4], Npp32s * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_AC4MR_Ctx(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, 
+                      NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32s_AC4MR(const Npp32s aValue[3], Npp32s * pDst, int nDstStep, 
                   NppiSize oSizeROI, 
@@ -743,6 +1011,9 @@ nppiSet_32s_AC4MR(const Npp32s aValue[3], Npp32s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_32f_C1MR_Ctx(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32f_C1MR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp8u * pMask, int nMaskStep);
 
 /** 
@@ -751,6 +1022,11 @@ nppiSet_32f_C1MR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
  * For common parameter descriptions, see <a href="#CommonImageMaskedSetParameters">Common parameters for nppiSet_CXM functions</a>.
  *
  */
+NppStatus 
+nppiSet_32f_C3MR_Ctx(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32f_C3MR(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, 
                  NppiSize oSizeROI,
@@ -763,6 +1039,11 @@ nppiSet_32f_C3MR(const Npp32f aValue[3], Npp32f * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_32f_C4MR_Ctx(const Npp32f aValue[4], Npp32f * pDst, int nDstStep, 
+                     NppiSize oSizeROI,
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+                          
+NppStatus 
 nppiSet_32f_C4MR(const Npp32f aValue[4], Npp32f * pDst, int nDstStep, 
                  NppiSize oSizeROI,
                  const Npp8u * pMask, int nMaskStep);
@@ -774,10 +1055,14 @@ nppiSet_32f_C4MR(const Npp32f aValue[4], Npp32f * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_32f_AC4MR_Ctx(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, 
+                      NppiSize oSizeROI,
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32f_AC4MR(const Npp32f aValue[3], Npp32f * pDst, int nDstStep, 
                   NppiSize oSizeROI,
                   const Npp8u * pMask, int nMaskStep);
-
 
 /** @} image_masked_set */
 
@@ -793,6 +1078,7 @@ nppiSet_32f_AC4MR(const Npp32f aValue[3], Npp32f * pDst, int nDstStep,
  * \param pDst \ref select_destination_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -806,6 +1092,9 @@ nppiSet_32f_AC4MR(const Npp32f aValue[3], Npp32f * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiSet_8u_C3CR_Ctx(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_8u_C3CR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -814,6 +1103,9 @@ nppiSet_8u_C3CR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
  * For common parameter descriptions, see <a href="#CommonImageChannelSetParameters">Common parameters for nppiSet_CXC functions</a>.
  *
  */
+NppStatus 
+nppiSet_8u_C4CR_Ctx(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_8u_C4CR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -824,6 +1116,9 @@ nppiSet_8u_C4CR(Npp8u nValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
+nppiSet_16u_C3CR_Ctx(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16u_C3CR(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -832,6 +1127,9 @@ nppiSet_16u_C3CR(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
  * For common parameter descriptions, see <a href="#CommonImageChannelSetParameters">Common parameters for nppiSet_CXC functions</a>.
  *
  */
+NppStatus 
+nppiSet_16u_C4CR_Ctx(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16u_C4CR(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -842,6 +1140,9 @@ nppiSet_16u_C4CR(Npp16u nValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
+nppiSet_16s_C3CR_Ctx(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_16s_C3CR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -850,6 +1151,9 @@ nppiSet_16s_C3CR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
  * For common parameter descriptions, see <a href="#CommonImageChannelSetParameters">Common parameters for nppiSet_CXC functions</a>.
  *
  */
+NppStatus 
+nppiSet_16s_C4CR_Ctx(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_16s_C4CR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -860,6 +1164,9 @@ nppiSet_16s_C4CR(Npp16s nValue, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
+nppiSet_32s_C3CR_Ctx(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32s_C3CR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -868,6 +1175,9 @@ nppiSet_32s_C3CR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
  * For common parameter descriptions, see <a href="#CommonImageChannelSetParameters">Common parameters for nppiSet_CXC functions</a>.
  *
  */
+NppStatus 
+nppiSet_32s_C4CR_Ctx(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiSet_32s_C4CR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -878,6 +1188,9 @@ nppiSet_32s_C4CR(Npp32s nValue, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
+nppiSet_32f_C3CR_Ctx(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiSet_32f_C3CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -887,8 +1200,10 @@ nppiSet_32f_C3CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
-nppiSet_32f_C4CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+nppiSet_32f_C4CR_Ctx(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiSet_32f_C4CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} image_channel_set */
 
@@ -913,6 +1228,7 @@ nppiSet_32f_C4CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -926,6 +1242,9 @@ nppiSet_32f_C4CR(Npp32f nValue, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
  *
  */
 NppStatus 
+nppiCopy_8s_C1R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8s_C1R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -934,6 +1253,9 @@ nppiCopy_8s_C1R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8s_C2R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8s_C2R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -944,6 +1266,9 @@ nppiCopy_8s_C2R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, Np
  *
  */
 NppStatus 
+nppiCopy_8s_C3R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8s_C3R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -952,6 +1277,9 @@ nppiCopy_8s_C3R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8s_C4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8s_C4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -962,6 +1290,9 @@ nppiCopy_8s_C4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, Np
  *
  */
 NppStatus 
+nppiCopy_8s_AC4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -970,6 +1301,9 @@ nppiCopy_8s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -980,6 +1314,9 @@ nppiCopy_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Np
  *
  */
 NppStatus 
+nppiCopy_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -988,6 +1325,9 @@ nppiCopy_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -998,6 +1338,9 @@ nppiCopy_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Np
  *
  */
 NppStatus 
+nppiCopy_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1006,6 +1349,9 @@ nppiCopy_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1016,6 +1362,9 @@ nppiCopy_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1024,6 +1373,9 @@ nppiCopy_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1034,6 +1386,9 @@ nppiCopy_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1042,6 +1397,9 @@ nppiCopy_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1052,6 +1410,9 @@ nppiCopy_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1060,6 +1421,9 @@ nppiCopy_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1070,6 +1434,9 @@ nppiCopy_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1078,6 +1445,9 @@ nppiCopy_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16sc_C1R_Ctx(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16sc_C1R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1088,6 +1458,9 @@ nppiCopy_16sc_C1R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_16sc_C2R_Ctx(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16sc_C2R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1096,6 +1469,9 @@ nppiCopy_16sc_C2R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16sc_C3R_Ctx(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16sc_C3R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1106,6 +1482,9 @@ nppiCopy_16sc_C3R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_16sc_C4R_Ctx(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16sc_C4R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1115,8 +1494,10 @@ nppiCopy_16sc_C4R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstSt
  *
  */
 NppStatus 
-nppiCopy_16sc_AC4R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
+nppiCopy_16sc_AC4R_Ctx(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiCopy_16sc_AC4R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * 32-bit image copy.
@@ -1124,6 +1505,9 @@ nppiCopy_16sc_AC4R(const Npp16sc * pSrc, int nSrcStep, Npp16sc * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32s_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32s_C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1134,6 +1518,9 @@ nppiCopy_32s_C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_32s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32s_C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1142,6 +1529,9 @@ nppiCopy_32s_C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32s_C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1152,6 +1542,9 @@ nppiCopy_32s_C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_32s_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32s_AC4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1160,6 +1553,9 @@ nppiCopy_32s_AC4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32sc_C1R_Ctx(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32sc_C1R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1170,6 +1566,9 @@ nppiCopy_32sc_C1R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_32sc_C2R_Ctx(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32sc_C2R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1178,6 +1577,9 @@ nppiCopy_32sc_C2R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32sc_C3R_Ctx(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32sc_C3R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1188,6 +1590,9 @@ nppiCopy_32sc_C3R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_32sc_C4R_Ctx(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32sc_C4R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1197,8 +1602,46 @@ nppiCopy_32sc_C4R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_32sc_AC4R_Ctx(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32sc_AC4R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstStep, NppiSize oSizeROI);
 
+/** 
+ * 16-bit floating point image copy.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
+ *
+ */
+NppStatus 
+nppiCopy_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiCopy_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three channel 16-bit floating point image copy.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
+ *
+ */
+NppStatus 
+nppiCopy_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiCopy_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * 4 channel 16-bit floating point image copy.
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
+ *
+ */
+NppStatus 
+nppiCopy_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiCopy_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * 32-bit floating point image copy.
@@ -1206,6 +1649,9 @@ nppiCopy_32sc_AC4R(const Npp32sc * pSrc, int nSrcStep, Npp32sc * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1216,6 +1662,9 @@ nppiCopy_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep,
  *
  */
 NppStatus 
+nppiCopy_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1224,6 +1673,9 @@ nppiCopy_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1234,8 +1686,10 @@ nppiCopy_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep,
  *
  */
 NppStatus 
-nppiCopy_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+nppiCopy_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus 
+nppiCopy_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * 32-bit floating-point complex image copy.
@@ -1243,6 +1697,9 @@ nppiCopy_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32fc_C1R_Ctx(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32fc_C1R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1253,6 +1710,9 @@ nppiCopy_32fc_C1R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_32fc_C2R_Ctx(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32fc_C2R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1261,6 +1721,9 @@ nppiCopy_32fc_C2R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32fc_C3R_Ctx(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32fc_C3R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1271,6 +1734,9 @@ nppiCopy_32fc_C3R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiCopy_32fc_C4R_Ctx(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32fc_C4R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1279,6 +1745,9 @@ nppiCopy_32fc_C4R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageCopyParameters">Common parameters for nppiCopy functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32fc_AC4R_Ctx(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32fc_AC4R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1298,6 +1767,7 @@ nppiCopy_32fc_AC4R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstS
  * \param pMask \ref mask_image_pointer.
  * \param nMaskStep \ref mask_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1311,6 +1781,10 @@ nppiCopy_32fc_AC4R(const Npp32fc * pSrc, int nSrcStep, Npp32fc * pDst, int nDstS
  *
  */
 NppStatus 
+nppiCopy_8u_C1MR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8u_C1MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp8u * pMask, int nMaskStep);
 
@@ -1320,6 +1794,10 @@ nppiCopy_8u_C1MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8u_C3MR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8u_C3MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp8u * pMask, int nMaskStep);
@@ -1331,6 +1809,10 @@ nppiCopy_8u_C3MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  *
  */
 NppStatus 
+nppiCopy_8u_C4MR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_8u_C4MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp8u * pMask, int nMaskStep);
 
@@ -1340,6 +1822,10 @@ nppiCopy_8u_C4MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_8u_AC4MR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_8u_AC4MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
@@ -1351,6 +1837,10 @@ nppiCopy_8u_AC4MR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  *
  */
 NppStatus 
+nppiCopy_16u_C1MR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16u_C1MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1360,6 +1850,10 @@ nppiCopy_16u_C1MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16u_C3MR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16u_C3MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
@@ -1371,6 +1865,10 @@ nppiCopy_16u_C3MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  *
  */
 NppStatus 
+nppiCopy_16u_C4MR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16u_C4MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1380,6 +1878,10 @@ nppiCopy_16u_C4MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16u_AC4MR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16u_AC4MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, int nMaskStep);
@@ -1391,6 +1893,10 @@ nppiCopy_16u_AC4MR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiCopy_16s_C1MR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16s_C1MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1400,6 +1906,10 @@ nppiCopy_16s_C1MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16s_C3MR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16s_C3MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
@@ -1411,6 +1921,10 @@ nppiCopy_16s_C3MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  *
  */
 NppStatus 
+nppiCopy_16s_C4MR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_16s_C4MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1420,6 +1934,10 @@ nppiCopy_16s_C4MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_16s_AC4MR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_16s_AC4MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, int nMaskStep);
@@ -1431,6 +1949,10 @@ nppiCopy_16s_AC4MR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiCopy_32s_C1MR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32s_C1MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1440,6 +1962,10 @@ nppiCopy_32s_C1MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32s_C3MR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32s_C3MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
@@ -1451,6 +1977,10 @@ nppiCopy_32s_C3MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  *
  */
 NppStatus 
+nppiCopy_32s_C4MR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32s_C4MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1460,6 +1990,10 @@ nppiCopy_32s_C4MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32s_AC4MR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32s_AC4MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, int nMaskStep);
@@ -1471,6 +2005,10 @@ nppiCopy_32s_AC4MR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiCopy_32f_C1MR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32f_C1MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1480,6 +2018,10 @@ nppiCopy_32f_C1MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32f_C3MR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32f_C3MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
@@ -1491,6 +2033,10 @@ nppiCopy_32f_C3MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  *
  */
 NppStatus 
+nppiCopy_32f_C4MR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiCopy_32f_C4MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, int nMaskStep);
 
@@ -1500,6 +2046,10 @@ nppiCopy_32f_C4MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageMaskedCopyParameters">Common parameters for nppiCopy_CXM functions</a>.
  *
  */
+NppStatus 
+nppiCopy_32f_AC4MR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, int nMaskStep, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCopy_32f_AC4MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, int nMaskStep);
@@ -1521,6 +2071,7 @@ nppiCopy_32f_AC4MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * \param pDst \ref select_destination_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1534,6 +2085,9 @@ nppiCopy_32f_AC4MR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_8u_C3CR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_8u_C3CR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1542,6 +2096,9 @@ nppiCopy_8u_C3CR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  * For common parameter descriptions, see <a href="#CommonImageChannelCopyParameters">Common parameters for nppiCopy_CXC functions</a>.
  *
  */
+NppStatus
+nppiCopy_8u_C4CR_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_8u_C4CR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1552,6 +2109,9 @@ nppiCopy_8u_C4CR(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  *
  */
 NppStatus
+nppiCopy_16s_C3CR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16s_C3CR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1560,6 +2120,9 @@ nppiCopy_16s_C3CR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageChannelCopyParameters">Common parameters for nppiCopy_CXC functions</a>.
  *
  */
+NppStatus
+nppiCopy_16s_C4CR_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16s_C4CR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1570,6 +2133,9 @@ nppiCopy_16s_C4CR(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep
  *
  */
 NppStatus
+nppiCopy_16u_C3CR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16u_C3CR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1578,6 +2144,9 @@ nppiCopy_16u_C3CR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageChannelCopyParameters">Common parameters for nppiCopy_CXC functions</a>.
  *
  */
+NppStatus
+nppiCopy_16u_C4CR_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16u_C4CR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1588,6 +2157,9 @@ nppiCopy_16u_C4CR(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  *
  */
 NppStatus
+nppiCopy_32s_C3CR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32s_C3CR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1596,6 +2168,9 @@ nppiCopy_32s_C3CR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageChannelCopyParameters">Common parameters for nppiCopy_CXC functions</a>.
  *
  */
+NppStatus
+nppiCopy_32s_C4CR_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32s_C4CR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1606,6 +2181,9 @@ nppiCopy_32s_C4CR(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep
  *
  */
 NppStatus
+nppiCopy_32f_C3CR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C3CR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1614,6 +2192,9 @@ nppiCopy_32f_C3CR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  * For common parameter descriptions, see <a href="#CommonImageChannelCopyParameters">Common parameters for nppiCopy_CXC functions</a>.
  *
  */
+NppStatus
+nppiCopy_32f_C4CR_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32f_C4CR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1632,6 +2213,7 @@ nppiCopy_32f_C4CR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1645,6 +2227,9 @@ nppiCopy_32f_C4CR(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  *
  */
 NppStatus
+nppiCopy_8u_C3C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1653,6 +2238,9 @@ nppiCopy_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  * For common parameter descriptions, see <a href="#CommonImageExtractChannelCopyParameters">Common parameters for nppiCopy_CXC1 functions</a>.
  *
  */
+NppStatus
+nppiCopy_8u_C4C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_8u_C4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1663,6 +2251,9 @@ nppiCopy_8u_C4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  *
  */
 NppStatus
+nppiCopy_16s_C3C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1671,6 +2262,9 @@ nppiCopy_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageExtractChannelCopyParameters">Common parameters for nppiCopy_CXC1 functions</a>.
  *
  */
+NppStatus
+nppiCopy_16s_C4C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16s_C4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1681,6 +2275,9 @@ nppiCopy_16s_C4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_16u_C3C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1689,6 +2286,9 @@ nppiCopy_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageExtractChannelCopyParameters">Common parameters for nppiCopy_CXC1 functions</a>.
  *
  */
+NppStatus
+nppiCopy_16u_C4C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16u_C4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1699,6 +2299,9 @@ nppiCopy_16u_C4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32s_C3C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32s_C3C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1707,6 +2310,9 @@ nppiCopy_32s_C3C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageExtractChannelCopyParameters">Common parameters for nppiCopy_CXC1 functions</a>.
  *
  */
+NppStatus
+nppiCopy_32s_C4C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32s_C4C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1717,6 +2323,9 @@ nppiCopy_32s_C4C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32f_C2C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C2C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1726,6 +2335,9 @@ nppiCopy_32f_C2C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32f_C3C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1734,6 +2346,9 @@ nppiCopy_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageExtractChannelCopyParameters">Common parameters for nppiCopy_CXC1 functions</a>.
  *
  */
+NppStatus
+nppiCopy_32f_C4C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32f_C4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1752,6 +2367,7 @@ nppiCopy_32f_C4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * \param pDst \ref select_destination_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1765,6 +2381,9 @@ nppiCopy_32f_C4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_8u_C1C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_8u_C1C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1773,6 +2392,9 @@ nppiCopy_8u_C1C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  * For common parameter descriptions, see <a href="#CommonImageInsertChannelCopyParameters">Common parameters for nppiCopy_C1CX functions</a>.
  *
  */
+NppStatus
+nppiCopy_8u_C1C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_8u_C1C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1783,6 +2405,9 @@ nppiCopy_8u_C1C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  *
  */
 NppStatus
+nppiCopy_16s_C1C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16s_C1C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1791,6 +2416,9 @@ nppiCopy_16s_C1C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageInsertChannelCopyParameters">Common parameters for nppiCopy_C1CX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16s_C1C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16s_C1C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1801,6 +2429,9 @@ nppiCopy_16s_C1C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_16u_C1C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16u_C1C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1809,6 +2440,9 @@ nppiCopy_16u_C1C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageInsertChannelCopyParameters">Common parameters for nppiCopy_C1CX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16u_C1C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16u_C1C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1819,6 +2453,9 @@ nppiCopy_16u_C1C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32s_C1C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32s_C1C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1827,6 +2464,9 @@ nppiCopy_32s_C1C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageInsertChannelCopyParameters">Common parameters for nppiCopy_C1CX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32s_C1C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32s_C1C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1837,6 +2477,9 @@ nppiCopy_32s_C1C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32f_C1C2R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C1C2R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1846,6 +2489,9 @@ nppiCopy_32f_C1C2R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_32f_C1C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C1C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1854,6 +2500,9 @@ nppiCopy_32f_C1C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageInsertChannelCopyParameters">Common parameters for nppiCopy_C1CX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32f_C1C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32f_C1C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1874,6 +2523,7 @@ nppiCopy_32f_C1C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * \param aDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1887,6 +2537,9 @@ nppiCopy_32f_C1C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiCopy_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1895,6 +2548,9 @@ nppiCopy_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[3], int n
  * For common parameter descriptions, see <a href="#CommonImagePackedToPlanarChannelCopyParameters">Common parameters for nppiCopy_CXPX functions</a>.
  *
  */
+NppStatus
+nppiCopy_8u_C4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_8u_C4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[4], int nDstStep, NppiSize oSizeROI);
 
@@ -1905,6 +2561,9 @@ nppiCopy_8u_C4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * const aDst[4], int n
  *
  */
 NppStatus
+nppiCopy_16s_C3P3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16s_C3P3R(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1913,6 +2572,9 @@ nppiCopy_16s_C3P3R(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[3], in
  * For common parameter descriptions, see <a href="#CommonImagePackedToPlanarChannelCopyParameters">Common parameters for nppiCopy_CXPX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16s_C4P4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16s_C4P4R(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[4], int nDstStep, NppiSize oSizeROI);
 
@@ -1923,6 +2585,9 @@ nppiCopy_16s_C4P4R(const Npp16s * pSrc, int nSrcStep, Npp16s * const aDst[4], in
  *
  */
 NppStatus
+nppiCopy_16u_C3P3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16u_C3P3R(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1931,6 +2596,9 @@ nppiCopy_16u_C3P3R(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[3], in
  * For common parameter descriptions, see <a href="#CommonImagePackedToPlanarChannelCopyParameters">Common parameters for nppiCopy_CXPX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16u_C4P4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16u_C4P4R(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[4], int nDstStep, NppiSize oSizeROI);
 
@@ -1941,6 +2609,9 @@ nppiCopy_16u_C4P4R(const Npp16u * pSrc, int nSrcStep, Npp16u * const aDst[4], in
  *
  */
 NppStatus
+nppiCopy_32s_C3P3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32s_C3P3R(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1949,6 +2620,9 @@ nppiCopy_32s_C3P3R(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[3], in
  * For common parameter descriptions, see <a href="#CommonImagePackedToPlanarChannelCopyParameters">Common parameters for nppiCopy_CXPX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32s_C4P4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32s_C4P4R(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[4], int nDstStep, NppiSize oSizeROI);
 
@@ -1959,6 +2633,9 @@ nppiCopy_32s_C4P4R(const Npp32s * pSrc, int nSrcStep, Npp32s * const aDst[4], in
  *
  */
 NppStatus
+nppiCopy_32f_C3P3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_C3P3R(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -1967,6 +2644,9 @@ nppiCopy_32f_C3P3R(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[3], in
  * For common parameter descriptions, see <a href="#CommonImagePackedToPlanarChannelCopyParameters">Common parameters for nppiCopy_CXPX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32f_C4P4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32f_C4P4R(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[4], int nDstStep, NppiSize oSizeROI);
 
@@ -1986,6 +2666,7 @@ nppiCopy_32f_C4P4R(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[4], in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1999,6 +2680,9 @@ nppiCopy_32f_C4P4R(const Npp32f * pSrc, int nSrcStep, Npp32f * const aDst[4], in
  *
  */
 NppStatus
+nppiCopy_8u_P3C3R_Ctx(const Npp8u * const aSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_8u_P3C3R(const Npp8u * const aSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -2007,6 +2691,9 @@ nppiCopy_8u_P3C3R(const Npp8u * const aSrc[3], int nSrcStep, Npp8u * pDst, int n
  * For common parameter descriptions, see <a href="#CommonImagePlanarToPackedChannelCopyParameters">Common parameters for nppiCopy_PXCX functions</a>.
  *
  */
+NppStatus
+nppiCopy_8u_P4C4R_Ctx(const Npp8u * const aSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_8u_P4C4R(const Npp8u * const aSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -2017,6 +2704,9 @@ nppiCopy_8u_P4C4R(const Npp8u * const aSrc[4], int nSrcStep, Npp8u * pDst, int n
  *
  */
 NppStatus
+nppiCopy_16u_P3C3R_Ctx(const Npp16u * const aSrc[3], int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16u_P3C3R(const Npp16u * const aSrc[3], int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -2025,6 +2715,9 @@ nppiCopy_16u_P3C3R(const Npp16u * const aSrc[3], int nSrcStep, Npp16u * pDst, in
  * For common parameter descriptions, see <a href="#CommonImagePlanarToPackedChannelCopyParameters">Common parameters for nppiCopy_PXCX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16u_P4C4R_Ctx(const Npp16u * const aSrc[4], int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16u_P4C4R(const Npp16u * const aSrc[4], int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -2035,6 +2728,9 @@ nppiCopy_16u_P4C4R(const Npp16u * const aSrc[4], int nSrcStep, Npp16u * pDst, in
  *
  */
 NppStatus
+nppiCopy_16s_P3C3R_Ctx(const Npp16s * const aSrc[3], int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_16s_P3C3R(const Npp16s * const aSrc[3], int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -2043,6 +2739,9 @@ nppiCopy_16s_P3C3R(const Npp16s * const aSrc[3], int nSrcStep, Npp16s * pDst, in
  * For common parameter descriptions, see <a href="#CommonImagePlanarToPackedChannelCopyParameters">Common parameters for nppiCopy_PXCX functions</a>.
  *
  */
+NppStatus
+nppiCopy_16s_P4C4R_Ctx(const Npp16s * const aSrc[4], int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_16s_P4C4R(const Npp16s * const aSrc[4], int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -2053,6 +2752,9 @@ nppiCopy_16s_P4C4R(const Npp16s * const aSrc[4], int nSrcStep, Npp16s * pDst, in
  *
  */
 NppStatus
+nppiCopy_32s_P3C3R_Ctx(const Npp32s * const aSrc[3], int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32s_P3C3R(const Npp32s * const aSrc[3], int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -2061,6 +2763,9 @@ nppiCopy_32s_P3C3R(const Npp32s * const aSrc[3], int nSrcStep, Npp32s * pDst, in
  * For common parameter descriptions, see <a href="#CommonImagePlanarToPackedChannelCopyParameters">Common parameters for nppiCopy_PXCX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32s_P4C4R_Ctx(const Npp32s * const aSrc[4], int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32s_P4C4R(const Npp32s * const aSrc[4], int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -2071,6 +2776,9 @@ nppiCopy_32s_P4C4R(const Npp32s * const aSrc[4], int nSrcStep, Npp32s * pDst, in
  *
  */
 NppStatus
+nppiCopy_32f_P3C3R_Ctx(const Npp32f * const aSrc[3], int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiCopy_32f_P3C3R(const Npp32f * const aSrc[3], int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -2079,6 +2787,9 @@ nppiCopy_32f_P3C3R(const Npp32f * const aSrc[3], int nSrcStep, Npp32f * pDst, in
  * For common parameter descriptions, see <a href="#CommonImagePlanarToPackedChannelCopyParameters">Common parameters for nppiCopy_PXCX functions</a>.
  *
  */
+NppStatus
+nppiCopy_32f_P4C4R_Ctx(const Npp32f * const aSrc[4], int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiCopy_32f_P4C4R(const Npp32f * const aSrc[4], int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -2105,6 +2816,7 @@ nppiCopy_32f_P4C4R(const Npp32f * const aSrc[4], int nSrcStep, Npp32f * pDst, in
  *      nRightBorderWidth = oDstSizeROI.width - nLeftBorderWidth - oSrcSizeROI.width.
  * \param nValue The pixel value to be set for border pixels for single channel functions.
  * \param aValue Vector of the RGBA values of the border pixels to be set for multi-channel functions.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2117,6 +2829,11 @@ nppiCopy_32f_P4C4R(const Npp32f * const aSrc[4], int nSrcStep, Npp32f * pDst, in
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_8u_C1R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth,
+                                         Npp8u nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth,
@@ -2128,6 +2845,11 @@ NppStatus nppiCopyConstBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_8u_C3R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth,
+                                         const Npp8u aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth,
@@ -2139,6 +2861,11 @@ NppStatus nppiCopyConstBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_8u_C4R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth,
+                                         const Npp8u aValue[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyConstBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth,
@@ -2150,6 +2877,11 @@ NppStatus nppiCopyConstBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_8u_AC4R_Ctx(const Npp8u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp8u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp8u aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_8u_AC4R(const Npp8u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp8u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2161,6 +2893,11 @@ NppStatus nppiCopyConstBorder_8u_AC4R(const Npp8u * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16u_C1R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          Npp16u nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2172,6 +2909,11 @@ NppStatus nppiCopyConstBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16u_C3R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp16u aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2183,8 +2925,13 @@ NppStatus nppiCopyConstBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
-NppStatus nppiCopyConstBorder_16u_C4R (const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
-                                             Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI,
+NppStatus nppiCopyConstBorder_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp16u aValue[4], NppStreamContext nppStreamCtx);
+                                       
+NppStatus nppiCopyConstBorder_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
+                                            Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
                                       const Npp16u aValue[4]);
                                        
@@ -2194,6 +2941,11 @@ NppStatus nppiCopyConstBorder_16u_C4R (const Npp16u * pSrc, int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16u_AC4R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                 Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                           int nTopBorderHeight, int nLeftBorderWidth,
+                                           const Npp16u aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                              Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                        int nTopBorderHeight, int nLeftBorderWidth,
@@ -2205,6 +2957,11 @@ NppStatus nppiCopyConstBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, NppiS
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16s_C1R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2216,6 +2973,11 @@ NppStatus nppiCopyConstBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16s_C3R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp16s aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2227,6 +2989,11 @@ NppStatus nppiCopyConstBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16s_C4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp16s aValue[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyConstBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2238,6 +3005,11 @@ NppStatus nppiCopyConstBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_16s_AC4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                 Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                           int nTopBorderHeight, int nLeftBorderWidth,
+                                           const Npp16s aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                              Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                        int nTopBorderHeight, int nLeftBorderWidth,
@@ -2249,6 +3021,11 @@ NppStatus nppiCopyConstBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, NppiS
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32s_C1R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          Npp32s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2260,6 +3037,11 @@ NppStatus nppiCopyConstBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32s_C3R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp32s aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2271,6 +3053,11 @@ NppStatus nppiCopyConstBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp32s aValue[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyConstBorder_32s_C4R(const Npp32s * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2282,6 +3069,11 @@ NppStatus nppiCopyConstBorder_32s_C4R(const Npp32s * pSrc, int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32s_AC4R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                 Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                           int nTopBorderHeight, int nLeftBorderWidth,
+                                           const Npp32s aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                              Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                        int nTopBorderHeight, int nLeftBorderWidth,
@@ -2293,6 +3085,11 @@ NppStatus nppiCopyConstBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, NppiS
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32f_C1R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2304,6 +3101,11 @@ NppStatus nppiCopyConstBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp32f aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2315,6 +3117,11 @@ NppStatus nppiCopyConstBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth,
+                                          const Npp32f aValue[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyConstBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth,
@@ -2326,6 +3133,11 @@ NppStatus nppiCopyConstBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyConstantBorderParameters">Common parameters for nppiCopyConstBorder functions</a>.
  *
  */
+NppStatus nppiCopyConstBorder_32f_AC4R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                 Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                           int nTopBorderHeight, int nLeftBorderWidth,
+                                           const Npp32f aValue[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyConstBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                              Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                        int nTopBorderHeight, int nLeftBorderWidth,
@@ -2352,6 +3164,7 @@ NppStatus nppiCopyConstBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiS
  * \param nLeftBorderWidth Width (in pixels) of the left border. The width of the border at the right side of the
  *      destination ROI is implicitly defined by the size of the source ROI:
  *      nRightBorderWidth = oDstSizeROI.width - nLeftBorderWidth - oSrcSizeROI.width.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2364,6 +3177,10 @@ NppStatus nppiCopyConstBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiS
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_8u_C1R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                                   Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                             int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                                Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                          int nTopBorderHeight, int nLeftBorderWidth);
@@ -2374,6 +3191,10 @@ NppStatus nppiCopyReplicateBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_8u_C3R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                                   Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                             int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                                Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                          int nTopBorderHeight, int nLeftBorderWidth);
@@ -2384,6 +3205,10 @@ NppStatus nppiCopyReplicateBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_8u_C4R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                                   Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                             int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyReplicateBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                                Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                          int nTopBorderHeight, int nLeftBorderWidth);
@@ -2394,6 +3219,10 @@ NppStatus nppiCopyReplicateBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, Npp
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_8u_AC4R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_8u_AC4R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2404,6 +3233,10 @@ NppStatus nppiCopyReplicateBorder_8u_AC4R(const Npp8u * pSrc,   int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16u_C1R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2414,6 +3247,10 @@ NppStatus nppiCopyReplicateBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16u_C3R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2424,6 +3261,10 @@ NppStatus nppiCopyReplicateBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16u_C4R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyReplicateBorder_16u_C4R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2434,6 +3275,10 @@ NppStatus nppiCopyReplicateBorder_16u_C4R(const Npp16u * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16u_AC4R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                     Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                               int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                  Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                            int nTopBorderHeight, int nLeftBorderWidth);
@@ -2444,6 +3289,10 @@ NppStatus nppiCopyReplicateBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16s_C1R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2454,6 +3303,10 @@ NppStatus nppiCopyReplicateBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16s_C3R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2464,6 +3317,10 @@ NppStatus nppiCopyReplicateBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16s_C4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyReplicateBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2474,6 +3331,10 @@ NppStatus nppiCopyReplicateBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_16s_AC4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                     Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                               int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                  Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                            int nTopBorderHeight, int nLeftBorderWidth);
@@ -2484,6 +3345,10 @@ NppStatus nppiCopyReplicateBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32s_C1R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2494,6 +3359,10 @@ NppStatus nppiCopyReplicateBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32s_C3R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2504,6 +3373,10 @@ NppStatus nppiCopyReplicateBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32s_C4R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyReplicateBorder_32s_C4R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2514,6 +3387,10 @@ NppStatus nppiCopyReplicateBorder_32s_C4R(const Npp32s * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32s_AC4R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                     Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                               int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                  Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                            int nTopBorderHeight, int nLeftBorderWidth);
@@ -2524,6 +3401,10 @@ NppStatus nppiCopyReplicateBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32f_C1R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2534,6 +3415,10 @@ NppStatus nppiCopyReplicateBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32f_C3R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32f_C3R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2544,6 +3429,10 @@ NppStatus nppiCopyReplicateBorder_32f_C3R(const Npp32f * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32f_C4R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                    Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                              int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyReplicateBorder_32f_C4R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                 Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                           int nTopBorderHeight, int nLeftBorderWidth);
@@ -2554,6 +3443,10 @@ NppStatus nppiCopyReplicateBorder_32f_C4R(const Npp32f * pSrc,  int nSrcStep, Np
  * For common parameter descriptions, see <a href="#CommonImageCopyReplicateBorderParameters">Common parameters for nppiCopyReplicateBorder functions</a>.
  *
  */
+NppStatus nppiCopyReplicateBorder_32f_AC4R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                     Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                               int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyReplicateBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                                  Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                            int nTopBorderHeight, int nLeftBorderWidth);
@@ -2579,6 +3472,7 @@ NppStatus nppiCopyReplicateBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, N
  * \param nLeftBorderWidth Width (in pixels) of the left border. The width of the border at the right side of the
  *      destination ROI is implicitly defined by the size of the source ROI:
  *      nRightBorderWidth = oDstSizeROI.width - nLeftBorderWidth - oSrcSizeROI.width.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2591,6 +3485,10 @@ NppStatus nppiCopyReplicateBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, N
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_8u_C1R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                              Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                        int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                           Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                     int nTopBorderHeight, int nLeftBorderWidth);
@@ -2601,6 +3499,10 @@ NppStatus nppiCopyWrapBorder_8u_C1R(const Npp8u * pSrc,   int nSrcStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_8u_C3R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                              Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                        int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                           Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                     int nTopBorderHeight, int nLeftBorderWidth);
@@ -2611,6 +3513,10 @@ NppStatus nppiCopyWrapBorder_8u_C3R(const Npp8u * pSrc,   int nSrcStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_8u_C4R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                              Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                        int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyWrapBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                           Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                     int nTopBorderHeight, int nLeftBorderWidth);
@@ -2621,6 +3527,10 @@ NppStatus nppiCopyWrapBorder_8u_C4R(const Npp8u * pSrc,   int nSrcStep, NppiSize
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_8u_AC4R_Ctx(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_8u_AC4R(const Npp8u * pSrc,   int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp8u * pDst,   int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2631,6 +3541,10 @@ NppStatus nppiCopyWrapBorder_8u_AC4R(const Npp8u * pSrc,   int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16u_C1R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2641,6 +3555,10 @@ NppStatus nppiCopyWrapBorder_16u_C1R(const Npp16u * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16u_C3R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2651,6 +3569,10 @@ NppStatus nppiCopyWrapBorder_16u_C3R(const Npp16u * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16u_C4R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyWrapBorder_16u_C4R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2661,6 +3583,10 @@ NppStatus nppiCopyWrapBorder_16u_C4R(const Npp16u * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16u_AC4R_Ctx(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16u * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth);
@@ -2671,6 +3597,10 @@ NppStatus nppiCopyWrapBorder_16u_AC4R(const Npp16u * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16s_C1R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2681,6 +3611,10 @@ NppStatus nppiCopyWrapBorder_16s_C1R(const Npp16s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16s_C3R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2691,6 +3625,10 @@ NppStatus nppiCopyWrapBorder_16s_C3R(const Npp16s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16s_C4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyWrapBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2701,6 +3639,10 @@ NppStatus nppiCopyWrapBorder_16s_C4R(const Npp16s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_16s_AC4R_Ctx(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp16s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth);
@@ -2711,6 +3653,10 @@ NppStatus nppiCopyWrapBorder_16s_AC4R(const Npp16s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32s_C1R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2721,6 +3667,10 @@ NppStatus nppiCopyWrapBorder_32s_C1R(const Npp32s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32s_C3R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2731,6 +3681,10 @@ NppStatus nppiCopyWrapBorder_32s_C3R(const Npp32s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32s_C4R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyWrapBorder_32s_C4R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2741,6 +3695,10 @@ NppStatus nppiCopyWrapBorder_32s_C4R(const Npp32s * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32s_AC4R_Ctx(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32s * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth);
@@ -2751,6 +3709,10 @@ NppStatus nppiCopyWrapBorder_32s_AC4R(const Npp32s * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32f_C1R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2761,6 +3723,10 @@ NppStatus nppiCopyWrapBorder_32f_C1R(const Npp32f * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32f_C3R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32f_C3R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2771,6 +3737,10 @@ NppStatus nppiCopyWrapBorder_32f_C3R(const Npp32f * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32f_C4R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                               Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                         int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopyWrapBorder_32f_C4R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                            Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                      int nTopBorderHeight, int nLeftBorderWidth);
@@ -2781,6 +3751,10 @@ NppStatus nppiCopyWrapBorder_32f_C4R(const Npp32f * pSrc,  int nSrcStep, NppiSiz
  * For common parameter descriptions, see <a href="#CommonImageCopyWrapBorderParameters">Common parameters for nppiCopyWrapBorder functions</a>.
  *
  */
+NppStatus nppiCopyWrapBorder_32f_AC4R_Ctx(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
+                                                Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
+                                          int nTopBorderHeight, int nLeftBorderWidth, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopyWrapBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiSize oSrcSizeROI,
                                             Npp32f * pDst,  int nDstStep, NppiSize oDstSizeROI,
                                       int nTopBorderHeight, int nLeftBorderWidth);
@@ -2801,6 +3775,7 @@ NppStatus nppiCopyWrapBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiSi
  *      data from the source image, source image ROI is assumed to be same as destination image ROI.
  * \param nDx Fractional part of source image X coordinate.
  * \param nDy Fractional part of source image Y coordinate.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2813,6 +3788,10 @@ NppStatus nppiCopyWrapBorder_32f_AC4R(const Npp32f * pSrc,  int nSrcStep, NppiSi
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                          Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                    Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_8u_C1R(const Npp8u * pSrc, int nSrcStep, 
                                       Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                 Npp32f nDx, Npp32f nDy);
@@ -2823,6 +3802,10 @@ NppStatus nppiCopySubpix_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                          Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                    Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_8u_C3R(const Npp8u * pSrc, int nSrcStep, 
                                       Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                 Npp32f nDx, Npp32f nDy);
@@ -2833,6 +3816,10 @@ NppStatus nppiCopySubpix_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                          Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                    Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopySubpix_8u_C4R(const Npp8u * pSrc, int nSrcStep, 
                                       Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                 Npp32f nDx, Npp32f nDy);
@@ -2843,6 +3830,10 @@ NppStatus nppiCopySubpix_8u_C4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                           Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_8u_AC4R(const Npp8u * pSrc, int nSrcStep, 
                                        Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2853,6 +3844,10 @@ NppStatus nppiCopySubpix_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                           Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_16u_C1R(const Npp16u * pSrc, int nSrcStep, 
                                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2863,6 +3858,10 @@ NppStatus nppiCopySubpix_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                           Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+ 
 NppStatus nppiCopySubpix_16u_C3R(const Npp16u * pSrc, int nSrcStep, 
                                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2873,6 +3872,10 @@ NppStatus nppiCopySubpix_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                           Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopySubpix_16u_C4R(const Npp16u * pSrc, int nSrcStep, 
                                        Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2883,6 +3886,10 @@ NppStatus nppiCopySubpix_16u_C4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                            Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                      Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_16u_AC4R(const Npp16u * pSrc, int nSrcStep, 
                                         Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                   Npp32f nDx, Npp32f nDy);
@@ -2893,6 +3900,10 @@ NppStatus nppiCopySubpix_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                           Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_16s_C1R(const Npp16s * pSrc, int nSrcStep, 
                                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2903,6 +3914,10 @@ NppStatus nppiCopySubpix_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                           Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_16s_C3R(const Npp16s * pSrc, int nSrcStep, 
                                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2913,6 +3928,10 @@ NppStatus nppiCopySubpix_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                           Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopySubpix_16s_C4R(const Npp16s * pSrc, int nSrcStep, 
                                        Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, 
                                  Npp32f nDx, Npp32f nDy);
@@ -2923,6 +3942,10 @@ NppStatus nppiCopySubpix_16s_C4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                            Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                      Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                         Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                   Npp32f nDx, Npp32f nDy);
@@ -2933,6 +3956,10 @@ NppStatus nppiCopySubpix_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32s_C1R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                           Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32s_C1R(const Npp32s * pSrc, int nSrcStep,
                                        Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -2943,6 +3970,10 @@ NppStatus nppiCopySubpix_32s_C1R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                           Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32s_C3R(const Npp32s * pSrc, int nSrcStep,
                                        Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -2953,6 +3984,10 @@ NppStatus nppiCopySubpix_32s_C3R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                           Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopySubpix_32s_C4R(const Npp32s * pSrc, int nSrcStep,
                                        Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -2963,6 +3998,10 @@ NppStatus nppiCopySubpix_32s_C4R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32s_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                            Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                      Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32s_AC4R(const Npp32s * pSrc, int nSrcStep,
                                         Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI,
                                   Npp32f nDx, Npp32f nDy);
@@ -2973,6 +4012,10 @@ NppStatus nppiCopySubpix_32s_AC4R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -2983,6 +4026,10 @@ NppStatus nppiCopySubpix_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -2993,6 +4040,10 @@ NppStatus nppiCopySubpix_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                     Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiCopySubpix_32f_C4R(const Npp32f * pSrc, int nSrcStep,
                                        Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                  Npp32f nDx, Npp32f nDy);
@@ -3003,6 +4054,10 @@ NppStatus nppiCopySubpix_32f_C4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageCopySubPixelParameters">Common parameters for nppiCopySubpix functions</a>.
  *
  */
+NppStatus nppiCopySubpix_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                            Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
+                                      Npp32f nDx, Npp32f nDy, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCopySubpix_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                         Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI,
                                   Npp32f nDx, Npp32f nDy);
@@ -3026,7 +4081,9 @@ NppStatus nppiCopySubpix_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * - When converting integers (e.g. Npp32u) to float (e.g. Npp32f) integer value not accurately representable 
  *   by the float are rounded to the closest floating-point value.
  * - When converting signed integers to unsigned integers all negative values are lost (saturated to 0).
- *
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ *  
  * <h3><a name="CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions include:</a></h3>
  *
  * \param pSrc \ref source_image_pointer.
@@ -3034,6 +4091,7 @@ NppStatus nppiCopySubpix_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -3047,6 +4105,9 @@ NppStatus nppiCopySubpix_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
+nppiConvert_8u16u_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u16u_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3055,6 +4116,9 @@ nppiConvert_8u16u_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u16u_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u16u_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3065,6 +4129,9 @@ nppiConvert_8u16u_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_8u16u_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u16u_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3073,6 +4140,9 @@ nppiConvert_8u16u_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u16u_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u16u_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3083,6 +4153,9 @@ nppiConvert_8u16u_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_8u16s_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u16s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3091,6 +4164,9 @@ nppiConvert_8u16s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u16s_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u16s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3101,6 +4177,9 @@ nppiConvert_8u16s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_8u16s_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u16s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3109,6 +4188,9 @@ nppiConvert_8u16s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u16s_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u16s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3119,6 +4201,9 @@ nppiConvert_8u16s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_8u32s_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u32s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3127,6 +4212,9 @@ nppiConvert_8u32s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u32s_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u32s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3137,6 +4225,9 @@ nppiConvert_8u32s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_8u32s_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u32s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3145,6 +4236,9 @@ nppiConvert_8u32s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u32s_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u32s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3155,6 +4249,9 @@ nppiConvert_8u32s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_8u32f_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u32f_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3163,6 +4260,9 @@ nppiConvert_8u32f_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u32f_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u32f_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3173,6 +4273,9 @@ nppiConvert_8u32f_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_8u32f_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8u32f_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3181,6 +4284,9 @@ nppiConvert_8u32f_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u32f_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u32f_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3191,6 +4297,9 @@ nppiConvert_8u32f_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_8s32s_C1R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s32s_C1R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3199,6 +4308,9 @@ nppiConvert_8s32s_C1R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8s32s_C3R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s32s_C3R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3209,6 +4321,9 @@ nppiConvert_8s32s_C3R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_8s32s_C4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s32s_C4R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3217,6 +4332,9 @@ nppiConvert_8s32s_C4R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8s32s_AC4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s32s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3227,6 +4345,9 @@ nppiConvert_8s32s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_8s32f_C1R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s32f_C1R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3235,6 +4356,9 @@ nppiConvert_8s32f_C1R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8s32f_C3R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s32f_C3R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3245,6 +4369,9 @@ nppiConvert_8s32f_C3R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_8s32f_C4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s32f_C4R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3253,6 +4380,9 @@ nppiConvert_8s32f_C4R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8s32f_AC4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s32f_AC4R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3263,6 +4393,9 @@ nppiConvert_8s32f_AC4R(const Npp8s * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_16u32s_C1R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u32s_C1R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3271,6 +4404,9 @@ nppiConvert_16u32s_C1R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u32s_C3R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u32s_C3R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3281,6 +4417,9 @@ nppiConvert_16u32s_C3R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_16u32s_C4R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u32s_C4R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3289,6 +4428,9 @@ nppiConvert_16u32s_C4R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u32s_AC4R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u32s_AC4R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3299,6 +4441,9 @@ nppiConvert_16u32s_AC4R(const Npp16u  * pSrc, int nSrcStep, Npp32s * pDst, int n
  *
  */
 NppStatus 
+nppiConvert_16u32f_C1R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u32f_C1R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3307,6 +4452,9 @@ nppiConvert_16u32f_C1R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u32f_C3R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u32f_C3R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3317,6 +4465,9 @@ nppiConvert_16u32f_C3R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_16u32f_C4R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u32f_C4R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3325,6 +4476,9 @@ nppiConvert_16u32f_C4R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u32f_AC4R_Ctx(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u32f_AC4R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3335,6 +4489,9 @@ nppiConvert_16u32f_AC4R(const Npp16u  * pSrc, int nSrcStep, Npp32f * pDst, int n
  *
  */
 NppStatus 
+nppiConvert_16s32s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32s_C1R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3344,12 +4501,18 @@ nppiConvert_16s32s_C1R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_16s32s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32s_C3R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
  * Four channel 16-bit signed to 32-bit signed conversion.
  * 
  */
+NppStatus 
+nppiConvert_16s32s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s32s_C4R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3360,6 +4523,9 @@ nppiConvert_16s32s_C4R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDs
  *
 */
 NppStatus 
+nppiConvert_16s32s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3368,6 +4534,9 @@ nppiConvert_16s32s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp32s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s32f_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s32f_C1R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3378,6 +4547,9 @@ nppiConvert_16s32f_C1R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_16s32f_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32f_C3R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3386,6 +4558,9 @@ nppiConvert_16s32f_C3R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s32f_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s32f_C4R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3396,14 +4571,76 @@ nppiConvert_16s32f_C4R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_16s32f_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32f_AC4R(const Npp16s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
- * Single channel 8-bit signed to 8-bit unsigned conversion with saturation.
+ * Single channel 16-bit floating-point to 32-bit floating-point conversion.
  * 
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16f32f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_16f32f_C1R(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * Three channel 16-bit floating-point to 32-bit floating-point conversion. 
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned 
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_16f32f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_16f32f_C3R(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four channel 16-bit floating-point to 32-bit floating-point conversion.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_16f32f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_16f32f_C4R(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * Four channel 16-bit floating-point to 32-bit floating-point conversion, not affecting Alpha.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_16f32f_AC4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_16f32f_AC4R(const Npp16f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** 
+ * Single channel 8-bit signed to 8-bit unsigned conversion with saturation.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ * 
+ * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_8s8u_C1Rs_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s8u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3414,6 +4651,9 @@ nppiConvert_8s8u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiConvert_8s16u_C1Rs_Ctx(const Npp8s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s16u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3422,6 +4662,9 @@ nppiConvert_8s16u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8s16s_C1R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8s16s_C1R(const Npp8s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3432,6 +4675,9 @@ nppiConvert_8s16s_C1R(const Npp8s * pSrc, int nSrcStep, Npp16s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_8s32u_C1Rs_Ctx(const Npp8s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_8s32u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3440,6 +4686,9 @@ nppiConvert_8s32u_C1Rs(const Npp8s * pSrc, int nSrcStep, Npp32u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s16u_C1Rs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s16u_C1Rs(const Npp16s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3450,6 +4699,9 @@ nppiConvert_16s16u_C1Rs(const Npp16s * pSrc, int nSrcStep, Npp16u * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_16s32u_C1Rs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s32u_C1Rs(const Npp16s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3458,6 +4710,9 @@ nppiConvert_16s32u_C1Rs(const Npp16s * pSrc, int nSrcStep, Npp32u * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u32u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u32u_C1R(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3469,6 +4724,9 @@ nppiConvert_16u32u_C1R(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_32s32u_C1Rs_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32s32u_C1Rs(const Npp32s * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3478,6 +4736,9 @@ nppiConvert_32s32u_C1Rs(const Npp32s * pSrc, int nSrcStep, Npp32u * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_32s32f_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32s32f_C1R(const Npp32s * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3486,6 +4747,9 @@ nppiConvert_32s32f_C1R(const Npp32s * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToIncreasedBitDepthParameters">Common parameters for nppiConvert to increased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32u32f_C1R_Ctx(const Npp32u * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32u32f_C1R(const Npp32u * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3499,7 +4763,9 @@ nppiConvert_32u32f_C1R(const Npp32u * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * - All converted values are saturated to the destination type's range. E.g. any values larger than
  *   the largest value of the destination type are clamped to the destination's maximum.
  * - Converting floating-point values to integer also involves rounding, effectively loosing all
- *   fractional value information in the process. 
+ *   fractional value information in the process.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
  *
  * <h3><a name="CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions include:</a></h3>
  *
@@ -3510,6 +4776,7 @@ nppiConvert_32u32f_C1R(const Npp32u * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param oSizeROI \ref roi_specification.
  * \param eRoundMode \ref rounding_mode_parameter.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -3523,6 +4790,9 @@ nppiConvert_32u32f_C1R(const Npp32u * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_16u8u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3531,6 +4801,9 @@ nppiConvert_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16u8u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16u8u_C3R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3541,6 +4814,9 @@ nppiConvert_16u8u_C3R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_16u8u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u8u_C4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3550,15 +4826,20 @@ nppiConvert_16u8u_C4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_16u8u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
+NppStatus 
 nppiConvert_16u8u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
           
-
 /** 
  * Single channel 16-bit signed to 8-bit unsigned conversion.
  * 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s8u_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
 NppStatus 
 nppiConvert_16s8u_C1R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
           
@@ -3569,6 +4850,9 @@ nppiConvert_16s8u_C1R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_16s8u_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16s8u_C3R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3577,6 +4861,9 @@ nppiConvert_16s8u_C3R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s8u_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s8u_C4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3587,8 +4874,10 @@ nppiConvert_16s8u_C4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus
-nppiConvert_16s8u_AC4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
+nppiConvert_16s8u_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
           
+NppStatus
+nppiConvert_16s8u_AC4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
           
 /** 
  * Single channel 32-bit signed to 8-bit unsigned conversion.
@@ -3596,6 +4885,9 @@ nppiConvert_16s8u_AC4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32s8u_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
 NppStatus 
 nppiConvert_32s8u_C1R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
           
@@ -3606,6 +4898,9 @@ nppiConvert_32s8u_C1R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_32s8u_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32s8u_C3R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3614,6 +4909,9 @@ nppiConvert_32s8u_C3R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32s8u_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32s8u_C4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3624,15 +4922,20 @@ nppiConvert_32s8u_C4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDst
  *
  */
 NppStatus
+nppiConvert_32s8u_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
+NppStatus
 nppiConvert_32s8u_AC4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI);
           
-      
 /** 
  * Single channel 32-bit signed to 8-bit signed conversion.
  * 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32s8s_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
 NppStatus 
 nppiConvert_32s8s_C1R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
           
@@ -3643,6 +4946,9 @@ nppiConvert_32s8s_C1R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_32s8s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32s8s_C3R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -3651,6 +4957,9 @@ nppiConvert_32s8s_C3R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32s8s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32s8s_C4R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -3661,6 +4970,9 @@ nppiConvert_32s8s_C4R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  *
  */
 NppStatus
+nppiConvert_32s8s_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+          
+NppStatus
 nppiConvert_32s8s_AC4R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI);
           
 /** 
@@ -3669,6 +4981,9 @@ nppiConvert_32s8s_AC4R(const Npp32s * pSrc, int nSrcStep, Npp8s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_8u8s_C1RSfs_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_8u8s_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3679,6 +4994,9 @@ nppiConvert_8u8s_C1RSfs(const Npp8u * pSrc, int nSrcStep, Npp8s * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_16u8s_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u8s_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3687,6 +5005,9 @@ nppiConvert_16u8s_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp8s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_16s8s_C1RSfs_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_16s8s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3697,6 +5018,9 @@ nppiConvert_16s8s_C1RSfs(const Npp16s * pSrc, int nSrcStep, Npp8s * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_16u16s_C1RSfs_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_16u16s_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3705,6 +5029,9 @@ nppiConvert_16u16s_C1RSfs(const Npp16u * pSrc, int nSrcStep, Npp16s * pDst, int 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32u8u_C1RSfs_Ctx(const Npp32u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32u8u_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3715,6 +5042,9 @@ nppiConvert_32u8u_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp8u * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_32u8s_C1RSfs_Ctx(const Npp32u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32u8s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3723,6 +5053,9 @@ nppiConvert_32u8s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp8s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32u16u_C1RSfs_Ctx(const Npp32u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32u16u_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3733,6 +5066,9 @@ nppiConvert_32u16u_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp16u * pDst, int 
  *
  */
 NppStatus 
+nppiConvert_32u16s_C1RSfs_Ctx(const Npp32u * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32u16s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3741,6 +5077,9 @@ nppiConvert_32u16s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp16s * pDst, int 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32u32s_C1RSfs_Ctx(const Npp32u * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32u32s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3751,6 +5090,9 @@ nppiConvert_32u32s_C1RSfs(const Npp32u * pSrc, int nSrcStep, Npp32s * pDst, int 
  *
  */
 NppStatus 
+nppiConvert_32s16u_C1RSfs_Ctx(const Npp32s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32s16u_C1RSfs(const Npp32s * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3759,6 +5101,9 @@ nppiConvert_32s16u_C1RSfs(const Npp32s * pSrc, int nSrcStep, Npp16u * pDst, int 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32s16s_C1RSfs_Ctx(const Npp32s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32s16s_C1RSfs(const Npp32s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3769,6 +5114,9 @@ nppiConvert_32s16s_C1RSfs(const Npp32s * pSrc, int nSrcStep, Npp16s * pDst, int 
  *
  */
 NppStatus 
+nppiConvert_32f8u_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f8u_C1R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3777,6 +5125,9 @@ nppiConvert_32f8u_C1R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f8u_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f8u_C3R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3787,6 +5138,9 @@ nppiConvert_32f8u_C3R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_32f8u_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f8u_C4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3795,6 +5149,9 @@ nppiConvert_32f8u_C4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f8u_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f8u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3805,6 +5162,9 @@ nppiConvert_32f8u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_32f8s_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f8s_C1R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3813,6 +5173,9 @@ nppiConvert_32f8s_C1R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f8s_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f8s_C3R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3823,6 +5186,9 @@ nppiConvert_32f8s_C3R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiConvert_32f8s_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f8s_C4R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3831,6 +5197,9 @@ nppiConvert_32f8s_C4R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstS
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f8s_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f8s_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3841,6 +5210,9 @@ nppiConvert_32f8s_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDst
  *
  */
 NppStatus 
+nppiConvert_32f16u_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16u_C1R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3849,6 +5221,9 @@ nppiConvert_32f16u_C1R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f16u_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f16u_C3R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3859,6 +5234,9 @@ nppiConvert_32f16u_C3R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  *
  */
 NppStatus 
+nppiConvert_32f16u_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16u_C4R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3867,6 +5245,9 @@ nppiConvert_32f16u_C4R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f16u_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f16u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3877,6 +5258,9 @@ nppiConvert_32f16u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_32f16s_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16s_C1R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
@@ -3885,6 +5269,9 @@ nppiConvert_32f16s_C1R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f16s_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f16s_C3R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
@@ -3895,17 +5282,78 @@ nppiConvert_32f16s_C3R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  *
 */
 NppStatus 
+nppiConvert_32f16s_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16s_C4R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
- * Four channel 32-bit floating point to 16-bit signed conversion.
+ * Four channel 32-bit floating point to 16-bit floating-point conversion.
  *
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
 NppStatus 
+nppiConvert_32f16s_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16s_AC4R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
+/** 
+ * Single channel 32-bit floating point to 16-bit floating-point conversion.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ *
+ * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_32f16f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_32f16f_C1R(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
+
+/** 
+ * Three channel 32-bit floating point to 16-bit floating-point conversion.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ *
+ * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_32f16f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_32f16f_C3R(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
+
+/** 
+ * Four channel 32-bit floating point to 16-bit floating-point conversion.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ *
+ * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
+ *
+*/
+NppStatus 
+nppiConvert_32f16f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_32f16f_C4R(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
+
+/** 
+ * Four channel 32-bit floating point to 16-bit floating-point conversion.
+ *  
+ * Note that all pointers and step sizes for images with 16f (Npp16f) data types perform best when they are at least 16 byte aligned. 
+ *
+ * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
+ *
+ */
+NppStatus 
+nppiConvert_32f16f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiConvert_32f16f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode);
 
 /** 
  * Single channel 32-bit floating point to 8-bit unsigned conversion.
@@ -3913,6 +5361,9 @@ nppiConvert_32f16s_AC4R(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f8u_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f8u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3923,6 +5374,9 @@ nppiConvert_32f8u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nD
  *
  */
 NppStatus 
+nppiConvert_32f8s_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f8s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3931,6 +5385,9 @@ nppiConvert_32f8s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp8s * pDst, int nD
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f16u_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f16u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -3941,6 +5398,9 @@ nppiConvert_32f16u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp16u * pDst, int 
  *
  */
 NppStatus 
+nppiConvert_32f16s_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f16s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3950,6 +5410,9 @@ nppiConvert_32f16s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp16s * pDst, int 
  *
  */
 NppStatus 
+nppiConvert_32f32u_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiConvert_32f32u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
 /** 
@@ -3958,6 +5421,9 @@ nppiConvert_32f32u_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp32u * pDst, int 
  * For common parameter descriptions, see <a href="#CommonImageConvertToDecreasedBitDepthParameters">Common parameters for nppiConvert to decreased bit depth functions</a>.
  *
  */
+NppStatus 
+nppiConvert_32f32s_C1RSfs_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiConvert_32f32s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppRoundMode eRoundMode, int nScaleFactor);
 
@@ -4003,6 +5469,7 @@ nppiConvert_32f32s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp32s * pDst, int 
  * \param oSizeROI \ref roi_specification.
  * \param nMin specifies the minimum saturation value to which every output value will be clamped.
  * \param nMax specifies the maximum saturation value to which every output value will be clamped.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, ::NPP_SCALE_RANGE_ERROR indicates an error condition if nMax <= nMin.
  *
  * @{
@@ -4016,6 +5483,9 @@ nppiConvert_32f32s_C1RSfs(const Npp32f * pSrc, int nSrcStep, Npp32s * pDst, int 
  *
  */
 NppStatus 
+nppiScale_8u16u_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u16u_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4024,6 +5494,9 @@ nppiScale_8u16u_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u16u_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u16u_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4034,6 +5507,9 @@ nppiScale_8u16u_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_8u16u_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u16u_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4042,6 +5518,9 @@ nppiScale_8u16u_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u16u_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u16u_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4052,6 +5531,9 @@ nppiScale_8u16u_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16u * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_8u16s_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u16s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4060,6 +5542,9 @@ nppiScale_8u16s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u16s_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u16s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4070,6 +5555,9 @@ nppiScale_8u16s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_8u16s_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u16s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4078,6 +5566,9 @@ nppiScale_8u16s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u16s_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u16s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4088,6 +5579,9 @@ nppiScale_8u16s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp16s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_8u32s_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u32s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4096,6 +5590,9 @@ nppiScale_8u32s_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u32s_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u32s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4106,6 +5603,9 @@ nppiScale_8u32s_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_8u32s_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u32s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** 
@@ -4114,6 +5614,9 @@ nppiScale_8u32s_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u32s_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u32s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -4124,6 +5627,9 @@ nppiScale_8u32s_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32s * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_8u32f_C1R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u32f_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
 /** 
@@ -4132,6 +5638,9 @@ nppiScale_8u32f_C1R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u32f_C3R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u32f_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
@@ -4142,6 +5651,9 @@ nppiScale_8u32f_C3R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_8u32f_C4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_8u32f_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
 /** 
@@ -4150,6 +5662,9 @@ nppiScale_8u32f_C4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToHigherBitDepthParameters">Common parameters for nppiScale to higher bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_8u32f_AC4R_Ctx(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_8u32f_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
@@ -4186,6 +5701,7 @@ nppiScale_8u32f_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  * \param hint algorithm performance or accuracy selector, currently ignored
  * \param nMin specifies the minimum saturation value to which every output value will be clamped.
  * \param nMax specifies the maximum saturation value to which every output value will be clamped.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, ::NPP_SCALE_RANGE_ERROR indicates an error condition if nMax <= nMin.
  *
  * @{
@@ -4199,6 +5715,9 @@ nppiScale_8u32f_AC4R(const Npp8u  * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_16u8u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
 /** 
@@ -4207,6 +5726,9 @@ nppiScale_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_16u8u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_16u8u_C3R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
@@ -4217,6 +5739,9 @@ nppiScale_16u8u_C3R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_16u8u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_16u8u_C4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
 /** 
@@ -4226,15 +5751,20 @@ nppiScale_16u8u_C4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_16u8u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+          
+NppStatus 
 nppiScale_16u8u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
           
-
 /** 
  * Single channel 16-bit signed to 8-bit unsigned conversion.
  * 
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_16s8u_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+          
 NppStatus 
 nppiScale_16s8u_C1R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
           
@@ -4245,6 +5775,9 @@ nppiScale_16s8u_C1R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_16s8u_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_16s8u_C3R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
 /** 
@@ -4254,6 +5787,9 @@ nppiScale_16s8u_C3R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_16s8u_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_16s8u_C4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
 /** 
@@ -4262,6 +5798,9 @@ nppiScale_16s8u_C4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus
+nppiScale_16s8u_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+          
 NppStatus
 nppiScale_16s8u_AC4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
           
@@ -4273,6 +5812,9 @@ nppiScale_16s8u_AC4R(const Npp16s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_32s8u_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+          
+NppStatus 
 nppiScale_32s8u_C1R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
           
 /** 
@@ -4281,6 +5823,9 @@ nppiScale_32s8u_C1R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_32s8u_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_32s8u_C3R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
@@ -4291,6 +5836,9 @@ nppiScale_32s8u_C3R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiScale_32s8u_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_32s8u_C4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
 
 /** 
@@ -4299,6 +5847,9 @@ nppiScale_32s8u_C4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus
+nppiScale_32s8u_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint, NppStreamContext nppStreamCtx);
+          
 NppStatus
 nppiScale_32s8u_AC4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstStep, NppiSize oSizeROI, NppHintAlgorithm hint);
           
@@ -4309,6 +5860,9 @@ nppiScale_32s8u_AC4R(const Npp32s * pSrc, int nSrcStep, Npp8u  * pDst, int nDstS
  *
  */
 NppStatus 
+nppiScale_32f8u_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_32f8u_C1R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
 /** 
@@ -4317,6 +5871,9 @@ nppiScale_32f8u_C1R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_32f8u_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_32f8u_C3R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
@@ -4327,6 +5884,9 @@ nppiScale_32f8u_C3R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiScale_32f8u_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiScale_32f8u_C4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
 /** 
@@ -4335,6 +5895,9 @@ nppiScale_32f8u_C4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageScaleToLowerBitDepthParameters">Common parameters for nppiScale to lower bit depth functions</a>.
  *
  */
+NppStatus 
+nppiScale_32f8u_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiScale_32f8u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp32f nMin, Npp32f nMax);
 
@@ -4354,6 +5917,7 @@ nppiScale_32f8u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param nDstStep \ref destination_image_line_step.
  * \param oDstSizeROI Size (width, height) of the destination region, i.e. the region that gets filled with
  *      data from the source image, source image ROI is assumed to be same as destination image ROI.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -4366,6 +5930,9 @@ nppiScale_32f8u_AC4R(const Npp32f * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_8u_C1C3R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                     Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_8u_C1C3R(const Npp8u * pSrc, int nSrcStep, 
                                  Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4375,6 +5942,9 @@ NppStatus nppiDup_8u_C1C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_8u_C1C4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                     Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiDup_8u_C1C4R(const Npp8u * pSrc, int nSrcStep, 
                                  Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI); 
                                        
@@ -4384,6 +5954,9 @@ NppStatus nppiDup_8u_C1C4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_8u_C1AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                      Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiDup_8u_C1AC4R(const Npp8u * pSrc, int nSrcStep, 
                                   Npp8u * pDst, int nDstStep, NppiSize oDstSizeROI); 
 
@@ -4393,6 +5966,9 @@ NppStatus nppiDup_8u_C1AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16u_C1C3R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                      Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiDup_16u_C1C3R(const Npp16u * pSrc, int nSrcStep, 
                                   Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI); 
 
@@ -4402,6 +5978,9 @@ NppStatus nppiDup_16u_C1C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16u_C1C4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                      Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiDup_16u_C1C4R(const Npp16u * pSrc, int nSrcStep, 
                                   Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI); 
                                        
@@ -4411,6 +5990,9 @@ NppStatus nppiDup_16u_C1C4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16u_C1AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                       Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiDup_16u_C1AC4R(const Npp16u * pSrc, int nSrcStep, 
                                    Npp16u * pDst, int nDstStep, NppiSize oDstSizeROI); 
 
@@ -4420,6 +6002,9 @@ NppStatus nppiDup_16u_C1AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16s_C1C3R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                      Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiDup_16s_C1C3R(const Npp16s * pSrc, int nSrcStep, 
                                   Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI); 
 
@@ -4429,6 +6014,9 @@ NppStatus nppiDup_16s_C1C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16s_C1C4R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                      Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiDup_16s_C1C4R(const Npp16s * pSrc, int nSrcStep, 
                                   Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI); 
                                        
@@ -4438,6 +6026,9 @@ NppStatus nppiDup_16s_C1C4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_16s_C1AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                       Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_16s_C1AC4R(const Npp16s * pSrc, int nSrcStep,
                                    Npp16s * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4447,6 +6038,9 @@ NppStatus nppiDup_16s_C1AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32s_C1C3R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                      Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_32s_C1C3R(const Npp32s * pSrc, int nSrcStep,
                                   Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4456,6 +6050,9 @@ NppStatus nppiDup_32s_C1C3R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32s_C1C4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                      Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiDup_32s_C1C4R(const Npp32s * pSrc, int nSrcStep,
                                   Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI);
                                        
@@ -4465,6 +6062,9 @@ NppStatus nppiDup_32s_C1C4R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32s_C1AC4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                       Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_32s_C1AC4R(const Npp32s * pSrc, int nSrcStep,
                                    Npp32s * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4474,6 +6074,9 @@ NppStatus nppiDup_32s_C1AC4R(const Npp32s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32f_C1C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                      Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_32f_C1C3R(const Npp32f * pSrc, int nSrcStep,
                                   Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4483,6 +6086,9 @@ NppStatus nppiDup_32f_C1C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32f_C1C4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                      Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiDup_32f_C1C4R(const Npp32f * pSrc, int nSrcStep,
                                   Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI);
                                        
@@ -4492,6 +6098,9 @@ NppStatus nppiDup_32f_C1C4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonImageDuplicateChannelParameters">Common parameters for nppiDup functions</a>.
  *
  */
+NppStatus nppiDup_32f_C1AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                       Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiDup_32f_C1AC4R(const Npp32f * pSrc, int nSrcStep,
                                    Npp32f * pDst, int nDstStep, NppiSize oDstSizeROI);
 
@@ -4510,6 +6119,7 @@ NppStatus nppiDup_32f_C1AC4R(const Npp32f * pSrc, int nSrcStep,
  * \param pDst Pointer to the destination ROI.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSrcROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -4523,6 +6133,9 @@ NppStatus nppiDup_32f_C1AC4R(const Npp32f * pSrc, int nSrcStep,
  *
  */
 NppStatus 
+nppiTranspose_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4531,6 +6144,9 @@ nppiTranspose_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4541,6 +6157,9 @@ nppiTranspose_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiTranspose_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4549,6 +6168,9 @@ nppiTranspose_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4559,6 +6181,9 @@ nppiTranspose_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4567,6 +6192,9 @@ nppiTranspose_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4577,6 +6205,9 @@ nppiTranspose_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4585,6 +6216,9 @@ nppiTranspose_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4595,6 +6229,9 @@ nppiTranspose_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4603,6 +6240,9 @@ nppiTranspose_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_32s_C1R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_32s_C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4613,6 +6253,9 @@ nppiTranspose_32s_C1R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_32s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_32s_C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4621,6 +6264,9 @@ nppiTranspose_32s_C3R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_32s_C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4631,6 +6277,9 @@ nppiTranspose_32s_C4R(const Npp32s * pSrc, int nSrcStep, Npp32s * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4640,6 +6289,9 @@ nppiTranspose_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  *
  */
 NppStatus 
+nppiTranspose_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiTranspose_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI);
 
 /**
@@ -4648,6 +6300,9 @@ nppiTranspose_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonImageTransposeParameters">Common parameters for nppiTranspose functions</a>.
  *
  */
+NppStatus 
+nppiTranspose_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiTranspose_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSrcROI);
 
@@ -4674,8 +6329,12 @@ nppiTranspose_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                            Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_8u_C3R(const Npp8u * pSrc, int nSrcStep, 
                                         Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -4688,8 +6347,11 @@ NppStatus nppiSwapChannels_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
 /** 
@@ -4703,8 +6365,12 @@ NppStatus nppiSwapChannels_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oS
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to a 3 channel BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C4C3R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                              Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_8u_C4C3R(const Npp8u * pSrc, int nSrcStep, 
                                           Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -4719,8 +6385,12 @@ NppStatus nppiSwapChannels_8u_C4C3R(const Npp8u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                            Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiSwapChannels_8u_C4R(const Npp8u * pSrc, int nSrcStep, 
                                         Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4]); 
                                        
@@ -4733,8 +6403,11 @@ NppStatus nppiSwapChannels_8u_C4R(const Npp8u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
 
 /** 
@@ -4752,8 +6425,12 @@ NppStatus nppiSwapChannels_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oS
  *      nValue is either written or not written to a particular channel depending on the aDstOrder entry for that destination
  *      channel. An aDstOrder value of 3 will output nValue to that channel, an aDstOrder value greater than 3 will leave that
  *      particular destination channel value unmodified.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_C3C4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                              Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp8u nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_8u_C3C4R(const Npp8u * pSrc, int nSrcStep, 
                                           Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp8u nValue);
 
@@ -4771,8 +6448,12 @@ NppStatus nppiSwapChannels_8u_C3C4R(const Npp8u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to BGRA
  *      channel order. In the AC4R case, the alpha channel is always assumed to be channel 3.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, 
+                                             Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiSwapChannels_8u_AC4R(const Npp8u * pSrc, int nSrcStep, 
                                          Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]); 
 
@@ -4787,8 +6468,12 @@ NppStatus nppiSwapChannels_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                             Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiSwapChannels_16u_C3R(const Npp16u * pSrc, int nSrcStep, 
                                          Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]); 
 
@@ -4801,8 +6486,11 @@ NppStatus nppiSwapChannels_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
 /** 
@@ -4816,8 +6504,12 @@ NppStatus nppiSwapChannels_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize 
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to a 3 channel BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C4C3R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                               Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16u_C4C3R(const Npp16u * pSrc, int nSrcStep, 
                                            Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -4832,8 +6524,12 @@ NppStatus nppiSwapChannels_16u_C4C3R(const Npp16u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                             Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiSwapChannels_16u_C4R(const Npp16u * pSrc, int nSrcStep, 
                                          Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4]); 
                                        
@@ -4846,8 +6542,11 @@ NppStatus nppiSwapChannels_16u_C4R(const Npp16u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16u_C4IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
 
 /** 
@@ -4865,8 +6564,12 @@ NppStatus nppiSwapChannels_16u_C4IR(Npp16u * pSrcDst, int nSrcDstStep, NppiSize 
  *      nValue is either written or not written to a particular channel depending on the aDstOrder entry for that destination
  *      channel. An aDstOrder value of 3 will output nValue to that channel, an aDstOrder value greater than 3 will leave that
  *      particular destination channel value unmodified.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_C3C4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                               Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp16u nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16u_C3C4R(const Npp16u * pSrc, int nSrcStep, 
                                            Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp16u nValue);
 
@@ -4881,8 +6584,12 @@ NppStatus nppiSwapChannels_16u_C3C4R(const Npp16u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to BGRA
  *      channel order. In the AC4R case, the alpha channel is always assumed to be channel 3.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, 
+                                              Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiSwapChannels_16u_AC4R(const Npp16u * pSrc, int nSrcStep, 
                                           Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]); 
 
@@ -4897,8 +6604,12 @@ NppStatus nppiSwapChannels_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                             Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiSwapChannels_16s_C3R(const Npp16s * pSrc, int nSrcStep, 
                                          Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]); 
 
@@ -4911,8 +6622,11 @@ NppStatus nppiSwapChannels_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
 /** 
@@ -4926,8 +6640,12 @@ NppStatus nppiSwapChannels_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize 
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to a 3 channel BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C4C3R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                               Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16s_C4C3R(const Npp16s * pSrc, int nSrcStep, 
                                            Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -4942,8 +6660,12 @@ NppStatus nppiSwapChannels_16s_C4C3R(const Npp16s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                             Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiSwapChannels_16s_C4R(const Npp16s * pSrc, int nSrcStep, 
                                          Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4]); 
                                        
@@ -4956,8 +6678,11 @@ NppStatus nppiSwapChannels_16s_C4R(const Npp16s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16s_C4IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
 
 /** 
@@ -4975,8 +6700,12 @@ NppStatus nppiSwapChannels_16s_C4IR(Npp16s * pSrcDst, int nSrcDstStep, NppiSize 
  *      nValue is either written or not written to a particular channel depending on the aDstOrder entry for that destination
  *      channel. An aDstOrder value of 3 will output nValue to that channel, an aDstOrder value greater than 3 will leave that
  *      particular destination channel value unmodified.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_C3C4R_Ctx(const Npp16s * pSrc, int nSrcStep, 
+                                               Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16s_C3C4R(const Npp16s * pSrc, int nSrcStep, 
                                            Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp16s nValue);
 
@@ -4991,8 +6720,12 @@ NppStatus nppiSwapChannels_16s_C3C4R(const Npp16s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to BGRA
  *      channel order. In the AC4R case, the alpha channel is always assumed to be channel 3.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                              Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                           Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5007,8 +6740,12 @@ NppStatus nppiSwapChannels_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C3R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                             Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_C3R(const Npp32s * pSrc, int nSrcStep,
                                          Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5021,8 +6758,11 @@ NppStatus nppiSwapChannels_32s_C3R(const Npp32s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C3IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_C3IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
 /** 
@@ -5036,8 +6776,12 @@ NppStatus nppiSwapChannels_32s_C3IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize 
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to a 3 channel BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C4C3R_Ctx(const Npp32s * pSrc, int nSrcStep, 
+                                               Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_C4C3R(const Npp32s * pSrc, int nSrcStep, 
                                            Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5052,8 +6796,12 @@ NppStatus nppiSwapChannels_32s_C4C3R(const Npp32s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                             Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiSwapChannels_32s_C4R(const Npp32s * pSrc, int nSrcStep,
                                          Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
                                        
@@ -5066,8 +6814,11 @@ NppStatus nppiSwapChannels_32s_C4R(const Npp32s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C4IR_Ctx(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_C4IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
 
 /** 
@@ -5085,8 +6836,12 @@ NppStatus nppiSwapChannels_32s_C4IR(Npp32s * pSrcDst, int nSrcDstStep, NppiSize 
  *      nValue is either written or not written to a particular channel depending on the aDstOrder entry for that destination
  *      channel. An aDstOrder value of 3 will output nValue to that channel, an aDstOrder value greater than 3 will leave that
  *      particular destination channel value unmodified.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_C3C4R_Ctx(const Npp32s * pSrc, int nSrcStep, 
+                                               Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp32s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_C3C4R(const Npp32s * pSrc, int nSrcStep, 
                                            Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp32s nValue);
 
@@ -5101,8 +6856,12 @@ NppStatus nppiSwapChannels_32s_C3C4R(const Npp32s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to BGRA
  *      channel order. In the AC4R case, the alpha channel is always assumed to be channel 3.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32s_AC4R_Ctx(const Npp32s * pSrc, int nSrcStep,
+                                              Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32s_AC4R(const Npp32s * pSrc, int nSrcStep,
                                           Npp32s * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5117,8 +6876,12 @@ NppStatus nppiSwapChannels_32s_AC4R(const Npp32s * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5131,8 +6894,11 @@ NppStatus nppiSwapChannels_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGB image, aDstOrder = [2,1,0] converts this to BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
 /** 
@@ -5146,8 +6912,12 @@ NppStatus nppiSwapChannels_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize 
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to a 3 channel BGR
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C4C3R_Ctx(const Npp32f * pSrc, int nSrcStep, 
+                                               Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_C4C3R(const Npp32f * pSrc, int nSrcStep, 
                                            Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 
@@ -5162,8 +6932,12 @@ NppStatus nppiSwapChannels_32f_C4C3R(const Npp32f * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+                                       
 NppStatus nppiSwapChannels_32f_C4R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
                                        
@@ -5176,8 +6950,11 @@ NppStatus nppiSwapChannels_32f_C4R(const Npp32f * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an ARGB image, aDstOrder = [3,2,1,0] converts this to BGRA
  *      channel order.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, const int aDstOrder[4]);
 
 /** 
@@ -5195,8 +6972,12 @@ NppStatus nppiSwapChannels_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep, NppiSize 
  *      nValue is either written or not written to a particular channel depending on the aDstOrder entry for that destination
  *      channel. An aDstOrder value of 3 will output nValue to that channel, an aDstOrder value greater than 3 will leave that
  *      particular destination channel value unmodified.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_C3C4R_Ctx(const Npp32f * pSrc, int nSrcStep, 
+                                               Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_C3C4R(const Npp32f * pSrc, int nSrcStep, 
                                            Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[4], const Npp32f nValue);
 
@@ -5211,8 +6992,12 @@ NppStatus nppiSwapChannels_32f_C3C4R(const Npp32f * pSrc, int nSrcStep,
  *      of the array contains the number of the channel that is stored in the n-th channel of
  *      the output image. E.g. Given an RGBA image, aDstOrder = [2,1,0] converts this to BGRA
  *      channel order. In the AC4R case, the alpha channel is always assumed to be channel 3.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiSwapChannels_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                              Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiSwapChannels_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                           Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const int aDstOrder[3]);
 

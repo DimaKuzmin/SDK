@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -82,8 +82,12 @@ extern "C" {
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_8u_I_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
 
@@ -92,8 +96,12 @@ nppsMinEvery_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_16u_I_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
 
@@ -102,8 +110,12 @@ nppsMinEvery_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_16s_I_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
 
@@ -112,8 +124,12 @@ nppsMinEvery_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_32s_I_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_32s_I(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength);
 
@@ -122,8 +138,12 @@ nppsMinEvery_32s_I(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -132,8 +152,12 @@ nppsMinEvery_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinEvery_64f_I_Ctx(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinEvery_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
 
@@ -142,8 +166,12 @@ nppsMinEvery_64f_I(const Npp64f * pSrc, Npp64f * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxEvery_8u_I_Ctx(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxEvery_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
 
@@ -152,8 +180,12 @@ nppsMaxEvery_8u_I(const Npp8u * pSrc, Npp8u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxEvery_16u_I_Ctx(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxEvery_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
 
@@ -162,8 +194,12 @@ nppsMaxEvery_16u_I(const Npp16u * pSrc, Npp16u * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxEvery_16s_I_Ctx(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxEvery_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
 
@@ -172,8 +208,12 @@ nppsMaxEvery_16s_I(const Npp16s * pSrc, Npp16s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxEvery_32s_I_Ctx(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxEvery_32s_I(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength);
 
@@ -182,8 +222,12 @@ nppsMaxEvery_32s_I(const Npp32s * pSrc, Npp32s * pSrcDst, int nLength);
  * \param pSrc \ref source_signal_pointer.
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxEvery_32f_I_Ctx(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxEvery_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
 
@@ -194,7 +238,7 @@ nppsMaxEvery_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  */
 
 /** @defgroup signal_sum Sum
- *
+ * Performs the sum operation on the samples of a signal.
  * @{  
  *
  */
@@ -204,8 +248,12 @@ nppsMaxEvery_32f_I(const Npp32f * pSrc, Npp32f * pSrcDst, int nLength);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -214,8 +262,12 @@ nppsSumGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_32fc_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_32fc(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -224,8 +276,12 @@ nppsSumGetBufferSize_32fc(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -234,8 +290,12 @@ nppsSumGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_64fc_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_64fc(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -244,8 +304,12 @@ nppsSumGetBufferSize_64fc(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_16s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -254,8 +318,12 @@ nppsSumGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_16sc_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_16sc_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -264,8 +332,12 @@ nppsSumGetBufferSize_16sc_Sfs(int nLength, int * hpBufferSize /* host pointer */
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_16sc32sc_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_16sc32sc_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -274,8 +346,12 @@ nppsSumGetBufferSize_16sc32sc_Sfs(int nLength, int * hpBufferSize /* host pointe
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_32s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+ 
 NppStatus 
 nppsSumGetBufferSize_32s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
  
@@ -284,8 +360,12 @@ nppsSumGetBufferSize_32s_Sfs(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsSumGetBufferSize_16s32s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSumGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -296,8 +376,12 @@ nppsSumGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host pointer 
  * \param pSum Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pSum, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_32f(const Npp32f * pSrc, int nLength, Npp32f * pSum, Npp8u * pDeviceBuffer);
 
@@ -308,8 +392,12 @@ nppsSum_32f(const Npp32f * pSrc, int nLength, Npp32f * pSum, Npp8u * pDeviceBuff
  * \param pSum Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_32fc_Ctx(const Npp32fc * pSrc, int nLength, Npp32fc * pSum, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_32fc(const Npp32fc * pSrc, int nLength, Npp32fc * pSum, Npp8u * pDeviceBuffer);
 
@@ -320,8 +408,12 @@ nppsSum_32fc(const Npp32fc * pSrc, int nLength, Npp32fc * pSum, Npp8u * pDeviceB
  * \param pSum Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pSum, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_64f(const Npp64f * pSrc, int nLength, Npp64f * pSum, Npp8u * pDeviceBuffer);
 
@@ -332,8 +424,12 @@ nppsSum_64f(const Npp64f * pSrc, int nLength, Npp64f * pSum, Npp8u * pDeviceBuff
  * \param pSum Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_64fc_Ctx(const Npp64fc * pSrc, int nLength, Npp64fc * pSum, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_64fc(const Npp64fc * pSrc, int nLength, Npp64fc * pSum, Npp8u * pDeviceBuffer);
 
@@ -345,8 +441,13 @@ nppsSum_64fc(const Npp64fc * pSrc, int nLength, Npp64fc * pSum, Npp8u * pDeviceB
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_16s_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_16s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pSum, int nScaleFactor, 
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pSum, int nScaleFactor, 
                 Npp8u * pDeviceBuffer);
@@ -359,8 +460,13 @@ nppsSum_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pSum, int nScaleFacto
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_32s_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_32s_Sfs_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pSum, int nScaleFactor, 
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_32s_Sfs(const Npp32s * pSrc, int nLength, Npp32s * pSum, int nScaleFactor, 
                 Npp8u * pDeviceBuffer);
@@ -373,8 +479,13 @@ nppsSum_32s_Sfs(const Npp32s * pSrc, int nLength, Npp32s * pSum, int nScaleFacto
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_16sc_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_16sc_Sfs_Ctx(const Npp16sc * pSrc, int nLength, Npp16sc * pSum, int nScaleFactor, 
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_16sc_Sfs(const Npp16sc * pSrc, int nLength, Npp16sc * pSum, int nScaleFactor, 
                  Npp8u * pDeviceBuffer);
@@ -388,8 +499,13 @@ nppsSum_16sc_Sfs(const Npp16sc * pSrc, int nLength, Npp16sc * pSum, int nScaleFa
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_16sc32sc_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_16sc32sc_Sfs_Ctx(const Npp16sc * pSrc, int nLength, Npp32sc * pSum, int nScaleFactor, 
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_16sc32sc_Sfs(const Npp16sc * pSrc, int nLength, Npp32sc * pSum, int nScaleFactor, 
                      Npp8u * pDeviceBuffer);
@@ -402,8 +518,13 @@ nppsSum_16sc32sc_Sfs(const Npp16sc * pSrc, int nLength, Npp32sc * pSum, int nSca
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsSumGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsSum_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pSum, int nScaleFactor,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsSum_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pSum, int nScaleFactor,
                    Npp8u * pDeviceBuffer);
@@ -412,7 +533,7 @@ nppsSum_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pSum, int nScaleFa
 
 
 /** @defgroup signal_max Maximum
- *
+ * Performs the maximum operation on the samples of a signal.
  * @{
  *
  */
@@ -422,8 +543,12 @@ nppsSum_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pSum, int nScaleFa
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -432,8 +557,12 @@ nppsMaxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -442,8 +571,12 @@ nppsMaxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -452,8 +585,12 @@ nppsMaxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -464,8 +601,12 @@ nppsMaxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param pMax Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMax_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMax, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMax_16s(const Npp16s * pSrc, int nLength, Npp16s * pMax, Npp8u * pDeviceBuffer);
 
@@ -476,8 +617,12 @@ nppsMax_16s(const Npp16s * pSrc, int nLength, Npp16s * pMax, Npp8u * pDeviceBuff
  * \param pMax Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMax_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMax, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMax_32s(const Npp32s * pSrc, int nLength, Npp32s * pMax, Npp8u * pDeviceBuffer);
 
@@ -488,8 +633,12 @@ nppsMax_32s(const Npp32s * pSrc, int nLength, Npp32s * pMax, Npp8u * pDeviceBuff
  * \param pMax Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMax_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMax, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMax_32f(const Npp32f * pSrc, int nLength, Npp32f * pMax, Npp8u * pDeviceBuffer);
 
@@ -500,8 +649,12 @@ nppsMax_32f(const Npp32f * pSrc, int nLength, Npp32f * pMax, Npp8u * pDeviceBuff
  * \param pMax Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMax_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMax, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMax_64f(const Npp64f * pSrc, int nLength, Npp64f * pMax, Npp8u * pDeviceBuffer);
 
@@ -510,8 +663,12 @@ nppsMax_64f(const Npp64f * pSrc, int nLength, Npp64f * pMax, Npp8u * pDeviceBuff
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxIndxGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -520,8 +677,12 @@ nppsMaxIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxIndxGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -530,8 +691,12 @@ nppsMaxIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxIndxGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -540,8 +705,12 @@ nppsMaxIndxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxIndxGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -553,8 +722,12 @@ nppsMaxIndxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */)
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxIndxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxIndx_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMax, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMax, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -566,8 +739,12 @@ nppsMaxIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMax, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxIndxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxIndx_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMax, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMax, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -579,8 +756,12 @@ nppsMaxIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMax, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxIndxGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxIndx_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMax, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMax, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -592,8 +773,12 @@ nppsMaxIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMax, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxIndxGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxIndx_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMax, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMax, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -602,8 +787,12 @@ nppsMaxIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMax, int * pIndx, Np
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxAbsGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -612,8 +801,12 @@ nppsMaxAbsGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxAbsGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -624,8 +817,12 @@ nppsMaxAbsGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
  * \param pMaxAbs Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxAbsGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxAbs_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbs_16s(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, Npp8u * pDeviceBuffer);
 
@@ -636,8 +833,12 @@ nppsMaxAbs_16s(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, Npp8u * pDevi
  * \param pMaxAbs Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxAbsGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxAbs_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbs_32s(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, Npp8u * pDeviceBuffer);
 
@@ -646,8 +847,12 @@ nppsMaxAbs_32s(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, Npp8u * pDevi
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxAbsIndxGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -656,8 +861,12 @@ nppsMaxAbsIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMaxAbsIndxGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -669,8 +878,12 @@ nppsMaxAbsIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer 
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxAbsIndxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxAbsIndx_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -682,15 +895,19 @@ nppsMaxAbsIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMaxAbs, int * pIn
  * \param pIndx Pointer to the index value of the first maximum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaxAbsIndxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaxAbsIndx_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaxAbsIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, int * pIndx, Npp8u * pDeviceBuffer);
 
 /** @} signal_max */
 
 /** @defgroup signal_min Minimum
- *
+ * Performs the minimum operation on the samples of a signal.
  * @{
  *
  */
@@ -700,8 +917,12 @@ nppsMaxAbsIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMaxAbs, int * pIn
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -710,8 +931,12 @@ nppsMinGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -720,8 +945,12 @@ nppsMinGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -730,8 +959,12 @@ nppsMinGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -742,8 +975,12 @@ nppsMinGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param pMin Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMin_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMin_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp8u * pDeviceBuffer);
 
@@ -754,8 +991,12 @@ nppsMin_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp8u * pDeviceBuff
  * \param pMin Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMin_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMin_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp8u * pDeviceBuffer);
 
@@ -766,8 +1007,12 @@ nppsMin_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp8u * pDeviceBuff
  * \param pMin Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMin_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMin_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp8u * pDeviceBuffer);
 
@@ -778,8 +1023,12 @@ nppsMin_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp8u * pDeviceBuff
  * \param pMin Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMin_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMin_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp8u * pDeviceBuffer);
 
@@ -788,8 +1037,12 @@ nppsMin_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp8u * pDeviceBuff
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinIndxGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -798,8 +1051,12 @@ nppsMinIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinIndxGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -808,8 +1065,12 @@ nppsMinIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinIndxGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -818,8 +1079,12 @@ nppsMinIndxGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */)
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinIndxGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -831,8 +1096,12 @@ nppsMinIndxGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */)
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinIndxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinIndx_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -844,8 +1113,12 @@ nppsMinIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinIndxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinIndx_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -857,8 +1130,12 @@ nppsMinIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinIndxGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinIndx_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -870,8 +1147,12 @@ nppsMinIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pIndx, Np
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinIndxGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinIndx_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -880,8 +1161,12 @@ nppsMinIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pIndx, Np
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinAbsGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -890,8 +1175,12 @@ nppsMinAbsGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinAbsGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -902,8 +1191,12 @@ nppsMinAbsGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
  * \param pMinAbs Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinAbsGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinAbs_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbs_16s(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, Npp8u * pDeviceBuffer);
 
@@ -914,8 +1207,12 @@ nppsMinAbs_16s(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, Npp8u * pDevi
  * \param pMinAbs Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinAbsGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinAbs_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbs_32s(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, Npp8u * pDeviceBuffer);
 
@@ -924,8 +1221,12 @@ nppsMinAbs_32s(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, Npp8u * pDevi
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinAbsIndxGetBufferSize_16s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -934,8 +1235,12 @@ nppsMinAbsIndxGetBufferSize_16s(int nLength, int * hpBufferSize /* host pointer 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMinAbsIndxGetBufferSize_32s_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -947,8 +1252,12 @@ nppsMinAbsIndxGetBufferSize_32s(int nLength, int * hpBufferSize /* host pointer 
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinAbsIndxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinAbsIndx_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, int * pIndx, Npp8u * pDeviceBuffer);
 
@@ -960,15 +1269,19 @@ nppsMinAbsIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMinAbs, int * pIn
  * \param pIndx Pointer to the index value of the first minimum element.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinAbsIndxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinAbsIndx_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, int * pIndx, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinAbsIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, int * pIndx, Npp8u * pDeviceBuffer);
 
 /** @} signal_min */
 
 /** @defgroup signal_mean Mean
- *
+ * Performs the mean operation on the samples of a signal.
  * @{
  *
  */
@@ -978,8 +1291,12 @@ nppsMinAbsIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMinAbs, int * pIn
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -988,8 +1305,12 @@ nppsMeanGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_32fc_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_32fc(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -998,8 +1319,12 @@ nppsMeanGetBufferSize_32fc(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1008,8 +1333,12 @@ nppsMeanGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_64fc_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_64fc(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1018,8 +1347,12 @@ nppsMeanGetBufferSize_64fc(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_16s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1028,8 +1361,12 @@ nppsMeanGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_32s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_32s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1038,8 +1375,12 @@ nppsMeanGetBufferSize_32s_Sfs(int nLength, int * hpBufferSize /* host pointer */
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanGetBufferSize_16sc_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanGetBufferSize_16sc_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1050,8 +1391,12 @@ nppsMeanGetBufferSize_16sc_Sfs(int nLength, int * hpBufferSize /* host pointer *
  * \param pMean Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMean_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMean_32f(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp8u * pDeviceBuffer);
 
@@ -1062,8 +1407,12 @@ nppsMean_32f(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp8u * pDeviceBu
  * \param pMean Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMean_32fc_Ctx(const Npp32fc * pSrc, int nLength, Npp32fc * pMean, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMean_32fc(const Npp32fc * pSrc, int nLength, Npp32fc * pMean, Npp8u * pDeviceBuffer);
 
@@ -1074,8 +1423,12 @@ nppsMean_32fc(const Npp32fc * pSrc, int nLength, Npp32fc * pMean, Npp8u * pDevic
  * \param pMean Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMean_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMean_64f(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp8u * pDeviceBuffer);
 
@@ -1086,8 +1439,12 @@ nppsMean_64f(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp8u * pDeviceBu
  * \param pMean Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMean_64fc_Ctx(const Npp64fc * pSrc, int nLength, Npp64fc * pMean, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMean_64fc(const Npp64fc * pSrc, int nLength, Npp64fc * pMean, Npp8u * pDeviceBuffer);
 
@@ -1099,11 +1456,16 @@ nppsMean_64fc(const Npp64fc * pSrc, int nLength, Npp64fc * pMean, Npp8u * pDevic
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_16s_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMean_16s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMean, int nScaleFactor, 
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMean_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pMean, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                 Npp8u * pDeviceBuffer);
 
 /** 
  * 32-bit integer vector mean with integer scaling method
@@ -1113,11 +1475,16 @@ nppsMean_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pMean, int nScaleFac
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_32s_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMean_32s_Sfs_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMean, int nScaleFactor, 
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMean_32s_Sfs(const Npp32s * pSrc, int nLength, Npp32s * pMean, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                 Npp8u * pDeviceBuffer);
 
 /** 
  * 16-bit short complex vector mean with integer scaling method
@@ -1127,16 +1494,21 @@ nppsMean_32s_Sfs(const Npp32s * pSrc, int nLength, Npp32s * pMean, int nScaleFac
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanGetBufferSize_16sc_Sfs to determine the minium number of bytes required.
  * \param nScaleFactor \ref integer_result_scaling.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMean_16sc_Sfs_Ctx(const Npp16sc * pSrc, int nLength, Npp16sc * pMean, int nScaleFactor, 
+                      Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMean_16sc_Sfs(const Npp16sc * pSrc, int nLength, Npp16sc * pMean, int nScaleFactor, 
-                 Npp8u * pDeviceBuffer);
+                  Npp8u * pDeviceBuffer);
 
 /** @} signal_mean */
 
 /** @defgroup signal_standard_deviation Standard Deviation
- *
+ * Calculates the standard deviation for the samples of a signal.
  * @{
  *
  */
@@ -1146,8 +1518,12 @@ nppsMean_16sc_Sfs(const Npp16sc * pSrc, int nLength, Npp16sc * pMean, int nScale
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsStdDevGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDevGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1156,8 +1532,12 @@ nppsStdDevGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsStdDevGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDevGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1166,8 +1546,12 @@ nppsStdDevGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsStdDevGetBufferSize_16s32s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDevGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1176,8 +1560,12 @@ nppsStdDevGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host point
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsStdDevGetBufferSize_16s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDevGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1188,8 +1576,12 @@ nppsStdDevGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer 
  * \param pStdDev Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsStdDevGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsStdDev_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pStdDev, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDev_32f(const Npp32f * pSrc, int nLength, Npp32f * pStdDev, Npp8u * pDeviceBuffer);
 
@@ -1200,8 +1592,12 @@ nppsStdDev_32f(const Npp32f * pSrc, int nLength, Npp32f * pStdDev, Npp8u * pDevi
  * \param pStdDev Pointer to the output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsStdDevGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsStdDev_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pStdDev, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsStdDev_64f(const Npp64f * pSrc, int nLength, Npp64f * pStdDev, Npp8u * pDeviceBuffer);
 
@@ -1213,11 +1609,16 @@ nppsStdDev_64f(const Npp64f * pSrc, int nLength, Npp64f * pStdDev, Npp8u * pDevi
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsStdDevGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsStdDev_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pStdDev, int nScaleFactor, 
+                          Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsStdDev_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pStdDev, int nScaleFactor, 
-            Npp8u * pDeviceBuffer);
+                      Npp8u * pDeviceBuffer);
 
 /** 
  * 16-bit float vector standard deviation method (return value is also 16-bit)
@@ -1227,16 +1628,21 @@ nppsStdDev_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pStdDev, int nS
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsStdDevGetBufferSize_16s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsStdDev_16s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pStdDev, int nScaleFactor, 
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsStdDev_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pStdDev, int nScaleFactor, 
-            Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** @} signal_standard_deviation */
 
 /** @defgroup signal_mean_and_standard_deviation Mean And Standard Deviation
- *
+ * Performs the mean and calculates the standard deviation for the samples of a signal.
  * @{
  *
  */
@@ -1246,8 +1652,12 @@ nppsStdDev_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pStdDev, int nScal
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanStdDevGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDevGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1256,8 +1666,12 @@ nppsMeanStdDevGetBufferSize_32f(int nLength, int * hpBufferSize /* host pointer 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanStdDevGetBufferSize_64f_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDevGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1266,8 +1680,12 @@ nppsMeanStdDevGetBufferSize_64f(int nLength, int * hpBufferSize /* host pointer 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanStdDevGetBufferSize_16s32s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDevGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1276,8 +1694,12 @@ nppsMeanStdDevGetBufferSize_16s32s_Sfs(int nLength, int * hpBufferSize /* host p
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size. Important: hpBufferSize is a 
  *        <em>host pointer.</em> \ref general_scratch_buffer.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus 
+nppsMeanStdDevGetBufferSize_16s_Sfs_Ctx(int nLength, int * hpBufferSize /* host pointer */, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDevGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host pointer */);
 
@@ -1289,8 +1711,12 @@ nppsMeanStdDevGetBufferSize_16s_Sfs(int nLength, int * hpBufferSize /* host poin
  * \param pStdDev Pointer to the output standard deviation value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanStdDevGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMeanStdDev_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp32f * pStdDev, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDev_32f(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp32f * pStdDev, Npp8u * pDeviceBuffer);
 
@@ -1302,8 +1728,12 @@ nppsMeanStdDev_32f(const Npp32f * pSrc, int nLength, Npp32f * pMean, Npp32f * pS
  * \param pStdDev Pointer to the output standard deviation value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanStdDevGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMeanStdDev_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp64f * pStdDev, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMeanStdDev_64f(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp64f * pStdDev, Npp8u * pDeviceBuffer);
 
@@ -1316,11 +1746,16 @@ nppsMeanStdDev_64f(const Npp64f * pSrc, int nLength, Npp64f * pMean, Npp64f * pS
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanStdDevGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMeanStdDev_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pMean, Npp32s * pStdDev, int nScaleFactor, 
+                              Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMeanStdDev_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pMean, Npp32s * pStdDev, int nScaleFactor, 
-            Npp8u * pDeviceBuffer);
+                          Npp8u * pDeviceBuffer);
 
 /** 
  * 16-bit float vector mean and standard deviation method (return values are also 16-bit)
@@ -1331,16 +1766,21 @@ nppsMeanStdDev_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pMean, Npp3
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMeanStdDevGetBufferSize_16s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMeanStdDev_16s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMean, Npp16s * pStdDev, int nScaleFactor, 
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMeanStdDev_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pMean, Npp16s * pStdDev, int nScaleFactor, 
-            Npp8u * pDeviceBuffer);
+                       Npp8u * pDeviceBuffer);
 
 /** @} signal_mean_and_standard_deviation */
 
-/** @defgroup signal_min_max Minimum_Maximum
- *
+/** @defgroup signal_min_max Minimum Maximum
+ * Performs the maximum and the minimum operation on the samples of a signal.
  * @{
  *
  */
@@ -1350,8 +1790,12 @@ nppsMeanStdDev_16s_Sfs(const Npp16s * pSrc, int nLength, Npp16s * pMean, Npp16s 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -1360,8 +1804,12 @@ nppsMinMaxGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -1370,8 +1818,12 @@ nppsMinMaxGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -1380,8 +1832,12 @@ nppsMinMaxGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -1390,8 +1846,12 @@ nppsMinMaxGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -1400,8 +1860,12 @@ nppsMinMaxGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -1410,8 +1874,12 @@ nppsMinMaxGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -1423,8 +1891,13 @@ nppsMinMaxGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_8u_Ctx(const Npp8u * pSrc, int nLength, Npp8u * pMin, Npp8u * pMax, 
+                  Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_8u(const Npp8u * pSrc, int nLength, Npp8u * pMin, Npp8u * pMax, 
               Npp8u * pDeviceBuffer);
@@ -1437,8 +1910,13 @@ nppsMinMax_8u(const Npp8u * pSrc, int nLength, Npp8u * pMin, Npp8u * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp16s * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp16s * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1451,8 +1929,13 @@ nppsMinMax_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, Npp16s * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_16u_Ctx(const Npp16u * pSrc, int nLength, Npp16u * pMin, Npp16u * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_16u(const Npp16u * pSrc, int nLength, Npp16u * pMin, Npp16u * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1465,8 +1948,13 @@ nppsMinMax_16u(const Npp16u * pSrc, int nLength, Npp16u * pMin, Npp16u * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_32u_Ctx(const Npp32u * pSrc, int nLength, Npp32u * pMin, Npp32u * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_32u(const Npp32u * pSrc, int nLength, Npp32u * pMin, Npp32u * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1479,8 +1967,13 @@ nppsMinMax_32u(const Npp32u * pSrc, int nLength, Npp32u * pMin, Npp32u * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp32s * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp32s * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1493,8 +1986,13 @@ nppsMinMax_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, Npp32s * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp32f * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp32f * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1507,8 +2005,13 @@ nppsMinMax_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, Npp32f * pMax,
  * \param pMax Pointer to the max output result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMinMax_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp64f * pMax, 
+                   Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMinMax_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp64f * pMax, 
                Npp8u * pDeviceBuffer);
@@ -1518,8 +2021,12 @@ nppsMinMax_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, Npp64f * pMax,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -1528,8 +2035,12 @@ nppsMinMaxIndxGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -1538,8 +2049,12 @@ nppsMinMaxIndxGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -1548,8 +2063,12 @@ nppsMinMaxIndxGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -1558,8 +2077,12 @@ nppsMinMaxIndxGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -1568,8 +2091,12 @@ nppsMinMaxIndxGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -1578,8 +2105,12 @@ nppsMinMaxIndxGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMinMaxIndxGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMinMaxIndxGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -1593,11 +2124,16 @@ nppsMinMaxIndxGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_8u_Ctx(const Npp8u * pSrc, int nLength, Npp8u * pMin, int * pMinIndx, Npp8u * pMax, int * pMaxIndx,
+                      Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_8u(const Npp8u * pSrc, int nLength, Npp8u * pMin, int * pMinIndx, Npp8u * pMax, int * pMaxIndx,
-              Npp8u * pDeviceBuffer);
+                  Npp8u * pDeviceBuffer);
 
 /** 
  * 16-bit signed short vector min and max with indices method
@@ -1609,11 +2145,16 @@ nppsMinMaxIndx_8u(const Npp8u * pSrc, int nLength, Npp8u * pMin, int * pMinIndx,
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_16s_Ctx(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pMinIndx, Npp16s * pMax, int * pMaxIndx,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pMinIndx, Npp16s * pMax, int * pMaxIndx,
-              Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * 16-bit unsigned short vector min and max with indices method
@@ -1625,11 +2166,16 @@ nppsMinMaxIndx_16s(const Npp16s * pSrc, int nLength, Npp16s * pMin, int * pMinIn
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_16u_Ctx(const Npp16u * pSrc, int nLength, Npp16u * pMin, int * pMinIndx, Npp16u * pMax, int * pMaxIndx,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+        
+NppStatus 
 nppsMinMaxIndx_16u(const Npp16u * pSrc, int nLength, Npp16u * pMin, int * pMinIndx, Npp16u * pMax, int * pMaxIndx,
-              Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * 32-bit signed short vector min and max with indices method
@@ -1641,11 +2187,16 @@ nppsMinMaxIndx_16u(const Npp16u * pSrc, int nLength, Npp16u * pMin, int * pMinIn
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_32s_Ctx(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pMinIndx, Npp32s * pMax, int * pMaxIndx,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pMinIndx, Npp32s * pMax, int * pMaxIndx,
-              Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * 32-bit unsigned short vector min and max with indices method
@@ -1657,11 +2208,16 @@ nppsMinMaxIndx_32s(const Npp32s * pSrc, int nLength, Npp32s * pMin, int * pMinIn
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_32u_Ctx(const Npp32u * pSrc, int nLength, Npp32u * pMin, int * pMinIndx, Npp32u * pMax, int * pMaxIndx,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_32u(const Npp32u * pSrc, int nLength, Npp32u * pMin, int * pMinIndx, Npp32u * pMax, int * pMaxIndx,
-               Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * 32-bit float vector min and max with indices method
@@ -1673,11 +2229,16 @@ nppsMinMaxIndx_32u(const Npp32u * pSrc, int nLength, Npp32u * pMin, int * pMinIn
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pMinIndx, Npp32f * pMax, int * pMaxIndx,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pMinIndx, Npp32f * pMax, int * pMaxIndx,
-               Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * 64-bit float vector min and max with indices method
@@ -1689,16 +2250,21 @@ nppsMinMaxIndx_32f(const Npp32f * pSrc, int nLength, Npp32f * pMin, int * pMinIn
  * \param pMaxIndx Pointer to the index of the first max value.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMinMaxIndxGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsMinMaxIndx_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pMinIndx, Npp64f * pMax, int * pMaxIndx, 
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsMinMaxIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pMinIndx, Npp64f * pMax, int * pMaxIndx, 
-               Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** @} signal_min_max */
 
 /** @defgroup signal_infinity_norm Infinity Norm
- *
+ * Performs the infinity norm on the samples of a signal.
  * @{
  *
  */
@@ -1708,8 +2274,12 @@ nppsMinMaxIndx_64f(const Npp64f * pSrc, int nLength, Npp64f * pMin, int * pMinIn
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -1720,8 +2290,13 @@ nppsNormInfGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
                  Npp8u * pDeviceBuffer);
@@ -1731,8 +2306,12 @@ nppsNorm_Inf_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -1743,8 +2322,13 @@ nppsNormInfGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
                  Npp8u * pDeviceBuffer);
@@ -1754,8 +2338,12 @@ nppsNorm_Inf_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -1766,8 +2354,13 @@ nppsNormInfGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_16s32f_Ctx(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
                     Npp8u * pDeviceBuffer);
@@ -1777,8 +2370,12 @@ nppsNorm_Inf_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_32fc32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_32fc32f(int nLength,  int * hpBufferSize);
 
@@ -1789,8 +2386,13 @@ nppsNormInfGetBufferSize_32fc32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_32fc32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_32fc32f_Ctx(const Npp32fc * pSrc, int nLength, Npp32f * pNorm,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_32fc32f(const Npp32fc * pSrc, int nLength, Npp32f * pNorm,
                      Npp8u * pDeviceBuffer);
@@ -1800,8 +2402,12 @@ nppsNorm_Inf_32fc32f(const Npp32fc * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -1812,8 +2418,13 @@ nppsNormInfGetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_64fc64f_Ctx(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
                      Npp8u * pDeviceBuffer);
@@ -1823,8 +2434,12 @@ nppsNorm_Inf_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormInfGetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormInfGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -1836,8 +2451,13 @@ nppsNormInfGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormInfGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_Inf_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_Inf_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
                         Npp8u * pDeviceBuffer);
@@ -1845,7 +2465,7 @@ nppsNorm_Inf_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nS
 /** @} signal_infinity_norm */
 
 /** @defgroup signal_L1_norm L1 Norm
- *
+ * Performs the L1 norm on the samples of a signal.
  * @{
  *
  */
@@ -1855,8 +2475,12 @@ nppsNorm_Inf_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nS
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -1867,8 +2491,13 @@ nppsNormL1GetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
                 Npp8u * pDeviceBuffer);
@@ -1878,8 +2507,12 @@ nppsNorm_L1_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -1890,8 +2523,13 @@ nppsNormL1GetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
                 Npp8u * pDeviceBuffer);
@@ -1901,8 +2539,12 @@ nppsNorm_L1_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -1913,8 +2555,13 @@ nppsNormL1GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the L1 norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_16s32f_Ctx(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
                    Npp8u * pDeviceBuffer);
@@ -1924,8 +2571,12 @@ nppsNorm_L1_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_32fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
 
@@ -1936,8 +2587,13 @@ nppsNormL1GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_32fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_32fc64f_Ctx(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_32fc64f(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
                     Npp8u * pDeviceBuffer);
@@ -1947,8 +2603,12 @@ nppsNorm_L1_32fc64f(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -1959,8 +2619,13 @@ nppsNormL1GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_64fc64f_Ctx(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
                     Npp8u * pDeviceBuffer);
@@ -1970,8 +2635,12 @@ nppsNorm_L1_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -1983,8 +2652,13 @@ nppsNormL1GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
                        Npp8u * pDeviceBuffer);
@@ -1994,8 +2668,12 @@ nppsNorm_L1_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nSc
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL1GetBufferSize_16s64s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL1GetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2007,8 +2685,13 @@ nppsNormL1GetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL1GetBufferSize_16s64s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L1_16s64s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nScaleFactor,
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L1_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nScaleFactor,
                        Npp8u * pDeviceBuffer);
@@ -2016,7 +2699,7 @@ nppsNorm_L1_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nSc
 /** @} signal_L1_norm */
 
 /** @defgroup signal_L2_norm L2 Norm
- *
+ * Performs the L2 norm on the samples of a signal.
  * @{
  *
  */
@@ -2026,8 +2709,12 @@ nppsNorm_L1_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nSc
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -2038,8 +2725,12 @@ nppsNormL2GetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pNorm, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm, Npp8u * pDeviceBuffer);
 
@@ -2048,8 +2739,12 @@ nppsNorm_L2_32f(const Npp32f * pSrc, int nLength, Npp32f * pNorm, Npp8u * pDevic
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -2060,8 +2755,13 @@ nppsNormL2GetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_64f_Ctx(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
                 Npp8u * pDeviceBuffer);
@@ -2071,8 +2771,12 @@ nppsNorm_L2_64f(const Npp64f * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -2083,8 +2787,13 @@ nppsNormL2GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_16s32f_Ctx(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
                    Npp8u * pDeviceBuffer);
@@ -2094,8 +2803,12 @@ nppsNorm_L2_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_32fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
 
@@ -2106,8 +2819,13 @@ nppsNormL2GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_32fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_32fc64f_Ctx(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_32fc64f(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
                     Npp8u * pDeviceBuffer);
@@ -2117,8 +2835,12 @@ nppsNorm_L2_32fc64f(const Npp32fc * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -2129,8 +2851,13 @@ nppsNormL2GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_64fc64f_Ctx(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
                     Npp8u * pDeviceBuffer);
@@ -2140,8 +2867,12 @@ nppsNorm_L2_64fc64f(const Npp64fc * pSrc, int nLength, Npp64f * pNorm,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2GetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2153,8 +2884,13 @@ nppsNormL2GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2GetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2_16s32s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nScaleFactor,
                        Npp8u * pDeviceBuffer);
@@ -2164,8 +2900,12 @@ nppsNorm_L2_16s32s_Sfs(const Npp16s * pSrc, int nLength, Npp32s * pNorm, int nSc
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormL2SqrGetBufferSize_16s64s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormL2SqrGetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2177,8 +2917,13 @@ nppsNormL2SqrGetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormL2SqrGetBufferSize_16s64s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsNorm_L2Sqr_16s64s_Sfs_Ctx(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nScaleFactor,
+                              Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsNorm_L2Sqr_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int nScaleFactor,
                           Npp8u * pDeviceBuffer);
@@ -2186,7 +2931,7 @@ nppsNorm_L2Sqr_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int 
 /** @} signal_L2_norm */
 
 /** @defgroup signal_infinity_norm_diff Infinity Norm Diff
- *
+ * Performs the infinity norm on the samples of two input signals' difference.
  * @{
  *
  */
@@ -2196,8 +2941,12 @@ nppsNorm_L2Sqr_16s64s_Sfs(const Npp16s * pSrc, int nLength, Npp64s * pNorm, int 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -2209,19 +2958,28 @@ nppsNormDiffInfGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
-                 Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_Inf_64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -2233,19 +2991,28 @@ nppsNormDiffInfGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
-                 Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_Inf_16s32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -2257,19 +3024,28 @@ nppsNormDiffInfGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
-                    Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_Inf_32fc32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_32fc32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_32fc32f(int nLength,  int * hpBufferSize);
 
@@ -2281,19 +3057,28 @@ nppsNormDiffInfGetBufferSize_32fc32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_32fc32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_32fc32f_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32f * pNorm,
+                             Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_32fc32f(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32f * pNorm,
-                     Npp8u * pDeviceBuffer);
+                         Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_Inf_64fc64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -2305,19 +3090,28 @@ nppsNormDiffInfGetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_64fc64f_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
+                             Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_64fc64f(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
-                     Npp8u * pDeviceBuffer);
+                         Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_Inf_16s32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffInfGetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffInfGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2330,16 +3124,21 @@ nppsNormDiffInfGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffInfGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_Inf_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
+                                Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_Inf_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
-                        Npp8u * pDeviceBuffer);
+                            Npp8u * pDeviceBuffer);
 
 /** @} signal_infinity_norm_diff */
 
 /** @defgroup signal_L1_norm_diff L1 Norm Diff
- *
+ * Performs the L1 norm on the samples of two input signals' difference.
  * @{
  *
  */
@@ -2349,8 +3148,12 @@ nppsNormDiff_Inf_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLen
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -2362,19 +3165,28 @@ nppsNormDiffL1GetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -2386,19 +3198,28 @@ nppsNormDiffL1GetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_16s32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -2410,19 +3231,28 @@ nppsNormDiffL1GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the L1 norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
-                   Npp8u * pDeviceBuffer);
+                       Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_32fc64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_32fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
 
@@ -2434,19 +3264,28 @@ nppsNormDiffL1GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_32fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_32fc64f_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pNorm,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_32fc64f(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pNorm,
-                    Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_64fc64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -2458,19 +3297,28 @@ nppsNormDiffL1GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_64fc64f_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_64fc64f(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
-                    Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_16s32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2483,19 +3331,28 @@ nppsNormDiffL1GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
+                               Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
-                       Npp8u * pDeviceBuffer);
+                           Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L1_16s64s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL1GetBufferSize_16s64s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL1GetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2508,16 +3365,21 @@ nppsNormDiffL1GetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL1GetBufferSize_16s64s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L1_16s64s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pNorm, int nScaleFactor,
+                               Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L1_16s64s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pNorm, int nScaleFactor,
-                       Npp8u * pDeviceBuffer);
+                           Npp8u * pDeviceBuffer);
 
 /** @} signal_L1_norm_diff */
 
 /** @defgroup signal_L2_norm_diff L2 Norm Diff
- *
+ * Performs the L2 norm on the samples of two input signals' difference.
  * @{
  *
  */
@@ -2527,8 +3389,12 @@ nppsNormDiff_L1_16s64s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLeng
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -2540,19 +3406,28 @@ nppsNormDiffL2GetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pNorm,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2_64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -2564,19 +3439,28 @@ nppsNormDiffL2GetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pNorm,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2_16s32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -2588,19 +3472,28 @@ nppsNormDiffL2GetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pNorm,
-                   Npp8u * pDeviceBuffer);
+                       Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2_32fc64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_32fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
 
@@ -2612,19 +3505,28 @@ nppsNormDiffL2GetBufferSize_32fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_32fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_32fc64f_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pNorm,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_32fc64f(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pNorm,
-                    Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2_64fc64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_64fc64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
 
@@ -2636,19 +3538,28 @@ nppsNormDiffL2GetBufferSize_64fc64f(int nLength,  int * hpBufferSize);
  * \param pNorm Pointer to the norm result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_64fc64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_64fc64f_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_64fc64f(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pNorm,
-                    Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2_16s32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2GetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2661,19 +3572,28 @@ nppsNormDiffL2GetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2GetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
+                               Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pNorm, int nScaleFactor,
-                       Npp8u * pDeviceBuffer);
+                           Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsNormDiff_L2Sqr_16s64s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsNormDiffL2SqrGetBufferSize_16s64s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsNormDiffL2SqrGetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -2686,16 +3606,21 @@ nppsNormDiffL2SqrGetBufferSize_16s64s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsNormDiffL2SqrGetBufferSize_16s64s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsNormDiff_L2Sqr_16s64s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pNorm, int nScaleFactor,
+                                  Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsNormDiff_L2Sqr_16s64s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pNorm, int nScaleFactor,
-                          Npp8u * pDeviceBuffer);
+                              Npp8u * pDeviceBuffer);
 
 /** @} signal_l2_norm_diff */
 
 /** @defgroup signal_dot_product Dot Product
- *
+ * Performs the dot product operation on the samples of two input signals.
  * @{
  *
  */
@@ -2705,8 +3630,12 @@ nppsNormDiff_L2Sqr_16s64s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nL
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -2718,8 +3647,13 @@ nppsDotProdGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDotProd_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pDp,
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDotProd_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f * pDp,
                 Npp8u * pDeviceBuffer);
@@ -2729,8 +3663,12 @@ nppsDotProd_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp32f 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32fc(int nLength,  int * hpBufferSize);
 
@@ -2742,19 +3680,28 @@ nppsDotProdGetBufferSize_32fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32fc * pDp,
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32fc * pDp,
-                Npp8u * pDeviceBuffer);
+                 Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32f32fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32f32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32f32fc(int nLength,  int * hpBufferSize);
 
@@ -2766,19 +3713,28 @@ nppsDotProdGetBufferSize_32f32fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32f32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32f32fc_Ctx(const Npp32f * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32fc * pDp,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32f32fc(const Npp32f * pSrc1, const Npp32fc * pSrc2, int nLength, Npp32fc * pDp,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32f64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32f64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32f64f(int nLength,  int * hpBufferSize);
 
@@ -2790,19 +3746,28 @@ nppsDotProdGetBufferSize_32f64f(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32f64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32f64f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDp,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32f64f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDp,
-                Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32fc64fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32fc64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32fc64fc(int nLength,  int * hpBufferSize);
 
@@ -2814,19 +3779,28 @@ nppsDotProdGetBufferSize_32fc64fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32fc64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32fc64fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64fc * pDp,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32fc64fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64fc * pDp,
-                Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32f32fc64fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32f32fc64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32f32fc64fc(int nLength,  int * hpBufferSize);
 
@@ -2838,19 +3812,28 @@ nppsDotProdGetBufferSize_32f32fc64fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32f32fc64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32f32fc64fc_Ctx(const Npp32f * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64fc * pDp,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32f32fc64fc(const Npp32f * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64fc * pDp,
-                Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_64f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -2862,8 +3845,13 @@ nppsDotProdGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDotProd_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDp,
+                    Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDotProd_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDp,
                 Npp8u * pDeviceBuffer);
@@ -2873,8 +3861,12 @@ nppsDotProd_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_64fc(int nLength,  int * hpBufferSize);
 
@@ -2886,19 +3878,28 @@ nppsDotProdGetBufferSize_64fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64fc * pDp,
+                     Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64fc * pDp,
-                Npp8u * pDeviceBuffer);
+                 Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_64f64fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_64f64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_64f64fc(int nLength,  int * hpBufferSize);
 
@@ -2910,19 +3911,28 @@ nppsDotProdGetBufferSize_64f64fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_64f64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_64f64fc_Ctx(const Npp64f * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64fc * pDp,
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_64f64fc(const Npp64f * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64fc * pDp,
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s64s.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s64s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s64s(int nLength,  int * hpBufferSize);
 
@@ -2934,19 +3944,28 @@ nppsDotProdGetBufferSize_16s64s(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s64s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s64s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pDp,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s64s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64s * pDp,
-                Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16sc64sc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16sc64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16sc64sc(int nLength,  int * hpBufferSize);
 
@@ -2958,19 +3977,28 @@ nppsDotProdGetBufferSize_16sc64sc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16sc64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16sc64sc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64sc * pDp,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16sc64sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64sc * pDp,
-                Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s16sc64sc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s16sc64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s16sc64sc(int nLength,  int * hpBufferSize);
 
@@ -2982,19 +4010,28 @@ nppsDotProdGetBufferSize_16s16sc64sc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s16sc64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s16sc64sc_Ctx(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64sc * pDp,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s16sc64sc(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64sc * pDp,
-                Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
 
@@ -3006,19 +4043,28 @@ nppsDotProdGetBufferSize_16s32f(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s32f_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pDp,
+                       Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s32f(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32f * pDp,
-                Npp8u * pDeviceBuffer);
+                   Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16sc32fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16sc32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16sc32fc(int nLength,  int * hpBufferSize);
 
@@ -3030,19 +4076,28 @@ nppsDotProdGetBufferSize_16sc32fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16sc32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16sc32fc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32fc * pDp,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16sc32fc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32fc * pDp,
-                Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s16sc32fc.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s16sc32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s16sc32fc(int nLength,  int * hpBufferSize);
 
@@ -3054,19 +4109,28 @@ nppsDotProdGetBufferSize_16s16sc32fc(int nLength,  int * hpBufferSize);
  * \param pDp Pointer to the dot product result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s16sc32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s16sc32fc_Ctx(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32fc * pDp,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s16sc32fc(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32fc * pDp,
-                Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3079,19 +4143,28 @@ nppsDotProdGetBufferSize_16s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp16s * pDp, int nScaleFactor, 
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp16s * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3104,19 +4177,28 @@ nppsDotProdGetBufferSize_16sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp16sc * pDp, int nScaleFactor, 
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp16sc * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3129,19 +4211,28 @@ nppsDotProdGetBufferSize_32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32s_Sfs_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
+                        Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32s_Sfs(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                    Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3154,19 +4245,28 @@ nppsDotProdGetBufferSize_32sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_32sc_Sfs_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_32sc_Sfs(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                     Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3179,19 +4279,28 @@ nppsDotProdGetBufferSize_16s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
+                           Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s32s_Sfs(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                       Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s16sc32sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s16sc32sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s16sc32sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3204,19 +4313,28 @@ nppsDotProdGetBufferSize_16s16sc32sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s16sc32sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s16sc32sc_Sfs_Ctx(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
+                                Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s16sc32sc_Sfs(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                            Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s32s32s_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s32s32s_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s32s32s_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3229,19 +4347,28 @@ nppsDotProdGetBufferSize_16s32s32s_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s32s32s_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s32s32s_Sfs_Ctx(const Npp16s * pSrc1, const Npp32s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
+                              Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s32s32s_Sfs(const Npp16s * pSrc1, const Npp32s * pSrc2, int nLength, Npp32s * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                          Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16s16sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16s16sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16s16sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3254,19 +4381,28 @@ nppsDotProdGetBufferSize_16s16sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16s16sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16s16sc_Sfs_Ctx(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp16sc * pDp, int nScaleFactor, 
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16s16sc_Sfs(const Npp16s * pSrc1, const Npp16sc * pSrc2, int nLength, Npp16sc * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_16sc32sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_16sc32sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_16sc32sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3279,19 +4415,28 @@ nppsDotProdGetBufferSize_16sc32sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_16sc32sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus 
+nppsDotProd_16sc32sc_Sfs_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
+                             Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsDotProd_16sc32sc_Sfs(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
-                Npp8u * pDeviceBuffer);
+                         Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsDotProd_32s32sc_Sfs.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsDotProdGetBufferSize_32s32sc_Sfs_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsDotProdGetBufferSize_32s32sc_Sfs(int nLength,  int * hpBufferSize);
 
@@ -3304,8 +4449,13 @@ nppsDotProdGetBufferSize_32s32sc_Sfs(int nLength,  int * hpBufferSize);
  * \param nScaleFactor \ref integer_result_scaling.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsDotProdGetBufferSize_32s32sc_Sfs to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsDotProd_32s32sc_Sfs_Ctx(const Npp32s * pSrc1, const Npp32sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsDotProd_32s32sc_Sfs(const Npp32s * pSrc1, const Npp32sc * pSrc2, int nLength, Npp32sc * pDp, int nScaleFactor, 
                         Npp8u * pDeviceBuffer);
@@ -3313,7 +4463,7 @@ nppsDotProd_32s32sc_Sfs(const Npp32s * pSrc1, const Npp32sc * pSrc2, int nLength
 /** @} signal_dot_product */
 
 /** @defgroup signal_count_in_range Count In Range
- *
+ * Calculates the number of elements from specified range in the samples of a signal.
  * @{
  *
  */
@@ -3323,8 +4473,12 @@ nppsDotProd_32s32sc_Sfs(const Npp32s * pSrc1, const Npp32sc * pSrc2, int nLength
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsCountInRangeGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsCountInRangeGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -3337,8 +4491,13 @@ nppsCountInRangeGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nUpperBound Upper bound of the specified range.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsCountInRangeGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus
+nppsCountInRange_32s_Ctx(const Npp32s * pSrc, int nLength, int * pCounts, Npp32s nLowerBound, Npp32s nUpperBound,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsCountInRange_32s(const Npp32s * pSrc, int nLength, int * pCounts, Npp32s nLowerBound, Npp32s nUpperBound,
                      Npp8u * pDeviceBuffer);
@@ -3348,7 +4507,7 @@ nppsCountInRange_32s(const Npp32s * pSrc, int nLength, int * pCounts, Npp32s nLo
 /** @defgroup signal_count_zero_crossings Count Zero Crossings
  *
  * @{
- *
+ * Calculates the number of zero crossings in a signal.
  */
 
 /** 
@@ -3356,8 +4515,12 @@ nppsCountInRange_32s(const Npp32s * pSrc, int nLength, int * pCounts, Npp32s nLo
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsZeroCrossingGetBufferSize_16s32f_Ctx(int nLength, int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsZeroCrossingGetBufferSize_16s32f(int nLength, int * hpBufferSize);
 
@@ -3369,19 +4532,28 @@ nppsZeroCrossingGetBufferSize_16s32f(int nLength, int * hpBufferSize);
  * \param tZCType Type of the zero crossing measure: nppZCR, nppZCXor or nppZCC.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsZeroCrossingGetBufferSize_16s32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
 NppStatus
+nppsZeroCrossing_16s32f_Ctx(const Npp16s * pSrc, int nLength, Npp32f * pValZC, NppsZCType tZCType,
+                            Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppsZeroCrossing_16s32f(const Npp16s * pSrc, int nLength, Npp32f * pValZC, NppsZCType tZCType,
-                     Npp8u * pDeviceBuffer);
+                        Npp8u * pDeviceBuffer);
 
 /** 
  * Device-buffer size (in bytes) for nppsZeroCrossing_32f.
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsZeroCrossingGetBufferSize_32f_Ctx(int nLength, int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsZeroCrossingGetBufferSize_32f(int nLength, int * hpBufferSize);
 
@@ -3393,8 +4565,13 @@ nppsZeroCrossingGetBufferSize_32f(int nLength, int * hpBufferSize);
  * \param tZCType Type of the zero crossing measure: nppZCR, nppZCXor or nppZCC.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsZeroCrossingGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus
+nppsZeroCrossing_32f_Ctx(const Npp32f * pSrc, int nLength, Npp32f * pValZC, NppsZCType tZCType,
+                         Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsZeroCrossing_32f(const Npp32f * pSrc, int nLength, Npp32f * pValZC, NppsZCType tZCType,
                      Npp8u * pDeviceBuffer);
@@ -3419,8 +4596,12 @@ nppsZeroCrossing_32f(const Npp32f * pSrc, int nLength, Npp32f * pValZC, NppsZCTy
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3432,8 +4613,12 @@ nppsMaximumError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_8s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_8s_Ctx(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3445,8 +4630,12 @@ nppsMaximumError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3458,8 +4647,12 @@ nppsMaximumError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3471,8 +4664,12 @@ nppsMaximumError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_16sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_16sc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3484,8 +4681,12 @@ nppsMaximumError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3497,8 +4698,12 @@ nppsMaximumError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_32s_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3510,8 +4715,12 @@ nppsMaximumError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_32sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_32sc_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3523,8 +4732,12 @@ nppsMaximumError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_64s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_64s_Ctx(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3536,8 +4749,12 @@ nppsMaximumError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_64sc_Ctx(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3549,8 +4766,12 @@ nppsMaximumError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3562,8 +4783,12 @@ nppsMaximumError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3575,8 +4800,12 @@ nppsMaximumError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3588,8 +4817,12 @@ nppsMaximumError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumErrorGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumError_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3598,8 +4831,12 @@ nppsMaximumError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -3608,8 +4845,12 @@ nppsMaximumErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_8s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
 
@@ -3618,8 +4859,12 @@ nppsMaximumErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -3628,8 +4873,12 @@ nppsMaximumErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -3638,8 +4887,12 @@ nppsMaximumErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_16sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
 
@@ -3648,8 +4901,12 @@ nppsMaximumErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -3658,8 +4915,12 @@ nppsMaximumErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -3668,8 +4929,12 @@ nppsMaximumErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_32sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
 
@@ -3678,8 +4943,12 @@ nppsMaximumErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_64s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
 
@@ -3688,8 +4957,12 @@ nppsMaximumErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
 
@@ -3698,8 +4971,12 @@ nppsMaximumErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -3708,8 +4985,12 @@ nppsMaximumErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
 
@@ -3718,8 +4999,12 @@ nppsMaximumErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumErrorGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -3728,10 +5013,15 @@ nppsMaximumErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
 NppStatus
+nppsMaximumErrorGetBufferSize_64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppsMaximumErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
+
 /** @} */
 
 /** @defgroup signal_average_error AverageError
@@ -3752,8 +5042,12 @@ nppsMaximumErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3765,8 +5059,12 @@ nppsAverageError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_8s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_8s_Ctx(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3778,8 +5076,12 @@ nppsAverageError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3791,8 +5093,12 @@ nppsAverageError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3804,8 +5110,12 @@ nppsAverageError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_16sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_16sc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3817,8 +5127,12 @@ nppsAverageError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3830,8 +5144,12 @@ nppsAverageError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_32s_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3843,8 +5161,12 @@ nppsAverageError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_32sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_32sc_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3856,8 +5178,12 @@ nppsAverageError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_64s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_64s_Ctx(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3869,8 +5195,12 @@ nppsAverageError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_64sc_Ctx(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3882,8 +5212,12 @@ nppsAverageError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3895,8 +5229,12 @@ nppsAverageError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3908,8 +5246,12 @@ nppsAverageError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength,
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3921,8 +5263,12 @@ nppsAverageError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Np
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageErrorGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageError_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -3931,8 +5277,12 @@ nppsAverageError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength,
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -3941,8 +5291,12 @@ nppsAverageErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_8s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
 
@@ -3951,8 +5305,12 @@ nppsAverageErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -3961,8 +5319,12 @@ nppsAverageErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -3971,8 +5333,12 @@ nppsAverageErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_16sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
 
@@ -3981,8 +5347,12 @@ nppsAverageErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -3991,8 +5361,12 @@ nppsAverageErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -4001,8 +5375,12 @@ nppsAverageErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_32sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
 
@@ -4011,8 +5389,12 @@ nppsAverageErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_64s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
 
@@ -4021,8 +5403,12 @@ nppsAverageErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
 
@@ -4031,8 +5417,12 @@ nppsAverageErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -4041,8 +5431,12 @@ nppsAverageErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
 
@@ -4051,8 +5445,12 @@ nppsAverageErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageErrorGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -4061,10 +5459,15 @@ nppsAverageErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
 NppStatus
+nppsAverageErrorGetBufferSize_64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppsAverageErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
+
 /** @} */
 
 /** @defgroup signal_maximum_relative_error MaximumRelativeError
@@ -4085,8 +5488,12 @@ nppsAverageErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4098,8 +5505,12 @@ nppsMaximumRelativeError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLengt
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_8s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_8s_Ctx(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4111,8 +5522,12 @@ nppsMaximumRelativeError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLengt
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4124,8 +5539,12 @@ nppsMaximumRelativeError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4137,8 +5556,12 @@ nppsMaximumRelativeError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_16sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_16sc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4150,8 +5573,12 @@ nppsMaximumRelativeError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4163,8 +5590,12 @@ nppsMaximumRelativeError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_32s_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4176,8 +5607,12 @@ nppsMaximumRelativeError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_32sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_32sc_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4189,8 +5624,12 @@ nppsMaximumRelativeError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_64s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_64s_Ctx(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4202,8 +5641,12 @@ nppsMaximumRelativeError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_64sc_Ctx(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4215,8 +5658,12 @@ nppsMaximumRelativeError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4228,8 +5675,12 @@ nppsMaximumRelativeError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4241,8 +5692,12 @@ nppsMaximumRelativeError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4254,8 +5709,12 @@ nppsMaximumRelativeError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsMaximumRelativeErrorGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsMaximumRelativeError_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsMaximumRelativeError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4264,8 +5723,12 @@ nppsMaximumRelativeError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -4274,8 +5737,12 @@ nppsMaximumRelativeErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_8s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
 
@@ -4284,8 +5751,12 @@ nppsMaximumRelativeErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -4294,8 +5765,12 @@ nppsMaximumRelativeErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -4304,8 +5779,12 @@ nppsMaximumRelativeErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_16sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
 
@@ -4314,8 +5793,12 @@ nppsMaximumRelativeErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -4324,8 +5807,12 @@ nppsMaximumRelativeErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -4334,8 +5821,12 @@ nppsMaximumRelativeErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_32sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
 
@@ -4344,8 +5835,12 @@ nppsMaximumRelativeErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_64s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
 
@@ -4354,8 +5849,12 @@ nppsMaximumRelativeErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
 
@@ -4364,8 +5863,12 @@ nppsMaximumRelativeErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -4374,8 +5877,12 @@ nppsMaximumRelativeErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
 
@@ -4384,8 +5891,12 @@ nppsMaximumRelativeErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsMaximumRelativeErrorGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsMaximumRelativeErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -4394,10 +5905,15 @@ nppsMaximumRelativeErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
 NppStatus
+nppsMaximumRelativeErrorGetBufferSize_64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppsMaximumRelativeErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
+
 /** @} */
 
 /** @defgroup signal_average_relative_error AverageRelativeError
@@ -4418,8 +5934,12 @@ nppsMaximumRelativeErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_8u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_8u_Ctx(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4431,8 +5951,12 @@ nppsAverageRelativeError_8u(const Npp8u * pSrc1, const Npp8u * pSrc2, int nLengt
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_8s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_8s_Ctx(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4444,8 +5968,12 @@ nppsAverageRelativeError_8s(const Npp8s * pSrc1, const Npp8s * pSrc2, int nLengt
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_16u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_16u_Ctx(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4457,8 +5985,12 @@ nppsAverageRelativeError_16u(const Npp16u * pSrc1, const Npp16u * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_16s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_16s_Ctx(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4470,8 +6002,12 @@ nppsAverageRelativeError_16s(const Npp16s * pSrc1, const Npp16s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_16sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_16sc_Ctx(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4483,8 +6019,12 @@ nppsAverageRelativeError_16sc(const Npp16sc * pSrc1, const Npp16sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_32u to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_32u_Ctx(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4496,8 +6036,12 @@ nppsAverageRelativeError_32u(const Npp32u * pSrc1, const Npp32u * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_32s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_32s_Ctx(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4509,8 +6053,12 @@ nppsAverageRelativeError_32s(const Npp32s * pSrc1, const Npp32s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_32sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_32sc_Ctx(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4522,8 +6070,12 @@ nppsAverageRelativeError_32sc(const Npp32sc * pSrc1, const Npp32sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_64s to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_64s_Ctx(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4535,8 +6087,12 @@ nppsAverageRelativeError_64s(const Npp64s * pSrc1, const Npp64s * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_64sc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_64sc_Ctx(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4548,8 +6104,12 @@ nppsAverageRelativeError_64sc(const Npp64sc * pSrc1, const Npp64sc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_32f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_32f_Ctx(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4561,8 +6121,12 @@ nppsAverageRelativeError_32f(const Npp32f * pSrc1, const Npp32f * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_32fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_32fc_Ctx(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4574,8 +6138,12 @@ nppsAverageRelativeError_32fc(const Npp32fc * pSrc1, const Npp32fc * pSrc2, int 
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_64f to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_64f_Ctx(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4587,8 +6155,12 @@ nppsAverageRelativeError_64f(const Npp64f * pSrc1, const Npp64f * pSrc2, int nLe
  * \param pDst Pointer to the error result.
  * \param pDeviceBuffer Pointer to the required device memory allocation, \ref general_scratch_buffer. 
  *        Use \ref nppsAverageRelativeErrorGetBufferSize_64fc to determine the minium number of bytes required.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsAverageRelativeError_64fc_Ctx(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsAverageRelativeError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int nLength, Npp64f * pDst, Npp8u * pDeviceBuffer);
 
@@ -4597,8 +6169,12 @@ nppsAverageRelativeError_64fc(const Npp64fc * pSrc1, const Npp64fc * pSrc2, int 
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_8u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
 
@@ -4607,8 +6183,12 @@ nppsAverageRelativeErrorGetBufferSize_8u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_8s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
 
@@ -4617,8 +6197,12 @@ nppsAverageRelativeErrorGetBufferSize_8s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_16u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
 
@@ -4627,8 +6211,12 @@ nppsAverageRelativeErrorGetBufferSize_16u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_16s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
 
@@ -4637,8 +6225,12 @@ nppsAverageRelativeErrorGetBufferSize_16s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_16sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
 
@@ -4647,8 +6239,12 @@ nppsAverageRelativeErrorGetBufferSize_16sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_32u_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
 
@@ -4657,8 +6253,12 @@ nppsAverageRelativeErrorGetBufferSize_32u(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_32s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
 
@@ -4667,8 +6267,12 @@ nppsAverageRelativeErrorGetBufferSize_32s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_32sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
 
@@ -4677,8 +6281,12 @@ nppsAverageRelativeErrorGetBufferSize_32sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_64s_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
 
@@ -4687,8 +6295,12 @@ nppsAverageRelativeErrorGetBufferSize_64s(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_64sc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
 
@@ -4697,8 +6309,12 @@ nppsAverageRelativeErrorGetBufferSize_64sc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_32f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
 
@@ -4707,8 +6323,12 @@ nppsAverageRelativeErrorGetBufferSize_32f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_32fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
 
@@ -4717,8 +6337,12 @@ nppsAverageRelativeErrorGetBufferSize_32fc(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
+NppStatus
+nppsAverageRelativeErrorGetBufferSize_64f_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppsAverageRelativeErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
 
@@ -4727,10 +6351,15 @@ nppsAverageRelativeErrorGetBufferSize_64f(int nLength,  int * hpBufferSize);
  * \param nLength \ref length_specification.
  * \param hpBufferSize Required buffer size.  Important: 
  *        hpBufferSize is a <em>host pointer.</em>
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return NPP_SUCCESS
  */
 NppStatus
+nppsAverageRelativeErrorGetBufferSize_64fc_Ctx(int nLength,  int * hpBufferSize, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppsAverageRelativeErrorGetBufferSize_64fc(int nLength,  int * hpBufferSize);
+
 /** @} */
 
 

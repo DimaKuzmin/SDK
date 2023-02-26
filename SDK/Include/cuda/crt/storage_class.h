@@ -1,7 +1,7 @@
 /*
  * NVIDIA_COPYRIGHT_BEGIN
  *
- * Copyright (c) 2008-2011, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2008-2018, NVIDIA CORPORATION.  All rights reserved.
  *
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -11,6 +11,16 @@
  *
  * NVIDIA_COPYRIGHT_END
  */
+
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/storage_class.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/storage_class.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_STORAGE_CLASS_H__
+#endif
 
 #if !defined(__STORAGE_CLASS_H__)
 #define __STORAGE_CLASS_H__
@@ -125,3 +135,8 @@
 #endif /* __storage_static__surf__ */
 
 #endif /* !__STORAGE_CLASS_H__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_STORAGE_CLASS_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_STORAGE_CLASS_H__
+#endif

@@ -60,18 +60,59 @@
 #if !defined(QUALIFIERS)
 #define QUALIFIERS static __forceinline__ __device__
 #endif
+
+/* To prevent unused parameter warnings */
+#if !defined(GCC_UNUSED_PARAMETER)
+#if defined(__GNUC__)
+#define GCC_UNUSED_PARAMETER __attribute__((unused))
+#else
+#define GCC_UNUSED_PARAMETER
+#endif /* defined(__GNUC__) */
+#endif /* !defined(GCC_UNUSED_PARAMETER) */
+
+#include <nv/target>
+
+#ifdef __CUDACC_RTC__
+#define CURAND_DETAIL_USE_CUDA_STL
+#endif
+
+#if __cplusplus >= 201103L
+#   ifdef CURAND_DETAIL_USE_CUDA_STL
+#       define CURAND_STD cuda::std
+#       include <cuda/std/type_traits>
+#   else
+#       define CURAND_STD std
+#       include <type_traits>
+#   endif // CURAND_DETAIL_USE_CUDA_STL
+#else
+// To support C++03 compilation
+#   define CURAND_STD curand_detail
+namespace curand_detail {
+    template<bool B, class T = void>
+    struct enable_if {};
+
+    template<class T>
+    struct enable_if<true, T> { typedef T type; };
+
+    template<class T, class U>
+    struct is_same { static const bool value = false; };
+
+    template<class T>
+    struct is_same<T, T> { static const bool value = true; };
+} // namespace curand_detail
+#endif // __cplusplus >= 201103L
+
+#ifndef __CUDACC_RTC__
+#include <math.h>
+#endif // __CUDACC_RTC__
+
 #include "curand.h"
 #include "curand_discrete.h"
 #include "curand_precalc.h"
 #include "curand_mrg32k3a.h"
 #include "curand_mtgp32_kernel.h"
-#include <math.h>
-
-#include "curand_philox4x32_x.h" 
+#include "curand_philox4x32_x.h"
 #include "curand_globals.h"
-
-
-
 
 /* Test RNG */
 /* This generator uses the formula:
@@ -100,7 +141,7 @@ www.jstatsoft.org/v08/i14/paper page 5
 Has period 2^192 - 2^32.
 */
 /**
- * CURAND XORWOW state 
+ * CURAND XORWOW state
  */
 struct curandStateXORWOW;
 
@@ -115,7 +156,7 @@ struct curandStateXORWOW {
 };
 
 /*
- * CURAND XORWOW state 
+ * CURAND XORWOW state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateXORWOW curandStateXORWOW_t;
@@ -126,7 +167,7 @@ typedef struct curandStateXORWOW curandStateXORWOW_t;
 
 /* Combined Multiple Recursive Generators */
 /* These generators are a family proposed by L'Ecuyer.  They keep state
-   in sets of doubles, then use repeated modular arithmetic multiply operations 
+   in sets of doubles, then use repeated modular arithmetic multiply operations
    to scramble the bits in each set, and combine the result.
 */
 
@@ -147,32 +188,26 @@ Has period 2^191.
 #define MRG32K3A_A13N 810728.
 #define MRG32K3A_A21  527612.
 #define MRG32K3A_A23N 1370589.
-#define MRG32K3A_NORM 2.328306549295728e-10
+#define MRG32K3A_NORM (2.3283065498378288e-10)
 //
 // #define MRG32K3A_BITS_NORM ((double)((POW32_DOUBLE-1.0)/MOD1))
 //  above constant, used verbatim, rounds differently on some host systems.
 #define MRG32K3A_BITS_NORM 1.000000048662
 
-
-/* Constants for address manipulation */
-
-#define MRG32K3A_SKIPUNITS_DOUBLES   (sizeof(struct sMRG32k3aSkipUnits)/sizeof(double))
-#define MRG32K3A_SKIPSUBSEQ_DOUBLES  (sizeof(struct sMRG32k3aSkipSubSeq)/sizeof(double))
-#define MRG32K3A_SKIPSEQ_DOUBLES     (sizeof(struct sMRG32k3aSkipSeq)/sizeof(double))
 /** \endcond */
 
 
 
 
 /**
- * CURAND MRG32K3A state 
+ * CURAND MRG32K3A state
  */
 struct curandStateMRG32k3a;
 
 /* Implementation details not in reference documentation */
 struct curandStateMRG32k3a {
-    double s1[3];
-    double s2[3];
+    unsigned int s1[3];
+    unsigned int s2[3];
     int boxmuller_flag;
     int boxmuller_flag_double;
     float boxmuller_extra;
@@ -180,7 +215,7 @@ struct curandStateMRG32k3a {
 };
 
 /*
- * CURAND MRG32K3A state 
+ * CURAND MRG32K3A state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateMRG32k3a curandStateMRG32k3a_t;
@@ -188,7 +223,7 @@ typedef struct curandStateMRG32k3a curandStateMRG32k3a_t;
 
 /* SOBOL QRNG */
 /**
- * CURAND Sobol32 state 
+ * CURAND Sobol32 state
  */
 struct curandStateSobol32;
 
@@ -199,14 +234,14 @@ struct curandStateSobol32 {
 };
 
 /*
- * CURAND Sobol32 state 
+ * CURAND Sobol32 state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateSobol32 curandStateSobol32_t;
 /** \endcond */
 
 /**
- * CURAND Scrambled Sobol32 state 
+ * CURAND Scrambled Sobol32 state
  */
 struct curandStateScrambledSobol32;
 
@@ -217,14 +252,14 @@ struct curandStateScrambledSobol32 {
 };
 
 /*
- * CURAND Scrambled Sobol32 state 
+ * CURAND Scrambled Sobol32 state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateScrambledSobol32 curandStateScrambledSobol32_t;
 /** \endcond */
 
 /**
- * CURAND Sobol64 state 
+ * CURAND Sobol64 state
  */
 struct curandStateSobol64;
 
@@ -235,14 +270,14 @@ struct curandStateSobol64 {
 };
 
 /*
- * CURAND Sobol64 state 
+ * CURAND Sobol64 state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateSobol64 curandStateSobol64_t;
 /** \endcond */
 
 /**
- * CURAND Scrambled Sobol64 state 
+ * CURAND Scrambled Sobol64 state
  */
 struct curandStateScrambledSobol64;
 
@@ -253,7 +288,7 @@ struct curandStateScrambledSobol64 {
 };
 
 /*
- * CURAND Scrambled Sobol64 state 
+ * CURAND Scrambled Sobol64 state
  */
 /** \cond UNHIDE_TYPEDEFS */
 typedef struct curandStateScrambledSobol64 curandStateScrambledSobol64_t;
@@ -271,13 +306,34 @@ typedef struct curandStateXORWOW curandState;
 /* Utility functions needed by RNGs */
 /****************************************************************************/
 /** \cond UNHIDE_UTILITIES */
-/* 
+/*
    multiply vector by matrix, store in result
    matrix is n x n, measured in 32 bit units
    matrix is stored in row major order
    vector and result cannot be same pointer
 */
-QUALIFIERS void __curand_matvec(unsigned int *vector, unsigned int *matrix, 
+template<int N>
+QUALIFIERS void __curand_matvec_inplace(unsigned int *vector, unsigned int *matrix)
+{
+    unsigned int result[N] = { 0 };
+    for(int i = 0; i < N; i++) {
+        #ifdef __CUDA_ARCH__
+        #pragma unroll 16
+        #endif
+        for(int j = 0; j < 32; j++) {
+            if(vector[i] & (1 << j)) {
+                for(int k = 0; k < N; k++) {
+                    result[k] ^= matrix[N * (i * 32 + j) + k];
+                }
+            }
+        }
+    }
+    for(int i = 0; i < N; i++) {
+        vector[i] = result[i];
+    }
+}
+
+QUALIFIERS void __curand_matvec(unsigned int *vector, unsigned int *matrix,
                                 unsigned int *result, int n)
 {
     for(int i = 0; i < n; i++) {
@@ -340,7 +396,7 @@ QUALIFIERS void __curand_matcopy(unsigned int *matrix, unsigned int *matrixA, in
 }
 
 /* compute matrixA to power p, store result in matrix */
-QUALIFIERS void __curand_matpow(unsigned int *matrix, unsigned int *matrixA, 
+QUALIFIERS void __curand_matpow(unsigned int *matrix, unsigned int *matrixA,
                                 unsigned long long p, int n)
 {
     unsigned int matrixR[MAX_XOR_N * MAX_XOR_N * 32];
@@ -356,51 +412,6 @@ QUALIFIERS void __curand_matpow(unsigned int *matrix, unsigned int *matrixA,
         p >>= 1;
     }
 }
-
-/* Convert unsigned int to float, use no intrinsics */
-QUALIFIERS float __curand_uint32AsFloat (unsigned int i)
-{
-    union {
-        float f;
-        unsigned int i;
-    } xx;
-    xx.i = i;
-    return xx.f;
-}
-
-/* Convert two unsigned ints to double, use no intrinsics */
-QUALIFIERS double __curand_hilouint32AsDouble (unsigned int hi, unsigned int lo)
-{
-    union {
-        double f;
-        unsigned int hi;
-        unsigned int lo;
-    } xx;
-    xx.hi = hi;
-    xx.lo = lo;
-    return xx.f;
-}
-
-/* Convert unsigned int to float, as efficiently as possible */
-QUALIFIERS float __curand_uint32_as_float(unsigned int x)
-{
-#if __CUDA_ARCH__ > 0
-    return __int_as_float(x);
-#else
-    return __curand_uint32AsFloat(x);
-#endif
-}
-
-/*
-QUALIFIERS double __curand_hilouint32_as_double(unsigned int hi, unsigned int lo)
-{
-#if __CUDA_ARCH__ > 0
-    return __hiloint2double(hi, lo);
-#elif !defined(__CUDA_ARCH__)
-    return hilouint32AsDouble(hi, lo);
-#endif
-}
-*/
 
 /****************************************************************************/
 /* Utility functions needed by MRG32k3a RNG                                 */
@@ -418,7 +429,7 @@ QUALIFIERS double curand_MRGmod(double i, double m)
     quo = floor(i/m);
     rem = i - (quo*m);
     if (rem < 0.0) rem += m;
-    return rem;    
+    return rem;
 }
 
 /* Multiplication modulo m. Inputs i and j less than 2**32                  */
@@ -428,7 +439,7 @@ QUALIFIERS double curand_MRGmodMul(double i, double j, double m)
 {
     double tempHi;
     double tempLo;
-    
+
     tempHi = floor(i/131072.0);
     tempLo = i - (tempHi*131072.0);
     tempLo = curand_MRGmod( curand_MRGmod( (tempHi * j), m) * 131072.0 + curand_MRGmod(tempLo * j, m),m);
@@ -439,39 +450,39 @@ QUALIFIERS double curand_MRGmodMul(double i, double j, double m)
 
 /* multiply 3 by 3 matrices of doubles, modulo m                            */
 
-QUALIFIERS void curand_MRGmatMul3x3(double i1[][3],double i2[][3],double o[][3],double m)
+QUALIFIERS void curand_MRGmatMul3x3(unsigned int i1[][3],unsigned int i2[][3],unsigned int o[][3],double m)
 {
     int i,j;
     double temp[3][3];
     for (i=0; i<3; i++){
         for (j=0; j<3; j++){
-            temp[i][j] = ( curand_MRGmodMul(i1[i][0], i2[0][j], m) + 
-                           curand_MRGmodMul(i1[i][1], i2[1][j], m) + 
+            temp[i][j] = ( curand_MRGmodMul(i1[i][0], i2[0][j], m) +
+                           curand_MRGmodMul(i1[i][1], i2[1][j], m) +
                            curand_MRGmodMul(i1[i][2], i2[2][j], m));
             temp[i][j] = curand_MRGmod( temp[i][j], m );
         }
     }
     for (i=0; i<3; i++){
         for (j=0; j<3; j++){
-            o[i][j] = temp[i][j];
+            o[i][j] = (unsigned int)temp[i][j];
         }
     }
 }
 
 /* multiply 3 by 3 matrix times 3 by 1 vector of doubles, modulo m          */
 
-QUALIFIERS void curand_MRGmatVecMul3x3( double i[][3], double v[], double m)
-{  
+QUALIFIERS void curand_MRGmatVecMul3x3( unsigned int i[][3], unsigned int v[], double m)
+{
     int k;
     double t[3];
     for (k = 0; k < 3; k++) {
-        t[k] = ( curand_MRGmodMul(i[k][0], v[0], m) + 
-                 curand_MRGmodMul(i[k][1], v[1], m) + 
+        t[k] = ( curand_MRGmodMul(i[k][0], v[0], m) +
+                 curand_MRGmodMul(i[k][1], v[1], m) +
                  curand_MRGmodMul(i[k][2], v[2], m) );
         t[k] = curand_MRGmod( t[k], m );
-    } 
+    }
     for (k = 0; k < 3; k++) {
-        v[k] = t[k];
+        v[k] = (unsigned int)t[k];
     }
 
 }
@@ -480,7 +491,7 @@ QUALIFIERS void curand_MRGmatVecMul3x3( double i[][3], double v[], double m)
 /* input is index zero of an array of 3 by 3 matrices m,                    */
 /* each m = m[0]**(2**index)                                                */
 
-QUALIFIERS void curand_MRGmatPow3x3( double in[][3][3], double o[][3], double m, unsigned long long pow )
+QUALIFIERS void curand_MRGmatPow3x3( unsigned int in[][3][3], unsigned int o[][3], double m, unsigned long long pow )
 {
     int i,j;
     for ( i = 0; i < 3; i++ ) {
@@ -505,12 +516,12 @@ QUALIFIERS void curand_MRGmatPow3x3( double in[][3][3], double o[][3], double m,
 
 QUALIFIERS void curnand_MRGmatPow2Pow3x3( double in[][3], double o[][3], double m, unsigned long pow )
 {
-    double temp[3][3];
+    unsigned int temp[3][3];
     int i,j;
     pow = pow % 191;
     for ( i = 0; i < 3; i++ ) {
         for ( j = 0; j < 3; j++ ) {
-            temp[i][j] = in[i][j];
+            temp[i][j] = (unsigned int)in[i][j];
         }
     }
     while (pow) {
@@ -532,9 +543,9 @@ QUALIFIERS void curnand_MRGmatPow2Pow3x3( double in[][3], double o[][3], double 
 
 /* Test RNG */
 
-QUALIFIERS void curand_init(unsigned long long seed, 
-                                            unsigned long long subsequence, 
-                                            unsigned long long offset, 
+QUALIFIERS void curand_init(unsigned long long seed,
+                                            unsigned long long subsequence,
+                                            unsigned long long offset,
                                             curandStateTest_t *state)
 {
     state->v = (unsigned int)(seed * 3) + (unsigned int)(subsequence * 31337) + \
@@ -593,24 +604,24 @@ QUALIFIERS void _skipahead_scratch(unsigned long long x, T *state, unsigned int 
     int matrix_num = 0;
     while(p && (matrix_num < PRECALC_NUM_MATRICES - 1)) {
         for(unsigned int t = 0; t < (p & PRECALC_BLOCK_MASK); t++) {
-#ifdef __CUDA_ARCH__
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
             __curand_matvec(vector, precalc_xorwow_offset_matrix[matrix_num], result, n);
-#else
+,
             __curand_matvec(vector, precalc_xorwow_offset_matrix_host[matrix_num], result, n);
-#endif
+)
             __curand_veccopy(vector, result, n);
         }
         p >>= PRECALC_BLOCK_SIZE;
         matrix_num++;
     }
     if(p) {
-#ifdef __CUDA_ARCH__
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
         __curand_matcopy(matrix, precalc_xorwow_offset_matrix[PRECALC_NUM_MATRICES - 1], n);
         __curand_matcopy(matrixA, precalc_xorwow_offset_matrix[PRECALC_NUM_MATRICES - 1], n);
-#else
+,
         __curand_matcopy(matrix, precalc_xorwow_offset_matrix_host[PRECALC_NUM_MATRICES - 1], n);
         __curand_matcopy(matrixA, precalc_xorwow_offset_matrix_host[PRECALC_NUM_MATRICES - 1], n);
-#endif
+)
     }
     while(p) {
         for(unsigned int t = 0; t < (p & SKIPAHEAD_MASK); t++) {
@@ -649,24 +660,24 @@ QUALIFIERS void _skipahead_sequence_scratch(unsigned long long x, T *state, unsi
     int matrix_num = 0;
     while(p && matrix_num < PRECALC_NUM_MATRICES - 1) {
         for(unsigned int t = 0; t < (p & PRECALC_BLOCK_MASK); t++) {
-#ifdef __CUDA_ARCH__
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
             __curand_matvec(vector, precalc_xorwow_matrix[matrix_num], result, n);
-#else
+,
             __curand_matvec(vector, precalc_xorwow_matrix_host[matrix_num], result, n);
-#endif
+)
             __curand_veccopy(vector, result, n);
         }
         p >>= PRECALC_BLOCK_SIZE;
         matrix_num++;
     }
     if(p) {
-#ifdef __CUDA_ARCH__
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
         __curand_matcopy(matrix, precalc_xorwow_matrix[PRECALC_NUM_MATRICES - 1], n);
         __curand_matcopy(matrixA, precalc_xorwow_matrix[PRECALC_NUM_MATRICES - 1], n);
-#else
+,
         __curand_matcopy(matrix, precalc_xorwow_matrix_host[PRECALC_NUM_MATRICES - 1], n);
         __curand_matcopy(matrixA, precalc_xorwow_matrix_host[PRECALC_NUM_MATRICES - 1], n);
-#endif
+)
     }
     while(p) {
         for(unsigned int t = 0; t < (p & SKIPAHEAD_MASK); t++) {
@@ -687,6 +698,43 @@ QUALIFIERS void _skipahead_sequence_scratch(unsigned long long x, T *state, unsi
     /* No update of state->d needed, guaranteed to be a multiple of 2^32 */
 }
 
+template <typename T, int N>
+QUALIFIERS void _skipahead_inplace(const unsigned long long x, T *state)
+{
+    unsigned long long p = x;
+    int matrix_num = 0;
+    while(p) {
+        for(unsigned int t = 0; t < (p & PRECALC_BLOCK_MASK); t++) {
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
+            __curand_matvec_inplace<N>(state->v, precalc_xorwow_offset_matrix[matrix_num]);
+,
+            __curand_matvec_inplace<N>(state->v, precalc_xorwow_offset_matrix_host[matrix_num]);
+)
+        }
+        p >>= PRECALC_BLOCK_SIZE;
+        matrix_num++;
+    }
+    state->d += 362437 * (unsigned int)x;
+}
+
+template <typename T, int N>
+QUALIFIERS void _skipahead_sequence_inplace(unsigned long long x, T *state)
+{
+    int matrix_num = 0;
+    while(x) {
+        for(unsigned int t = 0; t < (x & PRECALC_BLOCK_MASK); t++) {
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
+            __curand_matvec_inplace<N>(state->v, precalc_xorwow_matrix[matrix_num]);
+,
+            __curand_matvec_inplace<N>(state->v, precalc_xorwow_matrix_host[matrix_num]);
+)
+        }
+        x >>= PRECALC_BLOCK_SIZE;
+        matrix_num++;
+    }
+    /* No update of state->d needed, guaranteed to be a multiple of 2^32 */
+}
+
 /**
  * \brief Update XORWOW state to skip \p n elements.
  *
@@ -700,8 +748,7 @@ QUALIFIERS void _skipahead_sequence_scratch(unsigned long long x, T *state, unsi
  */
 QUALIFIERS void skipahead(unsigned long long n, curandStateXORWOW_t *state)
 {
-    unsigned int scratch[5 * 5 * 32 * 2 + 5 * 2];
-    _skipahead_scratch<curandStateXORWOW_t, 5>(n, state, (unsigned int *)scratch);
+    _skipahead_inplace<curandStateXORWOW_t, 5>(n, state);
 }
 
 /**
@@ -719,15 +766,12 @@ QUALIFIERS void skipahead(unsigned long long n, curandStateXORWOW_t *state)
  */
 QUALIFIERS void skipahead_sequence(unsigned long long n, curandStateXORWOW_t *state)
 {
-    unsigned int scratch[5 * 5 * 32 * 2 + 5 * 2];
-    _skipahead_sequence_scratch<curandStateXORWOW_t, 5>(n, state, (unsigned int *)scratch);
+    _skipahead_sequence_inplace<curandStateXORWOW_t, 5>(n, state);
 }
 
-
-
-QUALIFIERS void _curand_init_scratch(unsigned long long seed, 
-                                     unsigned long long subsequence, 
-                                     unsigned long long offset, 
+QUALIFIERS void _curand_init_scratch(unsigned long long seed,
+                                     unsigned long long subsequence,
+                                     unsigned long long offset,
                                      curandStateXORWOW_t *state,
                                      unsigned int *scratch)
 {
@@ -753,6 +797,33 @@ QUALIFIERS void _curand_init_scratch(unsigned long long seed,
     state->boxmuller_extra_double = 0.;
 }
 
+QUALIFIERS void _curand_init_inplace(unsigned long long seed,
+                                     unsigned long long subsequence,
+                                     unsigned long long offset,
+                                     curandStateXORWOW_t *state)
+{
+    // Break up seed, apply salt
+    // Constants are arbitrary nonzero values
+    unsigned int s0 = ((unsigned int)seed) ^ 0xaad26b49UL;
+    unsigned int s1 = (unsigned int)(seed >> 32) ^ 0xf7dcefddUL;
+    // Simple multiplication to mix up bits
+    // Constants are arbitrary odd values
+    unsigned int t0 = 1099087573UL * s0;
+    unsigned int t1 = 2591861531UL * s1;
+    state->d = 6615241 + t1 + t0;
+    state->v[0] = 123456789UL + t0;
+    state->v[1] = 362436069UL ^ t0;
+    state->v[2] = 521288629UL + t1;
+    state->v[3] = 88675123UL ^ t1;
+    state->v[4] = 5783321UL + t0;
+    _skipahead_sequence_inplace<curandStateXORWOW_t, 5>(subsequence, state);
+    _skipahead_inplace<curandStateXORWOW_t, 5>(offset, state);
+    state->boxmuller_flag = 0;
+    state->boxmuller_flag_double = 0;
+    state->boxmuller_extra = 0.f;
+    state->boxmuller_extra_double = 0.;
+}
+
 /**
  * \brief Initialize XORWOW state.
  *
@@ -771,13 +842,12 @@ QUALIFIERS void _curand_init_scratch(unsigned long long seed,
  * \param offset - Absolute offset into sequence
  * \param state - Pointer to state to initialize
  */
-QUALIFIERS void curand_init(unsigned long long seed, 
-                            unsigned long long subsequence, 
-                            unsigned long long offset, 
+QUALIFIERS void curand_init(unsigned long long seed,
+                            unsigned long long subsequence,
+                            unsigned long long offset,
                             curandStateXORWOW_t *state)
 {
-    unsigned int scratch[5 * 5 * 32 * 2 + 5 * 2];
-    _curand_init_scratch(seed, subsequence, offset, state, (unsigned int*)scratch);
+    _curand_init_inplace(seed, subsequence, offset, state);
 }
 
 /**
@@ -819,7 +889,21 @@ QUALIFIERS unsigned int curand(curandStatePhilox4_32_10_t *state)
 {
     // Maintain the invariant: output[STATE] is always "good" and
     //  is the next value to be returned by curand.
-    unsigned ret = (&state->output.x)[state->STATE++];
+    unsigned int ret;
+    switch(state->STATE++){
+    default:
+        ret = state->output.x;
+        break;
+    case 1:
+        ret = state->output.y;
+        break;
+    case 2:
+        ret = state->output.z;
+        break;
+    case 3:
+        ret = state->output.w;
+        break;
+    }
     if(state->STATE == 4){
         Philox_State_Incr(state);
         state->output = curand_Philox4x32_10(state->ctr,state->key);
@@ -922,9 +1006,9 @@ QUALIFIERS void skipahead_sequence(unsigned long long n, curandStatePhilox4_32_1
  *
  * All input values for \p seed, \p subseqence and \p offset are legal.  Each of the
  * \xmlonly<ph outputclass="xmlonly">2<sup>64</sup></ph>\endxmlonly possible
- * values of seed selects an independent sequence of length 
+ * values of seed selects an independent sequence of length
  * \xmlonly<ph outputclass="xmlonly">2<sup>130</sup></ph>\endxmlonly.
- * The first 
+ * The first
  * \xmlonly<ph outputclass="xmlonly">2<sup>66</sup> * subsequence + offset</ph>\endxmlonly.
  * values of the sequence are skipped.
  * I.e., subsequences are of length
@@ -935,7 +1019,7 @@ QUALIFIERS void skipahead_sequence(unsigned long long n, curandStatePhilox4_32_1
  * \param offset - Absolute offset into subsequence
  * \param state - Pointer to state to initialize
  */
-QUALIFIERS void curand_init(unsigned long long seed, 
+QUALIFIERS void curand_init(unsigned long long seed,
                                  unsigned long long subsequence,
                                  unsigned long long offset,
                                  curandStatePhilox4_32_10_t *state)
@@ -956,14 +1040,64 @@ QUALIFIERS void curand_init(unsigned long long seed,
 /* MRG32k3a RNG */
 
 /* Base generator for MRG32k3a                                              */
-/* note that the parameters have been selected such that intermediate       */
-/* results stay within 53 bits                                              */
-
-
-#if __CUDA_ARCH__ > 0
-/*  nj's implementation */
+QUALIFIERS unsigned long long __curand_umad(GCC_UNUSED_PARAMETER unsigned int a, GCC_UNUSED_PARAMETER unsigned int b, GCC_UNUSED_PARAMETER unsigned long long c)
+{
+    unsigned long long r = 0;
+NV_IF_TARGET(NV_PROVIDES_SM_61,
+    asm("mad.wide.u32 %0, %1, %2, %3;"
+        : "=l"(r) : "r"(a), "r"(b), "l"(c));
+)
+    return r;
+}
+QUALIFIERS unsigned long long __curand_umul(GCC_UNUSED_PARAMETER unsigned int a, GCC_UNUSED_PARAMETER unsigned int b)
+{
+    unsigned long long r = 0;
+NV_IF_TARGET(NV_PROVIDES_SM_61,
+    asm("mul.wide.u32 %0, %1, %2;"
+        : "=l"(r) : "r"(a), "r"(b));
+)
+    return r;
+}
 QUALIFIERS double curand_MRG32k3a (curandStateMRG32k3a_t *state)
 {
+NV_IF_TARGET(NV_PROVIDES_SM_61,
+    const unsigned int m1  = 4294967087u;
+    const unsigned int m2  = 4294944443u;
+    const unsigned int m1c = 209u;
+    const unsigned int m2c = 22853u;
+    const unsigned int a12  = 1403580u;
+    const unsigned int a13n = 810728u;
+    const unsigned int a21  = 527612u;
+    const unsigned int a23n = 1370589u;
+
+    unsigned long long p1;
+    unsigned long long p2;
+    const unsigned long long p3 = __curand_umul(a13n, m1 - state->s1[0]);
+    p1 = __curand_umad(a12, state->s1[1], p3);
+
+    // Putting addition inside and changing umul to umad
+    // slowed this function down on GV100
+    p1 =  __curand_umul(p1 >> 32, m1c) + (p1 & 0xffffffff);
+    if (p1 >= m1) p1 -= m1;
+
+    state->s1[0] = state->s1[1]; state->s1[1] = state->s1[2]; state->s1[2] = p1;
+    const unsigned long long p4 = __curand_umul(a23n, m2 - state->s2[0]);
+    p2 = __curand_umad(a21, state->s2[2], p4);
+
+    // Putting addition inside and changing umul to umad
+    // slowed this function down on GV100
+    p2 =  __curand_umul(p2 >> 32, m2c) + (p2 & 0xffffffff);
+    p2 =  __curand_umul(p2 >> 32, m2c) + (p2 & 0xffffffff);
+    if (p2 >= m2) p2 -= m2;
+
+    state->s2[0] = state->s2[1]; state->s2[1] = state->s2[2]; state->s2[2] = p2;
+
+    const unsigned int p5 = (unsigned int)p1 - (unsigned int)p2;
+    if(p1 <= p2) return p5 + m1;
+    return p5;
+)
+NV_IF_TARGET(NV_IS_DEVICE,
+/*  nj's implementation */
     const double m1 = 4294967087.;
     const double m2 = 4294944443.;
     const double a12  = 1403580.;
@@ -976,42 +1110,42 @@ QUALIFIERS double curand_MRG32k3a (curandStateMRG32k3a_t *state)
     const double rh2 =  2.3283188252407387e-010;  /* (1.0 / m2)__hi */
     const double rl2 =  2.4081018096503646e-026;  /* (1.0 / m2)__lo */
 
-    double q, p1, p2;
+    double q;
+    double p1;
+    double p2;
     p1 = a12 * state->s1[1] - a13n * state->s1[0];
     q = trunc (fma (p1, rh1, p1 * rl1));
-    p1 -= q * m1;  
+    p1 -= q * m1;
     if (p1 < 0.0) p1 += m1;
-    state->s1[0] = state->s1[1];   state->s1[1] = state->s1[2];   state->s1[2] = p1;
+    state->s1[0] = state->s1[1];   state->s1[1] = state->s1[2];   state->s1[2] = (unsigned int)p1;
     p2 = a21 * state->s2[2] - a23n * state->s2[0];
     q = trunc (fma (p2, rh2, p2 * rl2));
-    p2 -= q * m2;  
+    p2 -= q * m2;
     if (p2 < 0.0) p2 += m2;
-    state->s2[0] = state->s2[1];   state->s2[1] = state->s2[2];   state->s2[2] = p2;
+    state->s2[0] = state->s2[1];   state->s2[1] = state->s2[2];   state->s2[2] = (unsigned int)p2;
     if (p1 <= p2) return (p1 - p2 + m1);
     else return (p1 - p2);
-}
+)
 /* end nj's implementation */
-#else
-QUALIFIERS double curand_MRG32k3a(curandStateMRG32k3a_t *state)
-{
-    double p1,p2,r;
+    double p1;
+    double p2;
+    double r;
     p1 = (MRG32K3A_A12 * state->s1[1]) - (MRG32K3A_A13N * state->s1[0]);
     p1 = curand_MRGmod(p1, MRG32K3A_MOD1);
     if (p1 < 0.0) p1 += MRG32K3A_MOD1;
-    state->s1[0] = state->s1[1]; 
-    state->s1[1] = state->s1[2]; 
-    state->s1[2] = p1;
+    state->s1[0] = state->s1[1];
+    state->s1[1] = state->s1[2];
+    state->s1[2] = (unsigned int)p1;
     p2 = (MRG32K3A_A21 * state->s2[2]) - (MRG32K3A_A23N * state->s2[0]);
     p2 = curand_MRGmod(p2, MRG32K3A_MOD2);
     if (p2 < 0) p2 += MRG32K3A_MOD2;
-    state->s2[0] = state->s2[1]; 
-    state->s2[1] = state->s2[2]; 
-    state->s2[2] = p2;
+    state->s2[0] = state->s2[1];
+    state->s2[1] = state->s2[2];
+    state->s2[2] = (unsigned int)p2;
     r = p1 - p2;
     if (r <= 0) r += MRG32K3A_MOD1;
     return r;
 }
-#endif
 
 
 /**
@@ -1028,7 +1162,7 @@ QUALIFIERS unsigned int curand(curandStateMRG32k3a_t *state)
 {
     double dRet;
     dRet = (double)curand_MRG32k3a(state)*(double)MRG32K3A_BITS_NORM;
-    return (unsigned int)dRet;  
+    return (unsigned int)dRet;
 }
 
 
@@ -1046,18 +1180,18 @@ QUALIFIERS unsigned int curand(curandStateMRG32k3a_t *state)
  */
 QUALIFIERS void skipahead(unsigned long long n, curandStateMRG32k3a_t *state)
 {
-    double t[3][3];
-#ifdef __CUDA_ARCH__
+    unsigned int t[3][3];
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
     curand_MRGmatPow3x3( mrg32k3aM1, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3(mrg32k3aM2, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#else
+,
     curand_MRGmatPow3x3( mrg32k3aM1Host, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3(mrg32k3aM2Host, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#endif
+)
 }
 
 /**
@@ -1072,22 +1206,22 @@ QUALIFIERS void skipahead(unsigned long long n, curandStateMRG32k3a_t *state)
  * Valid values of \p n are 0 to \xmlonly<ph outputclass="xmlonly">2<sup>51</sup></ph>\endxmlonly.  Note \p n will be masked to 51 bits
  *
  * \param n - Number of subsequences to skip
- * \param state - Pointer to state to update 
+ * \param state - Pointer to state to update
  */
 QUALIFIERS void skipahead_subsequence(unsigned long long n, curandStateMRG32k3a_t *state)
 {
-    double t[3][3];
-#ifdef __CUDA_ARCH__
+    unsigned int t[3][3];
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
     curand_MRGmatPow3x3( mrg32k3aM1SubSeq, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3( mrg32k3aM2SubSeq, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#else    
+,
     curand_MRGmatPow3x3( mrg32k3aM1SubSeqHost, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3( mrg32k3aM2SubSeqHost, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#endif    
+)
 }
 
 /**
@@ -1095,7 +1229,7 @@ QUALIFIERS void skipahead_subsequence(unsigned long long n, curandStateMRG32k3a_
  *
  * Update the MRG32k3a state in \p state to skip ahead \p n sequences.  Each
  * sequence is \xmlonly<ph outputclass="xmlonly">2<sup>127</sup></ph>\endxmlonly elements long, so this means the function will skip ahead
- * \xmlonly<ph outputclass="xmlonly">2<sup>127</sup></ph>\endxmlonly * n elements. 
+ * \xmlonly<ph outputclass="xmlonly">2<sup>127</sup></ph>\endxmlonly * n elements.
  *
  * All values of \p n are valid.  Large values require more computation and so
  * will take more time to complete.
@@ -1105,18 +1239,18 @@ QUALIFIERS void skipahead_subsequence(unsigned long long n, curandStateMRG32k3a_
  */
 QUALIFIERS void skipahead_sequence(unsigned long long n, curandStateMRG32k3a_t *state)
 {
-    double t[3][3];
-#ifdef __CUDA_ARCH__    
+    unsigned int t[3][3];
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
     curand_MRGmatPow3x3( mrg32k3aM1Seq, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3(  mrg32k3aM2Seq, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#else
+,
     curand_MRGmatPow3x3( mrg32k3aM1SeqHost, t, MRG32K3A_MOD1, n);
     curand_MRGmatVecMul3x3( t, state->s1, MRG32K3A_MOD1);
     curand_MRGmatPow3x3(  mrg32k3aM2SeqHost, t, MRG32K3A_MOD2, n);
     curand_MRGmatVecMul3x3( t, state->s2, MRG32K3A_MOD2);
-#endif    
+)
 }
 
 
@@ -1126,7 +1260,7 @@ QUALIFIERS void skipahead_sequence(unsigned long long n, curandStateMRG32k3a_t *
  * Initialize MRG32k3a state in \p state with the given \p seed, \p subsequence,
  * and \p offset.
  *
- * All input values of \p seed, \p subsequence, and \p offset are legal. 
+ * All input values of \p seed, \p subsequence, and \p offset are legal.
  * \p subsequence will be truncated to 51 bits to avoid running into the next sequence
  *
  * A value of 0 for \p seed sets the state to the values of the original
@@ -1137,26 +1271,26 @@ QUALIFIERS void skipahead_sequence(unsigned long long n, curandStateMRG32k3a_t *
  * \param offset - Absolute offset into sequence
  * \param state - Pointer to state to initialize
  */
-QUALIFIERS void curand_init(unsigned long long seed, 
-                            unsigned long long subsequence, 
-                            unsigned long long offset, 
+QUALIFIERS void curand_init(unsigned long long seed,
+                            unsigned long long subsequence,
+                            unsigned long long offset,
                             curandStateMRG32k3a_t *state)
 {
     int i;
     for ( i=0; i<3; i++ ) {
-        state->s1[i] = 12345.;
-        state->s2[i] = 12345.;
+        state->s1[i] = 12345u;
+        state->s2[i] = 12345u;
     }
     if (seed != 0ull) {
         unsigned int x1 = ((unsigned int)seed) ^ 0x55555555UL;
         unsigned int x2 = (unsigned int)((seed >> 32) ^ 0xAAAAAAAAUL);
-        state->s1[0] = curand_MRGmodMul(x1, state->s1[0], MRG32K3A_MOD1);
-        state->s1[1] = curand_MRGmodMul(x2, state->s1[1], MRG32K3A_MOD1);
-        state->s1[2] = curand_MRGmodMul(x1, state->s1[2], MRG32K3A_MOD1);
-        state->s2[0] = curand_MRGmodMul(x2, state->s2[0], MRG32K3A_MOD2);
-        state->s2[1] = curand_MRGmodMul(x1, state->s2[1], MRG32K3A_MOD2);
-        state->s2[2] = curand_MRGmodMul(x2, state->s2[2], MRG32K3A_MOD2);
-    } 
+        state->s1[0] = (unsigned int)curand_MRGmodMul(x1, state->s1[0], MRG32K3A_MOD1);
+        state->s1[1] = (unsigned int)curand_MRGmodMul(x2, state->s1[1], MRG32K3A_MOD1);
+        state->s1[2] = (unsigned int)curand_MRGmodMul(x1, state->s1[2], MRG32K3A_MOD1);
+        state->s2[0] = (unsigned int)curand_MRGmodMul(x2, state->s2[0], MRG32K3A_MOD2);
+        state->s2[1] = (unsigned int)curand_MRGmodMul(x1, state->s2[1], MRG32K3A_MOD2);
+        state->s2[2] = (unsigned int)curand_MRGmodMul(x2, state->s2[2], MRG32K3A_MOD2);
+    }
     skipahead_subsequence( subsequence, state );
     skipahead( offset, state );
     state->boxmuller_flag = 0;
@@ -1176,7 +1310,9 @@ QUALIFIERS void curand_init(unsigned long long seed,
  * \param state - Pointer to state to update
  */
 template <typename T>
-QUALIFIERS void skipahead(unsigned int n, T state)
+QUALIFIERS
+typename CURAND_STD::enable_if<CURAND_STD::is_same<curandStateSobol32_t*, T>::value || CURAND_STD::is_same<curandStateScrambledSobol32_t*, T>::value>::type
+skipahead(unsigned int n, T state)
 {
     unsigned int i_gray;
     state->x = state->c;
@@ -1202,7 +1338,9 @@ QUALIFIERS void skipahead(unsigned int n, T state)
  * \param state - Pointer to state to update
  */
 template <typename T>
-QUALIFIERS void skipahead(unsigned long long n, T state)
+QUALIFIERS
+typename CURAND_STD::enable_if<CURAND_STD::is_same<curandStateSobol64_t*, T>::value || CURAND_STD::is_same<curandStateScrambledSobol64_t*, T>::value>::type
+skipahead(unsigned long long n, T state)
 {
     unsigned long long i_gray;
     state->x = state->c;
@@ -1220,7 +1358,7 @@ QUALIFIERS void skipahead(unsigned long long n, T state)
 /**
  * \brief Initialize Sobol32 state.
  *
- * Initialize Sobol32 state in \p state with the given \p direction \p vectors and 
+ * Initialize Sobol32 state in \p state with the given \p direction \p vectors and
  * \p offset.
  *
  * The direction vector is a device pointer to an array of 32 unsigned ints.
@@ -1231,8 +1369,8 @@ QUALIFIERS void skipahead(unsigned long long n, T state)
  * \param offset - Absolute offset into sequence
  * \param state - Pointer to state to initialize
  */
-QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,                                            
-                                            unsigned int offset, 
+QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,
+                                            unsigned int offset,
                                             curandStateSobol32_t *state)
 {
     state->i = 0;
@@ -1246,7 +1384,7 @@ QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,
 /**
  * \brief Initialize Scrambled Sobol32 state.
  *
- * Initialize Sobol32 state in \p state with the given \p direction \p vectors and 
+ * Initialize Sobol32 state in \p state with the given \p direction \p vectors and
  * \p offset.
  *
  * The direction vector is a device pointer to an array of 32 unsigned ints.
@@ -1260,7 +1398,7 @@ QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,
  */
 QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,
                                             unsigned int scramble_c,
-                                            unsigned int offset, 
+                                            unsigned int offset,
                                             curandStateScrambledSobol32_t *state)
 {
     state->i = 0;
@@ -1272,29 +1410,46 @@ QUALIFIERS void curand_init(curandDirectionVectors32_t direction_vectors,
     skipahead<curandStateScrambledSobol32_t *>(offset, state);
 }
 
-template<typename XT>
-QUALIFIERS int __curand_find_trailing_zero(XT x)
+QUALIFIERS int __curand_find_trailing_zero(unsigned int x)
 {
-#if __CUDA_ARCH__ > 0
-    unsigned long long z = x;
-    int y = __ffsll(~z);
-    if (y)
-        return y-1;
-    return 64;
-#else
-    unsigned long long z = x;
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
+    int y = __ffs(~x);
+    if(y)
+        return y - 1;
+    return 31;
+,
     int i = 1;
-    while(z & 1) {
-        i ++;
-        z >>= 1;
+    while(x & 1) {
+        i++;
+        x >>= 1;
     }
-    return i - 1;
-#endif
+    i = i - 1;
+    return i == 32 ? 31 : i;
+)
 }
+
+QUALIFIERS int __curand_find_trailing_zero(unsigned long long x)
+{
+NV_IF_ELSE_TARGET(NV_IS_DEVICE,
+    int y = __ffsll(~x);
+    if(y)
+        return y - 1;
+    return 63;
+,
+    int i = 1;
+    while(x & 1) {
+        i++;
+        x >>= 1;
+    }
+    i = i - 1;
+    return i == 64 ? 63 : i;
+)
+}
+
 /**
  * \brief Initialize Sobol64 state.
  *
- * Initialize Sobol64 state in \p state with the given \p direction \p vectors and 
+ * Initialize Sobol64 state in \p state with the given \p direction \p vectors and
  * \p offset.
  *
  * The direction vector is a device pointer to an array of 64 unsigned long longs.
@@ -1306,7 +1461,7 @@ QUALIFIERS int __curand_find_trailing_zero(XT x)
  * \param state - Pointer to state to initialize
  */
 QUALIFIERS void curand_init(curandDirectionVectors64_t direction_vectors,
-                                            unsigned long long offset, 
+                                            unsigned long long offset,
                                             curandStateSobol64_t *state)
 {
     state->i = 0;
@@ -1318,21 +1473,10 @@ QUALIFIERS void curand_init(curandDirectionVectors64_t direction_vectors,
     skipahead<curandStateSobol64_t *>(offset, state);
 }
 
-template<typename PT>
-QUALIFIERS void _skipahead_stride(int n_log2, PT state)
-{
-    /* Moving from i to i+2^n_log2 element in gray code is flipping two bits */
-    unsigned int shifted_i = state->i >> n_log2;
-    state->x ^= state->direction_vectors[n_log2 - 1];
-    state->x ^= state->direction_vectors[
-        __curand_find_trailing_zero(shifted_i) + n_log2];
-    state->i += 1 << n_log2;
-
-}
 /**
  * \brief Initialize Scrambled Sobol64 state.
  *
- * Initialize Sobol64 state in \p state with the given \p direction \p vectors and 
+ * Initialize Sobol64 state in \p state with the given \p direction \p vectors and
  * \p offset.
  *
  * The direction vector is a device pointer to an array of 64 unsigned long longs.
@@ -1346,7 +1490,7 @@ QUALIFIERS void _skipahead_stride(int n_log2, PT state)
  */
 QUALIFIERS void curand_init(curandDirectionVectors64_t direction_vectors,
                                             unsigned long long scramble_c,
-                                            unsigned long long offset, 
+                                            unsigned long long offset,
                                             curandStateScrambledSobol64_t *state)
 {
     state->i = 0;
@@ -1463,6 +1607,7 @@ __device__ static inline unsigned int *__get_precalculated_matrix(int n)
     return precalc_xorwow_matrix[n];
 }
 
+#ifndef __CUDACC_RTC__
 __host__ static inline unsigned int *__get_precalculated_matrix_host(int n)
 {
     if(n == 1) {
@@ -1473,8 +1618,9 @@ __host__ static inline unsigned int *__get_precalculated_matrix_host(int n)
     }
     return precalc_xorwow_matrix_host[n];
 }
+#endif // #ifndef __CUDACC_RTC__
 
-__device__ static inline double *__get_mrg32k3a_matrix(int n)
+__device__ static inline unsigned int *__get_mrg32k3a_matrix(int n)
 {
     if(n == 0) {
         return mrg32k3aM1[n][0];
@@ -1497,7 +1643,8 @@ __device__ static inline double *__get_mrg32k3a_matrix(int n)
     return mrg32k3aM1[n][0];
 }
 
-__host__ static inline double *__get_mrg32k3a_matrix_host(int n)
+#ifndef __CUDACC_RTC__
+__host__ static inline unsigned int *__get_mrg32k3a_matrix_host(int n)
 {
     if(n == 1) {
         return mrg32k3aM1Host[n][0];
@@ -1523,6 +1670,7 @@ __host__ static inline double *__get_mrg32k3a_matrix_host(int n)
 __host__ static inline double *__get__cr_lgamma_table_host(void) {
     return __cr_lgamma_table;
 }
+#endif // #ifndef __CUDACC_RTC__
 
 /** @} */
 

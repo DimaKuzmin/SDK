@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/device_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/device_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__
+#endif
+
 #if !defined(__DEVICE_FUNCTIONS_H__)
 #define __DEVICE_FUNCTIONS_H__
 
@@ -61,9 +71,11 @@
 #if defined(__CUDACC_RTC__)
 #define __DEVICE_FUNCTIONS_DECL__ __device__ __cudart_builtin__
 #define __DEVICE_FUNCTIONS_STATIC_DECL__ __device__ __cudart_builtin__
+#define __DEVICE_HOST_FUNCTIONS_STATIC_DECL__ __device__ __host__ __cudart_builtin__
 #else
 #define __DEVICE_FUNCTIONS_DECL__ __device__ __cudart_builtin__
 #define __DEVICE_FUNCTIONS_STATIC_DECL__ static __inline__ __device__ __cudart_builtin__
+#define __DEVICE_HOST_FUNCTIONS_STATIC_DECL__ static __inline__ __device__ __host__ __cudart_builtin__
 #endif /* __CUDACC_RTC__ */
 
 #include "builtin_types.h"
@@ -80,7 +92,7 @@ extern "C"
 {
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Calculate the most significant 32 bits of the product of the two 32 bit integers.
+ * \brief Calculate the most significant 32 bits of the product of the two 32-bit integers.
  *
  * Calculate the most significant 32 bits of the 64-bit product \p x * \p y, where \p x and \p y
  * are 32-bit integers.
@@ -90,7 +102,7 @@ extern "C"
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __mulhi(int x, int y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Calculate the most significant 32 bits of the product of the two 32 bit unsigned integers.
+ * \brief Calculate the most significant 32 bits of the product of the two 32-bit unsigned integers.
  *
  * Calculate the most significant 32 bits of the 64-bit product \p x * \p y, where \p x and \p y
  * are 32-bit unsigned integers. 
@@ -100,7 +112,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __mulhi(int 
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __umulhi(unsigned int x, unsigned int y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Calculate the most significant 64 bits of the product of the two 64 bit integers.
+ * \brief Calculate the most significant 64 bits of the product of the two 64-bit integers.
  *
  * Calculate the most significant 64 bits of the 128-bit product \p x * \p y, where \p x and \p y
  * are 64-bit integers. 
@@ -123,7 +135,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __umul64hi(u
  * \brief Reinterpret bits in an integer as a float.
  *
  * Reinterpret the bits in the signed integer value \p x as a single-precision
- * floating point value.
+ * floating-point value.
  * \return Returns reinterpreted value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int_as_float(int x);
@@ -131,7 +143,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int_as_flo
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Reinterpret bits in a float as a signed integer.
  *
- * Reinterpret the bits in the single-precision floating point value \p x
+ * Reinterpret the bits in the single-precision floating-point value \p x
  * as a signed integer.
  * \return Returns reinterpreted value.
  */
@@ -141,7 +153,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __float_as_i
  * \brief Reinterpret bits in an unsigned integer as a float.
  *
  * Reinterpret the bits in the unsigned integer value \p x as a single-precision
- * floating point value.
+ * floating-point value.
  * \return Returns reinterpreted value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint_as_float(unsigned int x);
@@ -149,7 +161,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint_as_fl
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Reinterpret bits in a float as a unsigned integer.
  *
- * Reinterpret the bits in the single-precision floating point value \p x
+ * Reinterpret the bits in the single-precision floating-point value \p x
  * as a unsigned integer.
  * \return Returns reinterpreted value.
  */
@@ -158,8 +170,14 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __syncthread
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __prof_trigger(int);
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __threadfence(void);
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __threadfence_block(void);
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __trap(void);
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __brkpt(int c = 0);
+__DEVICE_FUNCTIONS_DECL__ 
+#if defined(__GNUC__) || defined(__CUDACC_RTC__)
+__attribute__((__noreturn__))
+#elif defined(_MSC_VER)
+__declspec(noreturn)
+#endif  /* defined(__GNUC__) || defined(__CUDACC_RTC__) */
+__device_builtin__ void                   __trap(void);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __brkpt();
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
  * \brief Clamp the input argument to [+0.0, 1.0].
@@ -174,9 +192,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   __brkpt(int 
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mn>0</m:mn>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  *   <m:mn>1</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -194,7 +212,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __saturatef(
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -215,7 +233,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __saturatef(
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -241,7 +259,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __saturatef(
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -263,7 +281,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __sad(int x,
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -284,7 +302,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __sad(int x,
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -309,7 +327,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __sad(int x,
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo stretchy="false">|</m:mo>
@@ -342,7 +360,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __mul24(int 
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __umul24(unsigned int x, unsigned int y);
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Divide two floating point values.
+ * \brief Divide two floating-point values.
  *
  * Compute \p x divided by \p y.  If <tt>--use_fast_math</tt> is specified,
  * use ::__fdividef() for higher performance, otherwise use normal division.
@@ -365,12 +383,12 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fdividef(flo
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * , \p y) returns NaN for 
- * \latexonly $2^{126} < y < 2^{128}$ \endlatexonly
+ * \latexonly $2^{126} < |y| < 2^{128}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -381,7 +399,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fdividef(flo
  *     </m:mrow>
  *   </m:msup>
  *   <m:mo>&lt;</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>|y|</m:mi>
  *   <m:mo>&lt;</m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
@@ -392,7 +410,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fdividef(flo
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - __fdividef(\p x, \p y) returns 0 for 
- * \latexonly $2^{126} < y < 2^{128}$ \endlatexonly
+ * \latexonly $2^{126} < |y| < 2^{128}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -403,7 +421,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fdividef(flo
  *     </m:mrow>
  *   </m:msup>
  *   <m:mo>&lt;</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>|y|</m:mi>
  *   <m:mo>&lt;</m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
@@ -414,14 +432,12 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fdividef(flo
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  and 
- * \latexonly $x \ne \infty$ \endlatexonly
+ *  and finite
+ * \latexonly $x$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2260;<!-- ≠ --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -438,7 +454,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 fdivide(doub
  * \return Returns the approximate sine of \p x.
  *
  * \note_accuracy_single_intrinsic
- * \note Input and output in the denormal range is flushed to sign preserving 0.0.
+ * \note Output in the denormal range is flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __sinf(float x) __THROW;
 /**
@@ -450,7 +466,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * \return Returns the approximate cosine of \p x.
  *
  * \note_accuracy_single_intrinsic
- * \note Input and output in the denormal range is flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __cosf(float x) __THROW;
 /**
@@ -463,8 +478,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  *
  * \note_accuracy_single_intrinsic
  * \note The result is computed as the fast divide of ::__sinf()
- * by ::__cosf(). Denormal input and output are flushed to sign-preserving 
- * 0.0 at each step of the computation.
+ * by ::__cosf(). Denormal output is flushed to sign-preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __tanf(float x) __THROW;
 /**
@@ -529,7 +543,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ void            
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Most input and output values around denormal range are flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __expf(float x) __THROW;
 /**
@@ -561,7 +574,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Most input and output values around denormal range are flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __exp10f(float x) __THROW;
 /**
@@ -579,7 +591,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  *     <m:mi>log</m:mi>
  *     <m:mn>2</m:mn>
  *   </m:msub>
- *   <m:mo>&#x2061;<!-- ⁡ --></m:mo>
+ *   <m:mo>&#x2061;<!-- &functionAplication --></m:mo>
  *   <m:mo stretchy="false">(</m:mo>
  *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
@@ -587,7 +599,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Input and output in the denormal range is flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __log2f(float x) __THROW;
 /**
@@ -607,7 +618,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  *       <m:mn>10</m:mn>
  *     </m:mrow>
  *   </m:msub>
- *   <m:mo>&#x2061;<!-- ⁡ --></m:mo>
+ *   <m:mo>&#x2061;<!-- &functionAplication --></m:mo>
  *   <m:mo stretchy="false">(</m:mo>
  *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
@@ -615,7 +626,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Most input and output values around denormal range are flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __log10f(float x) __THROW;
 /**
@@ -651,7 +661,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  *     <m:mi>log</m:mi>
  *     <m:mi>e</m:mi>
  *   </m:msub>
- *   <m:mo>&#x2061;<!-- ⁡ --></m:mo>
+ *   <m:mo>&#x2061;<!-- &functionAplication --></m:mo>
  *   <m:mo stretchy="false">(</m:mo>
  *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
@@ -659,7 +669,6 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Most input and output values around denormal range are flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __logf(float x) __THROW;
 /**
@@ -702,14 +711,13 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float           
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single_intrinsic
- * \note Most input and output values around denormal range are flushed to sign preserving 0.0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ float                  __powf(float x, float y) __THROW;
 /**
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed integer in round-to-nearest-even mode.
  *
- * Convert the single-precision floating point value \p x to a signed integer
+ * Convert the single-precision floating-point value \p x to a signed integer
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -718,7 +726,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __float2int_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed integer in round-towards-zero mode.
  *
- * Convert the single-precision floating point value \p x to a signed integer
+ * Convert the single-precision floating-point value \p x to a signed integer
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -727,7 +735,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __float2int_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed integer in round-up mode.
  *
- * Convert the single-precision floating point value \p x to a signed integer
+ * Convert the single-precision floating-point value \p x to a signed integer
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -736,7 +744,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __float2int_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed integer in round-down mode.
  *
- * Convert the single-precision floating point value \p x to a signed integer
+ * Convert the single-precision floating-point value \p x to a signed integer
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -745,7 +753,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __float2int_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned integer in round-to-nearest-even mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned integer
+ * Convert the single-precision floating-point value \p x to an unsigned integer
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -754,7 +762,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __float2uint
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned integer in round-towards-zero mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned integer
+ * Convert the single-precision floating-point value \p x to an unsigned integer
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -763,7 +771,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __float2uint
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned integer in round-up mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned integer
+ * Convert the single-precision floating-point value \p x to an unsigned integer
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -772,7 +780,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __float2uint
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned integer in round-down mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned integer
+ * Convert the single-precision floating-point value \p x to an unsigned integer
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -781,7 +789,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __float2uint
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-to-nearest-even mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -790,7 +798,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-towards-zero mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -799,7 +807,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-up mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -808,7 +816,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-down mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -817,7 +825,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __int2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-to-nearest-even mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -826,7 +834,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint2float
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-towards-zero mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -835,7 +843,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint2float
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-up mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -844,7 +852,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint2float
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-down mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -853,7 +861,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __uint2float
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed 64-bit integer in round-to-nearest-even mode.
  *
- * Convert the single-precision floating point value \p x to a signed 64-bit integer
+ * Convert the single-precision floating-point value \p x to a signed 64-bit integer
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -862,7 +870,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __float2ll_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed 64-bit integer in round-towards-zero mode.
  *
- * Convert the single-precision floating point value \p x to a signed 64-bit integer
+ * Convert the single-precision floating-point value \p x to a signed 64-bit integer
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -871,7 +879,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __float2ll_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed 64-bit integer in round-up mode.
  *
- * Convert the single-precision floating point value \p x to a signed 64-bit integer
+ * Convert the single-precision floating-point value \p x to a signed 64-bit integer
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -880,7 +888,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __float2ll_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to a signed 64-bit integer in round-down mode.
  *
- * Convert the single-precision floating point value \p x to a signed 64-bit integer
+ * Convert the single-precision floating-point value \p x to a signed 64-bit integer
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -889,7 +897,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __float2ll_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned 64-bit integer in round-to-nearest-even mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned 64-bit integer
+ * Convert the single-precision floating-point value \p x to an unsigned 64-bit integer
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -898,8 +906,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __float2ull_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned 64-bit integer in round-towards-zero mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned 64-bit integer
- * in round-towards_zero mode.
+ * Convert the single-precision floating-point value \p x to an unsigned 64-bit integer
+ * in round-towards-zero mode.
  * \return Returns converted value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __float2ull_rz(float x);
@@ -907,7 +915,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __float2ull_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned 64-bit integer in round-up mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned 64-bit integer
+ * Convert the single-precision floating-point value \p x to an unsigned 64-bit integer
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -916,7 +924,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __float2ull_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a float to an unsigned 64-bit integer in round-down mode.
  *
- * Convert the single-precision floating point value \p x to an unsigned 64-bit integer
+ * Convert the single-precision floating-point value \p x to an unsigned 64-bit integer
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -925,7 +933,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __float2ull_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed 64-bit integer to a float in round-to-nearest-even mode.
  *
- * Convert the signed 64-bit integer value \p x to a single-precision floating point value
+ * Convert the signed 64-bit integer value \p x to a single-precision floating-point value
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -934,7 +942,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ll2float_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-towards-zero mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -943,7 +951,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ll2float_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-up mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -952,7 +960,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ll2float_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a signed integer to a float in round-down mode.
  *
- * Convert the signed integer value \p x to a single-precision floating point value
+ * Convert the signed integer value \p x to a single-precision floating-point value
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
@@ -961,7 +969,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ll2float_r
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-to-nearest-even mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-to-nearest-even mode.
  * \return Returns converted value.
  */
@@ -970,7 +978,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ull2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-towards-zero mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-towards-zero mode.
  * \return Returns converted value.
  */
@@ -979,7 +987,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ull2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-up mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-up (to positive infinity) mode.
  * \return Returns converted value.
  */
@@ -988,14 +996,14 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ull2float_
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert an unsigned integer to a float in round-down mode.
  *
- * Convert the unsigned integer value \p x to a single-precision floating point value
+ * Convert the unsigned integer value \p x to a single-precision floating-point value
  * in round-down (to negative infinity) mode.
  * \return Returns converted value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ull2float_rd(unsigned long long int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Add two floating point values in round-to-nearest-even mode.
+ * \brief Add two floating-point values in round-to-nearest-even mode.
  * 
  * Compute the sum of \p x and \p y in round-to-nearest-even rounding mode.
  *
@@ -1007,7 +1015,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __ull2float_
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rn(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Add two floating point values in round-towards-zero mode.
+ * \brief Add two floating-point values in round-towards-zero mode.
  * 
  * Compute the sum of \p x and \p y in round-towards-zero mode.
  *
@@ -1019,7 +1027,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rn(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rz(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Add two floating point values in round-up mode.
+ * \brief Add two floating-point values in round-up mode.
  * 
  * Compute the sum of \p x and \p y in round-up (to positive infinity) mode.
  *
@@ -1031,7 +1039,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rz(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_ru(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Add two floating point values in round-down mode.
+ * \brief Add two floating-point values in round-down mode.
  * 
  * Compute the sum of \p x and \p y in round-down (to negative infinity) mode.
  *
@@ -1043,7 +1051,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_ru(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rd(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Subtract two floating point values in round-to-nearest-even mode.
+ * \brief Subtract two floating-point values in round-to-nearest-even mode.
  * 
  * Compute the difference of \p x and \p y in round-to-nearest-even rounding mode.
  *
@@ -1055,7 +1063,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fadd_rd(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rn(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Subtract two floating point values in round-towards-zero mode.
+ * \brief Subtract two floating-point values in round-towards-zero mode.
  * 
  * Compute the difference of \p x and \p y in round-towards-zero mode.
  *
@@ -1067,7 +1075,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rn(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rz(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Subtract two floating point values in round-up mode.
+ * \brief Subtract two floating-point values in round-up mode.
  * 
  * Compute the difference of \p x and \p y in round-up (to positive infinity) mode.
  *
@@ -1079,7 +1087,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rz(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_ru(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Subtract two floating point values in round-down mode.
+ * \brief Subtract two floating-point values in round-down mode.
  * 
  * Compute the difference of \p x and \p y in round-down (to negative infinity) mode.
  *
@@ -1091,7 +1099,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_ru(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rd(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Multiply two floating point values in round-to-nearest-even mode.
+ * \brief Multiply two floating-point values in round-to-nearest-even mode.
  * 
  * Compute the product of \p x and \p y in round-to-nearest-even mode.
  *
@@ -1103,7 +1111,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsub_rd(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rn(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Multiply two floating point values in round-towards-zero mode.
+ * \brief Multiply two floating-point values in round-towards-zero mode.
  * 
  * Compute the product of \p x and \p y in round-towards-zero mode.
  *
@@ -1115,7 +1123,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rn(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rz(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Multiply two floating point values in round-up mode.
+ * \brief Multiply two floating-point values in round-up mode.
  * 
  * Compute the product of \p x and \p y in round-up (to positive infinity) mode.
  *
@@ -1127,7 +1135,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rz(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_ru(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Multiply two floating point values in round-down mode.
+ * \brief Multiply two floating-point values in round-down mode.
  * 
  * Compute the product of \p x and \p y in round-down (to negative infinity) mode.
  *
@@ -1145,7 +1153,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1160,7 +1168,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1176,7 +1184,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1189,8 +1197,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1199,7 +1207,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1210,7 +1218,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1220,8 +1228,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1231,8 +1239,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1242,7 +1250,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1253,7 +1261,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fmaf(\p x, \p y, 
@@ -1262,7 +1270,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1272,7 +1280,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1282,8 +1290,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmul_rd(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1298,7 +1306,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1313,7 +1321,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1329,7 +1337,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1342,8 +1350,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1352,7 +1360,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1363,7 +1371,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1373,8 +1381,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1384,8 +1392,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1395,7 +1403,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1406,7 +1414,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fmaf(\p x, \p y, 
@@ -1415,7 +1423,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1425,7 +1433,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1435,8 +1443,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rn(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1451,7 +1459,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1466,7 +1474,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1482,7 +1490,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1495,8 +1503,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1505,7 +1513,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1516,7 +1524,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1526,8 +1534,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1537,8 +1545,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1548,7 +1556,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1559,7 +1567,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fmaf(\p x, \p y, 
@@ -1568,7 +1576,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1578,7 +1586,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1588,8 +1596,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_rz(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1604,7 +1612,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1619,7 +1627,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1635,7 +1643,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -1648,8 +1656,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1658,7 +1666,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1669,7 +1677,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1679,8 +1687,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1690,8 +1698,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1701,7 +1709,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1712,7 +1720,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fmaf(\p x, \p y, 
@@ -1721,7 +1729,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1731,7 +1739,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Multiply --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -1741,8 +1749,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fmaf_ru(fl
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -2046,9 +2054,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fsqrt_rd(f
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __frsqrt_rn(float x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Divide two floating point values in round-to-nearest-even mode.
+ * \brief Divide two floating-point values in round-to-nearest-even mode.
  *
- * Divide two floating point values \p x by \p y in round-to-nearest-even mode.
+ * Divide two floating-point values \p x by \p y in round-to-nearest-even mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -2057,9 +2065,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __frsqrt_rn(
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rn(float x, float y);
 /**      
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Divide two floating point values in round-towards-zero mode.
+ * \brief Divide two floating-point values in round-towards-zero mode.
  *
- * Divide two floating point values \p x by \p y in round-towards-zero mode.
+ * Divide two floating-point values \p x by \p y in round-towards-zero mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -2068,9 +2076,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rn(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rz(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Divide two floating point values in round-up mode.
+ * \brief Divide two floating-point values in round-up mode.
  * 
- * Divide two floating point values \p x by \p y in round-up (to positive infinity) mode.
+ * Divide two floating-point values \p x by \p y in round-up (to positive infinity) mode.
  *    
  * \return Returns \p x / \p y.
  *
@@ -2079,9 +2087,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rz(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_ru(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SINGLE
- * \brief Divide two floating point values in round-down mode.
+ * \brief Divide two floating-point values in round-down mode.
  *
- * Divide two floating point values \p x by \p y in round-down (to negative infinity) mode.
+ * Divide two floating-point values \p x by \p y in round-down (to negative infinity) mode.
  *
  * \return Returns \p x / \p y.
  *
@@ -2090,7 +2098,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_ru(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rd(float x, float y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Return the number of consecutive high-order zero bits in a 32 bit integer.
+ * \brief Return the number of consecutive high-order zero bits in a 32-bit integer.
  *
  * Count the number of consecutive leading zero bits, starting at the most significant bit (bit 31) of \p x.
  *
@@ -2099,7 +2107,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  __fdiv_rd(fl
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __clz(int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Find the position of the least significant bit set to 1 in a 32 bit integer.
+ * \brief Find the position of the least significant bit set to 1 in a 32-bit integer.
  *
  * Find the position of the first (least significant) bit set to 1 in \p x, where the least significant
  * bit position is 1. 
@@ -2110,7 +2118,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __clz(int x)
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __ffs(int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Count the number of bits that are set to 1 in a 32 bit integer.
+ * \brief Count the number of bits that are set to 1 in a 32-bit integer.
  *
  * Count the number of bits that are set to 1 in \p x.
  *
@@ -2119,16 +2127,16 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __ffs(int x)
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __popc(unsigned int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Reverse the bit order of a 32 bit unsigned integer.
+ * \brief Reverse the bit order of a 32-bit unsigned integer.
  *
- * Reverses the bit order of the 32 bit unsigned integer \p x.
+ * Reverses the bit order of the 32-bit unsigned integer \p x.
  *
  * \return Returns the bit-reversed value of \p x. i.e. bit N of the return value corresponds to bit 31-N of \p x.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __brev(unsigned int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Count the number of consecutive high-order zero bits in a 64 bit integer.
+ * \brief Count the number of consecutive high-order zero bits in a 64-bit integer.
  *
  * Count the number of consecutive leading zero bits, starting at the most significant bit (bit 63) of \p x.
  *
@@ -2137,7 +2145,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __brev(unsig
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __clzll(long long int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Find the position of the least significant bit set to 1 in a 64 bit integer.
+ * \brief Find the position of the least significant bit set to 1 in a 64-bit integer.
  *
  * Find the position of the first (least significant) bit set to 1 in \p x, where the least significant
  * bit position is 1. 
@@ -2150,7 +2158,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __ffsll(long
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Count the number of bits that are set to 1 in a 64 bit integer.
+ * \brief Count the number of bits that are set to 1 in a 64-bit integer.
  *
  * Count the number of bits that are set to 1 in \p x.
  *
@@ -2159,35 +2167,34 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __ffsll(long
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __popcll(unsigned long long int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Reverse the bit order of a 64 bit unsigned integer.
+ * \brief Reverse the bit order of a 64-bit unsigned integer.
  *
- * Reverses the bit order of the 64 bit unsigned integer \p x.
+ * Reverses the bit order of the 64-bit unsigned integer \p x.
  *
  * \return Returns the bit-reversed value of \p x. i.e. bit N of the return value corresponds to bit 63-N of \p x.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __brevll(unsigned long long int x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
- * \brief Return selected bytes from two 32 bit unsigned integers.
+ * \brief Return selected bytes from two 32-bit unsigned integers.
  *
- * byte_perm(x,y,s) returns a 32-bit integer consisting of four bytes from eight input bytes provided in the two 
+ * \return Returns a 32-bit integer consisting of four bytes from eight input bytes provided in the two
  * input integers \p x and \p y, as specified by a selector, \p s.
  *
- * The input bytes are indexed as follows:
- * <pre>
- * input[0] = x<7:0>   input[1] = x<15:8>
- * input[2] = x<23:16> input[3] = x<31:24>
- * input[4] = y<7:0>   input[5] = y<15:8>
- * input[6] = y<23:16> input[7] = y<31:24>
- * </pre>
- * The selector indices are as follows (the upper 16-bits of the selector are not used):
- * <pre>
- * selector[0] = s<2:0>  selector[1] = s<6:4>
- * selector[2] = s<10:8> selector[3] = s<14:12>
- * </pre>
- * \return The returned value r is computed to be:
- * <tt>result[n] := input[selector[n]]</tt>
- * where <tt>result[n]</tt> is the nth byte of r.
+ * Create 8-byte source
+ * - uint64_t \p tmp64 = ((uint64_t)\p y << 32) | \p x;
+ *
+ * Extract selector bits
+ * - \p selector0 = (\p s >>  0) & 0x7;
+ * - \p selector1 = (\p s >>  4) & 0x7;
+ * - \p selector2 = (\p s >>  8) & 0x7;
+ * - \p selector3 = (\p s >> 12) & 0x7;
+ *
+ * Return 4 selected bytes from 8-byte source:
+ * - \p res[07:00] = \p tmp64[\p selector0];
+ * - \p res[15:08] = \p tmp64[\p selector1];
+ * - \p res[23:16] = \p tmp64[\p selector2];
+ * - \p res[31:24] = \p tmp64[\p selector3];
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __byte_perm(unsigned int x, unsigned int y, unsigned int s);
 /**
@@ -2201,7 +2208,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __byte_perm(
  * \return Returns a signed integer value representing the signed 
  * average value of the two inputs.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __hadd(int, int);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __hadd(int x, int y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
  * \brief Compute rounded average of signed input arguments, avoiding
@@ -2214,7 +2221,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __hadd(int, 
  * \return Returns a signed integer value representing the signed 
  * rounded average value of the two inputs.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __rhadd(int, int);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __rhadd(int x, int y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
  * \brief Compute average of unsigned input arguments, avoiding overflow
@@ -2226,7 +2233,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __rhadd(int,
  * \return Returns an unsigned integer value representing the unsigned 
  * average value of the two inputs.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __uhadd(unsigned int, unsigned int);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __uhadd(unsigned int x, unsigned int y);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_INT
  * \brief Compute rounded average of unsigned input arguments, avoiding
@@ -2239,44 +2246,44 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __uhadd(unsi
  * \return Returns an unsigned integer value representing the unsigned 
  * rounded average value of the two inputs.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __urhadd(unsigned int, unsigned int);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __urhadd(unsigned int x, unsigned int y);
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed int in round-towards-zero mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed integer value in round-towards-zero mode.
  * \return Returns converted value.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __double2int_rz(double);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    __double2int_rz(double x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned int in round-towards-zero mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned integer value in round-towards-zero mode.
  * \return Returns converted value.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __double2uint_rz(double);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __double2uint_rz(double x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to a signed 64-bit int in round-towards-zero mode.
  *
- * Convert the double-precision floating point value \p x to a
+ * Convert the double-precision floating-point value \p x to a
  * signed 64-bit integer value in round-towards-zero mode.
  * \return Returns converted value.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __double2ll_rz(double);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          __double2ll_rz(double x);
 /**
  * \ingroup CUDA_MATH_INTRINSIC_CAST
  * \brief Convert a double to an unsigned 64-bit int in round-towards-zero mode.
  *
- * Convert the double-precision floating point value \p x to an
+ * Convert the double-precision floating-point value \p x to an
  * unsigned 64-bit integer value in round-towards-zero mode.
  * \return Returns converted value.
  */
-__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __double2ull_rz(double);
+__DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int __double2ull_rz(double x);
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __pm0(void);
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __pm1(void);
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __pm2(void);
@@ -2303,7 +2310,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           __pm3(void);
  *
  * Splits 4 bytes of argument into 2 parts, each consisting of 2 bytes,
  * then computes absolute value for each of parts.
- * Result is stored as unsigned int and returned. 
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabs2(unsigned int a);
@@ -2314,7 +2321,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabs2(unsigned int a
  *
  * Splits 4 bytes of argument into 2 parts, each consisting of 2 bytes,
  * then computes absolute value with signed saturation for each of parts.
- * Result is stored as unsigned int and returned. 
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsss2(unsigned int a);
@@ -2325,7 +2332,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsss2(unsigned int
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes,
  * then performs unsigned addition on corresponding parts.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vadd2(unsigned int a, unsigned int b);
@@ -2336,7 +2343,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vadd2(unsigned int a
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes,
  * then performs addition with signed saturation on corresponding parts.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vaddss2 (unsigned int a, unsigned int b);
@@ -2355,9 +2362,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vaddus2 (unsigned in
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
  * \brief Performs per-halfword signed rounded average computation.
  *
- * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * then computes signed rounded avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes,
+ * then computes signed rounded average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgs2(unsigned int a, unsigned int b);
@@ -2366,9 +2373,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgs2(unsigned int 
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
  * \brief Performs per-halfword unsigned rounded average computation.
  *
- * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * then computes unsigned rounded avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes,
+ * then computes unsigned rounded average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgu2(unsigned int a, unsigned int b);
@@ -2377,9 +2384,9 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgu2(unsigned int 
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
  * \brief Performs per-halfword unsigned average computation.
  *
- * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * then computes unsigned avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes,
+ * then computes unsigned average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vhaddu2(unsigned int a, unsigned int b);
@@ -2500,8 +2507,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vcmpne2(unsigned int
  * \brief Performs per-halfword absolute difference of unsigned integer computation: |a - b|
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes absolute difference. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes absolute difference. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffu2(unsigned int a, unsigned int b);
@@ -2511,8 +2518,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffu2(unsigned 
  * \brief Performs per-halfword signed maximum computation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes signed maximum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes signed maximum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxs2(unsigned int a, unsigned int b);
@@ -2522,8 +2529,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxs2(unsigned int 
  * \brief Performs per-halfword unsigned maximum computation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes unsigned maximum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes unsigned maximum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxu2(unsigned int a, unsigned int b);
@@ -2533,8 +2540,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxu2(unsigned int 
  * \brief Performs per-halfword signed minimum computation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes signed minimum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes signed minimum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmins2(unsigned int a, unsigned int b);
@@ -2544,8 +2551,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmins2(unsigned int 
  * \brief Performs per-halfword unsigned minimum computation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes unsigned minimum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes unsigned minimum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vminu2(unsigned int a, unsigned int b);
@@ -2556,7 +2563,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vminu2(unsigned int 
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
  * For corresponding parts function performs comparison 'a' part == 'b' part.
- * If both equalities are satisfiad, function returns 1.
+ * If both equalities are satisfied, function returns 1.
  * \return Returns 1 if a = b, else returns 0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vseteq2(unsigned int a, unsigned int b);
@@ -2665,7 +2672,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsetne2(unsigned int
  * \brief Computes per-halfword sum of abs diff of unsigned.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts function computes absolute differences, and returns
+ * For corresponding parts function computes absolute differences and returns
  * sum of those differences.
  * \return Returns computed value.
  */
@@ -2673,33 +2680,33 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsadu2(unsigned int 
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-halfword (un)signed substraction, with wrap-around.
+ * \brief Performs per-halfword (un)signed subtraction, with wrap-around.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts functions performs substraction. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function performs subtraction. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsub2(unsigned int a, unsigned int b);
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-halfword (un)signed substraction, with signed saturation.
+ * \brief Performs per-halfword (un)signed subtraction, with signed saturation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts functions performs substraction with signed saturation.
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function performs subtraction with signed saturation.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubss2 (unsigned int a, unsigned int b);
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-halfword substraction with unsigned saturation.
+ * \brief Performs per-halfword subtraction with unsigned saturation.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts functions performs substraction with unsigned saturation.
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function performs subtraction with unsigned saturation.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubus2 (unsigned int a, unsigned int b);
@@ -2709,7 +2716,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubus2 (unsigned in
  * \brief Computes per-halfword negation.
  *
  * Splits 4 bytes of argument into 2 parts, each consisting of 2 bytes.
- * For each part function computes negation. Result is stored as unsigned int and returned.
+ * For each part function computes negation. Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vneg2(unsigned int a);
@@ -2719,7 +2726,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vneg2(unsigned int a
  * \brief Computes per-halfword negation with signed saturation.
  *
  * Splits 4 bytes of argument into 2 parts, each consisting of 2 bytes.
- * For each part function computes negation. Result is stored as unsigned int and returned.
+ * For each part function computes negation. Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vnegss2(unsigned int a);
@@ -2730,7 +2737,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vnegss2(unsigned int
  *
  * Splits 4 bytes of each into 2 parts, each consisting of 2 bytes.
  * For corresponding parts function computes absolute difference.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffs2(unsigned int a, unsigned int b);
@@ -2740,8 +2747,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffs2(unsigned 
  * \brief Performs per-halfword sum of absolute difference of signed.
  *
  * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
- * For corresponding parts functions computes absolute difference and sum it up. 
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function computes absolute difference and sum it up.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsads2(unsigned int a, unsigned int b);
@@ -2751,7 +2758,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsads2(unsigned int 
  * \brief Computes per-byte absolute value.
  *
  * Splits argument by bytes. Computes absolute value of each byte.
- * Result is stored as unsigned int.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabs4(unsigned int a);
@@ -2762,7 +2769,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabs4(unsigned int a
  *
  * Splits 4 bytes of argument into 4 parts, each consisting of 1 byte,
  * then computes absolute value with signed saturation for each of parts.
- * Result is stored as unsigned int and returned. 
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsss4(unsigned int a);
@@ -2773,7 +2780,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsss4(unsigned int
  *
  * Splits 'a' into 4 bytes, then performs unsigned addition on each of these
  * bytes with the corresponding byte from 'b', ignoring overflow.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vadd4(unsigned int a, unsigned int b);
@@ -2784,7 +2791,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vadd4(unsigned int a
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte,
  * then performs addition with signed saturation on corresponding parts.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vaddss4 (unsigned int a, unsigned int b);
@@ -2801,11 +2808,11 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vaddus4 (unsigned in
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Computes per-byte signed rounder average.
+ * \brief Computes per-byte signed rounded average.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * then computes signed rounded avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * then computes signed rounded average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgs4(unsigned int a, unsigned int b);
@@ -2815,8 +2822,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgs4(unsigned int 
  * \brief Performs per-byte unsigned rounded average.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * then computes unsigned rounded avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * then computes unsigned rounded average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgu4(unsigned int a, unsigned int b);
@@ -2826,8 +2833,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vavgu4(unsigned int 
  * \brief Computes per-byte unsigned average.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * then computes unsigned avarege of corresponding parts. Result is stored as
- * unsigned int and returned.
+ * then computes unsigned average of corresponding parts. Partial results are
+ * recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vhaddu4(unsigned int a, unsigned int b);
@@ -2947,8 +2954,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vcmpne4(unsigned int
  * \brief Computes per-byte absolute difference of unsigned integer.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes absolute difference. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes absolute difference. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffu4(unsigned int a, unsigned int b);
@@ -2958,8 +2965,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffu4(unsigned 
  * \brief Computes per-byte signed maximum.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes signed maximum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes signed maximum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxs4(unsigned int a, unsigned int b);
@@ -2969,8 +2976,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxs4(unsigned int 
  * \brief Computes per-byte unsigned maximum.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes unsigned maximum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes unsigned maximum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxu4(unsigned int a, unsigned int b);
@@ -2980,8 +2987,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmaxu4(unsigned int 
  * \brief Computes per-byte signed minimum.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes signed minimum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes signed minimum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmins4(unsigned int a, unsigned int b);
@@ -2991,8 +2998,8 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vmins4(unsigned int 
  * \brief Computes per-byte unsigned minimum.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes unsigned minimum. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function computes unsigned minimum. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vminu4(unsigned int a, unsigned int b);
@@ -3003,7 +3010,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vminu4(unsigned int 
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
  * For corresponding parts function performs comparison 'a' part == 'b' part.
- * If both equalities are satisfiad, function returns 1.
+ * If both equalities are satisfied, function returns 1.
  * \return Returns 1 if a = b, else returns 0.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vseteq4(unsigned int a, unsigned int b);
@@ -3109,10 +3116,10 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsetne4(unsigned int
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Computes per-byte sum af abs difference of unsigned.
+ * \brief Computes per-byte sum of abs difference of unsigned.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts function computes absolute differences, and returns
+ * For corresponding parts function computes absolute differences and returns
  * sum of those differences.
  * \return Returns computed value.
  */
@@ -3120,33 +3127,33 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsadu4(unsigned int 
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-byte substraction.
+ * \brief Performs per-byte subtraction.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts functions performs substraction. Result is stored
- * as unsigned int and returned.
+ * For corresponding parts function performs subtraction. Partial results
+ * are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsub4(unsigned int a, unsigned int b);
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-byte substraction with signed saturation.
+ * \brief Performs per-byte subtraction with signed saturation.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts functions performs substraction with signed saturation.
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function performs subtraction with signed saturation.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubss4(unsigned int a, unsigned int b);
 
 /**
  * \ingroup CUDA_MATH_INTRINSIC_SIMD
- * \brief Performs per-byte substraction with unsigned saturation.
+ * \brief Performs per-byte subtraction with unsigned saturation.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts functions performs substraction with unsigned saturation.
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function performs subtraction with unsigned saturation.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubus4(unsigned int a, unsigned int b);
@@ -3156,7 +3163,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsubus4(unsigned int
  * \brief Performs per-byte negation.
  *
  * Splits 4 bytes of argument into 4 parts, each consisting of 1 byte.
- * For each part function computes negation. Result is stored as unsigned int and returned.
+ * For each part function computes negation. Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vneg4(unsigned int a);
@@ -3166,7 +3173,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vneg4(unsigned int a
  * \brief Performs per-byte negation with signed saturation.
  *
  * Splits 4 bytes of argument into 4 parts, each consisting of 1 byte.
- * For each part function computes negation. Result is stored as unsigned int and returned.
+ * For each part function computes negation. Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vnegss4(unsigned int a);
@@ -3177,7 +3184,7 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vnegss4(unsigned int
  *
  * Splits 4 bytes of each into 4 parts, each consisting of 1 byte.
  * For corresponding parts function computes absolute difference.
- * Result is stored as unsigned int and returned.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffs4(unsigned int a, unsigned int b);
@@ -3187,65 +3194,411 @@ __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vabsdiffs4(unsigned 
  * \brief Computes per-byte sum of abs difference of signed.
  *
  * Splits 4 bytes of each argument into 4 parts, each consisting of 1 byte.
- * For corresponding parts functions computes absolute difference and sum it up. 
- * Result is stored as unsigned int and returned.
+ * For corresponding parts function computes absolute difference and sum it up.
+ * Partial results are recombined and returned as unsigned int.
  * \return Returns computed value.
  */
 __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int __vsads4(unsigned int a, unsigned int b);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(max(a, b), 0)
+ *
+ * Calculates the maximum of \p a and \p b of two signed ints, if this is less than \p 0 then \p 0 is returned.
+ * \return Returns computed value.
+ */
+
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__ int __vimax_s32_relu(const int a, const int b);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(max(a, b), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a max with relu ( = max(a_part, b_part, 0) ). Partial results
+ * are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimax_s16x2_relu(const unsigned int a, const unsigned int b);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(min(a, b), 0)
+ *
+ * Calculates the minimum of \p a and \p b of two signed ints, if this is less than \p 0 then \p 0 is returned.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vimin_s32_relu(const int a, const int b);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(min(a, b), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a min with relu ( = max(min(a_part, b_part), 0) ). Partial results
+ * are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimin_s16x2_relu(const unsigned int a, const unsigned int b);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(max(a, b), c)
+ * 
+ * Calculates the 3-way max of signed integers \p a, \p b and \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vimax3_s32(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(max(a, b), c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a 3-way max ( = max(max(a_part, b_part), c_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimax3_s16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(max(a, b), c)
+ * 
+ * Calculates the 3-way max of unsigned integers \p a, \p b and \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimax3_u32(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(max(a, b), c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs a 3-way max ( = max(max(a_part, b_part), c_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimax3_u16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(min(a, b), c)
+ * 
+ * Calculates the 3-way min of signed integers \p a, \p b and \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vimin3_s32(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(min(a, b), c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a 3-way min ( = min(min(a_part, b_part), c_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimin3_s16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(min(a, b), c)
+ * 
+ * Calculates the 3-way min of unsigned integers \p a, \p b and \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimin3_u32(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(min(a, b), c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs a 3-way min ( = min(min(a_part, b_part), c_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimin3_u16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(max(max(a, b), c), 0)
+ *
+ * Calculates the maximum of three signed ints, if this is less than \p 0 then \p 0 is returned.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vimax3_s32_relu(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(max(max(a, b), c), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a three-way max with relu ( = max(a_part, b_part, c_part, 0) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimax3_s16x2_relu(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(min(min(a, b), c), 0)
+ *
+ * Calculates the minimum of three signed ints, if this is less than \p 0 then \p 0 is returned.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vimin3_s32_relu(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(min(min(a, b), c), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a three-way min with relu ( = max(min(a_part, b_part, c_part), 0) ).
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vimin3_s16x2_relu(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(a + b, c)
+ *
+ * Calculates the sum of signed integers \p a and \p b and takes the max with \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __viaddmax_s32(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(a + b, c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs an add and compare: max(a_part + b_part), c_part)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmax_s16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(a + b, c)
+ *
+ * Calculates the sum of unsigned integers \p a and \p b and takes the max with \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmax_u32(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(a + b, c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs an add and compare: max(a_part + b_part), c_part)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmax_u16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(a + b, c)
+ *
+ * Calculates the sum of signed integers \p a and \p b and takes the min with \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __viaddmin_s32(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(a + b, c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs an add and compare: min(a_part + b_part), c_part)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmin_s16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(a + b, c)
+ *
+ * Calculates the sum of unsigned integers \p a and \p b and takes the min with \p c.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmin_u32(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(a + b, c)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs an add and compare: min(a_part + b_part), c_part)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmin_u16x2(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(max(a + b, c), 0)
+ *
+ * Calculates the sum of signed integers \p a and \p b and takes the max with \p c.
+ * If the result is less than \p 0 then \0 is returned.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __viaddmax_s32_relu(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(max(a + b, c), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs an add, followed by a max with relu: max(max(a_part + b_part), c_part), 0)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmax_s16x2_relu(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(min(a + b, c), 0)
+ *
+ * Calculates the sum of signed integers \p a and \p b and takes the min with \p c.
+ * If the result is less than \p 0 then \0 is returned.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __viaddmin_s32_relu(const int a, const int b, const int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(min(a + b, c), 0)
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs an add, followed by a min with relu: max(min(a_part + b_part), c_part), 0)
+ * Partial results are recombined and returned as unsigned int.
+ * \return Returns computed value.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __viaddmin_s16x2_relu(const unsigned int a, const unsigned int b, const unsigned int c);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(a, b), also sets the value pointed to by pred to (a >= b).
+ *
+ * Calculates the maximum of \p a and \p b of two signed ints. Also sets the value pointed to by \p pred to the value (a >= b).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vibmax_s32(const int a, const int b, bool* const pred);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes max(a, b), also sets the value pointed to by pred to (a >= b).
+ *
+ * Calculates the maximum of \p a and \p b of two unsigned ints. Also sets the value pointed to by \p pred to the value (a >= b).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmax_u32(const unsigned int a, const unsigned int b, bool* const pred);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(a, b), also sets the value pointed to by pred to (a <= b).
+ *
+ * Calculates the minimum of \p a and \p b of two signed ints. Also sets the value pointed to by \p pred to the value (a <= b).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  int __vibmin_s32(const int a, const int b, bool* const pred);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Computes min(a, b), also sets the value pointed to by pred to (a <= b).
+ *
+ * Calculates the minimum of \p a and \p b of two unsigned ints. Also sets the value pointed to by \p pred to the value (a <= b).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmin_u32(const unsigned int a, const unsigned int b, bool* const pred);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(a, b), also sets the value pointed to by pred_hi and pred_lo to the per-halfword result of (a >= b).
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a maximum ( = max(a_part, b_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * Sets the value pointed to by \p pred_hi to the value (a_high_part >= b_high_part).
+ * Sets the value pointed to by \p pred_lo to the value (a_low_part >= b_low_part).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmax_s16x2(const unsigned int a, const unsigned int b, bool* const pred_hi, bool* const pred_lo);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword max(a, b), also sets the value pointed to by pred_hi and pred_lo to the per-halfword result of (a >= b).
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs a maximum ( = max(a_part, b_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * Sets the value pointed to by \p pred_hi to the value (a_high_part >= b_high_part).
+ * Sets the value pointed to by \p pred_lo to the value (a_low_part >= b_low_part).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmax_u16x2(const unsigned int a, const unsigned int b, bool* const pred_hi, bool* const pred_lo);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(a, b), also sets the value pointed to by pred_hi and pred_lo to the per-halfword result of (a <= b).
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as signed shorts.
+ * For corresponding parts function performs a maximum ( = max(a_part, b_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * Sets the value pointed to by \p pred_hi to the value (a_high_part <= b_high_part).
+ * Sets the value pointed to by \p pred_lo to the value (a_low_part <= b_low_part).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmin_s16x2(const unsigned int a, const unsigned int b, bool* const pred_hi, bool* const pred_lo);
+
+/**
+ * \ingroup CUDA_MATH_INTRINSIC_SIMD
+ * \brief Performs per-halfword min(a, b), also sets the value pointed to by pred_hi and pred_lo to the per-halfword result of (a <= b).
+ * 
+ * Splits 4 bytes of each argument into 2 parts, each consisting of 2 bytes.
+ * These 2 byte parts are interpreted as unsigned shorts.
+ * For corresponding parts function performs a maximum ( = max(a_part, b_part) ).
+ * Partial results are recombined and returned as unsigned int.
+ * Sets the value pointed to by \p pred_hi to the value (a_high_part <= b_high_part).
+ * Sets the value pointed to by \p pred_lo to the value (a_low_part <= b_low_part).
+ * \return Returns computed values.
+ */
+__DEVICE_HOST_FUNCTIONS_STATIC_DECL__  unsigned int __vibmin_u16x2(const unsigned int a, const unsigned int b, bool* const pred_hi, bool* const pred_lo);
 
 /*******************************************************************************
  *                                                                             *
  *                            END SIMD functions                               *
  *                                                                             *
  *******************************************************************************/
-}
-
-/*******************************************************************************
-*                                                                              *
-*                                                                              *
-*                                                                              *
-*******************************************************************************/
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ int mulhi(int a, int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int mulhi(unsigned int a, unsigned int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int mulhi(int a, unsigned int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int mulhi(unsigned int a, int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ long long int mul64hi(long long int a, long long int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned long long int mul64hi(unsigned long long int a, unsigned long long int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned long long int mul64hi(long long int a, unsigned long long int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned long long int mul64hi(unsigned long long int a, long long int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ int float_as_int(float a);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ float int_as_float(int a);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int float_as_uint(float a);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ float uint_as_float(unsigned int a);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ float saturate(float a);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ int mul24(int a, int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int umul24(unsigned int a, unsigned int b);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ int float2int(float a, enum cudaRoundMode mode = cudaRoundZero);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ unsigned int float2uint(float a, enum cudaRoundMode mode = cudaRoundZero);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ float int2float(int a, enum cudaRoundMode mode = cudaRoundNearest);
-
-__DEVICE_FUNCTIONS_STATIC_DECL__ float uint2float(unsigned int a, enum cudaRoundMode mode = cudaRoundNearest);
+} //extern "c"
 
 #undef __DEVICE_FUNCTIONS_DECL__
 #undef __DEVICE_FUNCTIONS_STATIC_DECL__
+#undef __DEVICE_HOST_FUNCTIONS_STATIC_DECL__
 
 #endif /* __cplusplus && __CUDACC__ */
 
@@ -3271,16 +3624,22 @@ __DEVICE_FUNCTIONS_STATIC_DECL__ float uint2float(unsigned int a, enum cudaRound
 #include "sm_35_intrinsics.h"
 #include "sm_61_intrinsics.h"
 #include "sm_70_rt.h"
-#include "surface_functions.h"
-#include "texture_fetch_functions.h"
+#include "sm_80_rt.h"
+#include "sm_90_rt.h"
 #include "texture_indirect_functions.h"
 #include "surface_indirect_functions.h"
+#include "cudacc_ext.h"
 
 #ifdef __CUDACC__
 extern "C" __host__ __device__  unsigned CUDARTAPI __cudaPushCallConfiguration(dim3 gridDim,
                                       dim3 blockDim, 
                                       size_t sharedMem = 0, 
-                                      void *stream = 0);
+                                      struct CUstream_st *stream = 0);
 #endif  /* __CUDACC__ */
 
 #endif /* !__DEVICE_FUNCTIONS_H__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_FUNCTIONS_H__
+#endif

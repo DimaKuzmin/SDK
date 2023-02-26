@@ -1,4 +1,4 @@
- /* Copyright 2009-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -73,7 +73,7 @@ extern "C" {
  */
 
 /** @defgroup image_fourier_transforms Fourier Transforms
- *
+ * The set of Fourier transform functions available in the library.
  * @{
  *
  */
@@ -88,8 +88,14 @@ extern "C" {
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus
+nppiMagnitude_32fc32f_C1R_Ctx(const Npp32fc * pSrc, int nSrcStep,
+                                    Npp32f  * pDst, int nDstStep,
+                              NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+                                          
 NppStatus
 nppiMagnitude_32fc32f_C1R(const Npp32fc * pSrc, int nSrcStep,
                                 Npp32f  * pDst, int nDstStep,
@@ -111,8 +117,14 @@ nppiMagnitude_32fc32f_C1R(const Npp32fc * pSrc, int nSrcStep,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus
+nppiMagnitudeSqr_32fc32f_C1R_Ctx(const Npp32fc * pSrc, int nSrcStep,
+                                       Npp32f  * pDst, int nDstStep,
+                                 NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+                                          
 NppStatus
 nppiMagnitudeSqr_32fc32f_C1R(const Npp32fc * pSrc, int nSrcStep,
                                    Npp32f  * pDst, int nDstStep,

@@ -1,4 +1,4 @@
- /* Copyright 2009-2017 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -97,6 +97,7 @@ extern "C" {
  * \param nThreshold The threshold value.
  * \param eComparisonOperation The type of comparison operation to be used. The only valid
  *      values are: NPP_CMP_LESS and NPP_CMP_GREATER.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, or NPP_NOT_SUPPORTED_MODE_ERROR if an invalid
  * comparison operation type is specified.
  *
@@ -112,6 +113,11 @@ extern "C" {
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                         Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, 
+                                   const Npp8u nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                      Npp8u * pDst, int nDstStep, 
                                NppiSize oSizeROI, 
@@ -125,6 +131,10 @@ NppStatus nppiThreshold_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp8u nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                 NppiSize oSizeROI, 
                                 const Npp8u nThreshold, NppCmpOp eComparisonOperation); 
@@ -137,6 +147,11 @@ NppStatus nppiThreshold_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                          Npp16u * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp16u nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                       Npp16u * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -150,6 +165,10 @@ NppStatus nppiThreshold_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16u nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp16u nThreshold, NppCmpOp eComparisonOperation); 
@@ -162,6 +181,11 @@ NppStatus nppiThreshold_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                          Npp16s * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp16s nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                       Npp16s * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -175,6 +199,10 @@ NppStatus nppiThreshold_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16s nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp16s nThreshold, NppCmpOp eComparisonOperation); 
@@ -187,6 +215,11 @@ NppStatus nppiThreshold_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                          Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp32f nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                       Npp32f * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -200,6 +233,10 @@ NppStatus nppiThreshold_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp32f nThreshold, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp32f nThreshold, NppCmpOp eComparisonOperation); 
@@ -212,10 +249,15 @@ NppStatus nppiThreshold_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                         Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, 
+                                   const Npp8u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                      Npp8u * pDst, int nDstStep, 
-                                NppiSize oSizeROI, 
-                                const Npp8u rThresholds[3], NppCmpOp eComparisonOperation); 
+                               NppiSize oSizeROI, 
+                               const Npp8u rThresholds[3], NppCmpOp eComparisonOperation); 
 
 /** 
  * 3 channel 8-bit unsigned char in place threshold.
@@ -225,6 +267,10 @@ NppStatus nppiThreshold_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp8u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                 NppiSize oSizeROI, 
                                 const Npp8u rThresholds[3], NppCmpOp eComparisonOperation); 
@@ -237,6 +283,11 @@ NppStatus nppiThreshold_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                          Npp16u * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp16u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                       Npp16u * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -250,6 +301,10 @@ NppStatus nppiThreshold_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp16u rThresholds[3], NppCmpOp eComparisonOperation); 
@@ -262,6 +317,11 @@ NppStatus nppiThreshold_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                          Npp16s * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp16s rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                       Npp16s * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -275,6 +335,10 @@ NppStatus nppiThreshold_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16s rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp16s rThresholds[3], NppCmpOp eComparisonOperation); 
@@ -287,6 +351,11 @@ NppStatus nppiThreshold_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                          Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp32f rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                       Npp32f * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -300,10 +369,13 @@ NppStatus nppiThreshold_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp32f rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp32f rThresholds[3], NppCmpOp eComparisonOperation); 
-
 
 /** 
  * 4 channel 8-bit unsigned char image threshold, not affecting Alpha.
@@ -313,6 +385,11 @@ NppStatus nppiThreshold_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                          Npp8u * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, 
+                                    const Npp8u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                       Npp8u * pDst, int nDstStep, 
                                 NppiSize oSizeROI, 
@@ -326,6 +403,10 @@ NppStatus nppiThreshold_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp8u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                  NppiSize oSizeROI, 
                                  const Npp8u rThresholds[3], NppCmpOp eComparisonOperation);
@@ -338,6 +419,11 @@ NppStatus nppiThreshold_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                           Npp16u * pDst, int nDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                        Npp16u * pDst, int nDstStep, 
                                  NppiSize oSizeROI, 
@@ -351,6 +437,10 @@ NppStatus nppiThreshold_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp16u rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                   NppiSize oSizeROI, 
                                   const Npp16u rThresholds[3], NppCmpOp eComparisonOperation);
@@ -363,6 +453,11 @@ NppStatus nppiThreshold_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                           Npp16s * pDst, int nDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp16s rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                        Npp16s * pDst, int nDstStep, 
                                  NppiSize oSizeROI, 
@@ -376,6 +471,10 @@ NppStatus nppiThreshold_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp16s rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                   NppiSize oSizeROI, 
                                   const Npp16s rThresholds[3], NppCmpOp eComparisonOperation);
@@ -388,6 +487,11 @@ NppStatus nppiThreshold_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           Npp32f * pDst, int nDstStep, 
+                                     NppiSize oSizeROI, 
+                                     const Npp32f rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                        Npp32f * pDst, int nDstStep, 
                                  NppiSize oSizeROI, 
@@ -401,6 +505,10 @@ NppStatus nppiThreshold_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdParameters">Common parameters for nppiThreshold functions</a>.
  *
  */
+NppStatus nppiThreshold_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp32f rThresholds[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                   NppiSize oSizeROI, 
                                   const Npp32f rThresholds[3], NppCmpOp eComparisonOperation);
@@ -421,6 +529,7 @@ NppStatus nppiThreshold_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step for non-inplace functions.
  * \param oSizeROI \ref roi_specification.
  * \param nThreshold The threshold value.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes.
  *
  * @{
@@ -435,6 +544,11 @@ NppStatus nppiThreshold_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                            Npp8u * pDst, int nDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp8u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                         Npp8u * pDst, int nDstStep, 
                                   NppiSize oSizeROI, 
@@ -448,6 +562,10 @@ NppStatus nppiThreshold_GT_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                    NppiSize oSizeROI, 
                                    const Npp8u nThreshold); 
@@ -460,6 +578,11 @@ NppStatus nppiThreshold_GT_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                             Npp16u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                          Npp16u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -473,6 +596,10 @@ NppStatus nppiThreshold_GT_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16u nThreshold); 
@@ -485,6 +612,11 @@ NppStatus nppiThreshold_GT_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                             Npp16s * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16s nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                          Npp16s * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -498,6 +630,10 @@ NppStatus nppiThreshold_GT_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16s nThreshold); 
@@ -510,6 +646,11 @@ NppStatus nppiThreshold_GT_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp32f nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -523,6 +664,10 @@ NppStatus nppiThreshold_GT_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp32f nThreshold); 
@@ -535,6 +680,11 @@ NppStatus nppiThreshold_GT_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                            Npp8u * pDst, int nDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp8u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                         Npp8u * pDst, int nDstStep, 
                                   NppiSize oSizeROI, 
@@ -548,6 +698,10 @@ NppStatus nppiThreshold_GT_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                    NppiSize oSizeROI, 
                                    const Npp8u rThresholds[3]); 
@@ -560,6 +714,11 @@ NppStatus nppiThreshold_GT_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                             Npp16u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                          Npp16u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -573,6 +732,10 @@ NppStatus nppiThreshold_GT_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16u rThresholds[3]); 
@@ -585,6 +748,11 @@ NppStatus nppiThreshold_GT_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                             Npp16s * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16s rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                          Npp16s * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -598,6 +766,10 @@ NppStatus nppiThreshold_GT_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16s rThresholds[3]); 
@@ -610,6 +782,11 @@ NppStatus nppiThreshold_GT_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp32f rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -623,10 +800,13 @@ NppStatus nppiThreshold_GT_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GT_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp32f rThresholds[3]); 
-
 
 /** 
  * 4 channel 8-bit unsigned char image threshold, not affecting Alpha.
@@ -636,6 +816,11 @@ NppStatus nppiThreshold_GT_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                             Npp8u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                          Npp8u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -649,6 +834,10 @@ NppStatus nppiThreshold_GT_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp8u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp8u rThresholds[3]);
@@ -661,6 +850,11 @@ NppStatus nppiThreshold_GT_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                              Npp16u * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                           Npp16u * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -674,6 +868,10 @@ NppStatus nppiThreshold_GT_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16u rThresholds[3]);
@@ -686,6 +884,11 @@ NppStatus nppiThreshold_GT_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                              Npp16s * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                           Npp16s * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -699,6 +902,10 @@ NppStatus nppiThreshold_GT_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16s rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16s rThresholds[3]);
@@ -711,6 +918,11 @@ NppStatus nppiThreshold_GT_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                              Npp32f * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                           Npp32f * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -724,6 +936,10 @@ NppStatus nppiThreshold_GT_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanParameters">Common parameters for nppiThreshold_GT functions</a>.
  *
  */
+NppStatus nppiThreshold_GT_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp32f rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp32f rThresholds[3]);
@@ -744,6 +960,7 @@ NppStatus nppiThreshold_GT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step for non-inplace functions.
  * \param oSizeROI \ref roi_specification.
  * \param nThreshold The threshold value.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes.
  *
  * @{
@@ -758,6 +975,11 @@ NppStatus nppiThreshold_GT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                            Npp8u * pDst, int nDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp8u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                         Npp8u * pDst, int nDstStep, 
                                   NppiSize oSizeROI, 
@@ -771,6 +993,10 @@ NppStatus nppiThreshold_LT_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                    NppiSize oSizeROI, 
                                    const Npp8u nThreshold); 
@@ -783,6 +1009,11 @@ NppStatus nppiThreshold_LT_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                             Npp16u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                          Npp16u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -796,6 +1027,10 @@ NppStatus nppiThreshold_LT_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16u nThreshold); 
@@ -808,6 +1043,11 @@ NppStatus nppiThreshold_LT_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                             Npp16s * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16s nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                          Npp16s * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -821,6 +1061,10 @@ NppStatus nppiThreshold_LT_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16s nThreshold); 
@@ -833,6 +1077,11 @@ NppStatus nppiThreshold_LT_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp32f nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -846,6 +1095,10 @@ NppStatus nppiThreshold_LT_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f nThreshold, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp32f nThreshold); 
@@ -858,6 +1111,11 @@ NppStatus nppiThreshold_LT_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                            Npp8u * pDst, int nDstStep, 
+                                      NppiSize oSizeROI, 
+                                      const Npp8u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                         Npp8u * pDst, int nDstStep, 
                                   NppiSize oSizeROI, 
@@ -871,6 +1129,10 @@ NppStatus nppiThreshold_LT_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                    NppiSize oSizeROI, 
                                    const Npp8u rThresholds[3]); 
@@ -883,6 +1145,11 @@ NppStatus nppiThreshold_LT_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                             Npp16u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                          Npp16u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -896,6 +1163,10 @@ NppStatus nppiThreshold_LT_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16u rThresholds[3]); 
@@ -908,6 +1179,11 @@ NppStatus nppiThreshold_LT_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                             Npp16s * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp16s rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                          Npp16s * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -921,6 +1197,10 @@ NppStatus nppiThreshold_LT_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp16s rThresholds[3]); 
@@ -933,6 +1213,11 @@ NppStatus nppiThreshold_LT_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                             Npp32f * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp32f rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                          Npp32f * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -946,10 +1231,13 @@ NppStatus nppiThreshold_LT_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f rThresholds[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LT_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp32f rThresholds[3]); 
-
 
 /** 
  * 4 channel 8-bit unsigned char image threshold, not affecting Alpha.
@@ -959,6 +1247,11 @@ NppStatus nppiThreshold_LT_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                             Npp8u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                          Npp8u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -972,6 +1265,10 @@ NppStatus nppiThreshold_LT_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp8u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp8u rThresholds[3]);
@@ -984,6 +1281,11 @@ NppStatus nppiThreshold_LT_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                              Npp16u * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                           Npp16u * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -997,6 +1299,10 @@ NppStatus nppiThreshold_LT_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16u rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16u rThresholds[3]);
@@ -1009,6 +1315,11 @@ NppStatus nppiThreshold_LT_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                              Npp16s * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                           Npp16s * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1022,6 +1333,10 @@ NppStatus nppiThreshold_LT_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16s rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16s rThresholds[3]);
@@ -1034,6 +1349,11 @@ NppStatus nppiThreshold_LT_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                              Npp32f * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                           Npp32f * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1047,6 +1367,10 @@ NppStatus nppiThreshold_LT_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanParameters">Common parameters for nppiThreshold_LT functions</a>.
  *
  */
+NppStatus nppiThreshold_LT_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp32f rThresholds[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp32f rThresholds[3]);
@@ -1070,6 +1394,7 @@ NppStatus nppiThreshold_LT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nValue The threshold replacement value.
  * \param eComparisonOperation The type of comparison operation to be used. The only valid
  *      values are: NPP_CMP_LESS and NPP_CMP_GREATER.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes, or NPP_NOT_SUPPORTED_MODE_ERROR if an invalid
  * comparison operation type is specified.
  *
@@ -1085,6 +1410,11 @@ NppStatus nppiThreshold_LT_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                             Npp8u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u nThreshold, const Npp8u nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                          Npp8u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -1098,6 +1428,10 @@ NppStatus nppiThreshold_Val_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp8u nThreshold, const Npp8u nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp8u nThreshold, const Npp8u nValue, NppCmpOp eComparisonOperation); 
@@ -1110,6 +1444,11 @@ NppStatus nppiThreshold_Val_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                              Npp16u * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u nThreshold, const Npp16u nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                           Npp16u * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1123,6 +1462,10 @@ NppStatus nppiThreshold_Val_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16u nThreshold, const Npp16u nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16u nThreshold, const Npp16u nValue, NppCmpOp eComparisonOperation); 
@@ -1135,6 +1478,11 @@ NppStatus nppiThreshold_Val_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                              Npp16s * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s nThreshold, const Npp16s nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                           Npp16s * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1148,6 +1496,10 @@ NppStatus nppiThreshold_Val_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16s nThreshold, const Npp16s nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+                                     
 NppStatus nppiThreshold_Val_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16s nThreshold, const Npp16s nValue, NppCmpOp eComparisonOperation); 
@@ -1160,6 +1512,11 @@ NppStatus nppiThreshold_Val_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                              Npp32f * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f nThreshold, const Npp32f nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                           Npp32f * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1173,6 +1530,10 @@ NppStatus nppiThreshold_Val_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp32f nThreshold, const Npp32f nValue, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp32f nThreshold, const Npp32f nValue, NppCmpOp eComparisonOperation); 
@@ -1185,6 +1546,11 @@ NppStatus nppiThreshold_Val_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                             Npp8u * pDst, int nDstStep, 
+                                       NppiSize oSizeROI, 
+                                       const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                          Npp8u * pDst, int nDstStep, 
                                    NppiSize oSizeROI, 
@@ -1198,6 +1564,10 @@ NppStatus nppiThreshold_Val_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                     NppiSize oSizeROI, 
                                     const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation); 
@@ -1210,6 +1580,11 @@ NppStatus nppiThreshold_Val_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                              Npp16u * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                           Npp16u * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1223,6 +1598,10 @@ NppStatus nppiThreshold_Val_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation); 
@@ -1235,6 +1614,11 @@ NppStatus nppiThreshold_Val_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                              Npp16s * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                           Npp16s * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1248,6 +1632,10 @@ NppStatus nppiThreshold_Val_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation); 
@@ -1260,6 +1648,11 @@ NppStatus nppiThreshold_Val_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                              Npp32f * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                           Npp32f * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1273,6 +1666,10 @@ NppStatus nppiThreshold_Val_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_Val_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation); 
@@ -1286,6 +1683,11 @@ NppStatus nppiThreshold_Val_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                              Npp8u * pDst, int nDstStep, 
+                                        NppiSize oSizeROI, 
+                                        const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                           Npp8u * pDst, int nDstStep, 
                                     NppiSize oSizeROI, 
@@ -1299,6 +1701,10 @@ NppStatus nppiThreshold_Val_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                      NppiSize oSizeROI, 
                                      const Npp8u rThresholds[3], const Npp8u rValues[3], NppCmpOp eComparisonOperation);
@@ -1311,6 +1717,11 @@ NppStatus nppiThreshold_Val_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                               Npp16u * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                            Npp16u * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1324,6 +1735,10 @@ NppStatus nppiThreshold_Val_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp16u rThresholds[3], const Npp16u rValues[3], NppCmpOp eComparisonOperation);
@@ -1336,6 +1751,11 @@ NppStatus nppiThreshold_Val_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                               Npp16s * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                            Npp16s * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1349,6 +1769,10 @@ NppStatus nppiThreshold_Val_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp16s rThresholds[3], const Npp16s rValues[3], NppCmpOp eComparisonOperation);
@@ -1361,6 +1785,11 @@ NppStatus nppiThreshold_Val_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                               Npp32f * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                            Npp32f * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1374,6 +1803,10 @@ NppStatus nppiThreshold_Val_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdValueParameters">Common parameters for nppiThreshold_Val functions</a>.
  *
  */
+NppStatus nppiThreshold_Val_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_Val_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp32f rThresholds[3], const Npp32f rValues[3], NppCmpOp eComparisonOperation);
@@ -1395,6 +1828,7 @@ NppStatus nppiThreshold_Val_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param oSizeROI \ref roi_specification.
  * \param nThreshold The threshold value.
  * \param nValue The threshold replacement value.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes.
  *
  * @{
@@ -1411,6 +1845,11 @@ NppStatus nppiThreshold_Val_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                               Npp8u * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp8u nThreshold, const Npp8u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                            Npp8u * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1424,6 +1863,10 @@ NppStatus nppiThreshold_GTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u nThreshold, const Npp8u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp8u nThreshold, const Npp8u nValue); 
@@ -1436,6 +1879,11 @@ NppStatus nppiThreshold_GTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                Npp16u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16u nThreshold, const Npp16u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                             Npp16u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1449,6 +1897,10 @@ NppStatus nppiThreshold_GTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u nThreshold, const Npp16u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16u nThreshold, const Npp16u nValue); 
@@ -1461,6 +1913,11 @@ NppStatus nppiThreshold_GTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                Npp16s * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16s nThreshold, const Npp16s nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                             Npp16s * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1474,6 +1931,10 @@ NppStatus nppiThreshold_GTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s nThreshold, const Npp16s nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16s nThreshold, const Npp16s nValue); 
@@ -1486,6 +1947,11 @@ NppStatus nppiThreshold_GTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                Npp32f * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp32f nThreshold, const Npp32f nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                             Npp32f * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1499,6 +1965,10 @@ NppStatus nppiThreshold_GTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f nThreshold, const Npp32f nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp32f nThreshold, const Npp32f nValue); 
@@ -1511,6 +1981,11 @@ NppStatus nppiThreshold_GTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                               Npp8u * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                            Npp8u * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1524,6 +1999,10 @@ NppStatus nppiThreshold_GTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp8u rThresholds[3], const Npp8u rValues[3]); 
@@ -1536,6 +2015,11 @@ NppStatus nppiThreshold_GTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                Npp16u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                             Npp16u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1549,6 +2033,10 @@ NppStatus nppiThreshold_GTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx); 
+                                       
 NppStatus nppiThreshold_GTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16u rThresholds[3], const Npp16u rValues[3]); 
@@ -1561,6 +2049,11 @@ NppStatus nppiThreshold_GTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                Npp16s * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                             Npp16s * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1574,6 +2067,10 @@ NppStatus nppiThreshold_GTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16s rThresholds[3], const Npp16s rValues[3]); 
@@ -1586,6 +2083,11 @@ NppStatus nppiThreshold_GTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                Npp32f * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                             Npp32f * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1599,6 +2101,10 @@ NppStatus nppiThreshold_GTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_GTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp32f rThresholds[3], const Npp32f rValues[3]); 
@@ -1611,6 +2117,11 @@ NppStatus nppiThreshold_GTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                                Npp8u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                             Npp8u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1624,6 +2135,10 @@ NppStatus nppiThreshold_GTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp8u rThresholds[3], const Npp8u rValues[3]);
@@ -1636,6 +2151,11 @@ NppStatus nppiThreshold_GTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                 Npp16u * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                              Npp16u * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -1649,6 +2169,10 @@ NppStatus nppiThreshold_GTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp16u rThresholds[3], const Npp16u rValues[3]);
@@ -1661,6 +2185,11 @@ NppStatus nppiThreshold_GTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                 Npp16s * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                              Npp16s * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -1674,6 +2203,10 @@ NppStatus nppiThreshold_GTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp16s rThresholds[3], const Npp16s rValues[3]);
@@ -1686,6 +2219,11 @@ NppStatus nppiThreshold_GTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                 Npp32f * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                              Npp32f * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -1699,6 +2237,10 @@ NppStatus nppiThreshold_GTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdGreaterThanValueParameters">Common parameters for nppiThreshold_GTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_GTVal_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_GTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp32f rThresholds[3], const Npp32f rValues[3]);
@@ -1720,6 +2262,7 @@ NppStatus nppiThreshold_GTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param oSizeROI \ref roi_specification.
  * \param nThreshold The threshold value.
  * \param nValue The threshold replacement value.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes.
  *
  * @{
@@ -1734,6 +2277,11 @@ NppStatus nppiThreshold_GTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                               Npp8u * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp8u nThreshold, const Npp8u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                            Npp8u * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1747,6 +2295,10 @@ NppStatus nppiThreshold_LTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u nThreshold, const Npp8u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp8u nThreshold, const Npp8u nValue); 
@@ -1759,6 +2311,11 @@ NppStatus nppiThreshold_LTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                Npp16u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16u nThreshold, const Npp16u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                             Npp16u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1772,6 +2329,10 @@ NppStatus nppiThreshold_LTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u nThreshold, const Npp16u nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16u nThreshold, const Npp16u nValue); 
@@ -1784,6 +2345,11 @@ NppStatus nppiThreshold_LTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                Npp16s * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16s nThreshold, const Npp16s nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                             Npp16s * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1797,6 +2363,10 @@ NppStatus nppiThreshold_LTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s nThreshold, const Npp16s nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16s nThreshold, const Npp16s nValue); 
@@ -1809,6 +2379,11 @@ NppStatus nppiThreshold_LTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                Npp32f * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp32f nThreshold, const Npp32f nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                             Npp32f * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1822,6 +2397,10 @@ NppStatus nppiThreshold_LTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f nThreshold, const Npp32f nValue, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp32f nThreshold, const Npp32f nValue); 
@@ -1834,6 +2413,11 @@ NppStatus nppiThreshold_LTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                               Npp8u * pDst, int nDstStep, 
+                                         NppiSize oSizeROI, 
+                                         const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                            Npp8u * pDst, int nDstStep, 
                                      NppiSize oSizeROI, 
@@ -1847,6 +2431,10 @@ NppStatus nppiThreshold_LTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                       NppiSize oSizeROI, 
                                       const Npp8u rThresholds[3], const Npp8u rValues[3]); 
@@ -1859,6 +2447,11 @@ NppStatus nppiThreshold_LTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                Npp16u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                             Npp16u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1872,6 +2465,10 @@ NppStatus nppiThreshold_LTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16u rThresholds[3], const Npp16u rValues[3]); 
@@ -1884,6 +2481,11 @@ NppStatus nppiThreshold_LTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                Npp16s * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                             Npp16s * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1897,6 +2499,10 @@ NppStatus nppiThreshold_LTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp16s rThresholds[3], const Npp16s rValues[3]); 
@@ -1909,6 +2515,11 @@ NppStatus nppiThreshold_LTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                Npp32f * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                             Npp32f * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1922,6 +2533,10 @@ NppStatus nppiThreshold_LTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp32f rThresholds[3], const Npp32f rValues[3]); 
@@ -1934,6 +2549,11 @@ NppStatus nppiThreshold_LTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                                Npp8u * pDst, int nDstStep, 
+                                          NppiSize oSizeROI, 
+                                          const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                             Npp8u * pDst, int nDstStep, 
                                       NppiSize oSizeROI, 
@@ -1947,6 +2567,10 @@ NppStatus nppiThreshold_LTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp8u rThresholds[3], const Npp8u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                        NppiSize oSizeROI, 
                                        const Npp8u rThresholds[3], const Npp8u rValues[3]);
@@ -1959,6 +2583,11 @@ NppStatus nppiThreshold_LTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                 Npp16u * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                              Npp16u * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -1972,6 +2601,10 @@ NppStatus nppiThreshold_LTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp16u rThresholds[3], const Npp16u rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp16u rThresholds[3], const Npp16u rValues[3]);
@@ -1984,6 +2617,11 @@ NppStatus nppiThreshold_LTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                 Npp16s * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                              Npp16s * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -1997,6 +2635,10 @@ NppStatus nppiThreshold_LTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp16s rThresholds[3], const Npp16s rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp16s rThresholds[3], const Npp16s rValues[3]);
@@ -2009,6 +2651,11 @@ NppStatus nppiThreshold_LTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                 Npp32f * pDst, int nDstStep, 
+                                           NppiSize oSizeROI, 
+                                           const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                              Npp32f * pDst, int nDstStep, 
                                        NppiSize oSizeROI, 
@@ -2022,6 +2669,10 @@ NppStatus nppiThreshold_LTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueParameters">Common parameters for nppiThreshold_LTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTVal_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                            NppiSize oSizeROI, 
+                                            const Npp32f rThresholds[3], const Npp32f rValues[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                         NppiSize oSizeROI, 
                                         const Npp32f rThresholds[3], const Npp32f rValues[3]);
@@ -2045,6 +2696,7 @@ NppStatus nppiThreshold_LTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nValueLT The thresholdLT replacement value.
  * \param nThresholdGT The thresholdGT value.
  * \param nValueGT The thresholdGT replacement value.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes.
  *
  * @{
@@ -2060,6 +2712,11 @@ NppStatus nppiThreshold_LTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                                    Npp8u * pDst, int nDstStep, 
+                                              NppiSize oSizeROI, 
+                                              const Npp8u nThresholdLT, const Npp8u nValueLT, const Npp8u nThresholdGT, const Npp8u nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                                                 Npp8u * pDst, int nDstStep, 
                                           NppiSize oSizeROI, 
@@ -2073,6 +2730,10 @@ NppStatus nppiThreshold_LTValGTVal_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp8u nThresholdLT, const Npp8u nValueLT, const Npp8u nThresholdGT, const Npp8u nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                            NppiSize oSizeROI, 
                                            const Npp8u nThresholdLT, const Npp8u nValueLT, const Npp8u nThresholdGT, const Npp8u nValueGT); 
@@ -2085,6 +2746,11 @@ NppStatus nppiThreshold_LTValGTVal_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                     Npp16u * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp16u nThresholdLT, const Npp16u nValueLT, const Npp16u nThresholdGT, const Npp16u nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                                  Npp16u * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2098,6 +2764,10 @@ NppStatus nppiThreshold_LTValGTVal_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16u nThresholdLT, const Npp16u nValueLT, const Npp16u nThresholdGT, const Npp16u nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp16u nThresholdLT, const Npp16u nValueLT, const Npp16u nThresholdGT, const Npp16u nValueGT); 
@@ -2110,6 +2780,11 @@ NppStatus nppiThreshold_LTValGTVal_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                     Npp16s * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp16s nThresholdLT, const Npp16s nValueLT, const Npp16s nThresholdGT, const Npp16s nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                                  Npp16s * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2123,6 +2798,10 @@ NppStatus nppiThreshold_LTValGTVal_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16s nThresholdLT, const Npp16s nValueLT, const Npp16s nThresholdGT, const Npp16s nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp16s nThresholdLT, const Npp16s nValueLT, const Npp16s nThresholdGT, const Npp16s nValueGT); 
@@ -2135,6 +2814,11 @@ NppStatus nppiThreshold_LTValGTVal_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                     Npp32f * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp32f nThresholdLT, const Npp32f nValueLT, const Npp32f nThresholdGT, const Npp32f nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                                  Npp32f * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2148,6 +2832,10 @@ NppStatus nppiThreshold_LTValGTVal_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp32f nThresholdLT, const Npp32f nValueLT, const Npp32f nThresholdGT, const Npp32f nValueGT, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp32f nThresholdLT, const Npp32f nValueLT, const Npp32f nThresholdGT, const Npp32f nValueGT); 
@@ -2160,6 +2848,11 @@ NppStatus nppiThreshold_LTValGTVal_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                                    Npp8u * pDst, int nDstStep, 
+                                              NppiSize oSizeROI, 
+                                              const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                                                 Npp8u * pDst, int nDstStep, 
                                           NppiSize oSizeROI, 
@@ -2173,6 +2866,10 @@ NppStatus nppiThreshold_LTValGTVal_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                            NppiSize oSizeROI, 
                                            const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3]); 
@@ -2185,6 +2882,11 @@ NppStatus nppiThreshold_LTValGTVal_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                     Npp16u * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                                  Npp16u * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2198,6 +2900,10 @@ NppStatus nppiThreshold_LTValGTVal_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3]); 
@@ -2210,6 +2916,11 @@ NppStatus nppiThreshold_LTValGTVal_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                     Npp16s * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                                  Npp16s * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2223,6 +2934,10 @@ NppStatus nppiThreshold_LTValGTVal_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3]); 
@@ -2235,6 +2950,11 @@ NppStatus nppiThreshold_LTValGTVal_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                     Npp32f * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                                  Npp32f * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2248,6 +2968,10 @@ NppStatus nppiThreshold_LTValGTVal_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3], NppStreamContext nppStreamCtx); 
+
 NppStatus nppiThreshold_LTValGTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3]); 
@@ -2260,6 +2984,11 @@ NppStatus nppiThreshold_LTValGTVal_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                                     Npp8u * pDst, int nDstStep, 
+                                               NppiSize oSizeROI, 
+                                               const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                                  Npp8u * pDst, int nDstStep, 
                                            NppiSize oSizeROI, 
@@ -2273,6 +3002,10 @@ NppStatus nppiThreshold_LTValGTVal_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                                             NppiSize oSizeROI, 
                                             const Npp8u rThresholdsLT[3], const Npp8u rValuesLT[3], const Npp8u rThresholdsGT[3], const Npp8u rValuesGT[3]);
@@ -2285,6 +3018,11 @@ NppStatus nppiThreshold_LTValGTVal_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                                      Npp16u * pDst, int nDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                                   Npp16u * pDst, int nDstStep, 
                                             NppiSize oSizeROI, 
@@ -2298,6 +3036,10 @@ NppStatus nppiThreshold_LTValGTVal_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                                 NppiSize oSizeROI, 
+                                                 const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                                              NppiSize oSizeROI, 
                                              const Npp16u rThresholdsLT[3], const Npp16u rValuesLT[3], const Npp16u rThresholdsGT[3], const Npp16u rValuesGT[3]);
@@ -2310,6 +3052,11 @@ NppStatus nppiThreshold_LTValGTVal_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                                      Npp16s * pDst, int nDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                                   Npp16s * pDst, int nDstStep, 
                                             NppiSize oSizeROI, 
@@ -2323,6 +3070,10 @@ NppStatus nppiThreshold_LTValGTVal_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                                 NppiSize oSizeROI, 
+                                                 const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                                              NppiSize oSizeROI, 
                                              const Npp16s rThresholdsLT[3], const Npp16s rValuesLT[3], const Npp16s rThresholdsGT[3], const Npp16s rValuesGT[3]);
@@ -2335,6 +3086,11 @@ NppStatus nppiThreshold_LTValGTVal_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                                      Npp32f * pDst, int nDstStep, 
+                                                NppiSize oSizeROI, 
+                                                const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                                   Npp32f * pDst, int nDstStep, 
                                             NppiSize oSizeROI, 
@@ -2348,6 +3104,10 @@ NppStatus nppiThreshold_LTValGTVal_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonThresholdLessThanValueGreaterThanValueParameters">Common parameters for nppiThreshold_LTValGTVal functions</a>.
  *
  */
+NppStatus nppiThreshold_LTValGTVal_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                                                 NppiSize oSizeROI, 
+                                                 const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiThreshold_LTValGTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                                              NppiSize oSizeROI, 
                                              const Npp32f rThresholdsLT[3], const Npp32f rValuesLT[3], const Npp32f rThresholdsGT[3], const Npp32f rValuesGT[3]);
@@ -2383,6 +3143,7 @@ NppStatus nppiThreshold_LTValGTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eComparisonOperation Specifies the comparison operation to be used in the pixel comparison.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2396,6 +3157,11 @@ NppStatus nppiThreshold_LTValGTVal_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step,
+                                 const Npp8u * pSrc2, int nSrc2Step,
+                                       Npp8u * pDst,  int nDstStep,
+                                 NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_8u_C1R(const Npp8u * pSrc1, int nSrc1Step,
                              const Npp8u * pSrc2, int nSrc2Step,
                                    Npp8u * pDst,  int nDstStep,
@@ -2408,6 +3174,11 @@ NppStatus nppiCompare_8u_C1R(const Npp8u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step,
+                                 const Npp8u * pSrc2, int nSrc2Step,
+                                       Npp8u * pDst,  int nDstStep,
+                                 NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_8u_C3R(const Npp8u * pSrc1, int nSrc1Step,
                              const Npp8u * pSrc2, int nSrc2Step,
                                    Npp8u * pDst,  int nDstStep,
@@ -2420,6 +3191,11 @@ NppStatus nppiCompare_8u_C3R(const Npp8u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step,
+                                 const Npp8u * pSrc2, int nSrc2Step,
+                                       Npp8u * pDst,  int nDstStep,
+                                 NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_8u_C4R(const Npp8u * pSrc1, int nSrc1Step,
                              const Npp8u * pSrc2, int nSrc2Step,
                                    Npp8u * pDst,  int nDstStep,
@@ -2432,6 +3208,11 @@ NppStatus nppiCompare_8u_C4R(const Npp8u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step,
+                                  const Npp8u * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step,
                               const Npp8u * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2444,6 +3225,11 @@ NppStatus nppiCompare_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16u_C1R_Ctx(const Npp16u * pSrc1, int nSrc1Step,
+                                  const Npp16u * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16u_C1R(const Npp16u * pSrc1, int nSrc1Step,
                               const Npp16u * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2456,6 +3242,11 @@ NppStatus nppiCompare_16u_C1R(const Npp16u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16u_C3R_Ctx(const Npp16u * pSrc1, int nSrc1Step,
+                                  const Npp16u * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16u_C3R(const Npp16u * pSrc1, int nSrc1Step,
                               const Npp16u * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2468,6 +3259,11 @@ NppStatus nppiCompare_16u_C3R(const Npp16u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16u_C4R_Ctx(const Npp16u * pSrc1, int nSrc1Step,
+                                  const Npp16u * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16u_C4R(const Npp16u * pSrc1, int nSrc1Step,
                               const Npp16u * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2480,6 +3276,11 @@ NppStatus nppiCompare_16u_C4R(const Npp16u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16u_AC4R_Ctx(const Npp16u * pSrc1, int nSrc1Step,
+                                   const Npp16u * pSrc2, int nSrc2Step,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step,
                                const Npp16u * pSrc2, int nSrc2Step,
                                      Npp8u * pDst,  int nDstStep,
@@ -2492,6 +3293,11 @@ NppStatus nppiCompare_16u_AC4R(const Npp16u * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16s_C1R_Ctx(const Npp16s * pSrc1, int nSrc1Step,
+                                  const Npp16s * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16s_C1R(const Npp16s * pSrc1, int nSrc1Step,
                               const Npp16s * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2504,6 +3310,11 @@ NppStatus nppiCompare_16s_C1R(const Npp16s * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16s_C3R_Ctx(const Npp16s * pSrc1, int nSrc1Step,
+                                  const Npp16s * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16s_C3R(const Npp16s * pSrc1, int nSrc1Step,
                               const Npp16s * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2516,6 +3327,11 @@ NppStatus nppiCompare_16s_C3R(const Npp16s * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16s_C4R_Ctx(const Npp16s * pSrc1, int nSrc1Step,
+                                  const Npp16s * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16s_C4R(const Npp16s * pSrc1, int nSrc1Step,
                               const Npp16s * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2528,6 +3344,11 @@ NppStatus nppiCompare_16s_C4R(const Npp16s * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_16s_AC4R_Ctx(const Npp16s * pSrc1, int nSrc1Step,
+                                   const Npp16s * pSrc2, int nSrc2Step,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_16s_AC4R(const Npp16s * pSrc1, int nSrc1Step,
                                const Npp16s * pSrc2, int nSrc2Step,
                                      Npp8u * pDst,  int nDstStep,
@@ -2540,6 +3361,11 @@ NppStatus nppiCompare_16s_AC4R(const Npp16s * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                  const Npp32f * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_32f_C1R(const Npp32f * pSrc1, int nSrc1Step,
                               const Npp32f * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2552,6 +3378,11 @@ NppStatus nppiCompare_32f_C1R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                  const Npp32f * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_32f_C3R(const Npp32f * pSrc1, int nSrc1Step,
                               const Npp32f * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2564,6 +3395,11 @@ NppStatus nppiCompare_32f_C3R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                  const Npp32f * pSrc2, int nSrc2Step,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_32f_C4R(const Npp32f * pSrc1, int nSrc1Step,
                               const Npp32f * pSrc2, int nSrc2Step,
                                     Npp8u * pDst,  int nDstStep,
@@ -2576,6 +3412,11 @@ NppStatus nppiCompare_32f_C4R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImagesParameters">Common parameters for nppiCompare functions</a>.
  *
  */
+NppStatus nppiCompare_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                   const Npp32f * pSrc2, int nSrc2Step,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompare_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
                                const Npp32f * pSrc2, int nSrc2Step,
                                      Npp8u * pDst,  int nDstStep,
@@ -2599,6 +3440,7 @@ NppStatus nppiCompare_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eComparisonOperation Specifies the comparison operation to be used in the pixel comparison.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2612,6 +3454,11 @@ NppStatus nppiCompare_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                  const Npp8u nConstant,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_8u_C1R(const Npp8u * pSrc, int nSrcStep,
                               const Npp8u nConstant,
                                     Npp8u * pDst,  int nDstStep,
@@ -2624,6 +3471,11 @@ NppStatus nppiCompareC_8u_C1R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                  const Npp8u * pConstants,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_8u_C3R(const Npp8u * pSrc, int nSrcStep,
                               const Npp8u * pConstants,
                                     Npp8u * pDst,  int nDstStep,
@@ -2636,6 +3488,11 @@ NppStatus nppiCompareC_8u_C3R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                  const Npp8u * pConstants,
+                                        Npp8u * pDst,  int nDstStep,
+                                  NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_8u_C4R(const Npp8u * pSrc, int nSrcStep,
                               const Npp8u * pConstants,
                                     Npp8u * pDst,  int nDstStep,
@@ -2648,6 +3505,11 @@ NppStatus nppiCompareC_8u_C4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep,
+                                   const Npp8u * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
                                const Npp8u * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2660,6 +3522,11 @@ NppStatus nppiCompareC_8u_AC4R(const Npp8u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                   const Npp16u nConstant,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16u_C1R(const Npp16u * pSrc, int nSrcStep,
                                const Npp16u nConstant,
                                      Npp8u * pDst,  int nDstStep,
@@ -2672,6 +3539,11 @@ NppStatus nppiCompareC_16u_C1R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                   const Npp16u * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16u_C3R(const Npp16u * pSrc, int nSrcStep,
                                const Npp16u * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2684,6 +3556,11 @@ NppStatus nppiCompareC_16u_C3R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                   const Npp16u * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16u_C4R(const Npp16u * pSrc, int nSrcStep,
                                const Npp16u * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2696,6 +3573,11 @@ NppStatus nppiCompareC_16u_C4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep,
+                                    const Npp16u * pConstants,
+                                          Npp8u * pDst,  int nDstStep,
+                                    NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
                                 const Npp16u * pConstants,
                                       Npp8u * pDst,  int nDstStep,
@@ -2708,6 +3590,11 @@ NppStatus nppiCompareC_16u_AC4R(const Npp16u * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                   const Npp16s nConstant,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16s_C1R(const Npp16s * pSrc, int nSrcStep,
                                const Npp16s nConstant,
                                      Npp8u * pDst,  int nDstStep,
@@ -2720,6 +3607,11 @@ NppStatus nppiCompareC_16s_C1R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                   const Npp16s * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16s_C3R(const Npp16s * pSrc, int nSrcStep,
                                const Npp16s * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2732,6 +3624,11 @@ NppStatus nppiCompareC_16s_C3R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                   const Npp16s * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16s_C4R(const Npp16s * pSrc, int nSrcStep,
                                const Npp16s * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2744,6 +3641,11 @@ NppStatus nppiCompareC_16s_C4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep,
+                                    const Npp16s * pConstants,
+                                          Npp8u * pDst,  int nDstStep,
+                                    NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
                                 const Npp16s * pConstants,
                                       Npp8u * pDst,  int nDstStep,
@@ -2756,6 +3658,11 @@ NppStatus nppiCompareC_16s_AC4R(const Npp16s * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                   const Npp32f nConstant,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                const Npp32f nConstant,
                                      Npp8u * pDst,  int nDstStep,
@@ -2768,6 +3675,11 @@ NppStatus nppiCompareC_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                   const Npp32f * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                const Npp32f * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2780,6 +3692,11 @@ NppStatus nppiCompareC_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                   const Npp32f * pConstants,
+                                         Npp8u * pDst,  int nDstStep,
+                                   NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_32f_C4R(const Npp32f * pSrc, int nSrcStep,
                                const Npp32f * pConstants,
                                      Npp8u * pDst,  int nDstStep,
@@ -2792,6 +3709,11 @@ NppStatus nppiCompareC_32f_C4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageWithConstantParameters">Common parameters for nppiCompareC functions</a>.
  *
  */
+NppStatus nppiCompareC_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                    const Npp32f * pConstants,
+                                          Npp8u * pDst,  int nDstStep,
+                                    NppiSize oSizeROI, NppCmpOp eComparisonOperation, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareC_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                 const Npp32f * pConstants,
                                       Npp8u * pDst,  int nDstStep,
@@ -2815,6 +3737,7 @@ NppStatus nppiCompareC_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nEpsilon epsilon tolerance value to compare to pixel absolute differences
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2828,6 +3751,11 @@ NppStatus nppiCompareC_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferencesWithEpsilonParameters">Common parameters for nppiCompareEqualEps functions</a>.
  *
  */
+NppStatus nppiCompareEqualEps_32f_C1R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                          const Npp32f * pSrc2, int nSrc2Step,
+                                                Npp8u * pDst,   int nDstStep,
+                                          NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEps_32f_C1R(const Npp32f * pSrc1, int nSrc1Step,
                                       const Npp32f * pSrc2, int nSrc2Step,
                                             Npp8u * pDst,   int nDstStep,
@@ -2840,6 +3768,11 @@ NppStatus nppiCompareEqualEps_32f_C1R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferencesWithEpsilonParameters">Common parameters for nppiCompareEqualEps functions</a>.
  *
  */
+NppStatus nppiCompareEqualEps_32f_C3R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                          const Npp32f * pSrc2, int nSrc2Step,
+                                                Npp8u * pDst,   int nDstStep,
+                                          NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEps_32f_C3R(const Npp32f * pSrc1, int nSrc1Step,
                                       const Npp32f * pSrc2, int nSrc2Step,
                                             Npp8u * pDst,   int nDstStep,
@@ -2852,6 +3785,11 @@ NppStatus nppiCompareEqualEps_32f_C3R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferencesWithEpsilonParameters">Common parameters for nppiCompareEqualEps functions</a>.
  *
  */
+NppStatus nppiCompareEqualEps_32f_C4R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                          const Npp32f * pSrc2, int nSrc2Step,
+                                                Npp8u * pDst,   int nDstStep,
+                                          NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEps_32f_C4R(const Npp32f * pSrc1, int nSrc1Step,
                                       const Npp32f * pSrc2, int nSrc2Step,
                                             Npp8u * pDst,   int nDstStep,
@@ -2864,6 +3802,11 @@ NppStatus nppiCompareEqualEps_32f_C4R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferencesWithEpsilonParameters">Common parameters for nppiCompareEqualEps functions</a>.
  *
  */
+NppStatus nppiCompareEqualEps_32f_AC4R_Ctx(const Npp32f * pSrc1, int nSrc1Step,
+                                           const Npp32f * pSrc2, int nSrc2Step,
+                                                 Npp8u * pDst,   int nDstStep,
+                                           NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEps_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
                                        const Npp32f * pSrc2, int nSrc2Step,
                                              Npp8u * pDst,   int nDstStep,
@@ -2888,6 +3831,7 @@ NppStatus nppiCompareEqualEps_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nEpsilon epsilon tolerance value to compare to per color channel pixel absolute differences
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -2901,6 +3845,11 @@ NppStatus nppiCompareEqualEps_32f_AC4R(const Npp32f * pSrc1, int nSrc1Step,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferenceWithConstantWithinEpsilonParameters">Common parameters for nppiCompareEqualEpsC functions</a>.
  *
  */
+NppStatus nppiCompareEqualEpsC_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           const Npp32f nConstant,
+                                                 Npp8u * pDst,  int nDstStep,
+                                           NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEpsC_32f_C1R(const Npp32f * pSrc, int nSrcStep,
                                        const Npp32f nConstant,
                                              Npp8u * pDst,  int nDstStep,
@@ -2913,6 +3862,11 @@ NppStatus nppiCompareEqualEpsC_32f_C1R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferenceWithConstantWithinEpsilonParameters">Common parameters for nppiCompareEqualEpsC functions</a>.
  *
  */
+NppStatus nppiCompareEqualEpsC_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           const Npp32f * pConstants,
+                                                 Npp8u * pDst,  int nDstStep,
+                                           NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEpsC_32f_C3R(const Npp32f * pSrc, int nSrcStep,
                                        const Npp32f * pConstants,
                                              Npp8u * pDst,  int nDstStep,
@@ -2925,6 +3879,11 @@ NppStatus nppiCompareEqualEpsC_32f_C3R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferenceWithConstantWithinEpsilonParameters">Common parameters for nppiCompareEqualEpsC functions</a>.
  *
  */
+NppStatus nppiCompareEqualEpsC_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                           const Npp32f * pConstants,
+                                                 Npp8u * pDst,  int nDstStep,
+                                           NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEpsC_32f_C4R(const Npp32f * pSrc, int nSrcStep,
                                        const Npp32f * pConstants,
                                              Npp8u * pDst,  int nDstStep,
@@ -2937,6 +3896,11 @@ NppStatus nppiCompareEqualEpsC_32f_C4R(const Npp32f * pSrc, int nSrcStep,
  * For common parameter descriptions, see <a href="#CommonCompareImageDifferenceWithConstantWithinEpsilonParameters">Common parameters for nppiCompareEqualEpsC functions</a>.
  *
  */
+NppStatus nppiCompareEqualEpsC_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep,
+                                            const Npp32f * pConstants,
+                                                  Npp8u * pDst,  int nDstStep,
+                                            NppiSize oSizeROI, Npp32f nEpsilon, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompareEqualEpsC_32f_AC4R(const Npp32f * pSrc, int nSrcStep,
                                         const Npp32f * pConstants,
                                               Npp8u * pDst,  int nDstStep,

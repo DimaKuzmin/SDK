@@ -50,9 +50,9 @@
 #ifndef CUDAGL_H
 #define CUDAGL_H
 
-/**
- * CUDA API versioning support
- */
+#include <cuda.h>
+#include <GL/gl.h>
+
 #if defined(__CUDA_API_VERSION_INTERNAL) || defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
 #define __CUDA_DEPRECATED
 #elif defined(_MSC_VER)
@@ -63,15 +63,9 @@
 #define __CUDA_DEPRECATED
 #endif
 
-#if defined(CUDA_FORCE_API_VERSION)
-    #if (CUDA_FORCE_API_VERSION == 3010)
-        #define __CUDA_API_VERSION 3010
-    #else
-        #error "Unsupported value of CUDA_FORCE_API_VERSION"
-    #endif
-#else
-    #define __CUDA_API_VERSION 9000
-#endif /* CUDA_FORCE_API_VERSION */
+#ifdef CUDA_FORCE_API_VERSION
+#error "CUDA_FORCE_API_VERSION is no longer supported."
+#endif
 
 #if defined(__CUDA_API_VERSION_INTERNAL) || defined(CUDA_API_PER_THREAD_DEFAULT_STREAM)
     #define __CUDA_API_PER_THREAD_DEFAULT_STREAM
@@ -82,14 +76,10 @@
     #define __CUDA_API_PTSZ(api) api
 #endif
 
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION >= 3020
-    #define cuGLCtxCreate            cuGLCtxCreate_v2
-    #define cuGLMapBufferObject      __CUDA_API_PTDS(cuGLMapBufferObject_v2)
-    #define cuGLMapBufferObjectAsync __CUDA_API_PTSZ(cuGLMapBufferObjectAsync_v2)
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION >= 3020 */
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION >= 6050
-    #define cuGLGetDevices           cuGLGetDevices_v2
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION >= 6050 */
+#define cuGLCtxCreate            cuGLCtxCreate_v2
+#define cuGLMapBufferObject      __CUDA_API_PTDS(cuGLMapBufferObject_v2)
+#define cuGLMapBufferObjectAsync __CUDA_API_PTSZ(cuGLMapBufferObjectAsync_v2)
+#define cuGLGetDevices           cuGLGetDevices_v2
 
 #ifdef __cplusplus
 extern "C" {
@@ -149,6 +139,7 @@ typedef void* HGPUNV;
  * ::CUDA_ERROR_INVALID_HANDLE,
  * ::CUDA_ERROR_ALREADY_MAPPED,
  * ::CUDA_ERROR_INVALID_CONTEXT,
+ * ::CUDA_ERROR_OPERATING_SYSTEM
  * \notefnerr
  *
  * \sa 
@@ -207,6 +198,7 @@ CUresult CUDAAPI cuGraphicsGLRegisterBuffer(CUgraphicsResource *pCudaResource, G
  * ::CUDA_ERROR_INVALID_HANDLE,
  * ::CUDA_ERROR_ALREADY_MAPPED,
  * ::CUDA_ERROR_INVALID_CONTEXT,
+ * ::CUDA_ERROR_OPERATING_SYSTEM
  * \notefnerr
  *
  * \sa 
@@ -253,7 +245,6 @@ typedef enum CUGLDeviceList_enum {
     CU_GL_DEVICE_LIST_NEXT_FRAME     = 0x03, /**< The CUDA devices for the GPUs to be used by the current OpenGL context in the next frame */
 } CUGLDeviceList;
 
-#if __CUDA_API_VERSION >= 6050
 /**
  * \brief Gets the CUDA devices associated with the current OpenGL context
  *
@@ -281,9 +272,9 @@ typedef enum CUGLDeviceList_enum {
  * ::CUDA_ERROR_NO_DEVICE,
  * ::CUDA_ERROR_INVALID_VALUE,
  * ::CUDA_ERROR_INVALID_CONTEXT,
- * ::CUDA_ERROR_INVALID_GRAPHICS_CONTEXT
+ * ::CUDA_ERROR_INVALID_GRAPHICS_CONTEXT,
+ * ::CUDA_ERROR_OPERATING_SYSTEM
  *
- * \note This function is not supported on Mac OS X.
  * \notefnerr
  *
  * \sa
@@ -291,7 +282,6 @@ typedef enum CUGLDeviceList_enum {
  * ::cudaGLGetDevices
  */
 CUresult CUDAAPI cuGLGetDevices(unsigned int *pCudaDeviceCount, CUdevice *pCudaDevices, unsigned int cudaDeviceCount, CUGLDeviceList deviceList);
-#endif /* __CUDA_API_VERSION >= 6050 */
 
 /**
  * \defgroup CUDA_GL_DEPRECATED OpenGL Interoperability [DEPRECATED]
@@ -311,7 +301,6 @@ typedef enum CUGLmap_flags_enum {
     CU_GL_MAP_RESOURCE_FLAGS_WRITE_DISCARD = 0x02,    
 } CUGLmap_flags;
 
-#if __CUDA_API_VERSION >= 3020
 /**
  * \brief Create a CUDA context for interoperability with OpenGL
  *
@@ -341,7 +330,6 @@ typedef enum CUGLmap_flags_enum {
  * ::cuWGLGetDevice
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuGLCtxCreate(CUcontext *pCtx, unsigned int Flags, CUdevice device );
-#endif /* __CUDA_API_VERSION >= 3020 */
 
 /**
  * \brief Initializes OpenGL interoperability
@@ -393,7 +381,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuGLInit(void);
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuGLRegisterBufferObject(GLuint buffer);
 
-#if __CUDA_API_VERSION >= 3020
 /**
  * \brief Maps an OpenGL buffer object
  *
@@ -427,7 +414,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuGLRegisterBufferObject(GLuint buffer);
  * \sa ::cuGraphicsMapResources
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuGLMapBufferObject(CUdeviceptr *dptr, size_t *size,  GLuint buffer);  
-#endif /* __CUDA_API_VERSION >= 3020 */
 
 /**
  * \brief Unmaps an OpenGL buffer object
@@ -530,7 +516,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuGLUnregisterBufferObject(GLuint buffer);
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuGLSetBufferObjectMapFlags(GLuint buffer, unsigned int Flags);
 
-#if __CUDA_API_VERSION >= 3020
 /**
  * \brief Maps an OpenGL buffer object
  *
@@ -565,7 +550,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuGLSetBufferObjectMapFlags(GLuint buffer, un
  * \sa ::cuGraphicsMapResources
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuGLMapBufferObjectAsync(CUdeviceptr *dptr, size_t *size,  GLuint buffer, CUstream hStream);
-#endif /* __CUDA_API_VERSION >= 3020 */
 
 /**
  * \brief Unmaps an OpenGL buffer object
@@ -600,47 +584,25 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuGLUnmapBufferObjectAsync(GLuint buffer, CUs
 /** @} */ /* END CUDA_GL_DEPRECATED */
 /** @} */ /* END CUDA_GL */
 
-/** 
- * CUDA API versioning support
- */
+
 #if defined(__CUDA_API_VERSION_INTERNAL)
     #undef cuGLCtxCreate
     #undef cuGLMapBufferObject
     #undef cuGLMapBufferObjectAsync
     #undef cuGLGetDevices
-#endif /* __CUDA_API_VERSION_INTERNAL */
 
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION < 6050
-CUresult CUDAAPI cuGLGetDevices(unsigned int *pCudaDeviceCount, CUdevice *pCudaDevices, unsigned int cudaDeviceCount, CUGLDeviceList deviceList);
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION < 6050 */
-
-#if defined(__CUDA_API_VERSION_INTERNAL)
-CUresult CUDAAPI cuGLMapBufferObject_v2(CUdeviceptr *dptr, size_t *size,  GLuint buffer);
-CUresult CUDAAPI cuGLMapBufferObjectAsync_v2(CUdeviceptr *dptr, size_t *size,  GLuint buffer, CUstream hStream);
-#endif
-
-/** 
- * CUDA API made obselete at API version 3020
- */
-#if defined(__CUDA_API_VERSION_INTERNAL)
-    #define CUdeviceptr CUdeviceptr_v1
-#endif /* __CUDA_API_VERSION_INTERNAL */
-
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION < 3020
-CUresult CUDAAPI cuGLCtxCreate(CUcontext *pCtx, unsigned int Flags, CUdevice device );
-CUresult CUDAAPI cuGLMapBufferObject(CUdeviceptr *dptr, unsigned int *size,  GLuint buffer);  
-CUresult CUDAAPI cuGLMapBufferObjectAsync(CUdeviceptr *dptr, unsigned int *size,  GLuint buffer, CUstream hStream);
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION < 3020 */ 
-
-#if defined(__CUDA_API_VERSION_INTERNAL)
-    #undef CUdeviceptr
+    CUresult CUDAAPI cuGLGetDevices(unsigned int *pCudaDeviceCount, CUdevice *pCudaDevices, unsigned int cudaDeviceCount, CUGLDeviceList deviceList);
+    CUresult CUDAAPI cuGLMapBufferObject_v2(CUdeviceptr *dptr, size_t *size,  GLuint buffer);
+    CUresult CUDAAPI cuGLMapBufferObjectAsync_v2(CUdeviceptr *dptr, size_t *size,  GLuint buffer, CUstream hStream);
+    CUresult CUDAAPI cuGLCtxCreate(CUcontext *pCtx, unsigned int Flags, CUdevice device );
+    CUresult CUDAAPI cuGLMapBufferObject(CUdeviceptr_v1 *dptr, unsigned int *size,  GLuint buffer);
+    CUresult CUDAAPI cuGLMapBufferObjectAsync(CUdeviceptr_v1 *dptr, unsigned int *size,  GLuint buffer, CUstream hStream);
 #endif /* __CUDA_API_VERSION_INTERNAL */
 
 #ifdef __cplusplus
 };
 #endif
 
-#undef __CUDA_API_VERSION
 #undef __CUDA_DEPRECATED
 
 #endif

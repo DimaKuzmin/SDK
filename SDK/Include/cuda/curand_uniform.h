@@ -1,5 +1,5 @@
 
- /* Copyright 2010-2014 NVIDIA Corporation.  All rights reserved.
+ /* Copyright 2010-2018 NVIDIA Corporation.  All rights reserved.
   *
   * NOTICE TO LICENSEE:
   *
@@ -57,11 +57,13 @@
  * @{
  */
 
+#ifndef __CUDACC_RTC__
+#include <math.h>
+#endif // __CUDACC_RTC__
+
 #include "curand_mrg32k3a.h"
 #include "curand_mtgp32_kernel.h"
-#include <math.h>
-
-#include "curand_philox4x32_x.h" 
+#include "curand_philox4x32_x.h"
 
 
 QUALIFIERS float _curand_uniform(unsigned int x)
@@ -76,19 +78,19 @@ QUALIFIERS float4 _curand_uniform4(uint4 x)
     y.y = x.y * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
     y.z = x.z * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
     y.w = x.w * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
-    return y; 
+    return y;
 }
 
 QUALIFIERS float _curand_uniform(unsigned long long x)
 {
     unsigned int t;
-    t = (unsigned int)(x >> 32); 
+    t = (unsigned int)(x >> 32);
     return t * CURAND_2POW32_INV + (CURAND_2POW32_INV/2.0f);
 }
 
 QUALIFIERS double _curand_uniform_double(unsigned int x)
 {
-    return x * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
+    return x * CURAND_2POW32_INV_DOUBLE + CURAND_2POW32_INV_DOUBLE;
 }
 
 QUALIFIERS double _curand_uniform_double(unsigned long long x)
@@ -96,19 +98,9 @@ QUALIFIERS double _curand_uniform_double(unsigned long long x)
     return (x >> 11) * CURAND_2POW53_INV_DOUBLE + (CURAND_2POW53_INV_DOUBLE/2.0);
 }
 
-QUALIFIERS double4 _curand_uniform4_double(uint4 x)
-{
-    double4 result;
-    result.x = (x.x>>11) * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
-    result.y = (x.y>>11) * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
-    result.z = (x.z>>11) * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
-    result.w = (x.w>>11) * CURAND_2POW32_INV_DOUBLE + (CURAND_2POW32_INV_DOUBLE/2.0);
-    return result;
-}
-
 QUALIFIERS double _curand_uniform_double_hq(unsigned int x, unsigned int y)
 {
-    unsigned long long z = (unsigned long long)x ^ 
+    unsigned long long z = (unsigned long long)x ^
         ((unsigned long long)y << (53 - 32));
     return z * CURAND_2POW53_INV_DOUBLE + (CURAND_2POW53_INV_DOUBLE/2.0);
 }
@@ -126,7 +118,7 @@ QUALIFIERS double curand_uniform_double(curandStateTest_t *state)
 /**
  * \brief Return a uniformly distributed float from an XORWOW generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the XORWOW generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -147,7 +139,7 @@ QUALIFIERS float curand_uniform(curandStateXORWOW_t *state)
 /**
  * \brief Return a uniformly distributed double from an XORWOW generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the XORWOW generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
  * point outputs are never returned.
@@ -170,13 +162,13 @@ QUALIFIERS double curand_uniform_double(curandStateXORWOW_t *state)
 /**
  * \brief Return a uniformly distributed float from an MRG32k3a generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the MRG32k3a generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
  *
- * The implementation returns up to 23 bits of mantissa, with the minimum 
- * return value \f$ 2^{-32} \f$ 
+ * The implementation returns up to 23 bits of mantissa, with the minimum
+ * return value \f$ 2^{-32} \f$
  *
  * \param state - Pointer to state to update
  *
@@ -190,12 +182,12 @@ QUALIFIERS float curand_uniform(curandStateMRG32k3a_t *state)
 /**
  * \brief Return a uniformly distributed double from an MRG32k3a generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the MRG32k3a generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
- * point outputs are never returned. 
+ * point outputs are never returned.
  *
- * Note the implementation returns at most 32 random bits of mantissa as 
+ * Note the implementation returns at most 32 random bits of mantissa as
  * outlined in the seminal paper by L'Ecuyer.
  *
  * \param state - Pointer to state to update
@@ -212,10 +204,10 @@ QUALIFIERS double curand_uniform_double(curandStateMRG32k3a_t *state)
 /**
  * \brief Return a uniformly distributed tuple of 2 doubles from an Philox4_32_10 generator.
  *
- * Return a uniformly distributed 2 doubles (double4) between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed 2 doubles (double4) between \p 0.0 and \p 1.0
  * from the Philox4_32_10 generator in \p state, increment position of generator by 4.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
- * point outputs are never returned. 
+ * point outputs are never returned.
  *
  * \param state - Pointer to state to update
  *
@@ -250,15 +242,15 @@ QUALIFIERS double4 curand_uniform4_double(curandStatePhilox4_32_10_t *state)
 /**
  * \brief Return a uniformly distributed float from a Philox4_32_10 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the Philox4_32_10 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
- * 
+ *
  * \param state - Pointer to state to update
  *
  * \return uniformly distributed float between \p 0.0 and \p 1.0
-
+ *
  */
 QUALIFIERS float curand_uniform(curandStatePhilox4_32_10_t *state)
 {
@@ -268,17 +260,16 @@ QUALIFIERS float curand_uniform(curandStatePhilox4_32_10_t *state)
 /**
  * \brief Return a uniformly distributed tuple of 4 floats from a Philox4_32_10 generator.
  *
- * Return a uniformly distributed 4 floats between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed 4 floats between \p 0.0f and \p 1.0f
  * from the Philox4_32_10 generator in \p state, increment position of generator by 4.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
- * 
+ *
  * \param state - Pointer to state to update
  *
  * \return uniformly distributed float between \p 0.0 and \p 1.0
-
+ *
  */
-
 QUALIFIERS float4 curand_uniform4(curandStatePhilox4_32_10_t *state)
 {
    return _curand_uniform4(curand4(state));
@@ -287,7 +278,7 @@ QUALIFIERS float4 curand_uniform4(curandStatePhilox4_32_10_t *state)
 /**
  * \brief Return a uniformly distributed float from a MTGP32 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the MTGP32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -303,10 +294,13 @@ QUALIFIERS float curand_uniform(curandStateMtgp32_t *state)
 /**
  * \brief Return a uniformly distributed double from a MTGP32 generator.
  *
- * Return a uniformly distributed double between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed double between \p 0.0f and \p 1.0f
  * from the MTGP32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
+ *
+ * Note that the implementation uses only 32 random bits to generate a single double
+ * precision value.
  *
  * \param state - Pointer to state to update
  *
@@ -320,10 +314,16 @@ QUALIFIERS double curand_uniform_double(curandStateMtgp32_t *state)
 /**
  * \brief Return a uniformly distributed double from a Philox4_32_10 generator.
  *
- * Return a uniformly distributed double between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed double between \p 0.0f and \p 1.0f
  * from the Philox4_32_10 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
+ *
+ * Note that the implementation uses only 32 random bits to generate a single double
+ * precision value.
+ *
+ * \p curand_uniform2_double() is recommended for higher quality uniformly distributed
+ * double precision values.
  *
  * \param state - Pointer to state to update
  *
@@ -339,7 +339,7 @@ QUALIFIERS double curand_uniform_double(curandStatePhilox4_32_10_t *state)
 /**
  * \brief Return a uniformly distributed float from a Sobol32 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the Sobol32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -358,13 +358,16 @@ QUALIFIERS float curand_uniform(curandStateSobol32_t *state)
 /**
  * \brief Return a uniformly distributed double from a Sobol32 generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the Sobol32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
  * point outputs are never returned.
  *
  * The implementation is guaranteed to use a single call to \p curand()
  * to preserve the quasirandom properties of the sequence.
+ *
+ * Note that the implementation uses only 32 random bits to generate a single double
+ * precision value.
  *
  * \param state - Pointer to state to update
  *
@@ -377,7 +380,7 @@ QUALIFIERS double curand_uniform_double(curandStateSobol32_t *state)
 /**
  * \brief Return a uniformly distributed float from a scrambled Sobol32 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the scrambled Sobol32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -396,13 +399,16 @@ QUALIFIERS float curand_uniform(curandStateScrambledSobol32_t *state)
 /**
  * \brief Return a uniformly distributed double from a scrambled Sobol32 generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the scrambled Sobol32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
  * point outputs are never returned.
  *
  * The implementation is guaranteed to use a single call to \p curand()
  * to preserve the quasirandom properties of the sequence.
+ *
+ * Note that the implementation uses only 32 random bits to generate a single double
+ * precision value.
  *
  * \param state - Pointer to state to update
  *
@@ -415,7 +421,7 @@ QUALIFIERS double curand_uniform_double(curandStateScrambledSobol32_t *state)
 /**
  * \brief Return a uniformly distributed float from a Sobol64 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the Sobol64 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -434,7 +440,7 @@ QUALIFIERS float curand_uniform(curandStateSobol64_t *state)
 /**
  * \brief Return a uniformly distributed double from a Sobol64 generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the Sobol64 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
  * point outputs are never returned.
@@ -453,7 +459,7 @@ QUALIFIERS double curand_uniform_double(curandStateSobol64_t *state)
 /**
  * \brief Return a uniformly distributed float from a scrambled Sobol64 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the scrambled Sobol64 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
@@ -472,7 +478,7 @@ QUALIFIERS float curand_uniform(curandStateScrambledSobol64_t *state)
 /**
  * \brief Return a uniformly distributed double from a scrambled Sobol64 generator.
  *
- * Return a uniformly distributed double between \p 0.0 and \p 1.0 
+ * Return a uniformly distributed double between \p 0.0 and \p 1.0
  * from the scrambled Sobol64 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0 but includes \p 1.0.  Denormalized floating
  * point outputs are never returned.

@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2012 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -51,7 +51,7 @@
 #define __DRIVER_FUNCTIONS_H__
 
 #include "builtin_types.h"
-#include "host_defines.h"
+#include "crt/host_defines.h"
 #include "driver_types.h"
 
 /**

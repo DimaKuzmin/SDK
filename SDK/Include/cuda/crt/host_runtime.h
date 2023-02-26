@@ -1,7 +1,7 @@
 /*
  * NVIDIA_COPYRIGHT_BEGIN
  *
- * Copyright (c) 2008-2017, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2008-2018, NVIDIA CORPORATION.  All rights reserved.
  *
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -11,6 +11,16 @@
  *
  * NVIDIA_COPYRIGHT_END
  */
+
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/device_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/device_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_RUNTIME_H__
+#endif
 
 #if !defined(__CUDA_INTERNAL_COMPILATION__)
 
@@ -58,7 +68,7 @@ static inline T *__cudaAddressOf(T &val)
 
 #define __cudaRegisterBinary(X)                                                   \
         __cudaFatCubinHandle = __cudaRegisterFatBinary((void*)&__fatDeviceText); \
-        { void (*callback_fp)(void **) =  (void (*)(void **))(X); (*callback_fp)(__cudaFatCubinHandle); }\
+        { void (*callback_fp)(void **) =  (void (*)(void **))(X); (*callback_fp)(__cudaFatCubinHandle); __cudaRegisterFatBinaryEnd(__cudaFatCubinHandle); }\
         atexit(__cudaUnregisterBinaryUtil)
         
 #define __cudaRegisterVariable(handle, var, ext, size, constant, global) \
@@ -73,7 +83,6 @@ static inline T *__cudaAddressOf(T &val)
 #define __cudaRegisterEntry(handle, funptr, fun, thread_limit) \
         __cudaRegisterFunction(handle, (const char*)funptr, (char*)__device_fun(fun), #fun, -1, (uint3*)0, (uint3*)0, (dim3*)0, (dim3*)0, (int*)0)
 
-#if __NV_USE_NEW_KERNEL_LAUNCH
 extern "C" cudaError_t CUDARTAPI __cudaPopCallConfiguration(
   dim3         *gridDim,
   dim3         *blockDim,
@@ -112,28 +121,6 @@ extern "C" cudaError_t CUDARTAPI __cudaPopCallConfiguration(
             (void)cudaLaunchKernel(fun, __gridDim, __blockDim, &__args_arr[0], __sharedMem, __stream);\
           }\
         }
-          
-        
-#else /* !__NV_USE_NEW_KERNEL_LAUNCH */  
-#define __cudaLaunchPrologue(dummy)
-
-#define __cudaSetupArg(arg, offset) \
-        if (cudaSetupArgument((void *)(__cudaAddressOf(arg)), sizeof(arg), (size_t)offset) != cudaSuccess) \
-          return
-          
-#define __cudaSetupArgSimple(arg, offset) \
-        if (cudaSetupArgument((void *)(char *)&arg, sizeof(arg), (size_t)offset) != cudaSuccess) \
-          return
-
-#if defined(__GNUC__)
-#define __cudaLaunch(fun) \
-        { volatile static char *__f __attribute__((unused)); __f = fun; (void)cudaLaunch(fun); }
-#else /* __GNUC__ */
-#define __cudaLaunch(fun) \
-        { volatile static char *__f; __f = fun; (void)cudaLaunch(fun); }
-#endif /* __GNUC__ */
-
-#endif /* __NV_USE_NEW_KERNEL_LAUNCH */
 
 #if defined(__GNUC__)
 #define __nv_dummy_param_ref(param) \
@@ -179,6 +166,10 @@ extern "C" {
 extern "C" {
 extern void** CUDARTAPI __cudaRegisterFatBinary(
   void *fatCubin
+);
+
+extern void CUDARTAPI __cudaRegisterFatBinaryEnd(
+  void **fatCubinHandle
 );
 
 extern void CUDARTAPI __cudaUnregisterFatBinary(
@@ -275,12 +266,6 @@ static char __nv_init_managed_rt_with_module(void **handle)
 
 #include "common_functions.h"
 
-#if defined(__APPLE__)
-
-#pragma options align=natural
-
-#else /* __APPLE__ */
-
 #pragma pack()
 
 #if defined(_WIN32)
@@ -295,6 +280,9 @@ static char __nv_init_managed_rt_with_module(void **handle)
 
 #endif /* _WIN32 */
 
-#endif /* __APPLE__ */
-
 #endif /* !__CUDA_INTERNAL_COMPILATION__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_RUNTIME_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_RUNTIME_H__
+#endif

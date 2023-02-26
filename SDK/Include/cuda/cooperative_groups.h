@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2016 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2021 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -48,13 +48,32 @@
  */
 
 #ifndef _COOPERATIVE_GROUPS_H_
-# define _COOPERATIVE_GROUPS_H_
+#define _COOPERATIVE_GROUPS_H_
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-# include "cooperative_groups_helpers.h"
+#include "cooperative_groups/details/info.h"
+#include "cooperative_groups/details/driver_abi.h"
+#include "cooperative_groups/details/helpers.h"
+#include "cooperative_groups/details/memory.h"
+
+#if defined(_CG_HAS_STL_ATOMICS)
+#include <cuda/atomic>
+#define _CG_THREAD_SCOPE(scope) _CG_STATIC_CONST_DECL cuda::thread_scope thread_scope = scope;
+#else
+#define _CG_THREAD_SCOPE(scope)
+#endif
 
 _CG_BEGIN_NAMESPACE
+
+namespace details {
+    _CG_CONST_DECL unsigned int coalesced_group_id = 1;
+    _CG_CONST_DECL unsigned int multi_grid_group_id = 2;
+    _CG_CONST_DECL unsigned int grid_group_id = 3;
+    _CG_CONST_DECL unsigned int thread_block_id = 4;
+    _CG_CONST_DECL unsigned int multi_tile_group_id = 5;
+    _CG_CONST_DECL unsigned int cluster_group_id = 6;
+}
 
 /**
  * class thread_group;
@@ -66,50 +85,83 @@ _CG_BEGIN_NAMESPACE
  */
 class thread_group
 {
-    friend _CG_QUALIFIER thread_group this_thread();
+protected:
+    struct group_data {
+        unsigned int _unused : 1;
+        unsigned int type : 7, : 0;
+    };
+
+    struct gg_data  {
+        details::grid_workspace *gridWs;
+    };
+
+#if defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+    struct mg_data  {
+        unsigned long long _unused : 1;
+        unsigned long long type    : 7;
+        unsigned long long handle  : 56;
+        const details::multi_grid::multi_grid_functions *functions;
+    };
+#endif
+
+    struct tg_data {
+        unsigned int is_tiled : 1;
+        unsigned int type : 7;
+        unsigned int size : 24;
+        // packed to 4b
+        unsigned int metaGroupSize : 16;
+        unsigned int metaGroupRank : 16;
+        // packed to 8b
+        unsigned int mask;
+        // packed to 12b
+        unsigned int _res;
+    };
+
     friend _CG_QUALIFIER thread_group tiled_partition(const thread_group& parent, unsigned int tilesz);
     friend class thread_block;
 
- protected:
     union __align__(8) {
-        unsigned int type : 8;
-        struct {
-            unsigned int type : 8;
-            unsigned int size : 24;
-            unsigned int mask;
-        } coalesced;
-        struct {
-            void* ptr[2];
-        } buffer;
+        group_data  group;
+        tg_data     coalesced;
+        gg_data     grid;
+#if defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+        mg_data     multi_grid;
+#endif
     } _data;
 
     _CG_QUALIFIER thread_group operator=(const thread_group& src);
-    _CG_QUALIFIER thread_group(__internal::groupType type) {
-        _data.type = type;
+
+    _CG_QUALIFIER thread_group(unsigned int type) {
+        _data.group.type = type;
+        _data.group._unused = false;
     }
 
-#if __cplusplus >= 201103L
-    static_assert(sizeof(_data) == 16, "Failed size check");
+#ifdef _CG_CPP11_FEATURES
+    static_assert(sizeof(tg_data) <= 16, "Failed size check");
+    static_assert(sizeof(gg_data) <= 16, "Failed size check");
+#  ifdef _CG_ABI_EXPERIMENTAL
+    static_assert(sizeof(mg_data) <= 16, "Failed size check");
+#  endif
 #endif
 
 public:
-    _CG_QUALIFIER unsigned int size() const;
-    _CG_QUALIFIER unsigned int thread_rank() const;
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_device)
+
+    _CG_QUALIFIER unsigned long long size() const;
+    _CG_QUALIFIER unsigned long long num_threads() const;
+    _CG_QUALIFIER unsigned long long thread_rank() const;
     _CG_QUALIFIER void sync() const;
+    _CG_QUALIFIER unsigned int get_type() const {
+        return _data.group.type;
+    }
+
 };
 
-/**
- * thread_group this_thread()
- *
- * Constructs a generic thread_group containing only the calling thread
- */
-_CG_QUALIFIER thread_group this_thread()
-{
-    thread_group g = thread_group(__internal::Coalesced);
-    g._data.coalesced.mask = __internal::lanemask32_eq();
-    g._data.coalesced.size = 1;
-    return (g);
-}
+template <unsigned int TyId>
+struct thread_group_base : public thread_group {
+    _CG_QUALIFIER thread_group_base() : thread_group(TyId) {}
+    _CG_STATIC_CONST_DECL unsigned int id = TyId;
+};
 
 #if defined(_CG_HAS_MULTI_GRID_GROUP)
 
@@ -124,70 +176,137 @@ _CG_QUALIFIER thread_group this_thread()
  *
  * Constructed via this_multi_grid();
  */
-class multi_grid_group
+
+
+# if defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+class multi_grid_group;
+
+// Multi grid group requires these functions to be templated to prevent ptxas from trying to use CG syscalls
+template <typename = void>
+__device__ _CG_DEPRECATED multi_grid_group this_multi_grid();
+
+class multi_grid_group : public thread_group_base<details::multi_grid_group_id>
 {
-    friend _CG_QUALIFIER multi_grid_group this_multi_grid();
-
-    struct __align__(8) {
-        unsigned long long handle;
-        unsigned int size;
-        unsigned int rank;
-    } _data;
-
-#if __cplusplus >= 201103L
-    static_assert(sizeof(_data) == 16, "Failed size check");
-#endif
-
-public:
+private:
+    template <typename = void>
     _CG_QUALIFIER multi_grid_group() {
-        _data.handle = __internal::multi_grid::get_intrinsic_handle();
-        _data.size = __internal::multi_grid::size(_data.handle);
-        _data.rank = __internal::multi_grid::thread_rank(_data.handle);
+        _data.multi_grid.functions = details::multi_grid::load_grid_intrinsics();
+        _data.multi_grid.handle = _data.multi_grid.functions->get_intrinsic_handle();
     }
 
+    friend multi_grid_group this_multi_grid<void>();
+
+public:
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_system)
+
     _CG_QUALIFIER bool is_valid() const {
-        return (_data.handle != 0);
+        return (_data.multi_grid.handle != 0);
     }
 
     _CG_QUALIFIER void sync() const {
-        _CG_ASSERT(is_valid());
-        __internal::multi_grid::sync(_data.handle);
+        if (!is_valid()) {
+            _CG_ABORT();
+        }
+        _data.multi_grid.functions->sync(_data.multi_grid.handle);
     }
 
-    _CG_QUALIFIER unsigned int size() const {
+    _CG_QUALIFIER unsigned long long num_threads() const {
         _CG_ASSERT(is_valid());
-        return (_data.size);
+        return _data.multi_grid.functions->size(_data.multi_grid.handle);
     }
 
-    _CG_QUALIFIER unsigned int thread_rank() const {
+    _CG_QUALIFIER unsigned long long size() const {
+        return num_threads();
+    }
+
+    _CG_QUALIFIER unsigned long long thread_rank() const {
         _CG_ASSERT(is_valid());
-        return (_data.rank);
+        return _data.multi_grid.functions->thread_rank(_data.multi_grid.handle);
     }
 
     _CG_QUALIFIER unsigned int grid_rank() const {
         _CG_ASSERT(is_valid());
-        return (__internal::multi_grid::grid_rank(_data.handle));
+        return (_data.multi_grid.functions->grid_rank(_data.multi_grid.handle));
     }
 
     _CG_QUALIFIER unsigned int num_grids() const {
         _CG_ASSERT(is_valid());
-        return (__internal::multi_grid::num_grids(_data.handle));
+        return (_data.multi_grid.functions->num_grids(_data.multi_grid.handle));
     }
 };
+# else
+class multi_grid_group
+{
+private:
+    unsigned long long _handle;
+    unsigned int _size;
+    unsigned int _rank;
+
+    friend _CG_QUALIFIER multi_grid_group this_multi_grid();
+
+    _CG_QUALIFIER multi_grid_group() {
+        _handle = details::multi_grid::get_intrinsic_handle();
+        _size = details::multi_grid::size(_handle);
+        _rank = details::multi_grid::thread_rank(_handle);
+    }
+
+public:
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_system)
+
+    _CG_QUALIFIER _CG_DEPRECATED bool is_valid() const {
+        return (_handle != 0);
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED void sync() const {
+        if (!is_valid()) {
+            _CG_ABORT();
+        }
+        details::multi_grid::sync(_handle);
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED unsigned long long num_threads() const {
+        _CG_ASSERT(is_valid());
+        return _size;
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED unsigned long long size() const {
+        return num_threads();
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED unsigned long long thread_rank() const {
+        _CG_ASSERT(is_valid());
+        return _rank;
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED unsigned int grid_rank() const {
+        _CG_ASSERT(is_valid());
+        return (details::multi_grid::grid_rank(_handle));
+    }
+
+    _CG_QUALIFIER _CG_DEPRECATED unsigned int num_grids() const {
+        _CG_ASSERT(is_valid());
+        return (details::multi_grid::num_grids(_handle));
+    }
+};
+# endif
 
 /**
  * multi_grid_group this_multi_grid()
  *
  * Constructs a multi_grid_group
  */
-_CG_QUALIFIER multi_grid_group this_multi_grid()
+# if defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+template <typename>
+__device__
+#else
+_CG_QUALIFIER
+# endif
+_CG_DEPRECATED
+multi_grid_group this_multi_grid()
 {
-    return (multi_grid_group());
+    return multi_grid_group();
 }
-
 #endif
-
-#if defined(_CG_HAS_GRID_GROUP)
 
 /**
  * class grid_group;
@@ -199,63 +318,217 @@ _CG_QUALIFIER multi_grid_group this_multi_grid()
  *
  * Constructed via this_grid();
  */
-class grid_group
+class grid_group : public thread_group_base<details::grid_group_id>
 {
+    _CG_STATIC_CONST_DECL unsigned int _group_id = details::grid_group_id;
     friend _CG_QUALIFIER grid_group this_grid();
 
-    struct __align__(8) {
-        unsigned long long handle;
-        unsigned int size;
-        unsigned int rank;
-    } _data;
-
-#if __cplusplus >= 201103L
-    static_assert(sizeof(_data) == 16, "Failed size check");
-#endif
-
- public:
-    _CG_QUALIFIER grid_group() {
-        _data.handle = (__internal::grid::get_intrinsic_handle());
-        _data.size = __internal::grid::size(_data.handle);
-        _data.rank = __internal::grid::thread_rank(_data.handle);
+private:
+    _CG_QUALIFIER grid_group(details::grid_workspace *gridWs) {
+        _data.grid.gridWs = gridWs;
     }
 
+ public:
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_device)
+
     _CG_QUALIFIER bool is_valid() const {
-        return (_data.handle != 0);
+        return (_data.grid.gridWs != NULL);
     }
 
     _CG_QUALIFIER void sync() const {
-        _CG_ASSERT(is_valid());
-        __internal::grid::sync(_data.handle);
+        if (!is_valid()) {
+            _CG_ABORT();
+        }
+        details::grid::sync(&_data.grid.gridWs->barrier);
     }
 
-    _CG_QUALIFIER unsigned int size() const {
-        _CG_ASSERT(is_valid());
-        return (_data.size);
+    _CG_STATIC_QUALIFIER unsigned long long size() {
+        return details::grid::size();
     }
 
-    _CG_QUALIFIER unsigned int thread_rank() const {
-        _CG_ASSERT(is_valid());
-        return (_data.rank);
+    _CG_STATIC_QUALIFIER unsigned long long thread_rank() {
+        return details::grid::thread_rank();
     }
 
-    _CG_QUALIFIER dim3 group_dim() const {
-        _CG_ASSERT(is_valid());
-        return (__internal::grid::grid_dim());
+    _CG_STATIC_QUALIFIER dim3 group_dim() {
+        return details::grid::grid_dim();
     }
 
+    _CG_STATIC_QUALIFIER unsigned long long num_threads() {
+        return details::grid::num_threads();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 dim_blocks() {
+        return details::grid::dim_blocks();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned long long num_blocks() {
+        return details::grid::num_blocks();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 block_index() {
+        return details::grid::block_index();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned long long block_rank() {
+        return details::grid::block_rank();
+    }
+
+# if defined(_CG_HAS_CLUSTER_GROUP)
+    _CG_STATIC_QUALIFIER dim3 dim_clusters() {
+        return details::grid::dim_clusters();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned long long num_clusters() {
+        return details::grid::num_clusters();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 cluster_index() {
+        return details::grid::cluster_index();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned long long cluster_rank() {
+        return details::grid::cluster_rank();
+    }
+# endif
 };
 
-/**
- * grid_group this_grid()
- *
- * Constructs a grid_group
- */
-_CG_QUALIFIER grid_group this_grid()
-{
-    return (grid_group());
+_CG_QUALIFIER grid_group this_grid() {
+    // Load a workspace from the driver
+    grid_group gg(details::get_grid_workspace());
+#ifdef _CG_DEBUG
+    // *all* threads must be available to synchronize
+    gg.sync();
+#endif // _CG_DEBUG
+    return gg;
 }
 
+#if defined(_CG_HAS_CLUSTER_GROUP)
+/**
+ * class cluster_group
+ *
+ * Every GPU kernel is executed by a grid of thread blocks. A grid can be evenly
+ * divided along all dimensions to form groups of blocks, each group of which is
+ * a block cluster. Clustered grids are subject to various restrictions and
+ * limitations. Primarily, a cluster consists of at most 8 blocks by default
+ * (although the user is allowed to opt-in to non-standard sizes,) and clustered
+ * grids are subject to additional occupancy limitations due to per-cluster
+ * hardware resource consumption. In exchange, a block cluster is guaranteed to
+ * be a cooperative group, with access to all cooperative group capabilities, as
+ * well as cluster specific capabilities and accelerations. A cluster_group
+ * represents a block cluster.
+ *
+ * Constructed via this_cluster_group();
+ */
+class cluster_group : public thread_group_base<details::cluster_group_id>
+{
+    // Friends
+    friend _CG_QUALIFIER cluster_group this_cluster();
+
+    // Disable constructor
+    _CG_QUALIFIER cluster_group()
+    {
+    }
+
+ public:
+    //_CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_cluster)
+
+    using arrival_token = struct {};
+
+    // Functionality exposed by the group
+    _CG_STATIC_QUALIFIER void sync()
+    {
+        return details::cluster::sync();
+    }
+
+    _CG_STATIC_QUALIFIER arrival_token barrier_arrive()
+    {
+        details::cluster::barrier_arrive();
+        return arrival_token();
+    }
+
+    _CG_STATIC_QUALIFIER void barrier_wait()
+    {
+        return details::cluster::barrier_wait();
+    }
+
+    _CG_STATIC_QUALIFIER void barrier_wait(arrival_token&&)
+    {
+        return details::cluster::barrier_wait();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int query_shared_rank(const void *addr)
+    {
+        return details::cluster::query_shared_rank(addr);
+    }
+
+    template <typename T>
+    _CG_STATIC_QUALIFIER T* map_shared_rank(T *addr, int rank)
+    {
+        return details::cluster::map_shared_rank(addr, rank);
+    }
+
+    _CG_STATIC_QUALIFIER dim3 block_index()
+    {
+        return details::cluster::block_index();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int block_rank()
+    {
+        return details::cluster::block_rank();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int thread_rank()
+    {
+        return details::cluster::thread_rank();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 dim_blocks()
+    {
+        return details::cluster::dim_blocks();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int num_blocks()
+    {
+        return details::cluster::num_blocks();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 dim_threads()
+    {
+        return details::cluster::dim_threads();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int num_threads()
+    {
+        return details::cluster::num_threads();
+    }
+
+    // Legacy aliases
+    _CG_STATIC_QUALIFIER unsigned int size()
+    {
+        return num_threads();
+    }
+};
+
+/*
+ * cluster_group this_cluster()
+ *
+ * Constructs a cluster_group
+ */
+_CG_QUALIFIER cluster_group this_cluster()
+{
+    cluster_group cg;
+#ifdef _CG_DEBUG
+    cg.sync();
+#endif
+    return cg;
+}
+#endif
+
+#if defined(_CG_CPP11_FEATURES)
+class thread_block;
+template <unsigned int MaxBlockSize>
+_CG_QUALIFIER thread_block this_thread_block(block_tile_memory<MaxBlockSize>& scratch);
 #endif
 
 /**
@@ -267,14 +540,42 @@ _CG_QUALIFIER grid_group this_grid()
  *
  * Constructed via this_thread_block();
  */
-class thread_block : public thread_group
+class thread_block : public thread_group_base<details::thread_block_id>
 {
+    // Friends
     friend _CG_QUALIFIER thread_block this_thread_block();
     friend _CG_QUALIFIER thread_group tiled_partition(const thread_group& parent, unsigned int tilesz);
     friend _CG_QUALIFIER thread_group tiled_partition(const thread_block& parent, unsigned int tilesz);
 
-    _CG_QUALIFIER thread_block() : thread_group(__internal::ThreadBlock) {
+#if defined(_CG_CPP11_FEATURES)
+    template <unsigned int MaxBlockSize>
+    friend _CG_QUALIFIER thread_block this_thread_block(block_tile_memory<MaxBlockSize>& scratch);
+    template <unsigned int Size>
+    friend class __static_size_multi_warp_tile_base;
+
+    details::multi_warp_scratch* const tile_memory;
+
+    template <unsigned int MaxBlockSize>
+    _CG_QUALIFIER thread_block(block_tile_memory<MaxBlockSize>& scratch) :
+        tile_memory(details::get_scratch_ptr(&scratch)) {
+#ifdef _CG_DEBUG
+        if (num_threads() > MaxBlockSize) {
+            details::abort();
+        }
+#endif
+#if !defined(_CG_HAS_RESERVED_SHARED)
+        tile_memory->init_barriers(thread_rank());
+        sync();
+#endif
     }
+#endif
+
+    // Disable constructor
+    _CG_QUALIFIER thread_block()
+#if defined(_CG_CPP11_FEATURES)
+    : tile_memory(details::get_scratch_ptr(NULL))
+#endif
+    { }
 
     // Internal Use
     _CG_QUALIFIER thread_group _get_tiled_threads(unsigned int tilesz) const {
@@ -282,46 +583,60 @@ class thread_block : public thread_group
 
         // Invalid, immediately fail
         if (tilesz == 0 || (tilesz > 32) || !pow2_tilesz) {
-            __internal::abort();
+            details::abort();
             return (thread_block());
         }
 
         unsigned int mask;
         unsigned int base_offset = thread_rank() & (~(tilesz - 1));
-        unsigned int masklength = min(size() - base_offset, tilesz);
+        unsigned int masklength = min((unsigned int)size() - base_offset, tilesz);
 
         mask = (unsigned int)(-1) >> (32 - masklength);
-        mask <<= (__internal::laneid() & ~(tilesz - 1));
-        thread_group tile = thread_group(__internal::CoalescedTile);
+        mask <<= (details::laneid() & ~(tilesz - 1));
+        thread_group tile = thread_group(details::coalesced_group_id);
         tile._data.coalesced.mask = mask;
         tile._data.coalesced.size = __popc(mask);
+        tile._data.coalesced.metaGroupSize = (details::cta::size() + tilesz - 1) / tilesz;
+        tile._data.coalesced.metaGroupRank = details::cta::thread_rank() / tilesz;
+        tile._data.coalesced.is_tiled = true;
         return (tile);
     }
 
  public:
-    _CG_QUALIFIER void sync() const {
-        __internal::cta::sync();
+    _CG_STATIC_CONST_DECL unsigned int _group_id = details::thread_block_id;
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_block)
+
+    _CG_STATIC_QUALIFIER void sync() {
+        details::cta::sync();
     }
 
-    _CG_QUALIFIER unsigned int size() const {
-        return (__internal::cta::size());
+    _CG_STATIC_QUALIFIER unsigned int size() {
+        return details::cta::size();
     }
 
-    _CG_QUALIFIER unsigned int thread_rank() const {
-        return (__internal::cta::thread_rank());
+    _CG_STATIC_QUALIFIER unsigned int thread_rank() {
+        return details::cta::thread_rank();
     }
 
     // Additional functionality exposed by the group
-    _CG_QUALIFIER dim3 group_index() const {
-        return (__internal::cta::group_index());
+    _CG_STATIC_QUALIFIER dim3 group_index() {
+        return details::cta::group_index();
     }
 
-    _CG_QUALIFIER dim3 thread_index() const {
-        return (__internal::cta::thread_index());
+    _CG_STATIC_QUALIFIER dim3 thread_index() {
+        return details::cta::thread_index();
     }
 
-    _CG_QUALIFIER dim3 group_dim() const {
-        return (__internal::cta::block_dim());
+    _CG_STATIC_QUALIFIER dim3 group_dim() {
+        return details::cta::block_dim();
+    }
+
+    _CG_STATIC_QUALIFIER dim3 dim_threads() {
+        return details::cta::dim_threads();
+    }
+
+    _CG_STATIC_QUALIFIER unsigned int num_threads() {
+        return details::cta::num_threads();
     }
 
 };
@@ -336,6 +651,13 @@ _CG_QUALIFIER thread_block this_thread_block()
     return (thread_block());
 }
 
+#if defined(_CG_CPP11_FEATURES)
+template <unsigned int MaxBlockSize>
+_CG_QUALIFIER thread_block this_thread_block(block_tile_memory<MaxBlockSize>& scratch) {
+    return (thread_block(scratch));
+}
+#endif
+
 /**
  * class coalesced_group
  *
@@ -346,11 +668,13 @@ _CG_QUALIFIER thread_block this_thread_block()
  * This group exposes warp-synchronous builtins.
  * Constructed via coalesced_threads();
  */
-class coalesced_group : public thread_group
+class coalesced_group : public thread_group_base<details::coalesced_group_id>
 {
+private:
     friend _CG_QUALIFIER coalesced_group coalesced_threads();
     friend _CG_QUALIFIER thread_group tiled_partition(const thread_group& parent, unsigned int tilesz);
     friend _CG_QUALIFIER coalesced_group tiled_partition(const coalesced_group& parent, unsigned int tilesz);
+    friend class details::_coalesced_group_data_access;
 
     _CG_QUALIFIER unsigned int _packLanes(unsigned laneMask) const {
         unsigned int member_pack = 0;
@@ -372,24 +696,26 @@ class coalesced_group : public thread_group
 
         // Invalid, immediately fail
         if (tilesz == 0 || (tilesz > 32) || !pow2_tilesz) {
-            __internal::abort();
+            details::abort();
             return (coalesced_group(0));
         }
         if (size() <= tilesz) {
             return (*this);
         }
 
-        if ((_data.type == __internal::CoalescedTile) && pow2_tilesz) {
+        if ((_data.coalesced.is_tiled == true) && pow2_tilesz) {
             unsigned int base_offset = (thread_rank() & (~(tilesz - 1)));
-            unsigned int masklength = min(size() - base_offset, tilesz);
+            unsigned int masklength = min((unsigned int)size() - base_offset, tilesz);
             unsigned int mask = (unsigned int)(-1) >> (32 - masklength);
 
-            mask <<= (__internal::laneid() & ~(tilesz - 1));
+            mask <<= (details::laneid() & ~(tilesz - 1));
             coalesced_group coalesced_tile = coalesced_group(mask);
-            coalesced_tile._data.type = __internal::CoalescedTile;
+            coalesced_tile._data.coalesced.metaGroupSize = size() / tilesz;
+            coalesced_tile._data.coalesced.metaGroupRank = thread_rank() / tilesz;
+            coalesced_tile._data.coalesced.is_tiled = true;
             return (coalesced_tile);
         }
-        else if ((_data.type == __internal::Coalesced) && pow2_tilesz) {
+        else if ((_data.coalesced.is_tiled == false) && pow2_tilesz) {
             unsigned int mask = 0;
             unsigned int member_rank = 0;
             int seen_lanes = (thread_rank() / tilesz) * tilesz;
@@ -403,101 +729,134 @@ class coalesced_group : public thread_group
                     seen_lanes--;
                 }
             }
-            return (coalesced_group(mask));
+            coalesced_group coalesced_tile = coalesced_group(mask);
+            // Override parent with the size of this group
+            coalesced_tile._data.coalesced.metaGroupSize = (size() + tilesz - 1) / tilesz;
+            coalesced_tile._data.coalesced.metaGroupRank = thread_rank() / tilesz;
+            return coalesced_tile;
         }
         else {
             // None in _CG_VERSION 1000
-            __internal::abort();
+            details::abort();
         }
 
         return (coalesced_group(0));
     }
 
  protected:
-    // Construct a group from scratch (coalesced_threads)
-    _CG_QUALIFIER coalesced_group(unsigned int mask) : thread_group(__internal::Coalesced) {
+    _CG_QUALIFIER coalesced_group(unsigned int mask) {
         _data.coalesced.mask = mask;
         _data.coalesced.size = __popc(mask);
+        _data.coalesced.metaGroupRank = 0;
+        _data.coalesced.metaGroupSize = 1;
+        _data.coalesced.is_tiled = false;
+    }
+
+    _CG_QUALIFIER unsigned int get_mask() const {
+        return (_data.coalesced.mask);
     }
 
  public:
+    _CG_STATIC_CONST_DECL unsigned int _group_id = details::coalesced_group_id;
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_block)
+
+    _CG_QUALIFIER unsigned int num_threads() const {
+        return _data.coalesced.size;
+    }
+
     _CG_QUALIFIER unsigned int size() const {
-        return (_data.coalesced.size);
+        return num_threads();
     }
+
     _CG_QUALIFIER unsigned int thread_rank() const {
-        return (__popc(_data.coalesced.mask & __internal::lanemask32_lt()));
+        return (__popc(_data.coalesced.mask & details::lanemask32_lt()));
     }
+
+    // Rank of this group in the upper level of the hierarchy
+    _CG_QUALIFIER unsigned int meta_group_rank() const {
+        return _data.coalesced.metaGroupRank;
+    }
+
+    // Total num partitions created out of all CTAs when the group was created
+    _CG_QUALIFIER unsigned int meta_group_size() const {
+        return _data.coalesced.metaGroupSize;
+    }
+
     _CG_QUALIFIER void sync() const {
         __syncwarp(_data.coalesced.mask);
     }
 
-#define COALESCED_SHFL_FUNCTION(type)                                   \
-    _CG_QUALIFIER type shfl(type var, unsigned int src_rank) const {    \
-        unsigned int lane = (src_rank == 0) ? __ffs(_data.coalesced.mask) - 1 : \
-            (size() == 32) ? src_rank : __fns(_data.coalesced.mask, 0, (src_rank + 1)); \
-        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));      \
+#ifdef _CG_CPP11_FEATURES
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl(TyElem&& elem, int srcRank) const {
+        unsigned int lane = (srcRank == 0) ? __ffs(_data.coalesced.mask) - 1 :
+            (size() == 32) ? srcRank : __fns(_data.coalesced.mask, 0, (srcRank + 1));
+
+        return details::tile::shuffle_dispatch<TyElem>::shfl(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), _data.coalesced.mask, lane, 32);
     }
 
-#define COALESCED_SHFL_UP_FUNCTION(type)                                \
-    _CG_QUALIFIER type shfl_up(type var, int delta) const {             \
-        if (size() == 32) {                                             \
-            return (__shfl_up_sync(0xFFFFFFFF, var, delta, 32));        \
-        }                                                               \
-        unsigned lane = __fns(_data.coalesced.mask, __internal::laneid(), -(delta + 1)); \
-        if (lane >= 32) lane = __internal::laneid();                    \
-        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));      \
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl_down(TyElem&& elem, unsigned int delta) const {
+        if (size() == 32) {
+            return details::tile::shuffle_dispatch<TyElem>::shfl_down(
+                _CG_STL_NAMESPACE::forward<TyElem>(elem), 0xFFFFFFFF, delta, 32);
+        }
+
+        unsigned int lane = __fns(_data.coalesced.mask, details::laneid(), delta + 1);
+
+        if (lane >= 32)
+            lane = details::laneid();
+
+        return details::tile::shuffle_dispatch<TyElem>::shfl(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), _data.coalesced.mask, lane, 32);
     }
 
-#define COALESCED_SHFL_DOWN_FUNCTION(type)                              \
-    _CG_QUALIFIER type shfl_down(type var, int delta) const {           \
-        if (size() == 32) {                                             \
-            return (__shfl_down_sync(0xFFFFFFFF, var, delta, 32));      \
-        }                                                               \
-        unsigned int lane = __fns(_data.coalesced.mask, __internal::laneid(), delta + 1); \
-        if (lane >= 32) lane = __internal::laneid();                    \
-        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));      \
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl_up(TyElem&& elem, int delta) const {
+        if (size() == 32) {
+            return details::tile::shuffle_dispatch<TyElem>::shfl_up(
+                _CG_STL_NAMESPACE::forward<TyElem>(elem), 0xFFFFFFFF, delta, 32);
+        }
+
+        unsigned lane = __fns(_data.coalesced.mask, details::laneid(), -(delta + 1));
+        if (lane >= 32)
+            lane = details::laneid();
+
+        return details::tile::shuffle_dispatch<TyElem>::shfl(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), _data.coalesced.mask, lane, 32);
+    }
+#else
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl(TyIntegral var, unsigned int src_rank) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        unsigned int lane = (src_rank == 0) ? __ffs(_data.coalesced.mask) - 1 :
+            (size() == 32) ? src_rank : __fns(_data.coalesced.mask, 0, (src_rank + 1));
+        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));
     }
 
-    COALESCED_SHFL_FUNCTION(int);
-    COALESCED_SHFL_FUNCTION(unsigned int);
-    COALESCED_SHFL_FUNCTION(long);
-    COALESCED_SHFL_FUNCTION(unsigned long);
-    COALESCED_SHFL_FUNCTION(long long);
-    COALESCED_SHFL_FUNCTION(unsigned long long);
-    COALESCED_SHFL_FUNCTION(float);
-    COALESCED_SHFL_FUNCTION(double);
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl_up(TyIntegral var, int delta) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        if (size() == 32) {
+            return (__shfl_up_sync(0xFFFFFFFF, var, delta, 32));
+        }
+        unsigned lane = __fns(_data.coalesced.mask, details::laneid(), -(delta + 1));
+        if (lane >= 32) lane = details::laneid();
+        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));
+    }
 
-    COALESCED_SHFL_UP_FUNCTION(int);
-    COALESCED_SHFL_UP_FUNCTION(unsigned int);
-    COALESCED_SHFL_UP_FUNCTION(long);
-    COALESCED_SHFL_UP_FUNCTION(unsigned long);
-    COALESCED_SHFL_UP_FUNCTION(long long);
-    COALESCED_SHFL_UP_FUNCTION(unsigned long long);
-    COALESCED_SHFL_UP_FUNCTION(float);
-    COALESCED_SHFL_UP_FUNCTION(double);
-
-    COALESCED_SHFL_DOWN_FUNCTION(int);
-    COALESCED_SHFL_DOWN_FUNCTION(unsigned int);
-    COALESCED_SHFL_DOWN_FUNCTION(long);
-    COALESCED_SHFL_DOWN_FUNCTION(unsigned long);
-    COALESCED_SHFL_DOWN_FUNCTION(long long);
-    COALESCED_SHFL_DOWN_FUNCTION(unsigned long long);
-    COALESCED_SHFL_DOWN_FUNCTION(float);
-    COALESCED_SHFL_DOWN_FUNCTION(double);
-
-# ifdef _CG_HAS_FP16_COLLECTIVE
-    COALESCED_SHFL_FUNCTION(__half);
-    COALESCED_SHFL_UP_FUNCTION(__half);
-    COALESCED_SHFL_DOWN_FUNCTION(__half);
-
-    COALESCED_SHFL_FUNCTION(__half2);
-    COALESCED_SHFL_UP_FUNCTION(__half2);
-    COALESCED_SHFL_DOWN_FUNCTION(__half2);
-# endif
-
-#undef COALESCED_SHFL_FUNCTION
-#undef COALESCED_SHFL_UP_FUNCTION
-#undef COALESCED_SHFL_DOWN_FUNCTION
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl_down(TyIntegral var, int delta) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        if (size() == 32) {
+            return (__shfl_down_sync(0xFFFFFFFF, var, delta, 32));
+        }
+        unsigned int lane = __fns(_data.coalesced.mask, details::laneid(), delta + 1);
+        if (lane >= 32) lane = details::laneid();
+        return (__shfl_sync(_data.coalesced.mask, var, lane, 32));
+    }
+#endif
 
     _CG_QUALIFIER int any(int predicate) const {
         return (__ballot_sync(_data.coalesced.mask, predicate) != 0);
@@ -515,43 +874,25 @@ class coalesced_group : public thread_group
 
 #ifdef _CG_HAS_MATCH_COLLECTIVE
 
-# define COALESCED_MATCH_ANY_FUNCTION(type)                             \
-    _CG_QUALIFIER unsigned int match_any(type val) const {              \
-        if (size() == 32) {                                             \
-            return (__match_any_sync(0xFFFFFFFF, val));                 \
-        }                                                               \
-        unsigned int lane_match = __match_any_sync(_data.coalesced.mask, val); \
-        return (_packLanes(lane_match));                                \
-    }
-# define COALESCED_MATCH_ALL_FUNCTION(type)                             \
-    _CG_QUALIFIER unsigned int match_all(type val, int &pred) const {   \
-        if (size() == 32) {                                             \
-            return (__match_all_sync(0xFFFFFFFF, val, &pred));          \
-        }                                                               \
-        unsigned int lane_match = __match_all_sync(_data.coalesced.mask, val, &pred); \
-        return (_packLanes(lane_match));                                \
+    template <typename TyIntegral>
+    _CG_QUALIFIER unsigned int match_any(TyIntegral val) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        if (size() == 32) {
+            return (__match_any_sync(0xFFFFFFFF, val));
+        }
+        unsigned int lane_match = __match_any_sync(_data.coalesced.mask, val);
+        return (_packLanes(lane_match));
     }
 
-    COALESCED_MATCH_ANY_FUNCTION(int);
-    COALESCED_MATCH_ANY_FUNCTION(unsigned int);
-    COALESCED_MATCH_ANY_FUNCTION(long);
-    COALESCED_MATCH_ANY_FUNCTION(unsigned long);
-    COALESCED_MATCH_ANY_FUNCTION(long long);
-    COALESCED_MATCH_ANY_FUNCTION(unsigned long long);
-    COALESCED_MATCH_ANY_FUNCTION(float);
-    COALESCED_MATCH_ANY_FUNCTION(double);
-
-    COALESCED_MATCH_ALL_FUNCTION(int);
-    COALESCED_MATCH_ALL_FUNCTION(unsigned int);
-    COALESCED_MATCH_ALL_FUNCTION(long);
-    COALESCED_MATCH_ALL_FUNCTION(unsigned long);
-    COALESCED_MATCH_ALL_FUNCTION(long long);
-    COALESCED_MATCH_ALL_FUNCTION(unsigned long long);
-    COALESCED_MATCH_ALL_FUNCTION(float);
-    COALESCED_MATCH_ALL_FUNCTION(double);
-
-# undef COALESCED_MATCH_ANY_FUNCTION
-# undef COALESCED_MATCH_ALL_FUNCTION
+    template <typename TyIntegral>
+    _CG_QUALIFIER unsigned int match_all(TyIntegral val, int &pred) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        if (size() == 32) {
+            return (__match_all_sync(0xFFFFFFFF, val, &pred));
+        }
+        unsigned int lane_match = __match_all_sync(_data.coalesced.mask, val, &pred);
+        return (_packLanes(lane_match));
+    }
 
 #endif /* !_CG_HAS_MATCH_COLLECTIVE */
 
@@ -562,266 +903,260 @@ _CG_QUALIFIER coalesced_group coalesced_threads()
     return (coalesced_group(__activemask()));
 }
 
+namespace details {
+    template <unsigned int Size> struct verify_thread_block_tile_size;
+    template <> struct verify_thread_block_tile_size<32> { typedef void OK; };
+    template <> struct verify_thread_block_tile_size<16> { typedef void OK; };
+    template <> struct verify_thread_block_tile_size<8>  { typedef void OK; };
+    template <> struct verify_thread_block_tile_size<4>  { typedef void OK; };
+    template <> struct verify_thread_block_tile_size<2>  { typedef void OK; };
+    template <> struct verify_thread_block_tile_size<1>  { typedef void OK; };
+
+#ifdef _CG_CPP11_FEATURES
+    template <unsigned int Size>
+    using _is_power_of_2 = _CG_STL_NAMESPACE::integral_constant<bool, (Size & (Size - 1)) == 0>;
+
+    template <unsigned int Size>
+    using _is_single_warp = _CG_STL_NAMESPACE::integral_constant<bool, Size <= 32>;
+    template <unsigned int Size>
+    using _is_multi_warp =
+    _CG_STL_NAMESPACE::integral_constant<bool, (Size > 32) && (Size <= 1024)>;
+
+    template <unsigned int Size>
+    using _is_valid_single_warp_tile =
+        _CG_STL_NAMESPACE::integral_constant<bool, _is_power_of_2<Size>::value && _is_single_warp<Size>::value>;
+    template <unsigned int Size>
+    using _is_valid_multi_warp_tile =
+        _CG_STL_NAMESPACE::integral_constant<bool, _is_power_of_2<Size>::value && _is_multi_warp<Size>::value>;
+#else
+    template <unsigned int Size>
+    struct _is_multi_warp {
+        static const bool value = false;
+    };
+#endif
+}
+
 template <unsigned int Size>
-class __thread_block_tile_base : public thread_group
+class __static_size_tile_base
 {
-    static const unsigned int numThreads = Size;
+protected:
+    _CG_STATIC_CONST_DECL unsigned int numThreads = Size;
 
-    _CG_QUALIFIER unsigned int build_mask() const {
-        unsigned int mask;
+public:
+    _CG_THREAD_SCOPE(cuda::thread_scope::thread_scope_block)
 
-        if (numThreads == 32) {
-            mask = 0xFFFFFFFF;
-        }
-        else {
-            mask = (unsigned int)(-1) >> (32 - numThreads);
-            mask <<= (__internal::laneid() & (~(numThreads - 1)));
+    // Rank of thread within tile
+    _CG_STATIC_QUALIFIER unsigned int thread_rank() {
+        return (details::cta::thread_rank() & (numThreads - 1));
+    }
+
+    // Number of threads within tile
+    _CG_STATIC_CONSTEXPR_QUALIFIER unsigned int num_threads() {
+        return numThreads;
+    }
+
+    _CG_STATIC_CONSTEXPR_QUALIFIER unsigned int size() {
+        return num_threads();
+    }
+};
+
+template <unsigned int Size>
+class __static_size_thread_block_tile_base : public __static_size_tile_base<Size>
+{
+    friend class details::_coalesced_group_data_access;
+    typedef details::tile::tile_helpers<Size> th;
+
+#ifdef _CG_CPP11_FEATURES
+    static_assert(details::_is_valid_single_warp_tile<Size>::value, "Size must be one of 1/2/4/8/16/32");
+#else
+    typedef typename details::verify_thread_block_tile_size<Size>::OK valid;
+#endif
+    using __static_size_tile_base<Size>::numThreads;
+    _CG_STATIC_CONST_DECL unsigned int fullMask = 0xFFFFFFFF;
+
+ protected:
+    _CG_STATIC_QUALIFIER unsigned int build_mask() {
+        unsigned int mask = fullMask;
+        if (numThreads != 32) {
+            // [0,31] representing the current active thread in the warp
+            unsigned int laneId = details::laneid();
+            // shift mask according to the partition it belongs to
+            mask = th::tileMask << (laneId & ~(th::laneMask));
         }
         return (mask);
     }
 
- protected:
-    _CG_QUALIFIER __thread_block_tile_base() : thread_group(__internal::CoalescedTile) {
-        _data.coalesced.mask = build_mask();
-        _data.coalesced.size = numThreads;
-    }
+public:
+    _CG_STATIC_CONST_DECL unsigned int _group_id = details::coalesced_group_id;
 
- public:
-    _CG_QUALIFIER void sync() const {
+    _CG_STATIC_QUALIFIER void sync() {
         __syncwarp(build_mask());
     }
-    _CG_QUALIFIER unsigned int thread_rank() const {
-        return (__internal::laneid() & (numThreads - 1));
-    }
-    _CG_QUALIFIER unsigned int size() const {
-        return (numThreads);
+
+#ifdef _CG_CPP11_FEATURES
+    // PTX supported collectives
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl(TyElem&& elem, int srcRank) const {
+        return details::tile::shuffle_dispatch<TyElem>::shfl(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), build_mask(), srcRank, numThreads);
     }
 
-    // PTX supported collectives
-    _CG_QUALIFIER int shfl(int var, int srcRank) const {
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl_down(TyElem&& elem, unsigned int delta) const {
+        return details::tile::shuffle_dispatch<TyElem>::shfl_down(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), build_mask(), delta, numThreads);
+    }
+
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl_up(TyElem&& elem, unsigned int delta) const {
+        return details::tile::shuffle_dispatch<TyElem>::shfl_up(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), build_mask(), delta, numThreads);
+    }
+
+    template <typename TyElem, typename TyRet = details::remove_qual<TyElem>>
+    _CG_QUALIFIER TyRet shfl_xor(TyElem&& elem, unsigned int laneMask) const {
+        return details::tile::shuffle_dispatch<TyElem>::shfl_xor(
+            _CG_STL_NAMESPACE::forward<TyElem>(elem), build_mask(), laneMask, numThreads);
+    }
+#else
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl(TyIntegral var, int srcRank) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
         return (__shfl_sync(build_mask(), var, srcRank, numThreads));
     }
-    _CG_QUALIFIER int shfl_down(int var, unsigned int delta) const {
+
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl_down(TyIntegral var, unsigned int delta) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
         return (__shfl_down_sync(build_mask(), var, delta, numThreads));
     }
-    _CG_QUALIFIER int shfl_up(int var, unsigned int delta) const {
+
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl_up(TyIntegral var, unsigned int delta) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
         return (__shfl_up_sync(build_mask(), var, delta, numThreads));
     }
-    _CG_QUALIFIER int shfl_xor(int var, unsigned int laneMask) const {
+
+    template <typename TyIntegral>
+    _CG_QUALIFIER TyIntegral shfl_xor(TyIntegral var, unsigned int laneMask) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
         return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
     }
-    _CG_QUALIFIER unsigned int shfl(unsigned int var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER unsigned int shfl_down(unsigned int var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned int shfl_up(unsigned int var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned int shfl_xor(unsigned int var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER long shfl(long var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER long shfl_down(long var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER long shfl_up(long var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER long shfl_xor(long var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER unsigned long shfl(unsigned long var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER unsigned long shfl_down(unsigned long var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned long shfl_up(unsigned long var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned long shfl_xor(unsigned long var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER long long shfl(long long var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER long long shfl_down(long long var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER long long shfl_up(long long var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER long long shfl_xor(long long var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER unsigned long long shfl(unsigned long long var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER unsigned long long shfl_down(unsigned long long var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned long long shfl_up(unsigned long long var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER unsigned long long shfl_xor(unsigned long long var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER float shfl(float var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER float shfl_down(float var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER float shfl_up(float var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER float shfl_xor(float var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER double shfl(double var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER double shfl_down(double var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER double shfl_up(double var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER double shfl_xor(double var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
+#endif //_CG_CPP11_FEATURES
+
     _CG_QUALIFIER int any(int predicate) const {
-        unsigned int lane_ballot = build_mask() & __ballot_sync(build_mask(), predicate);
+        unsigned int lane_ballot = __ballot_sync(build_mask(), predicate);
         return (lane_ballot != 0);
     }
     _CG_QUALIFIER int all(int predicate) const {
-        unsigned int lane_ballot = build_mask() & __ballot_sync(build_mask(), predicate);
+        unsigned int lane_ballot = __ballot_sync(build_mask(), predicate);
         return (lane_ballot == build_mask());
     }
     _CG_QUALIFIER unsigned int ballot(int predicate) const {
-        unsigned int lane_ballot = build_mask() & __ballot_sync(build_mask(), predicate);
-        return (lane_ballot >> (__internal::laneid() & (~(numThreads - 1))));
+        unsigned int lane_ballot = __ballot_sync(build_mask(), predicate);
+        return (lane_ballot >> (details::laneid() & (~(th::laneMask))));
     }
-
-#ifdef _CG_HAS_FP16_COLLECTIVE
-    _CG_QUALIFIER __half shfl(__half var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER __half shfl_down(__half var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER __half shfl_up(__half var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER __half shfl_xor(__half var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-    _CG_QUALIFIER __half2 shfl(__half2 var, int srcRank) const {
-        return (__shfl_sync(build_mask(), var, srcRank, numThreads));
-    }
-    _CG_QUALIFIER __half2 shfl_down(__half2 var, unsigned int delta) const {
-        return (__shfl_down_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER __half2 shfl_up(__half2 var, unsigned int delta) const {
-        return (__shfl_up_sync(build_mask(), var, delta, numThreads));
-    }
-    _CG_QUALIFIER __half2 shfl_xor(__half2 var, unsigned int laneMask) const {
-        return (__shfl_xor_sync(build_mask(), var, laneMask, numThreads));
-    }
-#endif
 
 #ifdef _CG_HAS_MATCH_COLLECTIVE
-    _CG_QUALIFIER unsigned int match_any(int val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(unsigned int val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(long val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(unsigned long val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(long long val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(unsigned long long val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(float val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_any(double val) const {
-        unsigned int lane_match = build_mask() & __match_any_sync(build_mask(), val);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
+    template <typename TyIntegral>
+    _CG_QUALIFIER unsigned int match_any(TyIntegral val) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        unsigned int lane_match = __match_any_sync(build_mask(), val);
+        return (lane_match >> (details::laneid() & (~(th::laneMask))));
     }
 
-    _CG_QUALIFIER unsigned int match_all(int val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(unsigned int val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(long val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(unsigned long val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(long long val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(unsigned long long val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(float val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
-    }
-    _CG_QUALIFIER unsigned int match_all(double val, int &pred) const {
-        unsigned int lane_match = build_mask() & __match_all_sync(build_mask(), val, &pred);
-        return (lane_match >> (__internal::laneid() & (~(numThreads - 1))));
+    template <typename TyIntegral>
+    _CG_QUALIFIER unsigned int match_all(TyIntegral val, int &pred) const {
+        details::assert_if_not_arithmetic<TyIntegral>();
+        unsigned int lane_match = __match_all_sync(build_mask(), val, &pred);
+        return (lane_match >> (details::laneid() & (~(th::laneMask))));
     }
 #endif
 
 };
 
+template <unsigned int Size, typename ParentT>
+class __static_parent_thread_block_tile_base
+{
+public:
+    // Rank of this group in the upper level of the hierarchy
+    _CG_STATIC_QUALIFIER unsigned int meta_group_rank() {
+        return ParentT::thread_rank() / Size;
+    }
+
+    // Total num partitions created out of all CTAs when the group was created
+    _CG_STATIC_QUALIFIER unsigned int meta_group_size() {
+        return (ParentT::size() + Size - 1) / Size;
+    }
+};
+
 /**
- * class thread_block_tile<unsigned int Size>
+ * class thread_block_tile<unsigned int Size, ParentT = void>
  *
  * Statically-sized group type, representing one tile of a thread block.
  * The only specializations currently supported are those with native
  * hardware support (1/2/4/8/16/32)
  *
  * This group exposes warp-synchronous builtins.
- * Constructed via tiled_partition<Size>(class thread_block);
+ * Can only be constructed via tiled_partition<Size>(ParentT&)
  */
+
+template <unsigned int Size, typename ParentT = void>
+class __single_warp_thread_block_tile :
+    public __static_size_thread_block_tile_base<Size>,
+    public __static_parent_thread_block_tile_base<Size, ParentT>
+{
+    typedef __static_parent_thread_block_tile_base<Size, ParentT> staticParentBaseT;
+    friend class details::_coalesced_group_data_access;
+
+protected:
+    _CG_QUALIFIER __single_warp_thread_block_tile() { };
+    _CG_QUALIFIER __single_warp_thread_block_tile(unsigned int, unsigned int) { };
+
+    _CG_STATIC_QUALIFIER unsigned int get_mask() {
+        return __static_size_thread_block_tile_base<Size>::build_mask();
+    }
+};
+
 template <unsigned int Size>
-class thread_block_tile;
-template <> class thread_block_tile<32> : public __thread_block_tile_base<32> { };
-template <> class thread_block_tile<16> : public __thread_block_tile_base<16> { };
-template <> class thread_block_tile<8>  : public __thread_block_tile_base<8> { };
-template <> class thread_block_tile<4>  : public __thread_block_tile_base<4> { };
-template <> class thread_block_tile<2>  : public __thread_block_tile_base<2> { };
-template <> class thread_block_tile<1>  : public __thread_block_tile_base<1> { };
+class __single_warp_thread_block_tile<Size, void> :
+    public __static_size_thread_block_tile_base<Size>,
+    public thread_group_base<details::coalesced_group_id>
+{
+    _CG_STATIC_CONST_DECL unsigned int numThreads = Size;
+
+    template <unsigned int, typename ParentT> friend class __single_warp_thread_block_tile;
+    friend class details::_coalesced_group_data_access;
+
+    typedef __static_size_thread_block_tile_base<numThreads> staticSizeBaseT;
+
+protected:
+    _CG_QUALIFIER __single_warp_thread_block_tile(unsigned int meta_group_rank, unsigned int meta_group_size) {
+        _data.coalesced.mask = staticSizeBaseT::build_mask();
+        _data.coalesced.size = numThreads;
+        _data.coalesced.metaGroupRank = meta_group_rank;
+        _data.coalesced.metaGroupSize = meta_group_size;
+        _data.coalesced.is_tiled = true;
+    }
+
+    _CG_QUALIFIER unsigned int get_mask() const {
+        return (_data.coalesced.mask);
+    }
+
+public:
+    using staticSizeBaseT::sync;
+    using staticSizeBaseT::size;
+    using staticSizeBaseT::num_threads;
+    using staticSizeBaseT::thread_rank;
+
+    _CG_QUALIFIER unsigned int meta_group_rank() const {
+        return _data.coalesced.metaGroupRank;
+    }
+
+    _CG_QUALIFIER unsigned int meta_group_size() const {
+        return _data.coalesced.metaGroupSize;
+    }
+};
 
 /**
  * Outer level API calls
@@ -829,68 +1164,38 @@ template <> class thread_block_tile<1>  : public __thread_block_tile_base<1> { }
  * void thread_rank(GroupT) - see <group_type>.thread_rank()
  * void group_size(GroupT) - see <group_type>.size()
  */
-template <class GroupT> _CG_QUALIFIER void sync(GroupT const &g)
+template <class GroupT>
+_CG_QUALIFIER void sync(GroupT const &g)
 {
     g.sync();
 }
 
-template <class GroupT> _CG_QUALIFIER unsigned int thread_rank(GroupT const& g)
-{
-    return (g.thread_rank());
+// TODO: Use a static dispatch to determine appropriate return type
+// C++03 is stuck with unsigned long long for now
+#ifdef _CG_CPP11_FEATURES
+template <class GroupT>
+_CG_QUALIFIER auto thread_rank(GroupT const& g) -> decltype(g.thread_rank()) {
+    return g.thread_rank();
 }
 
-template <class GroupT> _CG_QUALIFIER unsigned int group_size(GroupT const &g)
-{
-    return (g.size());
+
+template <class GroupT>
+_CG_QUALIFIER auto group_size(GroupT const &g) -> decltype(g.num_threads()) {
+    return g.num_threads();
+}
+#else
+template <class GroupT>
+_CG_QUALIFIER unsigned long long thread_rank(GroupT const& g) {
+    return static_cast<unsigned long long>(g.thread_rank());
 }
 
-/**
- * <group_type>.sync()
- *
- * Executes a barrier across the group
- *
- * Implements both a compiler fence and an architectural fence to prevent,
- * memory reordering around the barrier.
- */
-_CG_QUALIFIER void thread_group::sync() const
-{
-    if (_data.type == __internal::Coalesced || _data.type == __internal::CoalescedTile) {
-        static_cast<const coalesced_group*>(this)->sync();
-    }
-    else {
-        static_cast<const thread_block*>(this)->sync();
-    }
-}
 
-/**
- * <group_type>.size()
- *
- * Returns the total number of threads in the group.
- */
-_CG_QUALIFIER unsigned int thread_group::size() const
-{
-    if (_data.type == __internal::Coalesced || _data.type == __internal::CoalescedTile) {
-        return (static_cast<const coalesced_group*>(this)->size());
-    }
-    else {
-        return (static_cast<const thread_block*>(this)->size());
-    }
+template <class GroupT>
+_CG_QUALIFIER unsigned long long group_size(GroupT const &g) {
+    return static_cast<unsigned long long>(g.num_threads());
 }
+#endif
 
-/**
- * <group_type>.thread_rank()
- *
- * Returns the linearized rank of the calling thread along the interval [0, size()).
- */
-_CG_QUALIFIER unsigned int thread_group::thread_rank() const
-{
-    if (_data.type == __internal::Coalesced || _data.type == __internal::CoalescedTile) {
-        return (static_cast<const coalesced_group*>(this)->thread_rank());
-    }
-    else {
-        return (static_cast<const thread_block*>(this)->thread_rank());
-    }
-}
 
 /**
  * tiled_partition
@@ -911,61 +1216,56 @@ _CG_QUALIFIER unsigned int thread_group::thread_rank() const
  */
 _CG_QUALIFIER thread_group tiled_partition(const thread_group& parent, unsigned int tilesz)
 {
-    if (parent._data.type == __internal::Coalesced || parent._data.type == __internal::CoalescedTile) {
-        return (static_cast<const coalesced_group&>(parent)._get_tiled_threads(tilesz));
+    if (parent.get_type() == details::coalesced_group_id) {
+        const coalesced_group *_cg = static_cast<const coalesced_group*>(&parent);
+        return _cg->_get_tiled_threads(tilesz);
     }
     else {
-        return (static_cast<const thread_block&>(parent)._get_tiled_threads(tilesz));
+        const thread_block *_tb = static_cast<const thread_block*>(&parent);
+        return _tb->_get_tiled_threads(tilesz);
     }
 }
+
 // Thread block type overload: returns a basic thread_group for now (may be specialized later)
 _CG_QUALIFIER thread_group tiled_partition(const thread_block& parent, unsigned int tilesz)
 {
     return (parent._get_tiled_threads(tilesz));
 }
+
 // Coalesced group type overload: retains its ability to stay coalesced
 _CG_QUALIFIER coalesced_group tiled_partition(const coalesced_group& parent, unsigned int tilesz)
 {
     return (parent._get_tiled_threads(tilesz));
 }
 
-namespace __internal {
-
-    // For specializing on different tiled_partition template arguments
+namespace details {
     template <unsigned int Size, typename ParentT>
-    struct tiled_partition_impl;
+    class internal_thread_block_tile : public __single_warp_thread_block_tile<Size, ParentT> {};
 
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block> : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block const &) : thread_block_tile<Size>() {}
-    };
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block_tile<32> > : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<32> const&) : thread_block_tile<Size>() {}
-    };
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block_tile<16> > : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<16> const&) : thread_block_tile<Size>() {}
-    };
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block_tile<8> > : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<8> const&) : thread_block_tile<Size>() {}
-    };
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block_tile<4> > : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<4> const&) : thread_block_tile<Size>() {}
-    };
-    template <unsigned int Size>
-    struct tiled_partition_impl<Size, thread_block_tile<2> > : public thread_block_tile<Size> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<2> const&) : thread_block_tile<Size>() {}
-    };
-    template <>
-    struct tiled_partition_impl<1, thread_block_tile<1> > : public thread_block_tile<1> {
-        _CG_QUALIFIER tiled_partition_impl(thread_block_tile<1> const&) : thread_block_tile<1>() {}
-    };
+    template <unsigned int Size, typename ParentT>
+    _CG_QUALIFIER internal_thread_block_tile<Size, ParentT> tiled_partition_internal() {
+        return internal_thread_block_tile<Size, ParentT>();
+    }
 
-};
+    template <typename TyVal, typename GroupT, typename WarpLambda, typename InterWarpLambda>
+    _CG_QUALIFIER TyVal multi_warp_collectives_helper(
+            const GroupT& group,
+            WarpLambda warp_lambda,
+            InterWarpLambda inter_warp_lambda) {
+                return group.template collectives_scheme<TyVal>(warp_lambda, inter_warp_lambda);
+            }
 
+    template <typename T, typename GroupT>
+    _CG_QUALIFIER T* multi_warp_scratch_location_getter(const GroupT& group, unsigned int warp_id) {
+        return group.template get_scratch_location<T>(warp_id);
+    }
+
+    template <typename GroupT>
+    _CG_QUALIFIER details::barrier_t* multi_warp_sync_location_getter(const GroupT& group) {
+        return group.get_sync_location();
+    }
+
+}
 /**
  * tiled_partition<tilesz>
  *
@@ -983,13 +1283,404 @@ namespace __internal {
  * The size(parent) must be greater than the template Size parameter
  * otherwise the results are undefined.
  */
-template <unsigned int Size, typename ParentT>
-_CG_QUALIFIER thread_block_tile<Size> tiled_partition(const ParentT& g)
+
+#if defined(_CG_CPP11_FEATURES)
+template <unsigned int Size>
+class __static_size_multi_warp_tile_base : public __static_size_tile_base<Size>
 {
-    return (__internal::tiled_partition_impl<Size, ParentT>(g));
+    static_assert(details::_is_valid_multi_warp_tile<Size>::value, "Size must be one of 64/128/256/512");
+
+    template <typename TyVal, typename GroupT, typename WarpLambda, typename InterWarpLambda>
+    friend __device__ TyVal details::multi_warp_collectives_helper(
+            const GroupT& group,
+            WarpLambda warp_lambda,
+            InterWarpLambda inter_warp_lambda);
+    template <typename T, typename GroupT>
+    friend __device__ T* details::multi_warp_scratch_location_getter(const GroupT& group, unsigned int warp_id);
+    template <typename GroupT>
+    friend __device__ details::barrier_t* details::multi_warp_sync_location_getter(const GroupT& group);
+    template <unsigned int OtherSize>
+    friend class __static_size_multi_warp_tile_base;
+    using WarpType = details::internal_thread_block_tile<32, __static_size_multi_warp_tile_base<Size>>;
+    using ThisType = __static_size_multi_warp_tile_base<Size>;
+    _CG_STATIC_CONST_DECL int numWarps = Size / 32;
+
+protected:
+    details::multi_warp_scratch* const tile_memory;
+
+    template <typename GroupT>
+    _CG_QUALIFIER __static_size_multi_warp_tile_base(const GroupT& g) : tile_memory(g.tile_memory) {
+#if defined(_CG_HAS_RESERVED_SHARED)
+        details::sync_warps_reset(get_sync_location(), details::cta::thread_rank());
+        g.sync();
+#endif
+    }
+
+
+private:
+    _CG_QUALIFIER details::barrier_t* get_sync_location() const {
+        // Different group sizes use different barriers, all groups of a given size share one barrier.
+        unsigned int sync_id = details::log2(Size / 64);
+        return &tile_memory->barriers[sync_id];
+    }
+
+    template <typename T>
+    _CG_QUALIFIER T* get_scratch_location(unsigned int warp_id) const {
+        unsigned int scratch_id = (details::cta::thread_rank() - thread_rank()) / 32 + warp_id;
+        return reinterpret_cast<T*>(&tile_memory->communication_memory[scratch_id]);
+    }
+
+    template <typename T>
+    _CG_QUALIFIER T* get_scratch_location() const {
+        unsigned int scratch_id = details::cta::thread_rank() / 32;
+        return reinterpret_cast<T*>(&tile_memory->communication_memory[scratch_id]);
+    }
+
+    template <typename TyVal>
+    _CG_QUALIFIER TyVal shfl_impl(TyVal val, unsigned int src) const {
+        unsigned int src_warp = src / 32;
+        auto warp = details::tiled_partition_internal<32, ThisType>();
+        details::barrier_t* sync_location = get_sync_location();
+
+        // Get warp slot of the source threads warp.
+        TyVal* warp_scratch_location = get_scratch_location<TyVal>(src_warp);
+
+        if (warp.meta_group_rank() == src_warp) {
+            warp.sync();
+            // Put shuffled value into my warp slot and let my warp arrive at the barrier.
+            if (thread_rank() == src) {
+                *warp_scratch_location = val;
+            }
+            details::sync_warps_arrive(sync_location, details::cta::thread_rank(), numWarps);
+            TyVal result = *warp_scratch_location;
+            details::sync_warps_wait(sync_location, details::cta::thread_rank());
+            return result;
+        }
+        else {
+            // Wait for the source warp to arrive on the barrier.
+            details::sync_warps_wait_for_specific_warp(sync_location,
+                    (details::cta::thread_rank() / 32 - warp.meta_group_rank() + src_warp));
+            TyVal result = *warp_scratch_location;
+            details::sync_warps(sync_location, details::cta::thread_rank(), numWarps);
+            return result;
+        }
+    }
+
+    template <typename TyVal, typename WarpLambda, typename InterWarpLambda>
+    _CG_QUALIFIER TyVal collectives_scheme(const WarpLambda& warp_lambda, const InterWarpLambda& inter_warp_lambda) const {
+        static_assert(sizeof(TyVal) <= details::multi_warp_scratch::communication_size,
+                      "Collectives with tiles larger than 32 threads are limited to types smaller then 8 bytes");
+        auto warp = details::tiled_partition_internal<32, ThisType>();
+        details::barrier_t* sync_location = get_sync_location();
+        TyVal* warp_scratch_location = get_scratch_location<TyVal>();
+
+        warp_lambda(warp, warp_scratch_location);
+
+        if (details::sync_warps_last_releases(sync_location, details::cta::thread_rank(), numWarps)) {
+            auto subwarp = details::tiled_partition_internal<numWarps, decltype(warp)>();
+            if (subwarp.meta_group_rank() == 0) {
+                TyVal* thread_scratch_location = get_scratch_location<TyVal>(subwarp.thread_rank());
+                inter_warp_lambda(subwarp, thread_scratch_location);
+            }
+            warp.sync();
+            details::sync_warps_release(sync_location, warp.thread_rank() == 0, details::cta::thread_rank(), numWarps);
+        }
+        TyVal result = *warp_scratch_location;
+        return result;
+    }
+
+public:
+    _CG_STATIC_CONST_DECL unsigned int _group_id = details::multi_tile_group_id;
+
+    using __static_size_tile_base<Size>::thread_rank;
+
+    template <typename TyVal>
+    _CG_QUALIFIER TyVal shfl(TyVal val, unsigned int src) const {
+        static_assert(sizeof(TyVal) <= details::multi_warp_scratch::communication_size,
+                      "Collectives with tiles larger than 32 threads are limited to types smaller then 8 bytes");
+        return shfl_impl(val, src);
+    }
+
+    _CG_QUALIFIER void sync() const {
+        details::sync_warps(get_sync_location(), details::cta::thread_rank(), numWarps);
+    }
+
+    _CG_QUALIFIER int any(int predicate) const {
+        auto warp_lambda = [=] (WarpType& warp, int* warp_scratch_location) {
+                *warp_scratch_location = __any_sync(0xFFFFFFFF, predicate);
+        };
+        auto inter_warp_lambda =
+            [] (details::internal_thread_block_tile<numWarps, WarpType>& subwarp, int* thread_scratch_location) {
+                *thread_scratch_location = __any_sync(0xFFFFFFFFU >> (32 - numWarps), *thread_scratch_location);
+        };
+        return collectives_scheme<int>(warp_lambda, inter_warp_lambda);
+    }
+
+    _CG_QUALIFIER int all(int predicate) const {
+        auto warp_lambda = [=] (WarpType& warp, int* warp_scratch_location) {
+                *warp_scratch_location = __all_sync(0xFFFFFFFF, predicate);
+        };
+        auto inter_warp_lambda =
+            [] (details::internal_thread_block_tile<numWarps, WarpType>& subwarp, int* thread_scratch_location) {
+                *thread_scratch_location = __all_sync(0xFFFFFFFFU >> (32 - numWarps), *thread_scratch_location);
+        };
+        return collectives_scheme<int>(warp_lambda, inter_warp_lambda);
+    }
+};
+
+
+template <unsigned int Size, typename ParentT = void>
+class __multi_warp_thread_block_tile :
+    public __static_size_multi_warp_tile_base<Size>,
+    public __static_parent_thread_block_tile_base<Size, ParentT>
+{
+    typedef __static_parent_thread_block_tile_base<Size, ParentT> staticParentBaseT;
+    typedef __static_size_multi_warp_tile_base<Size> staticTileBaseT;
+protected:
+    _CG_QUALIFIER __multi_warp_thread_block_tile(const ParentT& g) :
+        __static_size_multi_warp_tile_base<Size>(g) {}
+};
+
+template <unsigned int Size>
+class __multi_warp_thread_block_tile<Size, void> : public __static_size_multi_warp_tile_base<Size>
+{
+    const unsigned int metaGroupRank;
+    const unsigned int metaGroupSize;
+
+protected:
+    template <unsigned int OtherSize, typename ParentT>
+    _CG_QUALIFIER __multi_warp_thread_block_tile(const __multi_warp_thread_block_tile<OtherSize, ParentT>& g) :
+        __static_size_multi_warp_tile_base<Size>(g), metaGroupRank(g.meta_group_rank()), metaGroupSize(g.meta_group_size()) {}
+
+public:
+    _CG_QUALIFIER unsigned int meta_group_rank() const {
+        return metaGroupRank;
+    }
+
+    _CG_QUALIFIER unsigned int meta_group_size() const {
+        return metaGroupSize;
+    }
+};
+#endif
+
+template <unsigned int Size, typename ParentT = void>
+class thread_block_tile;
+
+namespace details {
+    template <unsigned int Size, typename ParentT, bool IsMultiWarp>
+    class thread_block_tile_impl;
+
+    template <unsigned int Size, typename ParentT>
+    class thread_block_tile_impl<Size, ParentT, false>: public __single_warp_thread_block_tile<Size, ParentT>
+    {
+    protected:
+        template <unsigned int OtherSize, typename OtherParentT, bool OtherIsMultiWarp>
+        _CG_QUALIFIER thread_block_tile_impl(const thread_block_tile_impl<OtherSize, OtherParentT, OtherIsMultiWarp>& g) :
+            __single_warp_thread_block_tile<Size, ParentT>(g.meta_group_rank(), g.meta_group_size()) {}
+
+        _CG_QUALIFIER thread_block_tile_impl(const thread_block& g) :
+            __single_warp_thread_block_tile<Size, ParentT>() {}
+    };
+
+#if defined(_CG_CPP11_FEATURES)
+    template <unsigned int Size, typename ParentT>
+    class thread_block_tile_impl<Size, ParentT, true> : public __multi_warp_thread_block_tile<Size, ParentT>
+    {
+        protected:
+        template <typename GroupT>
+        _CG_QUALIFIER thread_block_tile_impl(const GroupT& g) :
+            __multi_warp_thread_block_tile<Size, ParentT>(g) {}
+    };
+#else
+    template <unsigned int Size, typename ParentT>
+    class thread_block_tile_impl<Size, ParentT, true>
+    {
+        protected:
+        template <typename GroupT>
+        _CG_QUALIFIER thread_block_tile_impl(const GroupT& g) {}
+    };
+#endif
+}
+
+template <unsigned int Size, typename ParentT>
+class thread_block_tile : public details::thread_block_tile_impl<Size, ParentT, details::_is_multi_warp<Size>::value>
+{
+    friend _CG_QUALIFIER thread_block_tile<1, void> this_thread();
+
+protected:
+    _CG_QUALIFIER thread_block_tile(const ParentT& g) :
+        details::thread_block_tile_impl<Size, ParentT, details::_is_multi_warp<Size>::value>(g) {}
+
+public:
+    _CG_QUALIFIER operator thread_block_tile<Size, void>() const {
+        return thread_block_tile<Size, void>(*this);
+    }
+};
+
+template <unsigned int Size>
+class thread_block_tile<Size, void> : public details::thread_block_tile_impl<Size, void, details::_is_multi_warp<Size>::value>
+{
+    template <unsigned int, typename ParentT>
+    friend class thread_block_tile;
+
+protected:
+    template <unsigned int OtherSize, typename OtherParentT>
+    _CG_QUALIFIER thread_block_tile(const thread_block_tile<OtherSize, OtherParentT>& g) :
+        details::thread_block_tile_impl<Size, void, details::_is_multi_warp<Size>::value>(g) {}
+
+public:
+    template <typename ParentT>
+    _CG_QUALIFIER thread_block_tile(const thread_block_tile<Size, ParentT>& g) :
+        details::thread_block_tile_impl<Size, void, details::_is_multi_warp<Size>::value>(g) {}
+};
+
+namespace details {
+    template <unsigned int Size, typename ParentT>
+    struct tiled_partition_impl;
+
+    template <unsigned int Size>
+    struct tiled_partition_impl<Size, thread_block> : public thread_block_tile<Size, thread_block> {
+        _CG_QUALIFIER tiled_partition_impl(const thread_block& g) :
+            thread_block_tile<Size, thread_block>(g) {}
+    };
+
+    // ParentT = static thread_block_tile<ParentSize, GrandParent> specialization
+    template <unsigned int Size, unsigned int ParentSize, typename GrandParent>
+    struct tiled_partition_impl<Size, thread_block_tile<ParentSize, GrandParent> > :
+        public thread_block_tile<Size, thread_block_tile<ParentSize, GrandParent> > {
+#ifdef _CG_CPP11_FEATURES
+        static_assert(Size < ParentSize, "Tile size bigger or equal to the parent group size");
+#endif
+        _CG_QUALIFIER tiled_partition_impl(const thread_block_tile<ParentSize, GrandParent>& g) :
+            thread_block_tile<Size, thread_block_tile<ParentSize, GrandParent> >(g) {}
+    };
+
+}
+
+template <unsigned int Size, typename ParentT>
+_CG_QUALIFIER thread_block_tile<Size, ParentT> tiled_partition(const ParentT& g)
+{
+    return details::tiled_partition_impl<Size, ParentT>(g);
+}
+
+/**
+ * thread_group this_thread()
+ *
+ * Constructs a generic thread_group containing only the calling thread
+ */
+_CG_QUALIFIER thread_block_tile<1, void> this_thread()
+{
+    // Make thread_block_tile<1, thread_block> parent of the returned group, so it will have its
+    // meta group rank and size set to 0 and 1 respectively.
+    return thread_block_tile<1, thread_block_tile<1, thread_block> >(this_thread_block());
+}
+
+/**
+ * <group_type>.sync()
+ *
+ * Executes a barrier across the group
+ *
+ * Implements both a compiler fence and an architectural fence to prevent,
+ * memory reordering around the barrier.
+ */
+_CG_QUALIFIER void thread_group::sync() const
+{
+    switch (_data.group.type) {
+    case details::coalesced_group_id:
+        cooperative_groups::sync(*static_cast<const coalesced_group*>(this));
+        break;
+    case details::thread_block_id:
+        cooperative_groups::sync(*static_cast<const thread_block*>(this));
+        break;
+    case details::grid_group_id:
+        cooperative_groups::sync(*static_cast<const grid_group*>(this));
+        break;
+#if defined(_CG_HAS_MULTI_GRID_GROUP) && defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+    case details::multi_grid_group_id:
+        cooperative_groups::sync(*static_cast<const multi_grid_group*>(this));
+        break;
+#endif
+#if defined(_CG_HAS_CLUSTER_GROUP)
+    case details::cluster_group_id:
+        cooperative_groups::sync(*static_cast<const cluster_group*>(this));
+        break;
+#endif
+    default:
+        break;
+    }
+}
+
+/**
+ * <group_type>.size()
+ *
+ * Returns the total number of threads in the group.
+ */
+_CG_QUALIFIER unsigned long long thread_group::size() const
+{
+    unsigned long long size = 0;
+    switch (_data.group.type) {
+    case details::coalesced_group_id:
+        size = cooperative_groups::group_size(*static_cast<const coalesced_group*>(this));
+        break;
+    case details::thread_block_id:
+        size = cooperative_groups::group_size(*static_cast<const thread_block*>(this));
+        break;
+    case details::grid_group_id:
+        size = cooperative_groups::group_size(*static_cast<const grid_group*>(this));
+        break;
+#if defined(_CG_HAS_MULTI_GRID_GROUP) && defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+    case details::multi_grid_group_id:
+        size = cooperative_groups::group_size(*static_cast<const multi_grid_group*>(this));
+        break;
+#endif
+#if defined(_CG_HAS_CLUSTER_GROUP)
+    case details::cluster_group_id:
+        size = cooperative_groups::group_size(*static_cast<const cluster_group*>(this));
+        break;
+#endif
+    default:
+        break;
+    }
+    return size;
+}
+
+/**
+ * <group_type>.thread_rank()
+ *
+ * Returns the linearized rank of the calling thread along the interval [0, size()).
+ */
+_CG_QUALIFIER unsigned long long thread_group::thread_rank() const
+{
+    unsigned long long rank = 0;
+    switch (_data.group.type) {
+    case details::coalesced_group_id:
+        rank = cooperative_groups::thread_rank(*static_cast<const coalesced_group*>(this));
+        break;
+    case details::thread_block_id:
+        rank = cooperative_groups::thread_rank(*static_cast<const thread_block*>(this));
+        break;
+    case details::grid_group_id:
+        rank = cooperative_groups::thread_rank(*static_cast<const grid_group*>(this));
+        break;
+#if defined(_CG_HAS_MULTI_GRID_GROUP) && defined(_CG_CPP11_FEATURES) && defined(_CG_ABI_EXPERIMENTAL)
+    case details::multi_grid_group_id:
+        rank = cooperative_groups::thread_rank(*static_cast<const multi_grid_group*>(this));
+        break;
+#endif
+#if defined(_CG_HAS_CLUSTER_GROUP)
+    case details::cluster_group_id:
+        rank = cooperative_groups::thread_rank(*static_cast<const cluster_group*>(this));
+        break;
+#endif
+    default:
+        break;
+    }
+    return rank;
 }
 
 _CG_END_NAMESPACE
+
+#include <cooperative_groups/details/partitioning.h>
 
 # endif /* ! (__cplusplus, __CUDACC__) */
 

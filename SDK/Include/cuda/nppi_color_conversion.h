@@ -1,4 +1,4 @@
- /* Copyright 2009-2017 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -109,8 +109,11 @@ extern "C" {
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -122,8 +125,11 @@ NppStatus nppiRGBToYUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -134,8 +140,11 @@ NppStatus nppiRGBToYUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -146,8 +155,11 @@ NppStatus nppiRGBToYUV_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -159,8 +171,11 @@ NppStatus nppiRGBToYUV_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV_8u_AC4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoyuv */
@@ -193,8 +208,11 @@ NppStatus nppiRGBToYUV_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -206,8 +224,11 @@ NppStatus nppiBGRToYUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -218,8 +239,11 @@ NppStatus nppiBGRToYUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYUV_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -230,8 +254,11 @@ NppStatus nppiBGRToYUV_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYUV_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -243,8 +270,11 @@ NppStatus nppiBGRToYUV_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV_8u_AC4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYUV_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtoyuv */
@@ -287,8 +317,11 @@ NppStatus nppiBGRToYUV_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -300,8 +333,11 @@ NppStatus nppiYUVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -312,8 +348,11 @@ NppStatus nppiYUVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToRGB_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToRGB_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -324,11 +363,106 @@ NppStatus nppiYUVToRGB_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} yuvtorgb */
+
+/** @defgroup yuvtorgbbatch YUVToRGBBatch
+ *  YUV to RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ *  NPP converts YUV to gamma corrected RGB the same way as in \ref yuvtorgb.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YUV to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input and output images passed in pSrcBatchList and pSrcBatchList
+ * arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the borders of any of provided images.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToRGBBatch_8u_C3R_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToRGBBatch_8u_C3R(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YUV to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuvtorgbbatch */
+
+/** @defgroup yuvtorgbbatchadvanced YUVToRGBBatchAdvanced
+ *  YUV to RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ *  NPP converts YUV to gamma corrected RGB the same way as in \ref yuvtorgb.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YUV to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair of input/output images has own ROI.
+ * Provided oMaxSizeROI must contain the maximum width and the maximum height of all ROIs defined in pDstBatchList. API user must ensure that
+ * ROI from pDstBatchList for each pair of input and output images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToRGBBatch_8u_C3R_Advanced_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToRGBBatch_8u_C3R_Advanced(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YUV to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuvtorgbbatchadvanced */
 
 /** @defgroup yuvtobgr YUVToBGR 
  *  YUV to BGR color conversion.
@@ -368,8 +502,11 @@ NppStatus nppiYUVToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToBGR_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToBGR_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -381,8 +518,11 @@ NppStatus nppiYUVToBGR_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToBGR_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToBGR_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -393,8 +533,11 @@ NppStatus nppiYUVToBGR_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToBGR_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToBGR_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -405,15 +548,111 @@ NppStatus nppiYUVToBGR_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUVToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUVToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} yuvtobgr */
 
+/** @defgroup yuvtobgrbatch YUVToBGRBatch
+ *  YUV to BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ *  NPP converts YUV to gamma corrected BGR the same way as in \ref yuvtobgr.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YUV to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input and output images passed in pSrcBatchList and pSrcBatchList
+ * arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the borders of any of provided images.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToBGRBatch_8u_C3R_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToBGRBatch_8u_C3R(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YUV to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuvtobgrbatch */
+
+/** @defgroup yuvtobgrbatchadvanced YUVToBGRBatchAdvanced
+ *  YUV to BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ *  NPP converts YUV to gamma corrected BGR the same way as in \ref yuvtobgr.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YUV to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair of input/output images has own ROI.
+ * Provided oMaxSizeROI must contain the maximum width and the maximum height of all ROIs defined in pDstBatchList. API user must ensure that
+ * ROI from pDstBatchList for each pair of input and output images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToBGRBatch_8u_C3R_Advanced_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToBGRBatch_8u_C3R_Advanced(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YUV to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUVToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUVToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuvtobgrbatchadvanced */
+
 /** @defgroup rgbtoyuv422 RGBToYUV422 
  *  RGB to YUV422 color conversion.
  *
+ *  NPP converts YUV to gamma corrected BGR the same way as in \ref yuvtobgr.
  * @{
  *
  */
@@ -426,8 +665,11 @@ NppStatus nppiYUVToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV422_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -439,8 +681,11 @@ NppStatus nppiRGBToYUV422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV422_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV422_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -451,8 +696,11 @@ NppStatus nppiRGBToYUV422_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV422_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} rgbtoyuv422 */
@@ -472,8 +720,11 @@ NppStatus nppiRGBToYUV422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV422ToRGB_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -484,8 +735,11 @@ NppStatus nppiYUV422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV422ToRGB_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV422ToRGB_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -496,8 +750,11 @@ NppStatus nppiYUV422ToRGB_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV422ToRGB_8u_P3C3R_Ctx(const Npp8u* const pSrc[3], int rSrcStep[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV422ToRGB_8u_P3C3R(const Npp8u* const pSrc[3], int rSrcStep[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -508,11 +765,130 @@ NppStatus nppiYUV422ToRGB_8u_P3C3R(const Npp8u* const pSrc[3], int rSrcStep[3], 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV422ToRGB_8u_P3AC4R_Ctx(const Npp8u* const pSrc[3], int rSrcStep[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV422ToRGB_8u_P3AC4R(const Npp8u* const pSrc[3], int rSrcStep[3], Npp8u* pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} yuv422torgb */
+
+/** @defgroup yuv422torgbbatch YUV422ToRGBBatch
+ *  Planar YUV422 to packed RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YUV422 to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV422ToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV422ToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuv422torgbbatch */
+
+/** @defgroup yuv422torgbbatchadvanced YUV422ToRGBBatchAdvanced
+ *  Planar YUV422 to packed RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV422 to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV422ToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV422ToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuv422torgbbatchadvanced */
+
+/** @defgroup yuv422tobgrbatch YUV422ToBGRBatch
+ *  Planar YUV422 to packed BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YUV422 to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV422ToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV422ToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuv422tobgrbatch */
+
+/** @defgroup yuv422tobgrbatchadvanced YUV422ToBGRBatchAdvanced
+ *  Planar YUV422 to packed BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV422 to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV422ToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV422ToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuv422tobgrbatchadvanced */
 
 /** @defgroup rgbtoyuv420 RGBToYUV420 
  *  RGB to YUV420 color conversion.
@@ -530,8 +906,11 @@ NppStatus nppiYUV422ToRGB_8u_P3AC4R(const Npp8u* const pSrc[3], int rSrcStep[3],
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV420_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV420_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -542,8 +921,11 @@ NppStatus nppiRGBToYUV420_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYUV420_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYUV420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} rgbtoyuv420 */
@@ -563,8 +945,11 @@ NppStatus nppiRGBToYUV420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToRGB_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToRGB_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -575,8 +960,11 @@ NppStatus nppiYUV420ToRGB_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -587,8 +975,11 @@ NppStatus nppiYUV420ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3],
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToRGB_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -599,11 +990,72 @@ NppStatus nppiYUV420ToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3],
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToRGB_8u_P3AC4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToRGB_8u_P3AC4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} yuv420torgb */
+
+/** @defgroup yuv420torgbbatch YUV420ToRGBBatch
+ *  Planar YUV420 to packed RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV420 to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents U planes. The third element of array (pSrcBatchList[2])
+ *        represents V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV420ToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV420ToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuv420torgbbatch */
+
+/** @defgroup yuv420torgbbatchadvanced YUV420ToRGBBatchAdvanced
+ *  Planar YUV420 to packed RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV420 to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV420ToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV420ToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuv420torgbbatchadvanced */
 
 /** @defgroup nv12torgb NV12ToRGB 
  *  NV12 to RGB color conversion.
@@ -618,27 +1070,50 @@ NppStatus nppiYUV420ToRGB_8u_P3AC4R(const Npp8u * const pSrc[3], int rSrcStep[3]
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y
  *  	  plane, one for UV plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each source plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV12ToRGB_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV12ToRGB_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  *  2 channel 8-bit unsigned planar NV12 to 3 channel 8-bit
- *  unsigned packed RGB 709 HDTV full color conversion.
+ *  unsigned packed RGB 709 HDTV full color conversion. Note that HDTV conversion assumes full color range of 0 - 255, use CSC version for limited range color.
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y
  *  	  plane, one for UV plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV12ToRGB_709HDTV_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV12ToRGB_709HDTV_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+
+/**
+ *  2 channel 8-bit unsigned planar NV12 to 3 channel 8-bit
+ *  unsigned packed RGB 709 CSC color conversion. Note that HDTV conversion assumes full color range of 0 - 255, use CSC version for limited range color.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array (one for Y
+ *  	  plane, one for UV plane).
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each plane.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiNV12ToRGB_709CSC_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiNV12ToRGB_709CSC_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} nv12torgb */
 
@@ -653,12 +1128,15 @@ NppStatus nppiNV12ToRGB_709HDTV_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcSt
  *  2 channel 8-bit unsigned planar NV21 to 4 channel 8-bit unsigned packed RGBA color conversion with constant alpha (0xFF).
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y plane, one for VU plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV21ToRGB_8u_P2C4R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV21ToRGB_8u_P2C4R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} nv21torgb */
@@ -679,8 +1157,11 @@ NppStatus nppiNV21ToRGB_8u_P2C4R(const Npp8u * const pSrc[2], int rSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYUV420_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
 NppStatus nppiBGRToYUV420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
  
 /** @} bgrtoyuv420 */
@@ -700,8 +1181,11 @@ NppStatus nppiBGRToYUV420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pD
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -712,11 +1196,72 @@ NppStatus nppiYUV420ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3],
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYUV420ToBGR_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYUV420ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} yuv420tobgr */
+
+/** @defgroup yuv420tobgrbatch YUV420ToBGRBatch
+ *  Planar YUV420 to packed BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV420 to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents U planes. The third element of array (pSrcBatchList[2])
+ *        represents V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV420ToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV420ToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} yuv420tobgrbatch */
+
+/** @defgroup yuv420tobgrbatchadvanced YUV420ToBGRBatchAdvanced
+ *  Planar YUV420 to packed BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YUV420 to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of U planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of V planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYUV420ToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYUV420ToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} yuv420tobgrbatchadvanced */
 
 /** @defgroup nv12tobgr NV12ToBGR 
  *  NV12 to BGR color conversion.
@@ -731,27 +1276,50 @@ NppStatus nppiYUV420ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3],
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y
  *  	  plane, one for UV plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step.  Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV12ToBGR_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV12ToBGR_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  *  2 channel 8-bit unsigned planar NV12 to 3 channel 8-bit
- *  unsigned packed BGR 709 HDTV full color conversion.
+ *  unsigned packed RGB 709 HDTV full color conversion. Note that HDTV conversion assumes full color range of 0 - 255, use CSC version for limited range color.
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y
  *  	  plane, one for UV plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV12ToBGR_709HDTV_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV12ToBGR_709HDTV_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+
+/**
+ *  2 channel 8-bit unsigned planar NV12 to 3 channel 8-bit
+ *  unsigned packed RGB 709 CSC color conversion. Note that HDTV conversion assumes full color range of 0 - 255, use CSC version for limited range color.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array (one for Y
+ *  	  plane, one for UV plane).
+ * \param rSrcStep \ref source_planar_image_line_step. Same value is used for each plane.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiNV12ToBGR_709CSC_8u_P2C3R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiNV12ToBGR_709CSC_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} nv12tobgr */
 
@@ -766,12 +1334,15 @@ NppStatus nppiNV12ToBGR_709HDTV_8u_P2C3R(const Npp8u * const pSrc[2], int rSrcSt
  *  2 channel 8-bit unsigned planar NV21 to 4 channel 8-bit unsigned packed BGRA color conversion with constant alpha (0xFF).
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y plane, one for VU plane).
- * \param rSrcStep \ref source_planar_image_line_step_array.
+ * \param rSrcStep \ref source_planar_image_line_step.  Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV21ToBGR_8u_P2C4R_Ctx(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV21ToBGR_8u_P2C4R(const Npp8u * const pSrc[2], int rSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} nv21tobgr */
@@ -801,8 +1372,12 @@ NppStatus nppiNV21ToBGR_8u_P2C4R(const Npp8u * const pSrc[2], int rSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiRGBToYCbCr_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiRGBToYCbCr_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -814,8 +1389,11 @@ nppiRGBToYCbCr_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -826,8 +1404,11 @@ NppStatus nppiRGBToYCbCr_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -839,8 +1420,11 @@ NppStatus nppiRGBToYCbCr_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -851,8 +1435,11 @@ NppStatus nppiRGBToYCbCr_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoycbcr */
@@ -864,10 +1451,8 @@ NppStatus nppiRGBToYCbCr_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  *
  *  \code
  *  Npp32f nY = 1.164F * ((Npp32f)Y - 16.0F);
- *  Npp32f nR = ((Npp32f)Cr - 128.0F);
- *  Npp32f nB = ((Npp32f)Cb - 128.0F);
- *  Npp32f nG = nY - 0.813F * nR - 0.392F * nB;
- *  if (nG > 255.0F)
+ *  Npp32f nR = ((Npp32f)Cr - 128.0F); Npp32f nB = ((Npp32f)Cb
+ *  - 128.0F); Npp32f nG = nY - 0.813F * nR - 0.392F * nB; if (nG > 255.0F)
  *      nG = 255.0F;
  *  nR = nY + 1.596F * nR; 
  *  if (nR > 255.0F)
@@ -889,8 +1474,11 @@ NppStatus nppiRGBToYCbCr_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -902,8 +1490,11 @@ NppStatus nppiYCbCrToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -914,8 +1505,11 @@ NppStatus nppiYCbCrToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToRGB_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToRGB_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -926,8 +1520,11 @@ NppStatus nppiYCbCrToRGB_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -939,11 +1536,106 @@ NppStatus nppiYCbCrToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.                                         
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToRGB_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst , int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst , int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcrtorgb */
+
+/** @defgroup ycbcrtorgbbatch YCbCrToRGBBatch
+ *  YCbCr to RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ *  NPP converts YCbCr to gamma corrected RGB the same way as in \ref ycbcrtorgb.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YCbCr to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input and output images passed in pSrcBatchList and pSrcBatchList
+ * arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the borders of any of provided images.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToRGBBatch_8u_C3R_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToRGBBatch_8u_C3R(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcrtorgbbatch */
+
+/** @defgroup ycbcrtorgbbatchadvanced YCbCrToRGBBatchAdvanced
+ *  YCbCr to RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ *  NPP converts YCbCr to gamma corrected RGB the same way as in \ref ycbcrtorgb.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YCbCr to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair of input/output images has own ROI.
+ * Provided oMaxSizeROI must contain the maximum width and the maximum height of all ROIs defined in pDstBatchList. API user must ensure that
+ * ROI from pDstBatchList for each pair of input and output images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToRGBBatch_8u_C3R_Advanced_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToRGBBatch_8u_C3R_Advanced(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcrtorgbbatchadvanced */
 
 /** @defgroup ycbcrtobgr YCbCrToBGR 
  *  YCbCr to BGR color conversion.
@@ -960,8 +1652,11 @@ NppStatus nppiYCbCrToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -973,11 +1668,106 @@ NppStatus nppiYCbCrToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToBGR_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcrtobgr */
+
+/** @defgroup ycbcrtobgrbatch YCbCrToBGRBatch
+ *  YCbCr to BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ *  NPP converts YCbCr to gamma corrected BGR the same way as in \ref ycbcrtobgr.
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned packed YCbCr to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input and output images passed in pSrcBatchList and pSrcBatchList
+ * arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the borders of any of provided images.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToBGRBatch_8u_C3R_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToBGRBatch_8u_C3R(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this  call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
+NppStatus nppiYCbCrToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcrtobgrbatch */
+
+/** @defgroup ycbcrtobgrbatchadvanced YCbCrToBGRBatchAdvanced
+ *  YCbCr to BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ *  NPP converts YCbCr to gamma corrected BGR the same way as in \ref ycbcrtobgr.
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned packed YCbCr to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair of input/output images has own ROI.
+ * Provided oMaxSizeROI must contain the maximum width and the maximum height of all ROIs defined in pDstBatchList. API user must ensure that
+ * ROI from pDstBatchList for each pair of input and output images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList \ref source_batch_images_pointer.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context.
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToBGRBatch_8u_C3R_Advanced_Ctx(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToBGRBatch_8u_C3R_Advanced(const NppiImageDescriptor* pSrcBatchList, NppiImageDescriptor* pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCrToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCrToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcrtobgrbatchadvanced */
 
 /** @defgroup ycbcrtobgr709 YCbCrToBGR_709CSC 
  *  YCbCr to BGR_709CSC color conversion.
@@ -994,8 +1784,11 @@ NppStatus nppiYCbCrToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcStep, Npp
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToBGR_709CSC_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToBGR_709CSC_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1007,8 +1800,11 @@ NppStatus nppiYCbCrToBGR_709CSC_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcSt
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCrToBGR_709CSC_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCrToBGR_709CSC_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcrtobgr709 */
@@ -1029,10 +1825,12 @@ NppStatus nppiYCbCrToBGR_709CSC_8u_P3C4R(const Npp8u * const pSrc[3], int nSrcSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
-NppStatus 
-nppiRGBToYCbCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+NppStatus nppiRGBToYCbCr422_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiRGBToYCbCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  * 3 channel 8-bit unsigned packed RGB to 3 channel 8-bit unsigned planar YCbCr422 color conversion.
@@ -1043,8 +1841,11 @@ nppiRGBToYCbCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int n
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr422_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1056,8 +1857,11 @@ NppStatus nppiRGBToYCbCr422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoycbcr422 */
@@ -1078,8 +1882,11 @@ NppStatus nppiRGBToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int nSrcStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToRGB_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiYCbCr422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI); 
 
 /**
@@ -1091,8 +1898,11 @@ NppStatus nppiYCbCr422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToRGB_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToRGB_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1104,11 +1914,72 @@ NppStatus nppiYCbCr422ToRGB_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} ycbcr422torgb */
+
+/** @defgroup ycbcr422torgbbatch YCbCr422ToRGBBatch
+ *  Planar YCbCr422 to packed RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YCbCr422 to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr422ToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr422ToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcr422torgbbatch */
+
+/** @defgroup ycbcr422torgbbatchadvanced YCbCr422ToRGBBatchAdvanced
+ *  Planar YCbCr422 to packed RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr422 to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr422ToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr422ToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcr422torgbbatchadvanced */
 
 /** @defgroup rgbtoycrcb422 RGBToYCrCb422 
  *  RGB to YCrCb422 color conversion.
@@ -1126,8 +1997,11 @@ NppStatus nppiYCbCr422ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCrCb422_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCrCb422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1139,8 +2013,11 @@ NppStatus nppiRGBToYCrCb422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCrCb422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoycrcb422 */
@@ -1161,8 +2038,11 @@ NppStatus nppiRGBToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int nSrcStep, 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb422ToRGB_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx); 
+
 NppStatus nppiYCrCb422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI); 
 
 /**
@@ -1174,8 +2054,11 @@ NppStatus nppiYCrCb422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb422ToRGB_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb422ToRGB_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** @} ycrcb422torgb */
@@ -1196,8 +2079,11 @@ NppStatus nppiYCrCb422ToRGB_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1209,8 +2095,11 @@ NppStatus nppiBGRToYCbCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_8u_AC4C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1222,8 +2111,11 @@ NppStatus nppiBGRToYCbCr422_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1235,8 +2127,11 @@ NppStatus nppiBGRToYCbCr422_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycbcr422 */
@@ -1257,8 +2152,11 @@ NppStatus nppiBGRToYCbCr422_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToBGR_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToBGR_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1271,8 +2169,11 @@ NppStatus nppiYCbCr422ToBGR_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToBGR_8u_C2C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToBGR_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /**
@@ -1284,11 +2185,72 @@ NppStatus nppiYCbCr422ToBGR_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} ycbcr422tobgr */
+
+/** @defgroup ycbcr422tobgrbatch YCbCr422ToBGRBatch
+ *  Planar YCbCr422 to packed BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YCbCr422 to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this  call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr422ToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
+NppStatus nppiYCbCr422ToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcr422tobgrbatch */
+
+/** @defgroup ycbcr422tobgrbatchadvanced YCbCr422ToBGRBatchAdvanced
+ *  Planar YCbCr422 to packed BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr422 to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr422ToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr422ToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcr422tobgrbatchadvanced */
 
 /** @defgroup rgbtocbycr422 RGBToCbYCr422 
  *  RGB to CbYCr422 color conversion.
@@ -1306,8 +2268,11 @@ NppStatus nppiYCbCr422ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToCbYCr422_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToCbYCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1319,8 +2284,11 @@ NppStatus nppiRGBToCbYCr422_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToCbYCr422Gamma_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToCbYCr422Gamma_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtocbycr422 */
@@ -1341,8 +2309,11 @@ NppStatus nppiRGBToCbYCr422Gamma_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToRGB_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} cbcr422torgb */
@@ -1363,8 +2334,11 @@ NppStatus nppiCbYCr422ToRGB_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToCbYCr422_8u_AC4C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToCbYCr422_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtocbycr422 */
@@ -1385,8 +2359,11 @@ NppStatus nppiBGRToCbYCr422_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToCbYCr422_709HDTV_8u_C3C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToCbYCr422_709HDTV_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1398,8 +2375,11 @@ NppStatus nppiBGRToCbYCr422_709HDTV_8u_C3C2R(const Npp8u * pSrc, int nSrcStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToCbYCr422_709HDTV_8u_AC4C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToCbYCr422_709HDTV_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtocbycr422709HDTV */
@@ -1421,8 +2401,11 @@ NppStatus nppiBGRToCbYCr422_709HDTV_8u_AC4C2R(const Npp8u * pSrc, int nSrcStep, 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToBGR_8u_C2C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToBGR_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} cbycr422tobgr */
@@ -1443,8 +2426,11 @@ NppStatus nppiCbYCr422ToBGR_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1457,8 +2443,11 @@ NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C3R(const Npp8u * pSrc, int nSrcStep, N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} cbycr422tobgr709hdtv */
@@ -1479,8 +2468,11 @@ NppStatus nppiCbYCr422ToBGR_709HDTV_8u_C2C4R(const Npp8u * pSrc, int nSrcStep, N
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr420_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} rgbtoycbcr420 */
@@ -1500,11 +2492,72 @@ NppStatus nppiRGBToYCbCr420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} ycbcr420torgb */
+
+/** @defgroup ycbcr420torgbbatch YCbCr420ToRGBBatch
+ *  Planar YCbCr420 to packed RGB batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YCbCr420 to 3 channel 8-bit unsigned packed RGB batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr420ToRGBBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr420ToRGBBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcr420torgbbatch */
+
+/** @defgroup ycbcr420torgbbatchadvanced YCbCr420ToRGBBatchAdvanced
+ *  Planar YCbCr420 to packed RGB batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr420 to 3 channel 8-bit unsigned packed RGB batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr420ToRGBBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr420ToRGBBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcr420torgbbatchadvanced */
 
 /** @defgroup rgbtoycrcb420 RGBToYCrCb420 
  *  RGB to YCrCb420 color conversion.
@@ -1522,8 +2575,11 @@ NppStatus nppiYCbCr420ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCrCb420_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCrCb420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} rgbtoycrcb420 */
@@ -1544,8 +2600,11 @@ NppStatus nppiRGBToYCrCb420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToRGB_8u_P3C4R_Ctx(const Npp8u * const pSrc[3],int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToRGB_8u_P3C4R(const Npp8u * const pSrc[3],int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycrcb420torgb */
@@ -1566,8 +2625,11 @@ NppStatus nppiYCrCb420ToRGB_8u_P3C4R(const Npp8u * const pSrc[3],int rSrcStep[3]
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1579,8 +2641,11 @@ NppStatus nppiBGRToYCbCr420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycbcr420 */
@@ -1601,8 +2666,11 @@ NppStatus nppiBGRToYCbCr420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_709CSC_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_709CSC_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1614,8 +2682,11 @@ NppStatus nppiBGRToYCbCr420_709CSC_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Np
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_709CSC_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_709CSC_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycbcr420709csc */
@@ -1636,8 +2707,11 @@ NppStatus nppiBGRToYCbCr420_709CSC_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, N
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_709HDTV_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_709HDTV_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycbcr420709hdtv */
@@ -1656,8 +2730,11 @@ NppStatus nppiBGRToYCbCr420_709HDTV_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCrCb420_709CSC_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCrCb420_709CSC_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1669,8 +2746,11 @@ NppStatus nppiBGRToYCrCb420_709CSC_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Np
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCrCb420_709CSC_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCrCb420_709CSC_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycrdb420709csc */
@@ -1687,8 +2767,11 @@ NppStatus nppiBGRToYCrCb420_709CSC_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1700,11 +2783,72 @@ NppStatus nppiYCbCr420ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3],Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3],Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcr420tobgr */
+
+/** @defgroup ycbcr420tobgrbatch YCbCr420ToBGRBatch
+ *  Planar YCbCr420 to packed BGR batch color conversion with a single \ref roi_specification for all pairs of input/output images provided in batches.
+ *
+ * @{
+ *
+ */
+ 
+/**
+ * 3 channel 8-bit unsigned planar YCbCr420 to 3 channel 8-bit unsigned packed BGR batch color conversion for a single ROI.
+ * Provided oSizeROI will be used for all pairs of input planes making input images and output packed images passed in
+ * pSrcBatchList and pSrcBatchList arguments. API user must ensure that provided ROI (oSizeROI) does not go beyond the
+ * borders of any of provided images.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize A number of \ref NppiImageDescriptor structures processed in this  call (must be > 1).
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr420ToBGRBatch_8u_P3C3R_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
+NppStatus nppiYCbCr420ToBGRBatch_8u_P3C3R(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oSizeROI);
+
+/** @} ycbcr420tobgrbatch */
+
+/** @defgroup ycbcr420tobgrbatchadvanced YCbCr420ToBGRBatchAdvanced
+ *  Planar YCbCr420 to packed BGR batch color conversion where each pair of input/output images from provided batches has own \ref roi_specification.
+ *
+ * @{
+ *
+ */
+
+/**
+ * 3 channel 8-bit unsigned planar YCbCr420 to 3 channel 8-bit unsigned packed BGR batch color conversion where each pair
+ * of input/output images has own ROI. Provided oMaxSizeROI must contain the maximum width and the maximum height of all
+ * ROIs defined in pDstBatchList. API user must ensure that ROI from pDstBatchList for each pair of input and output
+ * images does not go beyond the borders of images in each pair.
+ *
+ * \param pSrcBatchList An array where each element is a batch of images representing one of planes in planar images,
+ *        \ref source_batch_images_pointer. The first element of array (pSrcBatchList[0]) represents a batch of Y planes.
+ *        The second element of array (pSrcBatchList[1]) represents a batch of Cb planes. The third element of array
+ *        (pSrcBatchList[2]) represents a batch of Cr planes.
+ * \param pDstBatchList \ref destination_batch_images_pointer.
+ * \param nBatchSize Number of \ref NppiImageDescriptor structures processed in this call (must be > 1).
+ * \param oMaxSizeROI \ref roi_specification, must contain the maximum width and the maximum height from all destination ROIs used for processing data.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCbCr420ToBGRBatch_8u_P3C3R_Advanced_Ctx(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCbCr420ToBGRBatch_8u_P3C3R_Advanced(const NppiImageDescriptor * const pSrcBatchList[3], NppiImageDescriptor * pDstBatchList, int nBatchSize, NppiSize oMaxSizeROI);
+
+/** @} ycbcr420tobgrbatchadvanced */
 
 /** @defgroup ycbcr420tobgr709csc YCbCr420ToBGR_709CSC 
  *  YCbCr420_709CSC to BGR color conversion.
@@ -1718,8 +2862,11 @@ NppStatus nppiYCbCr420ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_709CSC_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_709CSC_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} ycbcr420tobgr709csc */
@@ -1737,8 +2884,11 @@ NppStatus nppiYCbCr420ToBGR_709CSC_8u_P3C3R(const Npp8u * const pSrc[3], int rSr
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_709HDTV_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_709HDTV_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcr420tobgr709hdtv */
@@ -1756,8 +2906,11 @@ NppStatus nppiYCbCr420ToBGR_709HDTV_8u_P3C4R(const Npp8u * const pSrc[3], int rS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCrCb420_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCrCb420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1769,8 +2922,11 @@ NppStatus nppiBGRToYCrCb420_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCrCb420_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCrCb420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycrcb420 */
@@ -1788,8 +2944,11 @@ NppStatus nppiBGRToYCrCb420_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr411_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr411_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1801,8 +2960,11 @@ NppStatus nppiBGRToYCbCr411_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr411_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr411_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} bgrtoycbcr411 */
@@ -1820,8 +2982,11 @@ NppStatus nppiBGRToYCbCr411_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr411_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr411_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -1833,8 +2998,11 @@ NppStatus nppiRGBToYCbCr411_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * p
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr411_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr411_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} rgbtoycbcr411 */
@@ -1852,8 +3020,11 @@ NppStatus nppiRGBToYCbCr411_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1865,8 +3036,11 @@ NppStatus nppiBGRToYCbCr_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr_8u_AC4P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1878,8 +3052,11 @@ NppStatus nppiBGRToYCbCr_8u_AC4P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr_8u_AC4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtoycbcr */
@@ -1896,8 +3073,11 @@ NppStatus nppiBGRToYCbCr_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1909,8 +3089,11 @@ NppStatus nppiYCbCr411ToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToBGR_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcr411tobgr */
@@ -1927,8 +3110,11 @@ NppStatus nppiYCbCr411ToBGR_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToRGB_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1940,8 +3126,11 @@ NppStatus nppiYCbCr411ToRGB_8u_P3C3R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nAval 8-bit unsigned alpha constant.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToRGB_8u_P3C4R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nAval);
 
 /** @} ycbcr411torgb */
@@ -1979,8 +3168,11 @@ NppStatus nppiYCbCr411ToRGB_8u_P3C4R(const Npp8u * const pSrc[3], int rSrcStep[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToXYZ_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToXYZ_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1991,8 +3183,11 @@ NppStatus nppiRGBToXYZ_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToXYZ_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToXYZ_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoxyz */
@@ -2030,8 +3225,11 @@ NppStatus nppiRGBToXYZ_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiXYZToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiXYZToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2042,8 +3240,11 @@ NppStatus nppiXYZToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiXYZToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiXYZToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} xyztorgb */
@@ -2105,8 +3306,11 @@ NppStatus nppiXYZToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToLUV_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToLUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2117,8 +3321,11 @@ NppStatus nppiRGBToLUV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToLUV_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToLUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoluv */
@@ -2187,8 +3394,11 @@ NppStatus nppiRGBToLUV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiLUVToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiLUVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2199,8 +3409,11 @@ NppStatus nppiLUVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiLUVToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiLUVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} luvtorgb */
@@ -2225,24 +3438,10 @@ NppStatus nppiLUVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  *  Npp32f nY = 0.212671F * nNormalizedR + 0.71516F  * nNormalizedG + 0.072169F * nNormalizedB;
  *  Npp32f nZ = 0.019334F * nNormalizedR + 0.119193F * nNormalizedG + 0.950227F * nNormalizedB;
  *  Npp32f nL = cbrtf(nY);
- *  Npp32f nA;
- *  Npp32f nB;
- *  Npp32f nfX = nX * 1.052128F; // / nCIE_LAB_D65_xn; 
- *  Npp32f nfY = nY;
- *  Npp32f nfZ = nZ * 0.918482F; // / nCIE_LAB_D65_zn;
- *  nfY = nL - 16.0F;
- *  nL = 116.0F * nL - 16.0F;
- *  nA = cbrtf(nfX) - 16.0F;
- *  nA = 500.0F * (nA - nfY);
- *  nB = cbrtf(nfZ) - 16.0F;
- *  nB = 200.0F * (nfY - nB);
- *  // Now scale Lab range
- *  nL = nL * 255.0F * 0.01F; // / 100.0F
- *  nA = nA + 128.0F;
- *  nB = nB + 128.0F;
- *  L = (Npp8u)nL;
- *  a = (Npp8u)nA;
- *  b = (Npp8u)nB;
+ *  Npp32f nA; Npp32f nB; Npp32f nfX = nX * 1.052128F; // / nCIE_LAB_D65_xn; Npp32f nfY = nY; Npp32f nfZ = nZ * 0.918482F; // /
+ *  nCIE_LAB_D65_zn; nfY = nL - 16.0F; nL = 116.0F * nL - 16.0F; nA = cbrtf(nfX) - 16.0F; nA = 500.0F
+ *  * (nA - nfY); nB = cbrtf(nfZ) - 16.0F; nB = 200.0F * (nfY - nB); // Now scale Lab range nL = nL * 255.0F
+ *  * 0.01F; // / 100.0F nA = nA + 128.0F; nB = nB + 128.0F; L = (Npp8u)nL; a = (Npp8u)nA; b = (Npp8u)nB;
  *  \endcode
  * 
  * @{
@@ -2255,8 +3454,11 @@ NppStatus nppiLUVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToLab_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToLab_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtolab */
@@ -2304,8 +3506,11 @@ NppStatus nppiBGRToLab_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiLabToBGR_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiLabToBGR_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} labtobgr */
@@ -2341,8 +3546,11 @@ NppStatus nppiLabToBGR_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCC_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCC_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2353,8 +3561,11 @@ NppStatus nppiRGBToYCC_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCC_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCC_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtoycc */
@@ -2392,8 +3603,11 @@ NppStatus nppiRGBToYCC_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCCToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCCToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2404,11 +3618,135 @@ NppStatus nppiYCCToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCCToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCCToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} ycctorgb */
+
+/** @defgroup yccktocmyk601 YCCKToCMYK_JPEG 
+ *  This function partially converts JPEG YCCK to CMYK.
+ *
+ *  This is how NPP converts JPEG YCCK to CMYK. NPP only performs and initial YCC to RGB conversion using the 601 conversion coefficients
+ *  and the RGB to CMY inversion leaving K unmodified.  To complete this conversion to useful RGB values an additional RGB conversion needs
+ *  to follow this function using the color profile contained in the YCCK JPEG file metadata section.  NPP does not directly support
+ *  this conversion but potentially nppiColorTwist can be used to perform it once the conversion coefficients are known.
+ *
+ *  \code
+ *  Npp32f nY  = static_cast<Npp32f>(Y);
+ *  Npp32f nC1 = static_cast<Npp32f>(Cb);
+ *  Npp32f nC2 = static_cast<Npp32f>(Cr);
+ *  Npp32f nR = nY + 1.402F * nC2 - 179.456F;
+ *  Npp32f nG = nY - 0.34414F * nC1 - 0.71414F * nC2 + 135.45984F;
+ *  Npp32f nB = nY + 1.772F * nC1 - 226.816F;
+ *
+ *  Npp8u nC = static_cast<Npp8u>(255.0F - nR);
+ *  Npp8u nM = static_cast<Npp8u>(255.0F - nG);
+ *  Npp8u nM = static_cast<Npp8u>(255.0F - nB);
+ *  Npp8u nK = K;
+ *  \endcode
+ *
+ * @{
+ */
+/**
+ * 4 channel 8-bit unsigned planar JPEG YCCK color format to 4 channel 8-bit unsigned planar CMYK color conversion using 601 RGB color coefficients and CMY inversion.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_planar_image_pointer_array.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus nppiYCCKToCMYK_JPEG_601_8u_P4R_Ctx(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiYCCKToCMYK_JPEG_601_8u_P4R(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
+
+/** @} yccktocmyk601 */
+
+/** @defgroup ycckorcmyktorgb CMYK_OR_YCCK_JPEG_TO_RGB 
+ *  These functions convert JPEG CMYK or YCCK color format images to either planar or packed RGB images for images which need no color profile conversion.
+ *
+ * @{
+ */
+
+/**
+ * 4 channel 8-bit unsigned planar JPEG CMYK or YCCK color model image to 3 channel 8-bit unsigned planar RGB color model image without color profile conversion.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_planar_image_pointer_array.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+
+NppStatus nppiCMYKOrYCCKToRGB_JPEG_8u_P4P3R_Ctx(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiCMYKOrYCCKToRGB_JPEG_8u_P4P3R(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
+
+/**
+ * 4 channel 8-bit unsigned planar JPEG CMYK or YCCK color model image to 3 channel 8-bit unsigned packed RGB color model image without color profile conversion.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_planar_image_pointer_array.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+
+NppStatus nppiCMYKOrYCCKToRGB_JPEG_8u_P4C3R_Ctx(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiCMYKOrYCCKToRGB_JPEG_8u_P4C3R(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** @} ycckorcmyktorgb */
+
+/** @defgroup ycckorcmyktobgr CMYK_OR_YCCK_JPEG_TO_BGR 
+ *  These functions convert JPEG CMYK or YCCK color format images to either planar or packed BGR images for images which need no color profile conversion.
+ *
+ * @{
+ */
+
+/**
+ * 4 channel 8-bit unsigned planar JPEG CMYK or YCCK color model image to 3 channel 8-bit unsigned planar BGR color model image without color profile conversion.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_planar_image_pointer_array.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+
+NppStatus nppiCMYKOrYCCKToBGR_JPEG_8u_P4P3R_Ctx(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiCMYKOrYCCKToBGR_JPEG_8u_P4P3R(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
+
+/**
+ * 4 channel 8-bit unsigned planar JPEG CMYK or YCCK color model image to 3 channel 8-bit unsigned packed BGR color model image without color profile conversion.
+ *
+ * \param pSrc \ref source_planar_image_pointer_array.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_planar_image_pointer_array.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+
+NppStatus nppiCMYKOrYCCKToBGR_JPEG_8u_P4C3R_Ctx(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus nppiCMYKOrYCCKToBGR_JPEG_8u_P4C3R(const Npp8u * pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+
+/** @} ycckorcmyktobgr */
 
 /** @defgroup rgbtohls RGBToHLS 
  *  RGB to HLS color conversion.
@@ -2470,8 +3808,11 @@ NppStatus nppiYCCToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToHLS_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToHLS_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2482,8 +3823,11 @@ NppStatus nppiRGBToHLS_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToHLS_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToHLS_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtohls */
@@ -2575,8 +3919,11 @@ NppStatus nppiRGBToHLS_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2587,8 +3934,11 @@ NppStatus nppiHLSToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} hlstorgb */
@@ -2605,8 +3955,11 @@ NppStatus nppiHLSToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2617,8 +3970,11 @@ NppStatus nppiBGRToHLS_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2629,8 +3985,11 @@ NppStatus nppiBGRToHLS_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_AC4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2641,8 +4000,11 @@ NppStatus nppiBGRToHLS_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2653,8 +4015,11 @@ NppStatus nppiBGRToHLS_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_AP4C4R_Ctx(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_AP4C4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2665,8 +4030,11 @@ NppStatus nppiBGRToHLS_8u_AP4C4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2677,8 +4045,11 @@ NppStatus nppiBGRToHLS_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToHLS_8u_AP4R_Ctx(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToHLS_8u_AP4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /** @} bgrtohls */
@@ -2695,8 +4066,11 @@ NppStatus nppiBGRToHLS_8u_AP4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2707,8 +4081,11 @@ NppStatus nppiHLSToBGR_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_AC4P4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2719,8 +4096,11 @@ NppStatus nppiHLSToBGR_8u_AC4P4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2731,8 +4111,11 @@ NppStatus nppiHLSToBGR_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_AP4R_Ctx(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_AP4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst[4], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2743,8 +4126,11 @@ NppStatus nppiHLSToBGR_8u_AP4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2755,8 +4141,11 @@ NppStatus nppiHLSToBGR_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHLSToBGR_8u_AP4C4R_Ctx(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHLSToBGR_8u_AP4C4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} hlstobgr */
@@ -2815,8 +4204,11 @@ NppStatus nppiHLSToBGR_8u_AP4C4R(const Npp8u * const pSrc[4], int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToHSV_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToHSV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2827,8 +4219,11 @@ NppStatus nppiRGBToHSV_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToHSV_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToHSV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} rgbtohsv */
@@ -2889,8 +4284,11 @@ NppStatus nppiRGBToHSV_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHSVToRGB_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHSVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2901,14 +4299,17 @@ NppStatus nppiHSVToRGB_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiHSVToRGB_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiHSVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} hsvtorgb */
 
 /** @defgroup image_JPEG_color_conversion JPEG Color Conversion
- *
+ * The set of JPEG color conversion functions available in the library.
  * @{
  *
  */
@@ -2928,8 +4329,11 @@ NppStatus nppiHSVToRGB_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr420_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr420_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -2940,8 +4344,11 @@ NppStatus nppiRGBToYCbCr420_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr422_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr422_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -2952,8 +4359,11 @@ NppStatus nppiRGBToYCbCr422_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr411_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr411_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -2964,8 +4374,11 @@ NppStatus nppiRGBToYCbCr411_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr444_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr444_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -2976,8 +4389,11 @@ NppStatus nppiRGBToYCbCr444_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -2988,8 +4404,11 @@ NppStatus nppiBGRToYCbCr420_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3000,8 +4419,11 @@ NppStatus nppiBGRToYCbCr422_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr411_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr411_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3012,8 +4434,11 @@ NppStatus nppiBGRToYCbCr411_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr444_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr444_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3024,8 +4449,11 @@ NppStatus nppiBGRToYCbCr444_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3036,8 +4464,11 @@ NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3048,8 +4479,11 @@ NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3060,8 +4494,11 @@ NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3072,8 +4509,11 @@ NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3084,8 +4524,11 @@ NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3096,8 +4539,11 @@ NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3108,8 +4554,11 @@ NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int aSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3130,8 +4579,11 @@ NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3R(const Npp8u * const pSrc[3], int nSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr420_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr420_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3142,8 +4594,11 @@ NppStatus nppiRGBToYCbCr420_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr422_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr422_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3154,8 +4609,11 @@ NppStatus nppiRGBToYCbCr422_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr411_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr411_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3166,8 +4624,11 @@ NppStatus nppiRGBToYCbCr411_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToYCbCr444_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToYCbCr444_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3178,8 +4639,11 @@ NppStatus nppiRGBToYCbCr444_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr420_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr420_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3190,8 +4654,11 @@ NppStatus nppiBGRToYCbCr420_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr422_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr422_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3202,8 +4669,11 @@ NppStatus nppiBGRToYCbCr422_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr411_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr411_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3214,8 +4684,11 @@ NppStatus nppiBGRToYCbCr411_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiBGRToYCbCr444_JPEG_8u_C3P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiBGRToYCbCr444_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3226,8 +4699,11 @@ NppStatus nppiBGRToYCbCr444_JPEG_8u_C3P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3238,8 +4714,11 @@ NppStatus nppiYCbCr420ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3250,8 +4729,11 @@ NppStatus nppiYCbCr422ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3262,8 +4744,11 @@ NppStatus nppiYCbCr411ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3274,8 +4759,11 @@ NppStatus nppiYCbCr444ToRGB_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3286,8 +4774,11 @@ NppStatus nppiYCbCr420ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3298,8 +4789,11 @@ NppStatus nppiYCbCr422ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3310,8 +4804,11 @@ NppStatus nppiYCbCr411ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int aSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3C3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3348,8 +4845,11 @@ NppStatus nppiYCbCr444ToBGR_JPEG_8u_P3C3R(const Npp8u * const pSrc[3], int nSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_8u_C3C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3360,8 +4860,11 @@ NppStatus nppiRGBToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst,
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_8u_AC4C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_8u_AC4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3372,8 +4875,11 @@ NppStatus nppiRGBToGray_8u_AC4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_16u_C3C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3384,8 +4890,11 @@ NppStatus nppiRGBToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pD
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_16u_AC4C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_16u_AC4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3396,8 +4905,11 @@ NppStatus nppiRGBToGray_16u_AC4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_16s_C3C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3408,8 +4920,11 @@ NppStatus nppiRGBToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pD
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_16s_AC4C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_16s_AC4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3420,8 +4935,11 @@ NppStatus nppiRGBToGray_16s_AC4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * p
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_32f_C3C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3432,8 +4950,11 @@ NppStatus nppiRGBToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pD
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiRGBToGray_32f_AC4C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiRGBToGray_32f_AC4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3468,8 +4989,11 @@ NppStatus nppiRGBToGray_32f_AC4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * p
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_8u_C3C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3481,8 +5005,11 @@ NppStatus nppiColorToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_8u_AC4C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_8u_AC4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3494,8 +5021,11 @@ NppStatus nppiColorToGray_8u_AC4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pD
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_8u_C4C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_8u_C4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4]);
 
 /**
@@ -3507,8 +5037,11 @@ NppStatus nppiColorToGray_8u_C4C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDs
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16u_C3C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3520,8 +5053,11 @@ NppStatus nppiColorToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16u_AC4C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16u_AC4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3533,8 +5069,11 @@ NppStatus nppiColorToGray_16u_AC4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u *
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16u_C4C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16u_C4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4]);
 
 /**
@@ -3546,8 +5085,11 @@ NppStatus nppiColorToGray_16u_C4C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16s_C3C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3559,8 +5101,11 @@ NppStatus nppiColorToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16s_AC4C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16s_AC4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3572,8 +5117,11 @@ NppStatus nppiColorToGray_16s_AC4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s *
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_16s_C4C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_16s_C4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4]);
 
 /**
@@ -3585,8 +5133,11 @@ NppStatus nppiColorToGray_16s_C4C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_32f_C3C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3598,8 +5149,11 @@ NppStatus nppiColorToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_32f_AC4C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_32f_AC4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[3]);
 
 /**
@@ -3611,8 +5165,11 @@ NppStatus nppiColorToGray_32f_AC4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f *
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aCoeffs fixed size array of constant floating point conversion coefficient values, one per color channel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiColorToGray_32f_C4C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiColorToGray_32f_C4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, const Npp32f aCoeffs[4]);
 
 /** @} */
@@ -3633,8 +5190,11 @@ NppStatus nppiColorToGray_32f_C4C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * 
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eNorm Gradient distance method to use.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGradientColorToGray_8u_C3C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGradientColorToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm);
 
 /**
@@ -3646,8 +5206,11 @@ NppStatus nppiGradientColorToGray_8u_C3C1R(const Npp8u * pSrc, int nSrcStep, Npp
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eNorm Gradient distance method to use.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGradientColorToGray_16u_C3C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGradientColorToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm);
 
 /**
@@ -3659,8 +5222,11 @@ NppStatus nppiGradientColorToGray_16u_C3C1R(const Npp16u * pSrc, int nSrcStep, N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eNorm Gradient distance method to use.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGradientColorToGray_16s_C3C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGradientColorToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm);
 
 /**
@@ -3672,8 +5238,11 @@ NppStatus nppiGradientColorToGray_16s_C3C1R(const Npp16s * pSrc, int nSrcStep, N
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eNorm Gradient distance method to use.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGradientColorToGray_32f_C3C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGradientColorToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiNorm eNorm);
 
 /** @} */
@@ -3725,8 +5294,13 @@ NppStatus nppiGradientColorToGray_32f_C3C1R(const Npp32f * pSrc, int nSrcStep, N
  * \param nDstStep \ref destination_image_line_step.
  * \param eGrid enumeration value specifying bayer grid registration position at location oSrcROI.x, oSrcROI.y relative to pSrc.
  * \param eInterpolation MUST be NPPI_INTER_UNDEFINED
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiCFAToRGB_8u_C1C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
+                                Npp8u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCFAToRGB_8u_C1C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
                             Npp8u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation);
@@ -3743,8 +5317,13 @@ nppiCFAToRGB_8u_C1C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiR
  * \param eGrid enumeration value specifying bayer grid registration position at location oSrcROI.x, oSrcROI.y relative to pSrc.
  * \param eInterpolation MUST be NPPI_INTER_UNDEFINED
  * \param nAlpha constant alpha value to be written to each destination pixel
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiCFAToRGBA_8u_C1AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
+                                  Npp8u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, Npp8u nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCFAToRGBA_8u_C1AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
                               Npp8u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, Npp8u nAlpha);
@@ -3760,9 +5339,14 @@ nppiCFAToRGBA_8u_C1AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, Npp
  * \param nDstStep \ref destination_image_line_step.
  * \param eGrid enumeration value specifying bayer grid registration position at location oSrcROI.x, oSrcROI.y relative to pSrc.
  * \param eInterpolation MUST be NPPI_INTER_UNDEFINED
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiCFAToRGB_16u_C1C3R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
+                                 Npp16u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, NppStreamContext nppStreamCtx);
+
+NppStatus  
 nppiCFAToRGB_16u_C1C3R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
                              Npp16u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation);
 
@@ -3778,8 +5362,13 @@ nppiCFAToRGB_16u_C1C3R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, Npp
  * \param eGrid enumeration value specifying bayer grid registration position at location oSrcROI.x, oSrcROI.y relative to pSrc.
  * \param eInterpolation MUST be NPPI_INTER_UNDEFINED
  * \param nAlpha constant alpha value to be written to each destination pixel
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiCFAToRGBA_16u_C1AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
+                                   Npp16u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, Npp16u nAlpha, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiCFAToRGBA_16u_C1AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiRect oSrcROI, 
                                Npp16u * pDst, int nDstStep, NppiBayerGridPosition eGrid, NppiInterpolationMode eInterpolation, Npp16u nAlpha);
@@ -3809,8 +5398,11 @@ nppiCFAToRGBA_16u_C1AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, N
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCbCr411_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u* pDstY, int nDstYStep, Npp8u* pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u* pDstY, int nDstYStep, Npp8u* pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -3823,8 +5415,11 @@ NppStatus nppiYCbCr420ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCbCr411_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u* pSrcCbCr, int nSrcCbCrStep, Npp8u* pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCbCr411_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u* pSrcCbCr, int nSrcCbCrStep, Npp8u* pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -3842,8 +5437,11 @@ NppStatus nppiYCbCr420ToYCbCr411_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3855,8 +5453,11 @@ NppStatus nppiYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3874,8 +5475,11 @@ NppStatus nppiYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Np
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCrCb422_8u_C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCrCb422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -3887,8 +5491,11 @@ NppStatus nppiYCbCr422ToYCrCb422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u 
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCrCb422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3906,8 +5513,11 @@ NppStatus nppiYCbCr422ToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToCbYCr422_8u_C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToCbYCr422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -3925,8 +5535,11 @@ NppStatus nppiYCbCr422ToCbYCr422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCbCr411_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -3944,8 +5557,11 @@ NppStatus nppiCbYCr422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr420_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr420_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3959,8 +5575,11 @@ NppStatus nppiYCbCr422ToYCbCr420_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr420_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -3972,8 +5591,11 @@ NppStatus nppiYCbCr422ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr420_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -3987,8 +5609,11 @@ NppStatus nppiYCbCr422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr420_8u_C2P2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr420_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4006,8 +5631,11 @@ NppStatus nppiYCbCr422ToYCbCr420_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToYCbCr422_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4019,8 +5647,11 @@ NppStatus nppiYCrCb420ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToYCbCr422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4038,8 +5669,11 @@ NppStatus nppiYCrCb420ToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCrCb420_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCrCb420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4057,8 +5691,11 @@ NppStatus nppiYCbCr422ToYCrCb420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr411_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr411_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4072,8 +5709,11 @@ NppStatus nppiYCbCr422ToYCbCr411_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr411_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -4085,8 +5725,11 @@ NppStatus nppiYCbCr422ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr411_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4100,8 +5743,11 @@ NppStatus nppiYCbCr422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr422ToYCbCr411_8u_C2P2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr422ToYCbCr411_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4119,8 +5765,11 @@ NppStatus nppiYCbCr422ToYCbCr411_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb422ToYCbCr422_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb422ToYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4138,8 +5787,11 @@ NppStatus nppiYCrCb422ToYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb422ToYCbCr420_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4157,8 +5809,11 @@ NppStatus nppiYCrCb422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb422ToYCbCr411_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4176,8 +5831,11 @@ NppStatus nppiYCrCb422ToYCbCr411_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCbCr422_8u_C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCbCr422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4189,8 +5847,11 @@ NppStatus nppiCbYCr422ToYCbCr422_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCbCr422_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4208,8 +5869,11 @@ NppStatus nppiCbYCr422ToYCbCr422_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCbCr420_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4223,8 +5887,11 @@ NppStatus nppiCbYCr422ToYCbCr420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCbCr420_8u_C2P2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCbCr420_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4242,8 +5909,11 @@ NppStatus nppiCbYCr422ToYCbCr420_8u_C2P2R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCbYCr422ToYCrCb420_8u_C2P3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCbYCr422ToYCrCb420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4263,8 +5933,11 @@ NppStatus nppiCbYCr422ToYCrCb420_8u_C2P3R(const Npp8u * pSrc, int nSrcStep, Npp8
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -4277,8 +5950,11 @@ NppStatus nppiYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Np
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420_8u_P2P3R_Ctx(const Npp8u * const pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+ 
 NppStatus nppiYCbCr420_8u_P2P3R(const Npp8u * const pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
  
 /** @} */
@@ -4296,8 +5972,11 @@ NppStatus nppiYCbCr420_8u_P2P3R(const Npp8u * const pSrcY, int nSrcYStep, const 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCbCr422_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4310,8 +5989,11 @@ NppStatus nppiYCbCr420ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCbCr422_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCbCr422_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4324,8 +6006,11 @@ NppStatus nppiYCbCr420ToYCbCr422_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCbCr422_8u_P2C2R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCbCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4344,8 +6029,11 @@ NppStatus nppiYCbCr420ToYCbCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToCbYCr422_8u_P2C2R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToCbYCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4364,8 +6052,11 @@ NppStatus nppiYCbCr420ToCbYCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr420ToYCrCb420_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr420ToYCrCb420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4383,8 +6074,11 @@ NppStatus nppiYCbCr420ToYCrCb420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToCbYCr422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToCbYCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4404,8 +6098,11 @@ NppStatus nppiYCrCb420ToCbYCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToYCbCr420_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4425,8 +6122,11 @@ NppStatus nppiYCrCb420ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCrCb420ToYCbCr411_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCrCb420ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4446,8 +6146,11 @@ NppStatus nppiYCrCb420ToYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -4460,8 +6163,11 @@ NppStatus nppiYCbCr411_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Np
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4479,8 +6185,11 @@ NppStatus nppiYCbCr411_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u 
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr422_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4492,8 +6201,11 @@ NppStatus nppiYCbCr411ToYCbCr422_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4506,8 +6218,11 @@ NppStatus nppiYCbCr411ToYCbCr422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr422_8u_P2P3R_Ctx(const Npp8u * const pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr422_8u_P2P3R(const Npp8u * const pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4520,8 +6235,11 @@ NppStatus nppiYCbCr411ToYCbCr422_8u_P2P3R(const Npp8u * const pSrcY, int nSrcYSt
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr422_8u_P2C2R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4539,8 +6257,11 @@ NppStatus nppiYCbCr411ToYCbCr422_8u_P2C2R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCrCb422_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCrCb422_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4552,8 +6273,11 @@ NppStatus nppiYCbCr411ToYCrCb422_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCrCb422_8u_P3C2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4571,8 +6295,11 @@ NppStatus nppiYCbCr411ToYCrCb422_8u_P3C2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param nDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr420_8u_P3R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr420_8u_P3R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDst[3], int nDstStep[3], NppiSize oSizeROI);
 
 /**
@@ -4586,8 +6313,11 @@ NppStatus nppiYCbCr411ToYCbCr420_8u_P3R(const Npp8u * const pSrc[3], int rSrcSte
  * \param pDstCbCr \ref destination_planar_image_pointer.
  * \param nDstCbCrStep \ref destination_planar_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr420_8u_P3P2R_Ctx(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcStep[3], Npp8u * pDstY, int nDstYStep, Npp8u * pDstCbCr, int nDstCbCrStep, NppiSize oSizeROI);
 
 /**
@@ -4600,8 +6330,11 @@ NppStatus nppiYCbCr411ToYCbCr420_8u_P3P2R(const Npp8u * const pSrc[3], int rSrcS
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCbCr420_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCbCr420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4620,8 +6353,11 @@ NppStatus nppiYCbCr411ToYCbCr420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, co
  * \param pDst \ref destination_planar_image_pointer_array.
  * \param rDstStep \ref destination_planar_image_line_step_array.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiYCbCr411ToYCrCb420_8u_P2P3R_Ctx(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiYCbCr411ToYCrCb420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, const Npp8u * pSrcCbCr, int nSrcCbCrStep, Npp8u * pDst[3], int rDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4637,12 +6373,15 @@ NppStatus nppiYCbCr411ToYCrCb420_8u_P2P3R(const Npp8u * pSrcY, int nSrcYStep, co
  *  2 channel 8-bit unsigned planar NV12 to 3 channel 8-bit unsigned planar YUV420 color conversion.
  *
  * \param pSrc \ref source_planar_image_pointer_array (one for Y plane, one for UV plane).
- * \param nSrcStep \ref source_planar_image_line_step_array.
+ * \param nSrcStep \ref source_planar_image_line_step.  Same value is used for each plane.
  * \param pDst \ref destination_image_pointer.
  * \param aDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiNV12ToYUV420_8u_P2P3R_Ctx(const Npp8u * const pSrc[2], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiNV12ToYUV420_8u_P2P3R(const Npp8u * const pSrc[2], int nSrcStep, Npp8u * pDst[3], int aDstStep[3], NppiSize oSizeROI);
 
 /** @} */
@@ -4669,8 +6408,11 @@ NppStatus nppiNV12ToYUV420_8u_P2P3R(const Npp8u * const pSrc[2], int nSrcStep, N
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4679,8 +6421,11 @@ NppStatus nppiGammaFwd_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pSrcDst in place packed pixel image pointer.
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
 /**
@@ -4691,8 +6436,11 @@ NppStatus nppiGammaFwd_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4701,8 +6449,11 @@ NppStatus nppiGammaFwd_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pSrcDst in place packed pixel format image pointer.
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
 /**
@@ -4713,8 +6464,11 @@ NppStatus nppiGammaFwd_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSize
  * \param pDst destination planar pixel format image pointer array.
  * \param nDstStep destination planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4723,8 +6477,11 @@ NppStatus nppiGammaFwd_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pSrcDst in place planar pixel format image pointer array.
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaFwd_8u_IP3R_Ctx(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaFwd_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4741,8 +6498,11 @@ NppStatus nppiGammaFwd_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSi
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4751,8 +6511,11 @@ NppStatus nppiGammaInv_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, in
  * \param pSrcDst in place packed pixel format image pointer.
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
 /**
@@ -4763,8 +6526,11 @@ NppStatus nppiGammaInv_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4773,8 +6539,11 @@ NppStatus nppiGammaInv_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, i
  * \param pSrcDst in place packed pixel format image pointer.
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI);
 
 /**
@@ -4785,8 +6554,11 @@ NppStatus nppiGammaInv_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSize
  * \param pDst destination planar pixel format image pointer array.
  * \param nDstStep destination planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * pDst[3], int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -4795,8 +6567,11 @@ NppStatus nppiGammaInv_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u *
  * \param pSrcDst in place planar pixel format image pointer array.
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiGammaInv_8u_IP3R_Ctx(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus nppiGammaInv_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSize oSizeROI);
 
 /** @} */
@@ -4826,8 +6601,11 @@ NppStatus nppiGammaInv_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep, NppiSi
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nColorKeyConst color key constant
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCompColorKey_8u_C1R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst, NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompColorKey_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst);
 
 /**
@@ -4841,8 +6619,11 @@ NppStatus nppiCompColorKey_8u_C1R(const Npp8u * pSrc1, int nSrc1Step, const Npp8
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nColorKeyConst color key constant array
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCompColorKey_8u_C3R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst[3], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompColorKey_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst[3]);
 
 /**
@@ -4856,8 +6637,11 @@ NppStatus nppiCompColorKey_8u_C3R(const Npp8u * pSrc1, int nSrc1Step, const Npp8
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param nColorKeyConst color key constant array
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus nppiCompColorKey_8u_C4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst[4], NppStreamContext nppStreamCtx);
+
 NppStatus nppiCompColorKey_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8u * pSrc2, int nSrc2Step, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst[4]);
 
 /**
@@ -4874,9 +6658,14 @@ NppStatus nppiCompColorKey_8u_C4R(const Npp8u * pSrc1, int nSrc1Step, const Npp8
  * \param oSizeROI \ref roi_specification.
  * \param nColorKeyConst color key constant array
  * \param nppAlphaOp NppiAlphaOp alpha compositing operation selector  (excluding premul ops).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
-NppStatus nppiAlphaCompColorKey_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, Npp8u nColorKeyConst[4], NppiAlphaOp nppAlphaOp);
+NppStatus nppiAlphaCompColorKey_8u_AC4R_Ctx(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, Npp8u * pDst, int nDstStep, 
+											NppiSize oSizeROI, Npp8u nColorKeyConst[4], NppiAlphaOp nppAlphaOp, NppStreamContext nppStreamCtx);
+
+NppStatus nppiAlphaCompColorKey_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8u nAlpha1, const Npp8u * pSrc2, int nSrc2Step, Npp8u nAlpha2, Npp8u * pDst, int nDstStep, 
+										NppiSize oSizeROI, Npp8u nColorKeyConst[4], NppiAlphaOp nppAlphaOp);
 
 /** @} */
 
@@ -4927,8 +6716,13 @@ NppStatus nppiAlphaCompColorKey_8u_AC4R(const Npp8u * pSrc1, int nSrc1Step, Npp8
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -4943,8 +6737,13 @@ nppiColorTwist32f_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C1IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -4961,8 +6760,13 @@ nppiColorTwist32f_8u_C1IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C2R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -4977,8 +6781,13 @@ nppiColorTwist32f_8u_C2R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C2IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C2IR(Npp8u * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -4995,8 +6804,13 @@ nppiColorTwist32f_8u_C2IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5011,8 +6825,13 @@ nppiColorTwist32f_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C3IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5030,8 +6849,13 @@ nppiColorTwist32f_8u_C3IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5047,8 +6871,13 @@ nppiColorTwist32f_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_C4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5066,8 +6895,13 @@ nppiColorTwist32f_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5083,8 +6917,13 @@ nppiColorTwist32f_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nD
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5109,8 +6948,13 @@ nppiColorTwist32f_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
  * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32fC_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32fC_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
@@ -5133,8 +6977,13 @@ nppiColorTwist32fC_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nD
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
  * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32fC_8u_C4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32fC_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
@@ -5151,8 +7000,13 @@ nppiColorTwist32fC_8u_C4IR(Npp8u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_P3R_Ctx(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * const pDst[3], int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * const pDst[3], int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5167,8 +7021,13 @@ nppiColorTwist32f_8u_P3R(const Npp8u * const pSrc[3], int nSrcStep, Npp8u * cons
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8u_IP3R_Ctx(Npp8u * const pSrcDst[3], int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5185,8 +7044,13 @@ nppiColorTwist32f_8u_IP3R(Npp8u * const pSrcDst[3], int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C1R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C1R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5201,8 +7065,13 @@ nppiColorTwist32f_8s_C1R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C1IR_Ctx(Npp8s * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C1IR(Npp8s * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5219,8 +7088,13 @@ nppiColorTwist32f_8s_C1IR(Npp8s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C2R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C2R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5235,8 +7109,13 @@ nppiColorTwist32f_8s_C2R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C2IR_Ctx(Npp8s * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C2IR(Npp8s * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5253,8 +7132,13 @@ nppiColorTwist32f_8s_C2IR(Npp8s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C3R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C3R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5269,8 +7153,13 @@ nppiColorTwist32f_8s_C3R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C3IR_Ctx(Npp8s * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C3IR(Npp8s * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5288,8 +7177,13 @@ nppiColorTwist32f_8s_C3IR(Npp8s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5305,8 +7199,13 @@ nppiColorTwist32f_8s_C4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_C4IR_Ctx(Npp8s * pSrcDst, int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_C4IR(Npp8s * pSrcDst, int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5324,8 +7223,13 @@ nppiColorTwist32f_8s_C4IR(Npp8s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_AC4R_Ctx(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5341,8 +7245,13 @@ nppiColorTwist32f_8s_AC4R(const Npp8s * pSrc, int nSrcStep, Npp8s * pDst, int nD
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_AC4IR_Ctx(Npp8s * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_AC4IR(Npp8s * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5359,8 +7268,13 @@ nppiColorTwist32f_8s_AC4IR(Npp8s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_P3R_Ctx(const Npp8s * const pSrc[3], int nSrcStep, Npp8s * const pDst[3], int nDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_P3R(const Npp8s * const pSrc[3], int nSrcStep, Npp8s * const pDst[3], int nDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5375,8 +7289,13 @@ nppiColorTwist32f_8s_P3R(const Npp8s * const pSrc[3], int nSrcStep, Npp8s * cons
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_8s_IP3R_Ctx(Npp8s * const pSrcDst[3], int nSrcDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_8s_IP3R(Npp8s * const pSrcDst[3], int nSrcDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5394,8 +7313,13 @@ nppiColorTwist32f_8s_IP3R(Npp8s * const pSrcDst[3], int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5410,8 +7334,13 @@ nppiColorTwist32f_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C1IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5428,8 +7357,13 @@ nppiColorTwist32f_16u_C1IR(Npp16u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C2R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C2R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5444,8 +7378,13 @@ nppiColorTwist32f_16u_C2R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C2IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C2IR(Npp16u * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5462,8 +7401,13 @@ nppiColorTwist32f_16u_C2IR(Npp16u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5478,8 +7422,13 @@ nppiColorTwist32f_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_C3IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5497,8 +7446,13 @@ nppiColorTwist32f_16u_C3IR(Npp16u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5514,8 +7468,13 @@ nppiColorTwist32f_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_AC4IR_Ctx(Npp16u * pSrcDst, int nSrcDstStep, 
+                                NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep, 
                             NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5532,8 +7491,13 @@ nppiColorTwist32f_16u_AC4IR(Npp16u * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_P3R_Ctx(const Npp16u * const pSrc[3], int nSrcStep, Npp16u * const pDst[3], int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_P3R(const Npp16u * const pSrc[3], int nSrcStep, Npp16u * const pDst[3], int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5548,8 +7512,13 @@ nppiColorTwist32f_16u_P3R(const Npp16u * const pSrc[3], int nSrcStep, Npp16u * c
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16u_IP3R_Ctx(Npp16u * const pSrcDst[3], int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16u_IP3R(Npp16u * const pSrcDst[3], int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5566,8 +7535,13 @@ nppiColorTwist32f_16u_IP3R(Npp16u * const pSrcDst[3], int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5582,8 +7556,13 @@ nppiColorTwist32f_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C1IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5600,8 +7579,13 @@ nppiColorTwist32f_16s_C1IR(Npp16s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C2R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C2R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5616,8 +7600,13 @@ nppiColorTwist32f_16s_C2R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C2IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C2IR(Npp16s * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5634,8 +7623,13 @@ nppiColorTwist32f_16s_C2IR(Npp16s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5650,8 +7644,13 @@ nppiColorTwist32f_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int 
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_C3IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5669,8 +7668,13 @@ nppiColorTwist32f_16s_C3IR(Npp16s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5686,8 +7690,13 @@ nppiColorTwist32f_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_AC4IR_Ctx(Npp16s * pSrcDst, int nSrcDstStep, 
+                                NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep, 
                             NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5704,8 +7713,13 @@ nppiColorTwist32f_16s_AC4IR(Npp16s * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist32f_16s_P3R_Ctx(const Npp16s * const pSrc[3], int nSrcStep, Npp16s * const pDst[3], int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist32f_16s_P3R(const Npp16s * const pSrc[3], int nSrcStep, Npp16s * const pDst[3], int nDstStep, 
                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5720,11 +7734,254 @@ nppiColorTwist32f_16s_P3R(const Npp16s * const pSrc[3], int nSrcStep, Npp16s * c
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiColorTwist32f_16s_IP3R_Ctx(Npp16s * const pSrcDst[3], int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiColorTwist32f_16s_IP3R(Npp16s * const pSrcDst[3], int nSrcDstStep, 
                            NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 1 channel 16-bit floating point color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C1R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C1R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 1 channel 16-bit floating point in place color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrcDst in place packed pixel format image pointer.
+ * \param nSrcDstStep in place packed pixel format image line step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C1IR_Ctx(Npp16f * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C1IR(Npp16f * pSrcDst, int nSrcDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 2 channel 16-bit floating point color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C2R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C2R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 2 channel 16-bit floating point in place color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrcDst in place packed pixel format image pointer.
+ * \param nSrcDstStep in place packed pixel format image line step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C2IR_Ctx(Npp16f * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C2IR(Npp16f * pSrcDst, int nSrcDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 3 channel 16-bit floating point color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C3R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C3R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 3 channel 16-bit floating point in place color twist.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI.
+ *
+ * \param pSrcDst in place packed pixel format image pointer.
+ * \param nSrcDstStep in place packed pixel format image line step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C3IR_Ctx(Npp16f * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C3IR(Npp16f * pSrcDst, int nSrcDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 4 channel 16-bit floating point color twist, with alpha copy.
+ *
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied with
+ * in ROI.
+ * Alpha channel is the last channel and is copied unmodified from the source pixel to the destination pixel.
+ *
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                              NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 4 channel 16-bit floating point in place color twist, not affecting Alpha.
+ *
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied with
+ * in ROI.
+ * Alpha channel is the last channel and is not modified.
+ *
+ * \param pSrcDst in place packed pixel format image pointer.
+ * \param nSrcDstStep in place packed pixel format image line step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32f_16f_C4IR_Ctx(Npp16f * pSrcDst, int nSrcDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32f_16f_C4IR(Npp16f * pSrcDst, int nSrcDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4]);
+
+/**
+ * 4 channel 16-bit floating point color twist with 4x4 matrix and constant vector addition.
+ *
+ * An input 4x4 color twist matrix with 32-bit floating-point coefficient values with an additional 32-bit floating point constant vector addition
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aConstants[0]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aConstants[1]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aConstants[2]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aConstants[3]
+ *  \endcode
+ *
+ * \param pSrc \ref source_image_pointer.
+ * \param nSrcStep \ref source_image_line_step.
+ * \param pDst \ref destination_image_pointer.
+ * \param nDstStep \ref destination_image_line_step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32fC_16f_C4R_Ctx(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32fC_16f_C4R(const Npp16f * pSrc, int nSrcStep, Npp16f * pDst, int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
+
+/**
+ * 4 channel 16-bit floating point in place color twist with 4x4 matrix and an additional constant vector addition.
+ *
+ * An input 4x4 color twist matrix with 32-bit floating-point coefficient values with an additional 32-bit floating point constant vector addition
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aConstants[0]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aConstants[1]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aConstants[2]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aConstants[3]
+ *  \endcode
+ *
+ * \param pSrcDst in place packed pixel format image pointer.
+ * \param nSrcDstStep in place packed pixel format image line step.
+ * \param oSizeROI \ref roi_specification.
+ * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwist32fC_16f_C4IR_Ctx(Npp16f * pSrcDst, int nSrcDstStep, 
+                                NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwist32fC_16f_C4IR(Npp16f * pSrcDst, int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
 
 /**
  * 1 channel 32-bit floating point color twist.
@@ -5738,8 +7995,13 @@ nppiColorTwist32f_16s_IP3R(Npp16s * const pSrcDst[3], int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                        NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5754,8 +8016,13 @@ nppiColorTwist_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C1IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5772,8 +8039,13 @@ nppiColorTwist_32f_C1IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C2R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C2R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                        NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5788,8 +8060,13 @@ nppiColorTwist_32f_C2R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C2IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C2IR(Npp32f * pSrcDst, int nSrcDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5806,8 +8083,13 @@ nppiColorTwist_32f_C2IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                        NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5822,8 +8104,13 @@ nppiColorTwist_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C3IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5841,8 +8128,13 @@ nppiColorTwist_32f_C3IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                        NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5858,8 +8150,13 @@ nppiColorTwist_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_C4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5877,8 +8174,13 @@ nppiColorTwist_32f_C4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5894,8 +8196,13 @@ nppiColorTwist_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nD
  * \param nSrcDstStep in place packed pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_AC4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5920,8 +8227,13 @@ nppiColorTwist_32f_AC4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
  * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32fC_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32fC_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
@@ -5944,8 +8256,13 @@ nppiColorTwist_32fC_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nD
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
  * \param aConstants fixed size array of constant values, one per channel..
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32fC_C4IR_Ctx(Npp32f * pSrcDst, int nSrcDstStep, 
+                             NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32fC_C4IR(Npp32f * pSrcDst, int nSrcDstStep, 
                          NppiSize oSizeROI, const Npp32f aTwist[4][4], const Npp32f aConstants[4]);
@@ -5962,8 +8279,13 @@ nppiColorTwist_32fC_C4IR(Npp32f * pSrcDst, int nSrcDstStep,
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_P3R_Ctx(const Npp32f * const pSrc[3], int nSrcStep, Npp32f * const pDst[3], int nDstStep, 
+                           NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_P3R(const Npp32f * const pSrc[3], int nSrcStep, Npp32f * const pDst[3], int nDstStep, 
                        NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -5978,8 +8300,13 @@ nppiColorTwist_32f_P3R(const Npp32f * const pSrc[3], int nSrcStep, Npp32f * cons
  * \param nSrcDstStep in place planar pixel format image line step.
  * \param oSizeROI \ref roi_specification.
  * \param aTwist The color twist matrix with floating-point coefficient values.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwist_32f_IP3R_Ctx(Npp32f * const pSrcDst[3], int nSrcDstStep, 
+                            NppiSize oSizeROI, const Npp32f aTwist[3][4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwist_32f_IP3R(Npp32f * const pSrcDst[3], int nSrcDstStep, 
                         NppiSize oSizeROI, const Npp32f aTwist[3][4]);
@@ -6030,6 +8357,226 @@ typedef struct
 } NppiColorTwistBatchCXR;
 
 /**
+ * 1 channel 8-bit unsigned integer color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C1R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C1R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 1 channel 8-bit unsigned integer in place color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C1IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C1IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 3 channel 8-bit unsigned integer color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C3R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C3R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 3 channel 8-bit unsigned integer in place color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C3IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C3IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer in place color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer color twist batch, not affecting Alpha.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_AC4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_AC4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer in place color twist batch, not affecting Alpha.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_8u_AC4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_8u_AC4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer color twist with 4x5 matrix including a constant vector (20 coefficients total).
+ *
+ * An input 4x5 color twist matrix with floating-point coefficient values including a constant (in the fourth column) vector
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aTwist[0][4]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aTwist[1][4]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aTwist[2][4]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aTwist[3][4]
+ *  \endcode
+ *
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32fC_8u_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32fC_8u_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 8-bit unsigned integer in place color twist with 4x5 matrix including a constant vector (20 coefficients total).
+ *
+ * An input 4x5 color twist matrix with floating-point coefficient values including a constant (in the fourth column) vector
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aTwist[0][4]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aTwist[1][4]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aTwist[2][4]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aTwist[3][4]
+ *  \endcode
+ *
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32fC_8u_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32fC_8u_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
  * 1 channel 32-bit floating point color twist batch.
  * 
  * An input color twist matrix with floating-point coefficient values is applied
@@ -6040,8 +8587,12 @@ typedef struct
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C1R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C1R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6056,8 +8607,12 @@ nppiColorTwistBatch_32f_C1R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCol
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C1IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C1IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6072,8 +8627,12 @@ nppiColorTwistBatch_32f_C1IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCo
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C3R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C3R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6088,8 +8647,12 @@ nppiColorTwistBatch_32f_C3R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCol
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C3IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C3IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6104,8 +8667,12 @@ nppiColorTwistBatch_32f_C3IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCo
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6120,8 +8687,12 @@ nppiColorTwistBatch_32f_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCol
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6136,8 +8707,12 @@ nppiColorTwistBatch_32f_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCo
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_AC4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_AC4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6152,8 +8727,12 @@ nppiColorTwistBatch_32f_AC4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCo
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32f_AC4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32f_AC4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6178,8 +8757,12 @@ nppiColorTwistBatch_32f_AC4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiC
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
+NppStatus 
+nppiColorTwistBatch_32fC_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiColorTwistBatch_32fC_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
@@ -6204,10 +8787,194 @@ nppiColorTwistBatch_32fC_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiCo
  * \param oSizeROI \ref roi_specification.
  * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
  * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  */
 NppStatus 
+nppiColorTwistBatch_32fC_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiColorTwistBatch_32fC_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 1 channel 16-bit floating point color twist batch.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C1R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C1R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 1 channel 16-bit floating point in place color twist batch.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C1IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C1IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 3 channel 16-bit floating point color twist batch.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C3R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C3R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 3 channel 16-bit floating point in place color twist batch.
+ * 
+ * An input color twist matrix with floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C3IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C3IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 16-bit floating point color twist batch.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within the ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 16-bit floating point in place color twist batch.
+ * 
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32f_16f_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32f_16f_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel 16-bit floating point color twist with 4x5 matrix including a constant vector (20 coefficients total).
+ *
+ * An input 4x5 color twist matrix with 32-bit floating-point coefficient values including a constant (in the fourth column) vector
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aTwist[0][4]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aTwist[1][4]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aTwist[2][4]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aTwist[3][4]
+ *  \endcode
+ *
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32fC_16f_C4R_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32fC_16f_C4R(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
+
+/**
+ * 4 channel in place 16-bit floating point color twist with 4x5 matrix including a constant vector (20 coefficients total).
+ *
+ * An input 4x5 color twist matrix with 32-bitfloating-point coefficient values including a constant (in the fourth column) vector
+ * is applied within ROI.  For this particular version of the function the result is generated as shown below.
+ *
+ *  \code
+ *      dst[0] = aTwist[0][0] * src[0] + aTwist[0][1] * src[1] + aTwist[0][2] * src[2] + aTwist[0][3] * src[3] + aTwist[0][4]
+ *      dst[1] = aTwist[1][0] * src[0] + aTwist[1][1] * src[1] + aTwist[1][2] * src[2] + aTwist[1][3] * src[3] + aTwist[1][4]
+ *      dst[2] = aTwist[2][0] * src[0] + aTwist[2][1] * src[1] + aTwist[2][2] * src[2] + aTwist[2][3] * src[3] + aTwist[2][4]
+ *      dst[3] = aTwist[3][0] * src[0] + aTwist[3][1] * src[1] + aTwist[3][2] * src[2] + aTwist[3][3] * src[3] + aTwist[3][4]
+ *  \endcode
+ *
+ * An input color twist matrix with 32-bit floating-point coefficient values is applied
+ * within ROI for each image in batch.  Color twist matrix can vary per image. The same ROI is applied to each image.
+ *
+ * \param nMin Minimum clamp value.
+ * \param nMax Maximum saturation and clamp value.
+ * \param oSizeROI \ref roi_specification.
+ * \param pBatchList Device memory pointer to nBatchSize list of NppiColorTwistBatchCXR structures.
+ * \param nBatchSize Number of NppiColorTwistBatchCXR structures in this call (must be > 1).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
+ * \return \ref image_data_error_codes, \ref roi_error_codes
+ */
+NppStatus 
+nppiColorTwistBatch32fC_16f_C4IR_Ctx(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize, NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiColorTwistBatch32fC_16f_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiColorTwistBatchCXR * pBatchList, int nBatchSize);
 
 /** @} color_twist_batch */
 
@@ -6232,9 +8999,14 @@ nppiColorTwistBatch_32fC_C4IR(Npp32f nMin, Npp32f nMax, NppiSize oSizeROI, NppiC
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                   const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6250,9 +9022,14 @@ nppiLUT_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Npp
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C1IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6270,9 +9047,14 @@ nppiLUT_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                   const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6288,9 +9070,14 @@ nppiLUT_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Npp
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C3IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6308,9 +9095,14 @@ nppiLUT_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                   const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6326,9 +9118,14 @@ nppiLUT_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Npp
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_C4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6347,9 +9144,14 @@ nppiLUT_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6366,13 +9168,17 @@ nppiLUT_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, Np
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
 NppStatus 
+nppiLUT_8u_AC4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 16-bit unsigned look-up-table color conversion.
@@ -6387,9 +9193,14 @@ nppiLUT_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6405,9 +9216,14 @@ nppiLUT_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C1IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6425,9 +9241,14 @@ nppiLUT_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6443,9 +9264,14 @@ nppiLUT_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C3IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6463,9 +9289,14 @@ nppiLUT_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6481,9 +9312,14 @@ nppiLUT_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_C4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6502,9 +9338,14 @@ nppiLUT_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6521,13 +9362,17 @@ nppiLUT_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_16u_AC4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                      const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                   const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 16-bit signed look-up-table color conversion.
@@ -6542,9 +9387,14 @@ nppiLUT_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6560,9 +9410,14 @@ nppiLUT_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C1IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6580,9 +9435,14 @@ nppiLUT_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6598,9 +9458,14 @@ nppiLUT_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C3IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6618,9 +9483,14 @@ nppiLUT_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6636,9 +9506,14 @@ nppiLUT_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_C4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6657,9 +9532,14 @@ nppiLUT_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6676,13 +9556,17 @@ nppiLUT_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_16s_AC4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                      const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                   const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 32-bit floating point look-up-table color conversion.
@@ -6697,9 +9581,14 @@ nppiLUT_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -6715,9 +9604,14 @@ nppiLUT_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C1IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -6735,9 +9629,14 @@ nppiLUT_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -6753,9 +9652,14 @@ nppiLUT_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C3IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -6773,9 +9677,14 @@ nppiLUT_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                    const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                 const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -6791,9 +9700,14 @@ nppiLUT_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, 
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_C4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                     const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                  const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -6812,9 +9726,14 @@ nppiLUT_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                     const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                  const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -6831,9 +9750,14 @@ nppiLUT_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_32f_AC4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                      const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                   const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -6865,9 +9789,14 @@ nppiLUT_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Pointer to an array of user defined OUTPUT values (this is now a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is now a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6883,9 +9812,14 @@ nppiLUT_Linear_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C1IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -6909,9 +9843,14 @@ nppiLUT_Linear_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6927,9 +9866,14 @@ nppiLUT_Linear_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C3IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -6953,9 +9897,14 @@ nppiLUT_Linear_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6971,9 +9920,14 @@ nppiLUT_Linear_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_C4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -6998,9 +9952,14 @@ nppiLUT_Linear_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7017,9 +9976,14 @@ nppiLUT_Linear_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstS
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Linear_8u_AC4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+       
 NppStatus 
 nppiLUT_Linear_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7037,9 +10001,14 @@ nppiLUT_Linear_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7055,9 +10024,14 @@ nppiLUT_Linear_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C1IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7075,9 +10049,14 @@ nppiLUT_Linear_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7093,9 +10072,14 @@ nppiLUT_Linear_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C3IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7113,9 +10097,14 @@ nppiLUT_Linear_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7131,9 +10120,14 @@ nppiLUT_Linear_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_C4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7152,9 +10146,14 @@ nppiLUT_Linear_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7171,13 +10170,17 @@ nppiLUT_Linear_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nD
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_Linear_16u_AC4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                             const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Linear_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 16-bit signed look-up-table color conversion.
@@ -7192,9 +10195,14 @@ nppiLUT_Linear_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSize
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7210,9 +10218,14 @@ nppiLUT_Linear_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C1IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7230,9 +10243,14 @@ nppiLUT_Linear_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7248,9 +10266,14 @@ nppiLUT_Linear_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C3IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7268,9 +10291,14 @@ nppiLUT_Linear_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7286,9 +10314,14 @@ nppiLUT_Linear_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_C4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7307,9 +10340,14 @@ nppiLUT_Linear_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7326,13 +10364,17 @@ nppiLUT_Linear_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nD
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_Linear_16s_AC4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                             const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Linear_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 32-bit floating point look-up-table color conversion.
@@ -7347,9 +10389,14 @@ nppiLUT_Linear_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSize
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -7365,9 +10412,14 @@ nppiLUT_Linear_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C1IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -7385,9 +10437,14 @@ nppiLUT_Linear_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -7403,9 +10460,14 @@ nppiLUT_Linear_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C3IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -7423,9 +10485,14 @@ nppiLUT_Linear_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -7441,9 +10508,14 @@ nppiLUT_Linear_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_C4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -7462,9 +10534,14 @@ nppiLUT_Linear_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                            const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                         const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -7481,9 +10558,14 @@ nppiLUT_Linear_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nD
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Linear_32f_AC4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                             const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Linear_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                          const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -7508,9 +10590,14 @@ nppiLUT_Linear_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSize
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                         const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                      const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7526,9 +10613,14 @@ nppiLUT_Cubic_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C1IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7546,9 +10638,14 @@ nppiLUT_Cubic_8u_C1IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                      const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7564,9 +10661,14 @@ nppiLUT_Cubic_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C3IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7584,9 +10686,14 @@ nppiLUT_Cubic_8u_C3IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                         const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                      const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7602,9 +10709,14 @@ nppiLUT_Cubic_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_C4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7623,9 +10735,14 @@ nppiLUT_Cubic_8u_C4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI,
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7642,9 +10759,14 @@ nppiLUT_Cubic_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
+NppStatus 
+nppiLUT_Cubic_8u_AC4IR_Ctx(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7662,9 +10784,14 @@ nppiLUT_Cubic_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7680,9 +10807,14 @@ nppiLUT_Cubic_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C1IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7700,9 +10832,14 @@ nppiLUT_Cubic_16u_C1IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7718,9 +10855,14 @@ nppiLUT_Cubic_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C3IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7738,9 +10880,14 @@ nppiLUT_Cubic_16u_C3IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7756,9 +10903,14 @@ nppiLUT_Cubic_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_C4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7777,9 +10929,14 @@ nppiLUT_Cubic_16u_C4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7796,13 +10953,17 @@ nppiLUT_Cubic_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_Cubic_16u_AC4IR_Ctx(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Cubic_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 16-bit signed look-up-table color conversion.
@@ -7817,9 +10978,14 @@ nppiLUT_Cubic_16u_AC4IR(      Npp16u * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7835,9 +11001,14 @@ nppiLUT_Cubic_16s_C1R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C1IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues, const Npp32s * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues, const Npp32s * pLevels, int nLevels);
@@ -7855,9 +11026,14 @@ nppiLUT_Cubic_16s_C1IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C3R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7873,9 +11049,14 @@ nppiLUT_Cubic_16s_C3R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C3IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7893,9 +11074,14 @@ nppiLUT_Cubic_16s_C3IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7911,9 +11097,14 @@ nppiLUT_Cubic_16s_C4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDst
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_C4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[4], const Npp32s * pLevels[4], int nLevels[4]);
@@ -7932,9 +11123,14 @@ nppiLUT_Cubic_16s_C4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_16s_AC4R_Ctx(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
@@ -7951,13 +11147,17 @@ nppiLUT_Cubic_16s_AC4R(const Npp16s * pSrc, int nSrcStep, Npp16s * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
 NppStatus 
+nppiLUT_Cubic_16s_AC4IR_Ctx(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Cubic_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32s * pValues[3], const Npp32s * pLevels[3], int nLevels[3]);
-
 
 /**
  * 32-bit floating point look-up-table color conversion.
@@ -7972,9 +11172,14 @@ nppiLUT_Cubic_16s_AC4IR(      Npp16s * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -7990,9 +11195,14 @@ nppiLUT_Cubic_32f_C1R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * \param pValues Pointer to an array of user defined OUTPUT values (this is a device memory pointer)
  * \param pLevels Pointer to an array of user defined INPUT values  (this is a device memory pointer)
  * \param nLevels Number of user defined number of input/output mapping points (levels)
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C1IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues, const Npp32f * pLevels, int nLevels, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues, const Npp32f * pLevels, int nLevels);
@@ -8010,9 +11220,14 @@ nppiLUT_Cubic_32f_C1IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -8028,9 +11243,14 @@ nppiLUT_Cubic_32f_C3R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C3IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -8048,9 +11268,14 @@ nppiLUT_Cubic_32f_C3IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -8066,9 +11291,14 @@ nppiLUT_Cubic_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * \param pValues Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 4 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_C4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues[4], const Npp32f * pLevels[4], int nLevels[4]);
@@ -8087,9 +11317,14 @@ nppiLUT_Cubic_32f_C4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeRO
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -8106,9 +11341,14 @@ nppiLUT_Cubic_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * \param pValues Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT values.
  * \param pLevels Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined INPUT values.
  * \param nLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per color CHANNEL.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 1024 (the current size limit).
  */
+NppStatus 
+nppiLUT_Cubic_32f_AC4IR_Ctx(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                            const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3], NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUT_Cubic_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                         const Npp32f * pValues[3], const Npp32f * pLevels[3], int nLevels[3]);
@@ -8139,12 +11379,17 @@ nppiLUT_Cubic_32f_AC4IR(      Npp32f * pSrcDst, int nSrcDstStep, NppiSize oSizeR
  * \param aLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per 3D cube edge.
  *        aLevels[0] represents the number of x axis levels (Red), aLevels[1] represents the number of y axis levels (Green), 
  *        and aLevels[2] represets the number of z axis levels (Blue).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
 NppStatus 
+nppiLUT_Trilinear_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                                   Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Trilinear_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
-                         Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3]);
+                               Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3]);
 
 /**
  * Four channel 8-bit unsigned 3D trilinear interpolated look-up-table color conversion, not affecting alpha.
@@ -8164,12 +11409,17 @@ nppiLUT_Trilinear_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param aLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per 3D cube edge.
  *        aLevels[0] represents the number of x axis levels (Red), aLevels[1] represents the number of y axis levels (Green), 
  *        and aLevels[2] represets the number of z axis levels (Blue).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
 NppStatus 
+nppiLUT_Trilinear_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                                    Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiLUT_Trilinear_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
-                          Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3]);
+                                Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3]);
 
 /**
  * Four channel 8-bit unsigned 3D trilinear interpolated look-up-table in place color conversion, not affecting alpha.
@@ -8187,11 +11437,16 @@ nppiLUT_Trilinear_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nD
  * \param aLevels Host pointer to an array of 3 user defined number of input/output mapping points, one per 3D cube edge.
  *        aLevels[0] represents the number of x axis levels (Red), aLevels[1] represents the number of y axis levels (Green), 
  *        and aLevels[2] represets the number of z axis levels (Blue).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_NUMBER_OF_LEVELS_ERROR if the number of levels is less than 2 or greater than 256.
  */
 NppStatus 
-nppiLUT_Trilinear_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+nppiLUT_Trilinear_8u_AC4IR_Ctx(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
+                               Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3], NppStreamContext nppStreamCtx);
+
+NppStatus 
+nppiLUT_Trilinear_8u_AC4IR(Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSizeROI, 
                            Npp32u * pValues, Npp8u * pLevels[3], int aLevels[3]);
 
 /** @} image_color_LUT_Trilinear */
@@ -8215,9 +11470,14 @@ nppiLUT_Trilinear_8u_AC4IR(      Npp8u * pSrcDst, int nSrcDstStep, NppiSize oSiz
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp8u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp8u * pTable, int nBitSize);
@@ -8235,9 +11495,14 @@ nppiLUTPalette_8u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u24u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u24u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pTable, int nBitSize);
@@ -8255,9 +11520,14 @@ nppiLUTPalette_8u24u_C1R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDs
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u32u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, 
+                             const Npp32u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u32u_C1R(const Npp8u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, 
                          const Npp32u * pTable, int nBitSize);
@@ -8275,9 +11545,14 @@ nppiLUTPalette_8u32u_C1R(const Npp8u * pSrc, int nSrcStep, Npp32u * pDst, int nD
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp8u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp8u * pTables[3], int nBitSize);
@@ -8295,9 +11570,14 @@ nppiLUTPalette_8u_C3R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                          const Npp8u * pTables[4], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                       const Npp8u * pTables[4], int nBitSize);
@@ -8316,9 +11596,14 @@ nppiLUTPalette_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPalette_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp8u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp8u * pTables[3], int nBitSize);
@@ -8336,9 +11621,14 @@ nppiLUTPalette_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstS
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp16u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp16u * pTable, int nBitSize);
@@ -8356,9 +11646,14 @@ nppiLUTPalette_16u_C1R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u8u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pTable, int nBitSize);
@@ -8376,9 +11671,14 @@ nppiLUTPalette_16u8u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int nD
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u24u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                              const Npp8u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u24u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                           const Npp8u * pTable, int nBitSize);
@@ -8396,9 +11696,14 @@ nppiLUTPalette_16u24u_C1R(const Npp16u * pSrc, int nSrcStep, Npp8u * pDst, int n
  * \param oSizeROI \ref roi_specification.
  * \param pTable Pointer to an array of user defined OUTPUT palette values (this is a device memory pointer)
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u32u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, 
+                              const Npp32u * pTable, int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u32u_C1R(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int nDstStep, NppiSize oSizeROI, 
                           const Npp32u * pTable, int nBitSize);
@@ -8416,9 +11721,14 @@ nppiLUTPalette_16u32u_C1R(const Npp16u * pSrc, int nSrcStep, Npp32u * pDst, int 
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u_C3R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp16u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp16u * pTables[3], int nBitSize);
@@ -8436,9 +11746,14 @@ nppiLUTPalette_16u_C3R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 4 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                           const Npp16u * pTables[4], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                        const Npp16u * pTables[4], int nBitSize);
@@ -8457,9 +11772,14 @@ nppiLUTPalette_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * \param oSizeROI \ref roi_specification.
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPalette_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                            const Npp16u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPalette_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                         const Npp16u * pTables[3], int nBitSize);
@@ -8480,9 +11800,14 @@ nppiLUTPalette_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nD
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * Alpha values < 0 or > 255 will cause destination pixel alpha channel values to be unmodified.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 8) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 8.
  */
+NppStatus 
+nppiLUTPaletteSwap_8u_C3A0C4R_Ctx(const Npp8u * pSrc, int nSrcStep, int nAlphaValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
+                                  const Npp8u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPaletteSwap_8u_C3A0C4R(const Npp8u * pSrc, int nSrcStep, int nAlphaValue, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, 
                               const Npp8u * pTables[3], int nBitSize);
@@ -8503,9 +11828,14 @@ nppiLUTPaletteSwap_8u_C3A0C4R(const Npp8u * pSrc, int nSrcStep, int nAlphaValue,
  * \param pTables Host pointer to an array of 3 device memory pointers, one per color CHANNEL, pointing to user defined OUTPUT palette values.
  * Alpha values < 0 or > 65535 will cause destination pixel alpha channel values to be unmodified.
  * \param nBitSize Number of least significant bits (must be > 0 and <= 16) of each source pixel value to use as index into palette table during conversion.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *        - ::NPP_LUT_PALETTE_BITSIZE_ERROR if nBitSize is < 1 or > 16.
  */
+NppStatus 
+nppiLUTPaletteSwap_16u_C3A0C4R_Ctx(const Npp16u * pSrc, int nSrcStep, int nAlphaValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
+                                   const Npp16u * pTables[3], int nBitSize, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiLUTPaletteSwap_16u_C3A0C4R(const Npp16u * pSrc, int nSrcStep, int nAlphaValue, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, 
                                const Npp16u * pTables[3], int nBitSize);

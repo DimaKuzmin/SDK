@@ -54,11 +54,11 @@
  * MTGP32-11213
  *
  * Mersenne Twister RNG for the GPU
- * 
+ *
  * The period of generated integers is 2<sup>11213</sup>-1.
  *
  * This code generates 32-bit unsigned integers, and
- * single precision floating point numbers uniformly distributed 
+ * single precision floating point numbers uniformly distributed
  * in the range [1, 2). (float r; 1.0 <= r < 2.0)
  */
 
@@ -71,7 +71,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above
@@ -82,7 +82,7 @@
  *       its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written
  *       permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -98,15 +98,17 @@
 #if !defined CURAND_MTGP32_KERNEL_H
 #define CURAND_MTGP32_KERNEL_H
 
-//#if !defined(QUALIFIERS)
-//#define QUALIFIERS static inline __device__
-#define QUALIFIERS_MTGP32 static __forceinline__ __device__ __host__
-//#endif
+#if !defined(QUALIFIERS)
+#define QUALIFIERS static __forceinline__ __device__
+#endif
 
-#include <cuda.h>
+#ifndef __CUDACC_RTC__
+#include <cuda_runtime.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
+#endif // ifndef __CUDACC_RTC__
+#include <nv/target>
 #include "curand.h"
 #include "curand_mtgp32.h"
 
@@ -132,7 +134,7 @@ extern const uint3 threadIdx;
  * @param[in] bid block id.
  * @return output
  */
-QUALIFIERS_MTGP32 unsigned int para_rec(mtgp32_kernel_params_t * k,unsigned int X1, unsigned int X2, unsigned int Y, int bid) {
+QUALIFIERS unsigned int para_rec(mtgp32_kernel_params_t * k,unsigned int X1, unsigned int X2, unsigned int Y, int bid) {
     unsigned int X = (X1 & k->mask[0]) ^ X2;
     unsigned int MAT;
 
@@ -150,7 +152,7 @@ QUALIFIERS_MTGP32 unsigned int para_rec(mtgp32_kernel_params_t * k,unsigned int 
  * @param[in] bid block id.
  * @return the tempered value.
  */
-QUALIFIERS_MTGP32 unsigned int temper(mtgp32_kernel_params_t * k,unsigned int V, unsigned int T, int bid) {
+QUALIFIERS unsigned int temper(mtgp32_kernel_params_t * k,unsigned int V, unsigned int T, int bid) {
     unsigned int MAT;
 
     T ^= T >> 16;
@@ -169,7 +171,7 @@ QUALIFIERS_MTGP32 unsigned int temper(mtgp32_kernel_params_t * k,unsigned int V,
  * @param[in] bid block id.
  * @return the tempered and converted value.
  */
-QUALIFIERS_MTGP32 unsigned int temper_single(mtgp32_kernel_params_t * k,unsigned int V, unsigned int T, int bid) {
+QUALIFIERS unsigned int temper_single(mtgp32_kernel_params_t * k,unsigned int V, unsigned int T, int bid) {
     unsigned int MAT;
     unsigned int r;
 
@@ -191,7 +193,7 @@ QUALIFIERS_MTGP32 unsigned int temper_single(mtgp32_kernel_params_t * k,unsigned
  *
  * \return 32-bits of pseudorandomness as an unsigned int, all bits valid to use.
  */
-QUALIFIERS_MTGP32 unsigned int curand(curandStateMtgp32_t *state)
+QUALIFIERS unsigned int curand(curandStateMtgp32_t *state)
 {
     unsigned int t;
     unsigned int d;
@@ -211,18 +213,18 @@ QUALIFIERS_MTGP32 unsigned int curand(curandStateMtgp32_t *state)
     o = temper(state->k, r,
            state->s[(t + state->offset + pos -1) & MTGP32_STATE_MASK],
            state->pIdx);
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     if (t == 0)
     {
         state->offset = (state->offset + d) & MTGP32_STATE_MASK;
     }
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     return o;
-    
+
 }
 /**
  * \brief Return 32-bits of pseudorandomness from a specific position in a mtgp32 generator.
@@ -231,18 +233,18 @@ QUALIFIERS_MTGP32 unsigned int curand(curandStateMtgp32_t *state)
  * increment position of generator by \p n positions, which must be the total number of positions
  * upddated in the state by the thread block, for this invocation.
  *
- * Note : 
+ * Note :
  * Thread indices must range from 0...\ n - 1.
- * The number of positions updated may not exceed 256. 
+ * The number of positions updated may not exceed 256.
  * A thread block may update more than one state, but a given state may not be updated by more than one thread block.
  *
  * \param state - Pointer to state to update
  * \param index - Index (0..255) of the position within the state to draw from and update
  * \param n - The total number of postions in this state that are being updated by this invocation
- * 
+ *
  * \return 32-bits of pseudorandomness as an unsigned int, all bits valid to use.
  */
-QUALIFIERS_MTGP32 unsigned int curand_mtgp32_specific(curandStateMtgp32_t *state, unsigned char index, unsigned char n)
+QUALIFIERS unsigned int curand_mtgp32_specific(curandStateMtgp32_t *state, unsigned char index, unsigned char n)
 {
     unsigned int t;
     int pos = state->k->pos_tbl[state->pIdx];
@@ -259,43 +261,41 @@ QUALIFIERS_MTGP32 unsigned int curand_mtgp32_specific(curandStateMtgp32_t *state
     o = temper(state->k, r,
            state->s[(t + state->offset + pos -1) & MTGP32_STATE_MASK],
            state->pIdx);
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     if (index == 0)
     {
         state->offset = (state->offset + n) & MTGP32_STATE_MASK;
     }
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     return o;
 }
 /**
  * \brief Return a uniformly distributed float from a mtgp32 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from the mtgp32 generator in \p state, increment position of generator.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
  *
- * Note: This alternate derivation of a uniform float is provided for completeness 
+ * Note: This alternate derivation of a uniform float is provided for completeness
  * with the original source
  *
  * \param state - Pointer to state to update
  *
  * \return uniformly distributed float between \p 0.0f and \p 1.0f
  */
-QUALIFIERS_MTGP32 float curand_mtgp32_single(curandStateMtgp32_t *state)
+QUALIFIERS float curand_mtgp32_single(curandStateMtgp32_t *state)
 {
     unsigned int t;
     unsigned int d;
     int pos = state->k->pos_tbl[state->pIdx];
     unsigned int r;
-    union mtgp32_u_to_f {
-        unsigned int u;
-        float f;
-    }o;
+    unsigned int o_u;
+    float o_f;
 
 
     t = blockDim.z * blockDim.y;
@@ -308,56 +308,54 @@ QUALIFIERS_MTGP32 float curand_mtgp32_single(curandStateMtgp32_t *state)
              state->pIdx);
 
     state->s[t] = r;
-    o.u = temper_single(state->k, r,
+    o_u = temper_single(state->k, r,
                         state->s[(t + state->offset + pos -1) & MTGP32_STATE_MASK],
                         state->pIdx);
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     if (threadIdx.x == 0)
     {
         state->offset = (state->offset + d) & MTGP32_STATE_MASK;
     }
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
-    return o.f;
+)
+    memcpy(&o_f, &o_u, sizeof(o_u));
+    return o_f;
 }
 
 /**
  * \brief Return a uniformly distributed float from a specific position in a mtgp32 generator.
  *
- * Return a uniformly distributed float between \p 0.0f and \p 1.0f 
+ * Return a uniformly distributed float between \p 0.0f and \p 1.0f
  * from position \p index of the mtgp32 generator in \p state, and
  * increment position of generator by \p n positions, which must be the total number of positions
- * upddated in the state by the thread block, for this invocation. 
+ * upddated in the state by the thread block, for this invocation.
  * Output range excludes \p 0.0f but includes \p 1.0f.  Denormalized floating
  * point outputs are never returned.
  *
- * Note 1:  
+ * Note 1:
  * Thread indices must range from 0...\p n - 1.
- * The number of positions updated may not exceed 256. 
+ * The number of positions updated may not exceed 256.
  * A thread block may update more than one state, but a given state may not be updated by more than one thread block.
  *
- * Note 2: This alternate derivation of a uniform float is provided for completeness 
+ * Note 2: This alternate derivation of a uniform float is provided for completeness
  * with the original source
  *
  * \param state - Pointer to state to update
  * \param index - Index (0..255) of the position within the state to draw from and update
  * \param n - The total number of postions in this state that are being updated by this invocation
- * 
+ *
  * \return uniformly distributed float between \p 0.0f and \p 1.0f
  */
-QUALIFIERS_MTGP32 float curand_mtgp32_single_specific(curandStateMtgp32_t *state, unsigned char index, unsigned char n)
+QUALIFIERS float curand_mtgp32_single_specific(curandStateMtgp32_t *state, unsigned char index, unsigned char n)
 {
     unsigned int t;
     int pos = state->k->pos_tbl[state->pIdx];
     unsigned int r;
-    union mtgp32_u_to_f {
-        unsigned int u;
-        float f;
-    }o;
-
+    unsigned int o_u;
+    float o_f;
 
     t = index;
     r = para_rec(state->k, state->s[(t + state->offset) & MTGP32_STATE_MASK],
@@ -366,24 +364,23 @@ QUALIFIERS_MTGP32 float curand_mtgp32_single_specific(curandStateMtgp32_t *state
              state->pIdx);
 
     state->s[t] = r;
-    o.u = temper_single(state->k, r,
+    o_u = temper_single(state->k, r,
                         state->s[(t + state->offset + pos -1) & MTGP32_STATE_MASK],
                         state->pIdx);
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
+)
     if (threadIdx.x == 0)
     {
         state->offset = (state->offset + n) & MTGP32_STATE_MASK;
     }
-#if __CUDA_ARCH__ != 0
+NV_IF_TARGET(NV_IS_DEVICE,
     __syncthreads();
-#endif
-    return o.f;
+)
+    memcpy(&o_f, &o_u, sizeof(o_u));
+    return o_f;
 }
 
 /** @} */
 
 #endif
-
-#undef QUALIFIERS_MTGP32

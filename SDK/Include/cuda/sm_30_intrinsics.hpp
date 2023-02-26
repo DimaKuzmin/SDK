@@ -58,7 +58,7 @@
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 300
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 300
 
 /*******************************************************************************
 *                                                                              *
@@ -66,9 +66,7 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "device_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 // In here are intrinsics which are built in to the compiler. These may be
 // referenced by intrinsic implementations from this file.
@@ -142,12 +140,10 @@ unsigned __activemask() {
     asm volatile ("activemask.b32 %0;" : "=r"(ret));
     return ret;
 }
-// Warp register exchange (shuffle) intrinsics.
-// Notes:
-// a) Warp size is hardcoded to 32 here, because the compiler does not know
-//    the "warpSize" constant at this time
-// b) we cannot map the float __shfl to the int __shfl because it'll mess with
-//    the register number (especially if you're doing two shfls to move a double).
+
+// These are removed starting with compute_70 and onwards
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700
+
 __SM_30_INTRINSICS_DECL__ int __shfl(int var, int srcLane, int width) {
 	int ret;
 	int c = ((warpSize-width) << 8) | 0x1f;
@@ -155,20 +151,8 @@ __SM_30_INTRINSICS_DECL__ int __shfl(int var, int srcLane, int width) {
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ int __shfl_sync(unsigned mask, int var, int srcLane, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_idx_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-	int c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_idx_sync(mask, var, srcLane, c);
-	return ret;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned int __shfl(unsigned int var, int srcLane, int width) {
 	return (unsigned int) __shfl((int)var, srcLane, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_sync(unsigned mask, unsigned int var, int srcLane, int width) {
-        return (unsigned int) __shfl_sync(mask, (int)var, srcLane, width);
 }
 
 __SM_30_INTRINSICS_DECL__ int __shfl_up(int var, unsigned int delta, int width) {
@@ -178,20 +162,8 @@ __SM_30_INTRINSICS_DECL__ int __shfl_up(int var, unsigned int delta, int width) 
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ int __shfl_up_sync(unsigned mask, int var, unsigned int delta, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_up_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-	int c = (warpSize-width) << 8;
-        ret = __nvvm_shfl_up_sync(mask, var, delta, c);
-	return ret;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned int __shfl_up(unsigned int var, unsigned int delta, int width) {
 	return (unsigned int) __shfl_up((int)var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_up_sync(unsigned mask, unsigned int var, unsigned int delta, int width) {
-        return (unsigned int) __shfl_up_sync(mask, (int)var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ int __shfl_down(int var, unsigned int delta, int width) {
@@ -201,20 +173,8 @@ __SM_30_INTRINSICS_DECL__ int __shfl_down(int var, unsigned int delta, int width
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ int __shfl_down_sync(unsigned mask, int var, unsigned int delta, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_down_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-	int c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_down_sync(mask, var, delta, c);
-	return ret;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned int __shfl_down(unsigned int var, unsigned int delta, int width) {
 	return (unsigned int) __shfl_down((int)var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_down_sync(unsigned mask, unsigned int var, unsigned int delta, int width) {
-        return (unsigned int) __shfl_down_sync(mask, (int)var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ int __shfl_xor(int var, int laneMask, int width) {
@@ -224,20 +184,8 @@ __SM_30_INTRINSICS_DECL__ int __shfl_xor(int var, int laneMask, int width) {
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ int __shfl_xor_sync(unsigned mask, int var, int laneMask, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_bfly_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-	int c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_bfly_sync(mask, var, laneMask, c);
-	return ret;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned int __shfl_xor(unsigned int var, int laneMask, int width) {
 	return (unsigned int) __shfl_xor((int)var, laneMask, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned int __shfl_xor_sync(unsigned mask, unsigned int var, int laneMask, int width) {
-	return (unsigned int) __shfl_xor_sync(mask, (int)var, laneMask, width);
 }
 
 __SM_30_INTRINSICS_DECL__ float __shfl(float var, int srcLane, int width) {
@@ -248,30 +196,12 @@ __SM_30_INTRINSICS_DECL__ float __shfl(float var, int srcLane, int width) {
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ float __shfl_sync(unsigned mask, float var, int srcLane, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_idx_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-        int ret;
-        int c;
-	c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_idx_sync(mask, __float_as_int(var), srcLane, c);
-	return __int_as_float(ret);
-}
-
 __SM_30_INTRINSICS_DECL__ float __shfl_up(float var, unsigned int delta, int width) {
 	float ret;
         int c;
 	c = (warpSize-width) << 8;
 	asm volatile ("shfl.up.b32 %0, %1, %2, %3;" : "=f"(ret) : "f"(var), "r"(delta), "r"(c));
 	return ret;
-}
-
-__SM_30_INTRINSICS_DECL__ float __shfl_up_sync(unsigned mask, float var, unsigned int delta, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_up_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-        int c;
-	c = (warpSize-width) << 8;
-        ret = __nvvm_shfl_up_sync(mask, __float_as_int(var), delta, c);
-	return __int_as_float(ret);
 }
 
 __SM_30_INTRINSICS_DECL__ float __shfl_down(float var, unsigned int delta, int width) {
@@ -282,15 +212,6 @@ __SM_30_INTRINSICS_DECL__ float __shfl_down(float var, unsigned int delta, int w
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ float __shfl_down_sync(unsigned mask, float var, unsigned int delta, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_down_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-        int c;
-	c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_down_sync(mask, __float_as_int(var), delta, c);
-	return __int_as_float(ret);
-}
-
 __SM_30_INTRINSICS_DECL__ float __shfl_xor(float var, int laneMask, int width) {
 	float ret;
         int c;
@@ -299,16 +220,8 @@ __SM_30_INTRINSICS_DECL__ float __shfl_xor(float var, int laneMask, int width) {
 	return ret;
 }
 
-__SM_30_INTRINSICS_DECL__ float __shfl_xor_sync(unsigned mask, float var, int laneMask, int width) {
-        extern __device__ __device_builtin__ unsigned __nvvm_shfl_bfly_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
-	int ret;
-        int c;
-	c = ((warpSize-width) << 8) | 0x1f;
-        ret = __nvvm_shfl_bfly_sync(mask, __float_as_int(var), laneMask, c);
-	return __int_as_float(ret);
-}
-
 // 64-bits SHFL
+
 __SM_30_INTRINSICS_DECL__ long long __shfl(long long var, int srcLane, int width) {
 	int lo, hi;
 	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
@@ -318,21 +231,8 @@ __SM_30_INTRINSICS_DECL__ long long __shfl(long long var, int srcLane, int width
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ long long __shfl_sync(unsigned mask, long long var, int srcLane, int width) {
-	int lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
-	hi = __shfl_sync(mask, hi, srcLane, width);
-	lo = __shfl_sync(mask, lo, srcLane, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned long long __shfl(unsigned long long var, int srcLane, int width) {
 	return (unsigned long long) __shfl((long long) var, srcLane, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_sync(unsigned mask, unsigned long long var, int srcLane, int width) {
-        return (unsigned long long) __shfl_sync(mask, (long long) var, srcLane, width);
 }
 
 __SM_30_INTRINSICS_DECL__ long long __shfl_up(long long var, unsigned int delta, int width) {
@@ -344,21 +244,8 @@ __SM_30_INTRINSICS_DECL__ long long __shfl_up(long long var, unsigned int delta,
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ long long __shfl_up_sync(unsigned mask, long long var, unsigned int delta, int width) {
-	int lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
-	hi = __shfl_up_sync(mask, hi, delta, width);
-	lo = __shfl_up_sync(mask, lo, delta, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned long long __shfl_up(unsigned long long var, unsigned int delta, int width) {
 	return (unsigned long long) __shfl_up((long long) var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_up_sync(unsigned mask, unsigned long long var, unsigned int delta, int width) {
-        return (unsigned long long) __shfl_up_sync(mask, (long long) var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ long long __shfl_down(long long var, unsigned int delta, int width) {
@@ -370,21 +257,8 @@ __SM_30_INTRINSICS_DECL__ long long __shfl_down(long long var, unsigned int delt
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ long long __shfl_down_sync(unsigned mask, long long var, unsigned int delta, int width) {
-	int lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
-	hi = __shfl_down_sync(mask, hi, delta, width);
-	lo = __shfl_down_sync(mask, lo, delta, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned long long __shfl_down(unsigned long long var, unsigned int delta, int width) {
 	return (unsigned long long) __shfl_down((long long) var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_down_sync(unsigned mask, unsigned long long var, unsigned int delta, int width) {
-        return (unsigned long long) __shfl_down_sync(mask, (long long) var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ long long __shfl_xor(long long var, int laneMask, int width) {
@@ -396,21 +270,8 @@ __SM_30_INTRINSICS_DECL__ long long __shfl_xor(long long var, int laneMask, int 
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ long long __shfl_xor_sync(unsigned mask, long long var, int laneMask, int width) {
-	int lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
-	hi = __shfl_xor_sync(mask, hi, laneMask, width);
-	lo = __shfl_xor_sync(mask, lo, laneMask, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
 __SM_30_INTRINSICS_DECL__ unsigned long long __shfl_xor(unsigned long long var, int laneMask, int width) {
 	return (unsigned long long) __shfl_xor((long long) var, laneMask, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_xor_sync(unsigned mask, unsigned long long var, int laneMask, int width) {
-        return (unsigned long long) __shfl_xor_sync(mask, (long long) var, laneMask, width);
 }
 
 __SM_30_INTRINSICS_DECL__ double __shfl(double var, int srcLane, int width) {
@@ -422,30 +283,11 @@ __SM_30_INTRINSICS_DECL__ double __shfl(double var, int srcLane, int width) {
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ double __shfl_sync(unsigned mask, double var, int srcLane, int width) {
-	unsigned lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
-	hi = __shfl_sync(mask, hi, srcLane, width);
-	lo = __shfl_sync(mask, lo, srcLane, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
-
 __SM_30_INTRINSICS_DECL__ double __shfl_up(double var, unsigned int delta, int width) {
 	unsigned lo, hi;
 	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
 	hi = __shfl_up(hi, delta, width);
 	lo = __shfl_up(lo, delta, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
-__SM_30_INTRINSICS_DECL__ double __shfl_up_sync(unsigned mask, double var, unsigned int delta, int width) {
-	unsigned lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
-	hi = __shfl_up_sync(mask, hi, delta, width);
-	lo = __shfl_up_sync(mask, lo, delta, width);
 	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
 	return var;
 }
@@ -459,20 +301,231 @@ __SM_30_INTRINSICS_DECL__ double __shfl_down(double var, unsigned int delta, int
 	return var;
 }
 
-__SM_30_INTRINSICS_DECL__ double __shfl_down_sync(unsigned mask, double var, unsigned int delta, int width) {
-	unsigned lo, hi;
-	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
-	hi = __shfl_down_sync(mask, hi, delta, width);
-	lo = __shfl_down_sync(mask, lo, delta, width);
-	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
-	return var;
-}
-
 __SM_30_INTRINSICS_DECL__ double __shfl_xor(double var, int laneMask, int width) {
 	unsigned lo, hi;
 	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
 	hi = __shfl_xor(hi, laneMask, width);
 	lo = __shfl_xor(lo, laneMask, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ long __shfl(long var, int srcLane, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl((long long) var, srcLane, width) :
+		__shfl((int) var, srcLane, width);
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl(unsigned long var, int srcLane, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl((unsigned long long) var, srcLane, width) :
+		__shfl((unsigned int) var, srcLane, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long __shfl_up(long var, unsigned int delta, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_up((long long) var, delta, width) :
+		__shfl_up((int) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_up(unsigned long var, unsigned int delta, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_up((unsigned long long) var, delta, width) :
+		__shfl_up((unsigned int) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long __shfl_down(long var, unsigned int delta, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_down((long long) var, delta, width) :
+		__shfl_down((int) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_down(unsigned long var, unsigned int delta, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_down((unsigned long long) var, delta, width) :
+		__shfl_down((unsigned int) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long __shfl_xor(long var, int laneMask, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_xor((long long) var, laneMask, width) :
+		__shfl_xor((int) var, laneMask, width);
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long __shfl_xor(unsigned long var, int laneMask, int width) {
+	return (sizeof(long) == sizeof(long long)) ?
+		__shfl_xor((unsigned long long) var, laneMask, width) :
+		__shfl_xor((unsigned int) var, laneMask, width);
+}
+
+#endif /* defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ < 700 */
+
+// Warp register exchange (shuffle) intrinsics.
+// Notes:
+// a) Warp size is hardcoded to 32 here, because the compiler does not know
+//    the "warpSize" constant at this time
+// b) we cannot map the float __shfl to the int __shfl because it'll mess with
+//    the register number (especially if you're doing two shfls to move a double).
+__SM_30_INTRINSICS_DECL__ int __shfl_sync(unsigned mask, int var, int srcLane, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_idx_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+	int c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_idx_sync(mask, var, srcLane, c);
+	return ret;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_sync(unsigned mask, unsigned int var, int srcLane, int width) {
+        return (unsigned int) __shfl_sync(mask, (int)var, srcLane, width);
+}
+
+__SM_30_INTRINSICS_DECL__ int __shfl_up_sync(unsigned mask, int var, unsigned int delta, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_up_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+	int c = (warpSize-width) << 8;
+        ret = __nvvm_shfl_up_sync(mask, var, delta, c);
+	return ret;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_up_sync(unsigned mask, unsigned int var, unsigned int delta, int width) {
+        return (unsigned int) __shfl_up_sync(mask, (int)var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ int __shfl_down_sync(unsigned mask, int var, unsigned int delta, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_down_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+	int c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_down_sync(mask, var, delta, c);
+	return ret;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_down_sync(unsigned mask, unsigned int var, unsigned int delta, int width) {
+        return (unsigned int) __shfl_down_sync(mask, (int)var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ int __shfl_xor_sync(unsigned mask, int var, int laneMask, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_bfly_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+	int c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_bfly_sync(mask, var, laneMask, c);
+	return ret;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned int __shfl_xor_sync(unsigned mask, unsigned int var, int laneMask, int width) {
+	return (unsigned int) __shfl_xor_sync(mask, (int)var, laneMask, width);
+}
+
+__SM_30_INTRINSICS_DECL__ float __shfl_sync(unsigned mask, float var, int srcLane, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_idx_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+        int ret;
+        int c;
+	c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_idx_sync(mask, __float_as_int(var), srcLane, c);
+	return __int_as_float(ret);
+}
+
+__SM_30_INTRINSICS_DECL__ float __shfl_up_sync(unsigned mask, float var, unsigned int delta, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_up_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+        int c;
+	c = (warpSize-width) << 8;
+        ret = __nvvm_shfl_up_sync(mask, __float_as_int(var), delta, c);
+	return __int_as_float(ret);
+}
+
+__SM_30_INTRINSICS_DECL__ float __shfl_down_sync(unsigned mask, float var, unsigned int delta, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_down_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+        int c;
+	c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_down_sync(mask, __float_as_int(var), delta, c);
+	return __int_as_float(ret);
+}
+
+__SM_30_INTRINSICS_DECL__ float __shfl_xor_sync(unsigned mask, float var, int laneMask, int width) {
+        extern __device__ __device_builtin__ unsigned __nvvm_shfl_bfly_sync(unsigned mask, unsigned a, unsigned b, unsigned c);
+	int ret;
+        int c;
+	c = ((warpSize-width) << 8) | 0x1f;
+        ret = __nvvm_shfl_bfly_sync(mask, __float_as_int(var), laneMask, c);
+	return __int_as_float(ret);
+}
+
+// 64-bits SHFL
+__SM_30_INTRINSICS_DECL__ long long __shfl_sync(unsigned mask, long long var, int srcLane, int width) {
+	int lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
+	hi = __shfl_sync(mask, hi, srcLane, width);
+	lo = __shfl_sync(mask, lo, srcLane, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_sync(unsigned mask, unsigned long long var, int srcLane, int width) {
+        return (unsigned long long) __shfl_sync(mask, (long long) var, srcLane, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long long __shfl_up_sync(unsigned mask, long long var, unsigned int delta, int width) {
+	int lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
+	hi = __shfl_up_sync(mask, hi, delta, width);
+	lo = __shfl_up_sync(mask, lo, delta, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_up_sync(unsigned mask, unsigned long long var, unsigned int delta, int width) {
+        return (unsigned long long) __shfl_up_sync(mask, (long long) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long long __shfl_down_sync(unsigned mask, long long var, unsigned int delta, int width) {
+	int lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
+	hi = __shfl_down_sync(mask, hi, delta, width);
+	lo = __shfl_down_sync(mask, lo, delta, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_down_sync(unsigned mask, unsigned long long var, unsigned int delta, int width) {
+        return (unsigned long long) __shfl_down_sync(mask, (long long) var, delta, width);
+}
+
+__SM_30_INTRINSICS_DECL__ long long __shfl_xor_sync(unsigned mask, long long var, int laneMask, int width) {
+	int lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "l"(var));
+	hi = __shfl_xor_sync(mask, hi, laneMask, width);
+	lo = __shfl_xor_sync(mask, lo, laneMask, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=l"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ unsigned long long __shfl_xor_sync(unsigned mask, unsigned long long var, int laneMask, int width) {
+        return (unsigned long long) __shfl_xor_sync(mask, (long long) var, laneMask, width);
+}
+
+__SM_30_INTRINSICS_DECL__ double __shfl_sync(unsigned mask, double var, int srcLane, int width) {
+	unsigned lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
+	hi = __shfl_sync(mask, hi, srcLane, width);
+	lo = __shfl_sync(mask, lo, srcLane, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ double __shfl_up_sync(unsigned mask, double var, unsigned int delta, int width) {
+	unsigned lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
+	hi = __shfl_up_sync(mask, hi, delta, width);
+	lo = __shfl_up_sync(mask, lo, delta, width);
+	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
+	return var;
+}
+
+__SM_30_INTRINSICS_DECL__ double __shfl_down_sync(unsigned mask, double var, unsigned int delta, int width) {
+	unsigned lo, hi;
+	asm volatile("mov.b64 {%0,%1}, %2;" : "=r"(lo), "=r"(hi) : "d"(var));
+	hi = __shfl_down_sync(mask, hi, delta, width);
+	lo = __shfl_down_sync(mask, lo, delta, width);
 	asm volatile("mov.b64 %0, {%1,%2};" : "=d"(var) : "r"(lo), "r"(hi));
 	return var;
 }
@@ -488,22 +541,10 @@ __SM_30_INTRINSICS_DECL__ double __shfl_xor_sync(unsigned mask, double var, int 
 
 // long needs some help to choose between 32-bits and 64-bits
 
-__SM_30_INTRINSICS_DECL__ long __shfl(long var, int srcLane, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl((long long) var, srcLane, width) :
-		__shfl((int) var, srcLane, width);
-}
-
 __SM_30_INTRINSICS_DECL__ long __shfl_sync(unsigned mask, long var, int srcLane, int width) {
 	return (sizeof(long) == sizeof(long long)) ?
                 __shfl_sync(mask, (long long) var, srcLane, width) :
 		__shfl_sync(mask, (int) var, srcLane, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl(unsigned long var, int srcLane, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl((unsigned long long) var, srcLane, width) :
-		__shfl((unsigned int) var, srcLane, width);
 }
 
 __SM_30_INTRINSICS_DECL__ unsigned long __shfl_sync(unsigned mask, unsigned long var, int srcLane, int width) {
@@ -512,22 +553,10 @@ __SM_30_INTRINSICS_DECL__ unsigned long __shfl_sync(unsigned mask, unsigned long
 		__shfl_sync(mask, (unsigned int) var, srcLane, width);
 }
 
-__SM_30_INTRINSICS_DECL__ long __shfl_up(long var, unsigned int delta, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_up((long long) var, delta, width) :
-		__shfl_up((int) var, delta, width);
-}
-
 __SM_30_INTRINSICS_DECL__ long __shfl_up_sync(unsigned mask, long var, unsigned int delta, int width) {
 	return (sizeof(long) == sizeof(long long)) ?
 		__shfl_up_sync(mask, (long long) var, delta, width) :
 		__shfl_up_sync(mask, (int) var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_up(unsigned long var, unsigned int delta, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_up((unsigned long long) var, delta, width) :
-		__shfl_up((unsigned int) var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ unsigned long __shfl_up_sync(unsigned mask, unsigned long var, unsigned int delta, int width) {
@@ -536,22 +565,10 @@ __SM_30_INTRINSICS_DECL__ unsigned long __shfl_up_sync(unsigned mask, unsigned l
 		__shfl_up_sync(mask, (unsigned int) var, delta, width);
 }
 
-__SM_30_INTRINSICS_DECL__ long __shfl_down(long var, unsigned int delta, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_down((long long) var, delta, width) :
-		__shfl_down((int) var, delta, width);
-}
-
 __SM_30_INTRINSICS_DECL__ long __shfl_down_sync(unsigned mask, long var, unsigned int delta, int width) {
 	return (sizeof(long) == sizeof(long long)) ?
 		__shfl_down_sync(mask, (long long) var, delta, width) :
 		__shfl_down_sync(mask, (int) var, delta, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_down(unsigned long var, unsigned int delta, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_down((unsigned long long) var, delta, width) :
-		__shfl_down((unsigned int) var, delta, width);
 }
 
 __SM_30_INTRINSICS_DECL__ unsigned long __shfl_down_sync(unsigned mask, unsigned long var, unsigned int delta, int width) {
@@ -560,22 +577,10 @@ __SM_30_INTRINSICS_DECL__ unsigned long __shfl_down_sync(unsigned mask, unsigned
 		__shfl_down_sync(mask, (unsigned int) var, delta, width);
 }
 
-__SM_30_INTRINSICS_DECL__ long __shfl_xor(long var, int laneMask, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_xor((long long) var, laneMask, width) :
-		__shfl_xor((int) var, laneMask, width);
-}
-
 __SM_30_INTRINSICS_DECL__ long __shfl_xor_sync(unsigned mask, long var, int laneMask, int width) {
 	return (sizeof(long) == sizeof(long long)) ?
 		__shfl_xor_sync(mask, (long long) var, laneMask, width) :
 		__shfl_xor_sync(mask, (int) var, laneMask, width);
-}
-
-__SM_30_INTRINSICS_DECL__ unsigned long __shfl_xor(unsigned long var, int laneMask, int width) {
-	return (sizeof(long) == sizeof(long long)) ?
-		__shfl_xor((unsigned long long) var, laneMask, width) :
-		__shfl_xor((unsigned int) var, laneMask, width);
 }
 
 __SM_30_INTRINSICS_DECL__ unsigned long __shfl_xor_sync(unsigned mask, unsigned long var, int laneMask, int width) {
@@ -589,7 +594,7 @@ __SM_30_INTRINSICS_DECL__ unsigned long __shfl_xor_sync(unsigned mask, unsigned 
 #undef __local_warpSize
 #endif
 
-#endif /* !__CUDA_ARCH__ || __CUDA_ARCH__ >= 300 */
+#endif /* _NVHPC_CUDA || !__CUDA_ARCH__ || __CUDA_ARCH__ >= 300 */
 
 #endif /* __cplusplus && __CUDACC__ */
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2018 NVIDIA Corporation.  All rights reserved.
+ * Copyright 2017-2021 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -46,6 +46,16 @@
  * comments to the code, the above Disclaimer and U.S. Government End
  * Users Notice.
  */
+
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/sm_70_rt.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/sm_70_rt.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_SM_70_RT_HPP__
+#endif
 
 #if !defined(__SM_70_RT_HPP__)
 #define __SM_70_RT_HPP__
@@ -109,7 +119,7 @@ __SM_70_RT_DECL__ unsigned int __match_any_sync(unsigned mask, long long value) 
 }
 
 __SM_70_RT_DECL__ unsigned int __match_any_sync(unsigned mask, float value) {
-  return __match32_any_sync(mask, float_as_uint(value));
+  return __match32_any_sync(mask, __float_as_uint(value));
 }
 
 __SM_70_RT_DECL__ unsigned int __match_any_sync(unsigned mask, double value) {
@@ -148,7 +158,7 @@ __SM_70_RT_DECL__ unsigned int __match_all_sync(unsigned mask, long long value, 
 }
 
 __SM_70_RT_DECL__ unsigned int __match_all_sync(unsigned mask, float value, int *pred) {
-  return __match32_all_sync(mask, float_as_uint(value), pred);
+  return __match32_all_sync(mask, __float_as_uint(value), pred);
 }
 
 __SM_70_RT_DECL__ unsigned int __match_all_sync(unsigned mask, double value, int *pred) {
@@ -159,6 +169,15 @@ __SM_70_RT_DECL__ void __nanosleep(unsigned int ns) {
     asm volatile("nanosleep.u32 %0;" :: "r"(ns));
 }
 
+
+extern "C" __device__ __device_builtin__
+unsigned short __usAtomicCAS(unsigned short *, unsigned short, unsigned short);
+
+__SM_70_RT_DECL__ unsigned short int atomicCAS(unsigned short int *address, unsigned short int compare, unsigned short int val) {
+  return __usAtomicCAS(address, compare, val);
+}
+
+
 #endif /* !__CUDA_ARCH__ || __CUDA_ARCH__ >= 700 */
 
 #endif /* __cplusplus && __CUDACC__ */
@@ -167,3 +186,7 @@ __SM_70_RT_DECL__ void __nanosleep(unsigned int ns) {
 
 #endif /* !__SM_70_RT_HPP__ */
 
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_SM_70_RT_HPP__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_SM_70_RT_HPP__
+#endif

@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2014 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2019 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -46,7 +46,6 @@
  * comments to the code, the above Disclaimer and U.S. Government End
  * Users Notice.
  */
- 
 #if !defined(CUSPARSE_V2_H_)
 #define CUSPARSE_V2_H_
 

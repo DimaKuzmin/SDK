@@ -64,7 +64,9 @@
  * Hence keep the header out of extern "C" block
  */
 
+#if !defined(__CUDACC__)
 #include <math.h>       /* import fabsf, sqrt */
+#endif /* !defined(__CUDACC__) */
 
 #if defined(__cplusplus)
 extern "C" {

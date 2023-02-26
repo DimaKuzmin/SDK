@@ -64,8 +64,7 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 /*******************************************************************************
 *                                                                              *
@@ -184,8 +183,7 @@ __DEVICE_ATOMIC_FUNCTIONS_DECL__ unsigned int atomicCAS(unsigned int *address, u
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 /*******************************************************************************
 *                                                                              *

@@ -50,7 +50,7 @@
 #if !defined(__CUDA_D3D9_INTEROP_H__)
 #define __CUDA_D3D9_INTEROP_H__
 
-#if defined(_WIN32)
+#include "cuda_runtime_api.h"
 
 /** \cond impl_private */
 #if !defined(__dv)
@@ -69,9 +69,19 @@
 #endif /* !__dv */
 /** \endcond impl_private */
 
-#include "builtin_types.h"
-#include "host_defines.h"
 #include <d3d9.h>
+
+/** \cond impl_private */
+#if defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+/** \endcond impl_private */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -277,6 +287,9 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9GetDevices(unsigned int *pCudaDevi
  * Records \p pD3D9Device as the Direct3D 9 device to use for Direct3D 9
  * interoperability with the CUDA device \p device and sets \p device as 
  * the current device for the calling host thread.
+ *
+ * This function will immediately initialize the primary context on 
+ * \p device if needed.
  * 
  * If \p device has already been initialized then this call will fail with 
  * the error ::cudaErrorSetOnActiveProcess.  In this case it is necessary 
@@ -434,7 +447,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9RegisterResource(IDirect3DResource
  * \sa 
  * ::cudaGraphicsUnregisterResource
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9UnregisterResource(IDirect3DResource9 *pResource);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9UnregisterResource(IDirect3DResource9 *pResource);
 
 /**
  * \brief Map Direct3D resources for access by CUDA
@@ -468,7 +481,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9UnregisterResource(IDirect3DResour
  * \sa 
  * ::cudaGraphicsMapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9MapResources(int count, IDirect3DResource9 **ppResources);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9MapResources(int count, IDirect3DResource9 **ppResources);
 
 /**
  * \brief Unmap Direct3D resources for access by CUDA
@@ -498,7 +511,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9MapResources(int count, IDirect3DR
  * \sa 
   * ::cudaGraphicsUnmapResources
   */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9UnmapResources(int count, IDirect3DResource9 **ppResources);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9UnmapResources(int count, IDirect3DResource9 **ppResources);
 
 /**
  * \brief Set usage flags for mapping a Direct3D resource
@@ -537,7 +550,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9UnmapResources(int count, IDirect3
  * \sa
  * ::cudaInteropResourceSetMapFlags
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceSetMapFlags(IDirect3DResource9 *pResource, unsigned int flags); 
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceSetMapFlags(IDirect3DResource9 *pResource, unsigned int flags); 
 
 /**
  * \brief Get the dimensions of a registered Direct3D surface
@@ -578,7 +591,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceSetMapFlags(IDirect3DResou
  * \sa 
  * ::cudaGraphicsSubResourceGetMappedArray
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetSurfaceDimensions(size_t *pWidth, size_t *pHeight, size_t *pDepth, IDirect3DResource9 *pResource, unsigned int face, unsigned int level); 
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetSurfaceDimensions(size_t *pWidth, size_t *pHeight, size_t *pDepth, IDirect3DResource9 *pResource, unsigned int face, unsigned int level); 
 
 /**
  * \brief Get an array through which to access a subresource of a Direct3D
@@ -614,7 +627,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetSurfaceDimensions(size_
  * \sa 
  * ::cudaGraphicsSubResourceGetMappedArray
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedArray(cudaArray **ppArray, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedArray(cudaArray **ppArray, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
 
 /**
  * \brief Get a pointer through which to access a subresource of a Direct3D
@@ -658,7 +671,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedArray(cudaArray *
  * \sa 
  * ::cudaGraphicsResourceGetMappedPointer
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedPointer(void **pPointer, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedPointer(void **pPointer, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
 
 /**
  * \brief Get the size of a subresource of a Direct3D resource which has been
@@ -694,7 +707,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedPointer(void **pP
  * \sa 
  * ::cudaGraphicsResourceGetMappedPointer
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedSize(size_t *pSize, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedSize(size_t *pSize, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
 
 /**
  * \brief Get the pitch of a subresource of a Direct3D resource which has been
@@ -749,16 +762,16 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedSize(size_t *pSiz
  * \sa 
  * ::cudaGraphicsResourceGetMappedPointer
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedPitch(size_t *pPitch, size_t *pPitchSlice, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9ResourceGetMappedPitch(size_t *pPitch, size_t *pPitchSlice, IDirect3DResource9 *pResource, unsigned int face, unsigned int level);
 
 /* D3D9 1.x interop interface */
 
-extern __host__ cudaError_t CUDARTAPI cudaD3D9Begin(IDirect3DDevice9 *pDevice);
-extern __host__ cudaError_t CUDARTAPI cudaD3D9End(void);
-extern __host__ cudaError_t CUDARTAPI cudaD3D9RegisterVertexBuffer(IDirect3DVertexBuffer9 *pVB);
-extern __host__ cudaError_t CUDARTAPI cudaD3D9UnregisterVertexBuffer(IDirect3DVertexBuffer9 *pVB);
-extern __host__ cudaError_t CUDARTAPI cudaD3D9MapVertexBuffer(void **dptr, IDirect3DVertexBuffer9 *pVB);
-extern __host__ cudaError_t CUDARTAPI cudaD3D9UnmapVertexBuffer(IDirect3DVertexBuffer9 *pVB);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9Begin(IDirect3DDevice9 *pDevice);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9End(void);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9RegisterVertexBuffer(IDirect3DVertexBuffer9 *pVB);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9UnregisterVertexBuffer(IDirect3DVertexBuffer9 *pVB);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9MapVertexBuffer(void **dptr, IDirect3DVertexBuffer9 *pVB);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D9UnmapVertexBuffer(IDirect3DVertexBuffer9 *pVB);
 
 /** @} */ /* END CUDART_D3D9_DEPRECATED */
 
@@ -767,7 +780,6 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D9UnmapVertexBuffer(IDirect3DVertexB
 #endif /* __cplusplus */
 
 #undef __dv
-
-#endif /* _WIN32 */
+#undef __CUDA_DEPRECATED
 
 #endif /* __CUDA_D3D9_INTEROP_H__ */

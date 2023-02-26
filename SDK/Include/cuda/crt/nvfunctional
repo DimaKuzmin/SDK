@@ -1,7 +1,7 @@
 /*
  * NVIDIA_COPYRIGHT_BEGIN
  *
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
+ * Copyright (c) 2014-2018, NVIDIA CORPORATION.  All rights reserved.
  *
  * NVIDIA CORPORATION and its licensors retain all intellectual property
  * and proprietary rights in and to this software, related documentation
@@ -11,6 +11,16 @@
  *
  * NVIDIA_COPYRIGHT_END
  */
+
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/nvfunctional is an internal header file and must not be used directly.  Please use nvfunctional instead.")
+#else
+#warning "crt/nvfunctional is an internal header file and must not be used directly.  Please use nvfunctional instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_NV_LIBCXX_FUNCTIONAL_H__
+#endif
 
 #ifndef __NV_LIBCXX_FUNCTIONAL_H__
 #define __NV_LIBCXX_FUNCTIONAL_H__
@@ -604,3 +614,8 @@ void swap(function<_R(_ArgTypes...)>& __fn1, function<_R(_ArgTypes...)>& __fn2)
 #undef __NV_ALIGNOF
 
 #endif // __NV_LIBCXX_FUNCTIONAL_H__
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_NV_LIBCXX_FUNCTIONAL_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_NV_LIBCXX_FUNCTIONAL_H__
+#endif

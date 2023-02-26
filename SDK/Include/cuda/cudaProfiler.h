@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2014 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -50,6 +50,18 @@
 #ifndef cuda_profiler_H
 #define cuda_profiler_H
 
+#include <cuda.h>
+
+#if defined(__CUDA_API_VERSION_INTERNAL) || defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -67,7 +79,7 @@ typedef enum CUoutput_mode_enum
 
 /**
  * \ingroup CUDA_DRIVER
- * \defgroup CUDA_PROFILER Profiler Control 
+ * \defgroup CUDA_PROFILER_DEPRECATED Profiler Control [DEPRECATED]
  *
  * ___MANBRIEF___ profiler control functions of the low-level CUDA driver API
  * (___CURRENT_FILE___) ___ENDMANBRIEF___
@@ -81,6 +93,11 @@ typedef enum CUoutput_mode_enum
 /**
  * \brief Initialize the profiling.
  *
+ * \deprecated
+ *
+ * Note that this function is deprecated and should not be used.
+ * Starting with CUDA 12.0, it always returns error code ::CUDA_ERROR_NOT_SUPPORTED.
+ * 
  * Using this API user can initialize the CUDA profiler by specifying
  * the configuration file, output file and output file format. This
  * API is generally used to profile different set of counters by
@@ -116,18 +133,29 @@ typedef enum CUoutput_mode_enum
  * \param outputMode - outputMode, can be ::CU_OUT_KEY_VALUE_PAIR or ::CU_OUT_CSV.
  *
  * \return
- * ::CUDA_SUCCESS,
- * ::CUDA_ERROR_INVALID_CONTEXT,
- * ::CUDA_ERROR_INVALID_VALUE,
- * ::CUDA_ERROR_PROFILER_DISABLED
+ * ::CUDA_ERROR_NOT_SUPPORTED
  * \notefnerr
  *
  * \sa
  * ::cuProfilerStart,
  * ::cuProfilerStop,
- * ::cudaProfilerInitialize
  */
-CUresult CUDAAPI cuProfilerInitialize(const char *configFile, const char *outputFile, CUoutput_mode outputMode);
+__CUDA_DEPRECATED CUresult CUDAAPI cuProfilerInitialize(const char *configFile, const char *outputFile, CUoutput_mode outputMode);
+ 
+/** @} */ /* END CUDA_PROFILER_DEPRECATED */
+
+/**
+ * \ingroup CUDA_DRIVER
+ * \defgroup CUDA_PROFILER Profiler Control 
+ *
+ * ___MANBRIEF___ profiler control functions of the low-level CUDA driver API
+ * (___CURRENT_FILE___) ___ENDMANBRIEF___
+ *
+ * This section describes the profiler control functions of the low-level CUDA
+ * driver application programming interface.
+ *
+ * @{
+ */
 
 /**
  * \brief Enable profiling.
@@ -181,6 +209,8 @@ CUresult CUDAAPI cuProfilerStop(void);
 #ifdef __cplusplus
 };
 #endif
+
+#undef __CUDA_DEPRECATED
 
 #endif
 

@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/device_double_functions.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/device_double_functions.hpp is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_DOUBLE_FUNCTIONS_HPP__
+#endif
+
 #if !defined(__DEVICE_DOUBLE_FUNCTIONS_HPP__)
 #define __DEVICE_DOUBLE_FUNCTIONS_HPP__
 
@@ -181,3 +191,7 @@ __DEVICE_DOUBLE_FUNCTIONS_DECL__ double float2double(float a, enum cudaRoundMode
 
 #endif /* !__DEVICE_DOUBLE_FUNCTIONS_HPP__ */
 
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_DOUBLE_FUNCTIONS_HPP__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_DEVICE_DOUBLE_FUNCTIONS_HPP__
+#endif

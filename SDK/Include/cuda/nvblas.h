@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2014 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2019 NVIDIA Corporation. All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -49,301 +49,774 @@
 
 #if !defined(NVBLAS_H_)
 #define NVBLAS_H_
- 
+
 #include "driver_types.h"
-#include "cuComplex.h"   /* import complex data type */
- 
+#include "cuComplex.h" /* import complex data type */
+
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
 /* GEMM */
-void sgemm_ (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-             const float *alpha, const float *a, const int *lda, const float *b, const int *ldb,
-             const float *beta, float *c, const int *ldc);
+void sgemm_(const char* transa,
+            const char* transb,
+            const int* m,
+            const int* n,
+            const int* k,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            const float* b,
+            const int* ldb,
+            const float* beta,
+            float* c,
+            const int* ldc);
 
-void dgemm_ ( const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const double *alpha, const double *a, const int *lda, const double *b, const int *ldb,
-           const double *beta, double *c, const int *ldc);
+void dgemm_(const char* transa,
+            const char* transb,
+            const int* m,
+            const int* n,
+            const int* k,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            const double* b,
+            const int* ldb,
+            const double* beta,
+            double* c,
+            const int* ldc);
 
-void cgemm_ (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb, const cuComplex *beta,
-           cuComplex *c, const int *ldc);
+void cgemm_(const char* transa,
+            const char* transb,
+            const int* m,
+            const int* n,
+            const int* k,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* b,
+            const int* ldb,
+            const cuComplex* beta,
+            cuComplex* c,
+            const int* ldc);
 
-void zgemm_ (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta,
-           cuDoubleComplex *c, const int *ldc);
-           
-void sgemm (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const float *alpha, const float *a, const int *lda, const float *b, const int *ldb,
-           const float *beta, float *c, const int *ldc);
+void zgemm_(const char* transa,
+            const char* transb,
+            const int* m,
+            const int* n,
+            const int* k,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* b,
+            const int* ldb,
+            const cuDoubleComplex* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
 
-void dgemm ( const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const double *alpha, const double *a, const int *lda, const double *b, const int *ldb,
-           const double *beta, double *c, const int *ldc);
+void sgemm(const char* transa,
+           const char* transb,
+           const int* m,
+           const int* n,
+           const int* k,
+           const float* alpha,
+           const float* a,
+           const int* lda,
+           const float* b,
+           const int* ldb,
+           const float* beta,
+           float* c,
+           const int* ldc);
 
-void cgemm (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb, const cuComplex *beta,
-           cuComplex *c, const int *ldc);
+void dgemm(const char* transa,
+           const char* transb,
+           const int* m,
+           const int* n,
+           const int* k,
+           const double* alpha,
+           const double* a,
+           const int* lda,
+           const double* b,
+           const int* ldb,
+           const double* beta,
+           double* c,
+           const int* ldc);
 
-void zgemm (const char *transa, const char *transb, const int *m, const int *n, const int *k,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta,
-           cuDoubleComplex *c, const int *ldc);  
-           
-/* SYRK */           
-void ssyrk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, const float *a, const int *lda,
-           const float *beta, float *c, const int *ldc);                    
+void cgemm(const char* transa,
+           const char* transb,
+           const int* m,
+           const int* n,
+           const int* k,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           const cuComplex* b,
+           const int* ldb,
+           const cuComplex* beta,
+           cuComplex* c,
+           const int* ldc);
 
-void dsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, const double *a, const int *lda, const double *beta,
-           double *c, const int *ldc);
-           
-void csyrk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *beta, cuComplex *c, const int *ldc);
-           
-void zsyrk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);
-           
-void ssyrk (const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, const float *a, const int *lda,
-           const float *beta, float *c, const int *ldc);                    
+void zgemm(const char* transa,
+           const char* transb,
+           const int* m,
+           const int* n,
+           const int* k,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           const cuDoubleComplex* b,
+           const int* ldb,
+           const cuDoubleComplex* beta,
+           cuDoubleComplex* c,
+           const int* ldc);
 
-void dsyrk (const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, const double *a, const int *lda, const double *beta,
-           double *c, const int *ldc);
-           
-void csyrk (const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *beta, cuComplex *c, const int *ldc);
-           
-void zsyrk (const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);           
+/* SYRK */
+void ssyrk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            const float* beta,
+            float* c,
+            const int* ldc);
 
-/* HERK */ 
-void cherk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, const cuComplex *a, const int *lda, const float *beta,
-           cuComplex *c, const int *ldc);
-                     
-void zherk_(const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, const cuDoubleComplex *a, const int *lda,
-           const double *beta, cuDoubleComplex *c, const int *ldc);      
-           
-void cherk(const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, const cuComplex *a, const int *lda, const float *beta,
-           cuComplex *c, const int *ldc);
-                     
-void zherk(const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, const cuDoubleComplex *a, const int *lda,
-           const double *beta, cuDoubleComplex *c, const int *ldc);                 
-                
+void dsyrk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            const double* beta,
+            double* c,
+            const int* ldc);
+
+void csyrk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* beta,
+            cuComplex* c,
+            const int* ldc);
+
+void zsyrk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
+
+void ssyrk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const float* alpha,
+           const float* a,
+           const int* lda,
+           const float* beta,
+           float* c,
+           const int* ldc);
+
+void dsyrk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const double* alpha,
+           const double* a,
+           const int* lda,
+           const double* beta,
+           double* c,
+           const int* ldc);
+
+void csyrk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           const cuComplex* beta,
+           cuComplex* c,
+           const int* ldc);
+
+void zsyrk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           const cuDoubleComplex* beta,
+           cuDoubleComplex* c,
+           const int* ldc);
+
+/* HERK */
+void cherk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const float* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const float* beta,
+            cuComplex* c,
+            const int* ldc);
+
+void zherk_(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const double* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const double* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
+
+void cherk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const float* alpha,
+           const cuComplex* a,
+           const int* lda,
+           const float* beta,
+           cuComplex* c,
+           const int* ldc);
+
+void zherk(const char* uplo,
+           const char* trans,
+           const int* n,
+           const int* k,
+           const double* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           const double* beta,
+           cuDoubleComplex* c,
+           const int* ldc);
+
 /* TRSM */
-void strsm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const float *alpha, const float *a, const int *lda,
-           float *b, const int *ldb);
-           
-void dtrsm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const double *alpha, const double *a, const int *lda,
-           double *b, const int *ldb);
+void strsm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            float* b,
+            const int* ldb);
 
-void ctrsm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuComplex *alpha,
-           const cuComplex *a, const int *lda, cuComplex *b, const int *ldb);
-           
-void ztrsm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuDoubleComplex *alpha,
-           const cuDoubleComplex *a, const int *lda, cuDoubleComplex *b, const int *ldb);
-           
-void strsm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const float *alpha, const float *a, const int *lda,
-           float *b, const int *ldb);
-           
-void dtrsm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const double *alpha, const double *a, const int *lda,
-           double *b, const int *ldb);
+void dtrsm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            double* b,
+            const int* ldb);
 
-void ctrsm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuComplex *alpha,
-           const cuComplex *a, const int *lda, cuComplex *b, const int *ldb);
-           
-void ztrsm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuDoubleComplex *alpha,
-           const cuDoubleComplex *a, const int *lda, cuDoubleComplex *b, const int *ldb);           
-                                            
+void ctrsm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            cuComplex* b,
+            const int* ldb);
+
+void ztrsm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            cuDoubleComplex* b,
+            const int* ldb);
+
+void strsm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const float* alpha,
+           const float* a,
+           const int* lda,
+           float* b,
+           const int* ldb);
+
+void dtrsm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const double* alpha,
+           const double* a,
+           const int* lda,
+           double* b,
+           const int* ldb);
+
+void ctrsm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           cuComplex* b,
+           const int* ldb);
+
+void ztrsm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           cuDoubleComplex* b,
+           const int* ldb);
+
 /* SYMM */
-void ssymm_(const char *side, const char *uplo, const int *m, const int *n,
-           const float *alpha, const float *a, const int *lda, const float *b, const int *ldb,
-           const float *beta, float *c, const int *ldc);
-           
-void dsymm_(const char *side, const char *uplo, const int *m, const int *n,
-           const double *alpha, const double *a, const int *lda, const double *b, const int *ldb,
-           const double *beta, double *c, const int *ldc);
-           
-void csymm_(const char *side, const char *uplo, const int *m, const int *n,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb, const cuComplex *beta,
-           cuComplex *c, const int *ldc);
-           
-void zsymm_(const char *side, const char *uplo, const int *m, const int *n,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta,
-           cuDoubleComplex *c, const int *ldc);                    
+void ssymm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            const float* b,
+            const int* ldb,
+            const float* beta,
+            float* c,
+            const int* ldc);
 
-void ssymm(const char *side, const char *uplo, const int *m, const int *n,
-           const float *alpha, const float *a, const int *lda, const float *b, const int *ldb,
-           const float *beta, float *c, const int *ldc);
-           
-void dsymm(const char *side, const char *uplo, const int *m, const int *n,
-           const double *alpha, const double *a, const int *lda, const double *b, const int *ldb,
-           const double *beta, double *c, const int *ldc);
-           
-void csymm(const char *side, const char *uplo, const int *m, const int *n,
-           const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb, const cuComplex *beta,
-           cuComplex *c, const int *ldc);
-           
-void zsymm(const char *side, const char *uplo, const int *m, const int *n,
-           const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta,
-           cuDoubleComplex *c, const int *ldc);  
-           
-/* HEMM */ 
-void chemm_(const char *side, const char *uplo, const int *m, const int *n,
-            const cuComplex *alpha, const cuComplex *a, const int *lda,
-            const cuComplex *b, const int *ldb, const cuComplex *beta, 
-            cuComplex *c, const int *ldc);
+void dsymm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            const double* b,
+            const int* ldb,
+            const double* beta,
+            double* c,
+            const int* ldc);
 
-void zhemm_(const char *side, const char *uplo,
-           const int *m, const int *n, const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);
+void csymm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* b,
+            const int* ldb,
+            const cuComplex* beta,
+            cuComplex* c,
+            const int* ldc);
+
+void zsymm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* b,
+            const int* ldb,
+            const cuDoubleComplex* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
+
+void ssymm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const float* alpha,
+           const float* a,
+           const int* lda,
+           const float* b,
+           const int* ldb,
+           const float* beta,
+           float* c,
+           const int* ldc);
+
+void dsymm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const double* alpha,
+           const double* a,
+           const int* lda,
+           const double* b,
+           const int* ldb,
+           const double* beta,
+           double* c,
+           const int* ldc);
+
+void csymm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           const cuComplex* b,
+           const int* ldb,
+           const cuComplex* beta,
+           cuComplex* c,
+           const int* ldc);
+
+void zsymm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           const cuDoubleComplex* b,
+           const int* ldb,
+           const cuDoubleComplex* beta,
+           cuDoubleComplex* c,
+           const int* ldc);
+
+/* HEMM */
+void chemm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* b,
+            const int* ldb,
+            const cuComplex* beta,
+            cuComplex* c,
+            const int* ldc);
+
+void zhemm_(const char* side,
+            const char* uplo,
+            const int* m,
+            const int* n,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* b,
+            const int* ldb,
+            const cuDoubleComplex* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
 
 /* HEMM with no underscore*/
-void chemm(const char *side, const char *uplo,
-           const int *m, const int *n, const cuComplex *alpha, const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb, const cuComplex *beta, cuComplex *c, const int *ldc);
+void chemm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           const cuComplex* b,
+           const int* ldb,
+           const cuComplex* beta,
+           cuComplex* c,
+           const int* ldc);
 
-void zhemm(const char *side, const char *uplo,
-           const int *m, const int *n, const cuDoubleComplex *alpha, const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb, const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);
+void zhemm(const char* side,
+           const char* uplo,
+           const int* m,
+           const int* n,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           const cuDoubleComplex* b,
+           const int* ldb,
+           const cuDoubleComplex* beta,
+           cuDoubleComplex* c,
+           const int* ldc);
 
 /* SYR2K */
-void ssyr2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, 
-           const float *a, const int *lda, 
-           const float *b, const int *ldb,
-           const float *beta, float *c, const int *ldc);
+void ssyr2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const float* alpha,
+             const float* a,
+             const int* lda,
+             const float* b,
+             const int* ldb,
+             const float* beta,
+             float* c,
+             const int* ldc);
 
-void dsyr2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, 
-           const double *a, const int *lda, 
-           const double *b, const int *ldb, 
-           const double *beta,
-           double *c, const int *ldc);
+void dsyr2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const double* alpha,
+             const double* a,
+             const int* lda,
+             const double* b,
+             const int* ldb,
+             const double* beta,
+             double* c,
+             const int* ldc);
 
-void csyr2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, 
-           const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb,
-           const cuComplex *beta, cuComplex *c, const int *ldc);
+void csyr2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const cuComplex* alpha,
+             const cuComplex* a,
+             const int* lda,
+             const cuComplex* b,
+             const int* ldb,
+             const cuComplex* beta,
+             cuComplex* c,
+             const int* ldc);
 
-void zsyr2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, 
-           const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb,
-           const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);
-           
+void zsyr2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const cuDoubleComplex* alpha,
+             const cuDoubleComplex* a,
+             const int* lda,
+             const cuDoubleComplex* b,
+             const int* ldb,
+             const cuDoubleComplex* beta,
+             cuDoubleComplex* c,
+             const int* ldc);
+
 /* SYR2K no_underscore*/
-void ssyr2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const float *alpha, const float *a, const int *lda,
-           const float *b, const int *ldb,
-           const float *beta, float *c, const int *ldc);
-           
-void dsyr2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const double *alpha, 
-           const double *a, const int *lda, 
-           const double *b, const int *ldb, 
-           const double *beta,
-           double *c, const int *ldc);
-           
-void csyr2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, 
-           const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb,
-           const cuComplex *beta, cuComplex *c, const int *ldc);
+void ssyr2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            const float* b,
+            const int* ldb,
+            const float* beta,
+            float* c,
+            const int* ldc);
 
-void zsyr2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, 
-           const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb,           
-           const cuDoubleComplex *beta, cuDoubleComplex *c, const int *ldc);
-           
+void dsyr2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            const double* b,
+            const int* ldb,
+            const double* beta,
+            double* c,
+            const int* ldc);
+
+void csyr2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* b,
+            const int* ldb,
+            const cuComplex* beta,
+            cuComplex* c,
+            const int* ldc);
+
+void zsyr2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* b,
+            const int* ldb,
+            const cuDoubleComplex* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
+
 /* HERK */
-void cher2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, 
-           const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb,
-           const float  *beta, cuComplex *c, const int *ldc);
+void cher2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const cuComplex* alpha,
+             const cuComplex* a,
+             const int* lda,
+             const cuComplex* b,
+             const int* ldb,
+             const float* beta,
+             cuComplex* c,
+             const int* ldc);
 
-void zher2k_(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, 
-           const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb,
-           const double *beta, cuDoubleComplex *c, const int *ldc);\
-           
+void zher2k_(const char* uplo,
+             const char* trans,
+             const int* n,
+             const int* k,
+             const cuDoubleComplex* alpha,
+             const cuDoubleComplex* a,
+             const int* lda,
+             const cuDoubleComplex* b,
+             const int* ldb,
+             const double* beta,
+             cuDoubleComplex* c,
+             const int* ldc);
+
 /* HER2K with no underscore */
-void cher2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuComplex *alpha, 
-           const cuComplex *a, const int *lda,
-           const cuComplex *b, const int *ldb,
-           const float *beta, cuComplex *c, const int *ldc);
+void cher2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            const cuComplex* b,
+            const int* ldb,
+            const float* beta,
+            cuComplex* c,
+            const int* ldc);
 
-void zher2k(const char *uplo, const char *trans, const int *n, const int *k,
-           const cuDoubleComplex *alpha, 
-           const cuDoubleComplex *a, const int *lda,
-           const cuDoubleComplex *b, const int *ldb,           
-           const double *beta, cuDoubleComplex *c, const int *ldc);
-           
+void zher2k(const char* uplo,
+            const char* trans,
+            const int* n,
+            const int* k,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            const cuDoubleComplex* b,
+            const int* ldb,
+            const double* beta,
+            cuDoubleComplex* c,
+            const int* ldc);
+
 /* TRMM */
-void strmm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const float *alpha, const float *a, const int *lda,
-           float *b, const int *ldb);
-           
-void dtrmm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const double *alpha, const double *a, const int *lda,
-           double *b, const int *ldb);
+void strmm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const float* alpha,
+            const float* a,
+            const int* lda,
+            float* b,
+            const int* ldb);
 
-void ctrmm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuComplex *alpha,
-           const cuComplex *a, const int *lda, cuComplex *b, const int *ldb);
-           
-void ztrmm_(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuDoubleComplex *alpha,
-           const cuDoubleComplex *a, const int *lda, cuDoubleComplex *b, const int *ldb);
-           
-void strmm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const float *alpha, const float *a, const int *lda,
-           float *b, const int *ldb);
-           
-void dtrmm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const double *alpha, const double *a, const int *lda,
-           double *b, const int *ldb);
+void dtrmm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const double* alpha,
+            const double* a,
+            const int* lda,
+            double* b,
+            const int* ldb);
 
-void ctrmm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuComplex *alpha,
-           const cuComplex *a, const int *lda, cuComplex *b, const int *ldb);
-           
-void ztrmm(const char *side, const char *uplo, const char *transa, const char *diag,
-           const int *m, const int *n, const cuDoubleComplex *alpha,
-           const cuDoubleComplex *a, const int *lda, cuDoubleComplex *b, const int *ldb);    
-           
-                                                                        
+void ctrmm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const cuComplex* alpha,
+            const cuComplex* a,
+            const int* lda,
+            cuComplex* b,
+            const int* ldb);
+
+void ztrmm_(const char* side,
+            const char* uplo,
+            const char* transa,
+            const char* diag,
+            const int* m,
+            const int* n,
+            const cuDoubleComplex* alpha,
+            const cuDoubleComplex* a,
+            const int* lda,
+            cuDoubleComplex* b,
+            const int* ldb);
+
+void strmm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const float* alpha,
+           const float* a,
+           const int* lda,
+           float* b,
+           const int* ldb);
+
+void dtrmm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const double* alpha,
+           const double* a,
+           const int* lda,
+           double* b,
+           const int* ldb);
+
+void ctrmm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const cuComplex* alpha,
+           const cuComplex* a,
+           const int* lda,
+           cuComplex* b,
+           const int* ldb);
+
+void ztrmm(const char* side,
+           const char* uplo,
+           const char* transa,
+           const char* diag,
+           const int* m,
+           const int* n,
+           const cuDoubleComplex* alpha,
+           const cuDoubleComplex* a,
+           const int* lda,
+           cuDoubleComplex* b,
+           const int* ldb);
+
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */

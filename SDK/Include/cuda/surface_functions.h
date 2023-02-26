@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -50,6 +50,7 @@
 #if !defined(__SURFACE_FUNCTIONS_H__)
 #define __SURFACE_FUNCTIONS_H__
 
+
 #if defined(__cplusplus) && defined(__CUDACC__)
 
 /*******************************************************************************
@@ -58,12 +59,15 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
+#include "cuda_runtime_api.h"
 #include "cuda_surface_types.h"
-#include "host_defines.h"
-#include "surface_types.h"
 
-#ifdef __CUDA_ARCH__
+#if defined(_WIN32)
+# define __DEPRECATED__ __declspec(deprecated)
+#else
+# define __DEPRECATED__  __attribute__((deprecated))
+#endif
+
 template <typename T> struct __nv_surf_trait {  typedef void * cast_type; };
 
 template<> struct __nv_surf_trait<char> {  typedef char * cast_type; };
@@ -111,320 +115,10 @@ template<> struct __nv_surf_trait<float> {  typedef float * cast_type; };
 template<> struct __nv_surf_trait<float1> {  typedef float1 * cast_type; };
 template<> struct __nv_surf_trait<float2> {  typedef float2 * cast_type; };
 template<> struct __nv_surf_trait<float4> {  typedef float4 * cast_type; };
-#endif /* defined(__CUDA_ARCH__) */
-
-template <typename T>
-static __device__  __forceinline__ void surf1Dread(T *res, surface<void, cudaSurfaceType1D> surf, int x, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf1Dread_v2", (void *)res, s, surf, x, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surf1Dread(surface<void, cudaSurfaceType1D> surf, int x, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surf1Dread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, mode);
-  return temp;
-#endif
-}
-  
-template<class T>
-static __device__ __forceinline__ void surf1Dread(T *res, surface<void, cudaSurfaceType1D> surf, int x, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  *res = surf1Dread<T>(surf, x, mode);
-#endif /* __CUDA_ARCH__ */  
-}
 
 
-template <typename T>
-static __device__  __forceinline__ void surf2Dread(T *res, surface<void, cudaSurfaceType2D> surf, int x, int y, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf2Dread_v2", (void *)res, s, surf, x, y, mode);
-#endif     
-}
+#undef __DEPRECATED__
 
-template<class T>
-static __device__ __forceinline__  T surf2Dread(surface<void, cudaSurfaceType2D> surf, int x, int y, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surf2Dread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, y, mode);
-  return temp;
-#endif
-}
-
-template<class T>
-static __device__ __forceinline__ void surf2Dread(T *res, surface<void, cudaSurfaceType2D> surf, int x, int y, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  *res = surf2Dread<T>(surf, x, y, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-template <typename T>
-static __device__  __forceinline__ void surf3Dread(T *res, surface<void, cudaSurfaceType3D> surf, int x, int y, int z, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf3Dread_v2", (void *)res, s, surf, x, y, z, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surf3Dread(surface<void, cudaSurfaceType3D> surf, int x, int y, int z, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surf3Dread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, y, z, mode);
-  return temp;
-#endif
-}
-
-template<class T>
-static __device__ __forceinline__ void surf3Dread(T *res, surface<void, cudaSurfaceType3D> surf, int x, int y, int z, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  *res = surf3Dread<T>(surf, x, y, z, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-
-template <typename T>
-static __device__  __forceinline__ void surf1DLayeredread(T *res, surface<void, cudaSurfaceType1DLayered> surf, int x, int  layer, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf1DLayeredread_v2", (void *)res, s, surf, x,  layer, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surf1DLayeredread(surface<void, cudaSurfaceType1DLayered> surf, int x, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surf1DLayeredread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, layer, mode);
-  return temp;
-#endif
-}
-
-
-template<class T>
-static __device__ __forceinline__ void surf1DLayeredread(T *res, surface<void, cudaSurfaceType1DLayered> surf, int x, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  *res = surf1DLayeredread<T>(surf, x, layer, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-template <typename T>
-static __device__  __forceinline__ void surf2DLayeredread(T *res, surface<void, cudaSurfaceType2DLayered> surf, int x,  int y, int  layer, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf2DLayeredread_v2", (void *)res, s, surf, x, y, layer, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surf2DLayeredread(surface<void, cudaSurfaceType2DLayered> surf, int x, int y, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surf2DLayeredread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, y, layer, mode);
-  return temp;
-#endif
-}
-
-
-template<class T>
-static __device__ __forceinline__ void surf2DLayeredread(T *res, surface<void, cudaSurfaceType2DLayered> surf, int x, int y, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  *res = surf2DLayeredread<T>(surf, x, y, layer, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-template <typename T>
-static __device__  __forceinline__ void surfCubemapread(T *res, surface<void, cudaSurfaceTypeCubemap> surf, int x,  int y, int  face, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surfCubemapread_v2", (void *)res, s, surf, x, y, face, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surfCubemapread(surface<void, cudaSurfaceTypeCubemap> surf, int x, int y, int face, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-
-  __nv_tex_surf_handler("__surfCubemapread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, y, face, mode);
-  return temp;
-#endif
-}
-
-template<class T>
-static __device__ __forceinline__ void surfCubemapread(T *res, surface<void, cudaSurfaceTypeCubemap> surf, int x, int y, int face, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__  
-  *res = surfCubemapread<T>(surf, x, y, face, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-template <typename T>
-static __device__  __forceinline__ void surfCubemapLayeredread(T *res, surface<void, cudaSurfaceTypeCubemapLayered> surf, int x,  int y, int  layerFace, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surfCubemapLayeredread_v2", (void *)res, s, surf, x, y, layerFace, mode);
-#endif     
-}
-
-template<class T>
-static __device__ __forceinline__  T surfCubemapLayeredread(surface<void, cudaSurfaceTypeCubemapLayered> surf, int x, int y, int layerFace, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  T temp;
-  __nv_tex_surf_handler("__surfCubemapLayeredread_v2", (typename __nv_surf_trait<T>::cast_type)&temp, (int)sizeof(T), surf, x, y, layerFace, mode);
-  return temp;
-#endif
-}
-
-template<class T>
-static __device__ __forceinline__ void surfCubemapLayeredread(T *res, surface<void, cudaSurfaceTypeCubemapLayered> surf, int x, int y, int layerFace, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__  
-  *res = surfCubemapLayeredread<T>(surf, x, y, layerFace, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-//surf1Dwrite
-template<class T>
-static __device__ __forceinline__ void surf1Dwrite(T val, surface<void, cudaSurfaceType1D> surf, int x, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf1Dwrite_v2", (void *)&val, s, surf, x, mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surf1Dwrite(T val, surface<void, cudaSurfaceType1D> surf, int x, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surf1Dwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val, (int)sizeof(T), surf, x,  mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-//surf2Dwrite
-template<class T>
-static __device__ __forceinline__ void surf2Dwrite(T val, surface<void, cudaSurfaceType2D> surf, int x, int y, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf2Dwrite_v2", (void *)&val,  s, surf, x, y, mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surf2Dwrite(T val, surface<void, cudaSurfaceType2D> surf, int x, int y, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surf2Dwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val, (int)sizeof(T), surf, x, y,  mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-//surf3Dwrite
-template<class T>
-static __device__ __forceinline__ void surf3Dwrite(T val, surface<void, cudaSurfaceType3D> surf, int x, int y, int z, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf3Dwrite_v2", (void *)&val,  s, surf, x, y, z,mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surf3Dwrite(T val, surface<void, cudaSurfaceType3D> surf, int x, int y, int z, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surf3Dwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val, (int)sizeof(T), surf, x, y, z,  mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-//surf1DLayeredwrite
-template<class T>
-static __device__ __forceinline__ void surf1DLayeredwrite(T val, surface<void, cudaSurfaceType1DLayered> surf, int x, int layer, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf1DLayeredwrite_v2", (void *)&val,  s, surf, x, layer,mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surf1DLayeredwrite(T val, surface<void, cudaSurfaceType1DLayered> surf, int x, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surf1DLayeredwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val,  (int)sizeof(T), surf, x, layer, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-//surf2DLayeredwrite
-template<class T>
-static __device__ __forceinline__ void surf2DLayeredwrite(T val, surface<void, cudaSurfaceType2DLayered> surf, int x, int y, int layer, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surf2DLayeredwrite_v2", (void *)&val, s, surf, x, y, layer,mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surf2DLayeredwrite(T val, surface<void, cudaSurfaceType2DLayered> surf, int x, int y, int layer, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surf2DLayeredwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val,  (int)sizeof(T), surf, x, y, layer, mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-//surfCubemapwrite
-template<class T>
-static __device__ __forceinline__ void surfCubemapwrite(T val, surface<void, cudaSurfaceTypeCubemap> surf, int x, int y, int face, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surfCubemapwrite_v2", (void *)&val, s, surf, x, y, face, mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surfCubemapwrite(T val, surface<void, cudaSurfaceTypeCubemap> surf, int x, int y, int face, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surfCubemapwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val, (int)sizeof(T), surf, x, y, face,  mode);
-#endif /* __CUDA_ARCH__ */  
-}
-
-
-//surfCubemapLayeredwrite
-template<class T>
-static __device__ __forceinline__ void surfCubemapLayeredwrite(T val, surface<void, cudaSurfaceTypeCubemapLayered> surf, int x, int y, int layerFace, int s, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__
-  __nv_tex_surf_handler("__surfCubemapLayeredwrite_v2", (void *)&val, s, surf, x, y, layerFace,  mode);
-#endif  
-}
-
-template<class T>
-static __device__ __forceinline__ void surfCubemapLayeredwrite(T val, surface<void, cudaSurfaceTypeCubemapLayered> surf, int x, int y, int layerFace, enum cudaSurfaceBoundaryMode mode = cudaBoundaryModeTrap)
-{
-#ifdef __CUDA_ARCH__ 
-  __nv_tex_surf_handler("__surfCubemapLayeredwrite_v2", (typename __nv_surf_trait<T>::cast_type)&val, (int)sizeof(T), surf, x, y, layerFace,  mode);
-#endif /* __CUDA_ARCH__ */  
-}
 
 #endif /* __cplusplus && __CUDACC__ */
 #endif /* !__SURFACE_FUNCTIONS_H__ */

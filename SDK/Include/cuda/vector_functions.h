@@ -56,9 +56,7 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
-#include "vector_types.h"
+#include "cuda_runtime_api.h"
 
 #if defined(__CUDACC_RTC__)
 #define __VECTOR_FUNCTIONS_DECL__ __host__ __device__

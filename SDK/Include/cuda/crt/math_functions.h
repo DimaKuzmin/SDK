@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/math_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/math_functions.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_H__
+#endif
+
 #if !defined(__MATH_FUNCTIONS_H__)
 #define __MATH_FUNCTIONS_H__
 
@@ -60,16 +70,29 @@
  * \defgroup CUDA_MATH Mathematical Functions
  *
  * CUDA mathematical functions are always available in device code.
- * Some functions are also available in host code as indicated.
  *
- * Note that floating-point functions are overloaded for different
- * argument types.  For example, the ::log() function has the following
- * prototypes:
+ * Host implementations of the common mathematical functions are mapped
+ * in a platform-specific way to standard math library functions, provided
+ * by the host compiler and respective host libm where available.
+ * Some functions, not available with the host compilers, are implemented
+ * in crt/math_functions.hpp header file.
+ * For example, see ::erfinv(). Other, less common functions,
+ * like ::rhypot(), ::cyl_bessel_i0() are only available in device code.
+ *
+ * Note that many floating-point and integer functions names are
+ * overloaded for different argument types. For example, the ::log()
+ * function has the following prototypes:
  * \code
  * double log(double x);
  * float log(float x);
  * float logf(float x);
  * \endcode
+ *
+ * Note also that due to implementation constraints, certain math functions
+ * from std:: namespace may be callable in device code even via explicitly
+ * qualified std:: names. However, such use is discouraged, since this
+ * capability is unsupported, unverified, undocumented, not portable, and
+ * may change without notice.
  */
 
 /*******************************************************************************
@@ -112,6 +135,13 @@ extern "C"
  * \defgroup CUDA_MATH_DOUBLE Double Precision Mathematical Functions
  * This section describes double precision mathematical functions.
  * To use these functions you do not need to include any additional 
+ * header files in your program.
+ */
+
+/**
+ * \defgroup CUDA_MATH_INT Integer Mathematical Functions
+ * This section describes integer mathematical functions.
+ * To use these functions you do not need to include any additional
  * header files in your program.
  */
 
@@ -179,9 +209,30 @@ static __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ long long
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
 #endif
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ int            __cdecl abs(int) __THROW;
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ long int       __cdecl labs(long int) __THROW;
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ long long int          llabs(long long int) __THROW;
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the absolute value of the input \p int argument.
+ *
+ * Calculate the absolute value of the input argument \p a.
+ *
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ int            __cdecl abs(int a) __THROW;
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the absolute value of the input \p long \p int argument.
+ *
+ * Calculate the absolute value of the input argument \p a.
+ *
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ long int       __cdecl labs(long int a) __THROW;
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the absolute value of the input \p long \p long \p int argument.
+ *
+ * Calculate the absolute value of the input argument \p a.
+ *
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __cudart_builtin__ long long int          llabs(long long int a) __THROW;
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 }
 #endif
@@ -204,8 +255,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -215,7 +266,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fabs(
@@ -223,12 +274,12 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns 0.
+ * ) returns +0.
  * \note_accuracy_double
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fabs(double x) __THROW;
@@ -240,13 +291,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fabs(
  *
  * \return
  * Returns the absolute value of its argument.
- * - fabs(
+ * - fabsf(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -256,31 +307,56 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fabs(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
- * - fabs(
+ * - fabsf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns 0.
+ * ) returns +0.
+ * - fabsf(NaN) returns an unspecified NaN.
+ *
  * \note_accuracy_single
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  fabsf(float x) __THROW;
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 } /* std */
 #endif
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    min(int, int);
-
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           umin(unsigned int, unsigned int);
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          llmin(long long int, long long int);
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int ullmin(unsigned long long int, unsigned long long int);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    min(const int a, const int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           umin(const unsigned int a, const unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          llmin(const long long int a, const long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int ullmin(const unsigned long long int a, const unsigned long long int b);
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -294,7 +370,7 @@ namespace std {
  * value, the numeric value is chosen.
  *
  * \return
- * Returns the minimum numeric values of the arguments \p x and \p y.
+ * Returns the minimum numeric value of the arguments \p x and \p y.
  * - If both arguments are NaN, returns NaN.
  * - If one argument is NaN, returns the numeric argument.
  *
@@ -314,7 +390,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * value, the numeric value is chosen.
  *
  * \return
- * Returns the minimum numeric values of the arguments \p x and \p y.
+ * Returns the minimum numeric value of the arguments \p x and \p y.
  * - If both arguments are NaN, returns NaN.
  * - If one argument is NaN, returns the numeric argument.
  *
@@ -328,11 +404,35 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 } /* std */
 #endif
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    max(int, int);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ int                    max(const int a, const int b);
 
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           umax(unsigned int, unsigned int);
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          llmax(long long int, long long int);
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int ullmax(unsigned long long int, unsigned long long int);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned int           umax(const unsigned int a, const unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ long long int          llmax(const long long int a, const long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ unsigned long long int ullmax(const unsigned long long int a, const unsigned long long int b);
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -389,7 +489,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -399,7 +499,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -408,8 +508,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -430,7 +530,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sin(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -441,8 +541,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sin(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -502,7 +602,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -512,7 +612,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -521,8 +621,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -562,7 +662,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tan(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -572,7 +672,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tan(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -582,7 +682,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tan(d
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -592,7 +692,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tan(d
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - sqrt(\p x) returns NaN if \p x is less than 0.
@@ -643,7 +743,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sqrt(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -653,7 +753,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sqrt(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -663,8 +763,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sqrt(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - rsqrt(\p x) returns NaN if \p x is less than 0.
@@ -713,7 +813,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rsqrt
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -723,7 +823,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rsqrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -733,8 +833,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rsqrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - rsqrtf(\p x) returns NaN if \p x is less than 0.
@@ -758,7 +858,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -768,8 +868,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - log2(1) returns +0.
@@ -780,7 +880,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -790,7 +890,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -804,10 +904,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the base 2 exponential of the input argument.
- *
- * Calculate the base 2 exponential of the input argument \p x.
- *
- * \return Returns 
+ * 
+ * Calculate
  * \latexonly $2^x$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -816,6 +914,48 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mn>2</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base 2 exponential of the input argument \p x.
+ *
+ * \return
+ * - exp2(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - exp2(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - exp2(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -830,9 +970,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the base 2 exponential of the input argument.
  *
- * Calculate the base 2 exponential of the input argument \p x.
- *
- * \return Returns 
+ * Calculate
  * \latexonly $2^x$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -841,6 +979,48 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mn>2</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base 2 exponential of the input argument \p x.
+ *
+ * \return
+ * - exp2f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - exp2f(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - exp2f(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -858,9 +1038,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the base 10 exponential of the input argument.
  *
- * Calculate the base 10 exponential of the input argument \p x.
- *
- * \return Returns 
+ * Calculate
  * \latexonly $10^x$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -869,6 +1047,48 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *     <m:mn>10</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base 10 exponential of the input argument \p x.
+ *
+ * \return
+ * - exp10(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - exp10(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - exp10(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -880,9 +1100,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 exp10
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the base 10 exponential of the input argument.
  *
- * Calculate the base 10 exponential of the input argument \p x.
- *
- * \return Returns 
+ * Calculate
  * \latexonly $10^x$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -891,6 +1109,48 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 exp10
  *     <m:mn>10</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base 10 exponential of the input argument \p x.
+ *
+ * \return
+ * - exp10f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - exp10f(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - exp10f(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -915,7 +1175,18 @@ namespace std {
  * \endxmlonly
  *  exponential of the input argument, minus 1.
  *
- * Calculate the base 
+ * Calculate
+ * \latexonly $e^x$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:msup>
+ *     <m:mi>e</m:mi>
+ *     <m:mi>x</m:mi>
+ *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * -1, the base
  * \latexonly $e$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -926,17 +1197,53 @@ namespace std {
  * \endxmlonly
  *  exponential of the input argument \p x, minus 1.
  *
- * \return Returns 
- * \latexonly $e^x - 1$ \endlatexonly
+ * \return
+ * - expm1(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mi>x</m:mi>
- *   </m:msup>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mn>1</m:mn>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - expm1(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns -1.
+ * - expm1(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -960,7 +1267,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \endxmlonly
  *  exponential of the input argument, minus 1.
  *
- * Calculate the base 
+ * Calculate
+ * \latexonly $e^x$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:msup>
+ *     <m:mi>e</m:mi>
+ *     <m:mi>x</m:mi>
+ *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * -1, the base
  * \latexonly $e$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -971,17 +1289,53 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \endxmlonly
  *  exponential of the input argument \p x, minus 1.
  *
- * \return  Returns 
- * \latexonly $e^x - 1$ \endlatexonly
+ * \return
+ * - expm1f(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mi>x</m:mi>
- *   </m:msup>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mn>1</m:mn>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - expm1f(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns -1.
+ * - expm1f(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1004,7 +1358,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1014,8 +1368,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - log2f(1) returns +0.
@@ -1026,7 +1380,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1036,11 +1390,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single
+ * \note_fastmath
  */
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log2f(float x) __THROW;         
@@ -1053,13 +1408,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *
  * Calculate the base 10 logarithm of the input argument \p x.
  *
- * \return 
+ * \return
  * - log10(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1069,8 +1424,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - log10(1) returns +0.
@@ -1081,7 +1436,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1091,7 +1446,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1122,13 +1477,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log10
  * \endxmlonly
  *  logarithm of the input argument \p x.
  *
- * \return 
+ * \return
  * - log(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1138,8 +1493,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log10
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - log(1) returns +0.
@@ -1150,7 +1505,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log10
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1160,11 +1515,10 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log10
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
-
+ * \endxmlonly.
  *
  * \note_accuracy_double
  */
@@ -1172,15 +1526,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log(d
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the value of 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
- * \latexonly $\lfloor x \rfloor$ \endlatexonly
+ * \latexonly $\log_{e}(1+x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
  *   <m:msub>
- *     <m:mi>g</m:mi>
+ *     <m:mn>log</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
@@ -1194,15 +1545,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log(d
  * </d4p_MathML>\endxmlonly.
  *
  * Calculate the value of 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
- * \latexonly $\lfloor x \rfloor$ \endlatexonly
+ * \latexonly $\log_{e}(1+x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
  *   <m:msub>
- *     <m:mi>g</m:mi>
+ *     <m:mn>log</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
@@ -1213,31 +1561,39 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log(d
  *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *   of the input argument \p x.
+ * </d4p_MathML>\endxmlonly
+ * of the input argument \p x.
  *
- * \return 
+ * \return
  * - log1p(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - log1p(-1) returns
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
- * - log1p(-1) returns +0.
  * - log1p(\p x) returns NaN for \p x < -1.
  * - log1p(
  * \latexonly $+\infty$ \endlatexonly
@@ -1245,7 +1601,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log(d
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1255,7 +1611,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl log(d
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1269,15 +1625,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the value of 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
- * \latexonly $\lfloor x \rfloor$ \endlatexonly
+ * \latexonly $\log_{e}(1+x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
  *   <m:msub>
- *     <m:mi>g</m:mi>
+ *     <m:mn>log</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
@@ -1291,15 +1644,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * </d4p_MathML>\endxmlonly.
  *
  * Calculate the value of 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
- * \latexonly $\lfloor x \rfloor$ \endlatexonly
+ * \latexonly $\log_{e}(1+x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
  *   <m:msub>
- *     <m:mi>g</m:mi>
+ *     <m:mn>log</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
@@ -1310,31 +1660,39 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *   of the input argument \p x.
+ * </d4p_MathML>\endxmlonly
+ * of the input argument \p x.
  *
- * \return 
+ * \return
  * - log1pf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - log1pf(-1) returns
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
- * - log1pf(-1) returns +0.
  * - log1pf(\p x) returns NaN for \p x < -1.
  * - log1pf(
  * \latexonly $+\infty$ \endlatexonly
@@ -1342,7 +1700,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1352,7 +1710,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1371,24 +1729,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * 
  * \return
  * Returns 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
  * \latexonly $\lfloor x \rfloor$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
- *   <m:msub>
- *     <m:mi>g</m:mi>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi>e</m:mi>
- *     </m:mrow>
- *   </m:msub>
- *   <m:mo stretchy="false">(</m:mo>
- *   <m:mn>1</m:mn>
- *   <m:mo>+</m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x230A;<!-- &Lfloor --></m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo stretchy="false">)</m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x230B;<!-- &Rfloor --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1398,8 +1745,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1408,8 +1755,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - floor(
@@ -1417,7 +1764,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1427,7 +1774,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -1448,7 +1795,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \endxmlonly
  *  exponential of the input argument.
  *
- * Calculate the base 
+ * Calculate
+ * \latexonly $e^x$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:msup>
+ *     <m:mi>e</m:mi>
+ *     <m:mi>x</m:mi>
+ *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base
  * \latexonly $e$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -1459,15 +1817,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \endxmlonly
  *  exponential of the input argument \p x.
  *
- * \return Returns 
- * \latexonly $e^x$ \endlatexonly
+ * \return
+ * - exp(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mi>x</m:mi>
- *   </m:msup>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - exp(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - exp(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1480,15 +1867,25 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl exp(d
  *
  * Calculate the hyperbolic cosine of the input argument \p x.
  *
- * \return 
- * - cosh(0) returns 1.
+ * \return
+ * - cosh(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
  * - cosh(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1498,7 +1895,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl exp(d
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -1511,13 +1908,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl cosh(
  *
  * Calculate the hyperbolic sine of the input argument \p x.
  *
- * \return 
+ * \return
  * - sinh(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1527,10 +1924,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl cosh(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - sinh(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_double
  */
@@ -1541,13 +1958,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sinh(
  *
  * Calculate the hyperbolic tangent of the input argument \p x.
  *
- * \return 
+ * \return
  * - tanh(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1557,19 +1974,39 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl sinh(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - tanh( 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 1$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>1</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_double
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tanh(double x) __THROW;
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate the nonnegative arc hyperbolic cosine of the input argument.
+ * \brief Calculate the nonnegative inverse hyperbolic cosine of the input argument.
  *
- * Calculate the nonnegative arc hyperbolic cosine of the input argument \p x.
+ * Calculate the nonnegative inverse hyperbolic cosine of the input argument \p x.
  *
  * \return 
  * Result will be in the interval [0, 
@@ -1578,7 +2015,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tanh(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1589,12 +2026,32 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl tanh(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * , 1).
+ * - acosh( 
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_double
  */
@@ -1605,9 +2062,9 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate the nonnegative arc hyperbolic cosine of the input argument.
+ * \brief Calculate the nonnegative inverse hyperbolic cosine of the input argument.
  *
- * Calculate the nonnegative arc hyperbolic cosine of the input argument \p x.
+ * Calculate the nonnegative inverse hyperbolic cosine of the input argument \p x.
  *
  * \return 
  * Result will be in the interval [0, 
@@ -1616,7 +2073,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -1627,12 +2084,32 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * , 1).
+ * - acoshf( 
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_single
  */
@@ -1643,12 +2120,49 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate the arc hyperbolic sine of the input argument.
+ * \brief Calculate the inverse hyperbolic sine of the input argument.
  *
- * Calculate the arc hyperbolic sine of the input argument \p x.
+ * Calculate the inverse hyperbolic sine of the input argument \p x.
  *
- * \return 
- * - asinh(0) returns 1.
+ * \return
+ * - asinh(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">0</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">0</m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - asinh(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly. 
  *
  * \note_accuracy_double
  */
@@ -1659,13 +2173,50 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate the arc hyperbolic sine of the input argument.
+ * \brief Calculate the inverse hyperbolic sine of the input argument.
  *
- * Calculate the arc hyperbolic sine of the input argument \p x.
+ * Calculate the inverse hyperbolic sine of the input argument \p x.
  *
  * \return 
- * - asinhf(0) returns 1.
- *
+ * - asinhf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">0</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">0</m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly. 
+ * - asinhf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * 
  * \note_accuracy_single
  */
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
@@ -1675,9 +2226,9 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate the arc hyperbolic tangent of the input argument.
+ * \brief Calculate the inverse hyperbolic tangent of the input argument.
  *
- * Calculate the arc hyperbolic tangent of the input argument \p x.
+ * Calculate the inverse hyperbolic tangent of the input argument \p x.
  *
  * \return 
  * - atanh(
@@ -1685,7 +2236,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1695,7 +2246,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -1704,7 +2255,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>1</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1714,8 +2265,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - atanh(\p x) returns NaN for \p x outside interval [-1, 1].
@@ -1729,9 +2280,9 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate the arc hyperbolic tangent of the input argument.
+ * \brief Calculate the inverse hyperbolic tangent of the input argument.
  *
- * Calculate the arc hyperbolic tangent of the input argument \p x.
+ * Calculate the inverse hyperbolic tangent of the input argument \p x.
  *
  * \return 
  * - atanhf(
@@ -1739,7 +2290,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1749,7 +2300,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -1758,7 +2309,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>1</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -1768,8 +2319,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - atanhf(\p x) returns NaN for \p x outside interval [-1, 1].
@@ -1789,7 +2340,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
@@ -1807,7 +2358,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
@@ -1822,17 +2373,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *  of the input arguments \p x and \p exp.
  *
  * \return 
- * - ldexp(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the double floating point range.
+ * - ldexp(\p x, \p exp) is equivalent to scalbn(\p x, \p exp).
  *
  * \note_accuracy_double
  */
@@ -1845,7 +2386,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
@@ -1863,7 +2404,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mrow class="MJX-TeXAtom-ORD">
@@ -1878,68 +2419,58 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *  of the input arguments \p x and \p exp.
  *
  * \return 
- * - ldexpf(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the single floating point range.
+ * - ldexpf(\p x, \p exp) is equivalent to scalbnf(\p x, \p exp).
  *
  * \note_accuracy_single
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ldexpf(float x, int exp) __THROW;
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate the floating point representation of the exponent of the input argument.
+ * \brief Calculate the floating-point representation of the exponent of the input argument.
  *
- * Calculate the floating point representation of the exponent of the input argument \p x.
+ * Calculate the floating-point representation of the exponent of the input argument \p x.
  *
  * \return 
- * - logb
+ * - logb(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- returns 
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
- * - logb
+ * \endxmlonly.
+ * - logb(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  returns 
+ * ) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
+ * \endxmlonly.
  *
  * \note_accuracy_double
  */
@@ -1950,51 +2481,51 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate the floating point representation of the exponent of the input argument.
+ * \brief Calculate the floating-point representation of the exponent of the input argument.
  *
- * Calculate the floating point representation of the exponent of the input argument \p x.
+ * Calculate the floating-point representation of the exponent of the input argument \p x.
  *
  * \return 
- * - logbf
+ * - logbf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  returns 
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - logbf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * - logbf
+ * ) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
- *  returns 
- * \latexonly $+\infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
+ * \endxmlonly.
  *
  * \note_accuracy_single
  */
@@ -2011,20 +2542,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *
  * \return
  * - If successful, returns the unbiased exponent of the argument.
- * - ilogb(0) returns <tt>INT_MIN</tt>.
- * - ilogb(NaN) returns NaN.
- * - ilogb(\p x) returns <tt>INT_MAX</tt> if \p x is 
- * \latexonly $\infty$ \endlatexonly
+ * - ilogb(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly 
- *     or the correct value is greater than <tt>INT_MAX</tt>.
- * - ilogb(\p x) return <tt>INT_MIN</tt> if the correct value is less 
- *     than <tt>INT_MIN</tt>.
+ * \endxmlonly
+ * ) returns <tt>INT_MIN</tt>.
+ * - ilogb(NaN) returns <tt>INT_MIN</tt>.
+ * - ilogb(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns <tt>INT_MAX</tt>.
+ * - Note: above behavior does not take into account <tt>FP_ILOGB0</tt> nor <tt>FP_ILOGBNAN</tt>.
  *
  * \note_accuracy_double
  */
@@ -2041,20 +2582,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP int    __
  *
  * \return
  * - If successful, returns the unbiased exponent of the argument.
- * - ilogbf(0) returns <tt>INT_MIN</tt>.
- * - ilogbf(NaN) returns NaN.
- * - ilogbf(\p x) returns <tt>INT_MAX</tt> if \p x is 
- * \latexonly $\infty$ \endlatexonly
+ * - ilogbf(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly 
- *     or the correct value is greater than <tt>INT_MAX</tt>.
- * - ilogbf(\p x) return <tt>INT_MIN</tt> if the correct value is less 
- *     than <tt>INT_MIN</tt>.
+ * \endxmlonly
+ * ) returns <tt>INT_MIN</tt>.
+ * - ilogbf(NaN) returns <tt>INT_MIN</tt>.
+ * - ilogbf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns <tt>INT_MAX</tt>.
+ * - Note: above behavior does not take into account <tt>FP_ILOGB0</tt> nor <tt>FP_ILOGBNAN</tt>.
  *
  * \note_accuracy_single
  */
@@ -2099,7 +2650,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP int    __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2109,7 +2660,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP int    __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2119,8 +2670,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP int    __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2129,8 +2680,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP int    __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -2175,7 +2726,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2185,7 +2736,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2195,8 +2746,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2205,8 +2756,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -2251,7 +2802,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2261,7 +2812,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2271,8 +2822,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2281,8 +2832,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -2327,7 +2878,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2337,7 +2888,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2347,8 +2898,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2357,8 +2908,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -2382,7 +2933,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *   <m:mi>x</m:mi>
  *   <m:mo>=</m:mo>
  *   <m:mi>m</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mi>n</m:mi>
@@ -2393,13 +2944,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *
  * \return
  * Returns the fractional component \p m.
- * - frexp(0, \p nptr) returns 0 for the fractional component and zero for the integer component.
  * - frexp(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2409,7 +2959,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2420,8 +2970,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2430,8 +2980,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2457,7 +3007,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   <m:mi>x</m:mi>
  *   <m:mo>=</m:mo>
  *   <m:mi>m</m:mi>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:msup>
  *     <m:mn>2</m:mn>
  *     <m:mi>n</m:mi>
@@ -2468,13 +3018,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return
  * Returns the fractional component \p m.
- * - frexp(0, \p nptr) returns 0 for the fractional component and zero for the integer component.
- * - frexp(
+ * - frexpf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2484,19 +3033,19 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  *  and stores zero in the location pointed to by \p nptr.
- * - frexp(
+ * - frexpf(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2505,14 +3054,14 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  *  and stores an unspecified value in the 
  * location to which \p nptr points.
- * - frexp(NaN, \p y) returns a NaN and stores an unspecified value in the location to which \p nptr points.
+ * - frexpf(NaN, \p y) returns a NaN and stores an unspecified value in the location to which \p nptr points.
  *
  * \note_accuracy_single
  */
@@ -2526,6 +3075,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  frexp
  *
  * \return 
  * Returns rounded integer value.
+ * - round(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - round(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  *
  * \note_slow_round See ::rint().
  */
@@ -2543,6 +3130,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return
  * Returns rounded integer value.
+ * - roundf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - roundf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  *
  * \note_slow_round See ::rintf().
  */
@@ -2557,7 +3182,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *
  * Round \p x to the nearest integer value, with halfway cases rounded 
  * away from zero.  If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2575,7 +3200,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long int 
  *
  * Round \p x to the nearest integer value, with halfway cases rounded 
  * away from zero.  If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2593,7 +3218,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long int 
  *
  * Round \p x to the nearest integer value, with halfway cases rounded 
  * away from zero.  If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2611,7 +3236,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  *
  * Round \p x to the nearest integer value, with halfway cases rounded 
  * away from zero.  If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2632,6 +3257,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  *
  * \return 
  * Returns rounded integer value.
+ * - rint(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - rint(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  */
 #if defined(__CUDA_ARCH__) || defined(__DOXYGEN_ONLY__)
 /*
@@ -2669,6 +3332,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return 
  * Returns rounded integer value.
+ * - rintf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - rintf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  */
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rintf(float x) __THROW;
@@ -2682,7 +3383,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * Round \p x to the nearest integer value, 
  * with halfway cases rounded to the nearest even integer value.
  * If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2699,7 +3400,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long int 
  * Round \p x to the nearest integer value, 
  * with halfway cases rounded to the nearest even integer value.
  * If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2716,7 +3417,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long int 
  * Round \p x to the nearest integer value, 
  * with halfway cases rounded to the nearest even integer value.
  * If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2733,7 +3434,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * Round \p x to the nearest integer value, 
  * with halfway cases rounded to the nearest even integer value.
  * If the result is outside the range of the return type,
- * the result is undefined.
+ * the behavior is undefined.
  *
  * \return 
  * Returns rounded integer value.
@@ -2747,7 +3448,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Round the input argument to the nearest integer.
  *
- * Round argument \p x to an integer value in double precision floating-point format.
+ * Round argument \p x to an integer value in double precision floating-point format. Uses round to nearest rounding, with ties rounding to even.
  *
  * \return 
  * - nearbyint(
@@ -2755,7 +3456,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2765,7 +3466,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2774,8 +3475,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2784,8 +3485,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP long long
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -2800,7 +3501,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \ingroup CUDA_MATH_SINGLE
  * \brief Round the input argument to the nearest integer.
  *
- * Round argument \p x to an integer value in single precision floating-point format.
+ * Round argument \p x to an integer value in single precision floating-point format. Uses round to nearest rounding, with ties rounding to even.
  *
  * \return 
  * - nearbyintf(
@@ -2808,7 +3509,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2818,7 +3519,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2827,8 +3528,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2837,8 +3538,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -2861,9 +3562,9 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo fence="false" stretchy="false">&#x2308;<!-- ⌈ --></m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x2308;<!-- &Lceil --></m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo fence="false" stretchy="false">&#x2309;<!-- ⌉ --></m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x2309;<!-- &Rceil --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2873,7 +3574,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -2883,7 +3584,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -2892,8 +3593,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -2902,8 +3603,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -2917,6 +3618,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return 
  * Returns truncated integer value.
+ * - trunc(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - trunc(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  */
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 trunc(double x) __THROW;
@@ -2932,6 +3671,44 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return 
  * Returns truncated integer value.
+ * - truncf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
+ * - truncf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  */
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  truncf(float x) __THROW;
@@ -2953,7 +3730,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly \p y.
@@ -2979,7 +3756,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly \p y.
@@ -3004,21 +3781,285 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * /, +
+ * , +
  * \latexonly $\pi$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ].
- * - atan2(0, 1) returns +0.
+ * - atan2(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , -0) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atan2(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , +0) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atan2(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for \p x < 0.
+ * - atan2(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for \p x > 0.
+ * - atan2(\p y,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $-\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for \p y < 0.
+ * - atan2(\p y,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for \p y > 0.
+ * - atan2(
+ * \latexonly $\pm y$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>y</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for finite \p y > 0.
+ * - atan2(
+ * \latexonly $\pm y$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>y</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for finite \p y > 0.
+ * - atan2(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for finite \p x.
+ * - atan2(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm 3\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>3</m:mn>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /4.
+ * - atan2(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /4.
  *
  * \note_accuracy_double
  */
@@ -3035,7 +4076,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl atan2
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -3044,12 +4085,52 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl atan2
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * /2].
- * - atan(0) returns +0.
+ * - atan(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atan(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2.
  *
  * \note_accuracy_double
  */
@@ -3066,7 +4147,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl atan(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -3089,7 +4170,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl acos(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -3098,12 +4179,31 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl acos(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * /2] for \p x inside [-1, +1].
- * - asin(0) returns +0.
+ * - asin(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  * - asin(\p x) returns NaN for \p x outside [-1, +1].
  *
  * \note_accuracy_double
@@ -3134,16 +4234,38 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl asin(
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - hypot(\p x,\p y), hypot(\p y,\p x), and hypot(\p x, \p -y) are equivalent.
+ * - hypot(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) is equivalent to fabs(\p x).
+ * - hypot(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,\p y) returns
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly,
+ * even if \p y is a NaN.
  *
  * \note_accuracy_double
  */
@@ -3193,20 +4315,23 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double           hypot(doubl
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - rhypot(\p x,\p y), rhypot(\p y,\p x), and rhypot(\p x, \p -y) are equivalent.
+ * - rhypot(
+ * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,\p y) returns +0,
+ * even if \p y is a NaN.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                rhypot(double x, double y) __THROW;
+extern __device__ __device_builtin__ double                rhypot(double x, double y) __THROW;
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -3236,16 +4361,38 @@ namespace std {
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - hypotf(\p x,\p y), hypotf(\p y,\p x), and hypotf(\p x, \p -y) are equivalent.
+ * - hypotf(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) is equivalent to fabsf(\p x).
+ * - hypotf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,\p y) returns
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly,
+ * even if \p y is a NaN.
  *
  * \note_accuracy_single
  */
@@ -3291,73 +4438,76 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float           hypotf(float
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - rhypotf(\p x,\p y), rhypotf(\p y,\p x), and rhypotf(\p x, \p -y) are equivalent.
+ * - rhypotf(
+ * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,\p y) returns +0,
+ * even if \p y is a NaN.
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                 rhypotf(float x, float y) __THROW;
+extern __device__ __device_builtin__ float                 rhypotf(float x, float y) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the square root of the sum of squares of three coordinates of the argument.
  *
- * Calculate the length of three dimensional vector \p p in euclidean space without undue overflow or underflow.
+ * Calculate the length of three dimensional vector in Euclidean space without undue overflow or underflow.
  *
  * \return Returns the length of 3D vector
- * \latexonly $\sqrt{p.x^2+p.y^2+p.z^2}$ \endlatexonly
+ * \latexonly $\sqrt{a^2+b^2+c^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.x</m:mi>
+ *       <m:mi>a</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.y</m:mi>
+ *       <m:mi>b</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.z</m:mi>
+ *       <m:mi>c</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl norm3d(double a, double b, double c) __THROW;
+extern __device__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl norm3d(double a, double b, double c) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate one over the square root of the sum of squares of three coordinates of the argument.
+ * \brief Calculate one over the square root of the sum of squares of three coordinates.
  *
- * Calculate one over the length of three dimensional vector \p p in euclidean space undue overflow or underflow.
+ * Calculate one over the length of three dimensional vector in Euclidean space without undue overflow or underflow.
  *
- * \return Returns one over the length of the 3D vetor 
- * \latexonly $\frac{1}{\sqrt{p.x^2+p.y^2+p.z^2}}$ \endlatexonly
+ * \return Returns one over the length of the 3D vector 
+ * \latexonly $\frac{1}{\sqrt{a^2+b^2+c^2}}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3368,17 +4518,17 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.x</m:mi>
+ *           <m:mi>a</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.y</m:mi>
+ *           <m:mi>b</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.z</m:mi>
+ *           <m:mi>c</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3386,78 +4536,78 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                rnorm3d(double a, double b, double c) __THROW;
+extern __device__ __device_builtin__ double                rnorm3d(double a, double b, double c) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the square root of the sum of squares of four coordinates of the argument.
  *
- * Calculate the length of four dimensional vector \p p in euclidean space without undue overflow or underflow.
+ * Calculate the length of four dimensional vector in Euclidean space without undue overflow or underflow.
  *
  * \return Returns the length of 4D vector
- * \latexonly $\sqrt{p.x^2+p.y^2+p.z^2+p.t^2}$ \endlatexonly
+ * \latexonly $\sqrt{a^2+b^2+c^2+d^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.x</m:mi>
+ *       <m:mi>a</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.y</m:mi>
+ *       <m:mi>b</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.z</m:mi>
+ *       <m:mi>c</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.t</m:mi>
+ *       <m:mi>d</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl norm4d(double a, double b, double c, double d) __THROW;
+extern __device__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl norm4d(double a, double b, double c, double d) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate one over the square root of the sum of squares of four coordinates of the argument.
+ * \brief Calculate one over the square root of the sum of squares of four coordinates.
  *
- * Calculate one over the length of four dimensional vector \p p in euclidean space undue overflow or underflow.
+ * Calculate one over the length of four dimensional vector in Euclidean space without undue overflow or underflow.
  *
- * \return Returns one over the length of the 3D vetor 
- * \latexonly $\frac{1}{\sqrt{p.x^2+p.y^2+p.z^2+p.t^2}}$ \endlatexonly
+ * \return Returns one over the length of the 3D vector 
+ * \latexonly $\frac{1}{\sqrt{a^2+b^2+c^2+d^2}}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3468,22 +4618,22 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.x</m:mi>
+ *           <m:mi></m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.y</m:mi>
+ *           <m:mi>b</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.z</m:mi>
+ *           <m:mi>c</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
- *	   <m:mo>+</m:mo>
+ *	       <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.t</m:mi>
+ *           <m:mi>d</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3491,20 +4641,20 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rnorm4d(double a, double b, double c, double d) __THROW;
+extern __device__ __device_builtin__ double rnorm4d(double a, double b, double c, double d) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
@@ -3513,52 +4663,64 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rnorm4d(double a, dou
  * Calculate the length of a vector p, dimension of which is passed as an argument \p without undue overflow or underflow.
  *
  * \return Returns the length of the dim-D vector 
- * \latexonly $\sqrt{\sum_{i=1}^{dim} p_i^2}$ \endlatexonly
+ * \latexonly $\sqrt{\sum_{i=0}^{dim-1} p_i^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.1</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mn>0</m:mn>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.2</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mn>1</m:mn>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+ ... +</m:mo>
  *     <m:msup>
- *       <m:mi>p.dim</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mrow>
+ *           <m:mi>dim</m:mi>
+ *           <m:mo>-</m:mo>
+ *           <m:mn>1</m:mn>
+ *         </m:mrow>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
- * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * </d4p_MathML>\endxmlonly.
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
- * If two of the input arguments is 0, returns remaining argument
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double norm(int dim, double const * t) __THROW;
+extern "C++"  __device__ __device_builtin__  double norm(int dim, double const * p) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the reciprocal of square root of the sum of squares of any number of coordinates.
  *
- * Calculates one over the length of vector \p p, dimension of which is passed as an agument, in euclidean space without undue overflow or underflow.
+ * Calculates one over the length of vector \p p, dimension of which is passed as an argument, in Euclidean space without undue overflow or underflow.
  *
  * \return Returns one over the length of the vector
- * \latexonly $\frac{1}{\sqrt{\sum_{i=1}^{dim} p_i^2}$ \endlatexonly
+ * \latexonly $\frac{1}{\sqrt{\sum_{i=0}^{dim-1} p_i^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3569,17 +4731,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double norm(int dim, double 
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.1</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mn>0</m:mn>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.2</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mn>1</m:mn>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+ ... +</m:mo>
  *         <m:msup>
- *           <m:mi>p.dim</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mrow>
+ *               <m:mi>dim</m:mi>
+ *               <m:mo>-</m:mo>
+ *               <m:mn>1</m:mn>
+ *             </m:mrow>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3587,29 +4762,29 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double norm(int dim, double 
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rnorm(int dim, double const * t) __THROW;
+extern __device__ __device_builtin__ double rnorm(int dim, double const * p) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the reciprocal of square root of the sum of squares of any number of coordinates.
  *
- * Calculates one over the length of vector \p p, dimension of which is passed as an agument, in euclidean space without undue overflow or underflow.
+ * Calculates one over the length of vector \p p, dimension of which is passed as an argument, in Euclidean space without undue overflow or underflow.
  *
  * \return Returns one over the length of the vector
- * \latexonly $\frac{1}{\sqrt{\sum_{i=1}^{dim} p_i^2}$ \endlatexonly
+ * \latexonly $\frac{1}{\sqrt{\sum_{i=0}^{dim-1} p_i^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3620,17 +4795,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rnorm(int dim, double
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.1</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mn>0</m:mn>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.2</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mn>1</m:mn>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+ ... +</m:mo>
  *         <m:msup>
- *           <m:mi>p.dim</m:mi>
+ *           <m:msub>
+ *             <m:mi>p</m:mi>
+ *             <m:mrow>
+ *               <m:mi>dim</m:mi>
+ *               <m:mo>-</m:mo>
+ *               <m:mn>1</m:mn>
+ *             </m:mrow>
+ *           </m:msub>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3638,119 +4826,132 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double rnorm(int dim, double
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
 
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rnormf(int dim, float const * a) __THROW;
+extern __device__ __device_builtin__ float rnormf(int dim, float const * p) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the square root of the sum of squares of any number of coordinates.
  *
- * Calculates the length of a vector \p p, dimension of which is passed as an agument without undue overflow or underflow.
+ * Calculates the length of a vector \p p, dimension of which is passed as an argument without undue overflow or underflow.
  *
- * \return Returns the length of the vector
- * \latexonly $\sqrt{\sum_{i=1}^{dim} p_i^2}$ \endlatexonly
+ * \return Returns the length of the dim-D vector 
+ * \latexonly $\sqrt{\sum_{i=0}^{dim-1} p_i^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.1</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mn>0</m:mn>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.2</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mn>1</m:mn>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+ ... +</m:mo>
  *     <m:msup>
- *       <m:mi>p.dim</m:mi>
+ *       <m:msub>
+ *         <m:mi>p</m:mi>
+ *         <m:mrow>
+ *           <m:mi>dim</m:mi>
+ *           <m:mo>-</m:mo>
+ *           <m:mn>1</m:mn>
+ *         </m:mrow>
+ *       </m:msub>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
- * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * </d4p_MathML>\endxmlonly.
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float normf(int dim, float const * a) __THROW;
+extern "C++"  __device__ __device_builtin__  float normf(int dim, float const * p) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the square root of the sum of squares of three coordinates of the argument.
  *
- * Calculates the length of three dimensional vector \p p in euclidean space without undue overflow or underflow.
+ * Calculates the length of three dimensional vector in Euclidean space without undue overflow or underflow.
  *
- * \return Returns the length of the 3D
- * \latexonly $\sqrt{p.x^2+p.y^2+p.z^2}$ \endlatexonly
+ * \return Returns the length of the 3D vector 
+ * \latexonly $\sqrt{a^2+b^2+c^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.x</m:mi>
+ *       <m:mi>a</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.y</m:mi>
+ *       <m:mi>b</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.z</m:mi>
+ *       <m:mi>c</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
 
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm3df(float a, float b, float c) __THROW;
+extern __device__ __device_builtin__ float norm3df(float a, float b, float c) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate one over the square root of the sum of squares of three coordinates of the argument.
+ * \brief Calculate one over the square root of the sum of squares of three coordinates.
  *
- * Calculates one over the length of three dimension vector \p p in euclidean space without undue overflow or underflow.
+ * Calculates one over the length of three dimension vector in Euclidean space without undue overflow or underflow.
  *
  * \return Returns one over the length of the 3D vector
- * \latexonly $\frac{1}{\sqrt{p.x^2+p.y^2+p.z^2}}$ \endlatexonly
+ * \latexonly $\frac{1}{\sqrt{a^2+b^2+c^2}}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3761,17 +4962,17 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm3df(float a, float
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.x</m:mi>
+ *           <m:mi>a</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.y</m:mi>
+ *           <m:mi>b</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.z</m:mi>
+ *           <m:mi>c</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3779,78 +4980,78 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm3df(float a, float
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rnorm3df(float a, float b, float c) __THROW;
+extern __device__ __device_builtin__ float rnorm3df(float a, float b, float c) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the square root of the sum of squares of four coordinates of the argument.
  *
- * Calculates the length of four dimensional vector \p p in euclidean space without undue overflow or underflow.
+ * Calculates the length of four dimensional vector in Euclidean space without undue overflow or underflow.
  *
  * \return Returns the length of the 4D vector
- * \latexonly $\sqrt{p.x^2+p.y^2+p.z^2+p.t^2}$ \endlatexonly
+ * \latexonly $\sqrt{a^2+b^2+c^2+d^2}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msqrt>
  *     <m:msup>
- *       <m:mi>p.x</m:mi>
+ *       <m:mi>a</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.y</m:mi>
+ *       <m:mi>b</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.z</m:mi>
+ *       <m:mi>c</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *     <m:mo>+</m:mo>
  *     <m:msup>
- *       <m:mi>p.t</m:mi>
+ *       <m:mi>d</m:mi>
  *       <m:mn>2</m:mn>
  *     </m:msup>
  *   </m:msqrt>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the correct value would overflow, returns 
+ * - In the presence of an exactly infinite coordinate
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- * If the correct value would underflow, returns 0.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm4df(float a, float b, float c, float d) __THROW;
+extern __device__ __device_builtin__ float norm4df(float a, float b, float c, float d) __THROW;
 
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Calculate one over the square root of the sum of squares of four coordinates of the argument.
+ * \brief Calculate one over the square root of the sum of squares of four coordinates.
  *
- * Calculates one over the length of four dimension vector \p p in euclidean space without undue overflow or underflow.
+ * Calculates one over the length of four dimension vector in Euclidean space without undue overflow or underflow.
  *
  * \return Returns one over the length of the 3D vector
- * \latexonly $\frac{1}{\sqrt{p.x^2+p.y^2+p.z^2+p.t^2}}$ \endlatexonly
+ * \latexonly $\frac{1}{\sqrt{a^2+b^2+c^2+d^2}}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
@@ -3861,22 +5062,22 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm4df(float a, float
  *     <m:mrow>
  *       <m:msqrt>
  *         <m:msup>
- *           <m:mi>p.x</m:mi>
+ *           <m:mi>a</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.y</m:mi>
+ *           <m:mi>b</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.z</m:mi>
+ *           <m:mi>c</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *         <m:mo>+</m:mo>
  *         <m:msup>
- *           <m:mi>p.z</m:mi>
+ *           <m:mi>d</m:mi>
  *           <m:mn>2</m:mn>
  *         </m:msup>
  *       </m:msqrt>
@@ -3884,20 +5085,20 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float norm4df(float a, float
  *   </m:mfrac>
  * </m:math>
  * </d4p_MathML>\endxmlonly. 
- * If the square root would overflow, returns 0.
- * If the square root would underflow, returns
- * \latexonly $+\infty$ \endlatexonly
+ * - In the presence of an exactly infinite coordinate
+ * \latexonly $+0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>\endxmlonly
+ * is returned, even if there are NaNs.
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float rnorm4df(float a, float b, float c, float d) __THROW;
+extern __device__ __device_builtin__ float rnorm4df(float a, float b, float c, float d) __THROW;
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -3947,7 +5148,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -3957,7 +5158,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -3966,8 +5167,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -3976,8 +5177,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4033,7 +5234,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4043,7 +5244,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -4052,8 +5253,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4062,8 +5263,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4081,7 +5282,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate reciprocal cube root function.
  *
- * Calculate reciprocal cube root function of \p x
+ * Calculate reciprocal cube root function of \p x.
  *
  * \return 
  * - rcbrt(
@@ -4089,7 +5290,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4099,8 +5300,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - rcbrt(
@@ -4108,8 +5309,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4118,7 +5319,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -4131,7 +5332,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rcbrt
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate reciprocal cube root function.
  *
- * Calculate reciprocal cube root function of \p x
+ * Calculate reciprocal cube root function of \p x.
  *
  * \return 
  * - rcbrt(
@@ -4139,7 +5340,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4149,8 +5350,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - rcbrt(
@@ -4158,8 +5359,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4168,7 +5369,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -4183,8 +5384,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4193,8 +5394,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4207,7 +5408,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4217,7 +5418,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -4226,8 +5427,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  rcbrt
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4243,8 +5444,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4253,8 +5454,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4267,7 +5468,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4277,7 +5478,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -4286,8 +5487,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4303,8 +5504,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4313,8 +5514,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4327,7 +5528,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4338,8 +5539,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4355,8 +5556,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4365,8 +5566,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4379,7 +5580,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4390,8 +5591,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4407,8 +5608,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4417,8 +5618,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cospi
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.  The results for sine and cosine are written into the
  * second argument, \p sptr, and, respectively, third argument, \p cptr.
@@ -4437,8 +5638,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   sinco
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -4447,8 +5648,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ void                   sinco
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.  The results for sine and cosine are written into the
  * second argument, \p sptr, and, respectively, third argument, \p cptr.
@@ -4468,7 +5669,7 @@ namespace std {
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the value of first argument to the power of second argument.
  *
- * Calculate the value of \p x to the power of \p y
+ * Calculate the value of \p x to the power of \p y.
  *
  * \return 
  * - pow(
@@ -4476,7 +5677,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4486,18 +5687,39 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  for \p y an integer less than 0.
+ *  for \p y an odd integer less than 0.
  * - pow(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p y) returns 
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+*   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ *  for \p y less than 0 and not an odd integer.
+ * - pow(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4507,7 +5729,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4518,19 +5740,19 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p y) returns +0 for \p y > 0 and not and odd integer.
+ * , \p y) returns +0 for \p y > 0 and not an odd integer.
  * - pow(-1, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4541,7 +5763,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4553,8 +5775,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4564,7 +5786,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4589,8 +5811,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4616,7 +5838,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4642,7 +5864,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4652,7 +5874,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4677,8 +5899,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4688,8 +5910,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4699,8 +5921,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4709,8 +5931,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4720,8 +5942,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4731,7 +5953,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4742,7 +5964,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4753,7 +5975,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4763,7 +5985,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4786,7 +6008,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl pow(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *  <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *  <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mi>x</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -4797,8 +6019,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl pow(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4807,7 +6029,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl pow(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4817,8 +6039,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl pow(d
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4830,20 +6052,21 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl pow(d
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl modf(double x, double *iptr) __THROW;
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Calculate the floating-point remainder of \p x / \p y.
+ * \brief Calculate the double-precision floating-point remainder of \p x / \p y.
  *
- * Calculate the floating-point remainder of \p x / \p y. 
- * The absolute value of the computed value is always less than \p y's
- * absolute value and will have the same sign as \p x.
+ * Calculate the double-precision floating-point remainder of \p x / \p y.
+ * The floating-point remainder of the division operation \p x / \p y calculated
+ * by this function is exactly the value <tt>x - n*y</tt>, where \p n is \p x / \p y with its fractional part truncated.
+ * The computed value will have the same sign as \p x, and its magnitude will be less than the magnitude of \p y.
  *
  * \return
- * - Returns the floating point remainder of \p x / \p y.
+ * - Returns the floating-point remainder of \p x / \p y.
  * - fmod(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -4853,36 +6076,35 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  *  if \p y is not zero.
- * - fmod(\p x, \p y) returns NaN and raised an invalid floating point exception if \p x is 
- * \latexonly $\pm\infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  or \p y is zero.
- * - fmod(\p x, \p y) returns zero if \p y is zero or the result would overflow.
  * - fmod(\p x, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns \p x if \p x is finite.
- * - fmod(\p x, 0) returns NaN.
+ * - fmod(\p x, \p y) returns NaN if \p x is 
+ * \latexonly $\pm\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ *  or \p y is zero.
+ * - If either argument is NaN, NaN is returned.
  *
  * \note_accuracy_double
  */
@@ -4900,7 +6122,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fmod(
  *   <m:mi>r</m:mi>
  *   <m:mo>=</m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>n</m:mi>
  *   <m:mi>y</m:mi>
  * </m:math>
@@ -4925,7 +6147,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fmod(
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>n</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mfrac>
  *     <m:mi>x</m:mi>
  *     <m:mi>y</m:mi>
@@ -4945,14 +6167,24 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fmod(
  * even \p n value is chosen.
  *
  * \return 
- * - remainder(\p x, 0) returns NaN.
+ * - remainder(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns NaN.
  * - remainder(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4962,8 +6194,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double         __cdecl fmod(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -4989,7 +6221,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   <m:mi>r</m:mi>
  *   <m:mo>=</m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mi>n</m:mi>
  *   <m:mi>y</m:mi>
  * </m:math>
@@ -5014,7 +6246,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mo stretchy="false">|</m:mo>
  *   </m:mrow>
  *   <m:mi>n</m:mi>
- *   <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *   <m:mfrac>
  *     <m:mi>x</m:mi>
  *     <m:mi>y</m:mi>
@@ -5034,15 +6266,24 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * even \p n value is chosen.
  *
  * \return 
- * \return 
- * - remainderf(\p x, 0) returns NaN.
+ * - remainderf(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns NaN.
  * - remainderf(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5052,8 +6293,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5089,29 +6330,47 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *
  * \return 
  * Returns the remainder.
- * - remquo(\p x, 0, \p quo) returns NaN.
+ * - remquo(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points.
  * - remquo(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p y, \p quo) returns NaN.
+ * , \p y, \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points.
+ * - remquo(\p x, \p y, \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points if either of \p x or \p y is NaN.
  * - remquo(\p x, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p quo) returns \p x.
+ * , \p quo) returns \p x and stores zero
+ * in the location to which \p quo points for finite \p x.
  *
  * \note_accuracy_double
  */
@@ -5124,7 +6383,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \ingroup CUDA_MATH_SINGLE
  * \brief Compute single-precision floating-point remainder and part of quotient.
  *
- * Compute a double-precision floating-point remainder in the same way as the 
+ * Compute a single-precision floating-point remainder in the same way as the 
  * ::remainderf() function. Argument \p quo returns part of quotient upon 
  * division of \p x by \p y. Value \p quo has the same sign as 
  * \latexonly $ \frac{x}{y} $ \endlatexonly
@@ -5143,29 +6402,47 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return 
  * Returns the remainder.
- * - remquof(\p x, 0, \p quo) returns NaN.
+ * - remquof(\p x,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points.
  * - remquof(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p y, \p quo) returns NaN.
+ * , \p y, \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points.
+ * - remquof(\p x, \p y, \p quo) returns NaN
+ * and stores an unspecified value in the 
+ * location to which \p quo points if either of \p x or \p y is NaN.
  * - remquof(\p x, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p quo) returns \p x.
+ * , \p quo) returns \p x and stores zero
+ * in the location to which \p quo points for finite \p x.
  *
  * \note_accuracy_single
  */
@@ -5201,8 +6478,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5243,8 +6520,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5285,7 +6562,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -5295,7 +6572,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -5304,12 +6581,20 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns +0.
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  * - j1(NaN) returns NaN.
  *
  * \note_accuracy_double
@@ -5346,7 +6631,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -5356,7 +6641,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -5365,12 +6650,20 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns +0.
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  * - j1f(NaN) returns NaN.
  *
  * \note_accuracy_single
@@ -5410,7 +6703,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5453,7 +6746,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5488,13 +6781,22 @@ namespace std {
  *
  * \return
  * Returns the value of the Bessel function of the second kind of order 0.
- * - y0(0) returns 
+ * - y0(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - y0(\p x) returns NaN for \p x < 0.
@@ -5504,7 +6806,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5540,13 +6842,22 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return
  * Returns the value of the Bessel function of the second kind of order 0.
- * - y0f(0) returns 
+ * - y0f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - y0f(\p x) returns NaN for \p x < 0.
@@ -5556,7 +6867,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5592,13 +6903,22 @@ namespace std {
  *
  * \return
  * Returns the value of the Bessel function of the second kind of order 1.
- * - y1(0) returns 
+ * - y1(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - y1(\p x) returns NaN for \p x < 0.
@@ -5608,7 +6928,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5644,13 +6964,22 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \return
  * Returns the value of the Bessel function of the second kind of order 1.
- * - y1f(0) returns 
+ * - y1f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - y1f(\p x) returns NaN for \p x < 0.
@@ -5660,7 +6989,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5697,13 +7026,23 @@ namespace std {
  * \return
  * Returns the value of the Bessel function of the second kind of order \p n.
  * - yn(\p n, \p x) returns NaN for \p n < 0.
- * - yn(\p n, 0) returns 
+ * - yn(\p n, 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ *) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - yn(\p n, \p x) returns NaN for \p x < 0.
@@ -5713,7 +7052,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5750,13 +7089,23 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \return
  * Returns the value of the Bessel function of the second kind of order \p n.
  * - ynf(\p n, \p x) returns NaN for \p n < 0.
- * - ynf(\p n, 0) returns 
+ * - ynf(\p n, 
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - ynf(\p n, \p x) returns NaN for \p x < 0.
@@ -5766,7 +7115,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5802,7 +7151,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ynf(i
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl cyl_bessel_i0(double x) __THROW;
+extern __device__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl cyl_bessel_i0(double x) __THROW;
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the value of the regular modified cylindrical Bessel function of order 0 for the input argument.
@@ -5828,7 +7177,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cyl_bessel_i0f(float x) __THROW;
+extern __device__ __device_builtin__ float                  cyl_bessel_i0f(float x) __THROW;
 
 /**
  * \ingroup CUDA_MATH_DOUBLE
@@ -5855,7 +7204,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cyl_b
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl cyl_bessel_i1(double x) __THROW;
+extern __device__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl cyl_bessel_i1(double x) __THROW;
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the value of the regular modified cylindrical Bessel function of order 1 for the input argument.
@@ -5881,7 +7230,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cyl_bessel_i1f(float x) __THROW;
+extern __device__ __device_builtin__ float                  cyl_bessel_i1f(float x) __THROW;
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -5898,18 +7247,18 @@ namespace std {
  *   <m:mfrac>
  *     <m:mn>2</m:mn>
  *     <m:msqrt>
- *       <m:mi>&#x03C0;<!-- π --></m:mi>
+ *       <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *     </m:msqrt>
  *   </m:mfrac>
  *   <m:msubsup>
- *     <m:mo>&#x222B;<!-- ∫ --></m:mo>
+ *     <m:mo>&#x222B;<!-- &Int --></m:mo>
  *     <m:mn>0</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msubsup>
  *   <m:msup>
  *     <m:mi>e</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:msup>
  *         <m:mi>t</m:mi>
  *         <m:mn>2</m:mn>
@@ -5927,7 +7276,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -5937,7 +7286,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -5946,8 +7295,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -5956,7 +7305,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>1</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -5980,18 +7329,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *   <m:mfrac>
  *     <m:mn>2</m:mn>
  *     <m:msqrt>
- *       <m:mi>&#x03C0;<!-- π --></m:mi>
+ *       <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *     </m:msqrt>
  *   </m:mfrac>
  *   <m:msubsup>
- *     <m:mo>&#x222B;<!-- ∫ --></m:mo>
+ *     <m:mo>&#x222B;<!-- &Int --></m:mo>
  *     <m:mn>0</m:mn>
  *     <m:mi>x</m:mi>
  *   </m:msubsup>
  *   <m:msup>
  *     <m:mi>e</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:msup>
  *         <m:mi>t</m:mi>
  *         <m:mn>2</m:mn>
@@ -6009,7 +7358,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -6019,7 +7368,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -6028,8 +7377,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6038,7 +7387,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>1</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -6058,44 +7407,51 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the inverse error function of the input argument.
  *
- * Calculate the inverse error function of the input argument \p y, for \p y in the interval [-1, 1].
- * The inverse error function finds the value \p x that satisfies the equation \p y = erf(\p x),
- * for 
- * \latexonly $-1 \le y \le 1$ \endlatexonly
+ * Calculate the inverse error function
+ * \latexonly $\erf^{-1}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mn>1</m:mn>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>y</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mn>1</m:mn>
+ *   <m:msup>
+ *     <m:mi>erf</m:mi>
+ *     <m:mrow>
+ *       <m:mn>-</m:mn>
+ *       <m:mi>1</m:mi>
+ *     </m:mrow>
+ *   </m:msup>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , and 
- * \latexonly $-\infty \le x \le \infty$ \endlatexonly
+ * (\p x), of the input argument \p x in the interval [-1, 1].
+ *
+ * \return
+ * - erfinv(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>x</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- *
- * \return 
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  * - erfinv(1) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - erfinv(-1) returns 
@@ -6103,56 +7459,64 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - erfinv(\p x) returns NaN for \p x outside [-1, +1].
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfinv(double y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfinv(double x);
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the inverse error function of the input argument.
  *
- * Calculate the inverse error function of the input argument \p y, for \p y in the interval [-1, 1].
- * The inverse error function finds the value \p x that satisfies the equation \p y = erf(\p x),
- * for 
- * \latexonly $-1 \le y \le 1$ \endlatexonly
+ * Calculate the inverse error function
+ * \latexonly $\erf^{-1}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mn>1</m:mn>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>y</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mn>1</m:mn>
+ *   <m:msup>
+ *     <m:mi>erf</m:mi>
+ *     <m:mrow>
+ *       <m:mn>-</m:mn>
+ *       <m:mi>1</m:mi>
+ *     </m:mrow>
+ *   </m:msup>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , and 
- * \latexonly $-\infty \le x \le \infty$ \endlatexonly
+ * (\p x), of the input argument \p x in the interval [-1, 1].
+ *
+ * \return 
+ * - erfinvf(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>x</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- *
- * \return 
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  * - erfinvf(1) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - erfinvf(-1) returns 
@@ -6160,14 +7524,15 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfin
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - erfinvf(\p x) returns NaN for \p x outside [-1, +1].
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfinvf(float y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfinvf(float x);
 
 #if defined(__QNX__) && !defined(_LIBCPP_VERSION)
 namespace std {
@@ -6185,8 +7550,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6197,7 +7562,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6223,8 +7588,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6235,7 +7600,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6258,7 +7623,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msub>
- *     <m:mi>log</m:mi>
+ *     <m:mo>log</m:mo>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
@@ -6266,18 +7631,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *   <m:mfenced open="|" close="|">
  *     <m:mrow>
  *       <m:msubsup>
- *         <m:mo>&#x222B;<!-- ∫ --></m:mo>
+ *         <m:mo>&#x222B;<!-- &Int --></m:mo>
  *         <m:mrow class="MJX-TeXAtom-ORD">
  *           <m:mn>0</m:mn>
  *         </m:mrow>
  *         <m:mrow class="MJX-TeXAtom-ORD">
- *           <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *           <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  *         </m:mrow>
  *       </m:msubsup>
  *       <m:msup>
  *         <m:mi>e</m:mi>
  *         <m:mrow class="MJX-TeXAtom-ORD">
- *           <m:mo>&#x2212;<!-- − --></m:mo>
+ *           <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *           <m:mi>t</m:mi>
  *         </m:mrow>
  *       </m:msup>
@@ -6285,7 +7650,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *         <m:mi>t</m:mi>
  *         <m:mrow class="MJX-TeXAtom-ORD">
  *           <m:mi>x</m:mi>
- *           <m:mo>&#x2212;<!-- − --></m:mo>
+ *           <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *           <m:mn>1</m:mn>
  *         </m:mrow>
  *       </m:msup>
@@ -6301,23 +7666,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * - lgamma(1) returns +0.
  * - lgamma(2) returns +0.
  * - lgamma(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the double floating point range.
- * - lgamma(\p x) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6326,7 +7680,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly 0 and \p x is an integer.
@@ -6335,18 +7689,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns 
- * \latexonly $-\infty$ \endlatexonly
+ * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - lgamma(
@@ -6355,7 +7709,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6365,7 +7719,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -6384,43 +7738,41 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the inverse complementary error function of the input argument.
  *
- * Calculate the inverse complementary error function of the input argument \p y, for \p y in the interval [0, 2].
- * The inverse complementary error function find the value \p x that satisfies the equation \p y = erfc(\p x),
- * for 
- * \latexonly $0 \le y \le 2$ \endlatexonly
+ * Calculate the inverse complementary error function
+ * \latexonly $\erfc^{-1}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mn>0</m:mn>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>y</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mn>2</m:mn>
+ *   <m:msup>
+ *     <m:mi>erfc</m:mi>
+ *     <m:mrow>
+ *       <m:mn>-</m:mn>
+ *       <m:mi>1</m:mi>
+ *     </m:mrow>
+ *   </m:msup>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , and 
- * \latexonly $-\infty \le x \le \infty$ \endlatexonly
+ * (\p x), of the input argument \p x in the interval [0, 2].
+ *
+ * \return 
+ * - erfcinv(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>x</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- *
- * \return 
- * - erfcinv(0) returns 
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - erfcinv(2) returns 
@@ -6428,55 +7780,54 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - erfcinv(\p x) returns NaN for \p x outside [0, 2].
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfcinv(double y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfcinv(double x);
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the inverse complementary error function of the input argument.
  *
- * Calculate the inverse complementary error function of the input argument \p y, for \p y in the interval [0, 2].
- * The inverse complementary error function find the value \p x that satisfies the equation \p y = erfc(\p x),
- * for 
- * \latexonly $0 \le y \le 2$ \endlatexonly
+ * Calculate the inverse complementary error function
+ * \latexonly $\erfc^{-1}$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mn>0</m:mn>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>y</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mn>2</m:mn>
+ *   <m:msup>
+ *     <m:mi>erfc</m:mi>
+ *     <m:mrow>
+ *       <m:mn>-</m:mn>
+ *       <m:mi>1</m:mi>
+ *     </m:mrow>
+ *   </m:msup>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , and 
- * \latexonly $-\infty \le x \le \infty$ \endlatexonly
+ * (\p x), of the input argument \p x in the interval [0, 2].
+ *
+ * \return 
+ * - erfcinvf(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi>x</m:mi>
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
- *
- * \return 
- * - erfcinvf(0) returns 
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - erfcinvf(2) returns 
@@ -6484,32 +7835,33 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfci
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - erfcinvf(\p x) returns NaN for \p x outside [0, 2].
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfcinvf(float y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfcinvf(float x);
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the inverse of the standard normal cumulative distribution function.
  *
- * Calculate the inverse of the standard normal cumulative distribution function for input argument \p y,
- * \latexonly $\Phi^{-1}(y)$ \endlatexonly
+ * Calculate the inverse of the standard normal cumulative distribution function for input argument \p x,
+ * \latexonly $\Phi^{-1}(x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msup>
- *     <m:mi mathvariant="normal">&#x03A6;<!-- Φ --></m:mi>
+ *     <m:mi mathvariant="normal">&#x03A6;<!-- &Phi --></m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mn>1</m:mn>
  *     </m:mrow>
  *   </m:msup>
  *   <m:mo stretchy="false">(</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
  * </d4p_MathML>\endxmlonly. The function is defined for input values in the interval 
@@ -6526,13 +7878,23 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfci
  * </d4p_MathML>\endxmlonly.
  *
  * \return 
- * - normcdfinv(0) returns
+ * - normcdfinv(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - normcdfinv(1) returns 
@@ -6541,7 +7903,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfci
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - normcdfinv(\p x) returns NaN
@@ -6549,25 +7911,25 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfci
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normcdfinv(double y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normcdfinv(double x);
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the inverse of the standard normal cumulative distribution function.
  *
- * Calculate the inverse of the standard normal cumulative distribution function for input argument \p y,
- * \latexonly $\Phi^{-1}(y)$ \endlatexonly
+ * Calculate the inverse of the standard normal cumulative distribution function for input argument \p x,
+ * \latexonly $\Phi^{-1}(x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msup>
- *     <m:mi mathvariant="normal">&#x03A6;<!-- Φ --></m:mi>
+ *     <m:mi mathvariant="normal">&#x03A6;<!-- &Phi --></m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mn>1</m:mn>
  *     </m:mrow>
  *   </m:msup>
  *   <m:mo stretchy="false">(</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
  * </d4p_MathML>\endxmlonly. The function is defined for input values in the interval 
@@ -6584,13 +7946,23 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normc
  * </d4p_MathML>\endxmlonly.
  *
  * \return 
- * - normcdfinvf(0) returns
+ * - normcdfinvf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - normcdfinvf(1) returns 
@@ -6599,7 +7971,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normc
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - normcdfinvf(\p x) returns NaN
@@ -6607,19 +7979,19 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normc
  *
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normcdfinvf(float y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normcdfinvf(float x);
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the standard normal cumulative distribution function.
  *
- * Calculate the cumulative distribution function of the standard normal distribution for input argument \p y,
- * \latexonly $\Phi(y)$ \endlatexonly
+ * Calculate the cumulative distribution function of the standard normal distribution for input argument \p x,
+ * \latexonly $\Phi(x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi mathvariant="normal">&#x03A6;<!-- Φ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x03A6;<!-- &Phi --></m:mi>
  *   <m:mo stretchy="false">(</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -6631,38 +8003,38 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normc
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns 1
+ * ) returns 1.
  * - normcdf(
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML"> 
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns +0
+ * ) returns +0.
  *
  * \note_accuracy_double
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normcdf(double y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normcdf(double x);
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the standard normal cumulative distribution function.
  *
- * Calculate the cumulative distribution function of the standard normal distribution for input argument \p y,
- * \latexonly $\Phi(y)$ \endlatexonly
+ * Calculate the cumulative distribution function of the standard normal distribution for input argument \p x,
+ * \latexonly $\Phi(x)$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi mathvariant="normal">&#x03A6;<!-- Φ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x03A6;<!-- &Phi --></m:mi>
  *   <m:mo stretchy="false">(</m:mo>
- *   <m:mi>y</m:mi>
+ *   <m:mi>x</m:mi>
  *   <m:mo stretchy="false">)</m:mo>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -6674,18 +8046,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normc
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns 1
+ * ) returns 1.
  * - normcdff(
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML"> 
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6693,7 +8065,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 normc
 
  * \note_accuracy_single
  */
-extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normcdff(float y);
+extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normcdff(float x);
 /**
  * \ingroup CUDA_MATH_DOUBLE
  * \brief Calculate the scaled complementary error function of the input argument.
@@ -6712,7 +8084,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normc
  *       </m:msup>
  *     </m:mrow>
  *   </m:msup>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mtext>erfc</m:mtext>
  *   </m:mrow>
@@ -6729,7 +8101,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normc
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>-</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6739,32 +8111,21 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  normc
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
+ * \endxmlonly.
  * - erfcx(
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML"> 
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns +0
- * - erfcx(\p x) returns 
- * \latexonly $+\infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the double floating point range.
+ * ) returns +0.
  *
  * \note_accuracy_double
  */
@@ -6787,7 +8148,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfcx
  *       </m:msup>
  *     </m:mrow>
  *   </m:msup>
- *   <m:mo>&#x22C5;<!-- ⋅ --></m:mo>
+ *   <m:mo>&#x22C5;<!-- &Sdot --></m:mo>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mtext>erfc</m:mtext>
  *   </m:mrow>
@@ -6804,7 +8165,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfcx
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>-</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6814,33 +8175,22 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 erfcx
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
- * \endxmlonly
+ * \endxmlonly.
  * - erfcxf(
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML"> 
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns +0
- * - erfcxf(\p x) returns 
- * \latexonly $+\infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the single floating point range.
-
+ * ) returns +0.
+ *
  * \note_accuracy_single
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  erfcxf(float x);
@@ -6853,75 +8203,60 @@ namespace std {
  * \brief Calculate the natural logarithm of the absolute value of the gamma function of the input argument.
  *
  * Calculate the natural logarithm of the absolute value of the gamma function of the input argument \p x, namely the value of
- * \latexonly $log_{e}|\ \int_{0}^{\infty} e^{-t}t^{x-1}dt|$ \endlatexonly
+ * \latexonly $\log_{e}\left|\int_{0}^{\infty} e^{-t}t^{x-1}dt\right|$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
  *   <m:msub>
- *     <m:mi>g</m:mi>
+ *     <m:mo>log</m:mo>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>e</m:mi>
  *     </m:mrow>
  *   </m:msub>
- *   <m:mrow class="MJX-TeXAtom-ORD">
- *     <m:mo stretchy="false">|</m:mo>
- *   </m:mrow>
- *   <m:mtext>&#xA0;</m:mtext>
- *   <m:msubsup>
- *     <m:mo>&#x222B;<!-- ∫ --></m:mo>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mn>0</m:mn>
- *     </m:mrow>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- *     </m:mrow>
- *   </m:msubsup>
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *   <m:mfenced open="|" close="|">
+ *     <m:mrow>
+ *       <m:msubsup>
+ *         <m:mo>&#x222B;<!-- &Int --></m:mo>
+ *         <m:mrow class="MJX-TeXAtom-ORD">
+ *           <m:mn>0</m:mn>
+ *         </m:mrow>
+ *         <m:mrow class="MJX-TeXAtom-ORD">
+ *           <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ *         </m:mrow>
+ *       </m:msubsup>
+ *       <m:msup>
+ *         <m:mi>e</m:mi>
+ *         <m:mrow class="MJX-TeXAtom-ORD">
+ *           <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *           <m:mi>t</m:mi>
+ *         </m:mrow>
+ *       </m:msup>
+ *       <m:msup>
+ *         <m:mi>t</m:mi>
+ *         <m:mrow class="MJX-TeXAtom-ORD">
+ *           <m:mi>x</m:mi>
+ *           <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *           <m:mn>1</m:mn>
+ *         </m:mrow>
+ *       </m:msup>
+ *       <m:mi>d</m:mi>
  *       <m:mi>t</m:mi>
  *     </m:mrow>
- *   </m:msup>
- *   <m:msup>
- *     <m:mi>t</m:mi>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi>x</m:mi>
- *       <m:mo>&#x2212;<!-- − --></m:mo>
- *       <m:mn>1</m:mn>
- *     </m:mrow>
- *   </m:msup>
- *   <m:mi>d</m:mi>
- *   <m:mi>t</m:mi>
- *   <m:mrow class="MJX-TeXAtom-ORD">
- *     <m:mo stretchy="false">|</m:mo>
- *   </m:mrow>
+ *   </m:mfenced>
  * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * </d4p_MathML>
+ * \endxmlonly
  *
  * \return 
  * - lgammaf(1) returns +0.
  * - lgammaf(2) returns +0.
- * - lgammaf(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the single floating point range.
  * - lgammaf(\p x) returns 
  * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6930,7 +8265,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2264;<!-- ≤ --></m:mo>
+ *   <m:mo>&#x2264;<!-- &Le --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6940,18 +8275,18 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns 
- * \latexonly $-\infty$ \endlatexonly
+ * \latexonly $+\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - lgammaf(
@@ -6960,7 +8295,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -6970,7 +8305,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -6991,18 +8326,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msubsup>
- *     <m:mo>&#x222B;<!-- ∫ --></m:mo>
+ *     <m:mo>&#x222B;<!-- &Int --></m:mo>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mn>0</m:mn>
  *     </m:mrow>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *       <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  *     </m:mrow>
  *   </m:msubsup>
  *   <m:msup>
  *     <m:mi>e</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mi>t</m:mi>
  *     </m:mrow>
  *   </m:msup>
@@ -7010,7 +8345,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  *     <m:mi>t</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>x</m:mi>
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mn>1</m:mn>
  *     </m:mrow>
  *   </m:msup>
@@ -7025,7 +8360,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7035,30 +8370,19 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - tgamma(2) returns +1.
- * - tgamma(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the double floating point range.
  * - tgamma(\p x) returns NaN if \p x < 0 and \p x is an integer.
  * - tgamma(
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7069,7 +8393,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7079,7 +8403,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -7100,18 +8424,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:msubsup>
- *     <m:mo>&#x222B;<!-- ∫ --></m:mo>
+ *     <m:mo>&#x222B;<!-- &Int --></m:mo>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mn>0</m:mn>
  *     </m:mrow>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *       <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  *     </m:mrow>
  *   </m:msubsup>
  *   <m:msup>
  *     <m:mi>e</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mi>t</m:mi>
  *     </m:mrow>
  *   </m:msup>
@@ -7119,7 +8443,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  *     <m:mi>t</m:mi>
  *     <m:mrow class="MJX-TeXAtom-ORD">
  *       <m:mi>x</m:mi>
- *       <m:mo>&#x2212;<!-- − --></m:mo>
+ *       <m:mo>&#x2212;<!-- &Minus --></m:mo>
  *       <m:mn>1</m:mn>
  *     </m:mrow>
  *   </m:msup>
@@ -7134,7 +8458,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7144,30 +8468,19 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - tgammaf(2) returns +1.
- * - tgammaf(\p x) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  if the correctly calculated value is outside the single floating point range.
  * - tgammaf(\p x) returns NaN if \p x < 0  and \p x is an integer.
  * - tgammaf(
  * \latexonly $-\infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7178,7 +8491,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7188,7 +8501,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -7225,35 +8538,17 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  copys
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP float  __cdecl copysignf(float x, float y);
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-// FIXME exceptional cases for nextafter
 /**
  * \ingroup CUDA_MATH_DOUBLE
- * \brief Return next representable double-precision floating-point value after argument.
+ * \brief Return next representable double-precision floating-point value after argument \p x in the direction of \p y.
  *
  * Calculate the next representable double-precision floating-point value
  * following \p x in the direction of \p y. For example, if \p y is greater than \p x, ::nextafter()
  * returns the smallest representable number greater than \p x
  *
  * \return 
- * - nextafter(
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- * , \p y) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * - nextafter(\p x, \p y) = \p y if \p x equals \p y.
+ * - nextafter(\p x, \p y) = \p NaN if either \p x or \p y are \p NaN.
  *
  * \note_accuracy_double
  */
@@ -7262,35 +8557,17 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 nexta
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __cdecl nextafter(double x, double y);
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
-// FIXME exceptional cases for nextafterf
 /**
  * \ingroup CUDA_MATH_SINGLE
- * \brief Return next representable single-precision floating-point value afer argument.
+ * \brief Return next representable single-precision floating-point value after argument \p x in the direction of \p y.
  *
  * Calculate the next representable single-precision floating-point value
  * following \p x in the direction of \p y. For example, if \p y is greater than \p x, ::nextafterf()
  * returns the smallest representable number greater than \p x
  *
  * \return 
- * - nextafterf(
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- * , \p y) returns 
- * \latexonly $\pm \infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>\endxmlonly.
+ * - nextafterf(\p x, \p y) = \p y if \p x equals \p y.
+ * - nextafterf(\p x, \p y) = \p NaN if either \p x or \p y are \p NaN.
  *
  * \note_accuracy_single
  */
@@ -7365,7 +8642,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7380,7 +8657,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7397,7 +8674,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7410,8 +8687,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7420,7 +8697,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7431,7 +8708,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7441,8 +8718,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7452,8 +8729,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7463,7 +8740,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -7474,7 +8751,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fma(\p x, \p y, 
@@ -7483,7 +8760,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7493,7 +8770,7 @@ namespace std {
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -7503,8 +8780,8 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -7523,7 +8800,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7538,7 +8815,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7555,7 +8832,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  *   <m:mo>+</m:mo>
  *   <m:mi>z</m:mi>
@@ -7568,8 +8845,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7578,7 +8855,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7589,7 +8866,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7599,8 +8876,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7610,8 +8887,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7621,7 +8898,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -7632,7 +8909,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - fmaf(\p x, \p y, 
@@ -7641,7 +8918,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7651,7 +8928,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mi>x</m:mi>
- *   <m:mo>&#x00D7;<!-- × --></m:mo>
+ *   <m:mo>&#x00D7;<!-- &Times --></m:mo>
  *   <m:mi>y</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -7661,8 +8938,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ __CUDA_MATH_CRTIMP double __
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -7728,7 +9005,7 @@ namespace std {
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7751,7 +9028,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  acosf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo>/</m:mo>
  *   </m:mrow>
@@ -7764,7 +9041,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  acosf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo>/</m:mo>
  *   </m:mrow>
@@ -7773,7 +9050,26 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  acosf
  * </d4p_MathML>
  * \endxmlonly
  * ] for \p x inside [-1, +1].
- * - asinf(0) returns +0.
+ * - asinf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  * - asinf(\p x) returns NaN for \p x outside [-1, +1].
  *
  * \note_accuracy_single
@@ -7792,7 +9088,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  asinf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo>/</m:mo>
  *   </m:mrow>
@@ -7805,7 +9101,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  asinf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  *   <m:mrow class="MJX-TeXAtom-ORD">
  *     <m:mo>/</m:mo>
  *   </m:mrow>
@@ -7814,7 +9110,47 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  asinf
  * </d4p_MathML>
  * \endxmlonly
  * ].
- * - atanf(0) returns +0.
+ * - atanf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atanf(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2.
  *
  * \note_accuracy_single
  */
@@ -7833,7 +9169,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  atanf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7842,12 +9178,276 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  atanf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>&#x03C0;<!-- π --></m:mi>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ].
- * - atan2f(0, 1) returns +0.
+ * - atan2f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , -0) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atan2f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , +0) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
+ * - atan2f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for \p x < 0.
+ * - atan2f(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for \p x > 0.
+ * - atan2f(\p y,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $-\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for \p y < 0.
+ * - atan2f(\p y,
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for \p y > 0.
+ * - atan2f(
+ * \latexonly $\pm y$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>y</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for finite \p y > 0.
+ * - atan2f(
+ * \latexonly $\pm y$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>y</m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * for finite \p y > 0.
+ * - atan2f(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p x) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /2 for finite \p x.
+ * - atan2f(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm 3\pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>3</m:mn>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /4.
+ * - atan2f(
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ,
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $\pm \pi$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi>&#x03C0;<!-- &Pi --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * /4.
  *
  * \note_accuracy_single
  */
@@ -7859,14 +9459,24 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  atan2
  * Calculate the cosine of the input argument \p x (measured in radians).
  *
  * \return 
- * - cosf(0) returns 1.
+ * - cosf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
  * - cosf(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7888,7 +9498,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cosf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7898,7 +9508,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cosf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -7907,8 +9517,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cosf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7930,7 +9540,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -7940,7 +9550,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -7949,8 +9559,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -7960,7 +9570,6 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinf(
  * \note_fastmath
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanf(float x) __THROW;
-// FIXME return values for large arg values
 /**
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the hyperbolic cosine of the input argument.
@@ -7968,18 +9577,36 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanf(
  * Calculate the hyperbolic cosine of the input argument \p x.
  *
  * \return 
- * - coshf(0) returns 1.
+ * - coshf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
  * - coshf(
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns NaN.
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single
  */
@@ -7996,7 +9623,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  coshf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8006,7 +9633,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  coshf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -8015,12 +9642,21 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  coshf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * ) returns NaN.
+ * ) returns
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_single
  */
@@ -8037,7 +9673,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinhf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8047,10 +9683,30 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinhf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
+ * - tanhf( 
+ * \latexonly $\pm \infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns
+ * \latexonly $\pm 1$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>1</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly.
  *
  * \note_accuracy_single
  */
@@ -8067,7 +9723,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanhf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8077,8 +9733,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanhf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - logf(1) returns +0.
@@ -8089,7 +9745,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanhf
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8099,11 +9755,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  tanhf
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single
+ * \note_fastmath
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  logf(float x) __THROW;
 /**
@@ -8119,7 +9776,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  logf(
  * \endxmlonly
  *  exponential of the input argument.
  *
- * Calculate the base 
+ * Calculate
+ * \latexonly $e^x$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:msup>
+ *     <m:mi>e</m:mi>
+ *     <m:mi>x</m:mi>
+ *   </m:msup>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly,
+ * the base 
  * \latexonly $e$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
@@ -8128,27 +9796,46 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  logf(
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  exponential of the input argument \p x, 
- * \latexonly $e^x$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mi>x</m:mi>
- *   </m:msup>
- * </m:math>
- * </d4p_MathML>\endxmlonly.
+ *  exponential of the input argument \p x.
  *
- * \return Returns 
- * \latexonly $e^x$ \endlatexonly
+ * \return
+ * - expf(
+ * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:msup>
- *     <m:mi>e</m:mi>
- *     <m:mi>x</m:mi>
- *   </m:msup>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * ) returns 1.
+ * - expf(
+ * \latexonly $-\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>-</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns +0.
+ * - expf(
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>\endxmlonly
+ * ) returns
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
@@ -8168,7 +9855,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  expf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8178,8 +9865,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  expf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - log10f(1) returns +0.
@@ -8190,7 +9877,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  expf(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8200,11 +9887,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  expf(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  *
  * \note_accuracy_single
+ * \note_fastmath
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log10f(float x) __THROW;
 /**
@@ -8220,7 +9908,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log10
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *  <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *  <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mi>x</m:mi>
  * </m:math>
  * </d4p_MathML>
@@ -8231,8 +9919,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log10
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8241,7 +9929,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log10
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8251,8 +9939,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  log10
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8274,7 +9962,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8284,18 +9972,39 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- *  for \p y an integer less than 0.
+ *  for \p y an odd integer less than 0.
  * - powf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mn>0</m:mn>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ * , \p y) returns 
+ * \latexonly $+\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>+</m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ *  for \p y less than 0 and not an odd integer.
+ * - powf(
+ * \latexonly $\pm 0$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8305,7 +10014,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8316,19 +10025,19 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
- * , \p y) returns +0 for \p y > 0 and not and odd integer.
+ * , \p y) returns +0 for \p y > 0 and not an odd integer.
  * - powf(-1, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8339,7 +10048,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8351,8 +10060,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8362,7 +10071,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8387,8 +10096,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8414,7 +10123,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8440,7 +10149,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8450,7 +10159,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8475,8 +10184,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8486,8 +10195,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8497,8 +10206,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8507,8 +10216,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8518,8 +10227,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x2212;<!-- − --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x2212;<!-- &Minus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8529,7 +10238,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8540,7 +10249,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8551,7 +10260,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8561,13 +10270,14 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  modff
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  *  for \p y > 0.
  *
  * \note_accuracy_single
+ * \note_fastmath
  */
 extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  powf(float x, float y) __THROW;
 /**
@@ -8601,7 +10311,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  powf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8611,7 +10321,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  powf(
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -8621,7 +10331,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  powf(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8631,7 +10341,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  powf(
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
  *   <m:mo>+</m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - sqrtf(\p x) returns NaN if \p x is less than 0.
@@ -8651,9 +10361,9 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sqrtf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo fence="false" stretchy="false">&#x2308;<!-- ⌈ --></m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x2308;<!-- &Lceil --></m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo fence="false" stretchy="false">&#x2309;<!-- ⌉ --></m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x2309;<!-- &Rceil --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8663,7 +10373,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sqrtf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8673,7 +10383,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sqrtf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -8682,8 +10392,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sqrtf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8692,8 +10402,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sqrtf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  */
@@ -8706,24 +10416,13 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ceilf
  * 
  * \return
  * Returns 
- * \latexonly $log_{e}(1+x)$ \endlatexonly
  * \latexonly $\lfloor x \rfloor$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mi>l</m:mi>
- *   <m:mi>o</m:mi>
- *   <m:msub>
- *     <m:mi>g</m:mi>
- *     <m:mrow class="MJX-TeXAtom-ORD">
- *       <m:mi>e</m:mi>
- *     </m:mrow>
- *   </m:msub>
- *   <m:mo stretchy="false">(</m:mo>
- *   <m:mn>1</m:mn>
- *   <m:mo>+</m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x230A;<!-- &Lfloor --></m:mo>
  *   <m:mi>x</m:mi>
- *   <m:mo stretchy="false">)</m:mo>
+ *   <m:mo fence="false" stretchy="false">&#x230B;<!-- &Rfloor --></m:mo>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8733,8 +10432,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ceilf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
@@ -8743,8 +10442,8 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ceilf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
  * - floorf(
@@ -8752,7 +10451,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ceilf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8762,7 +10461,7 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  ceilf
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>\endxmlonly.
@@ -8774,18 +10473,18 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  floor
  * \ingroup CUDA_MATH_SINGLE
  * \brief Calculate the floating-point remainder of \p x / \p y.
  *
- * Calculate the floating-point remainder of \p x / \p y. 
- * The absolute value of the computed value is always less than \p y's
- * absolute value and will have the same sign as \p x.
- *
+ * Calculate the floating-point remainder of \p x / \p y.
+ * The floating-point remainder of the division operation \p x / \p y calculated
+ * by this function is exactly the value <tt>x - n*y</tt>, where \p n is \p x / \p y with its fractional part truncated.
+ * The computed value will have the same sign as \p x, and its magnitude will be less than the magnitude of \p y.
  * \return
- * - Returns the floating point remainder of \p x / \p y.
+ * - Returns the floating-point remainder of \p x / \p y.
  * - fmodf(
  * \latexonly $\pm 0$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
@@ -8795,36 +10494,35 @@ extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  floor
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
  *   <m:mn>0</m:mn>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  *  if \p y is not zero.
- * - fmodf(\p x, \p y) returns NaN and raised an invalid floating point exception if \p x is 
- * \latexonly $\pm\infty$ \endlatexonly
- * \xmlonly
- * <d4p_MathML outputclass="xmlonly">
- * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
- * </m:math>
- * </d4p_MathML>
- * \endxmlonly
- *  or \p y is zero.
- * - fmodf(\p x, \p y) returns zero if \p y is zero or the result would overflow.
  * - fmodf(\p x, 
  * \latexonly $\pm \infty$ \endlatexonly
  * \xmlonly
  * <d4p_MathML outputclass="xmlonly">
  * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
- *   <m:mo>&#x00B1;<!-- ± --></m:mo>
- *   <m:mi mathvariant="normal">&#x221E;<!-- ∞ --></m:mi>
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
  * </m:math>
  * </d4p_MathML>
  * \endxmlonly
  * ) returns \p x if \p x is finite.
- * - fmodf(\p x, 0) returns NaN.
+ * - fmodf(\p x, \p y) returns NaN if \p x is 
+ * \latexonly $\pm\infty$ \endlatexonly
+ * \xmlonly
+ * <d4p_MathML outputclass="xmlonly">
+ * <m:math xmlns:m="http://www.w3.org/1998/Math/MathML">
+ *   <m:mo>&#x00B1;<!-- &PlusMinus --></m:mo>
+ *   <m:mi mathvariant="normal">&#x221E;<!-- &Infinity --></m:mi>
+ * </m:math>
+ * </d4p_MathML>
+ * \endxmlonly
+ *  or \p y is zero.
+ * - If either argument is NaN, NaN is returned.
  *
  * \note_accuracy_single
  */
@@ -8896,17 +10594,32 @@ __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(float 
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(double x);
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(long double x);
 
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(float x);
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(double x) throw();
+#if !defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(float x);
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(long double x);
+#else /* !(!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000) */
+template <typename T>
+__DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool __libcpp_isnan(T) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isnan(float x) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY  __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isnan(long double x) _NOEXCEPT;
+#endif /* !defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000 */
 
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(float x);
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(double x) throw();
+#if !defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(float x);
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(long double x);
+#else /* !(!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000) */
+template <typename T>
+__cudart_builtin__ __DEVICE_FUNCTIONS_DECL__ bool __libcpp_isinf(T) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isinf(float x) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isinf(long double x) _NOEXCEPT;
+#endif /* !defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 7000 */
 
 #else /* __APPLE__ */
 
-#if _GLIBCXX_MATH_H && __cplusplus >= 201103L
+#if ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)
+#if !defined(_NVHPC_CUDA)
 namespace std {
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ constexpr bool signbit(float x);
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ constexpr bool signbit(double x);
@@ -8931,10 +10644,11 @@ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ constexpr bool isinf(double x);
 #endif /* _GLIBCXX_HAVE_OBSOLETE_ISINF && !_GLIBCXX_NO_OBSOLETE_ISINF_ISNAN_DYNAMIC */
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ constexpr bool isinf(long double x);
 }
+#endif
 
-#else /* !(_GLIBCXX_MATH_H && __cplusplus >= 201103L) */
+#else /* !(((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)) */
 
-#if defined(__QNX__) || defined(__HORIZON__)
+#if defined(__QNX__)
 #if (__QNX__) && !defined(_LIBCPP_VERSION)
 /* QNX defines functions in std, need to declare them here */
 namespace std {
@@ -8943,60 +10657,93 @@ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool signbit(double x);
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool signbit(long double x);
 }
 #else
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(float x);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(double x);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(long double x);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(const float x);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(const double x);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool signbit(const long double x);
 #endif
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(float a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(double a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(long double a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(float a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(double a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(long double a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(float a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(double a);
-static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(long double a);
-#else /* !(__QNX__ || __HORIZON__) */
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(float x);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(const float a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(const double a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isfinite(const long double a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(const float a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(const double a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isnan(const long double a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(const float a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(const double a);
+static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(const long double a);
+#else /* ! __QNX__ */
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(const float x);
 #if defined(__ICC)
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(double x) throw();
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(const double x) throw();
 #else /* !__ICC */
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(double x);
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(const double x);
 #endif /* __ICC */
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(long double x);
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int signbit(const long double x);
 
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(float x); 
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(const float x);
 #if defined(__ICC)
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(double x) throw();
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(const double x) throw();
 #else /* !__ICC */
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(double x);
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(const double x);
 #endif /* __ICC */
-__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(long double x);
+__forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isfinite(const long double x);
 
+#if (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000
+template <typename T>
+__DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool __libcpp_isnan(T) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isnan(float x) _NOEXCEPT;
+#else /* !((defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(float x);
-#if defined(__ANDROID__)
+#endif /* (defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000 */
+#if defined(__ANDROID__) || defined(__HORIZON__)
 #if !defined(_LIBCPP_VERSION)
 __forceinline__
 #endif  /* !defined(_LIBCPP_VERSION) */
+#if _LIBCPP_VERSION >= 7000
+#ifdef _LIBCPP_PREFERRED_OVERLOAD
+_LIBCPP_INLINE_VISIBILITY _LIBCPP_PREFERRED_OVERLOAD __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isnan(double x) _NOEXCEPT;
+#endif /* _LIBCPP_PREFERRED_OVERLOAD */
+#else /* _LIBCPP_VERSION < 7000 */
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(double x);
-#else /* !__ANDROID__ */
+#endif /* _LIBCPP_VERSION >= 7000 */
+#else /* !(__ANDROID__ || __HORIZON__) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(double x) throw();
 #endif /* __ANDROID__ */
+#if (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000
+inline _LIBCPP_INLINE_VISIBILITY  __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isnan(long double x) _NOEXCEPT;
+#else /* !( (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isnan(long double x);
+#endif /* (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000 */
 
+#if (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000
+template <typename T>
+__cudart_builtin__ __DEVICE_FUNCTIONS_DECL__ bool __libcpp_isinf(T) _NOEXCEPT;
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isinf(float x) _NOEXCEPT;
+#else /* !( (defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(float x);
-#if defined(__ANDROID__)
+#endif /* (defined(__ANDROID__) || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000 */
+
+#if defined(__ANDROID__) || defined(__HORIZON__)
 #if !defined(_LIBCPP_VERSION)
 __forceinline__
 #endif  /* !defined(_LIBCPP_VERSION) */
+#if _LIBCPP_VERSION >= 7000
+#ifdef _LIBCPP_PREFERRED_OVERLOAD
+_LIBCPP_INLINE_VISIBILITY _LIBCPP_PREFERRED_OVERLOAD __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isinf(double x) _NOEXCEPT;
+#endif /* _LIBCPP_PREFERRED_OVERLOAD */
+#else /* _LIBCPP_VERSION < 7000 */
 __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(double x);
-#else /* !__ANDROID__ */
+#endif /* _LIBCPP_VERSION >= 7000 */
+#else /* ! (__ANDROID__  || __HORIZON__) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(double x) throw();
-#endif /* __ANDROID__ */
+#endif /* __ANDROID__ || __HORIZON__ */
+#if (defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000
+inline _LIBCPP_INLINE_VISIBILITY __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ bool isinf(long double x) _NOEXCEPT;
+#else /* !( (defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000) */
 __forceinline__ __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ int isinf(long double x);
-#endif /* __QNX__ || __HORIZON__ */
+#endif  /* (defined(__ANDROID__)  || defined(__HORIZON__)) && _LIBCPP_VERSION >= 8000 */
+#endif /* __QNX__  */
 
-#endif /* _GLIBCXX_MATH_H && __cplusplus >= 201103L */
+#endif /* ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L) */
 #endif /* __APPLE__ */
 
 #if !defined(_LIBCPP_VERSION)
@@ -9207,9 +10954,9 @@ static __inline__ __DEVICE_FUNCTIONS_DECL__ bool isinf(long double a);
  * (positive or negative).
  * \return
  * - With Visual Studio 2013 host compiler: Returns true if and only 
- * if \p a is a infinite value.
+ * if \p a is an infinite value.
  * - With other host compilers: Returns a nonzero value if and only 
- * if \p a is a infinite value.
+ * if \p a is an infinite value.
  */
 static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(double a);
 #undef __RETURN_TYPE
@@ -9224,9 +10971,9 @@ static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(double a);
  * (positive or negative).
  * \return
  * - With Visual Studio 2013 host compiler: Returns true if and only 
- * if \p a is a infinite value.
+ * if \p a is an infinite value.
  * - With other host compilers: Returns a nonzero value if and only 
- * if \p a is a infinite value.
+ * if \p a is an infinite value.
  */
 static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(double a);
 #undef __RETURN_TYPE
@@ -9244,9 +10991,9 @@ static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(double a);
  *
  * \return
  * - With Visual Studio 2013 host compiler: __RETURN_TYPE is 'bool'. Returns 
- * true if and only if \p a is a infinite value.
+ * true if and only if \p a is an infinite value.
  * - With other host compilers: __RETURN_TYPE is 'int'. Returns a nonzero 
- * value if and only if \p a is a infinite value.
+ * value if and only if \p a is an infinite value.
  */
 static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(float a);
 #undef __RETURN_TYPE
@@ -9262,9 +11009,9 @@ static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(float a);
  *
  * \return
  * - With Visual Studio 2013 host compiler: __RETURN_TYPE is 'bool'. Returns 
- * true if and only if \p a is a infinite value.
+ * true if and only if \p a is an infinite value.
  * - With other host compilers: __RETURN_TYPE is 'int'. Returns a nonzero 
- * value if and only if \p a is a infinite value.
+ * value if and only if \p a is an infinite value.
  */
 static __inline__ __DEVICE_FUNCTIONS_DECL__ __RETURN_TYPE isinf(float a);
 #undef __RETURN_TYPE
@@ -9436,6 +11183,12 @@ extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ long long int abs(long long 
 
 #endif /* __CUDACC_RTC__ */
 
+#if __cplusplus >= 201103L
+#define __NV_NOEXCEPT noexcept
+#else /* !__cplusplus >= 201103L */
+#define __NV_NOEXCEPT throw()
+#endif /* __cplusplus >= 201103L */
+
 #if defined(_LIBCPP_VERSION) && defined(_LIBCPP_BEGIN_NAMESPACE_STD) && !defined(_STLPORT_VERSION)
 #if defined(__clang__)
 #pragma clang diagnostic push
@@ -9518,12 +11271,16 @@ extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl floor(float
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl sqrt(float) throw();
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl pow(float, float) throw();
 #if defined(_LIBCPP_VERSION)
-#if __cplusplus >= 201103L
-#define __NV_NOEXCEPT noexcept
-#else /* !__cplusplus >= 201103L */
-#define __NV_NOEXCEPT throw()
-#endif /* __cplusplus >= 201103L */
-#if (defined(__APPLE__) && __clang_major__ >= 7) || _LIBCPP_VERSION >= 3800 || defined(__QNX__)
+#if (defined (__ANDROID__) || defined(__HORIZON__)) && (_LIBCPP_VERSION >= 9000)
+template <class _A1, class _A2>
+extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__
+typename std::_EnableIf
+<
+    std::is_arithmetic<_A1>::value &&
+    std::is_arithmetic<_A2>::value,
+    std::__promote<_A1, _A2>
+>::type pow(_A1 __lcpp_x, _A2 __lcpp_y) __NV_NOEXCEPT;
+#elif (defined(__APPLE__) && __clang_major__ >= 7) || _LIBCPP_VERSION >= 3800 || defined(__QNX__)
 template <class _Tp, class _Up>
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__
 typename std::__lazy_enable_if <
@@ -9538,11 +11295,14 @@ typename enable_if <
   typename std::__promote<_Tp, _Up>::type
 >::type pow(_Tp __x, _Up __y) __NV_NOEXCEPT;
 #endif /* (__APPLE__ && __clang_major__ >= 7) || _LIBCPP_VERSION >= 3800 */
-#undef __NV_NOEXCEPT
 #else /* !defined(_LIBCPP_VERSION) */
 #if !(defined(__GNUC__) && __cplusplus >= 201103L)
+#if (defined(_MSC_VER) && (_MSC_VER >= 1928)) && !(defined __CUDA_INTERNAL_SKIP_CPP_HEADERS__)
+template <class _Ty1, class _Ty2, ::std:: enable_if_t< ::std:: is_arithmetic_v<_Ty1> && ::std:: is_arithmetic_v<_Ty2>, int> > [[nodiscard]] __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ ::std:: _Common_float_type_t<_Ty1, _Ty2> __cdecl pow(_Ty1 _Left, _Ty2 _Right) noexcept;
+#else
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl pow(float, int) throw();
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ double   __cdecl pow(double, int) throw();
+#endif /* (defined(_MSC_VER) && (_MSC_VER >= 1928)) && !(defined __CUDA_INTERNAL_SKIP_CPP_HEADERS__) */
 #endif /* !(defined(__GNUC__) && __cplusplus >= 201103L) */
 #endif /* defined(_LIBCPP_VERSION) */
 extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl log(float) throw();
@@ -9566,8 +11326,6 @@ extern __DEVICE_FUNCTIONS_DECL__ __cudart_builtin__ float    __cdecl tanh(float)
           (!defined(_MSC_VER) || _MSC_VER < 1800) &&
           (!defined(_LIBCPP_VERSION) || (_LIBCPP_VERSION < 1101)) */
 
-#undef __DEVICE_FUNCTIONS_DECL__
-
 #if defined(_LIBCPP_VERSION) && defined(_LIBCPP_END_NAMESPACE_STD) && !defined(_STLPORT_VERSION)
 #if _LIBCPP_VERSION < 3800
 _LIBCPP_END_NAMESPACE_STD
@@ -9580,15 +11338,20 @@ _LIBCPP_END_NAMESPACE_STD
 #endif /* defined(_LIBCPP_VERSION) && defined(_LIBCPP_BEGIN_NAMESPACE_STD) && !defined(_STLPORT_VERSION) ||
           __GNUC__ && !_STLPORT_VERSION */
 
+#undef __DEVICE_FUNCTIONS_DECL__
+#undef __NV_NOEXCEPT
+
 #if defined(__CUDACC_RTC__)
 #define __MATH_FUNCTIONS_DECL__ __host__ __device__
+#define __MATH_FUNCTIONS_DEVICE_DECL__ __device__
 #else /* __CUDACC_RTC__ */
 #define __MATH_FUNCTIONS_DECL__ static inline __host__ __device__ __cudart_builtin__
+#define __MATH_FUNCTIONS_DEVICE_DECL__ static inline __device__ __cudart_builtin__
 #endif /* __CUDACC_RTC__ */
 
 #if (!defined(_MSC_VER) || _MSC_VER < 1800)
 #if defined(__QNX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 3800)
-#if defined(__QNX__)
+#if defined(__QNX__) && (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 8000)
 #if defined(_LIBCPP_VERSION)
 #define __NV_NOEXCEPT _NOEXCEPT
 _LIBCPP_BEGIN_NAMESPACE_STD
@@ -9597,9 +11360,9 @@ _LIBCPP_BEGIN_NAMESPACE_STD
 namespace std {
 __host__ __device__ __cudart_builtin__ int ilogbf(float a);
 #endif
-#else /* !(defined(__QNX__)) */
+#else /* !(defined(__QNX__) && (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 8000)) */
 #define __NV_NOEXCEPT _NOEXCEPT
-#endif /* defined(__QNX__) */
+#endif /* defined(__QNX__) && (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 8000) */
 __host__ __device__ __cudart_builtin__ float logb(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ int ilogb(float a) __NV_NOEXCEPT;
 
@@ -9613,8 +11376,6 @@ __host__ __device__ __cudart_builtin__ float acosh(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float asinh(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float atanh(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float hypot(float a, float b) __NV_NOEXCEPT;
-__host__ __device__ __cudart_builtin__ float norm3d(float a, float b, float c) __NV_NOEXCEPT;
-__host__ __device__ __cudart_builtin__ float norm4d(float a, float b, float c, float d) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float cbrt(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float erf(float a) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float erfc(float a) __NV_NOEXCEPT;
@@ -9636,7 +11397,7 @@ __host__ __device__ __cudart_builtin__ float fdim(float a, float b) __NV_NOEXCEP
 __host__ __device__ __cudart_builtin__ float fma(float a, float b, float c) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float fmax(float a, float b) __NV_NOEXCEPT;
 __host__ __device__ __cudart_builtin__ float fmin(float a, float b) __NV_NOEXCEPT;
-#if defined(__QNX__)
+#if defined(__QNX__) && (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 8000)
 #if defined(_LIBCPP_VERSION)
 _LIBCPP_END_NAMESPACE_STD
 using _VSTD::logb;
@@ -9651,8 +11412,6 @@ using _VSTD::acosh;
 using _VSTD::asinh;
 using _VSTD::atanh;
 using _VSTD::hypot;
-using _VSTD::norm3d;
-using _VSTD::norm4d;
 using _VSTD::cbrt;
 using _VSTD::erf;
 using _VSTD::erfc;
@@ -9677,10 +11436,10 @@ using _VSTD::fmin;
 #else
 }
 #endif
-#endif /* defined(__QNX__) */
+#endif /* defined(__QNX__) && (!defined(_LIBCPP_VERSION) || _LIBCPP_VERSION < 8000) */
 #undef __NV_NOEXCEPT
 #else /* !(defined(__QNX__ ) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 3800)) */
-#if _GLIBCXX_MATH_H && __cplusplus >= 201103L
+#if ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)
 namespace std {
 __host__ __device__ __cudart_builtin__ constexpr float logb(float a);
 __host__ __device__ __cudart_builtin__ constexpr int ilogb(float a);
@@ -9694,8 +11453,6 @@ __host__ __device__ __cudart_builtin__ constexpr float acosh(float a);
 __host__ __device__ __cudart_builtin__ constexpr float asinh(float a);
 __host__ __device__ __cudart_builtin__ constexpr float atanh(float a);
 __host__ __device__ __cudart_builtin__ constexpr float hypot(float a, float b);
-__host__ __device__ __cudart_builtin__ constexpr float norm3d(float a, float b, float c);
-__host__ __device__ __cudart_builtin__ constexpr float norm4d(float a, float b, float c, float d);
 __host__ __device__ __cudart_builtin__ constexpr float cbrt(float a);
 __host__ __device__ __cudart_builtin__ constexpr float erf(float a);
 __host__ __device__ __cudart_builtin__ constexpr float erfc(float a);
@@ -9718,7 +11475,7 @@ __host__ __device__ __cudart_builtin__ constexpr float fma(float a, float b, flo
 __host__ __device__ __cudart_builtin__ constexpr float fmax(float a, float b);
 __host__ __device__ __cudart_builtin__ constexpr float fmin(float a, float b);
 }
-#else /* !(_GLIBCXX_MATH_H && __cplusplus >= 201103L) */
+#else /* !(((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L)) */
 __MATH_FUNCTIONS_DECL__ float logb(float a);
 
 __MATH_FUNCTIONS_DECL__ int ilogb(float a);
@@ -9742,10 +11499,6 @@ __MATH_FUNCTIONS_DECL__ float asinh(float a);
 __MATH_FUNCTIONS_DECL__ float atanh(float a);
 
 __MATH_FUNCTIONS_DECL__ float hypot(float a, float b);
-
-__MATH_FUNCTIONS_DECL__ float norm3d(float a, float b, float c);
-
-__MATH_FUNCTIONS_DECL__ float norm4d(float a, float b, float c, float d);
 
 __MATH_FUNCTIONS_DECL__ float cbrt(float a);
 
@@ -9788,7 +11541,7 @@ __MATH_FUNCTIONS_DECL__ float fma(float a, float b, float c);
 __MATH_FUNCTIONS_DECL__ float fmax(float a, float b);
 
 __MATH_FUNCTIONS_DECL__ float fmin(float a, float b);
-#endif /* _GLIBCXX_MATH_H && __cplusplus >= 201103L */
+#endif /* ((defined _GLIBCXX_MATH_H) && _GLIBCXX_MATH_H) && (__cplusplus >= 201103L) */
 #endif /* defined(__QNX__) || (defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 3800) */
 #else /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 extern __host__ __device__ __cudart_builtin__ float __cdecl logb(float) throw();
@@ -9803,8 +11556,6 @@ extern __host__ __device__ __cudart_builtin__ float __cdecl acosh(float) throw()
 extern __host__ __device__ __cudart_builtin__ float __cdecl asinh(float) throw();
 extern __host__ __device__ __cudart_builtin__ float __cdecl atanh(float) throw();
 extern __host__ __device__ __cudart_builtin__ float __cdecl hypot(float, float) throw();
-extern __host__ __device__ __cudart_builtin__ float __cdecl norm3d(float, float, float) throw();
-extern __host__ __device__ __cudart_builtin__ float __cdecl norm4d(float, float, float, float) throw();
 extern __host__ __device__ __cudart_builtin__ float __cdecl cbrt(float) throw();
 extern __host__ __device__ __cudart_builtin__ float __cdecl erf(float) throw();
 extern __host__ __device__ __cudart_builtin__ float __cdecl erfc(float) throw();
@@ -9828,111 +11579,312 @@ extern __host__ __device__ __cudart_builtin__ float         __cdecl fmax(float, 
 extern __host__ __device__ __cudart_builtin__ float         __cdecl fmin(float, float) throw();
 #endif /* (!defined(_MSC_VER) || _MSC_VER < 1800) */
 
-__MATH_FUNCTIONS_DECL__ float exp10(float a);
+__MATH_FUNCTIONS_DECL__ float exp10(const float a);
 
-__MATH_FUNCTIONS_DECL__ float rsqrt(float a);
+__MATH_FUNCTIONS_DECL__ float rsqrt(const float a);
 
-__MATH_FUNCTIONS_DECL__ float rcbrt(float a);
+__MATH_FUNCTIONS_DECL__ float rcbrt(const float a);
 
-__MATH_FUNCTIONS_DECL__ float sinpi(float a);
+__MATH_FUNCTIONS_DECL__ float sinpi(const float a);
 
-__MATH_FUNCTIONS_DECL__ float cospi(float a);
+__MATH_FUNCTIONS_DECL__ float cospi(const float a);
 
-__MATH_FUNCTIONS_DECL__ void sincospi(float a, float *sptr, float *cptr);
+__MATH_FUNCTIONS_DECL__ void sincospi(const float a, float *const sptr, float *const cptr);
 
-__MATH_FUNCTIONS_DECL__ void sincos(float a, float *sptr, float *cptr);
+__MATH_FUNCTIONS_DECL__ void sincos(const float a, float *const sptr, float *const cptr);
 
-__MATH_FUNCTIONS_DECL__ float j0(float a);
+__MATH_FUNCTIONS_DECL__ float j0(const float a);
 
-__MATH_FUNCTIONS_DECL__ float j1(float a);
+__MATH_FUNCTIONS_DECL__ float j1(const float a);
 
-__MATH_FUNCTIONS_DECL__ float jn(int n, float a);
+__MATH_FUNCTIONS_DECL__ float jn(const int n, const float a);
 
-__MATH_FUNCTIONS_DECL__ float y0(float a);
+__MATH_FUNCTIONS_DECL__ float y0(const float a);
 
-__MATH_FUNCTIONS_DECL__ float y1(float a);
+__MATH_FUNCTIONS_DECL__ float y1(const float a);
 
-__MATH_FUNCTIONS_DECL__ float yn(int n, float a);
+__MATH_FUNCTIONS_DECL__ float yn(const int n, const float a);
 
-__MATH_FUNCTIONS_DECL__ float cyl_bessel_i0(float a);
+__MATH_FUNCTIONS_DEVICE_DECL__ float cyl_bessel_i0(const float a);
 
-__MATH_FUNCTIONS_DECL__ float cyl_bessel_i1(float a);
+__MATH_FUNCTIONS_DEVICE_DECL__ float cyl_bessel_i1(const float a);
 
-__MATH_FUNCTIONS_DECL__ float erfinv(float a);
+__MATH_FUNCTIONS_DECL__ float erfinv(const float a);
 
-__MATH_FUNCTIONS_DECL__ float erfcinv(float a);
+__MATH_FUNCTIONS_DECL__ float erfcinv(const float a);
 
-__MATH_FUNCTIONS_DECL__ float normcdfinv(float a);
+__MATH_FUNCTIONS_DECL__ float normcdfinv(const float a);
 
-__MATH_FUNCTIONS_DECL__ float normcdf(float a);
+__MATH_FUNCTIONS_DECL__ float normcdf(const float a);
 
-__MATH_FUNCTIONS_DECL__ float erfcx(float a);
+__MATH_FUNCTIONS_DECL__ float erfcx(const float a);
 
-__MATH_FUNCTIONS_DECL__ double copysign(double a, float b);
+__MATH_FUNCTIONS_DECL__ double copysign(const double a, const float b);
 
-__MATH_FUNCTIONS_DECL__ double copysign(float a, double b);
+__MATH_FUNCTIONS_DECL__ double copysign(const float a, const double b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(unsigned int a, unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int min(const unsigned int a, const unsigned int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(int a, unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p int and \p unsigned \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int min(const int a, const unsigned int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int min(unsigned int a, int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p int and \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int min(const unsigned int a, const int b);
 
-__MATH_FUNCTIONS_DECL__ long int min(long int a, long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ long int min(const long int a, const long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(unsigned long int a, unsigned long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const unsigned long int a, const unsigned long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(long int a, unsigned long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p long \p int and \p unsigned \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const long int a, const unsigned long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int min(unsigned long int a, long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p long \p int and \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int min(const unsigned long int a, const long int b);
 
-__MATH_FUNCTIONS_DECL__ long long int min(long long int a, long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ long long int min(const long long int a, const long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(unsigned long long int a, unsigned long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const unsigned long long int a, const unsigned long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(long long int a, unsigned long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p long \p long \p int and \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const long long int a, const unsigned long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int min(unsigned long long int a, long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the minimum value of the input \p unsigned \p long \p long \p int and \p long \p long \p int arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int min(const unsigned long long int a, const long long int b);
 
-__MATH_FUNCTIONS_DECL__ float min(float a, float b);
+/**
+ * \ingroup CUDA_MATH_SINGLE
+ * \brief Calculate the minimum value of the input \p float arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ * Behavior is equivalent to ::fminf() function.
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ float min(const float a, const float b);
 
-__MATH_FUNCTIONS_DECL__ double min(double a, double b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the minimum value of the input \p float arguments.
+ *
+ * Calculate the minimum value of the arguments \p a and \p b.
+ * Behavior is equivalent to ::fmin() function.
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double min(const double a, const double b);
 
-__MATH_FUNCTIONS_DECL__ double min(float a, double b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the minimum value of the input \p float and \p double arguments.
+ *
+ * Convert \p float argument \p a to \p double, followed by ::fmin().
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double min(const float a, const double b);
 
-__MATH_FUNCTIONS_DECL__ double min(double a, float b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the minimum value of the input \p double and \p float arguments.
+ *
+ * Convert \p float argument \p b to \p double, followed by ::fmin().
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double min(const double a, const float b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(unsigned int a, unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int max(const unsigned int a, const unsigned int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(int a, unsigned int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p int and \p unsigned \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int max(const int a, const unsigned int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned int max(unsigned int a, int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p int and \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned int max(const unsigned int a, const int b);
 
-__MATH_FUNCTIONS_DECL__ long int max(long int a, long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ long int max(const long int a, const long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(unsigned long int a, unsigned long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const unsigned long int a, const unsigned long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(long int a, unsigned long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p long \p int and \p unsigned \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const long int a, const unsigned long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long int max(unsigned long int a, long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p long \p int and \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long int max(const unsigned long int a, const long int b);
 
-__MATH_FUNCTIONS_DECL__ long long int max(long long int a, long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ long long int max(const long long int a, const long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(unsigned long long int a, unsigned long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const unsigned long long int a, const unsigned long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(long long int a, unsigned long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p long \p long \p int and \p unsigned \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const long long int a, const unsigned long long int b);
 
-__MATH_FUNCTIONS_DECL__ unsigned long long int max(unsigned long long int a, long long int b);
+/**
+ * \ingroup CUDA_MATH_INT
+ * \brief Calculate the maximum value of the input \p unsigned \p long \p long \p int and \p long \p long \p int arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b, perform integer promotion first.
+ */
+__MATH_FUNCTIONS_DECL__ unsigned long long int max(const unsigned long long int a, const long long int b);
 
-__MATH_FUNCTIONS_DECL__ float max(float a, float b);
+/**
+ * \ingroup CUDA_MATH_SINGLE
+ * \brief Calculate the maximum value of the input \p float arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ * Behavior is equivalent to ::fmaxf() function.
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ float max(const float a, const float b);
 
-__MATH_FUNCTIONS_DECL__ double max(double a, double b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the maximum value of the input \p float arguments.
+ *
+ * Calculate the maximum value of the arguments \p a and \p b.
+ * Behavior is equivalent to ::fmax() function.
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double max(const double a, const double b);
 
-__MATH_FUNCTIONS_DECL__ double max(float a, double b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the maximum value of the input \p float and \p double arguments.
+ *
+ * Convert \p float argument \p a to \p double, followed by ::fmax().
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double max(const float a, const double b);
 
-__MATH_FUNCTIONS_DECL__ double max(double a, float b);
+/**
+ * \ingroup CUDA_MATH_DOUBLE
+ * \brief Calculate the maximum value of the input \p double and \p float arguments.
+ *
+ * Convert \p float argument \p b to \p double, followed by ::fmax().
+ *
+ * Note, this is different from \p std:: specification
+ */
+__MATH_FUNCTIONS_DECL__ double max(const double a, const float b);
 
 #undef __MATH_FUNCTIONS_DECL__
+#undef __MATH_FUNCTIONS_DEVICE_DECL__
 
 /*******************************************************************************
 *                                                                              *
@@ -9940,6 +11892,13 @@ __MATH_FUNCTIONS_DECL__ double max(double a, float b);
 *                                                                              *
 *******************************************************************************/
 
+extern "C"{
+inline __device__ void *__nv_aligned_device_malloc(size_t size, size_t align)
+{
+  __device__ void *__nv_aligned_device_malloc_impl(size_t, size_t);
+  return __nv_aligned_device_malloc_impl(size, align);
+}
+}
 #endif /* __cplusplus && __CUDACC__ */
 #if !defined(__CUDACC__)
 
@@ -10224,3 +12183,8 @@ __func__(float nanf(const char *tagp));
 #endif /* !__CUDACC_RTC__ */
 
 #endif /* !__MATH_FUNCTIONS_H__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_MATH_FUNCTIONS_H__
+#endif

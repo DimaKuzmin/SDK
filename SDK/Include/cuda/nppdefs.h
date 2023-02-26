@@ -1,4 +1,4 @@
- /* Copyright 2009-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2022 NVIDIA CORPORATION & AFFILIATES.  All rights reserved.
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -49,19 +49,40 @@
 #define NV_NPPIDEFS_H
 
 #include <stdlib.h>
-#include <host_defines.h>
+#include <cuda_runtime.h>
 
 /**
  * \file nppdefs.h
  * Typedefinitions and macros for NPP library.
  */
  
-
 #ifdef __cplusplus
+#ifdef NPP_PLUS
+using namespace nppPlusV;
+#else
 extern "C" {
 #endif
+#endif
 
-        // If this is a 32-bit Windows compile, don't align to 16-byte at all
+// Workaround for cuda_fp16.h C incompatibility
+typedef 
+struct
+{
+   short fp16;
+}
+Npp16f;
+
+typedef
+struct
+{
+   short fp16_0;
+   short fp16_1;
+}
+Npp16f_2;
+
+#define NPP_HALF_TO_NPP16F(pHalf) (* reinterpret_cast<Npp16f *>((void *)(pHalf)))
+
+// If this is a 32-bit Windows compile, don't align to 16-byte at all
         // and use a "union-trick" to create 8-byte alignment.
 #if defined(_WIN32) && !defined(_WIN64)
 
@@ -81,6 +102,7 @@ extern "C" {
 
 
 /** \defgroup typedefs_npp NPP Type Definitions and Constants
+ * Definitions of types, structures, enumerations and constants available in the library.
  * @{
  */
 
@@ -99,7 +121,7 @@ typedef enum
     NPPI_INTER_SUPER             = 8,        /**<  Super sampling. */
     NPPI_INTER_LANCZOS           = 16,       /**<  Lanczos filtering. */
     NPPI_INTER_LANCZOS3_ADVANCED = 17,       /**<  Generic Lanczos filtering with order 3. */
-    NPPI_SMOOTH_EDGE             = (1 << 31) /**<  Smooth edge filtering. */
+    NPPI_SMOOTH_EDGE             = (int)0x8000000 /**<  Smooth edge filtering. */
 } NppiInterpolationMode; 
 
 /** 
@@ -236,31 +258,6 @@ typedef enum
    
 } NppStatus;
 
-typedef enum
-{
-    NPP_CUDA_UNKNOWN_VERSION = -1,  /**<  Indicates that the compute-capability query failed */
-    NPP_CUDA_NOT_CAPABLE     = 0,   /**<  Indicates that no CUDA capable device was found */
-    NPP_CUDA_1_0             = 100, /**<  Indicates that CUDA 1.0 capable device is machine's default device */
-    NPP_CUDA_1_1             = 110, /**<  Indicates that CUDA 1.1 capable device is machine's default device */
-    NPP_CUDA_1_2             = 120, /**<  Indicates that CUDA 1.2 capable device is machine's default device */
-    NPP_CUDA_1_3             = 130, /**<  Indicates that CUDA 1.3 capable device is machine's default device */
-    NPP_CUDA_2_0             = 200, /**<  Indicates that CUDA 2.0 capable device is machine's default device */
-    NPP_CUDA_2_1             = 210, /**<  Indicates that CUDA 2.1 capable device is machine's default device */
-    NPP_CUDA_3_0             = 300, /**<  Indicates that CUDA 3.0 capable device is machine's default device */
-    NPP_CUDA_3_2             = 320, /**<  Indicates that CUDA 3.2 capable device is machine's default device */
-    NPP_CUDA_3_5             = 350, /**<  Indicates that CUDA 3.5 capable device is machine's default device */
-    NPP_CUDA_3_7             = 370, /**<  Indicates that CUDA 3.7 capable device is machine's default device */
-    NPP_CUDA_5_0             = 500, /**<  Indicates that CUDA 5.0 capable device is machine's default device */
-    NPP_CUDA_5_2             = 520, /**<  Indicates that CUDA 5.2 capable device is machine's default device */
-    NPP_CUDA_5_3             = 530, /**<  Indicates that CUDA 5.3 capable device is machine's default device */
-    NPP_CUDA_6_0             = 600, /**<  Indicates that CUDA 6.0 capable device is machine's default device */
-    NPP_CUDA_6_1             = 610, /**<  Indicates that CUDA 6.1 capable device is machine's default device */
-    NPP_CUDA_6_2             = 620, /**<  Indicates that CUDA 6.2 capable device is machine's default device */
-    NPP_CUDA_6_3             = 630, /**<  Indicates that CUDA 6.3 capable device is machine's default device */
-    NPP_CUDA_7_0             = 700, /**<  Indicates that CUDA 7.0 capable device is machine's default device */
-    NPP_CUDA_7_2             = 720  /**<  Indicates that CUDA 7.2 or better is machine's default device */
-} NppGpuComputeCapability;
-
 typedef struct 
 {
     int    major;   /**<  Major version number */
@@ -269,6 +266,7 @@ typedef struct
 } NppLibraryVersion;
 
 /** \defgroup npp_basic_types Basic NPP Data Types
+ * Definitions of basic types available in the library.
  * @{
  */
 
@@ -365,6 +363,40 @@ typedef struct NPP_ALIGN_16
     Npp64f  im;     /**<  Imaginary part */
 } Npp64fc;
 
+
+
+/** 
+ * Data types for nppiPlus functions
+ */
+typedef enum
+{
+    NPP_8U,
+    NPP_8S,
+    NPP_16U,
+    NPP_16S,
+    NPP_32U,
+    NPP_32S,
+    NPP_64U,
+    NPP_64S,
+    NPP_16F,
+    NPP_32F,
+    NPP_64F
+} NppDataType;
+
+/** 
+ * Image channel counts for nppiPlus functions
+ */
+typedef enum
+{
+    NPP_CH_1,
+    NPP_CH_2,
+    NPP_CH_3,
+    NPP_CH_4,
+    NPP_CH_A4,
+    NPP_CH_P3,
+    NPP_CH_P4
+} NppiChannels;
+
 /*@}*/
 
 #define NPP_MIN_8U      ( 0 )                        /**<  Minimum 8-bit unsigned integer */
@@ -399,6 +431,24 @@ typedef struct
     int x;      /**<  x-coordinate. */
     int y;      /**<  y-coordinate. */
 } NppiPoint;
+
+/** 
+ * 2D Npp32f Point
+ */
+typedef struct 
+{
+    Npp32f x;      /**<  x-coordinate. */
+    Npp32f y;      /**<  y-coordinate. */
+} NppiPoint32f;
+
+/** 
+ * 2D Npp64f Point
+ */
+typedef struct 
+{
+    Npp64f x;      /**<  x-coordinate. */
+    Npp64f y;      /**<  y-coordinate. */
+} NppiPoint64f;
 
 /** 
  * 2D Polar Point
@@ -593,16 +643,175 @@ typedef enum {
 } NppiHuffmanTableType;
 
 typedef enum {
-    nppiNormInf = 0, /**<  maximum */
+    nppiNormInf = 0, /**<  maximum */ 
     nppiNormL1 = 1,  /**<  sum */
     nppiNormL2 = 2   /**<  square root of sum of squares */
 } NppiNorm;
 
+typedef struct
+{
+	NppiRect oBoundingBox; 		 /**<  x, y, width, height == left, top, right, and bottom pixel coordinates */
+	Npp32u nConnectedPixelCount; /**< total number of pixels in connected region */
+	Npp32u aSeedPixelValue[3];	 /**< original pixel value of seed pixel, 1 or 3 channel */
+} NppiConnectedRegion;
+
+/**
+ * General image descriptor. Defines the basic parameters of an image,
+ * including data pointer, step, and image size.
+ * This can be used by both source and destination images.
+ */
+typedef struct
+{
+    void *     pData;  /**< device memory pointer to the image */
+    int        nStep;  /**< step size */
+    NppiSize  oSize;   /**< width and height of the image */
+} NppiImageDescriptor;
+
+
+typedef struct
+{
+    void *     pData;        /**< per image device memory pointer to the corresponding buffer */
+    int        nBufferSize;  /**< allocated buffer size */
+} NppiBufferDescriptor;
+
+
+/**
+ * Provides details of uniquely labeled pixel regions of interest returned 
+ * by CompressedLabelMarkersUF function. 
+ */
+
+typedef struct
+{
+    Npp32u nMarkerLabelPixelCount;           /**< total number of pixels in this connected pixel region */
+    Npp32u nContourPixelCount;               /**< total number of pixels in this connected pixel region contour */
+    Npp32u nContourPixelsFound;              /**< total number of pixels in this connected pixel region contour found during geometry search */
+    NppiPoint oContourFirstPixelLocation;    /**< image geometric x and y location of the first pixel in the contour */
+    NppiRect oMarkerLabelBoundingBox;        /**< bounding box of this connected pixel region */
+} NppiCompressedMarkerLabelsInfo;
+
+
+/**
+ * Provides details of contour pixel grid map location and association 
+ */
+
+typedef struct
+{
+    Npp32u nMarkerLabelID;                   /**< this connected pixel region contour ID */
+    Npp32u nContourPixelCount;               /**< total number of pixels in this connected pixel region contour */
+    Npp32u nContourStartingPixelOffset;      /**< base offset of starting pixel in the overall contour pixel list */
+    Npp32u nSegmentNum;                      /**< relative block segment number within this particular contour ID */
+} NppiContourBlockSegment;
+
+
+/**
+ * Provides contour (boundary) geometry info of uniquely labeled pixel regions returned 
+ * by nppiCompressedMarkerLabelsUFInfo function in host memory in counterclockwise order relative to contour interiors. 
+ */
+
+typedef struct
+{
+    NppiPoint oContourOrderedGeometryLocation;                 /**< image geometry X and Y location in requested output order */
+    NppiPoint oContourPrevPixelLocation;                       /**< image geometry X and Y location of previous contour pixel */
+    NppiPoint oContourCenterPixelLocation;                     /**< image geometry X and Y location of center contour pixel */
+    NppiPoint oContourNextPixelLocation;                       /**< image geometry X and Y location of next contour pixel */
+    Npp32s nOrderIndex;                                        /**< contour pixel counterclockwise order index in geometry list */
+    Npp32s nReverseOrderIndex;                                 /**< contour pixel clockwise order index in geometry list */
+    Npp32u nFirstIndex;                                        /**< index of first ordered contour pixel in this subgroup */
+    Npp32u nLastIndex;                                         /**< index of last ordered contour pixel in this subgroup */
+    Npp32u nNextContourPixelIndex;                             /**< index of next ordered contour pixel in NppiContourPixelGeometryInfo list */
+    Npp32u nPrevContourPixelIndex;                             /**< index of previous ordered contour pixel in NppiContourPixelGeometryInfo list */
+    Npp8u nPixelAlreadyUsed;                                   /**< this test pixel is has already been used */
+    Npp8u nAlreadyLinked;                                      /**< this test pixel is already linked to center pixel */
+    Npp8u nAlreadyOutput;                                      /**< this pixel has already been output in geometry list */
+    Npp8u nContourInteriorDirection;                           /**< direction of contour region interior */
+} NppiContourPixelGeometryInfo;
+
+/**
+ * Provides contour (boundary) direction info of uniquely labeled pixel regions returned 
+ * by CompressedLabelMarkersUF function. 
+ */
+
+#define NPP_CONTOUR_DIRECTION_SOUTH_EAST    1
+#define NPP_CONTOUR_DIRECTION_SOUTH         2
+#define NPP_CONTOUR_DIRECTION_SOUTH_WEST    4
+#define NPP_CONTOUR_DIRECTION_WEST          8
+#define NPP_CONTOUR_DIRECTION_EAST         16
+#define NPP_CONTOUR_DIRECTION_NORTH_EAST   32
+#define NPP_CONTOUR_DIRECTION_NORTH        64
+#define NPP_CONTOUR_DIRECTION_NORTH_WEST  128
+
+#define NPP_CONTOUR_DIRECTION_ANY_NORTH  NPP_CONTOUR_DIRECTION_NORTH_EAST | NPP_CONTOUR_DIRECTION_NORTH | NPP_CONTOUR_DIRECTION_NORTH_WEST
+#define NPP_CONTOUR_DIRECTION_ANY_WEST   NPP_CONTOUR_DIRECTION_NORTH_WEST | NPP_CONTOUR_DIRECTION_WEST | NPP_CONTOUR_DIRECTION_SOUTH_WEST
+#define NPP_CONTOUR_DIRECTION_ANY_SOUTH  NPP_CONTOUR_DIRECTION_SOUTH_EAST | NPP_CONTOUR_DIRECTION_SOUTH | NPP_CONTOUR_DIRECTION_SOUTH_WEST
+#define NPP_CONTOUR_DIRECTION_ANY_EAST   NPP_CONTOUR_DIRECTION_NORTH_EAST | NPP_CONTOUR_DIRECTION_EAST | NPP_CONTOUR_DIRECTION_SOUTH_EAST
+
+typedef struct
+{
+    Npp32u  nMarkerLabelID;                         /**< MarkerLabelID of contour interior connected region */
+    Npp8u nContourDirectionCenterPixel;             /**< provides current center contour pixel input and output direction info */
+    Npp8u nContourInteriorDirectionCenterPixel;     /**< provides current center contour pixel region interior direction info */
+    Npp8u nConnected;                               /**< direction to directly connected contour pixels, 0 if not connected */
+    Npp8u nGeometryInfoIsValid;
+    NppiContourPixelGeometryInfo oContourPixelGeometryInfo;
+    NppiPoint nEast1, nNorthEast1, nNorth1, nNorthWest1, nWest1, nSouthWest1, nSouth1, nSouthEast1;
+    Npp8u nTest1EastConnected;
+    Npp8u nTest1NorthEastConnected;
+    Npp8u nTest1NorthConnected;
+    Npp8u nTest1NorthWestConnected;
+    Npp8u nTest1WestConnected;
+    Npp8u nTest1SouthWestConnected;
+    Npp8u nTest1SouthConnected;
+    Npp8u nTest1SouthEastConnected;
+} NppiContourPixelDirectionInfo;
+
+typedef struct
+{
+    Npp32u nTotalImagePixelContourCount;    /**< total number of contour pixels in image */
+    Npp32u nLongestImageContourPixelCount;  /**< longest per contour pixel count in image */
+} NppiContourTotalsInfo;
+
+
+/**
+ * Provides control of the type of segment boundaries, if any, added 
+ * to the image generated by the watershed segmentation function. 
+ */
+
+typedef enum 
+{
+    NPP_WATERSHED_SEGMENT_BOUNDARIES_NONE,
+    NPP_WATERSHED_SEGMENT_BOUNDARIES_BLACK,
+    NPP_WATERSHED_SEGMENT_BOUNDARIES_WHITE,
+    NPP_WATERSHED_SEGMENT_BOUNDARIES_CONTRAST,
+    NPP_WATERSHED_SEGMENT_BOUNDARIES_ONLY
+} NppiWatershedSegmentBoundaryType;
+
+    
+/** 
+ * NPP stream context structure must be filled in by application. 
+ * Application should not initialize or alter reserved fields. 
+ * 
+ */
+typedef struct
+{
+    cudaStream_t hStream;
+    int nCudaDeviceId; /* From cudaGetDevice() */
+    int nMultiProcessorCount; /* From cudaGetDeviceProperties() */
+    int nMaxThreadsPerMultiProcessor; /* From cudaGetDeviceProperties() */
+    int nMaxThreadsPerBlock; /* From cudaGetDeviceProperties() */
+    size_t nSharedMemPerBlock; /* From cudaGetDeviceProperties */
+    int nCudaDevAttrComputeCapabilityMajor; /* From cudaGetDeviceAttribute() */
+    int nCudaDevAttrComputeCapabilityMinor; /* From cudaGetDeviceAttribute() */
+    unsigned int nStreamFlags; /* From cudaStreamGetFlags() */
+    int nReserved0;
+} NppStreamContext;
 
 #ifdef __cplusplus
+#ifndef NPP_PLUS
 } /* extern "C" */
+#endif
 #endif
 
 /*@}*/
  
 #endif /* NV_NPPIDEFS_H */
+

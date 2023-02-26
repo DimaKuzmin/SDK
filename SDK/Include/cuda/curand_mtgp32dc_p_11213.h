@@ -46,7 +46,7 @@
  * comments to the code, the above Disclaimer and U.S. Government End
  * Users Notice.
  */
- 
+
 /*
  * Multiple sets of generator parameters for Mersenne Twister
  * with period 2**11213 -1
@@ -60,7 +60,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above
@@ -71,7 +71,7 @@
  *       its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written
  *       permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -90,7 +90,18 @@
 
 #include "curand_mtgp32.h"
 
-mtgp32_params_fast_t mtgp32dc_params_fast_11213[]
+
+#if (__cplusplus >= 201703L) && defined(__cpp_inline_variables)
+inline const int mtgpdc_params_11213_num = 200;
+#else
+static const int mtgpdc_params_11213_num = 200;
+#endif
+
+#if (__cplusplus >= 201703L) && defined(__cpp_inline_variables)
+inline mtgp32_params_fast_t mtgp32dc_params_fast_11213[]
+#else
+static mtgp32_params_fast_t mtgp32dc_params_fast_11213[]
+#endif
  = {
     {
         /* No.0 delta:1599 weight:665 */
@@ -11693,8 +11704,6 @@ mtgp32_params_fast_t mtgp32dc_params_fast_11213[]
          0x81,0x1c,0x6d,0xbd,0x0f,0xd4,0x7e,0x57,0x5f,0x75,0x00}
     }
 };
-extern const int mtgpdc_params_11213_num;
-const int mtgpdc_params_11213_num  = 200;
 
 #endif
 

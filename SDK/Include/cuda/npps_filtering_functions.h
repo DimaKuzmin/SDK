@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -70,7 +70,7 @@ extern "C" {
  */
 
 /** @defgroup signal_integral Integral
- * Compute the indefinite interal of a given signal.
+ * Compute the indefinite integral of a given signal.
  * The i-th element is computed to be
  * \f[
  *      s'_i = \sum_0^i s_j
@@ -82,6 +82,10 @@ extern "C" {
 
 NppStatus
 nppsIntegralGetBufferSize_32s(int nLength,  int * hpBufferSize);
+
+
+NppStatus 
+nppsIntegral_32s_Ctx(const Npp32s * pSrc, Npp32s * pDst, int nLength, Npp8u * pDeviceBuffer, NppStreamContext nppStreamCtx);
 
 
 NppStatus 

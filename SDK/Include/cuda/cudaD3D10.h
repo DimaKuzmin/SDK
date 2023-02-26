@@ -50,9 +50,6 @@
 #ifndef CUDAD3D10_H
 #define CUDAD3D10_H
 
-/**
- * CUDA API versioning support
- */
 #if defined(__CUDA_API_VERSION_INTERNAL) || defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
 #define __CUDA_DEPRECATED
 #elif defined(_MSC_VER)
@@ -63,23 +60,15 @@
 #define __CUDA_DEPRECATED
 #endif
 
-#if defined(CUDA_FORCE_API_VERSION)
-    #if (CUDA_FORCE_API_VERSION == 3010)
-        #define __CUDA_API_VERSION 3010
-    #else
-        #error "Unsupported value of CUDA_FORCE_API_VERSION"
-    #endif
-#else
-    #define __CUDA_API_VERSION 9020
-#endif /* CUDA_FORCE_API_VERSION */
+#ifdef CUDA_FORCE_API_VERSION
+#error "CUDA_FORCE_API_VERSION is no longer supported."
+#endif
 
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION >= 3020
-    #define cuD3D10CtxCreate                    cuD3D10CtxCreate_v2
-    #define cuD3D10ResourceGetSurfaceDimensions cuD3D10ResourceGetSurfaceDimensions_v2
-    #define cuD3D10ResourceGetMappedPointer     cuD3D10ResourceGetMappedPointer_v2
-    #define cuD3D10ResourceGetMappedSize        cuD3D10ResourceGetMappedSize_v2
-    #define cuD3D10ResourceGetMappedPitch       cuD3D10ResourceGetMappedPitch_v2
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION >= 3020 */
+#define cuD3D10CtxCreate                    cuD3D10CtxCreate_v2
+#define cuD3D10ResourceGetSurfaceDimensions cuD3D10ResourceGetSurfaceDimensions_v2
+#define cuD3D10ResourceGetMappedPointer     cuD3D10ResourceGetMappedPointer_v2
+#define cuD3D10ResourceGetMappedSize        cuD3D10ResourceGetMappedSize_v2
+#define cuD3D10ResourceGetMappedPitch       cuD3D10ResourceGetMappedPitch_v2
 
 #ifdef __cplusplus
 extern "C" {
@@ -280,7 +269,6 @@ typedef enum CUD3D10map_flags_enum {
 } CUD3D10map_flags;
 
 
-#if __CUDA_API_VERSION >= 3020
 /**
  * \brief Create a CUDA context for interoperability with Direct3D 10
  *
@@ -364,8 +352,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10CtxCreateOnDevice(CUcontext *pCtx, uns
  * ::cuD3D10GetDevice
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10GetDirect3DDevice(ID3D10Device **ppD3DDevice);
-
-#endif /* __CUDA_API_VERSION >= 3020 */
 
 /**
  * \brief Register a Direct3D resource for access by CUDA
@@ -618,7 +604,6 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10ResourceSetMapFlags(ID3D10Resource *pR
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10ResourceGetMappedArray(CUarray *pArray, ID3D10Resource *pResource, unsigned int SubResource);
 
-#if __CUDA_API_VERSION >= 3020
 /**
  * \brief Get a pointer through which to access a subresource of a Direct3D
  * resource which has been mapped for access by CUDA
@@ -791,46 +776,29 @@ __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10ResourceGetMappedPitch(size_t *pPitch,
  * \sa ::cuGraphicsSubResourceGetMappedArray
  */
 __CUDA_DEPRECATED CUresult CUDAAPI cuD3D10ResourceGetSurfaceDimensions(size_t *pWidth, size_t *pHeight, size_t *pDepth, ID3D10Resource *pResource, unsigned int SubResource);
-#endif /* __CUDA_API_VERSION >= 3020 */
 
 /** @} */ /* END CUDA_D3D10_DEPRECATED */
 /** @} */ /* END CUDA_D3D10 */
 
-/**
- * CUDA API versioning support
- */
+
 #if defined(__CUDA_API_VERSION_INTERNAL)
     #undef cuD3D10CtxCreate
     #undef cuD3D10ResourceGetSurfaceDimensions
     #undef cuD3D10ResourceGetMappedPointer
     #undef cuD3D10ResourceGetMappedSize
     #undef cuD3D10ResourceGetMappedPitch
-#endif /* __CUDA_API_VERSION_INTERNAL */
 
-/**
- * CUDA API made obselete at API version 3020
- */
-#if defined(__CUDA_API_VERSION_INTERNAL)
-    #define CUdeviceptr CUdeviceptr_v1
-#endif /* __CUDA_API_VERSION_INTERNAL */
-
-#if defined(__CUDA_API_VERSION_INTERNAL) || __CUDA_API_VERSION < 3020
-CUresult CUDAAPI cuD3D10CtxCreate(CUcontext *pCtx, CUdevice *pCudaDevice, unsigned int Flags, ID3D10Device *pD3DDevice);
-CUresult CUDAAPI cuD3D10ResourceGetMappedPitch(unsigned int *pPitch, unsigned int *pPitchSlice, ID3D10Resource *pResource, unsigned int SubResource);
-CUresult CUDAAPI cuD3D10ResourceGetMappedPointer(CUdeviceptr *pDevPtr, ID3D10Resource *pResource, unsigned int SubResource);
-CUresult CUDAAPI cuD3D10ResourceGetMappedSize(unsigned int *pSize, ID3D10Resource *pResource, unsigned int SubResource);
-CUresult CUDAAPI cuD3D10ResourceGetSurfaceDimensions(unsigned int *pWidth, unsigned int *pHeight, unsigned int *pDepth, ID3D10Resource *pResource, unsigned int SubResource);
-#endif /* __CUDA_API_VERSION_INTERNAL || __CUDA_API_VERSION < 3020 */
-
-#if defined(__CUDA_API_VERSION_INTERNAL)
-    #undef CUdeviceptr
+    CUresult CUDAAPI cuD3D10CtxCreate(CUcontext *pCtx, CUdevice *pCudaDevice, unsigned int Flags, ID3D10Device *pD3DDevice);
+    CUresult CUDAAPI cuD3D10ResourceGetMappedPitch(unsigned int *pPitch, unsigned int *pPitchSlice, ID3D10Resource *pResource, unsigned int SubResource);
+    CUresult CUDAAPI cuD3D10ResourceGetMappedPointer(CUdeviceptr_v1 *pDevPtr, ID3D10Resource *pResource, unsigned int SubResource);
+    CUresult CUDAAPI cuD3D10ResourceGetMappedSize(unsigned int *pSize, ID3D10Resource *pResource, unsigned int SubResource);
+    CUresult CUDAAPI cuD3D10ResourceGetSurfaceDimensions(unsigned int *pWidth, unsigned int *pHeight, unsigned int *pDepth, ID3D10Resource *pResource, unsigned int SubResource);
 #endif /* __CUDA_API_VERSION_INTERNAL */
 
 #ifdef __cplusplus
 };
 #endif
 
-#undef __CUDA_API_VERSION
 #undef __CUDA_DEPRECATED
 
 #endif

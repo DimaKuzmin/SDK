@@ -1,4 +1,4 @@
- /* Copyright 2009-2017 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2009-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -93,6 +93,7 @@ extern "C" {
  * \param oMaskSize Width and Height mask array.
  * \param oAnchor X and Y offsets of the mask origin frame of reference
  *        w.r.t the source pixel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -106,6 +107,10 @@ extern "C" {
  *
  */
 NppStatus 
+nppiDilate_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
@@ -115,6 +120,10 @@ nppiDilate_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDst
  * For common parameter descriptions, see <a href="#CommonDilateParameters">Common parameters for nppiDilate functions</a>.
  *
  */
+NppStatus 
+nppiDilate_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
@@ -126,6 +135,10 @@ nppiDilate_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDst
  *
  */
 NppStatus
+nppiDilate_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
@@ -136,9 +149,12 @@ nppiDilate_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  *
  */
 NppStatus
+nppiDilate_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
-
 
 /**
  * Single-channel 16-bit unsigned integer dilation.
@@ -146,6 +162,10 @@ nppiDilate_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep,
  * For common parameter descriptions, see <a href="#CommonDilateParameters">Common parameters for nppiDilate functions</a>.
  *
  */
+NppStatus 
+nppiDilate_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
@@ -157,6 +177,10 @@ nppiDilate_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s n
  *
  */
 NppStatus 
+nppiDilate_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
@@ -166,6 +190,10 @@ nppiDilate_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s n
  * For common parameter descriptions, see <a href="#CommonDilateParameters">Common parameters for nppiDilate functions</a>.
  *
  */
+NppStatus
+nppiDilate_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilate_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
@@ -177,9 +205,12 @@ nppiDilate_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  *
  */
 NppStatus
+nppiDilate_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                        const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                     const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
-
 
 /**
  * Single-channel 32-bit floating-point dilation.
@@ -187,6 +218,10 @@ nppiDilate_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonDilateParameters">Common parameters for nppiDilate functions</a>.
  *
  */
+NppStatus 
+nppiDilate_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
@@ -198,6 +233,10 @@ nppiDilate_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s n
  *
  */
 NppStatus 
+nppiDilate_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
@@ -207,6 +246,10 @@ nppiDilate_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s n
  * For common parameter descriptions, see <a href="#CommonDilateParameters">Common parameters for nppiDilate functions</a>.
  *
  */
+NppStatus
+nppiDilate_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilate_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
@@ -218,9 +261,12 @@ nppiDilate_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus
+nppiDilate_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                        const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                     const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
-
 
 /** @} image_dilate */
 
@@ -250,6 +296,7 @@ nppiDilate_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSt
  * \param oAnchor X and Y offsets of the mask origin frame of reference
  *        w.r.t the source pixel.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -263,6 +310,10 @@ nppiDilate_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSt
  *
  */
 NppStatus 
+nppiDilateBorder_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilateBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -272,6 +323,10 @@ nppiDilateBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, 
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus 
+nppiDilateBorder_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilateBorder_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -283,6 +338,10 @@ nppiDilateBorder_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, 
  *
  */
 NppStatus
+nppiDilateBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilateBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -293,9 +352,12 @@ nppiDilateBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, Npp
  *
  */
 NppStatus
+nppiDilateBorder_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilateBorder_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 16-bit unsigned integer dilation with border control.
@@ -303,6 +365,10 @@ nppiDilateBorder_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, Np
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus 
+nppiDilateBorder_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilateBorder_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -314,6 +380,10 @@ nppiDilateBorder_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiDilateBorder_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilateBorder_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -323,6 +393,10 @@ nppiDilateBorder_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus
+nppiDilateBorder_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilateBorder_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -334,9 +408,12 @@ nppiDilateBorder_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, N
  *
  */
 NppStatus
+nppiDilateBorder_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                              const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilateBorder_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                           const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 32-bit floating-point dilation with border control.
@@ -344,6 +421,10 @@ nppiDilateBorder_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus 
+nppiDilateBorder_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilateBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -355,6 +436,10 @@ nppiDilateBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiDilateBorder_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilateBorder_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -364,6 +449,10 @@ nppiDilateBorder_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus
+nppiDilateBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilateBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -375,6 +464,10 @@ nppiDilateBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, N
  *
  */
 NppStatus
+nppiDilateBorder_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                              const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilateBorder_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                           const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -385,6 +478,10 @@ nppiDilateBorder_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, 
  *
  */
 NppStatus 
+nppiGrayDilateBorder_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                                const Npp32s * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiGrayDilateBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                             const Npp32s * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -394,6 +491,10 @@ nppiGrayDilateBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonDilateBorderParameters">Common parameters for nppiDilateBorder functions</a>.
  *
  */
+NppStatus 
+nppiGrayDilateBorder_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                                 const Npp32f * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiGrayDilateBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                              const Npp32f * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -413,6 +514,7 @@ nppiGrayDilateBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrc
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -426,6 +528,9 @@ nppiGrayDilateBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiDilate3x3_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -434,6 +539,9 @@ nppiDilate3x3_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s n
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -444,6 +552,9 @@ nppiDilate3x3_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s n
  *
  */
 NppStatus
+nppiDilate3x3_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate3x3_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -453,8 +564,10 @@ nppiDilate3x3_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  *
  */
 NppStatus
-nppiDilate3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+nppiDilate3x3_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiDilate3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  * Single-channel 16-bit unsigned integer 3x3 dilation.
@@ -462,6 +575,9 @@ nppiDilate3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSt
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -472,6 +588,9 @@ nppiDilate3x3_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32
  *
  */
 NppStatus 
+nppiDilate3x3_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -480,6 +599,9 @@ nppiDilate3x3_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus
+nppiDilate3x3_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilate3x3_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -490,8 +612,10 @@ nppiDilate3x3_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  *
  */
 NppStatus
-nppiDilate3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
+nppiDilate3x3_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiDilate3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  * Single-channel 32-bit floating-point 3x3 dilation.
@@ -499,6 +623,9 @@ nppiDilate3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -509,6 +636,9 @@ nppiDilate3x3_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32
  *
  */
 NppStatus 
+nppiDilate3x3_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -517,6 +647,9 @@ nppiDilate3x3_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus
+nppiDilate3x3_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilate3x3_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -527,6 +660,9 @@ nppiDilate3x3_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  *
  */
 NppStatus
+nppiDilate3x3_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate3x3_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -535,6 +671,9 @@ nppiDilate3x3_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDs
  * For common parameter descriptions, see <a href="#CommonDilate3x3Parameters">Common parameters for nppiDilate3x3 functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3_64f_C1R_Ctx(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -559,6 +698,7 @@ nppiDilate3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -572,6 +712,9 @@ nppiDilate3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32
  *
  */
 NppStatus 
+nppiDilate3x3Border_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3Border_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
@@ -580,6 +723,9 @@ nppiDilate3x3Border_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSiz
  * For common parameter descriptions, see <a href="#CommonDilate3x3BorderParameters">Common parameters for nppiDilate3x3Border functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3Border_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3Border_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -590,6 +736,9 @@ nppiDilate3x3Border_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSiz
  *
  */
 NppStatus
+nppiDilate3x3Border_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate3x3Border_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
@@ -599,8 +748,10 @@ nppiDilate3x3Border_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  *
  */
 NppStatus
-nppiDilate3x3Border_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
+nppiDilate3x3Border_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiDilate3x3Border_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
  * Single-channel 16-bit unsigned integer 3x3 dilation with border control.
@@ -609,12 +760,18 @@ nppiDilate3x3Border_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize,
  *
  */
 NppStatus 
+nppiDilate3x3Border_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3Border_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
  * Three-channel 16-bit unsigned integer 3x3 dilation with border control.
  * 
  */
+NppStatus 
+nppiDilate3x3Border_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3Border_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -623,6 +780,9 @@ nppiDilate3x3Border_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcS
  * 
  */
 NppStatus
+nppiDilate3x3Border_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate3x3Border_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
@@ -630,8 +790,10 @@ nppiDilate3x3Border_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize
  * 
  */
 NppStatus
-nppiDilate3x3Border_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
+nppiDilate3x3Border_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiDilate3x3Border_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
  * Single-channel 32-bit floating-point 3x3 dilation with border control.
@@ -639,6 +801,9 @@ nppiDilate3x3Border_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSiz
  * For common parameter descriptions, see <a href="#CommonDilate3x3BorderParameters">Common parameters for nppiDilate3x3Border functions</a>.
  *
  */
+NppStatus 
+nppiDilate3x3Border_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiDilate3x3Border_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -649,6 +814,9 @@ nppiDilate3x3Border_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcS
  *
  */
 NppStatus 
+nppiDilate3x3Border_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiDilate3x3Border_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
@@ -658,6 +826,9 @@ nppiDilate3x3Border_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcS
  *
  */
 NppStatus
+nppiDilate3x3Border_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiDilate3x3Border_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
 /**
@@ -666,6 +837,9 @@ nppiDilate3x3Border_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonDilate3x3BorderParameters">Common parameters for nppiDilate3x3Border functions</a>.
  *
  */
+NppStatus
+nppiDilate3x3Border_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiDilate3x3Border_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -690,6 +864,7 @@ nppiDilate3x3Border_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  * \param oMaskSize Width and Height mask array.
  * \param oAnchor X and Y offsets of the mask origin frame of reference
  *        w.r.t the source pixel.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -704,8 +879,12 @@ nppiDilate3x3Border_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  *
  */
 NppStatus 
+nppiErode_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                     const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                 const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Three-channel 8-bit unsigned integer erosion.
@@ -714,8 +893,12 @@ nppiErode_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstS
  *
  */
 NppStatus 
+nppiErode_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                     const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                 const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 8-bit unsigned integer erosion.
@@ -724,8 +907,12 @@ nppiErode_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstS
  *
  */
 NppStatus
+nppiErode_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                     const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
-                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                 const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 8-bit unsigned integer erosion, ignoring alpha-channel.
@@ -734,9 +921,12 @@ nppiErode_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, N
  *
  */
 NppStatus
-nppiErode_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+nppiErode_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiErode_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Single-channel 16-bit unsigned integer erosion.
@@ -745,16 +935,24 @@ nppiErode_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, 
  *
  */
 NppStatus 
+nppiErode_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Three-channel 16-bit unsigned integer erosion.
  * 
  */
 NppStatus 
+nppiErode_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 16-bit unsigned integer erosion.
@@ -763,8 +961,12 @@ nppiErode_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nD
  *
  */
 NppStatus
+nppiErode_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 16-bit unsigned integer erosion, ignoring alpha-channel.
@@ -773,9 +975,12 @@ nppiErode_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep
  *
  */
 NppStatus
-nppiErode_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
-                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+nppiErode_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiErode_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Single-channel 32-bit floating-point erosion.
@@ -784,8 +989,12 @@ nppiErode_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiErode_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Three-channel 32-bit floating-point erosion.
@@ -794,8 +1003,12 @@ nppiErode_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nD
  *
  */
 NppStatus 
+nppiErode_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 32-bit floating-point erosion.
@@ -804,8 +1017,12 @@ nppiErode_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nD
  *
  */
 NppStatus
+nppiErode_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                      const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
-                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+                  const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /**
  * Four-channel 32-bit floating-point erosion, ignoring alpha-channel.
@@ -814,9 +1031,12 @@ nppiErode_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep
  *
  */
 NppStatus
-nppiErode_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
-                    const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
+nppiErode_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                       const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiErode_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                   const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor);
 
 /** @} image_erode */
 
@@ -846,6 +1066,7 @@ nppiErode_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  * \param oAnchor X and Y offsets of the mask origin frame of reference
  *        w.r.t the source pixel.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -859,6 +1080,10 @@ nppiErode_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstSte
  *
  */
 NppStatus 
+nppiErodeBorder_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                           const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErodeBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                        const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -868,6 +1093,10 @@ nppiErodeBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, N
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus 
+nppiErodeBorder_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                           const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErodeBorder_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                        const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -879,6 +1108,10 @@ nppiErodeBorder_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, N
  *
  */
 NppStatus
+nppiErodeBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                           const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErodeBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                        const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -889,9 +1122,12 @@ nppiErodeBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, Nppi
  *
  */
 NppStatus
+nppiErodeBorder_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErodeBorder_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, NppiSize oSizeROI,
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 16-bit unsigned integer erosion with border control.
@@ -899,6 +1135,10 @@ nppiErodeBorder_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, Npp
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus 
+nppiErodeBorder_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErodeBorder_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -910,6 +1150,10 @@ nppiErodeBorder_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize,
  *
  */
 NppStatus 
+nppiErodeBorder_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErodeBorder_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -919,6 +1163,10 @@ nppiErodeBorder_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize,
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus
+nppiErodeBorder_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErodeBorder_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -930,9 +1178,12 @@ nppiErodeBorder_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, Np
  *
  */
 NppStatus
+nppiErodeBorder_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErodeBorder_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, NppiSize oSizeROI,
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 32-bit floating-point erosion with border control.
@@ -940,6 +1191,10 @@ nppiErodeBorder_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, N
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus 
+nppiErodeBorder_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErodeBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -951,6 +1206,10 @@ nppiErodeBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize,
  *
  */
 NppStatus 
+nppiErodeBorder_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErodeBorder_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -960,6 +1219,10 @@ nppiErodeBorder_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize,
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus
+nppiErodeBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                            const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErodeBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                         const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -971,6 +1234,10 @@ nppiErodeBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, Np
  *
  */
 NppStatus
+nppiErodeBorder_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
+                             const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErodeBorder_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, NppiSize oSizeROI,
                          const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -981,6 +1248,10 @@ nppiErodeBorder_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, N
  *
  */
 NppStatus 
+nppiGrayErodeBorder_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                               const Npp32s * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiGrayErodeBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                            const Npp32s * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
 
@@ -990,6 +1261,10 @@ nppiGrayErodeBorder_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSiz
  * For common parameter descriptions, see <a href="#CommonErodeBorderParameters">Common parameters for nppiErodeBorder functions</a>.
  *
  */
+NppStatus 
+nppiGrayErodeBorder_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
+                                const Npp32f * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiGrayErodeBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, 
                             const Npp32f * pMask, NppiSize oMaskSize, NppiPoint oAnchor, NppiBorderType eBorderType);
@@ -1009,6 +1284,7 @@ nppiGrayErodeBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcS
  * \param pDst \ref destination_image_pointer.
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1023,6 +1299,9 @@ nppiGrayErodeBorder_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcS
  *
  */
 NppStatus 
+nppiErode3x3_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1031,6 +1310,9 @@ nppiErode3x3_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nD
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -1041,6 +1323,9 @@ nppiErode3x3_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, Npp8u * pDst, Npp32s nD
  *
  */
 NppStatus
+nppiErode3x3_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1050,8 +1335,10 @@ nppiErode3x3_8u_C4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep
  *
  */
 NppStatus
-nppiErode3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
+nppiErode3x3_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiErode3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  * Single-channel 16-bit unsigned integer 3x3 erosion.
@@ -1059,6 +1346,9 @@ nppiErode3x3_8u_AC4R(const Npp8u * pSrc, int nSrcStep, Npp8u * pDst, int nDstSte
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -1069,6 +1359,9 @@ nppiErode3x3_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s
  *
  */
 NppStatus 
+nppiErode3x3_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1077,6 +1370,9 @@ nppiErode3x3_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, Npp16u * pDst, Npp32s
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus
+nppiErode3x3_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErode3x3_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1087,8 +1383,10 @@ nppiErode3x3_16u_C4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstS
  *
  */
 NppStatus
-nppiErode3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
+nppiErode3x3_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
 
+NppStatus
+nppiErode3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
  * Single-channel 32-bit floating-point 3x3 erosion.
@@ -1096,6 +1394,9 @@ nppiErode3x3_16u_AC4R(const Npp16u * pSrc, int nSrcStep, Npp16u * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -1106,6 +1407,9 @@ nppiErode3x3_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s
  *
  */
 NppStatus 
+nppiErode3x3_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1114,6 +1418,9 @@ nppiErode3x3_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, Npp32f * pDst, Npp32s
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus
+nppiErode3x3_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErode3x3_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
@@ -1124,6 +1431,9 @@ nppiErode3x3_32f_C4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstS
  *
  */
 NppStatus
+nppiErode3x3_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDstStep, NppiSize oSizeROI);
 
 /**
@@ -1132,6 +1442,9 @@ nppiErode3x3_32f_AC4R(const Npp32f * pSrc, int nSrcStep, Npp32f * pDst, int nDst
  * For common parameter descriptions, see <a href="#CommonErode3x3Parameters">Common parameters for nppiErode3x3 functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3_64f_C1R_Ctx(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s nDstStep, NppiSize oSizeROI);
 
@@ -1156,6 +1469,7 @@ nppiErode3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s
  * \param nDstStep \ref destination_image_line_step.
  * \param oSizeROI \ref roi_specification.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1169,6 +1483,10 @@ nppiErode3x3_64f_C1R(const Npp64f * pSrc, Npp32s nSrcStep, Npp64f * pDst, Npp32s
  *
  */
 NppStatus 
+nppiErode3x3Border_8u_C1R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                    Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3Border_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                 Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -1178,6 +1496,10 @@ nppiErode3x3Border_8u_C1R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonErode3x3BorderParameters">Common parameters for nppiErode3x3Border functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3Border_8u_C3R_Ctx(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                    Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3Border_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                 Npp8u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
@@ -1189,6 +1511,10 @@ nppiErode3x3Border_8u_C3R(const Npp8u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus
+nppiErode3x3Border_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                    Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3Border_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                 Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -1199,9 +1525,12 @@ nppiErode3x3Border_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, N
  *
  */
 NppStatus
+nppiErode3x3Border_8u_AC4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3Border_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp8u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 16-bit unsigned integer 3x3 erosion with border control.
@@ -1209,6 +1538,10 @@ nppiErode3x3Border_8u_AC4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  * For common parameter descriptions, see <a href="#CommonErode3x3BorderParameters">Common parameters for nppiErode3x3Border functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3Border_16u_C1R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3Border_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
@@ -1220,6 +1553,10 @@ nppiErode3x3Border_16u_C1R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiErode3x3Border_16u_C3R_Ctx(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3Border_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp16u * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -1229,6 +1566,10 @@ nppiErode3x3Border_16u_C3R(const Npp16u * pSrc, Npp32s nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonErode3x3BorderParameters">Common parameters for nppiErode3x3Border functions</a>.
  *
  */
+NppStatus
+nppiErode3x3Border_16u_C4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErode3x3Border_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
@@ -1240,9 +1581,12 @@ nppiErode3x3Border_16u_C4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize,
  *
  */
 NppStatus
+nppiErode3x3Border_16u_AC4R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                      Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3Border_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                   Npp16u * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
-
 
 /**
  * Single-channel 32-bit floating-point 3x3 erosion with border control.
@@ -1250,6 +1594,10 @@ nppiErode3x3Border_16u_AC4R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonErode3x3BorderParameters">Common parameters for nppiErode3x3Border functions</a>.
  *
  */
+NppStatus 
+nppiErode3x3Border_32f_C1R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiErode3x3Border_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
@@ -1261,6 +1609,10 @@ nppiErode3x3Border_32f_C1R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiErode3x3Border_32f_C3R_Ctx(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiErode3x3Border_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp32f * pDst, Npp32s nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -1271,6 +1623,10 @@ nppiErode3x3Border_32f_C3R(const Npp32f * pSrc, Npp32s nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus
+nppiErode3x3Border_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                     Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiErode3x3Border_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                  Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
 
@@ -1280,6 +1636,10 @@ nppiErode3x3Border_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize,
  * For common parameter descriptions, see <a href="#CommonErode3x3BorderParameters">Common parameters for nppiErode3x3Border functions</a>.
  *
  */
+NppStatus
+nppiErode3x3Border_32f_AC4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
+                                      Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus
 nppiErode3x3Border_32f_AC4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, 
                                   Npp32f * pDst, int nDstStep, NppiSize oSizeROI, NppiBorderType eBorderType);
@@ -1426,6 +1786,7 @@ nppiMorphGetBufferSize_32f_C4R(NppiSize oSizeROI, int * hpBufferSize);
  *        w.r.t the source pixel.
  * \param pBuffer Pointer to device memory scratch buffer at least as large as value returned by the corresponding MorphGetBufferSize call.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1439,6 +1800,10 @@ nppiMorphGetBufferSize_32f_C4R(NppiSize oSizeROI, int * hpBufferSize);
  *
  */
 NppStatus 
+nppiMorphCloseBorder_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphCloseBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1448,6 +1813,10 @@ nppiMorphCloseBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize,
  * For common parameter descriptions, see <a href="#CommonMorphCloseBorderParameters">Common parameters for nppiMorphCloseBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphCloseBorder_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphCloseBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1459,6 +1828,10 @@ nppiMorphCloseBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize,
  *
  */
 NppStatus 
+nppiMorphCloseBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphCloseBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1468,6 +1841,10 @@ nppiMorphCloseBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize,
  * For common parameter descriptions, see <a href="#CommonMorphCloseBorderParameters">Common parameters for nppiMorphCloseBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphCloseBorder_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphCloseBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1479,6 +1856,10 @@ nppiMorphCloseBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSiz
  *
  */
 NppStatus 
+nppiMorphCloseBorder_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphCloseBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1488,6 +1869,10 @@ nppiMorphCloseBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSiz
  * For common parameter descriptions, see <a href="#CommonMorphCloseBorderParameters">Common parameters for nppiMorphCloseBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphCloseBorder_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphCloseBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1499,6 +1884,10 @@ nppiMorphCloseBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  *
  */
 NppStatus 
+nppiMorphCloseBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphCloseBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1508,6 +1897,10 @@ nppiMorphCloseBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  * For common parameter descriptions, see <a href="#CommonMorphCloseBorderParameters">Common parameters for nppiMorphCloseBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphCloseBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphCloseBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1549,6 +1942,7 @@ nppiMorphCloseBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  *        w.r.t the source pixel.
  * \param pBuffer Pointer to device memory scratch buffer at least as large as value returned by the corresponding MorphGetBufferSize call.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1562,6 +1956,10 @@ nppiMorphCloseBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSiz
  *
  */
 NppStatus 
+nppiMorphOpenBorder_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphOpenBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                            NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1571,6 +1969,10 @@ nppiMorphOpenBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  * For common parameter descriptions, see <a href="#CommonMorphOpenBorderParameters">Common parameters for nppiMorphOpenBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphOpenBorder_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphOpenBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                            NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1582,6 +1984,10 @@ nppiMorphOpenBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  *
  */
 NppStatus 
+nppiMorphOpenBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphOpenBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                            NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1591,6 +1997,10 @@ nppiMorphOpenBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, 
  * For common parameter descriptions, see <a href="#CommonMorphOpenBorderParameters">Common parameters for nppiMorphOpenBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphOpenBorder_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphOpenBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1602,6 +2012,10 @@ nppiMorphOpenBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiMorphOpenBorder_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphOpenBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1611,6 +2025,10 @@ nppiMorphOpenBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonMorphOpenBorderParameters">Common parameters for nppiMorphOpenBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphOpenBorder_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphOpenBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1622,6 +2040,10 @@ nppiMorphOpenBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiMorphOpenBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphOpenBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1631,6 +2053,10 @@ nppiMorphOpenBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonMorphOpenBorderParameters">Common parameters for nppiMorphOpenBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphOpenBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphOpenBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1671,6 +2097,7 @@ nppiMorphOpenBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize
  *        w.r.t the source pixel.
  * \param pBuffer Pointer to device memory scratch buffer at least as large as value returned by the corresponding MorphGetBufferSize call.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1684,6 +2111,10 @@ nppiMorphOpenBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiMorphTopHatBorder_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphTopHatBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1693,6 +2124,10 @@ nppiMorphTopHatBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonMorphTopHatBorderParameters">Common parameters for nppiMorphTopHatBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphTopHatBorder_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphTopHatBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1704,6 +2139,10 @@ nppiMorphTopHatBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize
  *
  */
 NppStatus 
+nppiMorphTopHatBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphTopHatBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1713,6 +2152,10 @@ nppiMorphTopHatBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize
  * For common parameter descriptions, see <a href="#CommonMorphTopHatBorderParameters">Common parameters for nppiMorphTopHatBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphTopHatBorder_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
+                                  NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphTopHatBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1724,6 +2167,10 @@ nppiMorphTopHatBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphTopHatBorder_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
+                                  NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphTopHatBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1733,6 +2180,10 @@ nppiMorphTopHatBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonMorphTopHatBorderParameters">Common parameters for nppiMorphTopHatBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphTopHatBorder_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                  NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphTopHatBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1744,6 +2195,10 @@ nppiMorphTopHatBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphTopHatBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                  NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphTopHatBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1753,6 +2208,10 @@ nppiMorphTopHatBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonMorphTopHatBorderParameters">Common parameters for nppiMorphTopHatBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphTopHatBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                  NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphTopHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1793,6 +2252,7 @@ nppiMorphTopHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSi
  *        w.r.t the source pixel.
  * \param pBuffer Pointer to device memory scratch buffer at least as large as value returned by the corresponding MorphGetBufferSize call.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1806,8 +2266,12 @@ nppiMorphTopHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
-                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 3 channel 8-bit unsigned integer morphological black hat with border control.
@@ -1816,8 +2280,12 @@ nppiMorphBlackHatBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus
 nppiMorphBlackHatBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
-                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 4 channel 8-bit unsigned integer morphological black hat with border control.
@@ -1826,8 +2294,12 @@ nppiMorphBlackHatBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
-                             NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                               NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 1 channel 16-bit unsigned integer morphological black hat with border control.
@@ -1836,8 +2308,12 @@ nppiMorphBlackHatBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
-                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 1 channel 16-bit signed integer morphological black hat with border control.
@@ -1846,8 +2322,12 @@ nppiMorphBlackHatBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
-                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 1 channel 32-bit floating point morphological black hat with border control.
@@ -1856,8 +2336,12 @@ nppiMorphBlackHatBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
-                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 3 channel 32-bit floating point morphological black hat with border control.
@@ -1866,8 +2350,12 @@ nppiMorphBlackHatBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
-                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /**
  * 4 channel 32-bit floating point morphological black hat with border control.
@@ -1876,8 +2364,12 @@ nppiMorphBlackHatBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphBlackHatBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphBlackHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
-                              NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
+                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
 /** @} image_morph_black_hat_border */
 
@@ -1915,6 +2407,7 @@ nppiMorphBlackHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  *        w.r.t the source pixel.
  * \param pBuffer Pointer to device memory scratch buffer at least as large as value returned by the corresponding MorphGetBufferSize call.
  * \param eBorderType The border type operation to be applied at source image border boundaries.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref image_data_error_codes, \ref roi_error_codes
  *
  * @{
@@ -1928,6 +2421,10 @@ nppiMorphBlackHatBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphGradientBorder_8u_C1R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphGradientBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1937,6 +2434,10 @@ nppiMorphGradientBorder_8u_C1R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonMorphGradientBorderParameters">Common parameters for nppiMorphGradientBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphGradientBorder_8u_C3R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphGradientBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1948,6 +2449,10 @@ nppiMorphGradientBorder_8u_C3R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  *
  */
 NppStatus 
+nppiMorphGradientBorder_8u_C4R_Ctx(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
+                                   NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphGradientBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp8u * pDst, int nDstStep, 
                                NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1957,6 +2462,10 @@ nppiMorphGradientBorder_8u_C4R(const Npp8u * pSrc, int nSrcStep, NppiSize oSrcSi
  * For common parameter descriptions, see <a href="#CommonMorphGradientBorderParameters">Common parameters for nppiMorphGradientBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphGradientBorder_16u_C1R_Ctx(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphGradientBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16u * pDst, int nDstStep, 
                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1968,6 +2477,10 @@ nppiMorphGradientBorder_16u_C1R(const Npp16u * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphGradientBorder_16s_C1R_Ctx(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphGradientBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp16s * pDst, int nDstStep, 
                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1977,6 +2490,10 @@ nppiMorphGradientBorder_16s_C1R(const Npp16s * pSrc, int nSrcStep, NppiSize oSrc
  * For common parameter descriptions, see <a href="#CommonMorphGradientBorderParameters">Common parameters for nppiMorphGradientBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphGradientBorder_32f_C1R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                     NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphGradientBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
@@ -1988,6 +2505,10 @@ nppiMorphGradientBorder_32f_C1R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  *
  */
 NppStatus 
+nppiMorphGradientBorder_32f_C3R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppiMorphGradientBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);
 
@@ -1997,6 +2518,10 @@ nppiMorphGradientBorder_32f_C3R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrc
  * For common parameter descriptions, see <a href="#CommonMorphGradientBorderParameters">Common parameters for nppiMorphGradientBorder functions</a>.
  *
  */
+NppStatus 
+nppiMorphGradientBorder_32f_C4R_Ctx(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
+                                    NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppiMorphGradientBorder_32f_C4R(const Npp32f * pSrc, int nSrcStep, NppiSize oSrcSize, NppiPoint oSrcOffset, Npp32f * pDst, int nDstStep, 
                                 NppiSize oSizeROI, const Npp8u * pMask, NppiSize oMaskSize, NppiPoint oAnchor, Npp8u * pBuffer, NppiBorderType eBorderType);

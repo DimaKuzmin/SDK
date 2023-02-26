@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2014 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2018 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -50,13 +50,20 @@
 #if !defined(__VECTOR_TYPES_H__)
 #define __VECTOR_TYPES_H__
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_VECTOR_TYPES_H__
+#endif
+
 /*******************************************************************************
 *                                                                              *
 *                                                                              *
 *                                                                              *
 *******************************************************************************/
 
-#include "host_defines.h"
+#ifndef __DOXYGEN_ONLY__
+#include "crt/host_defines.h"
+#endif
 
 /*******************************************************************************
 *                                                                              *
@@ -412,14 +419,25 @@ struct __device_builtin__ dim3
 {
     unsigned int x, y, z;
 #if defined(__cplusplus)
+#if __cplusplus >= 201103L
+    __host__ __device__ constexpr dim3(unsigned int vx = 1, unsigned int vy = 1, unsigned int vz = 1) : x(vx), y(vy), z(vz) {}
+    __host__ __device__ constexpr dim3(uint3 v) : x(v.x), y(v.y), z(v.z) {}
+    __host__ __device__ constexpr operator uint3(void) const { return uint3{x, y, z}; }
+#else
     __host__ __device__ dim3(unsigned int vx = 1, unsigned int vy = 1, unsigned int vz = 1) : x(vx), y(vy), z(vz) {}
     __host__ __device__ dim3(uint3 v) : x(v.x), y(v.y), z(v.z) {}
-    __host__ __device__ operator uint3(void) { uint3 t; t.x = x; t.y = y; t.z = z; return t; }
+    __host__ __device__ operator uint3(void) const { uint3 t; t.x = x; t.y = y; t.z = z; return t; }
+#endif
 #endif /* __cplusplus */
 };
 
 typedef __device_builtin__ struct dim3 dim3;
 
 #undef  __cuda_builtin_vector_align8
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_VECTOR_TYPES_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_VECTOR_TYPES_H__
+#endif
 
 #endif /* !__VECTOR_TYPES_H__ */

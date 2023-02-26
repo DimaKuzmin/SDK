@@ -57,11 +57,13 @@
  * @{
  */
 
+#ifndef __CUDACC_RTC__
+#include <math.h>
+#endif // __CUDACC_RTC__
+
 #include "curand_mrg32k3a.h"
 #include "curand_mtgp32_kernel.h"
-#include <math.h>
-
-#include "curand_philox4x32_x.h" 
+#include "curand_philox4x32_x.h"
 
 
 template <typename T>

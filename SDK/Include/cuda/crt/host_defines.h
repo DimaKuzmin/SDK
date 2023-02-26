@@ -1,5 +1,5 @@
 /*
- * Copyright 1993-2017 NVIDIA Corporation.  All rights reserved.
+ * Copyright 1993-2022 NVIDIA Corporation.  All rights reserved.
  *
  * NOTICE TO LICENSEE:
  *
@@ -47,6 +47,16 @@
  * Users Notice.
  */
 
+#if !defined(__CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__)
+#if defined(_MSC_VER)
+#pragma message("crt/host_defines.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead.")
+#else
+#warning "crt/host_defines.h is an internal header file and must not be used directly.  Please use cuda_runtime_api.h or cuda_runtime.h instead."
+#endif
+#define __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#define __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_DEFINES_H__
+#endif
+
 #if !defined(__HOST_DEFINES_H__)
 #define __HOST_DEFINES_H__
 
@@ -87,6 +97,7 @@
 #define __location__(a) \
         __annotate__(a)
 #define CUDARTAPI
+#define CUDARTAPI_CDECL
 
 #elif defined(_MSC_VER)
 
@@ -123,6 +134,8 @@
         __annotate__(__##a##__)
 #define CUDARTAPI \
         __stdcall
+#define CUDARTAPI_CDECL \
+        __cdecl
 
 #else /* __GNUC__ || __CUDA_LIBDEVICE__ || __CUDACC_RTC__ */
 
@@ -183,18 +196,35 @@
 
 #endif /* __CUDACC__ || __CUDA_LIBDEVICE__ || __GNUC__  || _WIN64 */
 
+#if defined(__CUDACC__) || !defined(__grid_constant__)
+#define __grid_constant__ \
+        __location__(grid_constant)
+#endif /* defined(__CUDACC__) || !defined(__grid_constant__) */
+        
+#if defined(__CUDACC__) || !defined(__host__)
 #define __host__ \
         __location__(host)
+#endif /* defined(__CUDACC__) || !defined(__host__) */
+#if defined(__CUDACC__) || !defined(__device__)
 #define __device__ \
         __location__(device)
+#endif /* defined(__CUDACC__) || !defined(__device__) */
+#if defined(__CUDACC__) || !defined(__global__)
 #define __global__ \
         __location__(global)
+#endif /* defined(__CUDACC__) || !defined(__global__) */
+#if defined(__CUDACC__) || !defined(__shared__)
 #define __shared__ \
         __location__(shared)
+#endif /* defined(__CUDACC__) || !defined(__shared__) */
+#if defined(__CUDACC__) || !defined(__constant__)
 #define __constant__ \
         __location__(constant)
+#endif /* defined(__CUDACC__) || !defined(__constant__) */
+#if defined(__CUDACC__) || !defined(__managed__)
 #define __managed__ \
         __location__(managed)
+#endif /* defined(__CUDACC__) || !defined(__managed__) */
         
 #if !defined(__CUDACC__)
 #define __device_builtin__
@@ -212,5 +242,22 @@
         __location__(cudart_builtin)
 #endif /* !defined(__CUDACC__) */
 
+#if defined(__CUDACC__) || !defined(__cluster_dims__)
+#if defined(_MSC_VER)        
+#define __cluster_dims__(...) \
+        __declspec(__cluster_dims__(__VA_ARGS__))
+        
+#else  /* !defined(_MSC_VER) */
+#define __cluster_dims__(...) \
+        __attribute__((cluster_dims(__VA_ARGS__)))
+#endif  /* defined(_MSC_VER) */
+#endif  /* defined(__CUDACC__) || !defined(__cluster_dims__) */
+
+#define __CUDA_ARCH_HAS_FEATURE__(_FEAT) __CUDA_ARCH_FEAT_##_FEAT
 
 #endif /* !__HOST_DEFINES_H__ */
+
+#if defined(__UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_DEFINES_H__)
+#undef __CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS__
+#undef __UNDEF_CUDA_INCLUDE_COMPILER_INTERNAL_HEADERS_HOST_DEFINES_H__
+#endif

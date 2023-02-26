@@ -50,6 +50,8 @@
 #if !defined(__CUDA_D3D11_INTEROP_H__)
 #define __CUDA_D3D11_INTEROP_H__
 
+#include "cuda_runtime_api.h"
+
 /** \cond impl_private */
 #if !defined(__dv)
 
@@ -67,11 +69,19 @@
 #endif /* !__dv */
 /** \endcond impl_private */
 
-#if defined(_WIN32)
-
-#include "builtin_types.h"
-#include "host_defines.h"
 #include <d3d11.h>
+
+/** \cond impl_private */
+#if defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+/** \endcond impl_private */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -270,7 +280,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D11GetDevices(unsigned int *pCudaDev
  * \sa 
  * ::cudaD3D11SetDirect3DDevice
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D11GetDirect3DDevice(ID3D11Device **ppD3D11Device);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D11GetDirect3DDevice(ID3D11Device **ppD3D11Device);
 
 /**
  * \brief Sets the Direct3D 11 device to use for interoperability with 
@@ -282,6 +292,9 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D11GetDirect3DDevice(ID3D11Device **
  * no longer necessary to associate a CUDA device with a D3D11
  * device in order to achieve maximum interoperability performance.
  *
+ * This function will immediately initialize the primary context on 
+ * \p device if needed.
+ * 
  * \param pD3D11Device - Direct3D device to use for interoperability
  * \param device       - The CUDA device to use.  This device must be among the devices
  *                       returned when querying ::cudaD3D11DeviceListAll from ::cudaD3D11GetDevices,
@@ -299,7 +312,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D11GetDirect3DDevice(ID3D11Device **
  * ::cudaGraphicsD3D11RegisterResource,
  * ::cudaDeviceReset
  */
-extern __host__ cudaError_t CUDARTAPI cudaD3D11SetDirect3DDevice(ID3D11Device *pD3D11Device, int device __dv(-1));
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaD3D11SetDirect3DDevice(ID3D11Device *pD3D11Device, int device __dv(-1));
 
 /** @} */ /* END CUDART_D3D11_DEPRECATED */
 
@@ -307,8 +320,7 @@ extern __host__ cudaError_t CUDARTAPI cudaD3D11SetDirect3DDevice(ID3D11Device *p
 }
 #endif /* __cplusplus */
 
-#endif /* _WIN32 */
-
 #undef __dv
+#undef __CUDA_DEPRECATED
 
 #endif /* __CUDA_D3D11_INTEROP_H__ */

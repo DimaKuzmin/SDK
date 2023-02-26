@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -63,7 +63,7 @@ extern "C" {
 
 /** @defgroup signal_memory_management Memory Management
  *  @ingroup npps
- *
+ * Functions that provide memory management functionality like malloc and free.
  * @{
  */
 

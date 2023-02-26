@@ -53,13 +53,15 @@
 
 #if defined(__CUDACC_RTC__)
 #define __SM_60_ATOMIC_FUNCTIONS_DECL__ __device__
+#elif defined(_NVHPC_CUDA)
+#define __SM_60_ATOMIC_FUNCTIONS_DECL__ extern __device__ __cudart_builtin__
 #else /* __CUDACC_RTC__ */
 #define __SM_60_ATOMIC_FUNCTIONS_DECL__ static __inline__ __device__
 #endif /* __CUDACC_RTC__ */
 
 #if defined(__cplusplus) && defined(__CUDACC__)
 
-#if !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
+#if defined(_NVHPC_CUDA) || !defined(__CUDA_ARCH__) || __CUDA_ARCH__ >= 600
 
 /*******************************************************************************
 *                                                                              *
@@ -67,10 +69,11 @@
 *                                                                              *
 *******************************************************************************/
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
-#ifndef __CUDA_ARCH__
+/* Add !defined(_NVHPC_CUDA) to avoid empty function definition in CUDA
+ * C++ compiler where the macro __CUDA_ARCH__ is not defined. */
+#if !defined(__CUDA_ARCH__) && !defined(_NVHPC_CUDA)
 #define __DEF_IF_HOST { }
 #else  /* !__CUDA_ARCH__ */
 #define __DEF_IF_HOST ;

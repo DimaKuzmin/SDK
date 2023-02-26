@@ -54,11 +54,11 @@
  * MTGP32-11213
  *
  * Mersenne Twister RNG for the GPU
- * 
+ *
  * The period of generated integers is 2<sup>11213</sup>-1.
  *
  * This code generates 32-bit unsigned integers, and
- * single precision floating point numbers uniformly distributed 
+ * single precision floating point numbers uniformly distributed
  * in the range [1, 2). (float r; 1.0 <= r < 2.0)
  */
 
@@ -71,7 +71,7 @@
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
  * met:
- * 
+ *
  *     * Redistributions of source code must retain the above copyright
  *       notice, this list of conditions and the following disclaimer.
  *     * Redistributions in binary form must reproduce the above
@@ -82,7 +82,7 @@
  *       its contributors may be used to endorse or promote products
  *       derived from this software without specific prior written
  *       permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -102,7 +102,7 @@
 #define QUALIFIERS static inline __device__
 #endif
 
-#include <cuda.h>
+#include <cuda_runtime.h>
 #include <stdlib.h>
 #include <memory.h>
 #include <string.h>
@@ -117,8 +117,6 @@
  * @{
  */
 
-
-extern mtgp32_params_fast_t mtgp32dc_params_fast_11213[];
 static const unsigned int non_zero = 0x4d544750;
 
 /*
@@ -127,7 +125,7 @@ static const unsigned int non_zero = 0x4d544750;
  * @param[in] x 32-bit integer
  * @return 32-bit integer
  */
-static unsigned int ini_func1(unsigned int x) {
+static __forceinline__ unsigned int ini_func1(unsigned int x) {
     return (x ^ (x >> 27)) * (1664525);
 }
 
@@ -137,7 +135,7 @@ static unsigned int ini_func1(unsigned int x) {
  * @param[in] x 32-bit integer
  * @return 32-bit integer
  */
-static unsigned int ini_func2(unsigned int x) {
+static __forceinline__ unsigned int ini_func2(unsigned int x) {
     return (x ^ (x >> 27)) * (1566083941);
 }
 
@@ -154,9 +152,9 @@ static unsigned int ini_func2(unsigned int x) {
  * @param[in] para parameter structure
  * @param[in] seed a 32-bit integer used as the seed.
  */
-
+static __forceinline__ __host__
 void mtgp32_init_state(unsigned int state[],
-              const mtgp32_params_fast_t *para, unsigned int seed) {
+                       const mtgp32_params_fast_t *para, unsigned int seed) {
     int i;
     int size = para->mexp / 32 + 1;
     unsigned int hidden_seed;
@@ -169,9 +167,7 @@ void mtgp32_init_state(unsigned int state[],
     state[0] = seed;
     state[1] = hidden_seed;
     for (i = 1; i < size; i++) {
-    state[i] ^= (1812433253) * (state[i - 1]
-                        ^ (state[i - 1] >> 30))
-        + i;
+        state[i] ^= (1812433253) * (state[i - 1] ^ (state[i - 1] >> 30)) + i;
     }
 }
 
@@ -184,11 +180,12 @@ void mtgp32_init_state(unsigned int state[],
  * @param[in] para parameter structure
  * @param[in] array a 32-bit integer array used as a seed.
  * @param[in] length length of the array.
- * @return CURAND_STATUS_SUCCESS 
+ * @return CURAND_STATUS_SUCCESS
  */
+static __forceinline__ __host__
 int mtgp32_init_by_array(unsigned int state[],
-             const mtgp32_params_fast_t *para,
-             unsigned int *array, int length) {
+                         const mtgp32_params_fast_t *para,
+                         unsigned int *array, int length) {
     int i, j, count;
     unsigned int r;
     int lag;
@@ -272,8 +269,9 @@ int mtgp32_init_by_array(unsigned int state[],
  * @param[in] array a character array used as a seed. (terminated by zero.)
  * @return memory allocation result. if 0 then O.K.
  */
+static __forceinline__ __host__
 int mtgp32_init_by_str(unsigned int state[],
-               const mtgp32_params_fast_t *para, unsigned char *array) {
+                       const mtgp32_params_fast_t *para, unsigned char *array) {
     int i, j, count;
     unsigned int r;
     int lag;
@@ -346,25 +344,10 @@ int mtgp32_init_by_str(unsigned int state[],
     return 0;
 }
 
-
-
-/**
- * \brief Set up constant parameters for the mtgp32 generator
- *
- * This host-side helper function re-organizes CURAND_NUM_MTGP32_PARAMS sets of 
- * generator parameters for use by kernel functions and copies the 
- * result to the specified location in device memory.
- *
- * \param params - Pointer to an array of type mtgp32_params_fast_t in host memory
- * \param p - pointer to a structure of type mtgp32_kernel_params_t in device memory.
- *
- * \return 
- * - CURAND_STATUS_ALLOCATION_FAILED if host memory could not be allocated
- * - CURAND_STATUS_INITIALIZATION_FAILED if the copy to device memory failed
- * - CURAND_STATUS_SUCCESS otherwise
- */
-__host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t params[],mtgp32_kernel_params_t * p) {
-    const int block_num = CURAND_NUM_MTGP32_PARAMS;
+template<typename ParamsType>
+static __forceinline__ __host__
+curandStatus_t curandMakeMTGP32ConstantsImpl(const mtgp32_params_fast_t params[], ParamsType * p, const int block_num)
+{
     const int size1 = sizeof(unsigned int) * block_num;
     const int size2 = sizeof(unsigned int) * block_num * TBL_SIZE;
     unsigned int *h_pos_tbl;
@@ -375,7 +358,7 @@ __host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t par
     unsigned int *h_single_temper_tbl;
     unsigned int *h_mask;
     curandStatus_t status = CURAND_STATUS_SUCCESS;
-    
+
     h_pos_tbl = (unsigned int *)malloc(size1);
     h_sh1_tbl = (unsigned int *)malloc(size1);
     h_sh2_tbl = (unsigned int *)malloc(size1);
@@ -398,7 +381,7 @@ __host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t par
         if (h_single_temper_tbl != NULL) free(h_single_temper_tbl);
         if (h_mask != NULL) free(h_mask);
         status = CURAND_STATUS_ALLOCATION_FAILED;
-    } else {       
+    } else {
 
         h_mask[0] = params[0].mask;
         for (int i = 0; i < block_num; i++) {
@@ -411,41 +394,41 @@ __host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t par
 	            h_single_temper_tbl[i * TBL_SIZE + j] = params[i].flt_tmp_tbl[j];
 	        }
         }
-        if (cudaMemcpy( p->pos_tbl, 
+        if (cudaMemcpy( p->pos_tbl,
                         h_pos_tbl, size1, cudaMemcpyHostToDevice) != cudaSuccess)
-        { 
+        {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->sh1_tbl, 
+        if (cudaMemcpy( p->sh1_tbl,
                         h_sh1_tbl, size1, cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->sh2_tbl, 
+        if (cudaMemcpy( p->sh2_tbl,
                         h_sh2_tbl, size1, cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->param_tbl, 
+        if (cudaMemcpy( p->param_tbl,
                         h_param_tbl, size2, cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->temper_tbl, 
+        if (cudaMemcpy( p->temper_tbl,
                         h_temper_tbl, size2, cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->single_temper_tbl, 
+        if (cudaMemcpy( p->single_temper_tbl,
                         h_single_temper_tbl, size2, cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
         } else
-        if (cudaMemcpy( p->mask, 
+        if (cudaMemcpy( p->mask,
                         h_mask, sizeof(unsigned int), cudaMemcpyHostToDevice) != cudaSuccess)
         {
             status = CURAND_STATUS_INITIALIZATION_FAILED;
-        } 
+        }
     }
     if (h_pos_tbl != NULL) free(h_pos_tbl);
     if (h_sh1_tbl != NULL) free(h_sh1_tbl);
@@ -458,9 +441,30 @@ __host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t par
 }
 
 /**
+ * \brief Set up constant parameters for the mtgp32 generator
+ *
+ * This host-side helper function re-organizes CURAND_NUM_MTGP32_PARAMS sets of
+ * generator parameters for use by kernel functions and copies the
+ * result to the specified location in device memory.
+ *
+ * \param params - Pointer to an array of type mtgp32_params_fast_t in host memory
+ * \param p - pointer to a structure of type mtgp32_kernel_params_t in device memory.
+ *
+ * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if host memory could not be allocated
+ * - CURAND_STATUS_INITIALIZATION_FAILED if the copy to device memory failed
+ * - CURAND_STATUS_SUCCESS otherwise
+ */
+static __forceinline__ __host__
+curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t params[], mtgp32_kernel_params_t * p)
+{
+    return curandMakeMTGP32ConstantsImpl(params, p, CURAND_NUM_MTGP32_PARAMS);
+}
+
+/**
  * \brief Set up initial states for the mtgp32 generator
  *
- * This host-side helper function initializes a number of states (one parameter set per state) for 
+ * This host-side helper function initializes a number of states (one parameter set per state) for
  * an mtgp32 generator. To accomplish this it allocates a state array in host memory,
  * initializes that array, and copies the result to device memory.
  *
@@ -470,16 +474,17 @@ __host__ curandStatus_t curandMakeMTGP32Constants(const mtgp32_params_fast_t par
  * \param n - number of parameter sets/states to initialize
  * \param seed - seed value
  *
- * \return 
- * - CURAND_STATUS_ALLOCATION_FAILED if host memory state could not be allocated 
+ * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if host memory state could not be allocated
  * - CURAND_STATUS_INITIALIZATION_FAILED if the copy to device memory failed
  * - CURAND_STATUS_SUCCESS otherwise
  */
-__host__ curandStatus_t CURANDAPI curandMakeMTGP32KernelState(curandStateMtgp32_t *s,
-                                            mtgp32_params_fast_t params[],
-                                            mtgp32_kernel_params_t *k,
-                                            int n,
-                                            unsigned long long seed)
+static __forceinline__ __host__
+curandStatus_t CURANDAPI curandMakeMTGP32KernelState(curandStateMtgp32_t *s,
+                                                     mtgp32_params_fast_t params[],
+                                                     mtgp32_kernel_params_t *k,
+                                                     int n,
+                                                     unsigned long long seed)
 {
     int i;
     curandStatus_t status = CURAND_STATUS_SUCCESS;
@@ -493,7 +498,6 @@ __host__ curandStatus_t CURANDAPI curandMakeMTGP32KernelState(curandStateMtgp32_
             h_status[i].offset = 0;
             h_status[i].pIdx = i;
             h_status[i].k = k;
-            h_status[i].precise_double_flag = 0;
         }
         if (cudaMemcpy(s, h_status,
                        sizeof(curandStateMtgp32_t) * n,

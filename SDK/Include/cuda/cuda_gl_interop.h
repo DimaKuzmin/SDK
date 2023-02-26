@@ -50,8 +50,7 @@
 #if !defined(__CUDA_GL_INTEROP_H__)
 #define __CUDA_GL_INTEROP_H__
 
-#include "builtin_types.h"
-#include "host_defines.h"
+#include "cuda_runtime_api.h"
 
 #if defined(__APPLE__)
 
@@ -68,6 +67,18 @@
 #endif
 
 #endif /* __APPLE__ */
+
+/** \cond impl_private */
+#if defined(__DOXYGEN_ONLY__) || defined(CUDA_ENABLE_DEPRECATED)
+#define __CUDA_DEPRECATED
+#elif defined(_MSC_VER)
+#define __CUDA_DEPRECATED __declspec(deprecated)
+#elif defined(__GNUC__)
+#define __CUDA_DEPRECATED __attribute__((deprecated))
+#else
+#define __CUDA_DEPRECATED
+#endif
+/** \endcond impl_private */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -118,6 +129,7 @@ enum cudaGLDeviceList
  * ::cudaSuccess,
  * ::cudaErrorNoDevice,
  * ::cudaErrorInvalidGraphicsContext,
+ * ::cudaErrorOperatingSystem,
  * ::cudaErrorUnknown
  *
  * \note This function is not supported on Mac OS X.
@@ -179,6 +191,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLGetDevices(unsigned int *pCudaDevice
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorOperatingSystem,
  * ::cudaErrorUnknown
  * \notefnerr
  *
@@ -217,6 +230,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGraphicsGLRegisterImage(struct cudaGra
  * ::cudaErrorInvalidDevice,
  * ::cudaErrorInvalidValue,
  * ::cudaErrorInvalidResourceHandle,
+ * ::cudaErrorOperatingSystem,
  * ::cudaErrorUnknown
  * \notefnerr
  *
@@ -281,6 +295,9 @@ enum cudaGLMapFlags
  * no longer necessary to associate a CUDA device with an OpenGL
  * context in order to achieve maximum interoperability performance.
  *
+ * This function will immediately initialize the primary context on 
+ * \p device if needed.
+ *
  * \param device - Device to use for OpenGL interoperability
  *
  * \return
@@ -291,7 +308,7 @@ enum cudaGLMapFlags
  *
  * \sa ::cudaGraphicsGLRegisterBuffer, ::cudaGraphicsGLRegisterImage
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLSetGLDevice(int device);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLSetGLDevice(int device);
 
 /**
  * \brief Registers a buffer object for access by CUDA
@@ -313,7 +330,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLSetGLDevice(int device);
  *
  * \sa ::cudaGraphicsGLRegisterBuffer
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLRegisterBufferObject(GLuint bufObj);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLRegisterBufferObject(GLuint bufObj);
 
 /**
  * \brief Maps a buffer object for access by CUDA
@@ -342,7 +359,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLRegisterBufferObject(GLuint bufObj);
  *
  * \sa ::cudaGraphicsMapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLMapBufferObject(void **devPtr, GLuint bufObj);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLMapBufferObject(void **devPtr, GLuint bufObj);
 
 /**
  * \brief Unmaps a buffer object for access by CUDA
@@ -368,7 +385,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLMapBufferObject(void **devPtr, GLuin
  *
  * \sa ::cudaGraphicsUnmapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLUnmapBufferObject(GLuint bufObj);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLUnmapBufferObject(GLuint bufObj);
 
 /**
  * \brief Unregisters a buffer object for access by CUDA
@@ -390,7 +407,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLUnmapBufferObject(GLuint bufObj);
  *
  * \sa ::cudaGraphicsUnregisterResource
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLUnregisterBufferObject(GLuint bufObj);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLUnregisterBufferObject(GLuint bufObj);
 
 /**
  * \brief Set usage flags for mapping an OpenGL buffer
@@ -428,7 +445,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLUnregisterBufferObject(GLuint bufObj
  *
  * \sa ::cudaGraphicsResourceSetMapFlags
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLSetBufferObjectMapFlags(GLuint bufObj, unsigned int flags); 
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLSetBufferObjectMapFlags(GLuint bufObj, unsigned int flags); 
 
 /**
  * \brief Maps a buffer object for access by CUDA
@@ -457,7 +474,7 @@ extern __host__ cudaError_t CUDARTAPI cudaGLSetBufferObjectMapFlags(GLuint bufOb
  *
  * \sa ::cudaGraphicsMapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLMapBufferObjectAsync(void **devPtr, GLuint bufObj, cudaStream_t stream);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLMapBufferObjectAsync(void **devPtr, GLuint bufObj, cudaStream_t stream);
 
 /**
  * \brief Unmaps a buffer object for access by CUDA
@@ -483,13 +500,15 @@ extern __host__ cudaError_t CUDARTAPI cudaGLMapBufferObjectAsync(void **devPtr, 
  *
  * \sa ::cudaGraphicsUnmapResources
  */
-extern __host__ cudaError_t CUDARTAPI cudaGLUnmapBufferObjectAsync(GLuint bufObj, cudaStream_t stream);
+extern __CUDA_DEPRECATED __host__ cudaError_t CUDARTAPI cudaGLUnmapBufferObjectAsync(GLuint bufObj, cudaStream_t stream);
 
 /** @} */ /* END CUDART_OPENGL_DEPRECATED */
 
 #if defined(__cplusplus)
 }
 #endif /* __cplusplus */
+
+#undef __CUDA_DEPRECATED
 
 #endif /* __CUDA_GL_INTEROP_H__ */
 

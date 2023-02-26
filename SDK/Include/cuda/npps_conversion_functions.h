@@ -1,4 +1,4 @@
- /* Copyright 2010-2016 NVIDIA Corporation.  All rights reserved. 
+ /* Copyright 2010-2021 NVIDIA CORPORATION & AFFILIATES.  All rights reserved. 
   * 
   * NOTICE TO LICENSEE: 
   * 
@@ -63,13 +63,13 @@ extern "C" {
 
 /** @defgroup signal_conversion_functions Conversion Functions
  *  @ingroup npps
- *
+ * Functions that provide conversion and threshold operations
  * @{
  *
  */
 
 /** @defgroup signal_convert Convert
- *
+ * The set of conversion operations available in the library
  * @{
  *
  */
@@ -82,82 +82,163 @@ extern "C" {
  */
 
 NppStatus 
+nppsConvert_8s16s_Ctx(const Npp8s * pSrc, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_8s16s(const Npp8s * pSrc, Npp16s * pDst, int nLength);
+
+NppStatus 
+nppsConvert_8s32f_Ctx(const Npp8s * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_8s32f(const Npp8s * pSrc, Npp32f * pDst, int nLength);
 
 NppStatus 
+nppsConvert_8u32f_Ctx(const Npp8u * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_8u32f(const Npp8u * pSrc, Npp32f * pDst, int nLength);
+
+NppStatus 
+nppsConvert_16s8s_Sfs_Ctx(const Npp16s * pSrc, Npp8s * pDst, Npp32u nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_16s8s_Sfs(const Npp16s * pSrc, Npp8s * pDst, Npp32u nLength, NppRoundMode eRoundMode, int nScaleFactor);
 
 NppStatus 
+nppsConvert_16s32s_Ctx(const Npp16s * pSrc, Npp32s * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_16s32s(const Npp16s * pSrc, Npp32s * pDst, int nLength);
+
+NppStatus 
+nppsConvert_16s32f_Ctx(const Npp16s * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_16s32f(const Npp16s * pSrc, Npp32f * pDst, int nLength);
 
 NppStatus 
+nppsConvert_16u32f_Ctx(const Npp16u * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_16u32f(const Npp16u * pSrc, Npp32f * pDst, int nLength);
+
+NppStatus 
+nppsConvert_32s16s_Ctx(const Npp32s * pSrc, Npp16s * pDst, int nLength, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32s16s(const Npp32s * pSrc, Npp16s * pDst, int nLength);
 
 NppStatus 
+nppsConvert_32s32f_Ctx(const Npp32s * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32s32f(const Npp32s * pSrc, Npp32f * pDst, int nLength);
+
+NppStatus 
+nppsConvert_32s64f_Ctx(const Npp32s * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32s64f(const Npp32s * pSrc, Npp64f * pDst, int nLength);
 
 NppStatus 
+nppsConvert_32f64f_Ctx(const Npp32f * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32f64f(const Npp32f * pSrc, Npp64f * pDst, int nLength);
+
+NppStatus 
+nppsConvert_64s64f_Ctx(const Npp64s * pSrc, Npp64f * pDst, int nLength, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_64s64f(const Npp64s * pSrc, Npp64f * pDst, int nLength);
 
 NppStatus 
+nppsConvert_64f32f_Ctx(const Npp64f * pSrc, Npp32f * pDst, int nLength, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_64f32f(const Npp64f * pSrc, Npp32f * pDst, int nLength);
+
+NppStatus 
+nppsConvert_16s32f_Sfs_Ctx(const Npp16s * pSrc, Npp32f * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_16s32f_Sfs(const Npp16s * pSrc, Npp32f * pDst, int nLength, int nScaleFactor);
 
 NppStatus 
+nppsConvert_16s64f_Sfs_Ctx(const Npp16s * pSrc, Npp64f * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_16s64f_Sfs(const Npp16s * pSrc, Npp64f * pDst, int nLength, int nScaleFactor);
+
+NppStatus 
+nppsConvert_32s16s_Sfs_Ctx(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32s16s_Sfs(const Npp32s * pSrc, Npp16s * pDst, int nLength, int nScaleFactor);
 
 NppStatus 
+nppsConvert_32s32f_Sfs_Ctx(const Npp32s * pSrc, Npp32f * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32s32f_Sfs(const Npp32s * pSrc, Npp32f * pDst, int nLength, int nScaleFactor);
+
+NppStatus 
+nppsConvert_32s64f_Sfs_Ctx(const Npp32s * pSrc, Npp64f * pDst, int nLength, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32s64f_Sfs(const Npp32s * pSrc, Npp64f * pDst, int nLength, int nScaleFactor);
 
 NppStatus 
+nppsConvert_32f8s_Sfs_Ctx(const Npp32f * pSrc, Npp8s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32f8s_Sfs(const Npp32f * pSrc, Npp8s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
+
+NppStatus 
+nppsConvert_32f8u_Sfs_Ctx(const Npp32f * pSrc, Npp8u * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32f8u_Sfs(const Npp32f * pSrc, Npp8u * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
 
 NppStatus 
+nppsConvert_32f16s_Sfs_Ctx(const Npp32f * pSrc, Npp16s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32f16s_Sfs(const Npp32f * pSrc, Npp16s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
+
+NppStatus 
+nppsConvert_32f16u_Sfs_Ctx(const Npp32f * pSrc, Npp16u * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_32f16u_Sfs(const Npp32f * pSrc, Npp16u * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
 
 NppStatus 
+nppsConvert_32f32s_Sfs_Ctx(const Npp32f * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_32f32s_Sfs(const Npp32f * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
+
+NppStatus 
+nppsConvert_64s32s_Sfs_Ctx(const Npp64s * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_64s32s_Sfs(const Npp64s * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
 
 NppStatus 
+nppsConvert_64f16s_Sfs_Ctx(const Npp64f * pSrc, Npp16s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_64f16s_Sfs(const Npp64f * pSrc, Npp16s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
 
 NppStatus 
+nppsConvert_64f32s_Sfs_Ctx(const Npp64f * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
+
+NppStatus 
 nppsConvert_64f32s_Sfs(const Npp64f * pSrc, Npp32s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
+
+NppStatus 
+nppsConvert_64f64s_Sfs_Ctx(const Npp64f * pSrc, Npp64s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor, NppStreamContext nppStreamCtx);
 
 NppStatus 
 nppsConvert_64f64s_Sfs(const Npp64f * pSrc, Npp64s * pDst, int nLength, NppRoundMode eRoundMode, int nScaleFactor);
@@ -167,7 +248,7 @@ nppsConvert_64f64s_Sfs(const Npp64f * pSrc, Npp64s * pDst, int nLength, NppRound
 /** @} signal_convert */
 
 /** @defgroup signal_threshold Threshold
- *
+ * The set of threshold operations available in the library.
  * @{
  *
  */
@@ -186,8 +267,12 @@ nppsConvert_64f64s_Sfs(const Npp64f * pSrc, Npp64s * pDst, int nLength, NppRound
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp);
 
@@ -197,8 +282,12 @@ nppsThreshold_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_16s_I_Ctx(Npp16s * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp);
 
@@ -209,8 +298,12 @@ nppsThreshold_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRelO
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp);
 
@@ -220,8 +313,12 @@ nppsThreshold_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLe
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_16sc_I_Ctx(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRelOp);
 
@@ -232,8 +329,12 @@ nppsThreshold_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, NppCmpOp nRe
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp);
 
@@ -243,8 +344,12 @@ nppsThreshold_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp);
 
@@ -255,8 +360,12 @@ nppsThreshold_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRelO
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp);
 
@@ -266,8 +375,12 @@ nppsThreshold_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLe
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRelOp);
 
@@ -278,8 +391,12 @@ nppsThreshold_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, NppCmpOp nRe
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp);
 
@@ -289,8 +406,12 @@ nppsThreshold_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_64f_I_Ctx(Npp64f * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp);
 
@@ -301,8 +422,12 @@ nppsThreshold_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRelO
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp);
 
@@ -312,8 +437,12 @@ nppsThreshold_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLe
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nRelOp NppCmpOp type of thresholding operation (NPP_CMP_LESS or NPP_CMP_GREATER only).
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRelOp);
 
@@ -323,8 +452,12 @@ nppsThreshold_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, NppCmpOp nRe
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel);
 
@@ -333,8 +466,12 @@ nppsThreshold_LT_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_16s_I_Ctx(Npp16s * pSrcDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel);
 
@@ -344,8 +481,12 @@ nppsThreshold_LT_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel);
 
@@ -354,8 +495,12 @@ nppsThreshold_LT_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_16sc_I_Ctx(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel);
 
@@ -365,8 +510,12 @@ nppsThreshold_LT_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel);
 
@@ -375,8 +524,12 @@ nppsThreshold_LT_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel);
 
@@ -386,8 +539,12 @@ nppsThreshold_LT_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel);
 
@@ -396,8 +553,12 @@ nppsThreshold_LT_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel);
 
@@ -407,8 +568,12 @@ nppsThreshold_LT_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel);
 
@@ -417,8 +582,12 @@ nppsThreshold_LT_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_64f_I_Ctx(Npp64f * pSrcDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel);
 
@@ -428,8 +597,12 @@ nppsThreshold_LT_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel);
 
@@ -438,8 +611,12 @@ nppsThreshold_LT_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LT_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LT_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel);
 
@@ -449,8 +626,12 @@ nppsThreshold_LT_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel);
 
@@ -459,8 +640,12 @@ nppsThreshold_GT_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_16s_I_Ctx(Npp16s * pSrcDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel);
 
@@ -470,8 +655,12 @@ nppsThreshold_GT_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel);
 
@@ -480,8 +669,12 @@ nppsThreshold_GT_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_16sc_I_Ctx(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel);
 
@@ -491,8 +684,12 @@ nppsThreshold_GT_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel);
 
@@ -501,8 +698,12 @@ nppsThreshold_GT_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel);
 
@@ -512,8 +713,12 @@ nppsThreshold_GT_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel);
 
@@ -522,8 +727,12 @@ nppsThreshold_GT_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel);
 
@@ -533,8 +742,12 @@ nppsThreshold_GT_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel);
 
@@ -543,8 +756,12 @@ nppsThreshold_GT_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLe
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_64f_I_Ctx(Npp64f * pSrcDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel);
 
@@ -554,8 +771,12 @@ nppsThreshold_GT_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel);
  * \param pDst \ref destination_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel);
 
@@ -564,8 +785,12 @@ nppsThreshold_GT_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f 
  * \param pSrcDst \ref in_place_signal_pointer.
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GT_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GT_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel);
 
@@ -576,8 +801,12 @@ nppsThreshold_GT_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel);
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, Npp16s nValue);
 
@@ -587,8 +816,12 @@ nppsThreshold_LTVal_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_16s_I_Ctx(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s nValue);
 
@@ -599,8 +832,12 @@ nppsThreshold_LTVal_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, Npp16sc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, Npp16sc nValue);
 
@@ -610,8 +847,12 @@ nppsThreshold_LTVal_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp1
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_16sc_I_Ctx(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16sc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16sc nValue);
 
@@ -622,8 +863,12 @@ nppsThreshold_LTVal_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16s
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, Npp32f nValue);
 
@@ -633,8 +878,12 @@ nppsThreshold_LTVal_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f nValue);
 
@@ -645,8 +894,12 @@ nppsThreshold_LTVal_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, Npp32fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, Npp32fc nValue);
 
@@ -656,8 +909,12 @@ nppsThreshold_LTVal_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp3
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32fc nValue);
 
@@ -668,8 +925,12 @@ nppsThreshold_LTVal_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32f
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, Npp64f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, Npp64f nValue);
 
@@ -679,8 +940,12 @@ nppsThreshold_LTVal_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_64f_I_Ctx(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f nValue);
 
@@ -691,8 +956,12 @@ nppsThreshold_LTVal_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, Npp64fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, Npp64fc nValue);
 
@@ -702,8 +971,12 @@ nppsThreshold_LTVal_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp6
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_LTVal_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, Npp64fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_LTVal_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, Npp64fc nValue);
 
@@ -714,8 +987,12 @@ nppsThreshold_LTVal_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, Npp64f
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_16s_Ctx(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s nLevel, Npp16s nValue);
 
@@ -725,8 +1002,12 @@ nppsThreshold_GTVal_16s(const Npp16s * pSrc, Npp16s * pDst, int nLength, Npp16s 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_16s_I_Ctx(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s nValue);
 
@@ -737,8 +1018,12 @@ nppsThreshold_GTVal_16s_I(Npp16s * pSrcDst, int nLength, Npp16s nLevel, Npp16s n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_16sc_Ctx(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, Npp16sc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp16s nLevel, Npp16sc nValue);
 
@@ -748,8 +1033,12 @@ nppsThreshold_GTVal_16sc(const Npp16sc * pSrc, Npp16sc * pDst, int nLength, Npp1
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_16sc_I_Ctx(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16sc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16sc nValue);
 
@@ -760,8 +1049,12 @@ nppsThreshold_GTVal_16sc_I(Npp16sc * pSrcDst, int nLength, Npp16s nLevel, Npp16s
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_32f_Ctx(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f nLevel, Npp32f nValue);
 
@@ -771,8 +1064,12 @@ nppsThreshold_GTVal_32f(const Npp32f * pSrc, Npp32f * pDst, int nLength, Npp32f 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_32f_I_Ctx(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f nValue);
 
@@ -783,8 +1080,12 @@ nppsThreshold_GTVal_32f_I(Npp32f * pSrcDst, int nLength, Npp32f nLevel, Npp32f n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_32fc_Ctx(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, Npp32fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp32f nLevel, Npp32fc nValue);
 
@@ -794,8 +1095,12 @@ nppsThreshold_GTVal_32fc(const Npp32fc * pSrc, Npp32fc * pDst, int nLength, Npp3
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_32fc_I_Ctx(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32fc nValue);
 
@@ -806,8 +1111,12 @@ nppsThreshold_GTVal_32fc_I(Npp32fc * pSrcDst, int nLength, Npp32f nLevel, Npp32f
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_64f_Ctx(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, Npp64f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f nLevel, Npp64f nValue);
 
@@ -817,8 +1126,12 @@ nppsThreshold_GTVal_64f(const Npp64f * pSrc, Npp64f * pDst, int nLength, Npp64f 
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_64f_I_Ctx(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f nValue);
 
@@ -829,8 +1142,12 @@ nppsThreshold_GTVal_64f_I(Npp64f * pSrcDst, int nLength, Npp64f nLevel, Npp64f n
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_64fc_Ctx(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, Npp64fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp64f nLevel, Npp64fc nValue);
 
@@ -840,8 +1157,12 @@ nppsThreshold_GTVal_64fc(const Npp64fc * pSrc, Npp64fc * pDst, int nLength, Npp6
  * \param nLength \ref length_specification.
  * \param nLevel Constant threshold value (real part only and must be greater than 0) to be used to limit each signal sample
  * \param nValue Constant value to replace source value when threshold test is true.
+ * \param nppStreamCtx \ref application_managed_stream_context. 
  * \return \ref signal_data_error_codes, \ref length_error_codes.
  */
+NppStatus 
+nppsThreshold_GTVal_64fc_I_Ctx(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, Npp64fc nValue, NppStreamContext nppStreamCtx);
+
 NppStatus 
 nppsThreshold_GTVal_64fc_I(Npp64fc * pSrcDst, int nLength, Npp64f nLevel, Npp64fc nValue);
 

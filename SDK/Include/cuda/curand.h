@@ -55,14 +55,15 @@
  *
  * @{
  */
-
+#ifndef __CUDACC_RTC__
 #include <cuda_runtime.h>
+#endif
 
 #ifndef CURANDAPI
 #ifdef _WIN32
 #define CURANDAPI __stdcall
 #else
-#define CURANDAPI 
+#define CURANDAPI
 #endif
 #endif
 
@@ -70,14 +71,21 @@
 extern "C" {
 #endif /* __cplusplus */
 
+#define CURAND_VER_MAJOR 10
+#define CURAND_VER_MINOR 3
+#define CURAND_VER_PATCH 1
+#define CURAND_VER_BUILD 50
+#define CURAND_VERSION (CURAND_VER_MAJOR * 1000 + \
+                        CURAND_VER_MINOR *  100 + \
+                        CURAND_VER_PATCH)
 /* CURAND Host API datatypes */
 
-/**  
+/**
  * @{
  */
 
 /**
- * CURAND function call status types 
+ * CURAND function call status types
  */
 enum curandStatus {
     CURAND_STATUS_SUCCESS = 0, ///< No errors
@@ -132,8 +140,10 @@ typedef enum curandRngType curandRngType_t;
  */
 enum curandOrdering {
     CURAND_ORDERING_PSEUDO_BEST = 100, ///< Best ordering for pseudorandom results
-    CURAND_ORDERING_PSEUDO_DEFAULT = 101, ///< Specific default 4096 thread sequence for pseudorandom results
+    CURAND_ORDERING_PSEUDO_DEFAULT = 101, ///< Specific default thread sequence for pseudorandom results, same as CURAND_ORDERING_PSEUDO_BEST
     CURAND_ORDERING_PSEUDO_SEEDED = 102, ///< Specific seeding pattern for fast lower quality pseudorandom results
+    CURAND_ORDERING_PSEUDO_LEGACY = 103, ///< Specific legacy sequence for pseudorandom results, guaranteed to remain the same for all cuRAND release
+    CURAND_ORDERING_PSEUDO_DYNAMIC = 104, ///< Specific ordering adjusted to the device it is being executed on, provides the best performance
     CURAND_ORDERING_QUASI_DEFAULT = 201 ///< Specific n-dimensional ordering for quasirandom results
 };
 
@@ -174,7 +184,7 @@ typedef unsigned int curandDirectionVectors32_t[32];
 /** \cond UNHIDE_TYPEDEFS */
 typedef unsigned long long curandDirectionVectors64_t[64];
 /** \endcond **/
- 
+
 /**
  * CURAND generator (opaque)
  */
@@ -233,6 +243,9 @@ enum curandMethod {
 typedef enum curandMethod curandMethod_t;
 /** \endcond */
 
+
+#ifndef __CUDACC_RTC__
+
 /**
  * @}
  */
@@ -245,22 +258,22 @@ typedef enum curandMethod curandMethod_t;
  *
  * Legal values for \p rng_type are:
  * - CURAND_RNG_PSEUDO_DEFAULT
- * - CURAND_RNG_PSEUDO_XORWOW 
+ * - CURAND_RNG_PSEUDO_XORWOW
  * - CURAND_RNG_PSEUDO_MRG32K3A
  * - CURAND_RNG_PSEUDO_MTGP32
- * - CURAND_RNG_PSEUDO_MT19937 
+ * - CURAND_RNG_PSEUDO_MT19937
  * - CURAND_RNG_PSEUDO_PHILOX4_32_10
  * - CURAND_RNG_QUASI_DEFAULT
  * - CURAND_RNG_QUASI_SOBOL32
  * - CURAND_RNG_QUASI_SCRAMBLED_SOBOL32
  * - CURAND_RNG_QUASI_SOBOL64
  * - CURAND_RNG_QUASI_SCRAMBLED_SOBOL64
- * 
+ *
  * When \p rng_type is CURAND_RNG_PSEUDO_DEFAULT, the type chosen
  * is CURAND_RNG_PSEUDO_XORWOW.  \n
  * When \p rng_type is CURAND_RNG_QUASI_DEFAULT,
  * the type chosen is CURAND_RNG_QUASI_SOBOL32.
- * 
+ *
  * The default values for \p rng_type = CURAND_RNG_PSEUDO_XORWOW are:
  * - \p seed = 0
  * - \p offset = 0
@@ -309,16 +322,16 @@ typedef enum curandMethod curandMethod_t;
  * \param generator - Pointer to generator
  * \param rng_type - Type of generator to create
  *
- * \return 
+ * \return
  * - CURAND_STATUS_ALLOCATION_FAILED, if memory could not be allocated \n
  * - CURAND_STATUS_INITIALIZATION_FAILED if there was a problem setting up the GPU \n
- * - CURAND_STATUS_VERSION_MISMATCH if the header file version does not match the 
+ * - CURAND_STATUS_VERSION_MISMATCH if the header file version does not match the
  *   dynamically linked library version \n
  * - CURAND_STATUS_TYPE_ERROR if the value for \p rng_type is invalid \n
  * - CURAND_STATUS_SUCCESS if generator was created successfully \n
- * 
+ *
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandCreateGenerator(curandGenerator_t *generator, curandRngType_t rng_type);
 
 /**
@@ -329,19 +342,19 @@ curandCreateGenerator(curandGenerator_t *generator, curandRngType_t rng_type);
  *
  * Legal values for \p rng_type are:
  * - CURAND_RNG_PSEUDO_DEFAULT
- * - CURAND_RNG_PSEUDO_XORWOW 
+ * - CURAND_RNG_PSEUDO_XORWOW
  * - CURAND_RNG_PSEUDO_MRG32K3A
  * - CURAND_RNG_PSEUDO_MTGP32
  * - CURAND_RNG_PSEUDO_MT19937
  * - CURAND_RNG_PSEUDO_PHILOX4_32_10
  * - CURAND_RNG_QUASI_DEFAULT
  * - CURAND_RNG_QUASI_SOBOL32
- * 
+ *
  * When \p rng_type is CURAND_RNG_PSEUDO_DEFAULT, the type chosen
  * is CURAND_RNG_PSEUDO_XORWOW.  \n
  * When \p rng_type is CURAND_RNG_QUASI_DEFAULT,
  * the type chosen is CURAND_RNG_QUASI_SOBOL32.
- * 
+ *
  * The default values for \p rng_type = CURAND_RNG_PSEUDO_XORWOW are:
  * - \p seed = 0
  * - \p offset = 0
@@ -398,7 +411,7 @@ curandCreateGenerator(curandGenerator_t *generator, curandRngType_t rng_type);
  * - CURAND_STATUS_TYPE_ERROR if the value for \p rng_type is invalid \n
  * - CURAND_STATUS_SUCCESS if generator was created successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandCreateGeneratorHost(curandGenerator_t *generator, curandRngType_t rng_type);
 
 /**
@@ -412,7 +425,7 @@ curandCreateGeneratorHost(curandGenerator_t *generator, curandRngType_t rng_type
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_SUCCESS if generator was destroyed successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandDestroyGenerator(curandGenerator_t generator);
 
 /**
@@ -465,8 +478,8 @@ curandStatus_t CURANDAPI
 curandSetStream(curandGenerator_t generator, cudaStream_t stream);
 
 /**
- * \brief Set the seed value of the pseudo-random number generator.  
- * 
+ * \brief Set the seed value of the pseudo-random number generator.
+ *
  * Set the seed value of the pseudorandom number generator.
  * All values of seed are valid.  Different seeds will produce different sequences.
  * Different seeds will often not be statistically correlated with each other,
@@ -474,13 +487,13 @@ curandSetStream(curandGenerator_t generator, cudaStream_t stream);
  *
  * \param generator - Generator to modify
  * \param seed - Seed value
- * 
+ *
  * \return
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_TYPE_ERROR if the generator is not a pseudorandom number generator \n
  * - CURAND_STATUS_SUCCESS if generator seed was set successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandSetPseudoRandomGeneratorSeed(curandGenerator_t generator, unsigned long long seed);
 
 /**
@@ -488,7 +501,7 @@ curandSetPseudoRandomGeneratorSeed(curandGenerator_t generator, unsigned long lo
  *
  * Set the absolute offset of the pseudo or quasirandom number generator.
  *
- * All values of offset are valid.  The offset position is absolute, not 
+ * All values of offset are valid.  The offset position is absolute, not
  * relative to the current position in the sequence.
  *
  * \param generator - Generator to modify
@@ -498,7 +511,7 @@ curandSetPseudoRandomGeneratorSeed(curandGenerator_t generator, unsigned long lo
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_SUCCESS if generator offset was set successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandSetGeneratorOffset(curandGenerator_t generator, unsigned long long offset);
 
 /**
@@ -510,6 +523,7 @@ curandSetGeneratorOffset(curandGenerator_t generator, unsigned long long offset)
  * - CURAND_ORDERING_PSEUDO_DEFAULT
  * - CURAND_ORDERING_PSEUDO_BEST
  * - CURAND_ORDERING_PSEUDO_SEEDED
+ * - CURAND_ORDERING_PSEUDO_LEGACY
  *
  * Legal values of \p order for quasirandom generators are:
  * - CURAND_ORDERING_QUASI_DEFAULT
@@ -522,7 +536,7 @@ curandSetGeneratorOffset(curandGenerator_t generator, unsigned long long offset)
  * - CURAND_STATUS_OUT_OF_RANGE if the ordering is not valid \n
  * - CURAND_STATUS_SUCCESS if generator ordering was set successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandSetGeneratorOrdering(curandGenerator_t generator, curandOrdering_t order);
 
 /**
@@ -530,9 +544,9 @@ curandSetGeneratorOrdering(curandGenerator_t generator, curandOrdering_t order);
  *
  * Set the number of dimensions to be generated by the quasirandom number
  * generator.
- * 
+ *
  * Legal values for \p num_dimensions are 1 to 20000.
- * 
+ *
  * \param generator - Generator to modify
  * \param num_dimensions - Number of dimensions
  *
@@ -561,8 +575,9 @@ curandSetQuasiRandomGeneratorDimensions(curandGenerator_t generator, unsigned in
  * \param num - Number of random 32-bit values to generate
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
- * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from 
+ * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *     a previous kernel launch \n
  * - CURAND_STATUS_LENGTH_NOT_MULTIPLE if the number of output samples is
  *    not a multiple of the quasirandom dimension \n
@@ -571,7 +586,7 @@ curandSetQuasiRandomGeneratorDimensions(curandGenerator_t generator, unsigned in
  * (use ::curandGenerateLongLong() with 64 bit quasirandom generators)
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandGenerate(curandGenerator_t generator, unsigned int *outputPtr, size_t num);
 
 /**
@@ -591,7 +606,7 @@ curandGenerate(curandGenerator_t generator, unsigned int *outputPtr, size_t num)
  *
  * \return
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
- * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from 
+ * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *     a previous kernel launch \n
  * - CURAND_STATUS_LENGTH_NOT_MULTIPLE if the number of output samples is
  *    not a multiple of the quasirandom dimension \n
@@ -599,7 +614,7 @@ curandGenerate(curandGenerator_t generator, unsigned int *outputPtr, size_t num)
  * - CURAND_STATUS_TYPE_ERROR if the generator is not a 64 bit quasirandom generator\n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandGenerateLongLong(curandGenerator_t generator, unsigned long long *outputPtr, size_t num);
 
 /**
@@ -619,6 +634,7 @@ curandGenerateLongLong(curandGenerator_t generator, unsigned long long *outputPt
  * \param num - Number of floats to generate
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -627,7 +643,7 @@ curandGenerateLongLong(curandGenerator_t generator, unsigned long long *outputPt
  *    not a multiple of the quasirandom dimension \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandGenerateUniform(curandGenerator_t generator, float *outputPtr, size_t num);
 
 /**
@@ -638,7 +654,7 @@ curandGenerateUniform(curandGenerator_t generator, float *outputPtr, size_t num)
  * large enough to hold all the results.  Launches are done with the stream
  * set using ::curandSetStream(), or the null stream if no stream has been set.
  *
- * Results are 64-bit double precision floating point values between 
+ * Results are 64-bit double precision floating point values between
  * \p 0.0 and \p 1.0, excluding \p 0.0 and including \p 1.0.
  *
  * \param generator - Generator to use
@@ -647,6 +663,7 @@ curandGenerateUniform(curandGenerator_t generator, float *outputPtr, size_t num)
  * \param num - Number of doubles to generate
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -656,7 +673,7 @@ curandGenerateUniform(curandGenerator_t generator, float *outputPtr, size_t num)
  * - CURAND_STATUS_DOUBLE_PRECISION_REQUIRED if the GPU does not support double precision \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandGenerateUniformDouble(curandGenerator_t generator, double *outputPtr, size_t num);
 
 /**
@@ -672,7 +689,7 @@ curandGenerateUniformDouble(curandGenerator_t generator, double *outputPtr, size
  *
  * Normally distributed results are generated from pseudorandom generators
  * with a Box-Muller transform, and so require \p n to be even.
- * Quasirandom generators use an inverse cumulative distribution 
+ * Quasirandom generators use an inverse cumulative distribution
  * function to preserve dimensionality.
  *
  * There may be slight numerical differences between results generated
@@ -692,6 +709,7 @@ curandGenerateUniformDouble(curandGenerator_t generator, double *outputPtr, size
  * \param stddev - Standard deviation of normal distribution
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -701,8 +719,8 @@ curandGenerateUniformDouble(curandGenerator_t generator, double *outputPtr, size
  *    of two for pseudorandom generators \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
-curandGenerateNormal(curandGenerator_t generator, float *outputPtr, 
+curandStatus_t CURANDAPI
+curandGenerateNormal(curandGenerator_t generator, float *outputPtr,
                      size_t n, float mean, float stddev);
 
 /**
@@ -718,7 +736,7 @@ curandGenerateNormal(curandGenerator_t generator, float *outputPtr,
  *
  * Normally distributed results are generated from pseudorandom generators
  * with a Box-Muller transform, and so require \p n to be even.
- * Quasirandom generators use an inverse cumulative distribution 
+ * Quasirandom generators use an inverse cumulative distribution
  * function to preserve dimensionality.
  *
  * There may be slight numerical differences between results generated
@@ -738,6 +756,7 @@ curandGenerateNormal(curandGenerator_t generator, float *outputPtr,
  * \param stddev - Standard deviation of normal distribution
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -748,8 +767,8 @@ curandGenerateNormal(curandGenerator_t generator, float *outputPtr,
  * - CURAND_STATUS_DOUBLE_PRECISION_REQUIRED if the GPU does not support double precision \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
-curandGenerateNormalDouble(curandGenerator_t generator, double *outputPtr, 
+curandStatus_t CURANDAPI
+curandGenerateNormalDouble(curandGenerator_t generator, double *outputPtr,
                      size_t n, double mean, double stddev);
 
 /**
@@ -765,8 +784,8 @@ curandGenerateNormalDouble(curandGenerator_t generator, double *outputPtr,
  *
  * Normally distributed results are generated from pseudorandom generators
  * with a Box-Muller transform, and so require \p n to be even.
- * Quasirandom generators use an inverse cumulative distribution 
- * function to preserve dimensionality. 
+ * Quasirandom generators use an inverse cumulative distribution
+ * function to preserve dimensionality.
  * The normally distributed results are transformed into log-normal distribution.
  *
  * There may be slight numerical differences between results generated
@@ -786,6 +805,7 @@ curandGenerateNormalDouble(curandGenerator_t generator, double *outputPtr,
  * \param stddev - Standard deviation of associated normal distribution
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -795,8 +815,8 @@ curandGenerateNormalDouble(curandGenerator_t generator, double *outputPtr,
  *    of two for pseudorandom generators \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
-curandGenerateLogNormal(curandGenerator_t generator, float *outputPtr, 
+curandStatus_t CURANDAPI
+curandGenerateLogNormal(curandGenerator_t generator, float *outputPtr,
                      size_t n, float mean, float stddev);
 
 /**
@@ -812,7 +832,7 @@ curandGenerateLogNormal(curandGenerator_t generator, float *outputPtr,
  *
  * Normally distributed results are generated from pseudorandom generators
  * with a Box-Muller transform, and so require \p n to be even.
- * Quasirandom generators use an inverse cumulative distribution 
+ * Quasirandom generators use an inverse cumulative distribution
  * function to preserve dimensionality.
  * The normally distributed results are transformed into log-normal distribution.
  *
@@ -833,6 +853,7 @@ curandGenerateLogNormal(curandGenerator_t generator, float *outputPtr,
  * \param stddev - Standard deviation of normal distribution
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -843,8 +864,8 @@ curandGenerateLogNormal(curandGenerator_t generator, float *outputPtr,
  * - CURAND_STATUS_DOUBLE_PRECISION_REQUIRED if the GPU does not support double precision \n
  * - CURAND_STATUS_SUCCESS if the results were generated successfully \n
  */
-curandStatus_t CURANDAPI 
-curandGenerateLogNormalDouble(curandGenerator_t generator, double *outputPtr, 
+curandStatus_t CURANDAPI
+curandGenerateLogNormalDouble(curandGenerator_t generator, double *outputPtr,
                      size_t n, double mean, double stddev);
 
 /**
@@ -906,6 +927,7 @@ curandDestroyDistribution(curandDiscreteDistribution_t discrete_distribution);
  * \param lambda - lambda for the Poisson distribution
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
  * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *    a previous kernel launch \n
@@ -949,13 +971,14 @@ curandGenerateBinomialMethod(curandGenerator_t generator,
  * \param generator - Generator to update
  *
  * \return
+ * - CURAND_STATUS_ALLOCATION_FAILED if memory could not be allocated \n
  * - CURAND_STATUS_NOT_INITIALIZED if the generator was never created \n
- * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from 
+ * - CURAND_STATUS_PREEXISTING_FAILURE if there was an existing error from
  *     a previous kernel launch \n
  * - CURAND_STATUS_LAUNCH_FAILURE if the kernel launch failed for any reason \n
  * - CURAND_STATUS_SUCCESS if the seeds were generated successfully \n
  */
-curandStatus_t CURANDAPI 
+curandStatus_t CURANDAPI
 curandGenerateSeeds(curandGenerator_t generator);
 
 /**
@@ -1043,6 +1066,8 @@ curandStatus_t CURANDAPI
 curandGetScrambleConstants64(unsigned long long * * constants);
 
 /** @} */
+
+#endif // __CUDACC_RTC__
 
 #if defined(__cplusplus)
 }
