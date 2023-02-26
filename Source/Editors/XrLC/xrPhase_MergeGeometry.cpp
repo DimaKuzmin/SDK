@@ -282,9 +282,11 @@ xrCriticalSection cs;
 ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base )
 {
 	int CUR_ID = *selected;
+	cs.Enter();
+	bool use_single = USC;
+	cs.Leave();
 
-	CTimer t;
-	for ( u32 test = split ; test < split_size ; test++ ) 
+ 	for ( u32 test = split ; test < split_size ; test++ ) 
 	{	
 		if (g_XSplit[test]->empty())
 			continue;
@@ -306,14 +308,8 @@ ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 sp
 			*selected = test;
 			*selected_volume	= volume;
 			
-			cs.Enter();
-			if (USC)
-			{
-				cs.Leave();
-				break;
-			}
-			cs.Leave();
-			
+			if (use_single)
+				break;			
  		}
 	}
 }

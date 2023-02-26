@@ -19,6 +19,7 @@ enum HardwareModelType
 	HM_STANDART,
 	HM_OPTIMIZED
 };
+
 #ifdef THIS_IS_OPENCL
 #define __device__ __global
 #elif !defined(__CUDACC__)
@@ -44,16 +45,24 @@ struct HardwareVector
 		y = InY;
 		z = InZ;
 	}
+    
 
-#if defined(__CUDACC__) || defined(THIS_IS_OPENCL)
-
-#define EPS_S  0.0000001f
+	#define EPS_S  0.0000001f
 
 	__device__ HardwareVector Inverted() const
 	{
 		HardwareVector Result;
 		Result = { -x, -y, -z };
 		return Result;
+	}
+
+	__device__ HardwareVector CrossProduct(HardwareVector& v1, HardwareVector& v2)
+	{
+		HardwareVector res;
+		res.x = v1.y * v2.z - v1.z * v2.y;
+		res.y = v1.z * v2.x - v1.x * v2.z;
+		res.z = v1.x * v2.y - v1.y * v2.x;
+		return res;
 	}
 
 	__device__ float DotProduct(HardwareVector& Another) const
@@ -77,6 +86,13 @@ struct HardwareVector
 	{
 		HardwareVector Result;
 		Result = { x - Another.x, y - Another.y, z - Another.z };
+		return Result;
+	}
+
+	__device__ HardwareVector Subtract(HardwareVector& main, HardwareVector& Other) const
+	{
+		HardwareVector Result;
+		Result = { Other.x - main.x, Other.y - main.y, Other.z - main.z };
 		return Result;
 	}
 
@@ -107,8 +123,8 @@ struct HardwareVector
 		}
 	}
 
-#else
-	operator Fvector() const
+#ifndef __CUDACC__
+ 	operator Fvector() const
 	{
 		Fvector Result;
 		Result.x = x;
@@ -130,7 +146,11 @@ struct HardwareVector
 		y = From.y;
 		z = 0.0f;
 	}
+
+
+
 #endif
+ 
 };
 
 #ifndef __CUDACC__
@@ -171,7 +191,7 @@ struct RayRequest
 
 	void* FaceToSkip;
 };
-
+ 
 enum class LightCategory
 {
 	T_RGB = 0,
@@ -191,8 +211,7 @@ struct Ray_Detail
 	LightCategory RayLightCategory;
 	LightType RayLightType;
 };
-
-
+ 
 struct Hit
 {
 	static const int format = 0x463;
@@ -240,7 +259,9 @@ struct HardwareModel
 	HardwareVector* VertexNormal;
 	TrisAdditionInfo* TrianglesAdditionInfo;
 	PolyIndexes* Tris;
-	int					VertexCount;
+	int			TrisCount;
+	int			TrisAditinalInfoCount;
+	int			VertexCount;
 };
 
 struct xrHardwareLCGlobalData
@@ -251,4 +272,70 @@ struct xrHardwareLCGlobalData
 
 	//NEW DATA!
 	HardwareModel	   RaycastModel;
+};
+
+
+//se7kills
+
+
+struct TriOrig
+{
+	u64 FaceID;
+};
+
+struct OriginalModel
+{
+	HardwareVector* Vertexes;
+	HardwareVector* VertexNormal;
+	PolyIndexes* Tris;
+	int					VertexCount;
+};		
+
+struct OutData
+{
+	u64* result_faces;
+};
+
+struct MsgData
+{
+	char msg[32];
+	int value_int;
+	float value_other;
+};
+
+struct HitCDB
+{
+	float Distance;
+	int   triId;
+	float u;
+	float v;
+};
+
+struct RcastResult
+{
+	HitCDB result[16];
+	int total_TRI_used = 0;
+};
+
+
+struct CudaIDX
+{
+	int ThreadIdx;
+	int BlockIdx;
+	int BlockDim;
+	int GlobalIDX = 0;
+};
+
+struct Triangle
+{
+	HardwareVector p1;
+	HardwareVector p2;
+	HardwareVector p3;
+	u64 FaceID;
+};
+
+struct Model
+{
+	Triangle* tris;
+	int count;
 };

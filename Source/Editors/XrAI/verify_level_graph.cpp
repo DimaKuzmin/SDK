@@ -131,17 +131,20 @@ void verify_level_graph	(LPCSTR name, bool verbose)
 	bool							valid = true;
 	xr_vector<u32>::const_iterator	I = single_links.begin();
 	xr_vector<u32>::const_iterator	E = single_links.end();
-	for (u32 i=0, n = single_links.size(); I != E; ++I, ++i) {
+
+	for (u32 i=0, n = single_links.size(); I != E; ++I, ++i) 
+	{
 		marks.assign	(level_graph->header().vertex_count(),false);
 		floodfill		(*level_graph,marks,*I);
 		xr_vector<bool>::const_iterator	II = marks.begin(), BB = II;
 		xr_vector<bool>::const_iterator	EE = marks.end();
 		for ( ; II != EE; ++II)
-			if (!*II) {
-				valid	= false;
-				Msg		("AI-map is NOT valid :\nNode \n%6d[%f][%f][%f]\ncannot be reached from the node\n%6d[%f][%f][%f]\n",u32(II - BB),VPUSH(level_graph->vertex_position(u32(II - BB))),*I,VPUSH(level_graph->vertex_position(*I)));
-				break;
-			}
+		if (!*II)
+		{
+			valid	= false;
+			Msg		("AI-map is NOT valid :\nNode \n%6d[%f][%f][%f]\ncannot be reached from the node\n%6d[%f][%f][%f]\n",u32(II - BB),VPUSH(level_graph->vertex_position(u32(II - BB))),*I,VPUSH(level_graph->vertex_position(*I)));
+			break;
+		}
 
 		if (!valid)
 			break;

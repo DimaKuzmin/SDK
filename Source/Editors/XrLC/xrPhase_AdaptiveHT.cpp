@@ -205,6 +205,8 @@ CThreadManager	precalc_base_hemi;
 int THREADS_COUNT();
 #define MAX_THREADS THREADS_COUNT()
 
+#include "../XrLCLight/xrHardwareLight.h"
+
 void CBuild::xrPhase_AdaptiveHT	()
 {
 	CDB::COLLIDER	DB;
@@ -239,32 +241,6 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Light_prepare				();
 
 		// calc approximate normals for vertices + base lighting
-		//for (u32 vit=0; vit<lc_global_data()->g_vertices().size(); vit++)	
-		//{
-		//	base_color_c		vC;
-		//	Vertex*		V		= lc_global_data()->g_vertices()[vit];
-		//	V->normalFromAdj	();
-		//	LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
-		//	vC.mul				(0.5f);
-		//	V->C._set			(vC);
-		//}
-
-		/*
-		u32	stride			= u32(-1);
-		
-		u32 threads			= u32(-1);
-		u32 rest			= u32(-1);
-		get_intervals( 8, lc_global_data()->g_vertices().size(), threads, stride, rest );
-		
-		
-		for (u32 thID=0; thID<threads; thID++)
-			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID,thID*stride,thID*stride + stride ) );
-		if(rest > 0)
-			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (threads,threads*stride,threads*stride + rest ) );
-		*/
-
-		
-		
 		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
 			ThreadPrecalcHemi.push_back(i);
 
@@ -272,8 +248,19 @@ void CBuild::xrPhase_AdaptiveHT	()
 			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread> (i) );
 		
 		precalc_base_hemi.wait();
+		
+		 
+		/*
+		Status("Setup OptiX scene ...");
 
+		xrHardwareLight& LightCalculator = xrHardwareLight::Get();
+		LightCalculator.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
 
+		Status("Calculate ...");
+
+		LightCalculator.PerformAdaptiveHT();
+		*/
+		    
 		//precalc_base_hemi
 	}
 

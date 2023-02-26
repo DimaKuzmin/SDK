@@ -3,6 +3,8 @@
 #include "xrThread.h"
 #include "xrLight_Implicit.h"
 #include "xrlight_implicitdeflector.h"
+
+
 class ImplicitThread : public CThread
 {
 public:
@@ -45,18 +47,30 @@ int THREADS_COUNT()
 
 #define	NUM_THREADS	THREADS_COUNT()
 
+
+void RunCudaThread();
+
+void RunThread(ImplicitDeflector& defl)
+{
+	CThreadManager			tmanager;
+
+	u32	stride = defl.Height() / NUM_THREADS;
+	//Msg("Count: %d", NUM_THREADS);
+	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+	{
+		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
+		tmanager.start(th);
+	}
+
+	tmanager.wait();
+}
+
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 		// Start threads
-		CThreadManager			tmanager;
-	
-		u32	stride				= defl.Height()/NUM_THREADS;
-		//Msg("Count: %d", NUM_THREADS);
-		for (u32 thID = 0; thID < NUM_THREADS; thID++)
-		{	
-			ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
-			tmanager.start(th);	
-		}
-
-		tmanager.wait			();
+		
+		RunThread(defl);
+		//RunCudaThread();
 }
+
+ 

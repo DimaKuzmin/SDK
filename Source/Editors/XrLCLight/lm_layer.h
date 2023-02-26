@@ -2,21 +2,40 @@
 
 #include "base_color.h"
 
-#ifndef BORDER
-#define BORDER 1
-#endif
 
+struct XRLC_LIGHT_API LightpointRequest
+{
+	u32 X;
+	u32 Y;
+
+	Fvector Position;
+	Fvector Normal;
+
+	void* FaceToSkip;
+
+	LightpointRequest(u32 InX, u32 InY, Fvector InPosition, Fvector InNormal, void* InFaceToSkip)
+	{
+		X = InX;
+		Y = InY;
+
+		Position = InPosition;
+		Normal = InNormal;
+
+		FaceToSkip = InFaceToSkip;
+	}
+};
+
+
+
+
+
+#define BORDER 1
 
 class INetReader;
 struct XRLC_LIGHT_API  lm_layer
 {
-/*
-	enum LMODE
-	{
-		LMODE_RGBS			= 0,
-		LMODE_HS			= 1,
-	};
-*/
+	xr_vector <LightpointRequest> SurfaceLightRequests;
+
 	u32						width;
 	u32						height;
 	xr_vector<base_color>	surface;

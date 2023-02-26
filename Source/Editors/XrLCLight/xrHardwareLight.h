@@ -15,9 +15,15 @@
 #include "cuda_runtime.h"
 
 
+
 class XRLC_LIGHT_API xrHardwareLight
 {
 public:
+	struct MemoryCudaSTR
+	{
+		size_t MemoryAllocated = 0;
+	};
+	MemoryCudaSTR MemoryCuda;
 
 	enum class Mode
 	{
@@ -25,6 +31,18 @@ public:
 		OpenCL,
 		CUDA
 	};
+
+	struct MemoryUse
+	{
+		u64 start_1;
+		u64 start_2;
+		u64 start_3;
+		u64 start_4;
+		u64 start_5;
+		u64 start_6;
+	};
+
+	MemoryUse MemoryUSE;
 
 public:
 
@@ -37,11 +55,13 @@ public:
 	xrHardwareLight();
 	~xrHardwareLight();
 
+	void PerformRaycast1024(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
+
 	void LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Ligtings, xr_vector<b_BuildTexture>& Textures);
 
 	void PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
 
-	void CalculateLightmap(int DeflectorID, struct lm_layer& LightMapRef);
+	//void CalculateLightmap(int DeflectorID, struct lm_layer& LightMapRef);
 
 	void PerformAdaptiveHT();
 
@@ -52,6 +72,9 @@ public:
 
 	//here goes special functions for new batching concept
 
+	void LoadRaycastModel(CDB::MODEL* RaycastModel, xr_vector<RayRequest>& InRays);
+ 
+	void TriFindPos(xr_vector<RayRequest>& InRays);
 
 private:
 

@@ -602,6 +602,9 @@
     <ClCompile Include="xrHardwareLight.cpp">
       <Filter>Light\Lights\Hardware_code</Filter>
     </ClCompile>
+    <ClCompile Include="xrHardwareTest.cpp">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

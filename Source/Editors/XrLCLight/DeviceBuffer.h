@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include "xrHardwareLight.h"
 
 enum class DeviceBufferType
 {
@@ -15,13 +16,15 @@ enum class DeviceBufferType
 //
 // A simple abstraction for memory to be passed into Prime via BufferDescs
 //
+
 template<typename T>
 class DeviceBuffer
 {
 public:
-	DeviceBuffer(size_t count = 0, DeviceBufferType type = DeviceBufferType::CUDA)  : m_ptr(0)
+	DeviceBuffer(size_t count = 0, DeviceBufferType type = DeviceBufferType::CUDA, bool VRAM = 1)  : m_ptr(0)
 	{
-		alloc(count, type);
+		mem_type = VRAM;
+		alloc(count, type, VRAM);
 	}
 
 	// Allocate without changing type
@@ -30,19 +33,31 @@ public:
 		alloc(count, m_type);
 	}
 
-	void alloc(size_t count, DeviceBufferType type)
+	void alloc(size_t count, DeviceBufferType type, bool VRAM)
 	{
 		if (m_ptr)
 			free();
+		mem_type = VRAM;
 
 		m_type = type;
 		m_count = count;
+
+
 		if (m_count > 0)
 		{
 			if (m_type == DeviceBufferType::CUDA)
 			{
 				CHK_CUDA(cudaGetDevice(&m_device));
-				CHK_CUDA(cudaMalloc(&m_ptr, sizeInBytes()));
+
+				if (VRAM)
+				{
+					CHK_CUDA(cudaMalloc(&m_ptr, sizeInBytes()));
+				}
+				else
+				{
+					CHK_CUDA(cudaMallocHost(&m_ptr, sizeInBytes(), 0));
+				}
+				 
 			}
 			else
 			{
@@ -58,13 +73,23 @@ public:
 			int oldDevice;
 			CHK_CUDA(cudaGetDevice(&oldDevice));
 			CHK_CUDA(cudaSetDevice(m_device));
-			CHK_CUDA(cudaFree(m_ptr));
+			if (mem_type == 1)
+			{
+				CHK_CUDA(cudaFree(m_ptr));
+			}
+			else
+			{
+				CHK_CUDA(cudaFreeHost(m_ptr));
+			}
+			 
 			CHK_CUDA(cudaSetDevice(oldDevice));
 		}		 
 		else
 		{
 			FATAL("Undefined Buffer::Type for Buffer");
 		}
+
+		xrHardwareLight::Get().MemoryCuda.MemoryAllocated -= m_count;
 
 		m_ptr = 0;
 		m_count = 0;
@@ -102,6 +127,13 @@ public:
 
 		return nullptr;
 	}
+	
+	std::vector<T> hostPtrVec()
+	{
+		m_tempHost.resize(m_count);
+		CHK_CUDA(cudaMemcpy(m_tempHost.data(), m_ptr, sizeInBytes() * sizeof(T), cudaMemcpyDeviceToHost));
+		return m_tempHost;
+	}
 
 	// count == elements
 	void copyToBuffer(T* InData, size_t count, size_t offset = 0)
@@ -123,6 +155,7 @@ protected:
 	int m_device;
 	size_t m_count;
 	std::vector<T> m_tempHost;
+	bool mem_type;
  
 private:
 	DeviceBuffer<T>(const DeviceBuffer<T>&);            // forbidden

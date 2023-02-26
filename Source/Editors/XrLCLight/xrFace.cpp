@@ -17,6 +17,7 @@ const Shader_xrLC&	base_Face::Shader		()const
 	VERIFY( inlc_global_data() );
 	return shader( dwMaterial, inlc_global_data()->shaders(), inlc_global_data()->materials() );
 }
+
 void			base_Face::CacheOpacity	()
 {
 	flags.bOpaque				= true;

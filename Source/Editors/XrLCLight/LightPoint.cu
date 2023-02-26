@@ -185,6 +185,7 @@ __global__ void GenerateRaysForTask(xrHardwareLCGlobalData* GlobalData, RayReque
 	}
 }
 
+//Ray Intersection
 
 __device__ bool GetRayOptimizeOut(xrHardwareLCGlobalData* GlobalData, RayRequest* RequestedRays, u32 SurfaceID, int LightID)
 {
@@ -255,6 +256,7 @@ __global__ void CheckRayOptimizeOut(xrHardwareLCGlobalData* GlobalData, RayReque
 	StatusBuffer[idx] = (char)!IsRayOptimized;
 }
 
+// 3
 __device__ void GetEnergyFromHit(xrHardwareLCGlobalData* GlobalData, Hit* InHit, float& TargetColor)
 {
 	TrisAdditionInfo* pTrisInfo = &GlobalData->RaycastModel.TrianglesAdditionInfo[InHit->triId];
@@ -303,6 +305,7 @@ __device__ void GetEnergyFromHit(xrHardwareLCGlobalData* GlobalData, Hit* InHit,
 	}
 }
 
+// 2
 __device__ void ShiftRay(xrHardwareLCGlobalData* GlobalData, Ray* CurrentRay, Hit* InHit)
 {
 	//there is a not only shift, but strech tmax
@@ -320,7 +323,7 @@ __device__ void ShiftRay(xrHardwareLCGlobalData* GlobalData, Ray* CurrentRay, Hi
 	CurrentRay->Origin.Mad_Self(CurrentRay->Direction, Distance + 0.01f);
 }
 
-
+// 1
 __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer,
 	float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime,
 	bool CheckRGB, bool CheckSun, bool CheckHemi, bool SkipFaceMode, u64* FacesToSkip)
@@ -401,6 +404,8 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 	//shift ray, so we can cast next...
 	ShiftRay(GlobalData, OurRay, OurHit);
 }
+
+// COLOR WORK
 
 __device__ void DoFinalizeRay(xrHardwareLCGlobalData* GlobalData, float InputEnergy, RayRequest& Request, R_Light& Light, LightSource InLightType, base_color_c& OutColor)
 {
@@ -561,6 +566,86 @@ __global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBu
 
 }
 
+#include <assert.h>
+ 
+__device__ void MSG(MsgData* data, char* val, int id)
+{
+	for (int i = 0; i < 32; i++)
+		data->msg[i] = val[i];
+	data->value_int = id;
+}
+
+__device__ void HitSet(HitCDB* hit, int triID, int u, int v, int dist)
+{
+	hit->u = u;
+	hit->v = v;
+	hit->Distance = dist;
+	hit->triId = triID;
+}
+
+__device__ void __forceinline__ Tri(Model* data, int idx, RayRequest* ray, RcastResult * hit)
+{
+	
+	auto tri = data->tris[idx];
+	auto p0 = tri.p1;
+	auto p1 = tri.p2;
+	auto p2 = tri.p3;
+
+	HardwareVector edge1, edge2, tvec, pvec, qvec;
+	float det, inv_det;
+	float u, v, range;
+
+	edge1.Subtract(p1, p0);
+	edge2.Subtract(p2, p0);
+	// begin calculating determinant - also used to calculate U parameter
+	// if determinant is near zero, ray lies in plane of triangle
+	pvec.CrossProduct(ray->Normal, edge2);
+	det = edge1.DotProduct(pvec);
+
+	if (det < 0.0000100f)
+		return;
+
+	tvec.Subtract(ray->Position, p0);						// calculate distance from vert0 to ray origin
+	u = tvec.DotProduct(pvec);					// calculate U parameter and test bounds
+
+	if (u < 0.f || u > det)
+		return;
+
+	qvec.CrossProduct(tvec, edge1);				// prepare to test V parameter
+	v = ray->Position.DotProduct(qvec);			// calculate V parameter and test bounds
+
+	if (v < 0.f || u + v > det)
+		return;
+
+	range = edge2.DotProduct(qvec);				// calculate t, scale parameters, ray intersects triangle
+	inv_det = 1.0f / det;
+	range *= inv_det;
+	u *= inv_det;
+	v *= inv_det;
+
+	hit->result[1].triId = idx;
+	hit->result[1].u = u;
+	hit->result[1].v = v;
+	hit->result[1].Distance = range;
+ 
+}
+
+__global__ void __forceinline__ TriCalculate(int id, Model * data, RayRequest* rays, RcastResult* hits)
+{
+	//int idx_cuda = blockIdx.x * blockDim.x;
+	//int result = 0;			
+	//int split = GlobalData->RaycastModel.TrisCount / 1024; 
+	//for (int idx = (split * threadIdx.x) - split; idx < split * threadIdx.x; idx++)
+	
+	int res = threadIdx.x + blockIdx.x * blockDim.x * id;
+
+	for (int idx = 0; idx < data->count; idx++)
+	{
+		Tri(data, idx, &rays[res], &hits[res]);
+	}
+}
+
+
 //CALL
 
 extern "C" cudaError_t RunCheckRayOptimizeOut(xrHardwareLCGlobalData * GlobalData, RayRequest * RequestedRays, char* StatusBuffer, u64 MaxPossibleRays, int flag)
@@ -577,7 +662,7 @@ extern "C" cudaError_t RunCheckRayOptimizeOut(xrHardwareLCGlobalData * GlobalDat
 	if ((flag & LP_dont_rgb) != 0) IsRGBLightsAllowed = false;
 	if ((flag & LP_dont_sun) != 0) IsSunLightsAllowed = false;
 	if ((flag & LP_dont_hemi) != 0) IsHemiLightsAllowed = false;
-
+	
 	CheckRayOptimizeOut << <GridSize, BlockSize >> > (GlobalData, RequestedRays, StatusBuffer, MaxPossibleRays, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed);
 	return cudaDeviceSynchronize();
 }
@@ -595,7 +680,7 @@ extern "C" cudaError_t RunGenerateRaysForTask(xrHardwareLCGlobalData * GlobalDat
 	if ((flag & LP_dont_sun) != 0) IsSunLightsAllowed = false;
 	if ((flag & LP_dont_hemi) != 0) IsHemiLightsAllowed = false;
 
-	GenerateRaysForTask << <GridSize, BlockSize >> > (GlobalData, RequestedRays, RayBuffer, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed);
+	GenerateRaysForTask <<<GridSize, BlockSize >>> (GlobalData, RequestedRays, RayBuffer, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed);
 	return cudaDeviceSynchronize();
 }
 
@@ -618,8 +703,7 @@ extern "C" cudaError_t RunProcessHits(xrHardwareLCGlobalData * GlobalData, Ray *
 	ProcessHits << <GridSize, BlockSize >> > (GlobalData, RayBuffer, HitBuffer, ColorBuffer, RayStatusBuffer, AliveRaysIndexes, AliveRaysCount, IsFirstTime, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SkipFaceMode, FacesToSkip);
 	return cudaDeviceSynchronize();
 }
-
-
+ 
 extern "C" cudaError_t RunFinalizeRays(xrHardwareLCGlobalData * GlobalData, float* EnergyBuffer, RayRequest * RequestedRays, u32 RequestedRaysCount, base_color_c * OutColors, u32 * AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc)
 {
 	int BlockSize = 1024;
@@ -636,3 +720,21 @@ extern "C" cudaError_t RunFinalizeRays(xrHardwareLCGlobalData * GlobalData, floa
 	FinalizeRays << <GridSize, BlockSize >> > (GlobalData, EnergyBuffer, RequestedRays, RequestedRaysCount, OutColors, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SurfacePointStartLoc);
 	return cudaDeviceSynchronize();
 }
+
+extern "C" cudaError_t RunTriCollide(Model * model, RayRequest * ray, RcastResult * hits)
+{
+	int BlockSize = 1024;
+	//int GridSize = (RequestedRaysCount / BlockSize) + 1;
+	//int GridSize = ( tris_count / BlockSize ) + 1;
+
+	//TriCalculate << <GridSize, BlockSize >> > (GlobalData, ray, hits);
+	 
+	for (int i = 1; i <= 8; i++)
+		TriCalculate <<<4, 1024 >>> (i, &model[i-1], ray, hits);
+	//TriCalculate <<<8, 1024 >>> (0, &model[0], ray, hits);
+
+	return cudaDeviceSynchronize();
+}
+
+
+//TEST 
