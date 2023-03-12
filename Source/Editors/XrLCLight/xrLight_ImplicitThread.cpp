@@ -63,14 +63,19 @@ void RunThread(ImplicitDeflector& defl)
 	}
 
 	tmanager.wait();
-}
+}	   
+
+#include "xrHardwareLight.h"
 
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
-		// Start threads
-		
+	// Start threads
+	
+	if (!xrHardwareLight::IsEnabled())
 		RunThread(defl);
-		//RunCudaThread();
+	else
+		RunCudaThread(); 
+	
 }
 
  

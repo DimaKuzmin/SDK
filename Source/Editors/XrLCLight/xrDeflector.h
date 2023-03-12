@@ -44,6 +44,10 @@ static	CDeflector*		read_create					();
 	void	L_Direct			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
 	void	L_Direct_Edge		(CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
 	void	L_Calculate			(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
+	
+	void	GPU_Calculation();
+	
+	
 	u32		weight				() { return layer.Area(); }	
 	u16	GetBaseMaterial		() ;
 

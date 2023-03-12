@@ -60,6 +60,18 @@ void __cdecl Status	(const char *format, ...)
 	lc_log->Status		(status);
 	
 }
+
+void __cdecl StatusNoMSG(const char* format, ...)
+{
+	char				status[1024] = "";
+
+	va_list				mark;
+	va_start(mark, format);
+	vsprintf(status, format, mark);
+	lc_log->StatusNoMsg(status);
+
+}
+
 void Phase		( LPCSTR phase_name )
 {
 	if(!lc_log)

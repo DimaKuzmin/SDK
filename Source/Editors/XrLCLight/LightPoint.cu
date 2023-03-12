@@ -326,7 +326,7 @@ __device__ void ShiftRay(xrHardwareLCGlobalData* GlobalData, Ray* CurrentRay, Hi
 // 1
 __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer,
 	float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime,
-	bool CheckRGB, bool CheckSun, bool CheckHemi, bool SkipFaceMode, u64* FacesToSkip)
+	bool CheckRGB, bool CheckSun, bool CheckHemi, bool SkipFaceMode, u64* FacesToSkip, u32 * alive_rays_count, int Rounds)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -336,6 +336,7 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 	//second early exit condition. If ray is already done his life
 	u32 AliveRayIndex = AliveRaysIndexes[idx];
 	char& RayStatus = RayStatusBuffer[AliveRayIndex];
+
 	if (RayStatus == 0) return;
 
 	Hit* OurHit = &HitBuffer[idx];
@@ -350,10 +351,6 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 	//third early exit condition. If now - first time, and we don't have any hits
 	if (OurHit->triId == -1)
 	{
-		// 		if (IsFirstTime)
-		// 		{	
-		// 			OurColor = 1.0f;
-		// 		}
 		RayStatus = 0;
 		OurRay->tmax = 0.0f;
 		return;
@@ -374,6 +371,8 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 		TrisAdditionInfo& TriData = GlobalData->RaycastModel.TrianglesAdditionInfo[OurHit->triId];
 		if (TriData.FaceID == FacesToSkip[CurrentSurfaceID])
 		{
+			atomicAdd(&alive_rays_count[0], 1);
+
 			//we hit face, that we must skip. And we do that
 			ShiftRay(GlobalData, OurRay, OurHit);
 			return;
@@ -385,12 +384,9 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 	int LinearLightIndex = 0;
 	GetLightTypeAndIndex(GlobalData, CurrentRayForSurface, CheckRGB, CheckSun, CheckHemi, LightType, LinearLightIndex);
 
-	// ForserX to Giperion: Unused!
-	//R_Light& pLightSource = GlobalData->LightData[LinearLightIndex];
-
 	//get energy from current hit
-
 	GetEnergyFromHit(GlobalData, OurHit, OurColor);
+
 	//we lost all energy, die
 	if (OurColor == 0.0f)
 	{
@@ -398,8 +394,8 @@ __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, 
 		OurRay->tmax = 0.0f;
 		return;
 	}
-	//update by light properties
-	//#INFO: That call FinalizeRay, and we need to shedule this, when reach end
+
+	atomicAdd(&alive_rays_count[0], 1);  
 
 	//shift ray, so we can cast next...
 	ShiftRay(GlobalData, OurRay, OurHit);
@@ -566,6 +562,9 @@ __global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBu
 
 }
 
+
+// NEW TRIANGLE (NEED BVH SYSTEM TO FASTER WORKING)
+
 #include <assert.h>
  
 __device__ void MSG(MsgData* data, char* val, int id)
@@ -684,7 +683,8 @@ extern "C" cudaError_t RunGenerateRaysForTask(xrHardwareLCGlobalData * GlobalDat
 	return cudaDeviceSynchronize();
 }
 
-extern "C" cudaError_t RunProcessHits(xrHardwareLCGlobalData * GlobalData, Ray * RayBuffer, Hit * HitBuffer, float* ColorBuffer, char* RayStatusBuffer, u32 * AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime, int flag, u64 * FacesToSkip)
+extern "C" cudaError_t RunProcessHits(xrHardwareLCGlobalData * GlobalData, Ray * RayBuffer, Hit * HitBuffer, float* ColorBuffer, 
+	char* RayStatusBuffer, u32 * AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime, int flag, u64 * FacesToSkip, u32 * alive_rays_count, int Rounds)
 {
 	int BlockSize = 1024;
 	int GridSize = (AliveRaysCount / BlockSize) + 1;
@@ -700,7 +700,12 @@ extern "C" cudaError_t RunProcessHits(xrHardwareLCGlobalData * GlobalData, Ray *
 
 	bool SkipFaceMode = !!(flag & LP_UseFaceDisable);
 
-	ProcessHits << <GridSize, BlockSize >> > (GlobalData, RayBuffer, HitBuffer, ColorBuffer, RayStatusBuffer, AliveRaysIndexes, AliveRaysCount, IsFirstTime, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SkipFaceMode, FacesToSkip);
+	ProcessHits << <GridSize, BlockSize >> > (
+		GlobalData, RayBuffer, HitBuffer, ColorBuffer, 
+		RayStatusBuffer, AliveRaysIndexes, AliveRaysCount, IsFirstTime, 
+		IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SkipFaceMode, 
+		FacesToSkip, alive_rays_count, Rounds);
+
 	return cudaDeviceSynchronize();
 }
  
@@ -721,6 +726,8 @@ extern "C" cudaError_t RunFinalizeRays(xrHardwareLCGlobalData * GlobalData, floa
 	return cudaDeviceSynchronize();
 }
 
+//TEST
+
 extern "C" cudaError_t RunTriCollide(Model * model, RayRequest * ray, RcastResult * hits)
 {
 	int BlockSize = 1024;
@@ -728,13 +735,11 @@ extern "C" cudaError_t RunTriCollide(Model * model, RayRequest * ray, RcastResul
 	//int GridSize = ( tris_count / BlockSize ) + 1;
 
 	//TriCalculate << <GridSize, BlockSize >> > (GlobalData, ray, hits);
-	 
+
 	for (int i = 1; i <= 8; i++)
-		TriCalculate <<<4, 1024 >>> (i, &model[i-1], ray, hits);
+		TriCalculate << <4, 1024 >> > (i, &model[i - 1], ray, hits);
 	//TriCalculate <<<8, 1024 >>> (0, &model[0], ray, hits);
 
 	return cudaDeviceSynchronize();
 }
 
-
-//TEST 

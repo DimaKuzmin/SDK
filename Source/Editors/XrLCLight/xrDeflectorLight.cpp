@@ -524,7 +524,7 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 		if (range>0 && range<R) return 0;
   
   	// 2. Polygon doesn't pick - real database query
-	DB->ray_query(MDL, P, D, R, g_params().ray_calc_type);
+	DB->ray_query(MDL, P, D, R, 1);
  
 	// 3. Analyze polygons and cache nearest if possible
 	if (0==DB->r_count()) 

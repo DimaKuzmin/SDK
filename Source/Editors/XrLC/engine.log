@@ -1,5 +1,5 @@
 Initializing File System...
 $fs_root$ = A:\SDK\SDK\
 using fs-ltx: A:\SDK\SDK\fsgame.ltx
-FS: 37835 files cached 0 archives, 0Kb memory used.
-Init FileSystem 0.481997 sec
+FS: 38334 files cached 0 archives, 0Kb memory used.
+Init FileSystem 0.617582 sec

@@ -44,22 +44,27 @@ public:
 
 	MemoryUse MemoryUSE;
 
-public:
-
 	static BOOL IsHardwareAccelerationSupported(xrHardwareLight::Mode mode);
 
 	static xrHardwareLight& Get();
 
 	static bool IsEnabled();
+	static void SetEnabled(bool val) { _IsEnabled = val; };
+
+ 	int MAX_MEMORY = 1;
+	
+	void setMaxMem(int val) { MAX_MEMORY = val; };
+	int MaxMem() { return MAX_MEMORY; };
+
+	void PrintMSG(LPCSTR format, ...);
 
 	xrHardwareLight();
 	~xrHardwareLight();
 
-	void PerformRaycast1024(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
-
 	void LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Ligtings, xr_vector<b_BuildTexture>& Textures);
 
-	void PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
+	void PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits, bool update_status = false);
+	void Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
 
 	//void CalculateLightmap(int DeflectorID, struct lm_layer& LightMapRef);
 

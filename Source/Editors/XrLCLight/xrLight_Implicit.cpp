@@ -45,6 +45,17 @@ ImplicitCalcGlobs cl_globs;
 void CalculateGPU(ImplicitDeflector& defl)
 {
 	Msg("CalculateGPU");
+	/*
+	int idx = 0;
+	xr_vector <RayRequest> RayRequestsTri;
+	for (auto ray : RayRequests)
+	{
+		RayRequestsTri.push_back(ray);
+		idx++;
+	}
+	HardwareCalculator.TriFindPos(RayRequestsTri);
+	*/
+
 
 	if (true)
 	{
@@ -63,76 +74,16 @@ void CalculateGPU(ImplicitDeflector& defl)
 		{
 			LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceID];
 			RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
+			Msg("RayReq X[%d], Y[%d]", LRequest.X, LRequest.Y);
 		}
-
-		 
-		int idx = 0;
-		xr_vector <RayRequest> RayRequestsTri;
-		for (auto ray : RayRequests)
-		{
-			RayRequestsTri.push_back(ray);
-			idx++;
-		}
-
-
-		HardwareCalculator.TriFindPos(RayRequestsTri);
-
-
-
-		return;
 		 
 		xr_vector<base_color_c> FinalColors;
-
-		/*
-		
-		//Msg("CalculateGPU Preform Raycast %d", RayRequests.size());
-		
-		xr_vector<base_color_c> FinalColors;
- 
-		int split_value = RayRequests.size() / 8;
-
-		CTimer t; t.Start();
- 
-		xr_map<int, xr_vector<RayRequest>> maps;
-				
- 		int cur_split = 0;
-
-
-		int id = 0;
-		for (auto ray : RayRequests)
-		{
-			maps[cur_split].push_back(ray);	  
-			id++;
-			if (id > split_value)
-			{
-				id = 0;
-				cur_split += 1;
-			}
-		}
-
-		for (auto req : maps)
-		{
-			Msg("[%d]/[%d], time[%.0f], m1[%u], m2[%u], m3[%u], m4[%u], m5[%u], m6[%u]", 
-				req.first, maps.size(), t.GetElapsed_sec(), 
-				HardwareCalculator.MemoryUSE.start_1, HardwareCalculator.MemoryUSE.start_2,
-				HardwareCalculator.MemoryUSE.start_3, HardwareCalculator.MemoryUSE.start_4,
-				HardwareCalculator.MemoryUSE.start_5, HardwareCalculator.MemoryUSE.start_6);
-			xr_vector<base_color_c>	 tmp_colors;
-			HardwareCalculator.PerformRaycast(req.second, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, tmp_colors);
-			for (auto color : tmp_colors)
-				FinalColors.push_back(color);
-		}
-		*/
-		 
-
- 
+		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors, true);
 		//finalize rays
 
 		//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
 		u32 SurfaceRequestCursor = 0;
 		u32 AlmostMaxSurfaceLightRequest = defl.lmap.SurfaceLightRequests.size() - 1;
-
-
 		for (u32 V = 0; V < defl.lmap.height; V++)
 		{
 			for (u32 U = 0; U < defl.lmap.width; U++)
@@ -147,6 +98,7 @@ void CalculateGPU(ImplicitDeflector& defl)
 					for (;;)
 					{
 						LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
+						Msg("X:%d, Y: %d == U: %d, V: %d ", LRequest.X, LRequest.Y, U, V);
 
 						if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
 						{
@@ -327,9 +279,6 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 {
 	for (u32 U = 0; U < defl->Width(); U++)
 	{
-		//if (net_cb && !net_cb->test_connection())
-		//	return;
-
 		base_color_c	C;
 		u32				Fcount = 0;
 
@@ -360,7 +309,11 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 						wN.from_bary(V1->N, V2->N, V3->N, B);
 						wN.normalize();
 
-						LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), F);
+						LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN,
+							inlc_global_data()->L_static(), (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
+							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0), 
+						F);
 
 						Fcount++;
 					}

@@ -72,7 +72,7 @@ void EScene::GenObjectName(ObjClassID cls_id, char* buffer, const char* pref)
     {
         bool result;
         xr_string temp;
-        if (pref)
+        if (pref && pref[0])
         {
             if (i == 0)
             {

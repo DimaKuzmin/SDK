@@ -159,9 +159,6 @@ struct b_params
 	u32			m_lm_rms_zero;			// RMS - after what the lightmap will be shrinked to ZERO pixels
 	u32			m_lm_rms;				// RMS - shrink and recalc
 
-	//Ray Calculation TYPE
-	int ray_calc_type;
-
     // build quality
 	u16			m_quality;
 	u16			u_reserved;
@@ -215,8 +212,6 @@ struct b_params
         // Light maps
 		m_lm_rms_zero			= 4;
 		m_lm_rms				= 4;
-
-		ray_calc_type			= 0;
 
         setHighQuality			();
 	}

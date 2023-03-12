@@ -273,6 +273,7 @@ class client_log_impl : public i_lc_log
 	virtual void clMsg		( LPCSTR msg )			{::clMsg(msg);}
 	virtual void clLog		( LPCSTR msg )			{::clLog(msg);}
 	virtual void Status		( LPCSTR msg )			{::Status(msg);}
+	virtual void StatusNoMsg(LPCSTR msg)			{ ::StatusNoMSG(msg); }
 	virtual	void Progress	( const float F )		{::Progress( F );}
 	virtual	void Phase		( LPCSTR phase_name )	{::Phase( phase_name );}
 public:

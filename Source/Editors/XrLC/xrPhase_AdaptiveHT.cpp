@@ -239,28 +239,32 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Status						("Precalculating : base hemisphere ...");
 		mem_Compact					();
 		Light_prepare				();
-
-		// calc approximate normals for vertices + base lighting
-		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
-			ThreadPrecalcHemi.push_back(i);
-
-		for (int i = 0; i < MAX_THREADS; i++)
-			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread> (i) );
-		
-		precalc_base_hemi.wait();
-		
 		 
-		/*
-		Status("Setup OptiX scene ...");
+		if (!xrHardwareLight::IsEnabled())
+		{
+			// calc approximate normals for vertices + base lighting
+			for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
+				ThreadPrecalcHemi.push_back(i);
 
-		xrHardwareLight& LightCalculator = xrHardwareLight::Get();
-		LightCalculator.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
+			for (int i = 0; i < MAX_THREADS; i++)
+				precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
 
-		Status("Calculate ...");
+			precalc_base_hemi.wait();
+		}	
+		else
+		{
+			Status("Setup OptiX scene ...");
 
-		LightCalculator.PerformAdaptiveHT();
-		*/
-		    
+			xrHardwareLight& LightCalculator = xrHardwareLight::Get();
+			LightCalculator.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
+
+			Status("Calculate ...");
+
+			LightCalculator.PerformAdaptiveHT();
+		}
+	 
+
+		 
 		//precalc_base_hemi
 	}
 

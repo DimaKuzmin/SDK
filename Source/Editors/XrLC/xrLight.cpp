@@ -86,7 +86,7 @@ int THREADS_COUNT()
 }
 
 #define TH_NUM THREADS_COUNT()
-
+#include "..\XrLCLight\xrHardwareLight.h"
 
 void	CBuild::LMapsLocal				()
 {
@@ -113,11 +113,19 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		CThreadManager	threads;
  		CTimer	start_time;	
 		start_time.Start();				
-		for				(int L=0; L < TH_NUM; L++)
-			threads.start(xr_new<CLMThread> (L));
+			
+		int th = TH_NUM;
+
+		if (xrHardwareLight::IsEnabled())
+			th = 1;
+		for (int L = 0; L < th; L++)
+			threads.start(xr_new<CLMThread>(L));
+
 		
 		threads.wait	(500);
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
+
+
 }
 
 void	CBuild::LMaps					()
@@ -146,6 +154,8 @@ void	CBuild::LMaps					()
 void XRLC_LIGHT_API ImplicitNetWait();
 void CBuild::Light()
 {
+	Msg("QUALYTI: %d", g_params().m_quality);
+
 	if (g_params().m_quality == ebqDraft)
 		return;
 
@@ -158,7 +168,6 @@ void CBuild::Light()
 	}
 	
 	LMaps		();
-
 
 	//****************************************** Vertex
 	FPU::m64r		();

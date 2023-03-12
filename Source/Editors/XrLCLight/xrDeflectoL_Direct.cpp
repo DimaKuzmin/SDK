@@ -7,6 +7,9 @@
 #include "light_point.h"
 #include "xrface.h"
 #include "net_task.h"
+
+#include "xrHardwareLight.h"
+
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
 void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
@@ -119,14 +122,27 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 								wN.from_bary(V1->N,V2->N,V3->N,B);	exact_normalize	(wN); 
 								wN.add		(F->N);					exact_normalize	(wN);
 							}
-							try {
-								VERIFY(inlc_global_data());
-								VERIFY(inlc_global_data()->RCAST_Model());
-								LightPoint	(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun()?LP_dont_sun:0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F); //.
-								Fcount		+= 1;
-							} catch (...) {
-								clMsg("* ERROR (CDB). Recovered. ");
+							
+							if (!xrHardwareLight::IsEnabled())
+							{
+								try
+								{
+									VERIFY(inlc_global_data());
+									VERIFY(inlc_global_data()->RCAST_Model());
+									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F); //.
+									Fcount += 1;
+								}
+								catch (...) {
+									clMsg("* ERROR (CDB). Recovered. ");
+								}
 							}
+							else
+							{
+								lm.SurfaceLightRequests.push_back(LightpointRequest(U,V, wP, wN, F));
+								lm.marker[V * lm.width + U] = 255;
+							}
+							
+
 							break;
 						}
 					}
@@ -134,16 +150,21 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 			} catch (...) {
 				clMsg("* ERROR (Light). Recovered. ");
 			}
-			
-			if (Fcount)
+
+			if (!xrHardwareLight::IsEnabled())
 			{
-				C.scale(Fcount);
-				C.mul			(.5f);
-				lm.surface		[V*lm.width+U]._set(C);
-				lm.marker		[V*lm.width+U] = 255;
-			} else {
-				lm.surface		[V*lm.width+U]._set(C);	// 0-0-0-0-0
-				lm.marker		[V*lm.width+U] = 0;
+				if (Fcount)
+				{
+					C.scale(Fcount);
+					C.mul(.5f);
+					lm.surface[V * lm.width + U]._set(C);
+					lm.marker[V * lm.width + U] = 255;
+				}
+				else
+				{
+					lm.surface[V * lm.width + U]._set(C);	// 0-0-0-0-0
+					lm.marker[V * lm.width + U] = 0;
+				}
 			}
 		}
 	}
@@ -163,5 +184,75 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 		{
 			clMsg("* ERROR (Edge). Recovered. ");
 		}
+	}
+
+
+	GPU_Calculation();
+}
+
+void CDeflector::GPU_Calculation()
+{
+	if (xrHardwareLight::IsEnabled())
+	{
+		//cast and finalize
+		if (layer.SurfaceLightRequests.size() == 0)
+		{
+			return;
+		}
+		xrHardwareLight& HardwareCalculator = xrHardwareLight::Get();
+
+		//pack that shit in to task, but remember order
+		xr_vector <RayRequest> RayRequests;
+		size_t SurfaceCount = layer.SurfaceLightRequests.size();
+		RayRequests.reserve(SurfaceCount);
+		for (size_t SurfaceID = 0; SurfaceID < SurfaceCount; ++SurfaceID)
+		{
+			LightpointRequest& LRequest = layer.SurfaceLightRequests[SurfaceID];
+			RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
+		}
+
+		xr_vector<base_color_c> FinalColors;
+		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors);		
+ 
+		//finalize rays
+
+		//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
+		//#TODO: Invoke several threads!
+		u32 SurfaceRequestCursor = 0;
+		u32 AlmostMaxSurfaceLightRequest = (u32)layer.SurfaceLightRequests.size() - 1;
+		for (u32 V = 0; V < layer.height; V++)
+		{
+			for (u32 U = 0; U < layer.width; U++)
+			{
+				LightpointRequest& LRequest = layer.SurfaceLightRequests[SurfaceRequestCursor];
+
+				if (LRequest.X == U && LRequest.Y == V)
+				{
+					//accumulate all color and draw to the lmap
+					base_color_c ReallyFinalColor;
+					int ColorCount = 0;
+					for (;;)
+					{
+						LRequest = layer.SurfaceLightRequests[SurfaceRequestCursor];
+
+						if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
+						{
+							ReallyFinalColor.scale(ColorCount);
+							ReallyFinalColor.mul(0.5f);
+							layer.surface[V * layer.width + U]._set(ReallyFinalColor);
+							break;
+						}
+
+						base_color_c& CurrentColor = FinalColors[SurfaceRequestCursor];
+						ReallyFinalColor.add(CurrentColor);
+
+						++SurfaceRequestCursor;
+						++ColorCount;
+					}
+				}
+			}
+		}
+
+		layer.SurfaceLightRequests.clear();
 	}
 }

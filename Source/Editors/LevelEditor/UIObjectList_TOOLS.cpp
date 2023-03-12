@@ -534,7 +534,6 @@ void UIObjectList::CheckDuplicateNames()
 	}
 
 	names.clear_and_free();
-     
 
 	/*
 	xr_map<LPCSTR, u16> map_list;
@@ -591,7 +590,7 @@ void UIObjectList::RenameALLObjectsToObject()
 			ot->FClassID == OBJCLASS_GLOW || 
 			ot->FClassID == OBJCLASS_SECTOR || 
 			ot->FClassID == OBJCLASS_PORTAL || 
-			ot->FClassID == OBJCLASS_PS  
+			ot->FClassID == OBJCLASS_PS
 		)
 		{
 			ObjectList list = ot->GetObjects();
@@ -623,7 +622,8 @@ void UIObjectList::RenameALLObjectsToObject()
 			}			 
 		}
 
-		if (ot->FClassID == OBJCLASS_SPAWNPOINT || ot->FClassID == OBJCLASS_SCENEOBJECT ) 
+
+		if (ot->FClassID == OBJCLASS_SCENEOBJECT )  // ot->FClassID == OBJCLASS_SPAWNPOINT 
 		{
 			int id = 1;
 
@@ -1176,8 +1176,8 @@ void UIObjectList::UpdateUIObjectList()
 		if (ImGui::Button("sel loaded", ImVec2(-1, 0)))
 			SelectLoaded();
 
-		//if (ImGui::Button("check duplicate", ImVec2(-1, 0)))
-		//	CheckDuplicateNames();
+		if (ImGui::Button("check duplicate", ImVec2(-1, 0)))
+			CheckDuplicateNames();
 
 		if (ImGui::Button("rename all objects", ImVec2(-1, 0) ) )
 			RenameALLObjectsToObject();

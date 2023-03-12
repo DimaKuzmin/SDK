@@ -66,7 +66,7 @@ void Startup(LPSTR     lpCmdLine)
 
 	xr_strcpy(cmd,lpCmdLine);
 	strlwr(cmd);
-	if (strstr(cmd,"-?") || strstr(cmd,"-h"))			{ Help(); return; }
+	if (strstr(cmd,"-?") || strstr(cmd,"-help"))			{ Help(); return; }
 	if (strstr(cmd,"-f")==0)							{ Help(); return; }
 	if (strstr(cmd,"-o"))								bModifyOptions	= TRUE;
 	if (strstr(cmd,"-gi"))								g_build_options.b_radiosity		= TRUE;

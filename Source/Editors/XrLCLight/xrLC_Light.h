@@ -38,6 +38,7 @@ extern XRLC_LIGHT_API xr_pure_interface  XRLC_LIGHT_API i_lc_log
 	virtual void clMsg		( LPCSTR msg )			=0;
 	virtual void clLog		( LPCSTR msg )			=0;
 	virtual void Status		( LPCSTR msg )			=0;
+	virtual void StatusNoMsg(LPCSTR msg) = 0;
 	virtual	void Progress	( const float F )		=0;
 	virtual	void Phase		( LPCSTR phase_name )	=0;
 } *lc_log;

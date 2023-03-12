@@ -17,21 +17,35 @@ enum class DeviceBufferType
 // A simple abstraction for memory to be passed into Prime via BufferDescs
 //
 
+
+
+
 template<typename T>
 class DeviceBuffer
 {
 public:
-	DeviceBuffer(size_t count = 0, DeviceBufferType type = DeviceBufferType::CUDA, bool VRAM = 1)  : m_ptr(0)
+	template<class T>
+	void SafeCudaMemalloc(T** ptr, size_t size_in_bites)
 	{
-		mem_type = VRAM;
-		alloc(count, type, VRAM);
+		if (size_in_bites > 1 * 1024 * 1024)
+		{
+			Msg("MEMSET: %d MB, buffer: %s", size_in_bites / 1024 / 1024, name);
+		}
+
+		CHK_CUDA(cudaMalloc(ptr, size_in_bites));
 	}
+
+	DeviceBuffer(size_t count = 0, DeviceBufferType type = DeviceBufferType::CUDA, bool VRAM = 1, LPCSTR l = 0) : m_ptr(0), name(l), mem_type(VRAM)
+	{
+ 		alloc(count, type, VRAM);
+ 	}
 
 	// Allocate without changing type
 	void alloc(size_t count)
 	{
 		alloc(count, m_type);
 	}
+
 
 	void alloc(size_t count, DeviceBufferType type, bool VRAM)
 	{
@@ -51,7 +65,7 @@ public:
 
 				if (VRAM)
 				{
-					CHK_CUDA(cudaMalloc(&m_ptr, sizeInBytes()));
+					SafeCudaMemalloc(&m_ptr, sizeInBytes());
 				}
 				else
 				{
@@ -156,6 +170,8 @@ protected:
 	size_t m_count;
 	std::vector<T> m_tempHost;
 	bool mem_type;
+
+	LPCSTR name;
  
 private:
 	DeviceBuffer<T>(const DeviceBuffer<T>&);            // forbidden

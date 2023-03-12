@@ -159,6 +159,8 @@ bool skip_sectors = false;
 
 extern string_path LEVEL_PATH;
 
+#include "..\XrLCLight\xrHardwareLight.h"
+
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
@@ -189,11 +191,7 @@ void CBuild::Run(LPCSTR P)
 	H.XRLC_quality = g_params().m_quality;
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
-
-
-
-
-
+    
 	if (strstr(Core.Params, "-sample_9"))
 		g_params().m_lm_jitter_samples = 9;
 	else if (strstr(Core.Params, "-sample_4"))
@@ -201,28 +199,32 @@ void CBuild::Run(LPCSTR P)
 	else if (strstr(Core.Params, "-sample_1"))
 		g_params().m_lm_jitter_samples = 1;
 
+	xrHardwareLight& hw_light = xrHardwareLight::Get();
+
+	if (strstr(Core.Params, "-hw_light"))
+	{
+		hw_light.SetEnabled(true);
+		LPCSTR impl_part = strstr(Core.Params, "-hw_light");
+		LPCSTR val = impl_part + 9;
+		int value = 1;
+		if (impl_part && sscanf(val, "%d", &value))
+		{
+			hw_light.setMaxMem(value);
+		}
+ 	}
+
+	else
+	{
+		hw_light.SetEnabled(false);
+	}
+
 	LPCSTR pixel = strstr(Core.Params, "-pxpm");
 	LPCSTR val = pixel + 5;
 	int value;
 	if (pixel && sscanf(val, "%d", &value))
 	{
  		g_params().m_lm_pixels_per_meter = value;
-	}
-
-	bool use_avx = strstr(Core.Params, "-use_avx");
-	bool use_sse = strstr(Core.Params, "-use_sse");
-	bool use_fpu = strstr(Core.Params, "-use_fpu");
-
- 	if (use_avx)
-		g_params().ray_calc_type = 2;
-
-	if (use_sse)
-		g_params().ray_calc_type = 1;
-
-	if (use_fpu)
-		g_params().ray_calc_type = 0;
-
-	 
+	} 
 
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
