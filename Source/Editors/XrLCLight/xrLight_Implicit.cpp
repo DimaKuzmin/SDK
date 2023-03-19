@@ -74,8 +74,7 @@ void CalculateGPU(ImplicitDeflector& defl)
 		{
 			LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceID];
 			RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
-			Msg("RayReq X[%d], Y[%d]", LRequest.X, LRequest.Y);
-		}
+ 		}
 		 
 		xr_vector<base_color_c> FinalColors;
 		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors, true);

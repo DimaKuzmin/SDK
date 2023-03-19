@@ -436,7 +436,7 @@ void xrHardwareLight::PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr
 
 		for (auto ray : InRays)
 		{
-			if (i > 1024 * 8)
+			if (i > 1024 * MaxMem())
 			{
 				cur_split++;
 				i = 0;
