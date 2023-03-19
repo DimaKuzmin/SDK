@@ -97,7 +97,7 @@ void CalculateGPU(ImplicitDeflector& defl)
 					for (;;)
 					{
 						LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
-						Msg("X:%d, Y: %d == U: %d, V: %d ", LRequest.X, LRequest.Y, U, V);
+						//Msg("X:%d, Y: %d == U: %d, V: %d ", LRequest.X, LRequest.Y, U, V);
 
 						if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
 						{
