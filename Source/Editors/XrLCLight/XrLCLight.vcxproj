@@ -121,7 +121,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Development|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>A:\SDK\SDK\SDK\Include\cuda\;A:\SDK\SDK\SDK\Include\optix\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)..\SDK\Include\cuda;$(SolutionDir)..\SDK\Include\optix;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

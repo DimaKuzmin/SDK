@@ -457,8 +457,7 @@ void xrHardwareLight::PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr
 	}
 	else
 	{
-		//Msg("Start Lighting");
-		Raycasting(InRays, flag, OutHits);
+ 		Raycasting(InRays, flag, OutHits);
 	}	
 }
 
@@ -576,6 +575,9 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 	DebugErr = cudaMemset(OptimizedHitsVec.ptr(), 0, OptimizedHitsVec.count() * sizeof(Hit));
 	CheckCudaErr(DebugErr);
 
+	Msg("Hits: %d", OptimizedHitsVec.count());
+	Msg("Rays: %d", OptimizedRaysVec.count());
+
 	optix::prime::BufferDesc OptmizedHitDescBuffer = PrimeContext->createBufferDesc((RTPbufferformat)Hit::format, RTPbuffertype::RTP_BUFFER_TYPE_CUDA_LINEAR, OptimizedHitsVec.ptr());
 	OptmizedHitDescBuffer->setRange(0, OptimizedHitsVec.count());
 
@@ -619,8 +621,10 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 
 	while (AliveRays)
 	{
+		Msg("AliveRays: %d", AliveRays);
+
 		CTimer tt; tt.Start();
-		LevelQuery->execute(RTP_QUERY_HINT_ASYNC);
+		LevelQuery->execute(0);
 
 		AliveRays = 0;
 		CPU_USED += tt.GetElapsed_ms();

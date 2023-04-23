@@ -292,6 +292,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		// Dynamic
 		transfer("d-lights",	L_dynamic,			fs,		EB_Light_dynamic);
 	}
+
+	string_path p;
+	FS.update_path(p, "$app_data_root$", "xr_LC.error_textures");
+	IWriter* w = FS.w_open(p);
 	
 	// process textures
 	Status			("Processing textures...");
@@ -389,8 +393,19 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						{
 							clMsg("- loading: %s", N);
 							string_path name;
-							R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-							R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
+							
+							if (!Surface_Detect(name, N) || !BT.pSurface.LoadFromFile(name))
+							{
+								Msg("Skip Loading: %s", N);
+								string128 tmp = {0};
+								sprintf(tmp, "Texture: %s.dds", N);
+								w->w_string(tmp);
+								continue;
+							}
+
+							//R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
+							//R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
+
 							BT.pSurface.ClearMipLevels();
 							BT.THM.SetHasSurface(true);
 							BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
@@ -416,6 +431,13 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
 			{	
+				if (strstr(Core.Params, "-cvrt_impl_texture_1024"))
+				{
+					BT.pSurface.Scale(1024, 1024);
+					BT.dwWidth = 1024;
+					BT.dwHeight = 1024;
+				}
+
 				if (strstr(Core.Params, "-cvrt_impl_texture_512"))
 				{
 					BT.pSurface.Scale(512, 512);
@@ -446,6 +468,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// Parameter block
 	CopyMemory(&g_params(),&Params,sizeof(b_params));
 
+	FS.w_close(w);
 	// 
 	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
 }

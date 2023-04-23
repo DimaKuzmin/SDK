@@ -319,6 +319,7 @@ void ESceneAIMapTool::DenumerateNodes()
         }
 
 }
+
 bool ESceneAIMapTool::LoadLTX(CInifile& ini)
 {
 	R_ASSERT(0);
@@ -400,8 +401,8 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 
        // Msg("IDX: %d", (*it)->idx);
 
-        if (ids % 8192 == 0)
-           Msg("Load %d", ids);
+        //if (ids % 8192 == 0)
+        //  Msg("Load %d", ids);
     }
 
     int ch_node = version == AIMAP_VERSION ? InvalidNode_64bit : InvalidNode_32bit;

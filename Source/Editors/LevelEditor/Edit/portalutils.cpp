@@ -263,7 +263,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
     {       
         sPortal* p_it = &portals[id];
 
-        pb->Update(curr);
+       // pb->Update(curr);
 
         string128 text = { 0 };
         printf(text, "TH[%u] portal %u of %u, ms[%d]", &th, &curr, &ps, t.GetElapsed_ms());
@@ -290,8 +290,11 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
      
             // append portal
             string256 namebuffer = {0};
+            string64 name = { 0 };
             sprintf(namebuffer, "portal_%d", id);
+            sprintf(name, "portal: %d/%d", id, end);
             //Scene->GenObjectName(OBJCLASS_PORTAL, namebuffer);
+            pb->Info(name);
              
             CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
     
@@ -352,12 +355,15 @@ public:
         iz         = floorf(float(V.z-VMmin.z)/VMscale.z*clpMZ);
         R_ASSERT	(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 
+        // PACKING TOO LONG FOR BIG GEOMETRY 
+        // Se7Kills
         {
             U32Vec* vl;
             vl 			= &(VM[ix][iy][iz]);
             U32It it	= vl->begin();
             U32It it_e	= vl->end();
             xr_vector<sVert>::iterator verts_begin = verts.begin();
+            
             for(;it!=it_e; ++it)
             {
 //              if(verts[*it].similar(V) )	
@@ -368,6 +374,7 @@ public:
                 }
             }
         }
+
         if (0xffffffff==P)
         {
             P 					= verts.size();
@@ -429,7 +436,7 @@ public:
         T.v[0] 	= VPack(v0);
         T.v[1] 	= VPack(v1);
         T.v[2] 	= VPack(v2);
-        T.sector= sector;
+        T.sector = sector;
         faces.push_back(T);
     }
     void update_adjacency(){
@@ -587,23 +594,49 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
     Fmatrix T;
 
     //1. xform + weld
+    SPBItem* pb = UI->ProgressStart(sectors.size(), "xForm + weld portals...");
+    int i = 0, ii = 0;
+
     UI->SetStatus("xform + weld...");
-    for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++){
+    for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++, i++)
+    {
         CSector* S=(CSector*)(*s_it);
-        for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end();s_it++){
-        	if (s_it->object->IsMUStatic()) continue;
+        string64 tmp;
+        sprintf(tmp, "sector: %d / %d", i, sectors.size());
+        pb->Info(tmp);
+        ii = 0;
+        for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end();s_it++, ii++)
+        {
+        	if (s_it->object->IsMUStatic()) 
+                continue;
+            string64 tmp;
+            sprintf(tmp, "item: %d/%d, Faces: %d", ii, S->sector_items.size(), s_it->mesh->GetFCount());
+            pb->Info(tmp);
+            
+            pb->Update(i);
             s_it->GetTransform(T);
             Fvector* m_verts=s_it->mesh->m_Vertices;
-            for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++){
+            for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++)
+            {
                 Fvector v0, v1, v2;
                 const st_Face& P			= s_it->mesh->GetFaces()[f_id];
                 T.transform_tiny	(v0,m_verts[P.pv[0].pindex]);
                 T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
                 T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
                 CL->add_face		(v0,v1,v2,S);
+                 /*
+                if (f_id % 1024 * 10 == 0)
+                {
+                    string64 tmp;
+                    sprintf(tmp, "item: %d/%d, face: %d/%d", ii, S->sector_items.size(), f_id, s_it->mesh->GetFCount());
+                    pb->Info(tmp);
+                } */
+
             }
         }
     }
+    UI->ProgressEnd(pb);
+
     //2. update pervertex adjacency
     UI->SetStatus("updating per-vertex adjacency...");
     CL->update_adjacency();

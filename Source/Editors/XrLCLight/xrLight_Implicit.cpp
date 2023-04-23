@@ -45,18 +45,6 @@ ImplicitCalcGlobs cl_globs;
 void CalculateGPU(ImplicitDeflector& defl)
 {
 	Msg("CalculateGPU");
-	/*
-	int idx = 0;
-	xr_vector <RayRequest> RayRequestsTri;
-	for (auto ray : RayRequests)
-	{
-		RayRequestsTri.push_back(ray);
-		idx++;
-	}
-	HardwareCalculator.TriFindPos(RayRequestsTri);
-	*/
-
-
 	if (true)
 	{
 		//cast and finalize
@@ -309,7 +297,8 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 						wN.normalize();
 
 						LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN,
-							inlc_global_data()->L_static(), (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+							inlc_global_data()->L_static(),
+							(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
 							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0), 
 						F);

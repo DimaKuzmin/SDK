@@ -108,7 +108,7 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 
 	if (!level_graph().valid_vertex_id(vertex.tNodeID))
 	{
-		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map", entity->name_replace(),VPUSH(entity->o_Position));
+		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map Node (%d)", entity->name_replace(),VPUSH(entity->o_Position), vertex.tNodeID); //, level_graph().vertex(vertex.tNodeID)->position().xz() 
 		F_entity_Destroy	(entity);
 		return;
 	}
@@ -116,7 +116,8 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	{
 		graph_type::const_vertex_iterator	I = graph().vertices().begin();
 		graph_type::const_vertex_iterator	E = graph().vertices().end();
-		for ( ; I != E; ++I) {
+		for ( ; I != E; ++I) 
+		{
 			if ((*I).second->data().tNodeID == vertex.tNodeID) {
 				Msg			("! removing graph point [%s][%f][%f][%f] because it has the same AI node as another graph point",entity->name_replace(),VPUSH(entity->o_Position));
 				F_entity_Destroy	(entity);
@@ -401,6 +402,7 @@ void CGameGraphBuilder::save_cross_table	(const float &start, const float &amoun
 		tCrossTableCell.fDistance	= float(m_distances[tCrossTableCell.tGraphIndex][i])*level_graph().header().cell_size();
 		tMemoryStream.w				(&tCrossTableCell,sizeof(tCrossTableCell));
 	}
+ 
 
 	tMemoryStream.close_chunk();
 	

@@ -320,6 +320,11 @@ void CLevelSpawnConstructor::correct_objects					()
 
 	for (int i=0; i<(int)m_spawns.size(); i++) 
 	{
+		if (game_graph().valid_vertex_id(m_spawns[i]->m_tGraphID))
+		{
+			Msg("Graph Vertex not valid id[%d] name[%s] position [%f][%f][%f]", m_spawns[i]->ID, m_spawns[i]->name(), VPUSH(m_spawns[i]->position()));
+		}
+
 		if (!level_graph().valid_vertex_id(m_spawns[i]->m_tGraphID))
 		{
 			Msg("Node Vertex not valid id [%d] name[%s] position [%f][%f][%f]", m_spawns[i]->ID, m_spawns[i]->name(), VPUSH(m_spawns[i]->position()));

@@ -1,0 +1,1 @@
+start bin\x64\compilers_x64\xrLC.exe -skipinvalid -norgb -f dark

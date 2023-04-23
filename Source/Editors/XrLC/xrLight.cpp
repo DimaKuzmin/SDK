@@ -117,12 +117,18 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		int th = TH_NUM;
 
 		if (xrHardwareLight::IsEnabled())
-			th = 1;
+			th = 8;
 		for (int L = 0; L < th; L++)
 			threads.start(xr_new<CLMThread>(L));
 
-		
+
 		threads.wait	(500);
+
+		if (xrHardwareLight::IsEnabled())
+			GPU_Calculation();
+
+
+
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
 
 

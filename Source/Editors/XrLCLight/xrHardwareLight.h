@@ -13,7 +13,7 @@
 
 #include "DeviceBuffer.h"
 #include "cuda_runtime.h"
-
+ 
 
 
 class XRLC_LIGHT_API xrHardwareLight

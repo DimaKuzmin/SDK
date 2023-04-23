@@ -343,7 +343,9 @@ static const float _MM_ALIGN16
 ps_cst_plus_inf[4] = { flt_plus_inf,  flt_plus_inf,  flt_plus_inf,  flt_plus_inf },
 ps_cst_minus_inf[4] = { -flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf };
 
-ICF BOOL isect_sse_t(const aabb_t& box, const ray_t& ray, float& dist) {
+ICF BOOL isect_sse_t(const aabb_t& box, const ray_t& ray, float& dist) 
+{
+ 
 	// you may already have those values hanging around somewhere
 	const __m128
 		plus_inf = loadps(ps_cst_plus_inf),
@@ -390,6 +392,7 @@ ICF BOOL isect_sse_t(const aabb_t& box, const ray_t& ray, float& dist) {
 	//storess	(lmax, &rs.t_far);
 	
 	return  ret;
+ 	 
 }
  
 template <bool bCull, bool bFirst, bool bNearest>
@@ -453,10 +456,6 @@ public:
 	ICF BOOL		_box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist)
 	{
 		aabb_t		box;
-		/*
-			box.min.sub (bCenter,bExtents);	box.min.pad = 0;
-			box.max.add	(bCenter,bExtents); box.max.pad = 0;
-		*/
 		__m128 CN = _mm_unpacklo_ps(_mm_load_ss((float*)&bCenter.x), _mm_load_ss((float*)&bCenter.y));
 		CN = _mm_movelh_ps(CN, _mm_load_ss((float*)&bCenter.z));
 		__m128 EX = _mm_unpacklo_ps(_mm_load_ss((float*)&bExtents.x), _mm_load_ss((float*)&bExtents.y));
@@ -574,8 +573,6 @@ public:
 		_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
 		// Actual ray/aabb test
-		
-		 
 		if (bUseSSE)
 		{
 			// use SSE
@@ -591,60 +588,7 @@ public:
 			if (!_box_fpu((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))	return;
 			if (P.distance_to_sqr(ray.pos) > rRange2)											return;
 		}
-		 
-
-		/*
-		Fbox		BB;
-		BB.min.sub((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
-		BB.max.add((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
-
-	
-		
-		BOX_Optimized box(BB.min, BB.max);
-		if (!intersect_v1(box, ray_optimize, -rRange, rRange))
-			return;
-		
-
-		BOX_Optimized_v2 bbox;
-		bbox.min[0] = BB.min.x;
-		bbox.min[1] = BB.min.y;
-		bbox.min[2] = BB.min.z;
-		bbox.max[0] = BB.max.x;
-		bbox.max[1] = BB.max.y;
-		bbox.max[2] = BB.max.z;
-		if (!intersection_v2(&ray_optimize_v2, &bbox, rRange))
-			return;
-		*/
-
-/*
-		
-		//TextBOX   V1
-		Fbox		BB;
-		BB.min.sub((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
-		BB.max.add((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents);
-
-//#define use_method_v1
-
-#ifdef use_method_v1
-		BOX_Optimized box(BB.min, BB.max);		 
-		if (!intersect_v1(box, *r, -rRange, rRange))
-			return;
-	
-#else		 
-		//V2
-		ad_box bbox;
-		bbox.min[0] = BB.min.x;
-		bbox.min[1] = BB.min.y;
-		bbox.min[2] = BB.min.z;
-		bbox.max[0] = BB.max.x;
-		bbox.max[1] = BB.max.y;
-		bbox.max[2] = BB.max.z;
-		if (!intersection_v2(&r_a, &bbox, rRange))
-			return;
-		 
-#endif
-
-*/
+	   
 		// 1st chield
 		if (node->HasLeaf())
 			_prim(node->GetPrimitive());
@@ -652,6 +596,7 @@ public:
 			_stab(node->GetPos());
 
 		// Early exit for "only first"
+	
 		if (bFirst && dest->r_count())														return;
 
 		// 2nd chield
@@ -699,29 +644,6 @@ void StartLog()
 
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range, int INSTR_IDX) //0 = FPU, 1= SSE, 2 = AVX
 {
-	/*
-	if (!start_thread)
-	{
-		start_thread = true;
-		std::thread* th = new std::thread(StartLog);
-	}
-
-	IDX++;
-	*/
-	/*
-	csRAY.Enter();
-	if (!ttimer)
-	{
-		ttimer = xr_new<CTimer>();
-		ttimer->Start();
- 	}
-	csRAY.Leave();
-
-	
-	CTimer timer; 
-	timer.Start();
-   	*/
- 
 	m_def->syncronize();
  	
 
@@ -807,6 +729,8 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				//RES += RC.dest->r_count();
 				//CCOUNT += RC.count;
 				//tri_time += t.GetElapsed_ticks();
+				//if (RC.dest->r_count() > 8)
+				//Msg("Res: %d", RC.dest->r_count());
 			}
 		}
 	}

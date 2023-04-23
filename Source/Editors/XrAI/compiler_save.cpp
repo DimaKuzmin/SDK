@@ -172,7 +172,7 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 	Msg("Min[%f][%f][%f]", H.aabb.min.x, H.aabb.min.y, H.aabb.min.z);
 	Msg("Max[%f][%f][%f]", H.aabb.max.x, H.aabb.max.y, H.aabb.max.z);
-
+ 
 	for (u32 i=0; i<g_nodes.size(); ++i) 
 	{
 		vertex			&N	= g_nodes[i];
@@ -183,19 +183,20 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		if (NC.p.xz() > MAX_PX)
 			MAX_PX = NC.p.xz();
 		 
-		float x, z;
+
 
 		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
 		//int pxz = iFloor((x_o - H.aabb.min.x) * H.size + EPS_L + .5f) * m_row_length + iFloor((z_o - H.aabb.min.z) * H.size + EPS_L + .5f);
-		int py = iFloor(65535.f * (NC.p.y() - H.aabb.min.y) / (H.size_y) + EPS_L);
-
+		float py = float(  (NC.p.y()  / 65535.f) * H.size_y + H.aabb.min.y);
+		
+		//float(source_position.y()) / 65535) * header().factor_y() + header().box().min.y
+		
+		float x, z;
 		x = NC.p.xz() / m_row_length;
 		z = NC.p.xz() % m_row_length;
 		x = float(x) * H.size + H.aabb.min.x;
 		z = float(z) * H.size + H.aabb.min.z;
-
-		 
-
+		    
 		int max_px = 0x00ffffff;
 
 		if (NC.p.xz() > max_px)	  
@@ -204,16 +205,18 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 			if (NC.p.xz() > MAX_PX)
 			{
 				MAX_PX = NC.p.xz();
-				clMsg("NEW ROW[%d] Real[%f], [%f], [%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, z, NC.p.xz());
+				clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
 			}
 		}
-		 
+
+		//if (i % 1024 == 0)
+		//	clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
 	}
 
+ 
 	int n_e = errored_nodes;
  
-	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u]", 
-		compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), MAX_PX, errored_nodes);
+	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u], count_error: %u",  compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), MAX_PX, count);
  
 	xr_vector<u32>	sorted;
 	xr_vector<u32>	renumbering;

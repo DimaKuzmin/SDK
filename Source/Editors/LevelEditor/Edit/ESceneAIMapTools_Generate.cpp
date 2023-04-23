@@ -27,7 +27,7 @@ struct tri
 };
 
 const int	RCAST_MaxTris	= (2*1024);
-const int	RCAST_Count		= 1;
+const int	RCAST_Count		= 4;
 const int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
 const float	RCAST_Depth		= 1.f;
 const float RCAST_VALID 	= 0.55f;
@@ -441,7 +441,8 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
 		if (!old){
 			// register xr_new<node
             AINodeVec* V 		= HashMap(N.Pos);
-            if (V){ 
+            if (V)
+            { 
 	        	m_Nodes.push_back	(xr_new<SAINode>(N));
                 V->push_back		(m_Nodes.back());
                 return m_Nodes.back();
@@ -454,6 +455,8 @@ SAINode* ESceneAIMapTool::BuildNode(Fvector& vFrom, Fvector& vAt, bool bIC, bool
     	return 0;
     }
 }
+
+u32 oldCFmodel_SIZE = 0;
 
 int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
 {
@@ -469,10 +472,13 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     else
     	cnt=Scene->RayQuery(PQ,Pos,Dir,3,CDB::OPT_ONLYNEAREST|CDB::OPT_CULL,GetSnapList());
 
-    if (0==cnt) {
+    if (0==cnt) 
+    {
         ELog.Msg	(mtInformation,"Can't align position.");
         return		0;
-    } else {
+    }
+    else 
+    {
         Pos.y 		= Pos.y - PQ.r_begin()->range;
     }
 		
@@ -482,113 +488,17 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     if (!start)		return 0;
 
     // Estimate nodes
-    float estimated_nodes	= (2*sz-1)*(2*sz-1);
-
-	//SPBItem* pb 	= 0;
-    //if (estimated_nodes>64) 
-     //   pb = UI->ProgressStart(1, "Building nodes...");
-    
+    float estimated_nodes	= (2*sz-1)*(2*sz-1);   
     float radius			= sz*m_Params.fPatchSize-EPS_L;
-
-    /*
-    for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
-    {
-        if ((*it).first == OBJCLASS_SCENEOBJECT)
-        {
-            ObjectList list_for_snap;
-
-            ObjectList* list = (*it).second->GetSnapList();
-
-            Fbox box_nodes;
-            box_nodes.min.sub(Pos, sz * 10);
-            box_nodes.max.add(Pos, sz * 10);
-
-            if (list)
-            for (auto O : *list)
-            {
-                Fbox box;
-                O->GetBox(box);
-
-                if (box_nodes.intersect(box))
-                {
-                    list_for_snap.push_back(O);
-                }
-            }
-
-            m_SnapObjects = list_for_snap;
-             
-        }
-    }*/
-
-    //SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
-    
-
-    /*
-    float cur_radius = 1;
-    AINodeVec nodes_created;
-    nodes_created.push_back(start);
- 
-    while (radius > cur_radius)
-    {
-
-        pb->Update(cur_radius/radius);
-
-        for (auto N : nodes_created)
-        {
-            if (0 == N->n1)
-            {
-                Pos.set(N->Pos);
-                Pos.x -= m_Params.fPatchSize;
-                if (Pos.distance_to(start->Pos) <= radius)
-                {
-                    N->n1 = BuildNode(N->Pos, Pos, bIC);
-                }
-            }
-            // fwd
-            if (0 == N->n2) 
-            {
-                Pos.set(N->Pos);
-                Pos.z += m_Params.fPatchSize;
-                if (Pos.distance_to(start->Pos) <= radius)
-                {
-                    N->n2 = BuildNode(N->Pos, Pos, bIC);
-                    
-                }
-            }
-            // right
-            if (0 == N->n3) 
-            {
-                Pos.set(N->Pos);
-                Pos.x += m_Params.fPatchSize;
-                if (Pos.distance_to(start->Pos) <= radius)
-                    N->n3 = BuildNode(N->Pos, Pos, bIC);
-            }
-            // back
-            if (0 == N->n4)
-            {
-                Pos.set(N->Pos);
-                Pos.z -= m_Params.fPatchSize;
-                if (Pos.distance_to(start->Pos) <= radius)
-                    N->n4 = BuildNode(N->Pos, Pos, bIC);
-            }
-                    
-            if (N->n1)
-                nodes_created.push_back(N->n1);
-            if (N->n2)
-                nodes_created.push_back(N->n2);
-            if (N->n3)
-                nodes_created.push_back(N->n3);
-            if (N->n4)
-                nodes_created.push_back(N->n4);
-
-        }  
-        cur_radius++;
-    }
-
-    UI->ProgressEnd(pb);
    
-       */
-
+    bool destroy_cfmodel = false;
+    if (radius > 10 && oldCFmodel_SIZE != GetSnapList()->size())
+    {
+        oldCFmodel_SIZE = GetSnapList()->size();
+        CreateCFModel();
+        destroy_cfmodel = true;   
+        Msg("Create CF MODEL");
+    }
     // General cycle
 
     for (int k=0; k<(int)m_Nodes.size(); k++)
@@ -622,37 +532,12 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
             if (Pos.distance_to(start->Pos)<=radius)
 	            N->n4		=	BuildNode(N->Pos,Pos,bIC);
         }
-
-        //Msg("K[%d]/size[%d]", k, m_Nodes.size());
-
-       // string256 str;
-       // sprintf(str, "K[%d]/size[%d]", k, m_Nodes.size());
-         
-       // if (k%256000 == 0)
-        //    pb->Info(str);
-
-        /*
-        if (estimated_nodes>1024)
-        {
-            if (k%256000==0)
-            {
-                //float	p1	= float(k)/float(m_Nodes.size());
-                //float	p2	= float(m_Nodes.size())/estimated_nodes;
-                //float	p	= 0.1f*p1+0.9f*p2;
-
-                //clamp	(p,0.f,1.f);
-                pb->Update(k/m_Nodes.size());
-                // check need abort && redraw
-                if (UI->NeedAbort()) break;
-            }
-        }
-        */
     }
 
-
-    //if (estimated_nodes>1024)
-   // UI->ProgressEnd(pb);
-
+    if (destroy_cfmodel)
+    {
+    //    ETOOLS::destroy_model(m_CFModel);
+    }
 
     return oldcount-m_Nodes.size();
 }
@@ -673,6 +558,8 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
     float estimated_nodes	= (LevelSize.x/m_Params.fPatchSize)*(LevelSize.z/m_Params.fPatchSize);
 
     SPBItem* pb = UI->ProgressStart(1, "Building nodes...");
+    
+
     // General cycle
     for (int k=0; k<(int)m_Nodes.size(); k++)
     {
@@ -730,6 +617,7 @@ void ESceneAIMapTool::BuildNodes(bool bFromSelectedOnly)
         }
     }
     UI->ProgressEnd(pb);
+
 }
 
 SAINode* ESceneAIMapTool::GetNode(Fvector vAt, bool bIC)	// return node's index
@@ -740,7 +628,8 @@ SAINode* ESceneAIMapTool::GetNode(Fvector vAt, bool bIC)	// return node's index
 	// *** set up xr_new<node
 	SAINode* N 		= xr_new<SAINode>();
     SAINode* R		= 0;
-	if (CreateNode(vAt,*N,bIC)){
+	if (CreateNode(vAt,*N,bIC))
+    {
 		R 			= FindNode(N->Pos);
     	xr_delete	(N);
     }
@@ -786,83 +675,100 @@ void ESceneAIMapTool::UpdateLinks(SAINode* N, bool bIC)
     }
 }
 
+void ESceneAIMapTool::CreateCFModel()
+{
+   // if (!m_Flags.is(flSlowCalculate))
+    {
+        // evict resources
+        ExecCommand(COMMAND_EVICT_OBJECTS);
+        ExecCommand(COMMAND_EVICT_TEXTURES);
+
+        // prepare collision model
+        u32 avg_face_cnt = 0;
+        u32 avg_vert_cnt = 0;
+        u32 mesh_cnt = 0;
+        Fbox snap_bb;
+        {
+            snap_bb.invalidate();
+            for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
+            {
+                CSceneObject* S = dynamic_cast<CSceneObject*>(*o_it); VERIFY(S);
+                avg_face_cnt += S->GetFaceCount();
+                avg_vert_cnt += S->GetVertexCount();
+                mesh_cnt += S->Meshes()->size();
+                Fbox 			bb;
+                S->GetBox(bb);
+                snap_bb.merge(bb);
+            }
+        }
+
+        SPBItem* pb = UI->ProgressStart(mesh_cnt, "Prepare collision model...");
+
+        CDB::Collector* CL = ETOOLS::create_collector();
+        Fvector verts[3];
+        for (ObjectIt o_it = m_SnapObjects.begin(); o_it != m_SnapObjects.end(); o_it++)
+        {
+            CSceneObject* S = dynamic_cast<CSceneObject*>(*o_it); VERIFY(S);
+            CEditableObject* E = S->GetReference(); VERIFY(E);
+            EditMeshVec& _meshes = E->Meshes();
+            for (EditMeshIt m_it = _meshes.begin(); m_it != _meshes.end(); m_it++)
+            {
+                pb->Inc(xr_string().sprintf("%s [%s]", S->GetName(), (*m_it)->Name().c_str()).c_str());
+                const SurfFaces& _sfaces = (*m_it)->GetSurfFaces();
+                for (SurfFaces::const_iterator sp_it = _sfaces.begin(); sp_it != _sfaces.end(); sp_it++)
+                {
+                    CSurface* surf = sp_it->first;
+                    // test passable
+//.			        SGameMtl* mtl 		= GMLib.GetMaterialByID(surf->_GameMtl());
+//.					if (mtl->Flags.is(SGameMtl::flPassable))continue;
+
+                    Shader_xrLC* c_sh = EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
+                    if (!c_sh->flags.bCollision) 			continue;
+                    // collect tris
+                    const IntVec& face_lst = sp_it->second;
+                    for (IntVec::const_iterator it = face_lst.begin(); it != face_lst.end(); it++)
+                    {
+                        E->GetFaceWorld(S->_Transform(), *m_it, *it, verts);
+
+                        ETOOLS::collector_add_face_d(CL, verts[0], verts[1], verts[2], surf->_GameMtl() /* *it */);
+                        if (surf->m_Flags.is(CSurface::sf2Sided))
+                            ETOOLS::collector_add_face_d(CL, verts[2], verts[1], verts[0], surf->_GameMtl() /* *it */);
+                    }
+                }
+            }
+        }
+
+        UI->ProgressEnd(pb);
+
+        UI->SetStatus("Building collision model...");
+        // create CFModel
+        m_CFModel = ETOOLS::create_model_cl(CL);
+        ETOOLS::destroy_collector(CL);
+    }
+}
+
 bool ESceneAIMapTool::GenerateMap(bool bFromSelectedOnly)
 {
 	std::sort(m_ignored_materials.begin(),m_ignored_materials.end());
 	bool bRes = false;
-	if (!GetSnapList()->empty()){
+	
+    if (!GetSnapList()->empty())
+    {
+        bool build = oldCFmodel_SIZE != GetSnapList()->size();
+
 	    if (!RealUpdateSnapList()) return false;
 	    if (m_Nodes.empty()){
 			ELog.DlgMsg(mtError,"Append at least one node.");
             return false;
         }
 
-        if (!m_Flags.is(flSlowCalculate)){
-            // evict resources
-            ExecCommand				(COMMAND_EVICT_OBJECTS);
-            ExecCommand				(COMMAND_EVICT_TEXTURES);
-        
-            // prepare collision model
-            u32 avg_face_cnt 		= 0;
-            u32 avg_vert_cnt 		= 0;
-            u32 mesh_cnt		 	= 0;
-            Fbox snap_bb;			
-            {
-                snap_bb.invalidate	();
-                for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); o_it++){
-                    CSceneObject* 	S = dynamic_cast<CSceneObject*>(*o_it); VERIFY(S);
-                    avg_face_cnt	+= S->GetFaceCount();
-                    avg_vert_cnt	+= S->GetVertexCount();
-                    mesh_cnt	   	+= S->Meshes()->size();
-                    Fbox 			bb;
-                    S->GetBox		(bb);
-                    snap_bb.merge	(bb);
-                }
-            }
+        Msg("Generate MAP");
 
-            SPBItem* pb = UI->ProgressStart(mesh_cnt,"Prepare collision model...");
-
-            CDB::Collector* CL		= ETOOLS::create_collector();
-            Fvector verts[3];
-            for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); o_it++)
-            {
-                CSceneObject* 		S = dynamic_cast<CSceneObject*>(*o_it); VERIFY(S);
-                CEditableObject*    E = S->GetReference(); VERIFY(E);
-                EditMeshVec& 		_meshes = E->Meshes();
-                for (EditMeshIt m_it=_meshes.begin(); m_it!=_meshes.end(); m_it++)
-                {
-                    pb->Inc(xr_string().sprintf("%s [%s]",S->GetName(),(*m_it)->Name().c_str()).c_str());
-                    const SurfFaces&	_sfaces = (*m_it)->GetSurfFaces();
-                    for (SurfFaces::const_iterator sp_it=_sfaces.begin(); sp_it!=_sfaces.end(); sp_it++)
-                    {
-                        CSurface* surf		= sp_it->first;
-                        // test passable
-    //.			        SGameMtl* mtl 		= GMLib.GetMaterialByID(surf->_GameMtl());
-    //.					if (mtl->Flags.is(SGameMtl::flPassable))continue;
-
-                        Shader_xrLC* c_sh	= EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
-                        if (!c_sh->flags.bCollision) 			continue;
-                        // collect tris
-                        const IntVec& face_lst 	= sp_it->second;
-                        for (IntVec::const_iterator it=face_lst.begin(); it!=face_lst.end(); it++)
-                        {
-                            E->GetFaceWorld	(S->_Transform(),*m_it,*it,verts);
-
-                            ETOOLS::collector_add_face_d(CL,verts[0],verts[1],verts[2], surf->_GameMtl() /* *it */);
-                            if (surf->m_Flags.is(CSurface::sf2Sided))
-                                ETOOLS::collector_add_face_d(CL,verts[2],verts[1],verts[0], surf->_GameMtl() /* *it */);
-                        }
-                    }
-                }
-            }
-
-            UI->ProgressEnd(pb);
-
-            UI->SetStatus		("Building collision model...");
-            // create CFModel
-            m_CFModel 			= ETOOLS::create_model_cl(CL);
-            ETOOLS::destroy_collector(CL);
-    	}
+        if (build)
+        {
+            oldCFmodel_SIZE = GetSnapList()->size();
+            CreateCFModel();
+        }
 
         // building
         Scene->lock			();
@@ -876,13 +782,16 @@ tm.GetElapsed_sec();
 //.        Msg("-Rate: %3.2f Count: %d",(g_tm.GetElapsed_sec()/tm.GetElapsed_sec())*100.f,g_tm.count);
 
         // unload CFModel
-		ETOOLS::destroy_model(m_CFModel);
+
+		//ETOOLS::destroy_model(m_CFModel);
 
         Scene->UndoSave		();
         bRes = true;
 
         UI->SetStatus		("");
-    }else{
+    }
+    else
+    {
     	ELog.DlgMsg(mtError,"Fill snap list before generating slots!");
     }
     return bRes;

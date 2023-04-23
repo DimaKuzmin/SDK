@@ -12,8 +12,8 @@
 class ESceneAIMapTool;
 struct SAINode;
 
-const u32 InvalidNode		= (1<<31)-1;
-const u32 InvalidNode_32bit = (1 << 24) - 1;
+const u32 InvalidNode		= (1 << 32) - 1;
+const u32 InvalidNode_32bit = (1 << 23) - 1;
 const u32 InvalidNode_64bit = (1 << 31) - 1;
 
 #pragma pack(push,1)
@@ -124,6 +124,8 @@ protected:
 
     void				EnumerateNodes			();
     void				DenumerateNodes			();
+
+    void                CreateCFModel();
 
     bool				RealUpdateSnapList		();
 	int 				RemoveOutOfBoundsNodes	();

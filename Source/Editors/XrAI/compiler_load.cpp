@@ -350,10 +350,16 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			
 			for (int j=0; j<4; ++j) 
 			{
+#ifndef _USE_NODE_POSITION_11
+				u32 id = 0;
+				F->r(&id, 3);
+				g_nodes[i].n[j] = (*LPDWORD(&id)) & 0x00ffffff;
+#else 
 				u32 id = F->r_u32();
  				g_nodes[i].n[j]	= id;
-				//if (id != InvalidNode)
-				//	Msg("ID: %d", id);
+#endif
+				if (id > (1 << 23))
+					Msg("Check ID: %d", id);
 			}
 
 			pl				= F->r_u16();

@@ -579,13 +579,10 @@ bool sort_list(CCustomObject* obj1, CCustomObject* obj2)
 
 void UIObjectList::RenameALLObjectsToObject()
 {	
-	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	//for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
 	{
-		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
-		
-		if (!ot)
-			continue;
-
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID())); //it
+ 
 		if (ot->FClassID == OBJCLASS_LIGHT ||
 			ot->FClassID == OBJCLASS_GLOW || 
 			ot->FClassID == OBJCLASS_SECTOR || 
@@ -646,9 +643,7 @@ void UIObjectList::RenameALLObjectsToObject()
 					xr_strcat(prefix, ot->FClassID == OBJCLASS_SPAWNPOINT ? "spawn_no_ref" : "static_no_ref");
 					id++;
 				}
-				
-				
-
+	
 				string256 name_new = {0}, tmp;
 				xr_strcat(name_new, prefix);
 				xr_strcat(name_new, "_");
@@ -683,6 +678,8 @@ void UIObjectList::BboxSelectedObject()
 		Msg("BBOX x[%f][%f]", box.x1, box.x2);
 		Msg("BBOX z[%f][%f]", box.z1, box.z2);
 		Msg("BBOX y[%f][%f]", box.y1, box.y2);
+		Fvector pos = item->GetPosition();
+		Msg("Position: %f, %f, %f", pos.x, pos.y, pos.z );
 	}
 
 	Msg("Selected BBOX x[%f][%f]", box_all.x1, box_all.x2);

@@ -36,6 +36,8 @@ void ESceneAIMapTool::PackPosition(NodePosition& Dest, Fvector& Src, Fbox& bb, S
 	clamp	(pz,-32767,32767);	Dest.z = s16	(pz);
 }
 
+#include "xrLevel.h"
+
 bool ESceneAIMapTool::Export(LPCSTR path)
 {
 //.?	if (!RealUpdateSnapList()) return false;
@@ -70,15 +72,33 @@ bool ESceneAIMapTool::Export(LPCSTR path)
             u32 			id;
             u16 			pl;
             NodePosition 	np;
-
-            id = (*it)->n1?(u32)(*it)->n1->idx:InvalidNode;  	
+#ifndef _USE_NODE_POSITION_11
+            id = (*it)->n1 ? (u32)(*it)->n1->idx : InvalidNode_32bit;
+            if (InvalidNode_32bit < id)
+                Msg("CheckNode1: %d", id);
+            F->w(&id, 3);
+            id = (*it)->n2 ? (u32)(*it)->n2->idx : InvalidNode_32bit;
+            if (InvalidNode_32bit < id)
+                Msg("CheckNode2: %d", id);
+            F->w(&id, 3);
+            id = (*it)->n3 ? (u32)(*it)->n3->idx : InvalidNode_32bit;
+            if (InvalidNode_32bit < id)
+                Msg("CheckNode3: %d", id);
+            F->w(&id, 3);
+            id = (*it)->n4 ? (u32)(*it)->n4->idx : InvalidNode_32bit;
+            if (InvalidNode_32bit < id)
+                Msg("CheckNode4: %d", id);
+            F->w(&id, 3);
+#else 
+            id = (*it)->n1?(u32)(*it)->n1->idx: InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n2?(u32)(*it)->n2->idx:InvalidNode;  	
+            id = (*it)->n2?(u32)(*it)->n2->idx: InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n3?(u32)(*it)->n3->idx:InvalidNode;  	
+            id = (*it)->n3?(u32)(*it)->n3->idx: InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n4?(u32)(*it)->n4->idx:InvalidNode;  	
+            id = (*it)->n4?(u32)(*it)->n4->idx: InvalidNode_64bit;
             F->w_u32(id);
+#endif
             pl = pvCompress ((*it)->Plane.n);	 				
             F->w_u16(pl);
             PackPosition	(np,(*it)->Pos,bb,m_Params); 	

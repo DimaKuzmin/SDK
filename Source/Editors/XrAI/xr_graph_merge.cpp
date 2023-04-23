@@ -133,11 +133,14 @@ public:
 				}
 		}
 
+		int ids = 0;
 		m_tpVertices.resize		(m_tpGraph->header().vertex_count());
 		GRAPH_VERTEX_IT			B = m_tpVertices.begin();
 		GRAPH_VERTEX_IT			I = B;
 		GRAPH_VERTEX_IT			E = m_tpVertices.end();
-		for ( ; I != E; I++) {
+		for ( ; I != E; I++, ids++) 
+		{
+			Msg("AddGraph: %d, level: %d", ids, dwLevelID);
 			(*I).tLocalPoint		= m_tpGraph->vertex(int(I - B))->level_point();
 			(*I).tGlobalPoint.add	(m_tpGraph->vertex(int(I - B))->game_point(),m_tLevel.offset());
 			(*I).tLevelID			= dwLevelID;

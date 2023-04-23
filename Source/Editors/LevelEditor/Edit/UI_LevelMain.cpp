@@ -1211,9 +1211,10 @@ void CLevelMain::ShowContextMenu(int cls)
 void CLevelMain::ResetStatus()
 {
 	VERIFY(m_bReady);
-  /*  if (fraBottomBar->paStatus->Caption!=""){
+    /*  if (fraBottomBar->paStatus->Caption!=""){
 	    fraBottomBar->paStatus->Caption=""; fraBottomBar->paStatus->Repaint();
-    }*/
+    }
+    */
 }
 void CLevelMain::SetStatus(LPCSTR s, bool bOutLog)
 {
@@ -1222,6 +1223,7 @@ void CLevelMain::SetStatus(LPCSTR s, bool bOutLog)
 	    fraBottomBar->paStatus->Caption=s; fraBottomBar->paStatus->Repaint();
     	if (bOutLog&&s&&s[0]) ELog.Msg(mtInformation,s);
     }*/
+    Msg("SetStatus: %s", s);
 }
 void CLevelMain::ProgressDraw()
 {
