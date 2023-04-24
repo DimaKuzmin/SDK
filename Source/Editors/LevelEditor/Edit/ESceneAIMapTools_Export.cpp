@@ -11,18 +11,6 @@ void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const NodePosition& Psrc, F
     Pdest.z = float(Psrc.z)*params.fPatchSize;
 }
 
-#define AIMAP_VERSION  				0x0003
-#define AIMAP_VERSION_2             0x0002
-extern int ai_version;
-
-u32 ESceneAIMapTool::UnpackLink(u32& L)
-{
-    if (ai_version == AIMAP_VERSION_2)
-        return L & 0x00ffffff;
-
-	return L&0xffffffff;
-}
-
 void ESceneAIMapTool::PackPosition(NodePosition& Dest, Fvector& Src, Fbox& bb, SAIParams& params)
 {
 	float sp = 1/params.fPatchSize;

@@ -240,21 +240,19 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 
 			CCustomObject* obj = NULL;
 			bool load = Scene->ReadObjectLTX(file, tmp, obj);
-
-			while (Scene->FindObjectByName(obj->GetName(), obj) != 0)
-			{
-				CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
-				xr_string name;
-				string32 tmp;
-				name = obj_find->FName.c_str();
-				name += "_";
-				name += itoa(Random.randI(1, 20), tmp, 10);
-				obj_find->SetName(name.c_str());
-				//Msg("Renamed %s", name.c_str());
-			}
-
 			if (load)
 			{
+				while (Scene->FindObjectByName(obj->GetName(), obj) != 0)
+				{
+					CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
+					xr_string name;
+					string32 tmp;
+					name = obj_find->FName.c_str();
+					name += "_";
+					name += itoa(Random.randI(1, 20), tmp, 10);
+					obj_find->SetName(name.c_str());
+ 				}
+
 				if (!Scene->OnLoadAppendObject(obj))
 					xr_delete(obj);
 
@@ -269,11 +267,12 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 					//Msg("Load [%d]", obj->FClassID);
 					old_class = obj->FClassID;
 				}
+
+				objects_loaded[loaded].push_back(obj);
 			}
 
 			i++;
 			sprintf(tmp, "object_%d", i);
-			objects_loaded[loaded].push_back(obj);
 		}
 	}
    

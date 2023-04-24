@@ -9,6 +9,7 @@
 #include "stdafx.h"
 #include "patrol_path.h"
 #include "levelgamedef.h"
+#include "level_graph.h"
 
 LPCSTR TEST_PATROL_PATH_NAME		= "val_dogs_nest4_centre";
 
@@ -23,12 +24,36 @@ CPatrolPath	&CPatrolPath::load_raw	(const CLevelGraph *level_graph, const CGameL
 {
 	R_ASSERT		(stream.find_chunk(WAYOBJECT_CHUNK_POINTS));
 	u32				vertex_count = stream.r_u16();
-	for (u32 i=0; i<vertex_count; ++i)
-		add_vertex	(CPatrolPoint(this).load_raw(level_graph,cross,game_graph,stream),i);
+	
+	xr_vector<CPatrolPoint*> maps;
+
+	for (u32 i = 0; i < vertex_count; ++i)
+	{
+		CPatrolPoint* p = &CPatrolPoint(this).load_raw(level_graph, cross, game_graph, stream);;
+		add_vertex(*p, i);
+		maps.push_back(p);
+	}
+
+	for (auto point : maps)
+	{
+		bool vertex_Valid = level_graph->valid_vertex_id(point->level_vertex_id_get());
+
+		if ( !vertex_Valid )
+		{
+			Msg("Way: %s, Path: %s not Valid For Ai MAP", point->name().c_str(), this->m_name.c_str());
+		}
+		
+		if (vertex_Valid && !level_graph->inside(point->level_vertex_id_get(), point->position()))
+		{
+			Msg("Way: %s, Path: %s not Valid For Ai MAP", point->name().c_str(), this->m_name.c_str());
+		}
+	}
 
 	R_ASSERT		(stream.find_chunk(WAYOBJECT_CHUNK_LINKS));
 	u32				edge_count = stream.r_u16();
-	for (u32 i=0; i < edge_count; ++i) {
+	
+	for (u32 i=0; i < edge_count; ++i)
+	{
 		u16			vertex0 = stream.r_u16();
 		u16			vertex1 = stream.r_u16();
 		float		probability = stream.r_float();

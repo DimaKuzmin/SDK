@@ -354,12 +354,14 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				u32 id = 0;
 				F->r(&id, 3);
 				g_nodes[i].n[j] = (*LPDWORD(&id)) & 0x00ffffff;
+
+				if (id > (1 << 23))
+					Msg("Check ID: %d", id);
 #else 
 				u32 id = F->r_u32();
  				g_nodes[i].n[j]	= id;
 #endif
-				if (id > (1 << 23))
-					Msg("Check ID: %d", id);
+
 			}
 
 			pl				= F->r_u16();

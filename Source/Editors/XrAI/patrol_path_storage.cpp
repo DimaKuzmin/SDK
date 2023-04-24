@@ -103,7 +103,8 @@ void CPatrolPathStorage::save				(IWriter &stream)
 
 	PATROL_REGISTRY::iterator	I = m_registry.begin();
 	PATROL_REGISTRY::iterator	E = m_registry.end();
-	for (int i=0; I != E; ++I, ++i) {
+	for (int i=0; I != E; ++I, ++i) 
+	{
 		stream.open_chunk		(i);
 
 		stream.open_chunk		(0);

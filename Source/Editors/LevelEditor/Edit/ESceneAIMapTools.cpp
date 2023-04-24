@@ -9,11 +9,21 @@
 #include "ESceneAIMapControls.h"
 #include "..\..\XrCore\xrPool.h"
 
-// chunks
-#define AIMAP_VERSION  				0x0003
-#define AIMAP_VERSION_2             0x0002
+#define save_no_pack
 
-extern int ai_version = 3;
+#ifdef save_no_pack
+// chunks
+extern int AIMAP_VERSION = 0x0004;
+extern int AIMAP_VERSION_2 = 0x0002;
+#else 
+// chunks
+extern int AIMAP_VERSION = 0x0003;
+extern int AIMAP_VERSION_2 = 0x0002;
+#endif
+
+
+
+extern int ai_version = -1;
 //----------------------------------------------------
 #define AIMAP_CHUNK_VERSION			0x0001       
 #define AIMAP_CHUNK_FLAGS			0x0002
@@ -24,6 +34,9 @@ extern int ai_version = 3;
 #define AIMAP_CHUNK_INTERNAL_DATA	0x0008
 #define AIMAP_CHUNK_INTERNAL_DATA2	0x0009
 //----------------------------------------------------
+
+
+ 
 
 poolSS<SAINode,1024> g_ainode_pool;
 
@@ -82,51 +95,13 @@ void SAINode::PointBL(Fvector& D, float patch_size)
 	v.z			-= s;
 	Plane.intersectRayPoint(v,d,D);
 }
-
-void SAINode::LoadLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
-{
-	R_ASSERT(0);
-}
-
-void SAINode::SaveLTX(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool* tools)
-{
-	R_ASSERT2		(0, "dont use it !!!");
-	u32 			id;
-    u16 			pl;
-	NodePosition 	np;
-
-    id 				= n1?(u32)n1->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n1", id);
-
-    id 				= n2?(u32)n2->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n2", id);
-
-    id 				= n3?(u32)n3->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n3", id);
-
-    id 				= n4?(u32)n4->idx:InvalidNode;
-    ini.w_u32		(sect_name,"n4", id);
-
-    pl 				= pvCompress (Plane.n);
-    ini.w_u16		(sect_name, "plane", pl);
-
-	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params);
-    string256		buff;
-
-	s16				x;
-	u16				y;
-	s16				z;
-
-    sprintf			(buff,"%i,%u,%i",np.x,np.y,np.z);
-    ini.w_string	(sect_name, "np", buff);
-    ini.w_u8		(sect_name, "flag", flags.get());
-}
-
+ 
 void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
 {
 	u32 			id;
     u16 			pl;
 	NodePosition 	np;
+    
     if (ai_version == AIMAP_VERSION_2)
     {
         F.r(&id, 3);
@@ -151,11 +126,17 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
         n4 = (SAINode*)tools->UnpackLink(id);
     }
 
+
+
     pl = F.r_u16();
-    pvDecompress(Plane.n,pl);
-    F.r				(&np,sizeof(np)); 	
-   
+    pvDecompress(Plane.n,pl);	
+
+if (ai_version == AIMAP_VERSION)
+    F.r_fvector3(Pos);
+else 
     tools->UnpackPosition(Pos,np,tools->m_AIBBox,tools->m_Params);
+
+    F.r(&np, sizeof(np));
 	Plane.build		(Pos, Plane.n);
     flags.assign	(F.r_u8());
   
@@ -180,11 +161,13 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
     id = n3?(u32)n3->idx:InvalidNode; F.w(&id,4);
     id = n4?(u32)n4->idx:InvalidNode; F.w(&id,4);
    
-    pl = pvCompress (Plane.n);	 F.w_u16(pl);
-	tools->PackPosition(np,Pos,tools->m_AIBBox,tools->m_Params);
+    pl = pvCompress (Plane.n);	
+    F.w_u16(pl);	
+    F.w_fvector3(Pos);
+
     F.w(&np,sizeof(np));
     F.w_u8			(flags.get());
-    //F.w_u32(idx);
+ 
 }
 
 ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
@@ -225,6 +208,14 @@ void ESceneAIMapTool::Clear(bool bOnlyNodes)
     }
 }
 //----------------------------------------------------
+
+u32 ESceneAIMapTool::UnpackLink(u32& L)
+{
+    if (ai_version == AIMAP_VERSION_2)
+        return L & 0x00ffffff;
+
+    return L;
+}
 
 void ESceneAIMapTool::CalculateNodesBBox(Fbox& bb)
 {
@@ -320,46 +311,6 @@ void ESceneAIMapTool::DenumerateNodes()
 
 }
 
-bool ESceneAIMapTool::LoadLTX(CInifile& ini)
-{
-	R_ASSERT(0);
-	return true;
-}
-
-void ESceneAIMapTool::SaveLTX(CInifile& ini, int id)
-{
-	inherited::SaveLTX	(ini, id);
-
-	ini.w_u32			("main", "version", AIMAP_VERSION);
-	ini.w_u32			("main", "flags", m_Flags.get());
-
-    ini.w_fvector3		("main", "bbox_min", m_AIBBox.min);
-    ini.w_fvector3		("main", "bbox_max", m_AIBBox.max);
-
-    ini.w_float			("params", "patch_size", m_Params.fPatchSize);
-    ini.w_float			("params", "test_height", m_Params.fTestHeight);
-    ini.w_float			("params", "can_up", m_Params.fCanUP);
-    ini.w_float			("params", "can_down", m_Params.fCanDOWN);
-
-    EnumerateNodes		();
-    ini.w_u32			("main", "nodes_count", m_Nodes.size());
-
-    u32 i 				= 0;
-    string128			buff;
-	for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); ++it, ++i)
-    {
-    	sprintf			(buff,"n_%d", i);
-    	(*it)->SaveLTX	(ini, buff, this);
-    }
-
-    ini.w_float			("main", "vis_radius", m_VisRadius);
-    ini.w_u32			("main", "brush_size", m_BrushSize);
-
-    ini.w_float			("main", "smooth_height", m_SmoothHeight);
-
-    for (ObjectIt o_it=m_SnapObjects.begin(); o_it!=m_SnapObjects.end(); ++o_it)
-    	ini.w_string	("snap_objects", (*o_it)->GetName(), NULL);
-}
 
 bool ESceneAIMapTool::LoadStream(IReader& F)
 {
@@ -394,53 +345,24 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     vec.resize(size);
 
     for (AINodeIt it = vec.begin(); it != vec.end(); it++, ids++)
-	//for (AINodeIt it=m_Nodes.begin(); it!=m_Nodes.end(); it++, ids++)
     {
     	*it			= xr_new<SAINode>();
     	(*it)->LoadStream	(F,this);
-
-       // Msg("IDX: %d", (*it)->idx);
-
-        //if (ids % 8192 == 0)
-        //  Msg("Load %d", ids);
     }
 
+#ifdef _USE_NODE_POSITION_11
     int ch_node = version == AIMAP_VERSION ? InvalidNode_64bit : InvalidNode_32bit;
-   
-    /*
-    struct check_node
-    {
-        int last_check;
-
-        void test(int idx, int it,int max_idx)
-        {
-            if (last_check != idx)
-
-            if (idx < 0 || idx >= max_idx)
-            {
-                last_check = idx;
-                Msg("ERROR NODE [%d], connection [%d]", it, idx);
-            }
-        }
-
-    };
-
-
-    check_node n;
-   */
+#else 
+    int ch_node = InvalidNode_32bit;
+#endif
 
     ids = 0;
     for (auto it = vec.begin(); it != vec.end(); it++, ids++)
     {
-       // n.test((u32) (*it)->n1, (u32) (ids), size);
-       // n.test((u32) (*it)->n2, (u32) (ids), size);
-       // n.test((u32) (*it)->n3, (u32) (ids), size);
-       // n.test((u32) (*it)->n4, (u32) (ids), size);
-
-        (*it)->n1 = ((u32)(*it)->n1 == ch_node) ? 0 : vec[(u32)(*it)->n1];
-        (*it)->n2 = ((u32)(*it)->n2 == ch_node) ? 0 : vec[(u32)(*it)->n2];
-        (*it)->n3 = ((u32)(*it)->n3 == ch_node) ? 0 : vec[(u32)(*it)->n3];
-        (*it)->n4 = ((u32)(*it)->n4 == ch_node) ? 0 : vec[(u32)(*it)->n4];
+        (*it)->n1 = ((u32)(*it)->n1 >= ch_node) ? 0 : vec[(u32)(*it)->n1];
+        (*it)->n2 = ((u32)(*it)->n2 >= ch_node) ? 0 : vec[(u32)(*it)->n2];
+        (*it)->n3 = ((u32)(*it)->n3 >= ch_node) ? 0 : vec[(u32)(*it)->n3];
+        (*it)->n4 = ((u32)(*it)->n4 >= ch_node) ? 0 : vec[(u32)(*it)->n4];
     }   
 
     for (auto node : vec)

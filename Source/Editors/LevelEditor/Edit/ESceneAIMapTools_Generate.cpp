@@ -492,13 +492,15 @@ int ESceneAIMapTool::BuildNodes(const Fvector& pos, int sz, bool bIC)
     float radius			= sz*m_Params.fPatchSize-EPS_L;
    
     bool destroy_cfmodel = false;
-    if (radius > 10 && oldCFmodel_SIZE != GetSnapList()->size())
+   
+    if (oldCFmodel_SIZE != GetSnapList()->size())
     {
         oldCFmodel_SIZE = GetSnapList()->size();
         CreateCFModel();
         destroy_cfmodel = true;   
         Msg("Create CF MODEL");
     }
+
     // General cycle
 
     for (int k=0; k<(int)m_Nodes.size(); k++)
@@ -677,6 +679,9 @@ void ESceneAIMapTool::UpdateLinks(SAINode* N, bool bIC)
 
 void ESceneAIMapTool::CreateCFModel()
 {
+    if (m_CFModel)
+        ETOOLS::destroy_model(m_CFModel);
+
    // if (!m_Flags.is(flSlowCalculate))
     {
         // evict resources

@@ -16,7 +16,8 @@ class CGameGraph;
 #include "object_interfaces.h"
 #include "game_graph_space.h"
 
-class CPatrolPoint : public IPureSerializeObject<IReader,IWriter> {
+class CPatrolPoint : public IPureSerializeObject<IReader,IWriter>
+{
 protected:
 	shared_str							m_name;
 	Fvector								m_position;
@@ -47,6 +48,8 @@ public:
 	IC		const GameGraph::_GRAPH_ID	&game_vertex_id		(const CLevelGraph *level_graph, const CGameLevelCrossTable *cross, const CGameGraph *game_graph) const;
 	IC		const u32					&flags				() const;
 	IC		const shared_str			&name				() const;
+
+	IC		u32 level_vertex_id_get() { return m_level_vertex_id; };
 
 public:
 #ifdef XRGAME_EXPORTS

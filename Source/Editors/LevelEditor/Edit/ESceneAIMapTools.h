@@ -63,8 +63,8 @@ struct SAINode					// definition of "patch" or "node"
     //void   	SaveStreamOffset(IWriter&, ESceneAIMapTool*);
 
 
-    void   		LoadLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
-    void   		SaveLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
+ //   void   		LoadLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
+ //   void   		SaveLTX				(CInifile& ini, LPCSTR sect_name, ESceneAIMapTool*);
 
 	void*		operator 	new		(std::size_t size);
 	void*		operator 	new		(std::size_t size, SAINode*);
@@ -196,9 +196,14 @@ public:
 
     // IO
     virtual bool   		LoadStream         		(IReader&);
-    virtual bool   		LoadLTX            		(CInifile&);
+    virtual bool   		LoadLTX(CInifile&)     
+    {
+        return false;
+    };
     virtual void   		SaveStream         		(IWriter&);
-    virtual void   		SaveLTX            		(CInifile&, int id);
+    virtual void   		SaveLTX(CInifile&, int id) 
+    { 
+    };
     virtual bool 		can_use_inifile			()								{return false;}
 
     virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset);
