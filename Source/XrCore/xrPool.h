@@ -45,9 +45,13 @@ public:
 	}
 	void				destroy			(T* &P)
 	{
-		P->~T			();
-		*access(P)		= list;
-		list			= P;
+		if (P)
+		{
+			P->~T();
+			*access(P) = list;
+			list = P;
+		}
+
 		P				= NULL;
 	}
     void				clear			()

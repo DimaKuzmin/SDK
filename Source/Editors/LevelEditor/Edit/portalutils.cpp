@@ -270,11 +270,13 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
         Msg("TH[%d] portal %d of %d, ms[%d]", th, curr, ps, t.GetElapsed_ms());
         t.Start();
         //pb->Info(text);
+        string64 info = { 0 };
+        sprintf(info, "portal: %d/%d", curr, ps);
+        pb->Info(info);
 
         if (p_it->e.size() > 1)
         {
-            CTimer t2; t2.Start();
-            // build vert-list
+             // build vert-list
             xr_vector<int>	vlist;
             xr_deque<int>& elist = p_it->e;
             vlist.reserve(elist.size() * 2);
@@ -290,12 +292,9 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
      
             // append portal
             string256 namebuffer = {0};
-            string64 name = { 0 };
             sprintf(namebuffer, "portal_%d", id);
-            sprintf(name, "portal: %d/%d", id, end);
             //Scene->GenObjectName(OBJCLASS_PORTAL, namebuffer);
-            pb->Info(name);
-             
+
             CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
     
             for (u32 i = 0; i < vlist.size(); i++)
@@ -357,6 +356,8 @@ public:
 
         // PACKING TOO LONG FOR BIG GEOMETRY 
         // Se7Kills
+       
+        if (false)
         {
             U32Vec* vl;
             vl 			= &(VM[ix][iy][iz]);
@@ -601,16 +602,14 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
     for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++, i++)
     {
         CSector* S=(CSector*)(*s_it);
-        string64 tmp;
-        sprintf(tmp, "sector: %d / %d", i, sectors.size());
-        pb->Info(tmp);
+   
         ii = 0;
         for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end();s_it++, ii++)
         {
         	if (s_it->object->IsMUStatic()) 
                 continue;
             string64 tmp;
-            sprintf(tmp, "item: %d/%d, Faces: %d", ii, S->sector_items.size(), s_it->mesh->GetFCount());
+            sprintf(tmp, "sector(%d/%d) item: %d/%d, Faces: %d", i, sectors.size(), ii, S->sector_items.size(), s_it->mesh->GetFCount());
             pb->Info(tmp);
             
             pb->Update(i);
@@ -623,7 +622,7 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
                 T.transform_tiny	(v0,m_verts[P.pv[0].pindex]);
                 T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
                 T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
-                CL->add_face		(v0,v1,v2,S);
+                CL->add_face		(v0,v1,v2, S);
                  /*
                 if (f_id % 1024 * 10 == 0)
                 {

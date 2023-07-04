@@ -22,23 +22,31 @@ void UIAIMapTool::Draw()
 	{
 		ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
 		{
-			if (ImGui::Button("Generate Full", ImVec2(-1, 0)))
-			{
-				tool->GenerateMap(false);
-			}
-			if (ImGui::Button("Generate Selected", ImVec2(-1, 0)))
-			{
-				tool->GenerateMap(true);
-			}
 			if (ImGui::Button("Clear AI Map", ImVec2(-1, 0)))
 			{
-				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes) 
+				if (ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to clear AI Map?") == mrYes)
 				{
 					tool->Clear();
 					Scene->UndoSave();
 				}
 			}
+
+			if (ImGui::Button("Generate Full", ImVec2(-1, 0)))
+			{
+				tool->GenerateMap(false);
+			}
+
+			if (ImGui::Button("Generate Selected", ImVec2(-1, 0)))
+			{
+				tool->GenerateMap(true);
+			}
+
+			if (ImGui::Button("Calculate XFORM", ImVec2(-1, 0)))
+			{
+				tool->CreateCFModel();
+			}
 		}
+
 		ImGui::Separator();
 		{
 			if(ImGui::Button("Smooth Selected", ImVec2(-1, 0)))	tool->SmoothNodes();

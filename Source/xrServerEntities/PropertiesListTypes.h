@@ -235,7 +235,10 @@ public:
     IC PropValue*		GetFrontValue	()
     {
         //if (values.size() > 0)
-         //   Msg("Values[% d]", values.size());
+        // Msg("Values[% d]", values.size());
+        //if (values.size() == 0)
+         //   return 0;
+
         VERIFY(!values.empty());
         return values.front();
     };

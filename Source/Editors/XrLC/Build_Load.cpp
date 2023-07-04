@@ -338,7 +338,36 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				 
 				if (!THM)
 				{
-					Msg("Cant Load THM %s", th_name);
+					//Msg("Cant Load THM %s", th_name);
+					{
+						string_path path = { 0 }, gamedata = { 0 };
+						string32 name_thm = { 0 }, name_file = { 0 };
+						sprintf(name_thm, "textures\\%s.thm", N);
+
+						FS.update_path(path, _import_, name_thm);
+						FS.update_path(gamedata, _game_data_, name_thm);
+
+						if (FS.exist(path))
+							FS.file_copy(path, gamedata);
+						else
+							Msg("Cant Find Thm in %s", path);
+					}
+
+					{
+						string_path path = { 0 }, gamedata = { 0 };
+						string32 name_thm = { 0 }, name_file = { 0 };
+						sprintf(name_file, "textures\\%s.dds", N);
+						FS.update_path(path, _import_, name_file);
+						FS.update_path(gamedata, _game_data_, name_file);
+
+						if (FS.exist(path))
+							FS.file_copy(path, gamedata);
+						else
+							Msg("Cant Find DDS in %s", path);
+					}
+
+
+
 
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
@@ -431,25 +460,40 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
 			{	
-				if (strstr(Core.Params, "-cvrt_impl_texture_1024"))
+				if (strstr(Core.Params, "-cvrt_impl_texture_2"))
 				{
-					BT.pSurface.Scale(1024, 1024);
-					BT.dwWidth = 1024;
-					BT.dwHeight = 1024;
+					BT.pSurface.Scale(BT.dwWidth / 2, BT.dwHeight / 2);
+					BT.dwWidth = BT.dwWidth / 2;
+					BT.dwHeight = BT.dwHeight / 2;
 				}
 
-				if (strstr(Core.Params, "-cvrt_impl_texture_512"))
+				if (strstr(Core.Params, "-cvrt_impl_texture_4"))
 				{
-					BT.pSurface.Scale(512, 512);
-					BT.dwWidth = 512;
-					BT.dwHeight = 512;
+					BT.pSurface.Scale(BT.dwWidth / 4, BT.dwHeight / 4);
+					BT.dwWidth = BT.dwWidth / 4;
+					BT.dwHeight = BT.dwHeight / 4;
+				}
+				 
+				if (strstr(Core.Params, "-cvrt_impl_texture_8"))
+				{
+					BT.pSurface.Scale(BT.dwWidth / 8, BT.dwHeight / 8);
+					BT.dwWidth = BT.dwWidth / 8;
+					BT.dwHeight = BT.dwHeight / 8;
 				}
 
-				if (strstr(Core.Params, "-cvrt_impl_texture_256"))
+				if (strstr(Core.Params, "-cvrt_impl_texture_16"))
 				{
-					BT.pSurface.Scale(256, 256);
-					BT.dwWidth = 256;
-					BT.dwHeight = 256;
+					BT.pSurface.Scale(BT.dwWidth / 16, BT.dwHeight / 16);
+					BT.dwWidth = BT.dwWidth / 16;
+					BT.dwHeight = BT.dwHeight / 16;
+				}
+
+
+				if (strstr(Core.Params, "-cvrt_impl_texture_128"))
+				{
+					BT.pSurface.Scale(128, 128);
+					BT.dwWidth = 128;
+					BT.dwHeight = 128;
 				}
 			}
 

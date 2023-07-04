@@ -83,7 +83,8 @@ void CLevelSpawnConstructor::init								()
 	// loading patrol paths
 	FS.update_path			(file_name,"$game_levels$",*m_level.name());
 	xr_strcat					(file_name,"\\level.game");
-	if (FS.exist(file_name)) {
+	if (FS.exist(file_name)) 
+	{
 		IReader				*stream	= FS.r_open(file_name);
 		VERIFY				(stream);
 		m_game_spawn_constructor->patrol_path_storage().load_raw(&level_graph(),&cross_table(),&game_graph(),*stream);
@@ -322,7 +323,7 @@ void CLevelSpawnConstructor::correct_objects					()
 	{
 		if (game_graph().valid_vertex_id(m_spawns[i]->m_tGraphID))
 		{
-			Msg("Graph Vertex not valid id[%d] name[%s] position [%f][%f][%f]", m_spawns[i]->ID, m_spawns[i]->name(), VPUSH(m_spawns[i]->position()));
+		//	Msg("Graph Vertex not valid id[%d] name[%s] position [%f][%f][%f]", m_spawns[i]->ID, m_spawns[i]->name(), VPUSH(m_spawns[i]->position()));
 		}
 
 		if (!level_graph().valid_vertex_id(m_spawns[i]->m_tGraphID))
@@ -613,15 +614,24 @@ void CLevelSpawnConstructor::update_artefact_spawn_positions	()
 
 void CLevelSpawnConstructor::Execute							()
 {
+	CTimer t; t.Start();
 	load_objects						();
 //	fill_spawn_groups					();
-
+	Msg("TimeLoad Objects: %f", t.GetElapsed_sec());
+	
 	init								();
+	Msg("TimeInit Objects: %f", t.GetElapsed_sec());
 	
 	correct_objects						();
-	generate_artefact_spawn_positions	();
+	Msg("TimeCorrect Objects: %f", t.GetElapsed_sec());
+
+	//generate_artefact_spawn_positions	();
+	Msg("TimeArtefact Objects: %f", t.GetElapsed_sec());
+
 	correct_level_changers				();
+	Msg("TimeCorrectLC Objects: %f", t.GetElapsed_sec());
 	verify_space_restrictors			();
+	Msg("TimeVerifySR Objects: %f", t.GetElapsed_sec());
 	
 	xr_delete							(m_level_graph);
 	m_cross_table						= 0;

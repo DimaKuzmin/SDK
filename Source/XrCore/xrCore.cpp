@@ -33,7 +33,8 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 	
 	xr_strcpy					(ApplicationName,_ApplicationName);
 
-	if (0==init_counter) {
+	if (0==init_counter)
+	{
 		Editor = editor_fs;
 		BearCore::Initialize();
 #ifdef XRCORE_STATIC	
@@ -99,7 +100,9 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
 		xr_EFS				= xr_new<EFS_Utils>		();
 //.		R_ASSERT			(co_res==S_OK);
 	}
-	if (init_fs){
+
+	if (init_fs)
+	{
 		u32 flags			= 0;
 		if (0!=strstr(Params,"-build"))	 flags |= CLocatorAPI::flBuildCopy;
 		if (0!=strstr(Params,"-ebuild")) flags |= CLocatorAPI::flBuildCopy|CLocatorAPI::flEBuildCopy;
@@ -127,6 +130,7 @@ void xrCore::_initialize	(LPCSTR _ApplicationName, LogCallback cb, BOOL init_fs,
     #endif
 #endif // DEBUG
 	}
+
 	SetLogCB				(cb);
 	init_counter++;
 }

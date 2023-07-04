@@ -12,7 +12,7 @@
 #include "xrface.h"
 #include "xrLC_GlobalData.h"
 
-void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
+void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, u32 max_hits);
 union var
 {
 	int		i;
@@ -67,9 +67,54 @@ int MU_SAMPL()
 
 #define MU_SAMPLES MU_SAMPL()
 
+ 
+extern bool use_intel;
+void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
+void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
+void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
+ 
+
+
+bool initialized_tris = false;
+xr_map<int, bool> opacity_MU;
+xrCriticalSection csMu_Models;
+
+u64 models_ticks = 0;
+int th = 0;
+
+XRLC_LIGHT_API void InitDB(CDB::COLLIDER* DB, bool print)
+{	 
+	return;
+
+	//DB->use_triangles_opacity = strstr(Core.Params, "-use_opaque");
+	//if (!DB->use_triangles_opacity)
+	//	return;	 
+	th++;
+  
+	csMu_Models.Enter();
+	if (!initialized_tris)
+	{
+		for (int i = 0; i < lc_global_data()->RCAST_Model()->get_tris_count(); i++)
+		{
+			CDB::TRI tri = inlc_global_data()->RCAST_Model()->get_tris()[i];
+			base_Face* F = (base_Face*)(tri.pointer);
+			opacity_MU[i] = F->flags.bOpaque;
+		}
+		initialized_tris = true;
+	}
+// 	if (print)
+//		Msg("MemoryUSE ++ FOR OPACITY: %llu", opacity_MU.size() * sizeof(int) * sizeof(bool)  );
+	DB->triangle_opacity = &opacity_MU;
+	DB->use_triangles_opacity = true;
+	csMu_Models.Leave();
+};
+
+CTimer mu_models;
+
 //-----------------------------------------------------------------------
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags)
 {
+ 
 	// trans-map
 	typedef	xr_multimap<float,v_vertices>	mapVert;
 	typedef	mapVert::iterator				mapVertIt;
@@ -90,6 +135,8 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	// Perform lighting
 	CDB::COLLIDER				DB;
 	DB.ray_options				(0);
+	
+	InitDB(&DB, true);
 
 	// Disable faces if needed
 	/*
@@ -131,13 +178,27 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			Fvector				P,N;
 			N.random_dir		(vN,deg2rad(30.f));
 			P.mad				(vP,N,a);
-			LightPoint			(&DB, MDL, vC, P, N, lights, flags, 0);
+			mu_models.Start();
+			if (use_intel)
+			{
+				if (0 == (flags & LP_dont_sun))
+ 				RaysToSUNLight_Deflector(0, vP, vN, vC, lights, 0);
+				if (0 == (flags & LP_dont_hemi))
+				RaysToHemiLight_Deflector(0, vP, vN, vC, lights, 0);
+				if (0 == (flags & LP_dont_rgb))
+				RaysToRGBLight_Deflector(0, vP, vN, vC, lights, 0);
+			}
+			else 
+				LightPoint			(&DB, MDL, vC, P, N, lights, flags, 0, 1024);
+
+			models_ticks += mu_models.GetElapsed_ticks();
 		}
 
 		vC.scale				(n_samples);
 		vC._tmp_				=	v_trans;
 		if (flags&LP_dont_hemi) ;
-		else					vC.hemi	+=	v_amb;
+		else				
+			vC.hemi	+=	v_amb;
 		V->C._set				(vC);
 
 		// Search

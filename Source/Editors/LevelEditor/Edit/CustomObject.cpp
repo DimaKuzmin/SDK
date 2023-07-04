@@ -271,10 +271,11 @@ void CCustomObject::RenderRoot(int priority, bool strictB2F)
 
 void CCustomObject::Render(int priority, bool strictB2F)
 {
-	if ((1==priority)&&(false==strictB2F)){
-        if (EPrefs->object_flags.is(epoDrawPivot)&&Selected()){
+	if ((1==priority)&&(false==strictB2F))
+    {
+        if (EPrefs->object_flags.is(epoDrawPivot)&&Selected())
             DU_impl.DrawObjectAxis(FTransformRP,0.1f,Selected());
-        }
+       
         if (m_Motion&&Visible()&&Selected())
             AnimationDrawPath();
     }

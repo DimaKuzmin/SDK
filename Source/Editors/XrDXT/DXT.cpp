@@ -5,7 +5,8 @@
 
 int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
-	CTimer T; T.Start();
+	CTimer T;
+	T.Start();
 
 	Msg("DXT: Compressing Image: %s %uX%u", out_name, w, h);
 

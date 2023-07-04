@@ -25,7 +25,7 @@ public:
 	typedef PATROL_REGISTRY::iterator					iterator;
 	typedef PATROL_REGISTRY::const_iterator				const_iterator;
 
-protected:
+ 
 	PATROL_REGISTRY					m_registry;
 
 public:

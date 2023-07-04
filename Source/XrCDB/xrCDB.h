@@ -182,12 +182,17 @@ namespace CDB
 
 		// Result management
 		xr_vector<RESULT>	rd;
+
+		
 	public:
+		xr_map<int, bool>* triangle_opacity = 0;
+		bool use_triangles_opacity = false;
+
 		COLLIDER		();
 		~COLLIDER		();
 
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
-		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f, int INSTR_IDX = 0); //0 = FPU, 1= SSE, 2 = AVX
+		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f, u32 max_hits = 1024); //0 = FPU, 1= SSE, 2 = AVX
 
 		ICF void		box_options		(u32 f)	{	box_mode = f;		}
 		void			box_query		(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim);

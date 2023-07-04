@@ -304,8 +304,8 @@ bool CEditableObject::Load(IReader& F)
             F.r_fvector3(a_vRotate);
             //Msg("Load Position");
 
-            Msg("Load Position [%f][%f][%f]", a_vPosition.x, a_vPosition.y, a_vPosition.z);
-            Msg("Load a_vRotate [%f][%f][%f]", a_vRotate.x, a_vRotate.y, a_vRotate.z);
+            //Msg("Load Position [%f][%f][%f]", a_vPosition.x, a_vPosition.y, a_vPosition.z);
+            //Msg("Load a_vRotate [%f][%f][%f]", a_vRotate.x, a_vRotate.y, a_vRotate.z);
 
             //Msg("Load Position END");
         }

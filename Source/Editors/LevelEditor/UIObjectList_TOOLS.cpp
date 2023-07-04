@@ -23,28 +23,36 @@ xr_map<int, LevelSDK> level_offsets;
 int size_merge_levels = 0;
 int cur_merge_levels = 0;
 
+int sector = 0;
+int cur_light_type = 0;
+const char* light_type[] = { "all", "lightmap", "dynamic", "animated" };
+int cur_smart = 0;
+bool ai_ignore_stractures = false;
+int value_ai;
 
 
+xr_map<int, Fvector3> merge_offsets;	
 
-xr_map<int, Fvector3> merge_offsets;	  
-xr_map< CCustomObject*, Fvector3> objects_original_POS;
+struct OBJECT_POS
+{
+	CCustomObject* obj;
+	Fvector3 pos;
+};
 
-xr_map<u16, xr_vector<CCustomObject*> > objects_loaded;
+xr_map<xr_string, xr_vector<OBJECT_POS> > objects_original_POS;	 //CCustomObject*, Fvector3
+
+xr_map<int, xr_vector<CCustomObject*> > objects_loaded;
 u16 loaded = 0;
 Fvector3 vec_offset = Fvector().set(0, 0, 0);
 xr_string last_file;
 
 string_path prefix_name;
-
 string_path custom_data;
-
 string_path logic_sec = "smart_terrain", path_sec = "level_", name_sec = "test_";
 
 bool create_cfg_file = true;
 bool select_file = false;
-
-
-
+						     
 string4096 buffer_squads;	 
  
 void UIObjectList::ExportSelectObjects()
@@ -205,12 +213,159 @@ void UIObjectList::SetScale(Fvector size)
 	}
 }
 
+
+void UIObjectList::ClearCustomData()
+{
+	ESceneCustomOTool* tool = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+
+	if (tool)
+	{
+		for (auto obj : tool->GetObjects())
+		{
+			CSpawnPoint* sp = smart_cast<CSpawnPoint*>(obj);
+
+			if (sp && sp->Selected())
+			{
+				string_path	buff = {0};
+				xr_strcat(buff, "temp");
+				sp->m_SpawnData.ModifyCustomData(buff);
+			}				
+		}
+	}
+}
+
+bool custom_data_check(LPCSTR custom_data, xr_vector<LPCSTR>& vec)
+{
+	for (auto item : vec)
+	{
+		if (strstr(custom_data, item))
+			return false;
+	}
+
+	return true;
+};
+
+void UIObjectList::CheckCustomData()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SPAWNPOINT));
+
+	string256 file;
+	sprintf(file, "CustomData\\%s.ltx", "custom_datas");
+		
+	string_path ignore;
+	string_path path;
+	FS.update_path(path, _import_, file);
+	FS.update_path(ignore, _import_, "CustomData\\ignore_custom.ltx");
+
+	CInifile* fileignore = xr_new<CInifile>(ignore, true);
+
+	xr_vector<LPCSTR> ignore_vec;
+
+	if (fileignore)
+	{
+		int id = 1;
+		string128 line; 
+		sprintf(line, "ignore_%d", id);
+		while (fileignore->line_exist("ignore", line))
+		{
+			LPCSTR name = fileignore->r_string("ignore", line);
+			ignore_vec.push_back(name);
+
+			id++;
+			sprintf(line, "ignore_%d", id);
+
+			Msg("Add To Ignore: %s", name);
+		}
+	}
+
+
+
+
+	IWriter* w = FS.w_open(path);
+	
+	xr_vector<shared_str> list_file;
+
+	ObjectList& list = ot->GetObjects();
+	for (auto item : list)
+	{
+		CSpawnPoint* sp = (CSpawnPoint*)item;
+		if (sp && sp->Selected())
+		{
+			shared_str custom_data = sp->m_SpawnData.ReadCustomData();
+
+			if (custom_data.size() > 2 && custom_data_check(custom_data.c_str(), ignore_vec)  )
+			{
+				string512 tmp;
+				sprintf(tmp, "[%s]\n %s\n\n\n", sp->GetName(), custom_data.c_str());
+
+				list_file.push_back(tmp);
+			}
+
+			/*
+			shared_str custom_data = sp->m_SpawnData.ReadCustomData();
+			if (custom_data.size() > 2)
+			{
+
+
+				if (w)
+				{
+					string128 tmp;
+					sprintf(tmp, "[%s]", sp->GetName());
+ 					w->w_string(tmp);
+					w->w_string(custom_data.c_str());
+					w->w_string("\n");
+					w->w_string("\n");
+					w->w_string("\n");
+				}
+
+				// Name: %s, size: %d,  : sp->GetName(), custom_data.size(), 
+				//Msg("custom_data: {\n"
+				//	"%s \n}", custom_data.c_str());
+			}
+			*/
+		}
+	}
+
+	std::sort(list_file.begin(), list_file.end(), [](shared_str a, shared_str b) {return a.size() < b.size(); });
+
+	if (w)
+	for (auto str : list_file)
+		w->w_string(str.c_str());
+
+	FS.w_close(w);
+}
+
+void UIObjectList::UpdateCustomData()
+{
+	Msg("Update CustomData");
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SPAWNPOINT));
+
+	customdata_objects.clear();
+
+
+	ObjectList& list = ot->GetObjects();
+	for (auto item : list)
+	{
+		CSpawnPoint* sp = (CSpawnPoint*)item;
+		if (sp)
+		{
+			shared_str name = sp->m_SpawnData.ReadCustomData();
+			if (name.size() > 2)
+			{
+				customdata_objects.push_back(item);	 
+				Msg("Name:%s(%s), size: %d", item->GetName(), sp->m_SpawnData.m_Visual ? sp->m_SpawnData.m_Visual->source->visual_name.c_str() : "", name.size());
+			}
+			
+		}
+	}
+}
+
 void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 {
 	xr_string temp_fn = "";
 
 	loaded += 1;
-	objects_original_POS.clear();
+	//objects_original_POS.clear();
  
 	if (!use_path && EFS.GetOpenName(EDevice.m_hWnd, _import_, temp_fn) || use_path)
 	{
@@ -242,6 +397,8 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 			bool load = Scene->ReadObjectLTX(file, tmp, obj);
 			if (load)
 			{
+				Msg("Load: Sec: %s, Name: %s", tmp, obj->GetName());
+
 				while (Scene->FindObjectByName(obj->GetName(), obj) != 0)
 				{
 					CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
@@ -256,12 +413,16 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 				if (!Scene->OnLoadAppendObject(obj))
 					xr_delete(obj);
 
-				objects_original_POS[obj] = obj->GetPosition();
+				OBJECT_POS data;
+				data.obj = obj;
+				data.pos = obj->GetPosition();
+
+				objects_original_POS[temp_fn.c_str()].push_back(data);
 
 				Fvector3 pos = obj->GetPosition();
 				pos.add(offset);
 				obj->SetPosition(pos);
-				//obj->FPosition.add(offset);
+
 				if (old_class != obj->FClassID)
 				{
 					//Msg("Load [%d]", obj->FClassID);
@@ -275,10 +436,6 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 			sprintf(tmp, "object_%d", i);
 		}
 	}
-   
-
-
-	//Msg("Memory Use: %d", objects_loaded.get_allocator().max_size());
 }
 
 void UIObjectList::ImportMultiply()
@@ -440,7 +597,7 @@ bool UIObjectList::LoadAiMAP()
 	{
 		//Msg("FIND AI MAP");
 		IReader* read = FS.r_open(temp);
-		Scene->GetTool(OBJCLASS_AIMAP)->LoadStreamOFFSET(*read, vec_offset);
+		Scene->GetTool(OBJCLASS_AIMAP)->LoadStreamOFFSET(*read, vec_offset, ai_ignore_stractures);
 		FS.r_close(read);
 	}
 
@@ -474,32 +631,16 @@ void UIObjectList::SelectLoaded()
 	}
 }
 
-void UIObjectList::CheckCustomData()
+void UIObjectList::MoveObjectsToOffset(xr_string& load)
 {
-	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SPAWNPOINT));
+	Msg("Move: %s", load);
 
-	ObjectList& list = ot->GetObjects();
-	for (auto item : list)
-	{
-		CSpawnPoint* sp = (CSpawnPoint*)item;
-		if (sp)
-		{
-			shared_str name = sp->m_SpawnData.ReadCustomData();
-			if (name.size() > 0)
-				Msg("CUSTOM: %s", name.c_str());
-		}
-
-	}
-}
-
-void UIObjectList::MoveObjectsToOffset()
-{
-	for (auto obj : objects_original_POS)
+	for (auto object : objects_original_POS[load])
 	{
 		Fvector pos;
-		pos.set(obj.second);
+		pos.set(object.pos);
 		pos.add(vec_offset);
-		obj.first->SetPosition(pos);
+		object.obj->SetPosition(pos);
 	}
 
 	Scene->OnObjectsUpdate();
@@ -787,9 +928,6 @@ void UIObjectList::ModifyAIMAPFiles(Fvector offset)
 	}
 }
 
-int value_ai;
-
-
 xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
 {
 	IReader* read = FS.r_open(file);
@@ -798,8 +936,9 @@ xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
 
 	if (read)
 	{
-
-		read->open_chunk(2);
+		
+		auto count = read->open_chunk(2);
+		
 
 		u32 size = read->r_u32();
 
@@ -810,6 +949,11 @@ xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
 			positions.push_back(pos);
 		}
 
+		
+
+		auto count_v3 = read->open_chunk(3);
+		Msg("Load: %s, chunks: %d, v3: %d", file, count, count_v3);
+
 	}
 
 	FS.r_close(read);
@@ -817,6 +961,50 @@ xr_vector<Fvector3> UIObjectList::getAIPOS(LPCSTR file)
 	return positions;
 }
  
+void UIObjectList::MergeAI_FromINI(CInifile* file)
+{
+	int id = 1;
+	string16 section;
+	sprintf(section, "aimap_%d", id);
+
+	xr_vector <Fvector3>	result;
+
+	while (file->section_exist(section))
+	{
+		Fvector offset = file->r_fvector3(section, "position");
+		LPCSTR name_file = file->r_string(section, "name");
+
+		string_path path;
+		FS.update_path(path, _import_, name_file);
+ 
+		xr_vector <Fvector3>	aimap = getAIPOS(path); 
+		for (auto pos : aimap)
+		{
+			pos.add(offset);
+			result.push_back(pos);
+		}
+
+		Msg("LoadAIMap: %s, sizeof: %d, results: %d", path, aimap.size(), result.size());
+
+		id++;
+		sprintf(section, "aimap_%d", id);
+	}
+
+	if (file->section_exist("save_directory"))
+	{
+		string_path path;
+		FS.update_path(path, _import_, file->r_string("save_directory", "path"));
+
+		IWriter* write = FS.w_open(path);
+		write->open_chunk(2);
+		write->w_u32(result.size());
+		for (auto pos : result)
+			write->w_fvector3(pos);
+		write->close_chunk();
+		FS.w_close(write);
+	}
+}
+
 void UIObjectList::MergeAIMAP(u32 files)
 {
 	xr_vector <Fvector3> result;
@@ -861,7 +1049,14 @@ void UIObjectList::RenameSelectedObjects()
 		{
 			string256 name;
 
-			sprintf(name, "%s_%d", &prefix_name, i);
+			if (use_prefix_refname)
+			{	  
+				CSceneObject* scene = smart_cast<CSceneObject*>(item);
+				if (scene)
+				sprintf(name, "%s_%s_%d", scene->RefName(), &prefix_name, i);
+			}
+			else 
+				sprintf(name, "%s_%d", &prefix_name, i);
 
 			item->SetName(name);
 
@@ -902,8 +1097,8 @@ void UIObjectList::SetCustomData(bool autoNumarate, LPCSTR logic, LPCSTR path_na
 				sp->m_SpawnData.ModifyCustomData(buff);
 				
 				string_path create_file = { 0 };
-
 				string256 path_calc = { 0 };
+
 				sprintf(path_calc, "scripts\\%s\\%s.ltx", path_name, sp->GetName());
 
 				FS.update_path(create_file, _game_config_, path_calc);
@@ -1124,24 +1319,65 @@ void UIObjectList::CreateLogicConfigs()
 		ini_smart->save_as(smart_path);
 	}
 }
+ 
+int current_in_list = 0;
+bool current_only_customdata = 0;
 
-int sector = 0;
-int cur_light_type = 0;
-const char* light_type[] = { "all", "lightmap", "dynamic", "animated"};
+void UIObjectList::GenSpawnCFG(xr_string section, xr_string map, xr_string prefix)
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SPAWNPOINT));
 
-int cur_smart = 0;
+	ObjectList& list = ot->GetObjects();
+	int i = 0;
+ 
+	for (auto sel : list)
+	{	  
+		if (!sel->Selected())
+			continue;
+
+		string4096 text;
+		sprintf(text, "[%s] \ncfg=scripts\\%s\\%s\\%s.ltx", section.c_str(), map.c_str(), prefix.c_str(), sel->GetName() );
+		
+		string4096		buff;
+		xr_sprintf(buff, sizeof(buff), "\"%s\"", (text) ? text : "");
+		
+		string128 t;
+		sprintf(t, "scripts\\%s\\%s\\%s.ltx", map.c_str(), prefix.c_str(), sel->GetName());
+
+		string_path p;
+		FS.update_path(p, "$game_config$", t);
+	
+		CSpawnPoint* spawn = smart_cast<CSpawnPoint*>(sel);
+		if (spawn)
+		{
+			IWriter* I = FS.w_open(p);
+			I->w_string(spawn->m_SpawnData.ReadCustomData());
+			FS.w_close(I);
+
+			spawn->m_SpawnData.ModifyCustomData(buff);
+		}
+	}
+
+	
+}
+
+string_path prefix_cfg_section;
+string_path prefix_cfg_prefix;
+string_path prefix_cfg_map;
+
+bool use_genarate_cfgs = false;
 
 void UIObjectList::UpdateUIObjectList()
 {
-
  	{
-		ImGui::Text("OFFSET: ");
-		float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
-
-		if (ImGui::InputFloat3("x", vec, 0.001f))
-			vec_offset.set(vec[0], vec[1], vec[2]);
+		ImGui::Checkbox("LoadMenu", &ShowLOAD);
+		ImGui::Checkbox("MultiplySelect", &MultiplySelect);
+		ImGui::Checkbox("ShowError", &use_errored);
 	}
 
+	ImGui::Separator();
+
+	/*
 	if (LTools->CurrentClassID() == OBJCLASS_SECTOR)
 	{
 		ImGui::InputInt("sector_id", &sector, 1, 100);
@@ -1150,15 +1386,70 @@ void UIObjectList::UpdateUIObjectList()
 	}
 
 	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
+	{
 		ImGui::ListBox("list_light", &cur_light_type, light_type, IM_ARRAYSIZE(light_type), 8);
-
+	}
+	*/
+	
 	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP)
 	{
-		if (ImGui::Button("Move Loaded to Offset", ImVec2(-1, 0)))
-			MoveObjectsToOffset();
+		ImGui::InputInt("Distance", &DistanceObjects, 1, 100);
+		ImGui::Checkbox("Use Distances", &use_distance);
+		ImGui::InputInt("MaxName", &_sizetext, 1, 10);
 
-		if (ImGui::Button("Export Level ALL", ImVec2(-1, 0)))
-			ExportAllObjects();
+		ImGui::InputText("#repace_name", prefix_name, sizeof(prefix_name));
+		if (ImGui::Button("rename_selected", ImVec2(-1, 0)))
+			RenameSelectedObjects();
+
+
+		if (ImGui::Button("selected_names_to_log", ImVec2(-1, 0)))
+		{
+			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+			ObjectList list = scene_object->GetObjects();
+
+			for (auto obj : list)
+			{
+				if (obj->Selected())
+					Msg("%s", obj->GetName());
+			}
+		}
+
+		if (ImGui::Button("check_for_duplicate", ImVec2(-1, 0)))
+			FindALL_Duplicate();
+
+
+	}
+	
+	
+	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP && ShowLOAD)
+	{
+		ImGui::Text("LOAD_FUNCTS:");
+
+		ImGui::Text("OFFSET: ");
+		float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
+
+		if (ImGui::InputFloat3("x", vec, 0.001f))
+			vec_offset.set(vec[0], vec[1], vec[2]);
+
+		if (objects_original_POS.size() > 0)
+		{
+ 			const char* items[] = {"first"};
+		
+ 			int i = 0;
+			for (auto name : objects_original_POS)
+			{	
+				items[i] = name.first.c_str();
+ 				i++;
+			}
+			ImGui::ListBox("", &current_in_list, items, IM_ARRAYSIZE(items), 8);
+ 
+			if (ImGui::Button("Move Loaded to Offset", ImVec2(-1, 0)))
+			{
+				xr_string str = items[current_in_list];
+				// str.sprintf("%s", items[current_in_list]);
+ 				MoveObjectsToOffset(str);
+			}
+		}
 
 		if (ImGui::Button("Load Objects", ImVec2(-1, 0)))
 			ImportObjects(vec_offset);
@@ -1169,19 +1460,31 @@ void UIObjectList::UpdateUIObjectList()
 		if (ImGui::Button("Undo load", ImVec2(-1, 0)))
 			UndoLoad();
 
-		if (ImGui::Button("sel loaded", ImVec2(-1, 0)))
+		if (ImGui::Button("Select Loaded", ImVec2(-1, 0)))
 			SelectLoaded();
 
-		if (ImGui::Button("check duplicate", ImVec2(-1, 0)))
+		if (ImGui::Button("Check For Duplicate", ImVec2(-1, 0)))
 			CheckDuplicateNames();
 
-		if (ImGui::Button("rename all objects", ImVec2(-1, 0) ) )
+		if (ImGui::Button("Rename All Objects", ImVec2(-1, 0) ) )
 			RenameALLObjectsToObject();
 
+
+
+		ImGui::Separator();
+
 	}
-	
+
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
+		ImGui::Text("AIMAP: ");
+
+		ImGui::Text("OFFSET: ");
+		float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
+
+		if (ImGui::InputFloat3("x", vec, 0.001f))
+			vec_offset.set(vec[0], vec[1], vec[2]);
+
 		/*
 		ImGui::InputInt("SelectID: ", &value_ai, 0, 100000000);
 
@@ -1196,19 +1499,30 @@ void UIObjectList::UpdateUIObjectList()
 			AddSceneObjectToList();
 		*/
 
+		ImGui::Checkbox("ignore_construction_on_load", &ai_ignore_stractures);
+
 		if (ImGui::Button("select map file", ImVec2(-1, 0)))
 			SelectAIMAPFile();
 
 		if (ImGui::Button("load map", ImVec2(-1, 0)))
+		{
+			ESceneToolBase* tool = Scene->GetTool(OBJCLASS_AIMAP);
+			ESceneAIMapTool* tool_ai = smart_cast<ESceneAIMapTool*>(tool);
+			tool_ai->CreateCFModel();
 			LoadAiMAP();
+		}
+
 		if (ImGui::Button("export map", ImVec2(-1, 0)))
 			ExportAIMap();
 
+		/*
 		if (ImGui::Button("set offset terrain", ImVec2(-1, 0)))
 			SetTerrainOffsetForAI();
 
 		if (ImGui::Button("move to offsets", ImVec2(-1, 0)))
 			ModifyAIMAPFiles(vec_offset);			
+		
+
 		
 		if (ImGui::Button("merge", ImVec2(-1, 0)))
 			MergeAIMAP(merge_ai_map_size);
@@ -1228,10 +1542,28 @@ void UIObjectList::UpdateUIObjectList()
 
 			}
 		}
+
+		*/
+
+		if (ImGui::Button("merge_ini", ImVec2(-1, 0)))
+		{
+			xr_string path;
+			if (EFS.GetOpenName(EDevice.m_hWnd, _import_, path))
+			{
+				CInifile* file = new CInifile(path.c_str(), true);
+				MergeAI_FromINI(file);
+			}
+		}
+
+		ImGui::Separator();
 	}
 
 	if (LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
 	{
+		ImGui::Text("SCENE: ");
+
+		ImGui::Checkbox("use_prefix_by_refname", &use_prefix_refname);
+
 		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
 			CopyTempLODforObjects();
 
@@ -1244,21 +1576,48 @@ void UIObjectList::UpdateUIObjectList()
 		if (ImGui::Button("pos_objects_save_ltx", ImVec2(-1, 0) ))
 			POS_ObjectsToLTX();
 
+		if (ImGui::Button("Export Level ALL", ImVec2(-1, 0)))
+			ExportAllObjects();
+
+		
+
 		ImportMultiply();
+
+		ImGui::Separator();
 	}
 
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
-		//if (ImGui::Button("Check CustomData", ImVec2(-1, 0)))
-		//	CheckCustomData();
+		ImGui::Text("SPAWN: ");
+		
+		ImGui::Checkbox("GenConfigs", &use_genarate_cfgs);
+		ImGui::Checkbox("IgnoreVisual", &IgnoreVisual);
+		ImGui::Checkbox("IgnoreNotVisual", &IgnoreNotVisual);
+ 
+		if (ImGui::Checkbox("Show Only CustomData Objects", &current_only_customdata))
+			UpdateCustomData();
 
-		ImGui::InputText("#repace_name", prefix_name, sizeof(prefix_name));
+		if (ImGui::Button("Error_Spawns", ImVec2(-1, 0)))
+			LoadErrorsGraphs();
 
-		if (ImGui::Button("rename_selected", ImVec2(-1, 0)))
+		if (use_genarate_cfgs)
 		{
-			RenameSelectedObjects();
+			ImGui::InputText("section", prefix_cfg_section, sizeof(prefix_cfg_section));
+			ImGui::InputText("map", prefix_cfg_map, sizeof(prefix_cfg_map));
+			ImGui::InputText("prefix", prefix_cfg_prefix, sizeof(prefix_cfg_prefix));
+
+
+			if (ImGui::Button("GenSpawnCFG", ImVec2(-1, 0)))
+				GenSpawnCFG(prefix_cfg_section, prefix_cfg_map, prefix_cfg_prefix);
+
+			if (ImGui::Button("Check CustomData", ImVec2(-1, 0)))
+				CheckCustomData();
+
+			if (ImGui::Button("Clear_CustomData", ImVec2(-1, 0)))
+				ClearCustomData();
 		}
 
+		/*
 		ImGui::InputInt("smart_mask", &cur_smart, 1, 10);
 
 		if (ImGui::Button("smart_terrain_mask export", ImVec2(-1, 0)))
@@ -1277,20 +1636,8 @@ void UIObjectList::UpdateUIObjectList()
 			}
 		}	
 
-		if (ImGui::Button("smart_terrain_names", ImVec2(-1, 0)))
-		{
-			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
-			ObjectList list = scene_object->GetObjects();
-
-			for (auto obj : list)
-			{
-				if (obj->Selected())
-					Msg("%s", obj->GetName());
-			}
-		}
-
-		/*
-
+ 
+		
 		if (create_cfg_file)
 		{
 			ImGui::InputText("#logic_sec", logic_sec, sizeof(logic_sec));
@@ -1313,18 +1660,22 @@ void UIObjectList::UpdateUIObjectList()
 			SetCustomData(true, logic_sec, path_sec);
 		}
  
+		
 		if (ImGui::Button("#create_logic", ImVec2(-1, 0)))
 		{
 			CreateLogicConfigs();
-		}
+		} 
+		*/ 
 
-		*/
+
+
+		ImGui::Separator();
+
 	}
-
 }
  
 int current_selected_item = 0;
-const char* items[] = { "null", "use_items", "smart_terrain", "space_restrictor", "smart_cover", "camp_zone", "zones", "campfire", "graph_point", "anomal_zone" };
+const char* items[] = { "null", "use_items", "smart_terrain", "space_restrictor", "smart_cover", "camp_zone", "zones", "campfire", "graph_point", "anomal_zone", "physic", "physic_object", "physic_d"};
 const char* fireboll[] = { "fireboll", "fireboll_acidic", "fireboll_electric" };
 const char* fild_zones[] = { "field_acidic", "field_psychic", "field_radioactive", "field_thermal" };
 const char* mine_zones[] = { "mine_acidic", "mine_electric", "mine_gravitational", "mine_thermal" };
@@ -1332,10 +1683,118 @@ const char* use_items[] = { "antirad", "bandage", "conserva", "drug_", "energy_d
 
 #include "ELight.h"
 
+xr_vector<CCustomObject*> objects_failed;
+u32 OldDeviceTime = 0;
+
+bool UIObjectList::CheckForError(CCustomObject* object)
+{
+	if (use_errored)
+	{
+
+		if (OldDeviceTime < EDevice.dwTimeGlobal)
+		{
+			OldDeviceTime = EDevice.dwTimeGlobal + 2000;
+			
+			for (auto item : Errored_objects)
+			{
+				if (object->FName.equal(item.c_str()))
+				{
+					objects_failed.push_back(object);
+				}
+			};
+			
+		}
+ 
+		bool finditem = false;
+		
+		for (auto item : objects_failed)
+		{
+			if (item == object)
+			{
+				finditem = true;
+				return false;
+			}
+		}
+ 
+		if (finditem)
+			return true;
+	}
+	else
+	{
+		if (object->FName.size() <= _sizetext)
+			return true;
+	}
+
+
+	return false;
+}
+
+void UIObjectList::FindALL_Duplicate()
+{
+	Errored_objects.clear();
+						
+	ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+	if (mt)
+	{
+		ObjectList& lst = mt->GetObjects();
+		for (auto object : lst)
+		{
+			for (auto object_cmp : lst)
+			{
+				if (object->FName.equal(object_cmp->FName) && object != object_cmp)
+				{
+					Msg("Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", object->GetName(), (mt->FClassID), object->RefName(), VPUSH(object->GetPosition()));
+					Errored_objects.push_back(object->FName);
+				}
+			}
+		}
+	}
+
+
+}
+
+void UIObjectList::LoadErrorsGraphs()
+{
+
+	Errored_objects.clear();
+	xr_string file_path;
+
+	if (EFS.GetOpenName(EDevice.m_hWnd, _import_, file_path))
+	{
+		CInifile* file = xr_new<CInifile>(file_path.c_str());
+
+		string128 name_line;
+ 		sprintf(name_line, "graph_%d", 0);
+ 
+		int id = 0;
+		while (file->line_exist("graphs", name_line))
+		{
+			id++;
+			Errored_objects.push_back(file->r_string("graphs", name_line));
+			sprintf(name_line, "graph_%d", id);
+		}
+		
+
+	}
+
+}
+
+
+
 bool UIObjectList::CheckNameForType(CCustomObject* obj)
 {
+	if (!CheckForError(obj))
+		return false;
+
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
+		if (current_only_customdata)
+		{
+			auto Out = std::find(customdata_objects.begin(), customdata_objects.end(), obj);
+			if (Out == customdata_objects.end())
+				return false;
+		}
+
 		if (!current_selected_item && xr_strlen(m_Filter_type) == 0)
 			return true;
 
@@ -1374,23 +1833,21 @@ bool UIObjectList::CheckNameForType(CCustomObject* obj)
 				}
 				else
 				{
-					xr_strcpy(m_Filter_type, items[current_selected_item]);
+ 					xr_strcpy(m_Filter_type, items[current_selected_item]);
 
-					if (m_Filter_type[0])
+					if (m_Filter_type[0] && obj->RefName() != 0)
 					{
 						const char* str = strstr(obj->RefName(), m_Filter_type);
 						if (!str)
 							return false;
-
-						//	Msg("size %d", strlen(str) );
 					}
 				}
 		}
 		else
 		{
 			if (m_Filter_type[0] && obj->RefName() != 0)
-				if (strstr(obj->RefName(), m_Filter_type) == 0)
-					return false;
+			if (strstr(obj->RefName(), m_Filter_type) == 0)
+				return false;
 		}
 	}
 	
@@ -1424,11 +1881,16 @@ bool UIObjectList::CheckNameForType(CCustomObject* obj)
 
 void UIObjectList::ListBoxForTypes()
 {
+	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
+	{
+		ImGui::Text("VisualName:");
+		ImGui::InputText("##value_visual", m_Filter_visual, sizeof(m_Filter_visual));
+	}
+
 	if (current_selected_item == 0)
 	{
 		ImGui::Text("GameType Name:");
-		//ImGui::SetNextItemWidth(-200 );
-		ImGui::InputText("##value_type", m_Filter_type, sizeof(m_Filter_type));
+ 		ImGui::InputText("##value_type", m_Filter_type, sizeof(m_Filter_type));
 	}
 
 	ImGui::Text("Select Type:");

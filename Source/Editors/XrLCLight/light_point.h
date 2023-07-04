@@ -16,6 +16,4 @@ enum LightSource
 	LS_SUN,
 	LS_HEMI
 };
-
-
-//XRCL_LIGHT_API void  LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
+ 

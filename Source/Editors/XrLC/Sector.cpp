@@ -88,34 +88,44 @@ void CSector::BuildHierrarhy	()
 					float V;
 					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
 					{
-						if (V<best_volume)	{
+						if (V<best_volume)	
+						{
 							best_volume		= V;
 							best_id			= J;
+							break;
 						}
 					}
 				}
 				
 				// Analyze
-				if (best_id<0)		break;
+				if (best_id<0)		
+					break;
 				pNode->AddChield	(best_id);
 			}
 
-			StatusNoMSG("Sector: %d/%d", I, iSize);
+			StatusNoMSG("Sector: %d/%d geometry_tree: %d", I, iSize, g_tree.size());
 
-			if (pNode->chields.size()>1)	{
+			if (pNode->chields.size()>1)	
+			{
 				pNode->CalcBounds		();
 				g_tree.push_back		(pNode);
 				bAnyNode				= TRUE;
-			} else {
+			}
+			else 
+			{
 				g_tree[I]->bConnected	= false;
 				xr_delete				(pNode);
 			}
 		}
 		
-		if (iSize != (int)g_tree.size()) iLevel++;
+		if (iSize != (int)g_tree.size()) 
+			iLevel++;
 	}
+	
 	TreeRoot = 0;
-	if (bAnyNode) TreeRoot = g_tree.back();
+	
+	if (bAnyNode) 
+		TreeRoot = g_tree.back();
 	else {
 		for (u32 I=0; I<g_tree.size(); I++)
 		{
@@ -125,7 +135,8 @@ void CSector::BuildHierrarhy	()
 			TreeRoot	= g_tree[I];
 		}
 	}
-	if (0==TreeRoot) {
+	if (0==TreeRoot) 
+	{
 		clMsg("Can't build hierrarhy for sector #%d",SelfID);
 	}
 }

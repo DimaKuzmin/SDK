@@ -85,24 +85,32 @@ bool CEditableObject::BoxPick(CCustomObject* obj, const Fbox& box, const Fmatrix
 }
 #endif
 
+extern u32 GlobalRender = 0;
+
 extern float 	ssaLIMIT;
 extern float	g_fSCREEN;
 static const float ssaLim = 64.f*64.f/(640*480);
-void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces){
+void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
+{
     if (!(m_LoadState.is(LS_RBUFFERS)))
     	DefferedLoadRP();
+
 	Fvector v; 
     float r;
-    Fbox bb; 
-    bb.xform			(m_BBox,parent); 
-    bb.getsphere		(v,r);
+   
+    Fbox bb;
+    bb.xform(m_BBox, parent);
+    bb.getsphere(v, r);
 
-    if (EPrefs->object_flags.is(epoDrawLOD)&&(m_objectFlags.is(eoUsingLOD)&&(CalcSSA(v,r)<ssaLim)))
+    if (EPrefs->object_flags.is(epoDrawLOD) && m_objectFlags.is(eoUsingLOD) && CalcSSA(v,r) < ssaLim)
     {
 		if ((1==priority)&&(true==strictB2F))
         	RenderLOD(parent);
-    }else{
+    }
+    else
+    {
         RCache.set_xform_world	(parent);
+
         if (m_objectFlags.is(eoHOM))
         {
             if ((1==priority)&&(false==strictB2F))
@@ -111,14 +119,18 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
             if ((2==priority)&&(true==strictB2F))
             	RenderSelection	(parent,0,0,0xA0FFFFFF);
 
-        }else if (m_objectFlags.is(eoSoundOccluder))
+        }
+        else
+        if (m_objectFlags.is(eoSoundOccluder))
         {
             if ((1==priority)&&(false==strictB2F))
             	RenderEdge		(parent,0,0,0xFF000000);
 
             if ((2==priority)&&(true==strictB2F))
             	RenderSelection	(parent,0,0,0xA00000FF);
-        }else{
+        }
+        else
+        {
             if(psDeviceFlags.is(rsEdgedFaces)&&(1==priority)&&(false==strictB2F))
                 RenderEdge(parent);
             size_t s_id = 0;
@@ -132,18 +144,16 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
                     if (surfaces)
                     {
                         EDevice.SetShader((*surfaces)[s_id]->_Shader());
-                       
                     }
                     else
                     {
-
                         EDevice.SetShader((*s_it)->_Shader());
                     }
                     for (EditMeshIt _M=m_Meshes.begin(); _M!=m_Meshes.end(); _M++)
-                        if (IsSkeleton())
-                        	(*_M)->RenderSkeleton	(parent,*s_it);
-                        else
-                        	(*_M)->Render			(parent,*s_it);
+                    if (IsSkeleton())
+                        (*_M)->RenderSkeleton	(parent,*s_it);
+                    else
+                        (*_M)->Render			(parent,*s_it);
                 }
                 s_id++;
             }
@@ -153,13 +163,15 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
 
 void CEditableObject::RenderSingle(const Fmatrix& parent)
 {
-	for (int i=0; i<4; i++){
+	for (int i=0; i<4; i++)
+    {
 		Render(parent, i, false);
 		Render(parent, i, true);
     }
 }
 
-void CEditableObject::RenderAnimation(const Fmatrix&){
+void CEditableObject::RenderAnimation(const Fmatrix&)
+{
 }
 
 void CEditableObject::RenderEdge(const Fmatrix& parent, CEditableMesh* mesh, CSurface* surf, u32 color)

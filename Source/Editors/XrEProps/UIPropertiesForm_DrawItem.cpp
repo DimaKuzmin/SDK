@@ -431,6 +431,7 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 		{
 			CTextValue* V = dynamic_cast<CTextValue*>(node->GetFrontValue()); R_ASSERT(V);
 			{
+				 
 				char text[20];
 				xr_string str = node->GetDrawText();
 				int i = 0;
@@ -444,13 +445,14 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 						a++;
 					text[i] = str[a];
 				}
-				if(str.size()>16||str.size()==0)
+				if(str.size()> 16 ||str.size()==0)
 				for (; i < std::min(size_t(16), str.size()) + 3; i++)
 				{
 					text[i] = '.';
 				}
 				text[i] = 0;
-				ImGui::Text(text);
+			 
+ 				ImGui::Text(text);
 			}
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))
 			{
@@ -459,6 +461,8 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData)+1;
 				m_EditTextValue = node;
 			}
+			
+			//Msg("PropCtext: %s", name);
 			DrawEditText();
 		}
 			break;
@@ -485,7 +489,8 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 					text[i] = '.';
 				}
 				text[i] = 0;
-				ImGui::Text(text);
+
+   				ImGui::Text("%s\n     ", node->GetDrawText().c_str()); 
 			}
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))
 			{
@@ -494,6 +499,7 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData) + 1;
 				m_EditTextValue = node;
 			}
+			//Msg("PropRtext %s", name);
 			DrawEditText();
 		}
 			break;
@@ -521,6 +527,8 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 					text[i] = '.';
 				}
 				text[i] = 0;
+				//ImGui::Text(text);
+				//Msg("PropStext %s", name);
 				ImGui::Text(text);
 			}
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))

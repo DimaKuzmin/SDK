@@ -353,7 +353,8 @@ void CSHEngineTools::Load()
                 CBlender_DESC	desc;
                 chunk->r		(&desc,sizeof(desc));
                 IBlender*		B = IBlender::Create(desc.CLS);
-                if (B){
+                if (B)
+                {
                     if	(B->getDescription().version != desc.version)
                     {
                         Msg			("! Version conflict in shader '%s'",desc.cName);
@@ -701,8 +702,17 @@ void CSHEngineTools::ResetCurrentItem()
 void CSHEngineTools::CollapseMatrix(LPSTR name)
 {
 	if (*name=='$') return;
-	R_ASSERT(name&&name[0]);
-    CMatrix* M = FindMatrix(name); VERIFY(M);
+    if (!(name && name[0]))
+    {
+        Msg("Check: %s", name);
+        return;
+    }
+
+    CMatrix* M = FindMatrix(name);
+    if (!M)
+        return;
+
+    VERIFY(M);
 	M->dwReference--;
     for (MatrixPairIt m=m_OptMatrices.begin(); m!=m_OptMatrices.end(); m++){
         if (m->second->Similar(*M)){
@@ -711,6 +721,7 @@ void CSHEngineTools::CollapseMatrix(LPSTR name)
             return;
         }
     }
+
     // append new optimized matrix
     CMatrix* N = xr_new<CMatrix>(*M);
     N->dwReference=1;
@@ -720,8 +731,14 @@ void CSHEngineTools::CollapseMatrix(LPSTR name)
 void CSHEngineTools::CollapseConstant(LPSTR name)
 {
 	if (*name=='$') return;
-	R_ASSERT(name&&name[0]);
-    CConstant* C = FindConstant(name); VERIFY(C);
+    if (!(name && name[0]))
+    {
+        Msg("Check: %s", name);
+        return;
+    }
+
+    CConstant* C = FindConstant(name);
+    VERIFY(C);
 	C->dwReference--;
     for (ConstantPairIt c=m_OptConstants.begin(); c!=m_OptConstants.end(); c++){
         if (c->second->Similar(*C)){
@@ -730,8 +747,14 @@ void CSHEngineTools::CollapseConstant(LPSTR name)
             return;
         }
     }
+
+    if (!C)
+        return;
+
     // append opt constant
     CConstant* N = xr_new<CConstant>(*C);
+    if (!N)
+        return;
     N->dwReference=1;
 	m_OptConstants.insert(mk_pair(xr_strdup(name),N));
 }
@@ -739,17 +762,40 @@ void CSHEngineTools::CollapseConstant(LPSTR name)
 void CSHEngineTools::UpdateMatrixRefs(LPSTR name)
 {
 	if (*name=='$') return;
-	R_ASSERT(name&&name[0]);
-	CMatrix* M = FindMatrix(name); R_ASSERT(M);
+	
+    if (!(name && name[0]))
+    {
+        Msg("Check: %s", name);
+        return;
+    }
+    //R_ASSERT(name&&name[0]);
+	CMatrix* M = FindMatrix(name);
+    //R_ASSERT(M);
+    if (!M)
+    {
+        Msg("Not MATRIX: %s", name);
+        return;
+    }
 	M->dwReference++;
 }
 
 void CSHEngineTools::UpdateConstantRefs(LPSTR name)
 {
 	if (*name=='$') return;
-	R_ASSERT(name&&name[0]);
-	CConstant* C = FindConstant(name); R_ASSERT(C);
-	C->dwReference++;
+    if (!(name && name[0]))
+    {
+        Msg("Check: %s", name);  
+        return;
+    }
+    //R_ASSERT(name&&name[0]);
+	CConstant* C = FindConstant(name);
+    //R_ASSERT(C);
+    if (!C)
+    {
+        Msg("Not CONSTANT: %s", name);
+        return;
+    }
+    C->dwReference++;
 }
 
 void CSHEngineTools::ParseBlender(IBlender* B, CParseBlender& P)
@@ -762,23 +808,37 @@ void CSHEngineTools::ParseBlender(IBlender* B, CParseBlender& P)
     DWORD type;
     string256 key;
 
-    while (!data.eof()){
+    while (!data.eof())
+    {
         int sz=0;
         type = data.r_u32();
         data.r_stringZ(key,sizeof(key));
-        switch(type){
-        case xrPID_MARKER:							break;
-        case xrPID_MATRIX:	sz=sizeof(string64); 	break;
-        case xrPID_CONSTANT:sz=sizeof(string64); 	break;
-        case xrPID_TEXTURE: sz=sizeof(string64); 	break;
-        case xrPID_INTEGER: sz=sizeof(xrP_Integer);	break;
-        case xrPID_FLOAT: 	sz=sizeof(xrP_Float); 	break;
-        case xrPID_BOOL: 	sz=sizeof(xrP_BOOL); 	break;
-		case xrPID_TOKEN: 	sz=sizeof(xrP_TOKEN)+sizeof(xrP_TOKEN::Item)*(((xrP_TOKEN*)data.pointer())->Count); break;
-        default:
-            THROW2("xrPID_????");
+        switch(type)
+        {
+            case xrPID_MARKER:							break;
+            case xrPID_MATRIX:	sz=sizeof(string64); 	break;
+            case xrPID_CONSTANT:sz=sizeof(string64); 	break;
+            case xrPID_TEXTURE: sz=sizeof(string64); 	break;
+            case xrPID_INTEGER: sz=sizeof(xrP_Integer);	break;
+            case xrPID_FLOAT: 	sz=sizeof(xrP_Float); 	break;
+            case xrPID_BOOL: 	sz=sizeof(xrP_BOOL); 	break;
+		    case xrPID_TOKEN: 	sz=sizeof(xrP_TOKEN)+sizeof(xrP_TOKEN::Item)*(((xrP_TOKEN*)data.pointer())->Count); break;
+            default:
+            {   
+                //THROW2("xrPID_????");
+                Msg("Check xrPID: %u, %s", type, B->getName());
+            }
         }
-        P.Parse(this,type, key, data.pointer());
+        
+        if (B != nullptr)
+        {
+            Msg("B: texture:  %s", B->getTextureName() && B->getTextureName()[0] ? B->getTextureName() : "null");
+            //Msg("BLEND: %s, KEY: %s", B->getName() && B->getName() [0] ? B->getName() : "null", key);
+            P.Parse(this, type, key, data.pointer());
+        }
+        else
+            Msg("Check: %s", key);
+
         data.advance(sz);
     }
 

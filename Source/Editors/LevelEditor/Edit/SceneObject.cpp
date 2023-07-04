@@ -112,7 +112,8 @@ void CSceneObject::Render(int priority, bool strictB2F)
     Scene->SelectLightsForObject(this);
 #endif
 	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
-    if (Selected()){
+    if (Selected())
+    {
     	if (1==priority){
             if (false==strictB2F){
                 EDevice.SetShader(EDevice.m_WireShader);
@@ -128,7 +129,8 @@ void CSceneObject::Render(int priority, bool strictB2F)
 
 void CSceneObject::RenderBlink()
 {
-    if (m_iBlinkTime>0){
+    if (m_iBlinkTime>0)
+    {
         if (m_iBlinkTime>(int)EDevice.dwTimeGlobal){
         	int alpha = iFloor(sqrtf(float(m_iBlinkTime-EDevice.dwTimeGlobal)/BLINK_TIME)*64);
 			m_pReference->RenderSelection(_Transform(),0, m_BlinkSurf, D3DCOLOR_ARGB(alpha,255,255,255));
@@ -247,7 +249,7 @@ CEditableObject* CSceneObject::UpdateReference()
 
 CEditableObject* CSceneObject::SetReference(LPCSTR ref_name)
 {
-	m_ReferenceName	= ref_name;
+	m_ReferenceName	= ref_name; 
     return UpdateReference();
 }
 

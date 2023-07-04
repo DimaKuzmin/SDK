@@ -287,7 +287,7 @@ __device__ void GetEnergyFromHit(xrHardwareLCGlobalData* GlobalData, Hit* InHit,
 		HardwareVector& TexCoords2 = pTrisInfo[1].TexCoords;
 		HardwareVector& TexCoords3 = pTrisInfo[2].TexCoords;
 
-		HardwareVector BarycentricCoords(1.0f - InHit->u - InHit->v, InHit->u, InHit->v);
+		HardwareVector BarycentricCoords(1.0f - InHit->u - InHit->v , InHit->u, InHit->v);
 
 		float FinalU = TexCoords1.x * BarycentricCoords.x + TexCoords2.x * BarycentricCoords.y + TexCoords3.x * BarycentricCoords.z;
 		float FinalV = TexCoords1.y * BarycentricCoords.x + TexCoords2.y * BarycentricCoords.y + TexCoords3.y * BarycentricCoords.z;

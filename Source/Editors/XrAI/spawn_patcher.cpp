@@ -35,7 +35,8 @@ spawn_patcher::spawn_patcher		(LPCSTR new_spawn_id, LPCSTR previous_spawn_id)
 		return;
 
 	string_path				file_name;
-	if (!FS.exist(file_name, "$game_spawn$", new_spawn_id, ".spawn")) {
+	if (!FS.exist(file_name, "$game_spawn$", new_spawn_id, ".spawn"))
+	{
 		Msg					("cannot open spawn file \"%s\"",file_name);
 		return;
 	}
@@ -91,7 +92,8 @@ bool spawn_patcher::spawn_guid		(LPCSTR spawn_id, xrGUID &result)
 bool spawn_patcher::process_header	(IReader &reader, IWriter &writer, xrGUID &previous_spawn_guid)
 {
 	IReader					*chunk = reader.open_chunk(0);
-	if (!chunk) {
+	if (!chunk) 
+	{
 		Msg					("spawn is broken: cannot find header chunk");
 		return				(false);
 	}

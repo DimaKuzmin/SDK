@@ -170,8 +170,8 @@ void CBuild::BuildCForm	()
 		Progress(float(ref / float(mu_refs().size())));
 		mu_refs()[ref]->export_cform_game(CL);
 
-		if (ref % 100 == 0)
-			clMsg("Model %d", ref);
+		//if (ref % 100 == 0)
+		//	clMsg("Model %d", ref);
 	}
 
 	Status("SimplifyCFORM");

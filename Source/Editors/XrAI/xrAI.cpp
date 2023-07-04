@@ -8,6 +8,8 @@
 
 #include "xr_graph_merge.h"
 #include "game_spawn_constructor.h"
+#include "game_spawn_unpacker.h"
+
 #include "xrCrossTable.h"
 //#include "path_test.h"
 #include "game_graph_builder.h"
@@ -52,6 +54,21 @@ extern void clear_temp_folder	();
 
 void execute	(LPSTR cmd)
 {
+	Msg("Execute");
+
+	char* unpack = strstr(cmd, "-unpack");
+	char* out = strstr(cmd, "-out");
+
+	if (unpack && out)
+	{
+		string256 spawn_unpack, spawn_out;
+		sscanf(unpack + 7, "%s", spawn_unpack);
+		sscanf(out + 4, "%s", spawn_out);
+
+		game_spawn_unpacker(spawn_unpack, spawn_out);
+		return;
+	}
+   
 	// Load project
 	string4096 name;
 	name[0]=0; 
@@ -73,14 +90,17 @@ void execute	(LPSTR cmd)
 	string_path			prjName;
 	prjName				[0] = 0;
 	bool				can_use_name = false;
-	if (xr_strlen(name) < sizeof(string_path)) {
+	
+	if (xr_strlen(name) < sizeof(string_path)) 
+	{
 		can_use_name	= true;
 		FS.update_path	(prjName,"$game_levels$",name);
 	}
 
 	FS.update_path		(INI_FILE,"$game_config$",GAME_CONFIG);
 	
-	if (strstr(cmd,"-f")) {
+	if (strstr(cmd,"-f")) 
+	{
 		R_ASSERT3		(can_use_name,"Too big level name",name);
 		
 		char			*output = strstr(cmd,"-out");
@@ -96,20 +116,25 @@ void execute	(LPSTR cmd)
 
 		xrCompiler		(prjName,!!strstr(cmd,"-draft"),!!strstr(cmd,"-pure_covers"),output);
 	}
-	else {
-		if (strstr(cmd,"-s")) {
+	else
+	{
+
+		if (strstr(cmd,"-s")) 
+		{
 			if (xr_strlen(name))
 				name[xr_strlen(name) - 1] = 0;
 			char				*output = strstr(cmd,"-out");
 			string256			temp0, temp1;
-			if (output) {
+			if (output)
+			{
 				output			+= xr_strlen("-out");
 				sscanf			(output,"%s",temp0);
 				_TrimLeft		(temp0);
 				output			= temp0;
 			}
 			char				*start = strstr(cmd,"-start");
-			if (start) {
+			if (start) 
+			{
 				start			+= xr_strlen("-start");
 				sscanf			(start,"%s",temp1);
 				_TrimLeft		(temp1);
@@ -135,7 +160,7 @@ void Startup(LPSTR     lpCmdLine)
 	xr_strcpy(cmd,lpCmdLine);
 	strlwr(cmd);
 	if (strstr(cmd,"-?") || strstr(cmd,"-h"))			{ Help(); return; }
-	if ((strstr(cmd,"-f")==0) && (strstr(cmd,"-g")==0) && (strstr(cmd,"-m")==0) && (strstr(cmd,"-s")==0) && (strstr(cmd,"-t")==0) && (strstr(cmd,"-c")==0) && (strstr(cmd,"-verify")==0) && (strstr(cmd,"-patch")==0))	{ Help(); return; }
+	if ((strstr(cmd,"-f")==0) && (strstr(cmd,"-g")==0) && (strstr(cmd,"-m")==0) && (strstr(cmd,"-s")==0) && (strstr(cmd,"-t")==0) && (strstr(cmd,"-c")==0) && (strstr(cmd,"-verify")==0) && (strstr(cmd,"-patch")==0)&& (strstr(cmd, "-unpack") == 0)) { Help(); return; }
 	if (strstr(cmd,"-o"))								bModifyOptions = TRUE;
 
 	// Give a LOG-thread a chance to startup

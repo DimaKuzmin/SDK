@@ -307,12 +307,21 @@ bool EScene::IsModified()
     return (m_RTFlags.is(flRT_Modified));
 }
 
+bool ReadySave();
+
+
 bool EScene::IfModified()
 {
-	if (locked()){ 
+	if (locked())
+    { 
         ELog.DlgMsg( mtError, "Scene sharing violation" );
         return false;
     }
+
+    while (!ReadySave())
+        Sleep(1);
+
+
     if (m_RTFlags.is(flRT_Unsaved) && (ObjCount()||!Tools->GetEditFileName().empty())){
         int mr = ELog.DlgMsg(mtConfirmation, "The scene has been modified. Do you want to save your changes?");
         switch(mr){
@@ -362,10 +371,52 @@ void EScene::OnShowHint(AStringVec& dest)
 bool EScene::ExportGame(SExportStreams* F)
 {
 	bool bres = true;
+    CTimer t; t.Start();
+    
     SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
     SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-    for (; t_it!=t_end; t_it++)
-        if (t_it->second)		if (!t_it->second->ExportGame(F)) bres=false;
+    for (; t_it != t_end; t_it++)
+    {
+        t.Start();
+        if (t_it->second)
+        if (!t_it->second->ExportGame(F))
+        {
+            bres = false;
+        }
+
+        if (t_it->second)
+        {
+            try 
+            {
+                Msg("Export: %s, time: %d", t_it->second->ClassName(), t.GetElapsed_ms());
+            }
+            catch (...)
+            {
+                Msg("Cant Get ExportName: %d", t.GetElapsed_ms());
+            }
+        }
+    }
+
+
+    return bres;
+}
+bool EScene::ExportGameNoStatic(SExportStreams* F)
+{
+    bool bres = true;
+
+    SceneToolsMapPairIt t_it = m_SceneTools.begin();
+    SceneToolsMapPairIt t_end = m_SceneTools.end();
+    for (; t_it != t_end; t_it++)
+    {
+        if (t_it->second->FClassID == OBJCLASS_SCENEOBJECT)
+            continue;
+        if (t_it->second)
+        if (!t_it->second->ExportGame(F))
+        {
+            bres = false;
+        }
+    }
+
     return bres;
 }
 //------------------------------------------------------------------------------

@@ -9,12 +9,13 @@
 #include "ESceneAIMapControls.h"
 #include "..\..\XrCore\xrPool.h"
 
-#define save_no_pack
+//#define save_no_pack
 
 #ifdef save_no_pack
 // chunks
 extern int AIMAP_VERSION = 0x0004;
 extern int AIMAP_VERSION_2 = 0x0002;
+extern int AIMAP_VERSION_3 = 0x0003;
 #else 
 // chunks
 extern int AIMAP_VERSION = 0x0003;
@@ -98,24 +99,23 @@ void SAINode::PointBL(Fvector& D, float patch_size)
  
 void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
 {
-	u32 			id;
-    u16 			pl;
-	NodePosition 	np;
-    
     if (ai_version == AIMAP_VERSION_2)
     {
-        F.r(&id, 3);
-        n1 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 3);
-        n2 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 3);
-        n3 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 3);
-        n4 = (SAINode*)tools->UnpackLink(id);
-      
+        u32 			id;
+        u16 			pl;
+        NodePosition 	np;
+        F.r(&id, 3); 			n1 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 3); 			n2 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 3); 			n3 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 3); 			n4 = (SAINode*)tools->UnpackLink(id);
+        pl = F.r_u16(); 		pvDecompress(Plane.n, pl);
+        F.r(&np, sizeof(np)); 	tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
+        Plane.build(Pos, Plane.n);
+        flags.assign(F.r_u8());
     }
     else
     {
+        u32 			id;
         F.r(&id, 4);
         n1 = (SAINode*)tools->UnpackLink(id);
         F.r(&id, 4);
@@ -124,22 +124,35 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
         n3 = (SAINode*)tools->UnpackLink(id);
         F.r(&id, 4);
         n4 = (SAINode*)tools->UnpackLink(id);
+
+        pvDecompress(Plane.n, F.r_u16());
+        F.r_fvector3(Pos);
+        Plane.build(Pos, Plane.n);
+        flags.assign(F.r_u8());
     }
 
 
+    /*
+    {
+        u32 			id;
+        NodePosition 	np;
 
-    pl = F.r_u16();
-    pvDecompress(Plane.n,pl);	
+        F.r(&id, 4);
+        n1 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 4);
+        n2 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 4);
+        n3 = (SAINode*)tools->UnpackLink(id);
+        F.r(&id, 4);
+        n4 = (SAINode*)tools->UnpackLink(id);
 
-if (ai_version == AIMAP_VERSION)
-    F.r_fvector3(Pos);
-else 
-    tools->UnpackPosition(Pos,np,tools->m_AIBBox,tools->m_Params);
-
-    F.r(&np, sizeof(np));
-	Plane.build		(Pos, Plane.n);
-    flags.assign	(F.r_u8());
-  
+        pvDecompress(Plane.n, F.r_u16());
+        F.r(&np, sizeof(np)); 
+        tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
+        Plane.build(Pos, Plane.n);
+        flags.assign(F.r_u8());
+    }
+    */
     
   /*  u32 max_32 = 0x00ffffff;
     
@@ -152,22 +165,33 @@ else
 
 void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
 {
+   
 	u32 			id;
-    u16 			pl;
-	NodePosition 	np;
-
+  
     id = n1?(u32)n1->idx:InvalidNode; F.w(&id,4);
     id = n2?(u32)n2->idx:InvalidNode; F.w(&id,4);
     id = n3?(u32)n3->idx:InvalidNode; F.w(&id,4);
     id = n4?(u32)n4->idx:InvalidNode; F.w(&id,4);
    
-    pl = pvCompress (Plane.n);	
-    F.w_u16(pl);	
+    F.w_u16(pvCompress(Plane.n));
     F.w_fvector3(Pos);
-
-    F.w(&np,sizeof(np));
     F.w_u8			(flags.get());
  
+    /*
+    u32 			id;
+    u16 			pl;
+    NodePosition 	np;
+
+    id = n1 ? (u32)n1->idx : InvalidNode_32bit; F.w(&id, 4);
+    id = n2 ? (u32)n2->idx : InvalidNode_32bit; F.w(&id, 4);
+    id = n3 ? (u32)n3->idx : InvalidNode_32bit; F.w(&id, 4);
+    id = n4 ? (u32)n4->idx : InvalidNode_32bit; F.w(&id, 4);
+
+    pl = pvCompress(Plane.n);	 F.w_u16(pl);
+    tools->PackPosition(np, Pos, tools->m_AIBBox, tools->m_Params);
+    F.w(&np, sizeof(np));
+    F.w_u8(flags.get());
+    */
 }
 
 ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
@@ -212,7 +236,10 @@ void ESceneAIMapTool::Clear(bool bOnlyNodes)
 u32 ESceneAIMapTool::UnpackLink(u32& L)
 {
     if (ai_version == AIMAP_VERSION_2)
-        return L & 0x00ffffff;
+    {
+        u32 link = L & 0x00ffffff;
+        return link;
+    }
 
     return L;
 }
@@ -312,6 +339,14 @@ void ESceneAIMapTool::DenumerateNodes()
 }
 
 
+void check_lick(u32 link)
+{
+    if (link > 1024 * 1024 * 4)
+    {
+        Msg("Link: %d", link);
+    }
+}
+
 bool ESceneAIMapTool::LoadStream(IReader& F)
 {
 	inherited::LoadStream	(F);
@@ -351,14 +386,19 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     }
 
 #ifdef _USE_NODE_POSITION_11
-    int ch_node = version == AIMAP_VERSION ? InvalidNode_64bit : InvalidNode_32bit;
+    u32 ch_node = version == AIMAP_VERSION ? InvalidNode_64bit : InvalidNode_32bit;
 #else 
-    int ch_node = InvalidNode_32bit;
+    u32 ch_node = InvalidNode_32bit;
 #endif
 
     ids = 0;
     for (auto it = vec.begin(); it != vec.end(); it++, ids++)
     {
+       // check_lick((u32)(*it)->n1);
+       // check_lick((u32)(*it)->n2);
+       // check_lick((u32)(*it)->n3);
+       // check_lick((u32)(*it)->n4);
+
         (*it)->n1 = ((u32)(*it)->n1 >= ch_node) ? 0 : vec[(u32)(*it)->n1];
         (*it)->n2 = ((u32)(*it)->n2 >= ch_node) ? 0 : vec[(u32)(*it)->n2];
         (*it)->n3 = ((u32)(*it)->n3 >= ch_node) ? 0 : vec[(u32)(*it)->n3];
@@ -405,8 +445,9 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 }
 //----------------------------------------------------
 
-bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
+bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
 { 
+      
     if (F.find_chunk(3))
     {
         Fbox ai_box;
@@ -475,10 +516,10 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
 
         for (auto it = vec.begin() ; it != vec.end();it++ )
         {
-            (*it)->n1 = ((u32)(*it)->n1 == InvalidNode) ? 0 : vec[(u32)(*it)->n1];
-            (*it)->n2 = ((u32)(*it)->n2 == InvalidNode) ? 0 : vec[(u32)(*it)->n2];
-            (*it)->n3 = ((u32)(*it)->n3 == InvalidNode) ? 0 : vec[(u32)(*it)->n3];
-            (*it)->n4 = ((u32)(*it)->n4 == InvalidNode) ? 0 : vec[(u32)(*it)->n4];
+            (*it)->n1 = ((u32)(*it)->n1 >= size) ? 0 : vec[(u32)(*it)->n1];
+            (*it)->n2 = ((u32)(*it)->n2 >= size) ? 0 : vec[(u32)(*it)->n2];
+            (*it)->n3 = ((u32)(*it)->n3 >= size) ? 0 : vec[(u32)(*it)->n3];
+            (*it)->n4 = ((u32)(*it)->n4 >= size) ? 0 : vec[(u32)(*it)->n4];
         }
 
         for (auto node : vec)
@@ -500,9 +541,13 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
 
         return true;
     }
+     
 
     if (F.find_chunk(2))
     {
+        Msg("!!! OLD VERSION AI EXPORT V2");
+      //  return false;
+
         u32 size = F.r_u32();
 
         AINodeVec vec;
@@ -515,8 +560,9 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
         {
             Fvector3 pos;
             F.r_fvector3(pos);
+            pos.add(offset);
 
-            AddNode(pos, true, true, 1);
+            AddNode(pos, ignore, true, 1);
 
             if (id % 512 == 0)
             {
@@ -529,7 +575,7 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset)
 
 }
 
-//#define ver2
+#define ver2
 
 void ESceneAIMapTool::SaveStreamPOS(IWriter& write)
 {
@@ -658,17 +704,23 @@ void ESceneAIMapTool::OnObjectRemove(CCustomObject* O, bool bDeleting)
 int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool bAutoLink, int sz)
 {
    	Fvector Pos				= pos;
-    if (1==sz){
+    if (1==sz)
+    {
         SAINode* N 			= BuildNode(Pos,Pos,bIgnoreConstraints,true);
-        if (N){
+        if (N)
+        {
             N->flags.set	(SAINode::flSelected,TRUE);
             if (bAutoLink) 	UpdateLinks(N,bIgnoreConstraints);
             return			1;
-        }else{
+        }
+        else
+        {
             ELog.Msg		(mtError,"Can't create node.");
             return 			0;
         }
-    }else{
+    }
+    else
+    {
 		return BuildNodes	(Pos,sz,bIgnoreConstraints);
     }
 }
@@ -679,6 +731,7 @@ struct invalid_node_pred : public std::unary_function<SAINode*, bool>
 	invalid_node_pred(int _link):link(_link){;}
 	bool operator()(const SAINode*& x){ return x->Links()==link; }
 };
+
 void ESceneAIMapTool::SelectNodesByLink(int link)
 {
     SelectObjects		(false);
@@ -702,6 +755,8 @@ void ESceneAIMapTool::SelectObjects(bool flag)
     UpdateHLSelected	();
     UI->RedrawScene		();
 }
+
+
 struct delete_sel_node_pred : public std::unary_function<SAINode*, bool>
 {
 	bool operator()(SAINode*& x)
@@ -771,7 +826,7 @@ void ESceneAIMapTool::FillProp(LPCSTR pref, PropItemVec& items)
 {
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Draw Nodes"),			&m_Flags, 		flHideNodes, 0,0, FlagValueCustom::flInvertedDraw);
     PHelper().CreateFlag32	(items, PrepareKey(pref,"Common\\Slow Calculate Mode"),	&m_Flags, 		flSlowCalculate);
-    PHelper().CreateFloat 	(items, PrepareKey(pref,"Common\\Visible Radius"),		&m_VisRadius, 	10.f, 	250.f);
+    PHelper().CreateFloat 	(items, PrepareKey(pref,"Common\\Visible Radius"),		&m_VisRadius, 	10.f, 	2500.f);
     PHelper().CreateFloat 	(items, PrepareKey(pref,"Common\\Smooth Height"),		&m_SmoothHeight,0.1f,	100.f);
 
     PHelper().CreateU32	 	(items, PrepareKey(pref,"Params\\Brush Size"),			&m_BrushSize, 	1, 100);

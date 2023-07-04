@@ -9,6 +9,7 @@
 #endif
 
 IWriter* filelog = nullptr;
+IWriter* filelog_dump_data = nullptr;
  
 extern BOOL					LogExecCB		= TRUE;
 static string_path			logFName		= "engine.log";
@@ -22,25 +23,21 @@ static BOOL 				no_log			= TRUE;
 xr_vector<shared_str>*		LogFile			= NULL;
 static LogCallback			LogCB			= 0;
 
+void ThreadLog()
+{
+	while (true)
+	{
+		if (filelog)
+			filelog->flush();
+
+		Sleep(1000);
+	}
+}
+
 void FlushLog			()
 {
-	/*
-	if (!no_log){
-		logCS.Enter			();
-		IWriter *f			= FS.w_open(logFName);
-        if (f) {
-            for (u32 it=0; it<LogFile->size(); it++)	{
-				LPCSTR		s	= *((*LogFile)[it]);
-				f->w_string	(s?s:"");
-			}
-            FS.w_close		(f);
-        }
-		logCS.Leave			();
-    }
-	*/
-	if (filelog)
-		filelog->flush();
-
+	//if (filelog)
+	//	filelog->flush();
 }
 
 void AddOne				(const char *split) 
@@ -69,9 +66,17 @@ void AddOne				(const char *split)
 	if (filelog)
 		filelog->w_string(split);
 
-	FlushLog();
+	//FlushLog();
 
 	logCS.Leave				();
+}
+
+void AddOne_fast(const char* split)
+{
+	logCS.Enter();
+	if (filelog_dump_data)
+		filelog_dump_data->w_string(split);
+	logCS.Leave();
 }
 
 void Log				(const char *s) 
@@ -84,7 +89,8 @@ void Log				(const char *s)
 #else
 	PSTR split  = (PSTR)alloca( (length + 1) * sizeof(char) );
 #endif
-	for (i=0,j=0; s[i]!=0; i++) {
+	for (i=0,j=0; s[i]!=0; i++) 
+	{
 		if (s[i]=='\n') {
 			split[j]=0;	// end of line
 			if (split[0]==0) { split[0]=' '; split[1]=0; }
@@ -108,8 +114,23 @@ void __cdecl Msg		( const char *format, ...)
 	if (sz)		Log(buf);
 }
 
+void __cdecl Msg_IN_FILE(const char* format, ...)
+{
+	va_list		mark;
+	string2048	buf;
+	va_start(mark, format);
+	int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark); buf[sizeof(buf) - 1] = 0;
+	va_end(mark);
+	if (sz)
+	{
+		AddOne_fast(buf);
+	}
+}
+
+
 void Log				(const char *msg, const char *dop) {
-	if (!dop) {
+	if (!dop) 
+	{
 		Log		(msg);
 		return;
 	}
@@ -191,15 +212,21 @@ void InitLog()
 	LogFile->reserve	(1000);
 }
 
+#include <thread>
+
 void CreateLog			(BOOL nl)
 {
     no_log				= nl;
 	strconcat			(sizeof(log_file_name),log_file_name,Core.ApplicationName,"_",Core.UserName,".log");
+	
 	if (FS.path_exist("$logs$"))
 		FS.update_path	(logFName,"$logs$",log_file_name);
-	if (!no_log){
+	
+	if (!no_log)
+	{
         IWriter *f		= FS.w_open	(logFName);
-        if (f==NULL){
+        if (f==NULL)
+		{
         	MessageBox	(NULL,"Can't create log file.","Error",MB_ICONERROR);
         	abort();
         }
@@ -207,6 +234,18 @@ void CreateLog			(BOOL nl)
     }
 
 	filelog = FS.w_open(logFName);
+	for (auto s : *LogFile)
+	{
+		filelog->w_string(s.c_str());
+	}
+	
+	string_path path;
+	sprintf(path, "%s_dump", logFName);
+
+	filelog_dump_data = FS.w_open(path);
+
+	std::thread* th = new std::thread(ThreadLog);
+	th->detach();
 }
 
 void CloseLog(void)
@@ -215,4 +254,5 @@ void CloseLog(void)
  	LogFile->clear	();
 	xr_delete		(LogFile);
 	FS.w_close(filelog);
+	FS.w_close(filelog_dump_data);
 }

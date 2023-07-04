@@ -26,9 +26,13 @@ CGameSpawnConstructor::CGameSpawnConstructor	(LPCSTR name, LPCSTR output, LPCSTR
 	:m_critical_section(MUTEX_PROFILE_ID(CGameSpawnConstructor))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	load_spawns						(name,no_separator_check);
+	Phase("process load");
+ 	load_spawns						(name,no_separator_check);
+	Phase("process spawns");
 	process_spawns					();
+	Phase("process actor");
 	process_actor					(start);
+	Phase("process save");
 	save_spawn						(name,output);
 }
 
@@ -79,7 +83,7 @@ void CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 	strlwr								(levels_string);
 	fill_needed_levels					(levels_string,needed_levels);
 
-	// fill level info
+ 	// fill level info
 	read_levels							(
 		&game_info(),
 		m_levels,
@@ -87,11 +91,13 @@ void CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 		&needed_levels
 	);
 
-	// init game graph
+ 	// init game graph
 	generate_temp_file_name				("game_graph","",m_game_graph_id);
 	xrMergeGraphs						(m_game_graph_id,name,false);
 	m_game_graph						= xr_new<CGameGraph>(m_game_graph_id);
 
+
+	Phase("Load Levels");
 	// load levels
 	GameGraph::SLevel					level;
 	LEVEL_INFO_STORAGE::const_iterator	I = m_levels.begin();
@@ -113,12 +119,19 @@ void CGameSpawnConstructor::process_spawns	()
 {
 	LEVEL_SPAWN_STORAGE::iterator		I = m_level_spawns.begin();
 	LEVEL_SPAWN_STORAGE::iterator		E = m_level_spawns.end();
-	for ( ; I != E; ++I)
+
+	CTimer t; t.Start();
+	for (; I != E; ++I)
+	{
+		(*I)->Execute();
+		Msg("Level: %s, TimeSpawn: %u", (*I)->level().m_name.c_str(), t.GetElapsed_ticks());
+	}
+
+
 #ifdef NO_MULTITHREADING
-		(*I)->Execute					();
 #else
 		m_thread_manager.start			(*I);
-	m_thread_manager.wait				();
+		m_thread_manager.wait				();
 #endif
 
 	I									= m_level_spawns.begin();

@@ -337,8 +337,131 @@ xr_string EScene::LevelPartName(LPCSTR map_name, ObjClassID cls)
     return 			LevelPartPath(map_name)+GetTool(cls)->ClassName() + ".part";
 }
 
+
+#include <thread>
+extern int Threads = 0;
+extern int EndedTH = 0;
+
+void ClearTH()
+{
+    Threads = 0;
+    EndedTH = 0;
+}
+
+bool ReadySave()
+{
+    return Threads == EndedTH;
+}
+
+struct ThreadData
+{
+    shared_str fn;
+    ESceneToolBase* tool;
+    EScene* scene;
+    xrGUID guid;
+
+};
+
+xr_vector<ThreadData> data_threads;
+xrCriticalSection csSave;
+
+void SaveToFileMT(void* data)
+{
+    csSave.Enter();
+    if (data_threads.empty())
+    {
+        EndedTH++;
+        csSave.Leave();
+        return;
+    }
+
+    ThreadData file_C = data_threads.back();
+    ThreadData* file = &file_C;
+    data_threads.pop_back();
+
+    csSave.Leave();
+
+
+    if (file)
+    {
+        Msg("FN: %s, tool: %s", file->fn.c_str(), file->tool ? file->tool->ClassName() : "NO TOOLS PTR");
+
+        CTimer t;
+
+        CInifile ini_part(file->fn.c_str(), FALSE, FALSE, FALSE);
+        t.Start();
+        file->tool->SaveLTX(ini_part, 0);
+        file->guid.SaveLTX(ini_part, "guid", "guid");
+        u64 timer_write_ltx = t.GetElapsed_ticks();
+
+        t.Start();
+        ini_part.save_as();
+        u64 timer_write_save = t.GetElapsed_ticks();
+        Msg("Name: %s, WriteToFile: %u, WriteToINI: %u", file->tool->ClassName(), timer_write_save, timer_write_ltx);
+    }
+
+    Msg("Threads: %d, WorkEnd: %d", Threads, EndedTH);
+    csSave.Enter();
+    EndedTH++;
+    csSave.Leave();
+}
+ 
+//--------------------------------------------------------------------------------------------------
+void EScene::SaveToolLTX(ObjClassID clsid, LPCSTR fn)
+{
+    ESceneToolBase* tool = GetTool(clsid);
+    int fc = tool->SaveFileCount();
+    if (fc == 1)
+    {
+         
+        ThreadData data;
+        data.fn = fn;
+        data.scene = this;
+        data.tool = tool;
+        data.guid = m_GUID;
+        csSave.Enter();
+        data_threads.push_back(data);
+        Threads++;
+        csSave.Leave();
+ 
+        thread_spawn(SaveToFileMT, "MT_THREAD_SAVE", 0, &data_threads.back());
+         
+        /*
+        CInifile ini_part(fn, FALSE, FALSE, FALSE);
+        tool->SaveLTX(ini_part, 0);
+        m_GUID.SaveLTX(ini_part, "guid", "guid");
+        ini_part.save_as();
+        */
+    }
+    else
+    {
+        for (int i = 0; i < fc; ++i)
+        {
+
+            string_path 			filename;
+            if (i)
+                sprintf(filename, "%s%d", fn, i);
+            else
+                strcpy(filename, fn);
+
+            CInifile ini_part(filename, FALSE, FALSE, FALSE);
+            tool->SaveLTX(ini_part, i);
+            m_GUID.SaveLTX(ini_part, "guid", "guid");
+            ini_part.save_as();
+        }
+    }
+}
+
+
+
 void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
 {
+    while (!ReadySave())
+        Sleep(1);
+
+    ClearTH();
+     
+
 	VERIFY			(map_name);
     R_ASSERT		(!bForUndo);
 
@@ -408,7 +531,7 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
                   
                     if(_I->second->can_use_inifile())
                     {
-                        Msg("Save TOOL: %d, name_file: %s", (u32) _I->first, part_name);
+                        //Msg("Save TOOL: %d, name_file: %s", (u32) _I->first, part_name);
 
                         EFS.MarkFile			(part_name.c_str(),true);
                     	SaveToolLTX				(_I->second->FClassID, part_name.c_str());
@@ -443,35 +566,7 @@ void EScene::SaveLTX(LPCSTR map_name, bool bForUndo, bool bForceSaveAll)
     	Msg				("Saving time: %3.2f sec",T.GetElapsed_sec());
     }
 }
-//--------------------------------------------------------------------------------------------------
-void EScene::SaveToolLTX(ObjClassID clsid, LPCSTR fn)
-{
-    ESceneToolBase* tool 	= GetTool(clsid);
-	int fc = tool->SaveFileCount();
-	if(fc==1)
-    {
-      CInifile ini_part		(fn, FALSE, FALSE, FALSE);
-      tool->SaveLTX			(ini_part, 0);
-      m_GUID.SaveLTX			(ini_part,"guid","guid");
-      ini_part.save_as		();
-    }else
-    {
-    	for(int i=0; i<fc; ++i)
-        {
-        	
-        	string_path 			filename;
-            if(i)
-            	sprintf				(filename, "%s%d", fn, i);
-            else
-            	strcpy				(filename, fn);
-
-            CInifile ini_part		(filename, FALSE, FALSE, FALSE);
-            tool->SaveLTX			(ini_part, i);
-            m_GUID.SaveLTX			(ini_part,"guid","guid");
-            ini_part.save_as		();
-        }
-    }
-}
+ 
 
 bool EScene::LoadToolLTX(ObjClassID clsid, LPCSTR fn)
 {
@@ -586,6 +681,7 @@ void EScene::SaveObjectsLTX(ObjectList& lst, LPCSTR sect_name_parent, LPCSTR sec
 {
     u32 i 				= 0;
     string256			buff;
+
     for(ObjectIt _F = lst.begin(); _F!=lst.end(); ++_F, ++i)
     {
     	sprintf				(buff,"%s_%s_%d",sect_name_parent,sect_name_prefix,i);

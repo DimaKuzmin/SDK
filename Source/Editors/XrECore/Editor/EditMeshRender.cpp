@@ -203,12 +203,17 @@ void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
     // visibility test
     if (!m_Flags.is(flVisible)) return;
     // frustum test
-    Fbox bb; bb.set(m_Box);
+    
+    Fbox bb; 
+    bb.set(m_Box);
     bb.xform(parent);
+
     if (!::Render->occ_visible(bb)) return;
+  
     // render
     RBMapPairIt rb_pair = m_RenderBuffers->find(S);
-    if (rb_pair!=m_RenderBuffers->end()){
+    if (rb_pair!=m_RenderBuffers->end())
+    {
         RBVector& rb_vec = rb_pair->second;
         for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
             EDevice.DP(D3DPT_TRIANGLELIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);

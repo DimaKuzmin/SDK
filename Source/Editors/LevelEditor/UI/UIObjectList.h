@@ -1,10 +1,24 @@
 #pragma once
 
 class CCustomObject;
- 																						   
+ 
+
+
 class UIObjectList:public XrUI
 {
+	xr_vector<shared_str> Errored_objects;
+	xr_vector<CCustomObject*> customdata_objects;
 
+	bool MultiplySelect = false;
+	bool IgnoreVisual = false;
+	bool IgnoreNotVisual = false;
+	bool ShowLOAD = false;
+	int DistanceObjects = 0;
+	bool use_prefix_refname = false;
+
+	bool use_errored = false;
+	bool use_distance = false;
+	int _sizetext = 64;
 public:
 	UIObjectList();
 	virtual ~UIObjectList();
@@ -37,7 +51,11 @@ public:
 	void UndoLoad();
 	void SelectLoaded();
 	void CheckCustomData();
-	void MoveObjectsToOffset();
+	void UpdateCustomData();
+
+	void GenSpawnCFG(xr_string section, xr_string map, xr_string prefix);
+
+	void MoveObjectsToOffset(xr_string& load);
 	void CheckDuplicateNames();
 
 	void RenameALLObjectsToObject();
@@ -50,6 +68,8 @@ public:
 	void ModifyAIMAPFiles(Fvector pos);
 	void MergeAIMAP(u32 file);
 
+	void MergeAI_FromINI(CInifile* file);
+
 	void RenameSelectedObjects();
 	void SetCustomData(bool autoNumarate, LPCSTR logic_sec, LPCSTR path_name);
 
@@ -59,8 +79,13 @@ public:
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
 
 	void UpdateUIObjectList();
-	bool CheckNameForType(CCustomObject* object);
 	void ListBoxForTypes();
+
+	bool CheckNameForType(CCustomObject* object);
+	bool CheckForError(CCustomObject* object);
+
+	void FindALL_Duplicate();
+	void LoadErrorsGraphs();
 
 	void FindObjectSector(u16 id);
 
@@ -68,6 +93,8 @@ private:
 	static UIObjectList* Form;
 	xr_vector<CCustomObject*> objects_selected;
 	int merge_ai_map_size = 0;
+
+	void ClearCustomData();
 
 private:
 	void DrawObjects();
@@ -83,6 +110,9 @@ private:
 	EMode m_Mode;
 	CCustomObject* m_SelectedObject;
 	bool serch_mode;
-	string_path m_Filter;
-	string_path m_Filter_type;
+	string_path m_Filter = {0};
+	string_path m_Filter_type = { 0 };
+	string_path m_Filter_visual = { 0 };
+
+
 };

@@ -73,10 +73,13 @@ void Startup(LPSTR     lpCmdLine)
 	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
 	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
 	VERIFY( lc_global_data() );
+	
 	lc_global_data()->b_nosun_set						( strstr(cmd, "-nosun") );
 	lc_global_data()->b_norgb_set						( strstr(cmd, "-norgb") );
 	lc_global_data()->b_nohemi_set						( strstr(cmd, "-nohemi") );
-	//if (strstr(cmd,"-nosun"))							b_nosun			= TRUE;
+ 
+	Msg("RGB: %d, SUN: %d, HEMI: %d", lc_global_data()->b_norgb(), lc_global_data()->b_nosun(), lc_global_data()->b_nohemi());
+
 	
 	// Give a LOG-thread a chance to startup
 	//_set_sbh_threshold(1920);
@@ -175,6 +178,8 @@ void Startup(LPSTR     lpCmdLine)
 
 
 
+
+
 int APIENTRY WinMain(HINSTANCE hInst,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -193,5 +198,10 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	Startup				(lpCmdLine);
 	Core._destroy		();
 	
+	for (auto phase : *phases_timers_Get())
+	{
+		Msg("%s", phase.c_str());
+	}
+
 	return 0;
 }

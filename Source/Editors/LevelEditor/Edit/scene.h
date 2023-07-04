@@ -117,6 +117,9 @@ public:
 	typedef	FixedMAP<float,CCustomObject*, render_allocator>	mapObject_D;
 	typedef mapObject_D::TNode	 	    	mapObject_Node;
 	mapObject_D						    	mapRenderObjects;
+
+	mapObject_D						    	mapRenderObjectsTH[8];
+
 public:
 	st_LevelOptions	m_LevelOp;
 protected:
@@ -182,6 +185,7 @@ public:
     BOOL			UnloadLevelPart		(LPCSTR map_name, ObjClassID cls);
 public:
 	bool			ExportGame			(SExportStreams* F);
+	bool			ExportGameNoStatic	(SExportStreams* F);
 
 	bool 			Load				(LPCSTR map_name, bool bUndo);
 	bool 			LoadLTX				(LPCSTR map_name, bool bUndo);
@@ -226,6 +230,9 @@ public:
 	int 			ObjCount 			();
 
 	void 			RenderSky			(const Fmatrix& camera);
+
+	u32				LastUpdateRender = 0;
+	void			UpdateRenderList	(void* object_tools);
 	void 			Render              (const Fmatrix& camera);
 	void 			OnFrame				(float dT);
 

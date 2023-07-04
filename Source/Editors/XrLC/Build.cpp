@@ -21,15 +21,21 @@ void	export_geometry	( xrMU_Model &	mu_model );
 
 void	export_ogf		( xrMU_Reference& mu_reference );
 
+
+
 using namespace			std;
 struct OGF_Base;
+SBuildOptions			g_build_options;
+
 xr_vector<OGF_Base *>	g_tree;
+vec2Face				g_XSplit;
+
 
 //BOOL					b_noise		= FALSE;
 //BOOL					b_radiosity	= FALSE;
 //BOOL					b_net_light	= FALSE;
-SBuildOptions			g_build_options;
-vec2Face				g_XSplit;
+
+
  
 void	CBuild::CheckBeforeSave( u32 stage )
 {
@@ -251,10 +257,10 @@ void CBuild::Run(LPCSTR P)
 	
 	log_vminfo();
 
-	if (strstr(Core.Params, "-no_adaptive") == 0 && !CformOnly)
+	if (!CformOnly && !strstr(Core.Params, "-no_adaptive"))
 	{
+
 	//****************************************** HEMI-Tesselate
-	
 		FPU::m64r();
 		Phase("Adaptive HT...");
 		mem_Compact();
@@ -396,30 +402,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	mem_Compact					();
 	Flex2OGF					();
 
-	//****************************************** Starting MU
-	FPU::m64r();
-	Phase("LIGHT: Starting MU...");
-	mem_Compact();
-	Light_prepare();
-	if (g_build_options.b_net_light)
-	{
-		lc_global_data()->mu_models_calc_materials();
-		RunNetCompileDataPrepare();
-	}
-	StartMu();
-	 
 
-	//****************************************** Wait for MU
-	FPU::m64r					();
-	Phase						("LIGHT: Waiting for MU-thread...");
-	mem_Compact					();
-	wait_mu_base				();
-
-	if (!g_build_options.b_net_light)
-	{
-		Phase("LIGHT: Waiting for MU-Secondary threads...");
-		wait_mu_secondary();
-	}
 
 	//****************************************** Export MU-models
 	FPU::m64r					();

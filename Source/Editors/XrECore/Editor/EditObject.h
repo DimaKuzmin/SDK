@@ -109,13 +109,18 @@ public:
     IC void			SetVMap			(LPCSTR name){m_VMap=name;}
 #ifdef _EDITOR
     IC u32			_GameMtl		()const	{return GMLib.GetMaterialID	(*m_GameMtlName);}
+    
+
+
     IC void			OnDeviceCreate	()
     { 
         R_ASSERT(!m_RTFlags.is(rtValidShader));
-    	if (m_ShaderName.size()&&m_Texture.size())	m_Shader.create(*m_ShaderName,*m_Texture); 
-        else                                       	m_Shader.create("editor\\wire");
+     	if (m_ShaderName.size()&&m_Texture.size())	
+            m_Shader.create(*m_ShaderName,*m_Texture); 
+        else                                      
+            m_Shader.create("editor\\wire");
         m_RTFlags.set(rtValidShader,TRUE);
-    }
+     }
     IC void			OnDeviceDestroy	()
     {
     	m_Shader.destroy();

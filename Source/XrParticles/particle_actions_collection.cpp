@@ -1786,7 +1786,7 @@ void PATurbulence::Execute(ParticleEffect *effect, const float dt, float& tm_max
 		ttapi_AddWorker( PATurbulenceExecuteStream , (LPVOID) &tesParams[i] );
 	}
 
-	ttapi_RunAllWorkers();
+ 	ttapi_RunAllWorkers();
 
 }
 

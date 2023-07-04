@@ -50,6 +50,7 @@ public:
 	IC		const shared_str			&name				() const;
 
 	IC		u32 level_vertex_id_get() { return m_level_vertex_id; };
+	IC		u32 game_vertex_id_get() { return m_game_vertex_id; };
 
 public:
 #ifdef XRGAME_EXPORTS

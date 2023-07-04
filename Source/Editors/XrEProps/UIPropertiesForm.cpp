@@ -252,14 +252,17 @@ void UIPropertiesForm::DrawItem(Node* node)
 		}
 		else if (node->Object->m_Flags.test(PropItem::flMixed) && !node->Object->m_Flags.test(PropItem::flIgnoreMixed))
 		{
-			ImGui::Text(node->Name.c_str());
+			ImGui::Text("%s", node->Name.c_str());
 			ImGui::NextColumn();
+			 
 			if (ImGui::Button("(Mixed)", ImVec2(-1, 0)))
 			{
 				RemoveMixed(node);
-			}
+			} 
+			 
 			ImGui::NextColumn();
 		}
+		
 		else
 		{
 			if (node->Object->m_Flags.test(PropItem::flShowCB))
@@ -482,12 +485,16 @@ void UIPropertiesForm::DrawEditText()
 					}
 				}
 			}
-		}ImGui::SameLine(0);
+		}
+		ImGui::SameLine(0);
+
 		if (ImGui::Button("Cancel"))
 		{
 			xr_delete(m_EditTextValueData);
 			ImGui::CloseCurrentPopup();
-		} ImGui::SameLine(0);
+		} 
+		ImGui::SameLine(0);
+
 		if (ImGui::Button("Apply"))
 		{
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
@@ -532,11 +539,13 @@ void UIPropertiesForm::DrawEditText()
 					}
 					else
 					{
-						R_ASSERT(false);
+
+						//R_ASSERT(false);
 					}
 				}
 			}
-		}ImGui::SameLine(150);
+		}
+		ImGui::SameLine(150);
 
 		if (ImGui::Button("Load"))
 		{
@@ -565,10 +574,15 @@ void UIPropertiesForm::DrawEditText()
 		}
 		
 		ImGui::SameLine(0);
-		if (ImGui::Button("Clear")) { m_EditTextValueData[0] = 0; }
+		
+		if (ImGui::Button("Clear"))
+		{
+			m_EditTextValueData[0] = 0;
+		}
 		ImGui::EndGroup();
+		
 		if(m_EditTextValueData)
-		ImGui::InputTextMultiline("", m_EditTextValueData, m_EditTextValueDataSize, ImVec2(500, 200) ,ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data)->int {return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data); }, reinterpret_cast<void*>(this));
+			ImGui::InputTextMultiline("", m_EditTextValueData, m_EditTextValueDataSize, ImVec2(500, 200) ,ImGuiInputTextFlags_CallbackResize, [](ImGuiInputTextCallbackData* data)->int {return reinterpret_cast<UIPropertiesForm*>(data->UserData)->DrawEditText_Callback(data); }, reinterpret_cast<void*>(this));
 
 		
 		ImGui::EndPopup();

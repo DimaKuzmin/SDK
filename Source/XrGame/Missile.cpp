@@ -433,6 +433,7 @@ void CMissile::setup_throw_params()
 	if (this == inventory_owner->inventory().ActiveItem())
 	{
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
+		/*
 		if(NULL == io->inventory().ActiveItem())
 		{
 				Log("current_state", GetState() );
@@ -441,7 +442,7 @@ void CMissile::setup_throw_params()
 				Log("item_sect", cNameSect().c_str());
 				Log("H_Parent", H_Parent()->cNameSect().c_str());
 		}
-
+	    */
 		entity->g_fireParams(this, FirePos, FireDir);
 	}else{
 		FirePos				= XFORM().c;

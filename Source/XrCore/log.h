@@ -4,6 +4,8 @@
 #define VPUSH(a)	((a).x), ((a).y), ((a).z)
 
 void 	XRCORE_API	__cdecl		Msg	(LPCSTR format, ...);
+void 	XRCORE_API	__cdecl		Msg_IN_FILE (LPCSTR format, ...);
+
 void 	XRCORE_API		Log			(LPCSTR msg);
 void 	XRCORE_API		Log			(LPCSTR msg);
 void 	XRCORE_API		Log			(LPCSTR msg, LPCSTR			dop);

@@ -138,10 +138,15 @@ CEditableObject* ELibrary::CreateEditObject(LPCSTR nm)
     // file exist - find in already loaded
     CEditableObject* m_EditObject = 0;
 	EditObjPairIt it 	= m_EditObjects.find(name);
-    if (it!=m_EditObjects.end())	m_EditObject = it->second;
-    else if (0!=(m_EditObject=LoadEditObject(name.c_str())))
+    if (it!=m_EditObjects.end())
+        m_EditObject = it->second;
+    else 
+    if (0!=(m_EditObject=LoadEditObject(name.c_str())))
 		m_EditObjects[name]	= m_EditObject;
-    if (m_EditObject)	m_EditObject->m_RefCount++;
+    
+    if (m_EditObject)
+        m_EditObject->m_RefCount++;
+
 	return m_EditObject;
 }
 //---------------------------------------------------------------------------

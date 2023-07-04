@@ -359,7 +359,7 @@ LPCSTR CSpawnPoint::SSpawnData::ReadCustomData()
     NET_Packet 				Packet;
 
     string_path path;
-    FS.update_path(path, _import_, "temp.ltx");
+    FS.update_path(path, _import_, "tmp.ltx");
     CInifile* file = xr_new<CInifile>(path, false);
 
     SIniFileStream 			ini_stream;
@@ -367,12 +367,14 @@ LPCSTR CSpawnPoint::SSpawnData::ReadCustomData()
     ini_stream.sect = "spawn_ini";
     ini_stream.move_begin();
     Packet.inistream = &ini_stream;
-
-    m_Data->Spawn_Write(Packet, TRUE);
-
-    LPCSTR cfg = file->r_string("spawn_ini", "000024");
-
-    return cfg;
+    shared_str cfg = 0;
+    if (m_Data != nullptr)
+    {
+        m_Data->Spawn_Write(Packet, TRUE);
+        cfg = file->r_string_wb("spawn_ini", "000024");
+    }
+  
+    return cfg.c_str();
 }
 
 void CSpawnPoint::SSpawnData::ModifyCustomData(string4096 data)
@@ -395,7 +397,7 @@ void CSpawnPoint::SSpawnData::ModifyCustomData(string4096 data)
    
     ini_stream.move_begin();
     Packet.r_pos = 0;
-    file->save_as(path);
+    //file->save_as(path);
      
     m_Data->Spawn_Read(Packet);
 }
@@ -503,6 +505,9 @@ void CSpawnPoint::SSpawnData::OnAnimControlClick(ButtonValue* value, bool& bModi
 
 void CSpawnPoint::SSpawnData::FillProp(LPCSTR pref, PropItemVec& items)
 {
+    // for (auto item : items)
+    //     Msg("Fill Prop: %s, pref: s%, item: %s", m_Data->name(), pref, item->GetDrawText().c_str());
+
 	m_Data->FillProp			(pref,items);
 
     if(Scene->m_LevelOp.m_mapUsage.MatchType(eGameIDDeathmatch|eGameIDTeamDeathmatch|eGameIDArtefactHunt|eGameIDCaptureTheArtefact))

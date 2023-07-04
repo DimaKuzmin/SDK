@@ -11,6 +11,9 @@
 //#include "../xrLCLight/net_task_manager.h"
 #include "../xrLCLight/lcnet_task_manager.h"
 #include "../xrLCLight/mu_model_light.h"
+
+#include "../XrLCLight/net_cl_data_prepare.h"
+
 xrCriticalSection	task_CS
 #ifdef PROFILE_CRITICAL_SECTIONS
 	(MUTEX_PROFILE_ID(task_C_S))
@@ -18,6 +21,8 @@ xrCriticalSection	task_CS
 ;
 
 xr_vector<int>		task_pool;
+ 
+XRLC_LIGHT_API void InitDB(CDB::COLLIDER* DB, bool print);
 
 class CLMThread		: public CThread
 {
@@ -25,6 +30,7 @@ private:
 	HASH			H;
 	CDB::COLLIDER	DB;
 	base_lighting	LightsSelected;
+
 public:
 	CLMThread	(u32 ID) : CThread(ID)
 	{
@@ -34,6 +40,8 @@ public:
 
 	virtual void	Execute()
 	{
+		InitDB(&DB);
+
 		CDeflector* D	= 0;
 
 		for (;;) 
@@ -50,8 +58,13 @@ public:
 			}
 
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
-			if (lc_global_data()->g_deflectors().size() - task_pool.size() % 1024 == 0)
-				StatusNoMSG("DEFL[%d]/[%d]", lc_global_data()->g_deflectors().size() - task_pool.size(), lc_global_data()->g_deflectors().size());
+
+			//if (task_pool.size() % 1 == 0)
+				StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
+					lc_global_data()->g_deflectors().size() - task_pool.size(), 
+					lc_global_data()->g_deflectors().size(),
+					D->layer.width, D->layer.height
+				);
 			
 			task_pool.pop_back	();
 			task_CS.Leave		();
@@ -59,7 +72,7 @@ public:
 			// Perform operation
 			try 
 			{
-				D->Light	(&DB,&LightsSelected,H);
+				D->Light	(thID, &DB,&LightsSelected,H);
 			} 
 			catch (...)
 			{
@@ -88,6 +101,15 @@ int THREADS_COUNT()
 #define TH_NUM THREADS_COUNT()
 #include "..\XrLCLight\xrHardwareLight.h"
 
+
+void IntelEmbereUNLOAD();
+void IntelClearTimers();
+
+void IntelEmbereLOAD();
+XRLC_LIGHT_API extern bool use_intel;
+
+#include <tbb/parallel_for_each.h>
+
 void	CBuild::LMapsLocal				()
 {
 		FPU::m64r		();
@@ -96,7 +118,7 @@ void	CBuild::LMapsLocal				()
 
 		// Randomize deflectors
 #ifndef NET_CMP
-		std::random_shuffle	(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end());
+		//std::random_shuffle	(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end());
 #endif
 
 #ifndef NET_CMP	
@@ -115,19 +137,19 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		start_time.Start();				
 			
 		int th = TH_NUM;
-
+ 		 
 		if (xrHardwareLight::IsEnabled())
 			th = 8;
+
 		for (int L = 0; L < th; L++)
 			threads.start(xr_new<CLMThread>(L));
-
-
-		threads.wait	(500);
+		
+		threads.wait(500);
+		
 
 		if (xrHardwareLight::IsEnabled())
 			GPU_Calculation();
-
-
+ 	 
 
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
 
@@ -158,47 +180,86 @@ void	CBuild::LMaps					()
 
 }
 void XRLC_LIGHT_API ImplicitNetWait();
+
+
+
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d", g_params().m_quality);
 
 	if (g_params().m_quality == ebqDraft)
+		return;		  
+
+	if (strstr(Core.Params, "-light_off"))
 		return;
 
 	//****************************************** Implicit
-	{
+ 	{
+		IntelClearTimers();
 		FPU::m64r		();
 		Phase			("LIGHT: Implicit...");
 		mem_Compact		();
 		ImplicitLighting();
 	}
 	
-	LMaps		();
+	IntelClearTimers();
+	
+ 	{
+		LMaps();
 
-	//****************************************** Vertex
-	FPU::m64r		();
-	Phase			("LIGHT: Vertex...");
-	mem_Compact		();
+		//****************************************** Vertex
+		FPU::m64r();
+		Phase("LIGHT: Vertex...");
+		mem_Compact();
 
-	LightVertex		();
+		IntelClearTimers();
+		LightVertex();
 
-//
-	//clMsg("LightVertex END");
 
-	ImplicitNetWait();
-	//WaitMuModelsLocalCalcLightening();
-	lc_net::get_task_manager().wait_all();
-	//	get_task_manager().wait_all();
-	lc_net::get_task_manager().release();
-//
-	//****************************************** Merge LMAPS
-	{
-		FPU::m64r		();
-		Phase			("LIGHT: Merging lightmaps...");
-		mem_Compact		();
+		ImplicitNetWait();
+		lc_net::get_task_manager().wait_all();
+		lc_net::get_task_manager().release();
+ 
+		//****************************************** Merge LMAPS
+		{
+			FPU::m64r();
+			Phase("LIGHT: Merging lightmaps...");
+			mem_Compact();
 
-		xrPhase_MergeLM	();
+			xrPhase_MergeLM();
+		}
+
 	}
+
+	//****************************************** Starting MU
+	FPU::m64r();
+	Phase("LIGHT: Starting MU...");
+
+	IntelClearTimers();
+	mem_Compact();
+	Light_prepare();
+	if (g_build_options.b_net_light)
+	{
+		lc_global_data()->mu_models_calc_materials();
+		RunNetCompileDataPrepare();
+	}
+	StartMu();
+
+
+	//****************************************** Wait for MU
+	FPU::m64r();
+	Phase("LIGHT: Waiting for MU-thread...");
+	mem_Compact();
+	wait_mu_base();
+
+	if (!g_build_options.b_net_light)
+	{
+		Phase("LIGHT: Waiting for MU-Secondary threads...");
+		wait_mu_secondary();
+	}
+
+	if (use_intel)
+		IntelEmbereUNLOAD();
 }
 
 void CBuild::LightVertex	()

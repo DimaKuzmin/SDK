@@ -5,6 +5,6 @@
 
 void light_execute::run( CDeflector& D )
 {
-	D.Light	(&DB,&LightsSelected,H);
+	D.Light	(0, &DB, &LightsSelected, H);
 }
 

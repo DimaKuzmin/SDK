@@ -122,6 +122,63 @@ BOOL SceneBuilder::Compile(bool b_selected_only)
 }
 //------------------------------------------------------------------------------
 
+BOOL SceneBuilder::MakeSpawn()
+{
+    xr_string error_text = "";
+    UI->ResetBreak();
+    if (UI->ContainEState(esBuildLevel)) return false;
+    ELog.Msg(mtInformation, "Making started...");
+
+    UI->BeginEState(esBuildLevel);
+
+    // clear error
+    Tools->ClearDebugDraw();
+
+    try 
+    {
+        do 
+        {
+            CTimer t;
+            t.Start();
+            
+            Tools->ClearDebugDraw();
+
+            VERIFY_COMPILE(PreparePath(), "Failed to prepare level path.", "");
+            Msg("PreparePath: %f", t.GetElapsed_sec());
+
+            VERIFY_COMPILE(GetBounding(), "Failed to acquire level bounding volume.", "");
+            Msg("GetBounding: %f", t.GetElapsed_sec());
+
+            VERIFY_COMPILE(RenumerateSectors(), "Failed to renumerate sectors", "");
+            Msg("RenumerateSectors: %f", t.GetElapsed_sec());
+
+            VERIFY_COMPILE(BuildLTX(), "Failed to build level description.", "");
+            Msg("BuildLTX: %f", t.GetElapsed_sec());
+
+            VERIFY_COMPILE(BuildGame(false), "Failed to build game.", "");
+            Msg("BuildGame: %f", t.GetElapsed_sec());
+        }
+        while (0);
+
+
+        if (!error_text.empty()) 	
+            ELog.DlgMsg(mtError, error_text.c_str());
+        else if (UI->NeedAbort())	
+            ELog.DlgMsg(mtInformation, "Making terminated.");
+        else						
+            ELog.DlgMsg(mtInformation, "Making finished.");
+    }
+    catch (...)
+    {
+        ELog.DlgMsg(mtError, "Error has occured in builder routine. Editor aborted.");
+        abort();
+    }
+
+    UI->EndEState();
+
+    return true;
+}
+
 BOOL SceneBuilder::MakeGame( )
 {
 	xr_string error_text="";
@@ -135,19 +192,36 @@ BOOL SceneBuilder::MakeGame( )
 	        // clear error
             Tools->ClearDebugDraw();
 	        // validate scene
-    	    VERIFY_COMPILE(Scene->Validate(false,false,false,false,false,false),	"Validation failed.","Invalid scene.");
-        	// build
+            CTimer t;
+            t.Start();
+            //VERIFY_COMPILE(Scene->Validate(false,false,false,false,false,false),	"Validation failed.","Invalid scene.");
+            Msg("Validate: %f", t.GetElapsed_sec());
+            // build
             VERIFY_COMPILE(PreparePath(),				"Failed to prepare level path.","");
+            Msg("PreparePath: %f", t.GetElapsed_sec());
+
             VERIFY_COMPILE(GetBounding(),				"Failed to acquire level bounding volume.","");
+            Msg("GetBounding: %f", t.GetElapsed_sec());
+            
             VERIFY_COMPILE(RenumerateSectors(), 		"Failed to renumerate sectors","");
+            Msg("RenumerateSectors: %f", t.GetElapsed_sec());
+            
             VERIFY_COMPILE(BuildLTX(),					"Failed to build level description.","");
+            Msg("BuildLTX: %f", t.GetElapsed_sec());
+            
             VERIFY_COMPILE(BuildGame(),					"Failed to build game.","");
+            Msg("BuildGame: %f", t.GetElapsed_sec());
         } while(0);
 
-        if (!error_text.empty()) 	ELog.DlgMsg(mtError,error_text.c_str());
-        else if (UI->NeedAbort())	ELog.DlgMsg(mtInformation,"Making terminated.");
-        else						ELog.DlgMsg(mtInformation,"Making finished.");
-    }catch(...){
+        if (!error_text.empty()) 	
+            ELog.DlgMsg(mtError,error_text.c_str());
+        else if (UI->NeedAbort())	
+            ELog.DlgMsg(mtInformation,"Making terminated.");
+        else						
+            ELog.DlgMsg(mtInformation,"Making finished.");
+    }
+    catch(...)
+    {
     	ELog.DlgMsg(mtError,"Error has occured in builder routine. Editor aborted.");
         abort();
     }

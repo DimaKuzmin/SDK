@@ -6,6 +6,8 @@
 #include "../xrLCLight/xrdeflector.h"
 #include "../xrLCLight/xrface.h"
 
+
+
 #include "../../xrcdb/xrcdb.h"
 #include "../XrECore/Editor/face_smoth_flags.h"
 #include "../xrLCLight/xrThread.h"
@@ -119,6 +121,8 @@ void GSaveAsSMF					(LPCSTR fname)
 	FS.w_close	(W);
 }
 */
+
+
 xrCriticalSection csAdaptive;
 int id = 0;
 
@@ -141,6 +145,7 @@ public:
 		R_ASSERT(to>0);
 		*/
 	}
+ 
 virtual	void Execute()
 {
 		DB.ray_options	(0);
@@ -169,7 +174,19 @@ virtual	void Execute()
  			vecVertex& verts = lc_global_data()->g_vertices();
  			Vertex* V = verts[ID];
 			V->normalFromAdj();
-			LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+		
+			 
+			if (use_intel)
+			{
+				RaysToHemiLight_Deflector(0, V->P, V->N, vC, pBuild->L_static(), 0);
+			}
+			else 
+				LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0, 1024);
+			 
+
+			//vC.hemi = 0.75;
+			
+
 			vC.mul(0.5f);
 			V->C._set(vC);
 		}	
@@ -239,14 +256,20 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Status						("Precalculating : base hemisphere ...");
 		mem_Compact					();
 		Light_prepare				();
-		 
+		
+		if (strstr(Core.Params, "-use_intel"))
+		{
+			use_intel = true;
+			IntelEmbereLOAD();
+		}
+
 		if (!xrHardwareLight::IsEnabled())
 		{
 			// calc approximate normals for vertices + base lighting
 			for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
 				ThreadPrecalcHemi.push_back(i);
 
-			for (int i = 0; i < MAX_THREADS; i++)
+			for (int i = 0; i < THREADS_COUNT(); i++)
 				precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
 
 			precalc_base_hemi.wait();

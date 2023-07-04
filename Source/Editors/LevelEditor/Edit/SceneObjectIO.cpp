@@ -16,6 +16,7 @@
 #define SCENEOBJ_CHUNK_PLACEMENT     	0x0904
 #define SCENEOBJ_CHUNK_FLAGS			0x0905
 #define SCENEOBJ_CHUNK_SURFACE			0x0906
+
 bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 {
     bool bRes = true;
@@ -79,6 +80,7 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
                     xr_string Name;
                     ini_stream.r_string(Name);
                     CSurface* Surf = nullptr;
+                    
                     for (SurfaceIt sf_it = m_Surfaces.begin(); sf_it != m_Surfaces.end(); ++sf_it)
                     {
                         if ((*sf_it)->m_Name == Name.c_str())
@@ -106,7 +108,9 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
                         if (Surf)Surf->SetVMap(Name.c_str());
                     }
 
-                    if (Surf) Surf->OnDeviceCreate();
+                    if (Surf)
+                        Surf->OnDeviceCreate();
+
                 }
             }
         }

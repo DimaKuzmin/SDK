@@ -130,6 +130,9 @@ public:
 	virtual void			set_name				(LPCSTR) = 0;
 	virtual LPCSTR			name_replace			() const = 0;
 	virtual void			set_name_replace		(LPCSTR) = 0;
+	//virtual void			spawn_ini() = 0;
+	virtual void			clear_ini_file() = 0;
+	
 	virtual Fvector&		position				() = 0;
 	virtual Fvector&		angle					() = 0;
 	virtual Flags16&		flags					() = 0;

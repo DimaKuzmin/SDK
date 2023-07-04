@@ -228,8 +228,6 @@ bool EDetailManager::UpdateSlots()
         	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
         	UpdateSlotBBox	(x,z,*slot);
  	        pb->Inc();
-            
-            
          }
     }
     UI->ProgressEnd(pb);  

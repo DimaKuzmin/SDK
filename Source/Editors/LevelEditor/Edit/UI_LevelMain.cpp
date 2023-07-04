@@ -612,6 +612,22 @@ CCommandVar CommandMakeAIMap(CCommandVar p1, CCommandVar p2)
     }
     return 						FALSE;
 }
+
+CCommandVar CommandMakeSpawn(CCommandVar p1, CCommandVar p2)
+{
+    if (!Scene->locked()) 
+    {
+        if (mrYes == ELog.DlgMsg(mtConfirmation, mbYes | mbNo, "Are you sure to export level.spawn?"))
+            return				Builder.MakeSpawn();
+    }
+    else 
+    {
+        ELog.DlgMsg(mtError, "Scene sharing violation");
+    }
+    return 						FALSE;
+}
+
+
 CCommandVar CommandMakeGame(CCommandVar p1, CCommandVar p2)
 {
     if( !Scene->locked() ){
@@ -920,11 +936,15 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_SCENE_HIGHLIGHT_TEXTURE,	CommandSceneHighlightTexture);
 	REGISTER_CMD_SE	    (COMMAND_OPTIONS,              		"Scene\\Options",		        CommandOptions,false);
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
-	REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
+	
+    REGISTER_CMD_SE     (COMMAND_MAKE_SPAWN,                "Compile\\Make level.spawn",    CommandMakeSpawn, false);
+    REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_AIMAP,              	"Compile\\Make AI Map",	        CommandMakeAIMap,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_DETAILS,              "Compile\\Make Details",        CommandMakeDetails,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_HOM,              	"Compile\\Make HOM",	        CommandMakeHOM,false);
 	REGISTER_CMD_SE	    (COMMAND_MAKE_SOM,              	"Compile\\Make SOM",	        CommandMakeSOM,false);
+
+
 	REGISTER_CMD_SE	    (COMMAND_INVERT_SELECTION_ALL,      "Selection\\Invert", 			CommandInvertSelectionAll,false);
 	REGISTER_CMD_SE	    (COMMAND_SELECT_ALL,              	"Selection\\Select All", 		CommandSelectAll,false);
 	REGISTER_CMD_SE	    (COMMAND_DESELECT_ALL,              "Selection\\Unselect All", 		CommandDeselectAll,false);

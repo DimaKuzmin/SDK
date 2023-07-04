@@ -329,6 +329,7 @@
     <ClCompile Include="..\..\xrServerEntities\xrServer_Objects_ALife_Items.cpp" />
     <ClCompile Include="..\..\xrServerEntities\xrServer_Objects_ALife_Monsters.cpp" />
     <ClCompile Include="..\..\xrServerEntities\xrServer_Object_Base.cpp" />
+    <ClCompile Include="..\LevelEditor\iniStreamImpl.cpp" />
     <ClCompile Include="alife_artefact_order.cpp" />
     <ClCompile Include="buffer_vector.cpp" />
     <ClCompile Include="cl_collector.cpp" />
@@ -378,6 +379,7 @@
     <ClCompile Include="compiler_smooth.cpp" />
     <ClCompile Include="game_graph_builder.cpp" />
     <ClCompile Include="game_spawn_constructor.cpp" />
+    <ClCompile Include="game_spawn_unpacker.cpp" />
     <ClCompile Include="guid_generator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -477,6 +479,7 @@
     <ClInclude Include="..\..\xrServerEntities\xrServer_Object_Base.h" />
     <ClInclude Include="..\..\xrServerEntities\xrServer_Space.h" />
     <ClInclude Include="..\..\xr_3da\xrLevel.h" />
+    <ClInclude Include="..\LevelEditor\iniStreamImpl.h" />
     <ClInclude Include="AIMapExport.h" />
     <ClInclude Include="alife_artefact_order.h" />
     <ClInclude Include="a_star.h" />
@@ -518,6 +521,7 @@
     <ClInclude Include="game_level_cross_table_inline.h" />
     <ClInclude Include="game_spawn_constructor.h" />
     <ClInclude Include="game_spawn_constructor_inline.h" />
+    <ClInclude Include="game_spawn_unpacker.h" />
     <ClInclude Include="graph_abstract.h" />
     <ClInclude Include="graph_abstract_inline.h" />
     <ClInclude Include="graph_edge.h" />

@@ -38,69 +38,6 @@ void SaveUVM			(LPCSTR fname, xr_vector<b_rc_face>& vm)
 	FS.w_close	(W);
 }
 
-xr_map<u16, xr_vector<Face*>> mt_faces;
-
-xr_vector<bool> threads_end;
- 
-void face_thread(CDB::CollectorPacked* cl, u8 threadID)
-{
-	clMsg("Thread[%d] started", threadID);
-
-	CDB::CollectorPacked*	CL = cl;
-	xr_vector<Face*>			adjacent_vec;
-	adjacent_vec.reserve(6 * 2 * 3);
-
-	int i = 0;
-	for (auto face : mt_faces[threadID])
-	{
-		i++;
-
-		Face* F = face;
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)					continue;
-
-		// Collect
-		adjacent_vec.clear();
-		for (int vit = 0; vit < 3; ++vit)
-		{
-			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
-
-		// Unique
-		BOOL			bAlready = FALSE;
-
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
-		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)					continue;
-			if (!Test->flags.bProcessed)	continue;
-			if (FaceEqual(*F, *Test))
-			{
-				bAlready = TRUE;
-				break;
-			}
-		}
-
-		//
-		if (!bAlready)
-		{
-			F->flags.bProcessed = true;
-			//clMsg("Thread[%d] Face[%d]", threadID, i);
-			CL->add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group);
-		}
-	}
-
-	clMsg("Thread[%d] finished", threadID);
-	threads_end.push_back(true);
-}
-
 size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightings, xr_vector<b_BuildTexture>& Textures)
 {
 	size_t VertexDataSize = RaycastModel->get_verts_count() * sizeof(12);
@@ -130,8 +67,6 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 	return TotalMemorySize;
 }
 
-#include <thread>
-
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
 	float	p_total			= 0;
@@ -146,46 +81,6 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	adjacent_vec.reserve		(6*2*3);
 
 	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
-
-	/*
- 	CTimer timer;
-	timer.Start();
-	
-	 
-	u8 threads = 1;
-	int face_id = 1;
-
-	Status("Fill Table faces... (MT)");
-	for (vecFaceIt it = lc_global_data()->g_faces().begin(); it != lc_global_data()->g_faces().end(); ++it, face_id++)
-	{
-		if (face_id > threads * 500000)
-			threads += 1;
-
-		Face* F = (*it);
- 		mt_faces[threads].push_back(F);
- 		//Progress(float(it - lc_global_data()->g_faces().begin()) / float(lc_global_data()->g_faces().size()));
- 	}
-
-	Status("Start Threads... [%d], faces[%d]", threads, lc_global_data()->g_faces().size());
-
-	std::thread* th_arr = new std::thread[threads];
-	threads_end.clear();
-
-	for (int i = 1; i <= threads; i++)
-	{
- 		std::thread(face_thread, &CL, i).join();
-		Progress(i / threads);
-	}
-	
-	for (int i = 1; i < threads;i ++)
-	{										
-		mt_faces[i].clear_and_free();
-	}
-
-	mt_faces.clear();
- 
-	clMsg("Faces [%d] cpu_msec [%d]", lc_global_data()->g_faces().size(), timer.GetElapsed_ms());
-	*/ 
  
 //	Status("Converting faces... (ONE CORE)");
 	 
@@ -235,11 +130,6 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
  
 	}
 	 
-	/*
-	clMsg					("Faces: original(%d), model(%d), ratio(%f)",
-		g_faces.size(),CL.getTS(),float(CL.getTS())/float(g_faces.size()));
-	*/
-
 	// Export references
 	if (bSaveForOtherCompilers)		
 		Phase	("Building rcast-CFORM-mu model...");
@@ -248,8 +138,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	for (u32 ref = 0; ref < mu_refs().size(); ref++)
 	{
-		if (ref % 100 == 0)
-		   clMsg("ModelID [%d]", ref);
+		//if (ref % 100 == 0)
+		//  clMsg("ModelID [%d]", ref);
 
 		Progress(float(ref / float(mu_refs().size())));
 		mu_refs()[ref]->export_cform_rcast(CL);

@@ -187,7 +187,11 @@ void CSHEngineTools::RealUpdateProperties()
                 xrP_BOOL* V=(xrP_BOOL*)data.pointer();
                 PHelper().CreateBOOL(items,PrepareKey(marker_text.c_str(),key),&V->value);
             }break;
-            default: THROW2("UNKNOWN xrPID_????");
+            default:
+            { 
+                Msg("Cant Read Parram: %u, %s", type, key);
+                //THROW2("UNKNOWN xrPID_????");
+            }
             }
             data.advance(sz);
         }

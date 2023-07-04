@@ -11,6 +11,7 @@ UIObjectList::UIObjectList()
 	m_Mode = M_Visible;
 	m_Filter[0] = 0;
 	m_SelectedObject = nullptr;
+ 
 }
 
 UIObjectList::~UIObjectList()
@@ -20,14 +21,15 @@ UIObjectList::~UIObjectList()
  
 void UIObjectList::Draw()
 {
-	int offset_y = LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT ? 180 : 0;
+			   
+	int offset_x = 0;
+	int offset_bottom = 20;	 // Для Обычных SceneObject и ТД
+	int offset_bottom_y = LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT ? 240 : 0;
 
-	int offset_x = 100;
+ 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400 + offset_x, 400 + offset_bottom_y));
+	
 
- 	ImGui::PushStyleVar(ImGuiStyleVar_WindowMinSize, ImVec2(400 + offset_x, 400 + offset_y));
-	 
-
-	if (!ImGui::Begin("Object List", &bOpen))
+	if (!ImGui::Begin("Object List", &bOpen))	// ImGuiWindowFlags_NoResize
 	{
 		ImGui::PopStyleVar(1);
 		ImGui::End();
@@ -35,23 +37,20 @@ void UIObjectList::Draw()
 	}
 
 	{
-			ImGui::BeginGroup();
+		ImGui::BeginGroup();
 		
-			if (ImGui::BeginChild("Left", ImVec2(-200 - offset_x, -ImGui::GetFrameHeight()-8 - offset_y), true))
-			{
-				DrawObjects();
-			}
-			ImGui::EndChild();
+		if (ImGui::BeginChild("Left", ImVec2(-200 - offset_x, -ImGui::GetFrameHeight() - offset_bottom - offset_bottom_y), true))
+			DrawObjects();
 
-			ImGui::SetNextItemWidth(-200 - offset_x);
-			ImGui::InputText("##value", m_Filter, sizeof(m_Filter));
+		ImGui::EndChild();
 
-			if (offset_y > 0)
- 			{ 
-				ListBoxForTypes();
-			}
-		 
-		
+		ImGui::SetNextItemWidth(-200);
+
+		ImGui::Text("ObjectName:");
+		ImGui::InputText("##value", m_Filter, sizeof(m_Filter));
+
+		if (offset_bottom_y > 0)
+			ListBoxForTypes();	
 		
 		ImGui::EndGroup();
 	}
@@ -75,7 +74,8 @@ void UIObjectList::Draw()
 		{
 			m_Mode = M_Inbvisible;
 		}
-		//ImGui::Separator();
+		
+		ImGui::Separator();
 
 		if (ImGui::Button("Show Selected", ImVec2(-1, 0)))
 		{
@@ -93,6 +93,8 @@ void UIObjectList::Draw()
 				m_SelectedObject->Show(false);
 			}
 		}
+
+		ImGui::Separator();
  
 		UpdateUIObjectList();
 	}
@@ -217,13 +219,33 @@ void UIObjectList::DrawObjects()
 	}
 }
 
+#include "SpawnPoint.h"
+#include "SceneObject.h"
+ 
 void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 { 
+	CSpawnPoint* spawn = smart_cast<CSpawnPoint*>(obj);
+	CSceneObject* scene = smart_cast<CSceneObject*>(obj);
+ 
 	if (m_Filter[0] && obj->GetName() != 0)
-	if (strstr(obj->GetName(), m_Filter) == 0)
+ 	if ( strstr(obj->GetName(), m_Filter) == 0)
 		return;
 
+	if (m_Filter_visual[0] && spawn && spawn->m_SpawnData.m_Visual)
+	if (strstr(spawn->m_SpawnData.m_Visual->source->visual_name.c_str(), m_Filter_visual) == 0)
+		return;
+
+
 	if (!CheckNameForType(obj))
+		return;
+
+	if (spawn && IgnoreVisual && spawn->m_SpawnData.m_Visual)
+		return;
+
+	if (spawn && IgnoreNotVisual && !spawn->m_SpawnData.m_Visual)
+		return;
+ 
+	if (obj && obj->GetPosition().distance_to(EDevice.vCameraPosition) > DistanceObjects && use_distance)
 		return;
 
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
@@ -236,19 +258,27 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 	if (m_SelectedObject == obj)
 	{
 		Flags |= ImGuiTreeNodeFlags_Selected;
-	}	 
+	}
 
 	if (name)
 		ImGui::TreeNodeEx(name, Flags);
+	else
+	if (spawn && spawn->m_SpawnData.m_Visual && spawn->m_SpawnData.m_Visual->source)
+		ImGui::TreeNodeEx(obj->GetName(), Flags, "%s (%s)", obj->GetName(), spawn->m_SpawnData.m_Visual->source->visual_name.c_str());
 	else
 		ImGui::TreeNodeEx(obj->GetName(), Flags);
 
 	if (ImGui::IsItemClicked())
 	{
+		if (obj->Selected())
+			obj->Select(false);
+
+		if (!MultiplySelect)
+			Scene->SelectObjects(false, OBJCLASS_DUMMY);
+
 		if (m_SelectedObject != obj)
 		{
 			obj->Select(true);
-
 			m_SelectedObject = obj;
 		}
 	}
@@ -256,7 +286,6 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 	if (ImGui::GetIO().KeyAlt)
 		obj->Select(false);
 
-		
 	if (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift)
 	{
 		if (!obj->Selected())

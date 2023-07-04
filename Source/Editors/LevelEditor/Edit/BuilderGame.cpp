@@ -18,17 +18,29 @@ bool sort_fog_vol(EFogVolume* fv1, EFogVolume* fv2)
 	return (fv1->m_volumeType < fv2->m_volumeType);
 }
 
-BOOL SceneBuilder::BuildGame()
+BOOL SceneBuilder::BuildGame(bool static_iclude)
 {
 	SExportStreams 		F;
     F.envmodif.stream.open_chunk	(F.envmodif.chunk++);
     F.envmodif.stream.w_u32			(u32(SPAWNPOINT_VERSION));
     F.envmodif.stream.close_chunk	();
     
-    if (!Scene->ExportGame(&F))				return FALSE;
+    if (static_iclude)
+    {
+        if (!Scene->ExportGame(&F))			
+            return FALSE;
+    }
+    else
+    {
+        if (!Scene->ExportGameNoStatic(&F))
+            return FALSE;
+    }
+
 
     BOOL bRes 			= TRUE;
     // save spawn
+    
+    CTimer t; t.Start();
     {
         xr_string lev_spawn 	  			= MakeLevelPath("level.spawn");
         EFS.MarkFile						(lev_spawn.c_str(),true);
@@ -40,6 +52,7 @@ BOOL SceneBuilder::BuildGame()
         if (F.spawn_rs.chunk)
             if (!F.spawn_rs.stream.save_to	(lev_spawn.c_str())) bRes = FALSE;
     }
+    Msg("Save Spawn: %d ms", t.GetElapsed_ms());
 
     // save game
     {
@@ -52,6 +65,8 @@ BOOL SceneBuilder::BuildGame()
             if (!GAME.save_to				(lev_game.c_str())) bRes = FALSE;
     }
 
+    Msg("Save Game: %d ms", t.GetElapsed_ms());
+
     // save weather env modificator
     {
         xr_string lev_env_mod				= MakeLevelPath("level.env_mod");
@@ -60,6 +75,8 @@ BOOL SceneBuilder::BuildGame()
 	        if (!F.envmodif.stream.save_to	(lev_env_mod.c_str())) bRes = FALSE;
     }
 
+    Msg("Save Weather: %d ms", t.GetElapsed_ms());
+
     // save static sounds
     {
         xr_string lev_sound_static 			= MakeLevelPath("level.snd_static");
@@ -67,6 +84,8 @@ BOOL SceneBuilder::BuildGame()
         if (F.sound_static.chunk)    	
             if (!F.sound_static.stream.save_to	(lev_sound_static.c_str())) bRes = FALSE;
     }
+
+    Msg("Save Static SND: %d ms", t.GetElapsed_ms());
 /*
     // save sound envs
     {
@@ -83,6 +102,8 @@ BOOL SceneBuilder::BuildGame()
         if (F.pe_static.chunk)    	
             if (!F.pe_static.stream.save_to	(lev_pe_static.c_str())) bRes = FALSE;
     }
+
+    Msg("Save Static PG: %d ms", t.GetElapsed_ms());
 
     // save fog volumes
     if(1)
@@ -168,6 +189,9 @@ BOOL SceneBuilder::BuildGame()
         if (!F.fog_vol.stream.save_to(lev_fog_vol.c_str()))
         	bRes = FALSE;
     }
+
+    Msg("Save FOG VOLUMES: %d ms", t.GetElapsed_ms());
+
 
     return bRes;
 }

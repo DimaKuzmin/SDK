@@ -62,13 +62,15 @@ BOOL is_combat_cover			(shared_str const &table_id)
 	//if (!result)
 	//	return false;
 
-	if (table.type() != LUA_TTABLE) {
+	if (table.type() != LUA_TTABLE) 
+	{
 		VERIFY					(table.type() != LUA_TNIL);
 		return					(TRUE);
 	}
 
 	value						= table["is_combat_cover"];
-	if (value.type() == LUA_TNIL) {
+	if (value.type() == LUA_TNIL)
+	{
 		Msg						("! is_combat_cover flag not found for smart_cover [%s], forcing to \"true\"", table_id.c_str());
 		return					(TRUE);
 	}

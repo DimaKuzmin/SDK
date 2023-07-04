@@ -107,6 +107,8 @@ protected:
 	AINodeVec*			HashMap					(Fvector& V);
 	SAINode*			FindNode				(Fvector& vAt, float eps=0.05f);
 	SAINode* 			FindNeighbor			(SAINode* N, int side, bool bIgnoreConstraints);
+    SAINode*            FindNeighborIgnoreXZ(SAINode* N, int side);
+
 	void 				MotionSimulate			(Fvector& result, Fvector& start, Fvector& end, float _radius, float _height);
 
 	SAINode* 			BuildNode				(Fvector& vFrom, Fvector& vAt, bool bIgnoreConstraints, bool bSuperIgnoreConstraints=false);
@@ -125,7 +127,7 @@ protected:
     void				EnumerateNodes			();
     void				DenumerateNodes			();
 
-    void                CreateCFModel();
+
 
     bool				RealUpdateSnapList		();
 	int 				RemoveOutOfBoundsNodes	();
@@ -136,6 +138,8 @@ protected:
     virtual void 		CreateControls			();
 	virtual void 		RemoveControls			();
 public:
+    void                CreateCFModel();
+
 	enum EMode{
     	mdAppend,
     	mdRemove,
@@ -206,7 +210,7 @@ public:
     };
     virtual bool 		can_use_inifile			()								{return false;}
 
-    virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset);
+    virtual bool   		LoadStreamOFFSET(IReader&, Fvector offset, bool LoadStreamOFFSET);
     virtual void        SaveStreamPOS(IWriter&);
 
     void SelectNode(u32 id);

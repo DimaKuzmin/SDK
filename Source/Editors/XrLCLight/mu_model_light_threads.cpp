@@ -70,8 +70,11 @@ public:
 };
 */
 
+#include <atomic>
 
-xr_vector<int>		task_pool_mu;
+std::atomic<int> task_id = 0;
+
+//xr_vector<int>		task_pool_mu;
 
 xrCriticalSection	task_CS;
 
@@ -91,21 +94,25 @@ public:
 
 		for (;;)
 		{
+
  			task_CS.Enter();
-			if (task_pool_mu.empty())
-			{
-				task_CS.Leave();
-				return;
-			}
+			int id = task_id.load();
+			thProgress = (float(id) / float(lc_global_data()->mu_refs().size()));
+				if ( (task_id.load()) % 16 == 0)
+					Status("Progress %d / %d", id, lc_global_data()->mu_refs().size());
+				if (id < inlc_global_data()->mu_refs().size())
+					ref = inlc_global_data()->mu_refs()[id];
+				else
+					ref = 0;
 
-			thProgress = (float(lc_global_data()->mu_refs().size() - task_pool_mu.size() ) / float(lc_global_data()->mu_refs().size()));
-
-			if ( ( lc_global_data()->mu_refs().size() - task_pool_mu.size() ) % 16 == 0)
-				Status("Progress %d / %d", lc_global_data()->mu_refs().size() - task_pool_mu.size(), lc_global_data()->mu_refs().size());
-
-			ref = inlc_global_data()->mu_refs()[task_pool_mu.back()];
-			task_pool_mu.pop_back();
+				task_id.fetch_add(1);
 			task_CS.Leave();
+
+			if (!ref)
+			{
+				break;
+			}
+				  
 			try
 			{
 				ref->calc_lighting();
@@ -167,10 +174,7 @@ public:
 		if(last > 0)
 			mu_secondary.start	( xr_new<CMULight> (threads,threads*stride,threads*stride + last ) );
 		*/
-
-		for (int i = 0; i < inlc_global_data()->mu_refs().size(); i++)
-			task_pool_mu.push_back(i);
-
+ 
 		for (int TH = 0; TH < MU_THREADS; TH++)
 			mu_secondary.start(xr_new<CMULight> (TH));
 

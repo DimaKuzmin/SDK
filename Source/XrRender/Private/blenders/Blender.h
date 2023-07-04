@@ -51,6 +51,7 @@ public:
 	CBlender_DESC&				getDescription	()	{return description;}
 	virtual 		LPCSTR		getName			()	{return description.cName;}
 	virtual			LPCSTR		getComment		()	= 0;
+	virtual			LPCSTR		getTextureName() { return oT_Name; }
 
 	virtual			BOOL		canBeDetailed	()	{ return FALSE; }
 	virtual			BOOL		canBeLMAPped	()	= 0;

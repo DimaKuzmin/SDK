@@ -227,13 +227,16 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 
 	// Search equal in shaders array
 	for (u32 it=0; it<v_shaders.size(); it++)
-		if (S.equal(v_shaders[it]))	return v_shaders[it];
+	if (S.equal(v_shaders[it]))
+		return v_shaders[it];
 
 	// Create _new_ entry
 	Shader*		N			=	xr_new<Shader>(S);
 	N->dwFlags				|=	xr_resource_flagged::RF_REGISTERED;
-	v_shaders.push_back		(N);
-	return N;
+
+ 	v_shaders.push_back		(N);
+
+ 	return N;
 }
 
 Shader*	CResourceManager::_cpp_Create	(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
@@ -407,10 +410,7 @@ void CResourceManager::ExportTexturesToDir(LPCSTR name)
 				FS.file_copy(bump2, bump_copy_2);
 
 			if (FS.exist(old_path))
-			{
 				FS.file_copy(old_path, new_path);
-				//Msg("Copy to [%s]", new_path);
-			}
 		}
 		
 
@@ -421,12 +421,6 @@ void CResourceManager::ExportTexturesToDir(LPCSTR name)
 
 			xr_strcat(old_path, ".thm");
 			xr_strcat(new_path, ".thm");
- 
-			if (FS.exist(old_path))
-			{
-				FS.file_copy(old_path, new_path);
-				//Msg("Copy THM to [%s]", new_path);
-			}
 
 			string_path bump, bump2, bump_copy, bump_copy_2;
 
@@ -445,6 +439,9 @@ void CResourceManager::ExportTexturesToDir(LPCSTR name)
 				FS.file_copy(bump, bump_copy);
 			if (FS.exist(bump2))
 				FS.file_copy(bump2, bump_copy_2);
+
+			if (FS.exist(old_path))
+				FS.file_copy(old_path, new_path);
 		}
 	}
 

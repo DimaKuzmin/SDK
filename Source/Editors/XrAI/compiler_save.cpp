@@ -196,8 +196,12 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		z = NC.p.xz() % m_row_length;
 		x = float(x) * H.size + H.aabb.min.x;
 		z = float(z) * H.size + H.aabb.min.z;
-		    
+		
+#ifdef _USE_NODE_POSITION_11
+		int max_px = 0xffffffff;
+#else 
 		int max_px = 0x00ffffff;
+#endif
 
 		if (NC.p.xz() > max_px)	  
 		{

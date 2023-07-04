@@ -108,7 +108,7 @@ public:
 	virtual							~CSE_Abstract			();
 	virtual void					OnEvent					(NET_Packet &tNetPacket, u16 type, u32 time, ClientID sender ){};
 #ifndef XRGAME_EXPORTS
-	virtual void					FillProps				(LPCSTR pref, PropItemVec &items);
+	virtual void			FillProps				(LPCSTR pref, PropItemVec &items);
 	virtual void			FillProp				(LPCSTR pref, PropItemVec &items);
 	virtual void 			on_render				(CDUInterface* du, ISE_AbstractLEOwner* owner, bool bSelected, const Fmatrix& parent,int priority, bool strictB2F){} 
 	virtual	visual_data*	visual_collection		() const { return 0; }
@@ -126,6 +126,13 @@ public:
 		s_name		= s;
 	};
 	virtual void			set_name_replace		(LPCSTR s) {xr_free(s_name_replace); s_name_replace = xr_strdup(s);};
+
+	virtual void			clear_ini_file() 
+	{ 
+		if (m_ini_file != nullptr)
+		m_ini_file->sections().clear();
+	};
+
 	virtual Fvector&		position				();
 	virtual Fvector&		angle					();
 	virtual Flags16&		flags					();

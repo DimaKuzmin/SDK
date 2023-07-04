@@ -60,6 +60,9 @@ void CGameGraphBuilder::load_level_graph	(const float &start, const float &amoun
 	Progress				(start + amount);
 }
 
+CInifile* file = 0;
+int global_ids = 0;
+
 void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 {
 	string256				section_id;
@@ -91,7 +94,8 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	{
 		graph_type::const_vertex_iterator	I = graph().vertices().begin();
 		graph_type::const_vertex_iterator	E = graph().vertices().end();
-		for ( ; I != E; ++I) {
+		for ( ; I != E; ++I) 
+		{
 			if ((*I).second->data().tLocalPoint.distance_to_sqr(vertex.tLocalPoint) < EPS_L)
 			{
 				Msg			("! removing graph point [%s][%f][%f][%f] because it is too close to the another graph point",entity->name_replace(),VPUSH(entity->o_Position));
@@ -104,11 +108,21 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	vertex.tGlobalPoint		= graph_point->o_Position;
 	vertex.tNodeID			= level_graph().valid_vertex_position(vertex.tLocalPoint) ? level_graph().vertex_id(vertex.tLocalPoint) : u32(-1);
 	
-	//Msg("NodeID %d", vertex.tNodeID);
-
 	if (!level_graph().valid_vertex_id(vertex.tNodeID))
 	{
-		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map Node (%d)", entity->name_replace(),VPUSH(entity->o_Position), vertex.tNodeID); //, level_graph().vertex(vertex.tNodeID)->position().xz() 
+		if (file)
+		{
+
+			string128 name = {0};
+			sprintf(name, "%s", entity->name_replace());
+
+			string128 tmp = { 0 };
+			sprintf(tmp, "graph_%d", global_ids);
+			file->w_string("graphs", tmp, name);
+			global_ids++;
+		}
+		//error_points.push_back(entity->name_replace());
+		Msg					("! removing graph point [%s][%f][%f][%f] because it is outside of the AI map Node (%d)", entity->name_replace(), VPUSH(entity->o_Position), vertex.tNodeID); //, level_graph().vertex(vertex.tNodeID)->position().xz() 
 		F_entity_Destroy	(entity);
 		return;
 	}
@@ -143,6 +157,10 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 
 	Msg						("Loading graph points");
 
+	string_path files;
+	FS.update_path(files, _import_, "aigraphs_errors.ltx");
+	file = xr_new<CInifile>(files, false, false, false);
+	
 	string_path				spawn_file_name;
 	strconcat				(sizeof(spawn_file_name),spawn_file_name,*m_level_name,"level.spawn");
 	IReader					*reader = FS.r_open(spawn_file_name);
@@ -160,6 +178,9 @@ void CGameGraphBuilder::load_graph_points	(const float &start, const float &amou
 	}
 	
 	FS.r_close				(reader);
+
+	file->save_as(files);
+
 
 	Msg						("%d graph points loaded",graph().vertices().size());
 

@@ -27,7 +27,11 @@ public:
 	typedef xr_vector<Item>				Items;
 	typedef Items::const_iterator		SectCIt;
 	typedef Items::iterator				SectIt_;
-    struct XRCORE_API	Sect {
+    
+	int CurrentIniSection = 0;
+	struct XRCORE_API	Sect 
+	{
+		int ID = 0; 
 		shared_str		Name;
 		Items			Data;
 		xr_vector<shared_str> Includes;
@@ -74,8 +78,13 @@ public:
                                     );
 
 	virtual 	~CInifile		( );
-    bool		save_as         ( LPCSTR new_fname=0 );
+   
+
+
+	bool		save_as         ( LPCSTR new_fname=0 );
 	void		save_as			(IWriter& writer, bool bcheck=false)const;
+	void		save_as_new		(IWriter& writer, bool bCheck=false) const;
+
 	void		set_override_names(BOOL b){m_flags.set(eOverrideNames,b);}
 	void		save_at_end		(BOOL b){m_flags.set(eSaveAtEnd,b);}
 	LPCSTR		fname			( ) const { return m_file_name; };

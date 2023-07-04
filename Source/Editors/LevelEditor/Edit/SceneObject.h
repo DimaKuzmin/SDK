@@ -55,7 +55,11 @@ public:
 	IC bool 		RefCompare				(LPCSTR ref){return ref&&m_pReference?(strcmp(ref,m_pReference->GetName())==0):false; }
 	IC CEditableObject*	GetReference		()	{return m_pReference; }
 	CEditableObject*SetReference			(LPCSTR ref_name);
+	
+	xrCriticalSection csOBJECT;
 	CEditableObject*UpdateReference			();
+
+
 	IC EditMeshVec* Meshes					() {return m_pReference?&m_pReference->Meshes():0;}
     virtual LPCSTR	RefName					() {return m_pReference?m_pReference->GetName():0;}
     virtual bool	CanAttach				() {return true;}

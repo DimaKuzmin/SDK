@@ -104,18 +104,38 @@ void Progress		(const float F)
 	*/
 }
 
+xr_vector<shared_str> phases_timers;
+
+xr_vector<shared_str>* phases_timers_Get()
+{
+	return &phases_timers;
+};
+
+bool phase_inited = false;
+ 
 void Phase			(const char *phase_name)
 {
 	while (!(hwPhaseTime && hwStage)) Sleep(1);
 
+
 	csLog.Enter			();
-	// Replace phase name with TIME:Name 
-	char	tbuf		[512];
-	bPhaseChange		= TRUE;
-	phase_total_time	= timeGetTime()-phase_start_time;
-	xr_sprintf				( tbuf,"%s : %s",make_time(phase_total_time/1000).c_str(),	phase);
-	SendMessage			( hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
-	SendMessage			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
+	char	tbuf[512];
+	bPhaseChange = TRUE;
+
+	if (!phase_inited)
+	{
+		phase_inited = true;
+	}
+	else
+	{
+		// Replace phase name with TIME:Name 
+		phase_total_time = timeGetTime() - phase_start_time;
+		xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / 1000).c_str(), phase);
+		phases_timers.push_back(tbuf);
+
+		SendMessage(hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
+		SendMessage(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
+	}
 
 	// Start _new phase
 	phase_start_time	= timeGetTime();

@@ -394,7 +394,7 @@ void CInifile::save_as	(IWriter& writer, bool bcheck) const
         xr_sprintf		(temp, sizeof(temp), "[%s]", sec->Name.c_str());
  
 		int id = 0;
-		//Msg("Size:%d", sec->Includes.size());
+
 		if (sec->Includes.size() > 0)
 		{
 			xr_strcat(temp, ":");
@@ -409,7 +409,6 @@ void CInifile::save_as	(IWriter& writer, bool bcheck) const
 			else
 				sprintf(include_sec, "%s", incl.c_str());
 			
-			//Msg("Include %s", include_sec);
 			xr_strcat(temp, include_sec);
 		}
 
@@ -454,6 +453,83 @@ void CInifile::save_as	(IWriter& writer, bool bcheck) const
     }
 }
 
+void CInifile::save_as_new(IWriter& writer, bool bCheck) const
+{
+	xr_vector<Sect*> data_new;
+
+	for (auto sec : DATA)
+		data_new.push_back(sec);
+
+	std::sort(data_new.begin(), data_new.end(), [](CInifile::Sect* item, CInifile::Sect* item2) { return item->ID < item2->ID;} );
+
+	string4096		temp, val;
+	for (auto sec : data_new)
+	{
+		Msg("SEC: %d", sec->ID);
+
+
+		xr_sprintf(temp, sizeof(temp), "[%s]", sec->Name.c_str());
+
+		int id = 0;
+
+		if (sec->Includes.size() > 0)
+		{
+			xr_strcat(temp, ":");
+		}
+
+		for (auto incl : sec->Includes)
+		{
+			id++;
+			string256 include_sec;
+			if (id < sec->Includes.size())
+				sprintf(include_sec, "%s,", incl.c_str());
+			else
+				sprintf(include_sec, "%s", incl.c_str());
+
+			xr_strcat(temp, include_sec);
+		}
+
+		writer.w_string(temp);
+
+		if (bCheck)
+		{
+			xr_sprintf(temp, sizeof(temp), "; %d %d %d", sec->Name._get()->dwCRC,
+				sec->Name._get()->dwReference,
+				sec->Name._get()->dwLength);
+			writer.w_string(temp);
+		}
+
+		for (auto item : sec->Data)
+		{
+			const Item& I = item;
+			if (*I.first)
+			{
+				if (*I.second)
+				{
+					_decorate(val, *I.second);
+					// only name and value
+					xr_sprintf(temp, sizeof(temp), "%8s%-32s = %-32s", " ", I.first.c_str(), val);
+				}
+				else
+				{
+					// only name
+					xr_sprintf(temp, sizeof(temp), "%8s%-32s = ", " ", I.first.c_str());
+				}
+			}
+			else
+			{
+				// no name, so no value
+				temp[0] = 0;
+			}
+			_TrimRight(temp);
+			if (temp[0])
+				writer.w_string(temp);
+		}
+
+		writer.w_string(" ");
+	}
+}
+
 bool CInifile::save_as	(LPCSTR new_fname)
 {
 	// save if needed
@@ -465,7 +541,8 @@ bool CInifile::save_as	(LPCSTR new_fname)
     if (!F)
 		return			(false);
 
-	save_as				(*F);
+	save_as_new(*F);
+	//save_as				(*F);
     FS.w_close			(F);
     return				(true);
 }
@@ -761,6 +838,8 @@ void CInifile::w_string( LPCSTR S, LPCSTR L, LPCSTR V, LPCSTR comment)
 		// create _new_ section
 		Sect			*NEW = xr_new<Sect>();
 		NEW->Name		= sect;
+		NEW->ID			= CurrentIniSection;
+		CurrentIniSection++;
 		RootIt I		= std::lower_bound(DATA.begin(),DATA.end(),sect,sect_pred);
 		DATA.insert		(I,NEW);
 	}

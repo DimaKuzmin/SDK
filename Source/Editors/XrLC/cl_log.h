@@ -8,3 +8,5 @@ void Phase			(const char *phase_name);
 
 void logThread	    (void *dummy);
 void logCallback	(LPCSTR c);
+
+xr_vector<shared_str>* phases_timers_Get();

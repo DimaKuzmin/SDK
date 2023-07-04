@@ -63,6 +63,41 @@ void ESceneCustomOTool::SaveSelection(IWriter& F)
 	F.w_chunk		(CHUNK_OBJECT_COUNT,&count,sizeof(count));
 }
 //----------------------------------------------------
+
+/*
+xr_vector<shared_str> thread_work;
+xrCriticalSection csLoad;
+#include <thread>
+
+void LoadThread(EScene* scene, CInifile* ini, SPBItem* pb)
+{
+    for (;;)
+    {
+        csLoad.Enter();
+
+        if (thread_work.empty())
+        {
+            csLoad.Leave();
+            break;
+        }
+
+        shared_str section = thread_work.back();
+        thread_work.pop_back();
+
+        csLoad.Leave();
+        
+        CCustomObject* obj = NULL;
+        if (ini->section_exist(section))
+        if (Scene->ReadObjectLTX(*ini, section.c_str(), obj))
+        {
+            if (!Scene->OnLoadAppendObject(obj))
+                xr_delete(obj);
+        }
+
+        pb->Inc();
+    }
+} */
+ 
 bool ESceneCustomOTool::LoadLTX(CInifile& ini)
 {
 	inherited::LoadLTX	(ini);
@@ -73,23 +108,40 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
 
     u32 i				= 0;
     string128			buff;
+    CTimer t;
+    t.Start();
 
-      for(i=0; i<count; ++i)
-      {
-          CCustomObject* obj	= NULL;
-          sprintf				(buff, "object_%d", i);
-            
-          if (ini.section_exist(buff))
-          if( Scene->ReadObjectLTX(ini, buff, obj) )
-          {
-              if (!OnLoadAppendObject(obj))
-                  xr_delete(obj);
-          }
-          pb->Inc();
-      }
+    for(i=0; i<count; ++i)
+    { 
+        sprintf				(buff, "object_%d", i);
+    
+        CCustomObject* obj	= NULL;
+        if (ini.section_exist(buff))
+        if( Scene->ReadObjectLTX(ini, buff, obj) )
+        {
+            if (!OnLoadAppendObject(obj))
+                xr_delete(obj);
+        }
 
-	UI->ProgressEnd		(pb);
+        pb->Inc();
+       
+        /* thread_work.push_back(buff);  */
+    }
+     /*
+    std::thread* th[8];
+    for (int i = 0; i < 8; i++)
+        th[i] = new std::thread(LoadThread, Scene, &ini, pb);
 
+    for (int i = 0; i < 8; i++)
+        th[i]->join();
+
+    Msg("Tool: %d, time: %u", FClassID, t.GetElapsed_ticks());
+
+
+	
+    */
+
+    UI->ProgressEnd(pb);
     return true;
 }
 

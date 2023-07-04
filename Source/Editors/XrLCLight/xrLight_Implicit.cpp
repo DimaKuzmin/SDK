@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 #include "xrlight_implicit.h"
 #include "xrLight_ImplicitDeflector.h"
@@ -19,9 +19,13 @@
 
 #include "../../xrcdb/xrcdb.h"
 
+
+
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
-
+xrCriticalSection crImplicit;
+int curHeight = 0;
+ImplicitCalcGlobs cl_globs;
 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
  
@@ -38,7 +42,7 @@ void		ImplicitExecute::write			( IWriter	&w ) const
 	w.w_u32( y_end );
 }
 
-ImplicitCalcGlobs cl_globs;
+
 
 #include <algorithm>
 
@@ -172,10 +176,7 @@ void RunCudaThread()
 
 	CalculateGPU(defl);
 }
-
-
-
-
+ 
 void	ImplicitExecute::	receive_result			( INetReader	&r )
 {
 	R_ASSERT( y_start != (u32(-1)) );
@@ -203,46 +204,44 @@ void	ImplicitExecute::	send_result				( IWriter	&w ) const
 	}
 }
 
-int curHeight = 0;
-
 void ImplicitExecute::clear()
 {
 	curHeight = 0;
 }
 
-xrCriticalSection crImplicit;
-   
-
-
-void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
+void	ImplicitExecute::Execute(net_task_callback* net_callback)
 {
+	InitDB(&DB);
+	
+
 	net_cb = net_callback;
 	//R_ASSERT( y_start != (u32(-1)) );
 	//R_ASSERT( y_end != (u32(-1)) );
 	ImplicitDeflector& defl = cl_globs.DATA();
-		
+
 	// Setup variables
 	//u32		Jcount;
 	//Fvector2	dim,half;
 	//Fvector2	JS;
 	//Fvector2*	Jitter;
 
-	dim.set		(float(defl.Width()), float(defl.Height()));
-	half.set	(.5f/dim.x,.5f/dim.y);
-		
+	dim.set(float(defl.Width()), float(defl.Height()));
+	half.set(.5f / dim.x, .5f / dim.y);
+
 	// Jitter data
-	JS.set		(.499f/dim.x, .499f/dim.y);
+	JS.set(.499f / dim.x, .499f / dim.y);
 	CTimer t;
 	t.Start();
 	Jitter_Select(Jitter, Jcount);
-		
+
 	// Lighting itself
 	CDB::COLLIDER			DB;
-	DB.ray_options	(0);
- 
+	DB.ray_options(0);
+
 	//for (u32 V=y_start; V<y_end; V++)
+
 	for (;;)
-	{  
+	{
 		int ID = 0;
 		crImplicit.Enter();
 		ID = curHeight;
@@ -252,21 +251,60 @@ void	ImplicitExecute::	Execute	( net_task_callback *net_callback )
 			break;
 		}
 		curHeight++;
-		crImplicit.Leave(); 
+		crImplicit.Leave();
 
-		ForCycle(&defl, ID);
-		if (ID % 16 == 0)
+		ForCycle(&defl, ID, TH_ID);
+		if (ID % 128 == 0)
 			Msg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
-  	}
-	 
-
+	}
 }
 
-void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
+extern u64 results;
+extern u64 results_tDB;
+
+float hemi;
+float sun;
+
+u32 cnt_good_hemi = 0;
+u32 cnt_good_sun = 0;
+u32 cnt_good_rgb = 0;
+
+u32 cnt_bad_hemi = 0;
+u32 cnt_bad_sun = 0;
+u32 cnt_bad_rgb = 0;
+
+bool SameFloat(float& a, float& b, float eps)
+{
+	if (a < (b - eps) || a >(b + eps))
+		return false;
+	else
+		return true;
+}
+
+bool SameVector(Fvector& a, Fvector& b, float eps)
+{
+	if (a.x < (b.x - eps) || a.x >(b.x + eps))
+		return false;
+
+	if (a.y < (b.y - eps) || a.y >(b.y + eps))
+		return false;
+	
+	if (a.z < (b.z - eps) || a.z >(b.z + eps))
+		return false;
+
+	return true;
+}
+
+//#define DEBUG_COLOR
+
+void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 {
 	for (u32 U = 0; U < defl->Width(); U++)
 	{
 		base_color_c	C;
+#ifdef DEBUG_COLOR
+		base_color_c	C_test;
+#endif 
 		u32				Fcount = 0;
 
 		try
@@ -296,13 +334,36 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 						wN.from_bary(V1->N, V2->N, V3->N, B);
 						wN.normalize();
 
-						LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN,
-							inlc_global_data()->L_static(),
-							(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
-							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
-							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0), 
-						F);
+						if (use_intel)
+						{
+							if (!inlc_global_data()->b_nosun())
+								RaysToSUNLight_Deflector(TH, wP, wN, C, inlc_global_data()->L_static(), F);
+							if (!inlc_global_data()->b_nohemi())
+								RaysToHemiLight_Deflector(TH, wP, wN, C, inlc_global_data()->L_static(), F);
+							if (!inlc_global_data()->b_norgb())
+								RaysToRGBLight_Deflector(TH, wP, wN, C, inlc_global_data()->L_static(), F);
+#ifdef DEBUG_COLOR						    
+							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C_test, wP, wN,
+								inlc_global_data()->L_static(),
+								(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+								(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
+								(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
+								F, false);
 
+#endif
+						    
+							///Msg("RGB: %d, SUN: %d, HEMI: %d", lc_global_data()->b_norgb(), lc_global_data()->b_nosun(), lc_global_data()->b_nohemi());
+						}
+						else
+						{
+							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN,
+								inlc_global_data()->L_static(),
+								(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+								(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
+								(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
+								F, 1024);
+						}
+						 
 						Fcount++;
 					}
 				}
@@ -315,9 +376,42 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
    
 		if (Fcount)
 		{
+
+#ifdef DEBUG_COLOR
+			if (!SameFloat(C.hemi, C_test.hemi, 0.2f))
+			{
+				Msg_IN_FILE("U: %d, V: %d, Hemi: %f != %f", U, V, C.hemi, C_test.hemi);
+				cnt_bad_hemi++;
+			}
+			else
+				cnt_good_hemi++;
+
+			if (!SameFloat(C.sun, C_test.sun, 0.2f))
+			{
+				Msg_IN_FILE("U: %d, V: %d, sun: %f != %f", U, V, C.sun, C_test.sun);
+				cnt_bad_sun++;
+			}
+			else
+				cnt_good_sun++;
+
+			if (!SameVector(C.rgb, C_test.rgb, 0.01f))
+			{
+				Msg_IN_FILE("U: %d, V: %d, RGB: [%f,%f,%f] != [%f,%f,%f]", U, V, VPUSH(C.rgb), VPUSH(C_test.rgb));
+				cnt_bad_rgb++;
+			}
+			else
+				cnt_good_rgb++;
+#endif
+			 
+			//Msg("U: %d, V: %d, Hemi: %f, sun: %f, rgb: [%f][%f][%f]", U, V, C.hemi, C.sun, C.rgb.x, C.rgb.y, C.rgb.z);
 			// Calculate lighting amount
+	 
 			C.scale(Fcount);
 			C.mul(.5f);
+
+			hemi += C.hemi;
+			sun += C.sun;
+
 			defl->Lumel(U, V)._set(C);
 			defl->Marker(U, V) = 255;
 		}
@@ -327,6 +421,18 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V)
 		}
 
 	}
+
+
+
+	if (V % (64) == 0)
+	{
+#ifdef DEBUG_COLOR
+		Msg("Total: HEMI: %f, SUN: %f", hemi, sun);
+		Msg("SAME OPCODE: hemi: %d, sun: %d, rgb: %d", cnt_good_hemi, cnt_good_sun, cnt_good_rgb);
+		Msg("DIFF OPCODE: hemi: %d, sun: %d, rgb: %d", cnt_bad_hemi, cnt_bad_sun, cnt_bad_rgb);
+#endif
+	}
+
 }
 
 void ImplicitLightingExec(BOOL b_net);

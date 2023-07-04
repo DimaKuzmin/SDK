@@ -485,6 +485,8 @@ void CWeaponMagazined::state_Fire(float dt)
 		}
 
 		CInventoryOwner* io		= smart_cast<CInventoryOwner*>(H_Parent());
+		
+		/*
 		if(NULL == io->inventory().ActiveItem())
 		{
 				Log("current_state", GetState() );
@@ -492,6 +494,7 @@ void CWeaponMagazined::state_Fire(float dt)
 				Log("item_sect", cNameSect().c_str());
 				Log("H_Parent", H_Parent()->cNameSect().c_str());
 		}
+		*/
 
 		CEntity* E = smart_cast<CEntity*>(H_Parent());
 		E->g_fireParams	(this, p1,d);

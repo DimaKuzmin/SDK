@@ -133,7 +133,7 @@ protected:
     BOOL	ParseLTX				(CInifile* pIni, ObjectList& lst, LPCSTR prefix=0);
 	BOOL 	BuildLTX                ();
     BOOL	ParseGAME				(IWriter& game, IWriter& spawn, ObjectList& lst, LPCSTR prefix=0);
-    BOOL 	BuildGame				();
+    BOOL 	BuildGame				(bool static_iclude = true);
 
     BOOL	BuildSceneStat			();
     bool 	BuildHOMModel			();
@@ -149,6 +149,8 @@ public:
 	virtual ~SceneBuilder           ();
 
 	BOOL	Compile            		(bool b_selected_only);
+
+    BOOL    MakeSpawn               ();
 	BOOL 	MakeGame				();
     BOOL 	MakeDetails				();
     BOOL 	MakeHOM					();

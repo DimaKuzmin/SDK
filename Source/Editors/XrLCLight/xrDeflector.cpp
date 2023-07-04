@@ -311,7 +311,7 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 }
 
 
-void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
 	try 
 	{
@@ -333,7 +333,7 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		R_ASSERT		(lm.width	<=(getLMSIZE() -2*BORDER));
 		R_ASSERT		(lm.height	<=(getLMSIZE() -2*BORDER));
 		lm.create		(lm.width,lm.height);
-		L_Direct		(DB,LightsSelected,H);
+		L_Direct		(th, DB,LightsSelected,H);
 	} 
 	catch (...)
 	{
@@ -498,9 +498,7 @@ void setLMSIZE(int size)
 u32 getLMSIZE()
 {
 	if (strstr(Core.Params, "-fast_lightmaps"))
-	{
 		return global_size_map;
-	}
 
 
 	//if (strstr(Core.Params, "-fast_lightmaps"))
