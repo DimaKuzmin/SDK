@@ -725,7 +725,7 @@ int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool b
     }
 }
 
-struct invalid_node_pred : public std::unary_function<SAINode*, bool>
+struct invalid_node_pred 
 {
 	int link;
 	invalid_node_pred(int _link):link(_link){;}
@@ -757,7 +757,7 @@ void ESceneAIMapTool::SelectObjects(bool flag)
 }
 
 
-struct delete_sel_node_pred : public std::unary_function<SAINode*, bool>
+struct delete_sel_node_pred 
 {
 	bool operator()(SAINode*& x)
     {
@@ -771,6 +771,7 @@ struct delete_sel_node_pred : public std::unary_function<SAINode*, bool>
         return 		res; 
     }
 };
+
 void ESceneAIMapTool::RemoveSelection()
 {
     switch (LTools->GetSubTarget()){

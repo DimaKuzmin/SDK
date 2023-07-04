@@ -299,6 +299,8 @@ bool CompareWeightFunc(SIndexDist& d0, SIndexDist& d1){
 	return d0.dist<d1.dist;
 }
 
+#include <random>
+
 struct best_rand
 {
 	CRandom gen;
@@ -401,7 +403,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
         for (U8It b_it=elem.begin(); b_it!=elem.end(); b_it++)
             *b_it=u8(b_it-elem.begin());
 //        best_rand A(DetailRandom);
-        std::random_shuffle(elem.begin(),elem.end());//,A);
+        std::shuffle(elem.begin(),elem.end(), std::random_device());//,A);
         for (auto b_it=elem.begin(); b_it!=elem.end(); b_it++)
         {
 			bool bNotFound=true;

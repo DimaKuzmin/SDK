@@ -79,6 +79,9 @@ typedef struct tagSDynamicGraphVertex {
 DEFINE_VECTOR(SDynamicGraphVertex,		GRAPH_VERTEX_VECTOR,	GRAPH_VERTEX_IT);
 DEFINE_VECTOR(CGameGraph::CEdge,	GRAPH_EDGE_VECTOR,		GRAPH_EDGE_IT);
 
+
+#include <random>
+
 class CLevelGameGraph {
 public:
 	GRAPH_VERTEX_VECTOR			m_tpVertices;
@@ -373,7 +376,7 @@ public:
 
 		R_ASSERT2				(!l_dwaNodes.empty(),"Can't create at least one death point for specified graph point");
 
-		std::random_shuffle		(l_dwaNodes.begin(),l_dwaNodes.end());
+		std::shuffle		(l_dwaNodes.begin(),l_dwaNodes.end(), std::random_device());
 
 		u32						m = l_dwaNodes.size() > 10 ? _min(iFloor(.1f*l_dwaNodes.size()),255) : l_dwaNodes.size(), l_dwStartIndex = m_tpLevelPoints.size();
 		m_tpLevelPoints.resize	(l_dwStartIndex + m);

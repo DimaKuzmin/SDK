@@ -448,6 +448,8 @@ public:
 };
 #endif
 
+#include <random>
+
 void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 {
 	// create graph engine
@@ -522,8 +524,8 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 #endif
 		}
 		else		*/
-			std::random_shuffle			(l_tpaStack.begin(),l_tpaStack.end());
-
+			std::shuffle			(l_tpaStack.begin(),l_tpaStack.end(), std::random_device());
+																			   
 		zone->m_artefact_position_offset= m_level_points.size();
 		m_level_points.resize			(zone->m_artefact_position_offset + zone->m_artefact_spawn_count);
 
