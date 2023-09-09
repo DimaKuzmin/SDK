@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Russian resources
+// Русский (Россия) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
-#ifdef _WIN32
 LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -48,7 +46,7 @@ FONT 10, "Lucida Console", 400, 0, 0xCC
 BEGIN
     LISTBOX         IDC_LOG,0,0,345,253,NOT LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_VSCROLL
     CTEXT           "Starting...",IDC_STAGE,0,255,345,17,SS_CENTERIMAGE | SS_SUNKEN
-    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",0x1,0,309,311,14
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",PBS_SMOOTH,0,309,311,14
     GROUPBOX        "Stage information",IDC_STATIC,0,273,218,35
     LTEXT           "",IDC_INFO,5,281,207,22
     GROUPBOX        "Phase Timing",IDC_STATIC,220,274,125,34
@@ -73,7 +71,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_VERIFY, DIALOG
     BEGIN
@@ -99,18 +97,16 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Russian resources
+#endif    // Русский (Россия) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Ukrainian resources
+// Украинский (Украина) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_UKR)
-#ifdef _WIN32
 LANGUAGE LANG_UKRAINIAN, SUBLANG_DEFAULT
 #pragma code_page(1251)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -137,25 +133,23 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Ukrainian resources
+#endif    // Украинский (Украина) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Английский (США) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_NVIEW DIALOG  0, 0, 780, 535
+IDD_NVIEW DIALOG 0, 0, 780, 535
 STYLE DS_ABSALIGN | DS_SETFONT | DS_SETFOREGROUND | DS_NOFAILCREATE | DS_CENTER | WS_VISIBLE | WS_BORDER
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -179,7 +173,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_NVIEW, DIALOG
     BEGIN
@@ -191,7 +185,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // Английский (США) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
