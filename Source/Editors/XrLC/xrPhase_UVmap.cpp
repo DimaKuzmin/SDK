@@ -4,6 +4,7 @@
 #include "../xrLCLight/xrDeflector.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
+
 void Detach(vecFace* S)
 {
 	map_v2v			verts;
@@ -18,6 +19,7 @@ void Detach(vecFace* S)
 			Vertex*		VC;
 			map_v2v_it	W=verts.find(V);	// iterator
 			
+
 			if (W==verts.end()) 
 			{	// where is no such-vertex
 				VC = V->CreateCopy_NOADJ( lc_global_data()->g_vertices() );	// make copy
@@ -73,6 +75,8 @@ void MT_FindAttached(CDeflector* defl, vecFace& affected, int SP, int start, int
 }
 
 #include <thread>
+#include <algorithm>
+#include <execution>
 
 void CBuild::xrPhase_UVmap()
 {
@@ -87,7 +91,7 @@ void CBuild::xrPhase_UVmap()
 	clMsg("SP_SIZE %d, pixel_per_metter %f, Jitter = %d", g_XSplit.size(), g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
  
 	orig_size = g_XSplit.size();
-	bool use_fast_method = strstr(Core.Params, "-fast_uv");
+	bool use_fast_method = true; // strstr(Core.Params, "-fast_uv");
 
 	CTimer timer_gl, timer_c;
 	timer_gl.Start();
@@ -96,7 +100,7 @@ void CBuild::xrPhase_UVmap()
 	u64 ticks_buffer = 0;
 	u64 ticks_find = 0;
 	u64 ticks_find_affected = 0;
-
+	u64 ticks_clear_finded = 0;
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
 		Progress			(p_total+=p_cost);
@@ -161,7 +165,7 @@ void CBuild::xrPhase_UVmap()
 			{
  				if (remove_count == g_XSplit[SP]->size())
 				{
-					//clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
+					clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
 					xr_delete(g_XSplit[SP]);
 					g_XSplit.erase(g_XSplit.begin() + SP);
 					SP--;
@@ -182,19 +186,24 @@ void CBuild::xrPhase_UVmap()
 				CDeflector* D = xr_new<CDeflector>();
 				lc_global_data()->g_deflectors().push_back(D);
 			
-				
+ 				faces_affected.clear();
+ 
 				// Start recursion from this face
 				start_unwarp_recursion();
 				D->OA_SetNormal(msF->N);
-				msF->OA_Unwarp(D);
+				msF->OA_Unwarp(D, faces_affected);
+				remove_count += faces_affected.size();
+				
 				// break the cycle to startup again
 				D->OA_Export();
 				ticks_new += timer_c.GetElapsed_ticks();
 
-				timer_c.Start();
+		
 				// Detach affected faces
-				faces_affected.clear();
 
+
+				/*
+				timer_c.Start();
 				if (!use_fast_method)
 				{ 
 					for (int i = 0; i<int(g_XSplit[SP]->size()); i++)
@@ -210,22 +219,7 @@ void CBuild::xrPhase_UVmap()
 				}
 				else
 				{
-					//for (auto face : *g_XSplit[SP])
-					
-					/*
-					for (auto iter = g_XSplit[SP]->begin(); iter != g_XSplit[SP]->end(); iter++)
-					{
-						auto face = *iter;
-						if (face->pDeflector == D)
-						{
- 							faces_affected.push_back(face);
-							remove_count += 1;
-						}
-					}
-					*/
-
-					/*
-					auto it = std::find_if(g_XSplit[SP]->begin(), g_XSplit[SP]->end(), [&D](const auto& face) {
+ 					auto it = std::find_if(std::execution::par, g_XSplit[SP]->begin(), g_XSplit[SP]->end(), [&D](const auto& face) {
 						return face->pDeflector == D;
 					});
 
@@ -233,33 +227,17 @@ void CBuild::xrPhase_UVmap()
 					{
 						faces_affected.push_back(*it);
 						remove_count += 1;
-						it = std::find_if(std::next(it), g_XSplit[SP]->end(), [&D](const auto& face)
+						it = std::find_if(std::execution::par, std::next(it), g_XSplit[SP]->end(), [&D](const auto& face)
 						{
 							return face->pDeflector == D;
 						});
 					}
-					*/
-
-					integer_mt = 0;
-
-					std::thread* th[16];
-					
-					for (int i = 0; i < 8; i ++)
-					{
-						int split = g_XSplit[SP]->size() / 8;
-						th[i] = new std::thread(MT_FindAttached, D, faces_affected, SP, split*i, (split*i) + split);
-					}
-
-					for (int i = 0; i < 8; i++)
-					{
-						th[i]->join();
-					}
-
-					remove_count += integer_mt;
 				}
-
 				ticks_find_affected += timer_c.GetElapsed_ticks();
-				  
+			
+			
+				*/
+
 				// detaching itself
 				
 				timer_c.Start();
@@ -267,21 +245,21 @@ void CBuild::xrPhase_UVmap()
  				g_XSplit.push_back	(xr_new<vecFace> (faces_affected));
 
 				ticks_buffer += timer_c.GetElapsed_ticks();
-				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d] T[%f]/ [%llu][%llu][%llu][%llu]", SP, id_face, g_XSplit[SP]->size() - remove_count, g_XSplit.size(), timer_gl.GetElapsed_sec(), ticks_new, ticks_find_affected, ticks_find, ticks_buffer );
+				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d] T[%f]", SP, id_face, g_XSplit[SP]->size() - remove_count, g_XSplit.size(), timer_gl.GetElapsed_sec());
 			}
 			else
 			{
-				/*
+				
 				if (g_XSplit[SP]->empty() && SP >= 1)
 				{
 					xr_delete(g_XSplit[SP]);
 					g_XSplit.erase(g_XSplit.begin() + SP);
 					SP--;
 				}
-				*/
+				
 
 				// Cancel infine loop (while)
-				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d] T[%f]/ [%llu][%llu][%llu][%llu]", SP, id_face, g_XSplit[SP]->size() - remove_count, g_XSplit.size(), timer_gl.GetElapsed_sec(), ticks_new, ticks_find_affected, ticks_find, ticks_buffer);
+				StatusNoMSG("SP[%d], face[%d]/[%d], all[%d] T[%f]", SP, id_face, g_XSplit[SP]->size() - remove_count, g_XSplit.size(), timer_gl.GetElapsed_sec());
 
 				//StatusNoMSG("SP[%d], face[%d]/[%d], all[%d]", SP, id_face, g_XSplit[SP]->size(), g_XSplit.size());
 				break;

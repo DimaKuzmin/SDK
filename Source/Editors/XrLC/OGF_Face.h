@@ -241,22 +241,45 @@ struct OGF_Reference : public OGF_Base
 struct OGF_Node : public OGF_Base
 {
 	xr_vector<u32>		chields;
+	//xr_vector<xr_vector<OGF_Base*>::iterator> chields;
 
 	OGF_Node(int _L, u16 _Sector) : OGF_Base(_L) { Sector=_Sector; }
 
 	void				AddChield	(u32 ID)
 	{
+		/*
+		xr_vector<OGF_Base*>::iterator	P = g_tree.begin() + ID;
+		chields.push_back	(P);
+		R_ASSERT			((*P)->Sector == Sector);
+		bbox.merge			( (*P)->bbox);
+		(*P)->bConnected		= TRUE;
+		*/
+
+		OGF_Base* P = g_tree[ID];
 		chields.push_back	(ID);
-		OGF_Base*			P = g_tree[ID];
 		R_ASSERT			(P->Sector == Sector);
 		bbox.merge			(P->bbox);
 		P->bConnected		= TRUE;
 	}
+	/*
+	void				AddChieldSTD	(xr_vector<OGF_Base*>::iterator ID)
+	{
+ 		OGF_Base*			P = *ID;
+		chields.push_back	(ID);
+		R_ASSERT			(P->Sector == Sector);
+		bbox.merge			(P->bbox);
+		P->bConnected		= TRUE;
+	}
+	*/
+  
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &R)
 	{
 		for (xr_vector<u32>::iterator I=chields.begin(); I!=chields.end(); I++)
-			g_tree[*I]->GetGeometry(R);
+		g_tree[*I]->GetGeometry(R);
+		
+		//for (auto base : chields)	
+		//	(*base)->GetGeometry(R);
 	}
 };
 

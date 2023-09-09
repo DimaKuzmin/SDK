@@ -32,15 +32,8 @@ public:
 
 	IC	BOOL	 similar			( Tvertex<DataVertex> &V, float eps );
 
-virtual	void		read	(INetReader	&r );
-virtual	void		write	(IWriter	&w )const;
-
-virtual void		write_Reader(IWriter& w);
-virtual void		read_Reader(IReader& r);
-
-virtual void		write_LTX(CInifile* file, LPCSTR sec);
-virtual void		read_LTX(CInifile* file, LPCSTR sec);
-
+	virtual	void		read	(INetReader	&r );
+	virtual	void		write	(IWriter	&w )const;
 
 	DataVertex				(){};
 	virtual		~DataVertex				(){};
@@ -71,12 +64,6 @@ public:
 
 	virtual	void		read	(INetReader	&r );
 	virtual	void		write	(IWriter	&w )const;
-
-	virtual void		write_Reader(IWriter &w);
-	virtual void		read_Reader(IReader  &r);
-
-	virtual void		write_LTX(CInifile* file, LPCSTR sec, LPCSTR pref);
-	virtual void		read_LTX(CInifile* file, LPCSTR sec, LPCSTR pref);
 
 	DataFace(){};
 	virtual ~DataFace(){};

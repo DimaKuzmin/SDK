@@ -13,7 +13,8 @@ public:
 	u16						dwMaterial;			// index of material
 	u16						dwMaterialGame;		// unique-id of game material (must persist up to game-CForm saving)
 
-	struct					{
+	struct					
+	{
 		u16					bSplitted			:		1;
 		u16					bProcessed			:		1;
 		u16					bOpaque				:		1;	// For ray-tracing speedup
@@ -30,11 +31,7 @@ public:
 	virtual	void			read	(INetReader	&r );
 	virtual	void			write	(IWriter	&w )const;
 
-	virtual void			read_Reader(IReader& w);
-	virtual void			write_Reader(IWriter& w);
-
-	virtual void			read_LTX(CInifile* file, LPCSTR sec);
-	virtual void			write_LTX(CInifile* file, LPCSTR sec);
+ 
 };		
 
 
@@ -52,10 +49,4 @@ public:
 
 	virtual	void			read	(INetReader	&r );
 	virtual	void			write	(IWriter	&w )const;
-
-	virtual void			read_Reader(IReader &w);
-	virtual void			write_Reader(IWriter &w);
-
-	virtual void			read_LTX(CInifile* file, LPCSTR sec);
-	virtual void			write_LTX(CInifile* file, LPCSTR sec);
 };

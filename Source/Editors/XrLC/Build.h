@@ -70,6 +70,11 @@ public:
 	void	mem_CompactSubdivs		();
 public:
 	void	Load					(const b_params& P, const IReader&  fs);
+
+	void	TestMergeGeom(IWriter* writer);
+	void	ExportDeflectors();
+
+
 	void	Run						(LPCSTR path);
 	void	StartMu					();
 	void	RunAfterLight			( IWriter* fs	);

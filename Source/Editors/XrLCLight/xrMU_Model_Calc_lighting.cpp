@@ -69,9 +69,9 @@ int MU_SAMPL()
 
  
 extern bool use_intel;
-void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
-void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
-void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
+void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
+void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
+void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
  
 
 
@@ -113,8 +113,7 @@ CTimer mu_models;
 
 //-----------------------------------------------------------------------
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags)
-{
- 
+{ 
 	// trans-map
 	typedef	xr_multimap<float,v_vertices>	mapVert;
 	typedef	mapVert::iterator				mapVertIt;
@@ -145,6 +144,9 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
 	*/
 
+	bool check = strstr(Core.Params, "-HemiOFF");
+
+
 	// Perform lighting
 	for (I = 0; I<m_vertices.size(); I++)
 	{
@@ -171,30 +173,32 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 
 		// multi-sample		 
 		const int n_samples		= (g_params().m_quality==ebqDraft)? 1 : MU_SAMPLES;
- 
-		for (u32 sample=0; sample<(u32)n_samples; sample++)
+
+		for (u32 sample = 0; sample < (u32)n_samples; sample++)
 		{
-			float				a	= 0.2f * float(sample) / float(n_samples);
-			Fvector				P,N;
-			N.random_dir		(vN,deg2rad(30.f));
-			P.mad				(vP,N,a);
+			float				a = 0.2f * float(sample) / float(n_samples);
+			Fvector				P, N;
+			N.random_dir(vN, deg2rad(30.f));
+			P.mad(vP, N, a);
 			mu_models.Start();
+
 			if (use_intel)
 			{
 				if (0 == (flags & LP_dont_sun))
- 				RaysToSUNLight_Deflector(0, vP, vN, vC, lights, 0);
+					RaysToSUNLight_Deflector(0, vP, vN, vC, lights, 0);
 				if (0 == (flags & LP_dont_hemi))
-				RaysToHemiLight_Deflector(0, vP, vN, vC, lights, 0);
+					RaysToHemiLight_Deflector(0, vP, vN, vC, lights, 0);
 				if (0 == (flags & LP_dont_rgb))
-				RaysToRGBLight_Deflector(0, vP, vN, vC, lights, 0);
+					RaysToRGBLight_Deflector(0, vP, vN, vC, lights, 0);
 			}
-			else 
-				LightPoint			(&DB, MDL, vC, P, N, lights, flags, 0, 1024);
+			else
+				LightPoint(&DB, MDL, vC, P, N, lights, flags, 0, 1024);
 
 			models_ticks += mu_models.GetElapsed_ticks();
 		}
-
-		vC.scale				(n_samples);
+		
+		
+		vC.scale(n_samples);
 		vC._tmp_				=	v_trans;
 		if (flags&LP_dont_hemi) ;
 		else				

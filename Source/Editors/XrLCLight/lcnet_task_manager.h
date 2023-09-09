@@ -7,7 +7,7 @@ namespace	lc_net
 {
 	
 	#include "hxgrid/Interface/IAgent.h"
-//interface IGenericStream;
+	//interface IGenericStream;
 
 
 

@@ -46,6 +46,47 @@ void		ImplicitExecute::write			( IWriter	&w ) const
 
 #include <algorithm>
 
+void FinalizeImplicit(ImplicitDeflector& defl, xr_vector<base_color_c>& FinalColors )
+{
+	//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
+	u32 SurfaceRequestCursor = 0;
+	u32 AlmostMaxSurfaceLightRequest = defl.lmap.SurfaceLightRequests.size() - 1;
+	for (u32 V = 0; V < defl.lmap.height; V++)
+	{
+		for (u32 U = 0; U < defl.lmap.width; U++)
+		{
+			LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
+
+			if (LRequest.X == U && LRequest.Y == V)
+			{
+				//accumulate all color and draw to the lmap
+				base_color_c ReallyFinalColor;
+				int ColorCount = 0;
+				for (;;)
+				{
+					LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
+ 
+					if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
+					{
+						ReallyFinalColor.scale(ColorCount);
+						ReallyFinalColor.mul(0.5f);
+						defl.Lumel(U, V)._set(ReallyFinalColor);
+						break;
+					}
+
+					base_color_c& CurrentColor = FinalColors[SurfaceRequestCursor];
+					ReallyFinalColor.add(CurrentColor);
+
+					++SurfaceRequestCursor;
+					++ColorCount;
+				}
+			}
+		}
+	}
+
+	defl.lmap.SurfaceLightRequests.clear();
+}
+
 void CalculateGPU(ImplicitDeflector& defl)
 {
 	Msg("CalculateGPU");
@@ -69,47 +110,11 @@ void CalculateGPU(ImplicitDeflector& defl)
  		}
 		 
 		xr_vector<base_color_c> FinalColors;
-		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors, true);
+		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), FinalColors, true);
+
+
 		//finalize rays
-
-		//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
-		u32 SurfaceRequestCursor = 0;
-		u32 AlmostMaxSurfaceLightRequest = defl.lmap.SurfaceLightRequests.size() - 1;
-		for (u32 V = 0; V < defl.lmap.height; V++)
-		{
-			for (u32 U = 0; U < defl.lmap.width; U++)
-			{
-				LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
-
-				if (LRequest.X == U && LRequest.Y == V)
-				{
-					//accumulate all color and draw to the lmap
-					base_color_c ReallyFinalColor;
-					int ColorCount = 0;
-					for (;;)
-					{
-						LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
-						//Msg("X:%d, Y: %d == U: %d, V: %d ", LRequest.X, LRequest.Y, U, V);
-
-						if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
-						{
-							ReallyFinalColor.scale(ColorCount);
-							ReallyFinalColor.mul(0.5f);
-							defl.Lumel(U, V)._set(ReallyFinalColor);
-							break;
-						}
-
-						base_color_c& CurrentColor = FinalColors[SurfaceRequestCursor];
-						ReallyFinalColor.add(CurrentColor);
-
-						++SurfaceRequestCursor;
-						++ColorCount;
-					}
-				}
-			}
-		}
-
-		defl.lmap.SurfaceLightRequests.clear();
+		FinalizeImplicit(defl, FinalColors);
 	}
 }
 
@@ -176,6 +181,161 @@ void RunCudaThread()
 
 	CalculateGPU(defl);
 }
+
+
+#include <thread>
+
+xrCriticalSection csLock;
+void CalculateCPU_MT(int th, xr_vector <RayRequest>& rays, xr_vector<base_color_c>& FinalColors)
+{
+	 for (;;)
+	 {
+		 csLock.Enter();
+		 RayRequest ray = rays.back();
+		 rays.pop_back();
+		 if (rays.empty())
+		 {
+			 csLock.Leave();
+			 break;
+		 }
+		 csLock.Leave();
+
+		 base_color_c C;
+		 RaysToHemiLight_Deflector(th, (Fvector&)ray.Position, (Fvector&) ray.Normal, C, inlc_global_data()->L_static(), (Face*) ray.FaceToSkip);
+		 RaysToSUNLight_Deflector(th, (Fvector&)ray.Position, (Fvector&) ray.Normal, C, inlc_global_data()->L_static(), (Face*) ray.FaceToSkip);
+		 RaysToRGBLight_Deflector(th, (Fvector&)ray.Position, (Fvector&) ray.Normal, C, inlc_global_data()->L_static(), (Face*) ray.FaceToSkip);
+		
+		 csLock.Enter();
+		 FinalColors.push_back(C);
+		 csLock.Leave();
+	 }
+}
+
+void CalculateGPU_CPU(ImplicitDeflector& defl)
+{
+	Phase("xrLightImplicit Calculation GPU_CPU");
+
+	//cast and finalize
+	if (defl.lmap.SurfaceLightRequests.empty())
+	{
+		return;
+	}
+	xrHardwareLight& HardwareCalculator = xrHardwareLight::Get();
+
+	//pack that shit in to task, but remember order
+	xr_vector <RayRequest> RayRequests;
+	xr_vector <RayRequest> RayRequestsCPU;
+
+	u32 SurfaceCount = defl.lmap.SurfaceLightRequests.size();
+
+	u32 CpuWork = SurfaceCount / 2;
+
+	RayRequests.reserve(CpuWork);
+	RayRequestsCPU.reserve(CpuWork);
+	
+	for (int SurfaceID = 0; SurfaceID < CpuWork; ++SurfaceID)
+	{
+		LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceID];
+		RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
+ 	}
+
+	for (int SurfaceID = CpuWork; SurfaceID < SurfaceCount; ++SurfaceID)
+	{
+		LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceID];
+		RayRequestsCPU.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
+ 	}
+		 
+		   
+	xr_vector<base_color_c> FinalColors;
+	xr_vector<base_color_c> FinalColorsCPU;
+	std::thread* th[8];
+
+	for (auto i = 0; i < 7; i++)
+		th[i] = new std::thread(CalculateCPU_MT, i, RayRequestsCPU, FinalColorsCPU);
+	
+	th[7] = new std::thread([&]()
+	{
+		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), FinalColors, true);
+	});
+
+	for (auto i = 0; i < 8; i++)
+		th[i]->join();
+
+	FinalColors.insert(FinalColors.end(), FinalColorsCPU.begin(),FinalColorsCPU.end());
+	
+//	FinalColorsCPU.clear_and_free();
+//	RayRequestsCPU.clear_and_free();
+//	RayRequests.clear_and_free();
+
+	//finalize rays
+	FinalizeImplicit(defl, FinalColors);
+}
+
+void RunGPU_CPU()
+{
+	ImplicitDeflector& defl = cl_globs.DATA();
+	CDB::COLLIDER			DB;
+
+	// Setup variables
+	Fvector2	dim, half;
+	dim.set(float(defl.Width()), float(defl.Height()));
+	half.set(.5f / dim.x, .5f / dim.y);
+
+	// Jitter data
+	Fvector2	JS;
+	JS.set(.499f / dim.x, .499f / dim.y);
+	u32			Jcount;
+	Fvector2* Jitter;
+	Jitter_Select(Jitter, Jcount);
+
+	// Lighting itself
+	DB.ray_options(0);
+	for (u32 V = 0; V < defl.Height(); V++)
+	{
+		for (u32 U = 0; U < defl.Width(); U++)
+		{
+			base_color_c	C;
+			u32				Fcount = 0;
+
+			for (u32 J = 0; J < Jcount; J++)
+			{
+				// LUMEL space
+				Fvector2				P;
+				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+				xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+				// World space
+				Fvector wP, wN, B;
+				for (vecFaceIt it = space.begin(); it != space.end(); it++)
+				{
+					Face* F = *it;
+					_TCF& tc = F->tc[0];
+					if (tc.isInside(P, B))
+					{
+						// We found triangle and have barycentric coords
+						Vertex* V1 = F->v[0];
+						Vertex* V2 = F->v[1];
+						Vertex* V3 = F->v[2];
+						wP.from_bary(V1->P, V2->P, V3->P, B);
+						wN.from_bary(V1->N, V2->N, V3->N, B);
+						wN.normalize();
+							
+						defl.lmap.SurfaceLightRequests.emplace_back(U, V, wP, wN, F);
+						defl.Marker(U, V) = 255;					
+						Fcount++;
+					}
+				}
+			} 
+		}
+	}
+
+	Phase("LightImplicit Buffer GPUCPU Set");
+
+	CalculateGPU_CPU(defl);
+
+}
+
  
 void	ImplicitExecute::	receive_result			( INetReader	&r )
 {
@@ -209,14 +369,13 @@ void ImplicitExecute::clear()
 	curHeight = 0;
 }
 
+extern void PrintTimeRayTrace();
+
 void	ImplicitExecute::Execute(net_task_callback* net_callback)
 {
 	InitDB(&DB);
-	
-
 	net_cb = net_callback;
-	//R_ASSERT( y_start != (u32(-1)) );
-	//R_ASSERT( y_end != (u32(-1)) );
+ 
 	ImplicitDeflector& defl = cl_globs.DATA();
 
 	// Setup variables
@@ -238,8 +397,6 @@ void	ImplicitExecute::Execute(net_task_callback* net_callback)
 	CDB::COLLIDER			DB;
 	DB.ray_options(0);
 
-	//for (u32 V=y_start; V<y_end; V++)
-
 	for (;;)
 	{
 		int ID = 0;
@@ -255,23 +412,16 @@ void	ImplicitExecute::Execute(net_task_callback* net_callback)
 
 		ForCycle(&defl, ID, TH_ID);
 		if (ID % 128 == 0)
+		{	
 			Msg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
+			PrintTimeRayTrace();
+		}
 	}
 }
 
 extern u64 results;
 extern u64 results_tDB;
 
-float hemi;
-float sun;
-
-u32 cnt_good_hemi = 0;
-u32 cnt_good_sun = 0;
-u32 cnt_good_rgb = 0;
-
-u32 cnt_bad_hemi = 0;
-u32 cnt_bad_sun = 0;
-u32 cnt_bad_rgb = 0;
 
 bool SameFloat(float& a, float& b, float eps)
 {
@@ -294,18 +444,84 @@ bool SameVector(Fvector& a, Fvector& b, float eps)
 
 	return true;
 }
+   
+/*
+int size = 0;
+xrCriticalSection csLC;
 
-//#define DEBUG_COLOR
+void PrcoessTHEmbree(ImplicitDeflector* defl, int TH)
+{
+	for (;;)
+	{
+		csLC.Enter();
+		size++;
+		if (size > defl->lmap.SurfaceLightRequestsColor.size())
+		{
+			csLC.Leave();
+			break;
+		}
+		csLC.Leave();
+
+	   
+ 	   
+		if (size % 1024 == 0)
+			Msg("Data: %d/%d", size, defl->lmap.SurfaceLightRequestsColor.size());
+
+		for (int i = 0; i < defl->lmap.SurfaceLightRequestsColor[size].size();i++)
+		{
+			LightpointRequestC DataRay = defl->lmap.SurfaceLightRequestsColor[size][i];
+
+			if (!inlc_global_data()->b_nosun())
+				RaysToSUNLight_Deflector(TH, DataRay.Position, DataRay.Normal, DataRay.color, inlc_global_data()->L_static(), (Face*) DataRay.FaceToSkip);
+			if (!inlc_global_data()->b_nohemi())
+				RaysToHemiLight_Deflector(TH, DataRay.Position, DataRay.Normal, DataRay.color, inlc_global_data()->L_static(), (Face*) DataRay.FaceToSkip);
+			if (!inlc_global_data()->b_norgb())
+				RaysToRGBLight_Deflector(TH, DataRay.Position, DataRay.Normal, DataRay.color, inlc_global_data()->L_static(), (Face*) DataRay.FaceToSkip);
+		}
+	}
+}
+
+void ProcessBufferEmbree(ImplicitDeflector* defl)
+{
+	Status("ProcessBufferEmbree");
+	
+	/*
+	std::sort(defl->lmap.SurfaceLightRequests.begin(),defl->lmap.SurfaceLightRequests.end(), [] (xr_map<int, LightpointRequest> recvest, xr_map<int, LightpointRequest> recvest2)
+	{
+		if (recvest[1].Position.x < recvest2[1].Position.x - 0.1f || recvest[1].Position.x > recvest2[1].Position.x + 0.1f)
+			return false;
+		if (recvest[1].Position.y < recvest2[1].Position.y - 0.1f || recvest[1].Position.y > recvest2[1].Position.y + 0.1f)
+			return false;
+		if (recvest[1].Position.z < recvest2[1].Position.z - 0.1f || recvest[1].Position.z > recvest2[1].Position.z + 0.1f)
+			return false;
+		return true;
+	}); 
+	 
+  
+	std::thread* th[8];
+	for (int i = 0; i < 8; i++)
+		th[i] = new std::thread(PrcoessTHEmbree, defl, i);
+	
+	for (int i = 0; i < 8; i++)
+		th[i]->join();
+	//data.Y*defl->lmap.width+data.X
+   
+	Status("END ProcessBufferEmbree");
+	 
+
+}
+ */
+
 
 void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 {
 	for (u32 U = 0; U < defl->Width(); U++)
 	{
 		base_color_c	C;
-#ifdef DEBUG_COLOR
-		base_color_c	C_test;
-#endif 
+
 		u32				Fcount = 0;
+
+		//xr_map<int, LightpointRequestC> map;
 
 		try
 		{
@@ -333,7 +549,7 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 						wP.from_bary(V1->P, V2->P, V3->P, B);
 						wN.from_bary(V1->N, V2->N, V3->N, B);
 						wN.normalize();
-
+						 
 						if (use_intel)
 						{
 							if (!inlc_global_data()->b_nosun())
@@ -342,17 +558,6 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 								RaysToHemiLight_Deflector(TH, wP, wN, C, inlc_global_data()->L_static(), F);
 							if (!inlc_global_data()->b_norgb())
 								RaysToRGBLight_Deflector(TH, wP, wN, C, inlc_global_data()->L_static(), F);
-#ifdef DEBUG_COLOR						    
-							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C_test, wP, wN,
-								inlc_global_data()->L_static(),
-								(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
-								(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
-								(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
-								F, false);
-
-#endif
-						    
-							///Msg("RGB: %d, SUN: %d, HEMI: %d", lc_global_data()->b_norgb(), lc_global_data()->b_nosun(), lc_global_data()->b_nohemi());
 						}
 						else
 						{
@@ -363,54 +568,27 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 								(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
 								F, 1024);
 						}
-						 
+						
+						
+						  
 						Fcount++;
 					}
 				}
-			}
+			}			 
 		}
 		catch (...)
 		{
 			clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
 		}
    
+	 
+ 
+		 
 		if (Fcount)
 		{
-
-#ifdef DEBUG_COLOR
-			if (!SameFloat(C.hemi, C_test.hemi, 0.2f))
-			{
-				Msg_IN_FILE("U: %d, V: %d, Hemi: %f != %f", U, V, C.hemi, C_test.hemi);
-				cnt_bad_hemi++;
-			}
-			else
-				cnt_good_hemi++;
-
-			if (!SameFloat(C.sun, C_test.sun, 0.2f))
-			{
-				Msg_IN_FILE("U: %d, V: %d, sun: %f != %f", U, V, C.sun, C_test.sun);
-				cnt_bad_sun++;
-			}
-			else
-				cnt_good_sun++;
-
-			if (!SameVector(C.rgb, C_test.rgb, 0.01f))
-			{
-				Msg_IN_FILE("U: %d, V: %d, RGB: [%f,%f,%f] != [%f,%f,%f]", U, V, VPUSH(C.rgb), VPUSH(C_test.rgb));
-				cnt_bad_rgb++;
-			}
-			else
-				cnt_good_rgb++;
-#endif
-			 
-			//Msg("U: %d, V: %d, Hemi: %f, sun: %f, rgb: [%f][%f][%f]", U, V, C.hemi, C.sun, C.rgb.x, C.rgb.y, C.rgb.z);
 			// Calculate lighting amount
-	 
 			C.scale(Fcount);
 			C.mul(.5f);
-
-			hemi += C.hemi;
-			sun += C.sun;
 
 			defl->Lumel(U, V)._set(C);
 			defl->Marker(U, V) = 255;
@@ -419,21 +597,11 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 		{
 			defl->Marker(U, V) = 0;
 		}
-
+ 
 	}
-
-
-
-	if (V % (64) == 0)
-	{
-#ifdef DEBUG_COLOR
-		Msg("Total: HEMI: %f, SUN: %f", hemi, sun);
-		Msg("SAME OPCODE: hemi: %d, sun: %d, rgb: %d", cnt_good_hemi, cnt_good_sun, cnt_good_rgb);
-		Msg("DIFF OPCODE: hemi: %d, sun: %d, rgb: %d", cnt_bad_hemi, cnt_bad_sun, cnt_bad_rgb);
-#endif
-	}
-
 }
+
+
 
 void ImplicitLightingExec(BOOL b_net);
 void ImplicitLightingTreadNetExec( void *p );
@@ -483,8 +651,6 @@ void ImplicitLightingExec(BOOL b_net)
 		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
 		u32				Tid = M.surfidx;
 		b_BuildTexture*	T	= &(inlc_global_data()->textures()[Tid]);
-
-		
  
 		Implicit_it		it	= calculator.find(Tid);
 		if (it==calculator.end()) 
@@ -502,7 +668,6 @@ void ImplicitLightingExec(BOOL b_net)
 		}
 	}
 
-	
 	// Lighing
 	for (Implicit_it imp=calculator.begin(); imp!=calculator.end(); imp++)
 	{
@@ -518,12 +683,14 @@ void ImplicitLightingExec(BOOL b_net)
 			lc_net::RunImplicitnet( defl, not_clear );
 		else
 			RunImplicitMultithread(defl);
-	
+						  
 		defl.faces.clear_and_free();
 
 		// Expand
 		Status	("Processing lightmap...");
-		for (u32 ref=254; ref>0; ref--)	if (!ApplyBorders(defl.lmap,ref)) break;
+		for (u32 ref=254; ref>0; ref--)
+		if (!ApplyBorders(defl.lmap,ref)) 
+		break;
 
 		Status	("Mixing lighting with texture...");
 		{

@@ -15,13 +15,11 @@
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
-xr_map<CDeflector*, xr_vector<LightpointRequest>> deflectors_edges;
-xr_map<CDeflector*, xr_vector<LightpointRequest>> deflectors_recvests;
- 
 extern bool use_intel = false;
 
 
-void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+
+void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, bool use_cpu)
 {
 	Fvector		vdir;
 	vdir.sub	(v2,v1);
@@ -34,7 +32,8 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 	int	du			= iCeil(_abs(size.x)/texel_size);
 	int	dv			= iCeil(_abs(size.y)/texel_size);
 	int steps		= _max(du,dv);
-	if (steps<=0)	return;
+	if (steps<=0)
+		return;
 	
 	for (int I=0; I<=steps; I++)
 	{
@@ -71,36 +70,33 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 			}
 			else
 				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT, skip, 1024); //.
+			
 			C.mul(.5f);
 			lm.surface[_y * lm.width + _x]._set(C);
 			lm.marker[_y * lm.width + _x] = 255;
 		}
 		else
 		{
-			deflectors_edges[this].push_back(LightpointRequest(_x, _y, P, N, skip));
-			lm.marker[_y * lm.width + _x] = 255;
+ 			if (use_cpu)
+			{
+				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, skip, 1024);
+			}
+			else
+			{
+				lm.SurfaceLightRequests.push_back(LightpointRequest(_x, _y, P, N, skip));
+				lm.marker[_y * lm.width + _x] = 255;
+			}
+ 
 		}
-
 	}
 }
-
-bool sort_rays(RayOptimizedTyped a, RayOptimizedTyped b)
-{
-	bool cmp1 = a.dir.x < b.dir.x&& a.dir.y < b.dir.y&& a.dir.z < b.dir.z;;
-	//bool cmp2 = a.pos.x < b.pos.x&& a.pos.y < b.pos.y&& a.pos.z < b.pos.z;
-
-	return cmp1 ; //&& cmp2
-}
-
-
-
-
+  
 
 int id = 0;
 
 #include <tbb/parallel_for_each.h>
 	 
-void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
 {
 	id++;
 	R_ASSERT	(DB);
@@ -177,17 +173,16 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 									VERIFY(inlc_global_data()->RCAST_Model());
 									if (use_intel)
 									{
-										// LP_UseFaceDisable НЕ ИСПОЛЬЗУЕТСЯ НИГДЕ !!!
-										u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0);
+ 										u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0);
 
 										if (0 == (flags & LP_dont_sun))
-											RaysToSUNLight_Deflector(th, wP, wN, C, *LightsSelected, F);
+											RaysToSUNLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
 										if (0 == (flags & LP_dont_hemi))
-											RaysToHemiLight_Deflector(th, wP, wN, C, *LightsSelected, F);
+											RaysToHemiLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
 										if (0 == (flags & LP_dont_rgb))
-											RaysToRGBLight_Deflector(th, wP, wN, C, *LightsSelected, F);
- 									}
-									else 
+											RaysToRGBLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
+									}
+									else
 										LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F, 1024); //.
 									
 									Fcount += 1;
@@ -199,13 +194,10 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 							}
 							else
 							{
-								//LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F); //.
 								Fcount += 1;
-								//lm.SurfaceLightRequests.push_back(LightpointRequest(U,V, wP, wN, F));
-								deflectors_recvests[this].push_back(LightpointRequest(U, V, wP, wN, F));
+								lm.SurfaceLightRequests.push_back(LightpointRequest(U, V, wP, wN, F));
 								lm.marker[V * lm.width + U] = 255;
 							}
-							
 
 							break;
 						}
@@ -217,7 +209,7 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 				clMsg("* ERROR (Light). Recovered. ");
 			}
 
-			if (!xrHardwareLight::IsEnabled() && !use_intel)
+			if (!xrHardwareLight::IsEnabled())
 			{
 				if (Fcount)
 				{
@@ -228,7 +220,7 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 				}
 				else
 				{
-					lm.surface[V * lm.width + U]._set(C);	// 0-0-0-0-0
+					lm.surface[V * lm.width + U]._set(C);	 
 					lm.marker[V * lm.width + U] = 0;
 				}
 			}
@@ -253,174 +245,15 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 			clMsg("* ERROR (Edge). Recovered. ");
 		}
 	}
+
+#ifdef OLD_METHOD_GPU_COMPUTE
+	GPU_CalculationOLD();
+#endif
+
  
 }	  
 
-
-
-
-
-
-
-
-
-
-
-
-
-#include "cl_intersect.h"
-#include "R_light.h"
-
-void RaysToHemiLights(HardwareVector& P, HardwareVector& N, base_lighting& lights, xr_vector<Ray>& rays)
-{
-	Fvector		Ldir, Pnew;
-	Pnew.mad(P, N, 0.01f);
-	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
-
-	for (; L != E; L++)
-	{
-		if (L->type == LT_DIRECT)
-		{
-			// Cos
-			Ldir.invert(L->direction);
-			float D = Ldir.dotproduct(N);
-			if (D <= 0) continue;
-
-			// Trace Light
-			Fvector		PMoved;
-			PMoved.mad(Pnew, Ldir, 0.001f);
-
-			Ray r;
-			r.Origin = PMoved;
-			r.Direction = Ldir;
-			r.tmax = 1000.f;
-			r.tmin = 0.f;
-
-			rays.push_back(r);
-		}
-		else
-		{
-			HardwareVector pos = L->position;
-
-			// Distance
-			float sqD = P.DistanceSquared(pos);
-			if (sqD > L->range2) continue;
-
-			// Dir
-			Ldir.sub(L->position, P);
-			Ldir.normalize_safe();
-			float D = Ldir.dotproduct(N);
-			if (D <= 0) continue;
-
-			// Trace Light
- 			Ray r;
-			r.Origin = Pnew;
-			r.Direction = Ldir;
-			r.tmax = 1000.f;
-			r.tmin = 0.f;
-			rays.push_back(r);
-
-		}
-
-	}
-}
-
-
-
-#include "optix/optix_prime.h"
-#include "optix/optix_primepp.h"
-#include "cuda_runtime.h"
-
-//level buffers
-optix::prime::Context PrimeContext_NEW;
-optix::prime::Model LevelModel_OPTIX;
-
-#define CHK_CUDA( code )                                                       \
-{                                                                              \
-  cudaError_t err__ = code;                                                    \
-  if( err__ != cudaSuccess )                                                   \
-  {                                                                            \
-    Msg("Error at (%s), line: (%d), code: (%d)",  __FILE__ ,  __LINE__ , code);              \
-    exit(1);                                                                   \
-  }                                                                            \
-}
-
-void InitWorldModelOptix(CDB::MODEL* RaycastModel)
-{
-	PrimeContext_NEW = optix::prime::Context::create(RTP_CONTEXT_TYPE_CUDA);
-
-	DeviceBuffer<HardwareVector> CDBVertexesBuffer;
-	DeviceBuffer<PolyIndexes> CDBTrisIndexBuffer;
-
-	DeviceBuffer<TrisAdditionInfo> CDBTrisAdditionBuffer;
-
-	xr_vector<PolyIndexes> OptimizedMeshTris;
-	OptimizedMeshTris.reserve(RaycastModel->get_tris_count());
-
-	xr_vector<TrisAdditionInfo> OptimizedTrisAdditionInfo;
-	OptimizedTrisAdditionInfo.reserve(RaycastModel->get_tris_count());
-
-	// ����� ���� ������������� ������
-	for (int i = 0; i < RaycastModel->get_tris_count(); i++)
-	{
-		CDB::TRI Tris = RaycastModel->get_tris()[i];
-		PolyIndexes indx{ (u32)Tris.verts[0], (u32)Tris.verts[1], (u32)Tris.verts[2] };
-
-		OptimizedMeshTris.push_back(indx);
-
-		TrisAdditionInfo AdditionInfo;
-
-		base_Face& FaceRef = *(base_Face*)Tris.pointer;
-
-		const Shader_xrLC& TrisShader = FaceRef.Shader();
-
-		AdditionInfo.CastShadow = !!TrisShader.flags.bLIGHT_CastShadow;
-
-		Fvector2* pCDBTexCoord = FaceRef.getTC0();
-		AdditionInfo.TexCoords = *pCDBTexCoord;
-
-		b_material& TrisMaterial = inlc_global_data()->materials()[FaceRef.dwMaterial];
-		AdditionInfo.TextureID = TrisMaterial.surfidx;
-
-		//#WARNING: :(
-		AdditionInfo.FaceID = (u64)&FaceRef;
-		OptimizedTrisAdditionInfo.push_back(AdditionInfo);
-	}
-
-	CDBTrisIndexBuffer.alloc(OptimizedMeshTris.size(), DeviceBufferType::CUDA, 1);
-	CDBTrisIndexBuffer.copyToBuffer(OptimizedMeshTris.data(), OptimizedMeshTris.size());
-
-	CDBTrisAdditionBuffer.alloc(OptimizedTrisAdditionInfo.size(), DeviceBufferType::CUDA, 1);
-	CDBTrisAdditionBuffer.copyToBuffer(OptimizedTrisAdditionInfo.data(), OptimizedTrisAdditionInfo.size());
-
-	CDBVertexesBuffer.alloc(RaycastModel->get_verts_count(), DeviceBufferType::CUDA, 1);
-	CDBVertexesBuffer.copyToBuffer(reinterpret_cast<HardwareVector*>(RaycastModel->get_verts()), RaycastModel->get_verts_count());
-
-	Msg("SizeTRI: %d, Aditinal: %d, SizeVert: %d", CDBTrisIndexBuffer.count(), CDBTrisAdditionBuffer.count(), CDBVertexesBuffer.count());
-
-	// ������� ������ � OptiX Prime
-
-	optix::prime::BufferDesc LevelIndixes_CDB;
-	optix::prime::BufferDesc LevelVertexes_CDB;
-
-	LevelIndixes_CDB = PrimeContext_NEW->createBufferDesc(RTP_BUFFER_FORMAT_INDICES_INT3, RTP_BUFFER_TYPE_CUDA_LINEAR, CDBTrisIndexBuffer.ptr());
-	LevelIndixes_CDB->setRange(0, CDBTrisIndexBuffer.count());
-
-	LevelVertexes_CDB = PrimeContext_NEW->createBufferDesc(RTP_BUFFER_FORMAT_VERTEX_FLOAT3, RTP_BUFFER_TYPE_CUDA_LINEAR, CDBVertexesBuffer.ptr());
-	LevelVertexes_CDB->setRange(0, CDBVertexesBuffer.count());
-
-
-	LevelModel_OPTIX = PrimeContext_NEW->createModel();
-	// LevelModel_OPTIX ������� � ������� ������
-	LevelModel_OPTIX->setTriangles(LevelIndixes_CDB, LevelVertexes_CDB);
-	// ��������� ������
-	LevelModel_OPTIX->update(0);
-
-
-
-}
-
-
+ /*
 void ExecuteOptix(xr_vector<Ray>& rays, xr_vector<Hit>& hits)
 {
 	if (rays.size() == 0)
@@ -457,80 +290,157 @@ void ExecuteOptix(xr_vector<Ray>& rays, xr_vector<Hit>& hits)
 
 	Msg("GetElapsed: %d", t.GetElapsed_ms());
 
-	/*
-	// ������������ ���������� �������
-	if (result.isValid())
-	{
-		float distance = result.distance;
-		int hitPrimitiveIndex = result.hitIndex;
-		int hitInstaceIndex = result.instanceIndex;
-		float2 barycentrics = result.barycentrics;
-		float3 hitPoint = result.worldPosition;
-		float3 hitNormal = result.worldNormal;
-		// ...
-	}
-	else 
-	{
- 	}
-	*/
-
 }
+*/
+
+
+
+// GPU By xrHardware RayTrace
+
+void CDeflector::GPU_CalculationOLD()
+{
+	//cast and finalize
+	if (layer.SurfaceLightRequests.size() == 0)
+	{
+		return;
+	}
+	xrHardwareLight& HardwareCalculator = xrHardwareLight::Get();
+
+	//pack that shit in to task, but remember order
+	xr_vector <RayRequest> RayRequests;
+	size_t SurfaceCount = layer.SurfaceLightRequests.size();
+	RayRequests.reserve(SurfaceCount);
+	for (size_t SurfaceID = 0; SurfaceID < SurfaceCount; ++SurfaceID)
+	{
+		LightpointRequest& LRequest = layer.SurfaceLightRequests[SurfaceID];
+		RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
+	}
+
+	xr_vector<base_color_c> FinalColors;
+	HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors);
+
+	//finalize rays
+
+	//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
+	//#TODO: Invoke several threads!
+	u32 SurfaceRequestCursor = 0;
+	u32 AlmostMaxSurfaceLightRequest = (u32)layer.SurfaceLightRequests.size() - 1;
+	for (u32 V = 0; V < layer.height; V++)
+	{
+		for (u32 U = 0; U < layer.width; U++)
+		{
+			LightpointRequest& LRequest = layer.SurfaceLightRequests[SurfaceRequestCursor];
+
+			if (LRequest.X == U && LRequest.Y == V)
+			{
+				//accumulate all color and draw to the lmap
+				base_color_c ReallyFinalColor;
+				int ColorCount = 0;
+				for (;;)
+				{
+					LRequest = layer.SurfaceLightRequests[SurfaceRequestCursor];
+
+					if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
+					{
+						ReallyFinalColor.scale(ColorCount);
+						ReallyFinalColor.mul(0.5f);
+						layer.surface[V * layer.width + U]._set(ReallyFinalColor);
+						break;
+					}
+
+					base_color_c& CurrentColor = FinalColors[SurfaceRequestCursor];
+					ReallyFinalColor.add(CurrentColor);
+
+					++SurfaceRequestCursor;
+					++ColorCount;
+				}
+			}
+		}
+	}
+
+	layer.SurfaceLightRequests.clear();
+};
+
 
 void GPU_Calculation()
 {
+	if (lc_global_data()->g_deflectors().size() == 0)
+		return;
+
+
+	//cast and finalize
 	xrHardwareLight& HardwareCalculator = xrHardwareLight::Get();
 
-	xr_vector<base_color_c> FinalColors;
-	xr_vector<RayRequest> RayRequests;
+	xr_vector <RayRequestLMAPS> RayRequests;
 
-	 
-	for (auto defl : deflectors_recvests)
-	for (auto ray : defl.second)
-		RayRequests.push_back(RayRequest{ ray.Position, ray.Normal, ray.FaceToSkip});
-	 
-
-	Msg("DSize: %d, RaySize: %d", deflectors_recvests.size(), RayRequests.size());
- 
-	xr_vector<Ray> rays;
-	InitWorldModelOptix(lc_global_data()->RCAST_Model());
-
-	int hits_total = 0;
-
-	int i = 0;	  
-	u64 total_Rays = 0;
-
-	CTimer buffer; buffer.Start();
-
-	for (auto ray : RayRequests)
+ 	for (auto D_ID =0; D_ID < lc_global_data()->g_deflectors().size(); D_ID++ )
 	{
-		RaysToHemiLights(ray.Position, ray.Normal, inlc_global_data()->L_static(), rays);
-		/*
-		if (i % 800000 == 0)
-		{
-			Msg("ID: %d/%d, size: %d", i, RayRequests.size(), rays.size());
-			log_vminfo();
-			xr_vector<Hit> hits;
-			hits.reserve(rays.size());
-			ExecuteOptix(rays, hits);
-			rays.clear();	  
-			hits_total += hits.size();
-		}
-		*/
-		 
-		if (i % 800000 == 0)
-		{
-			Msg("ID: %d, MS: %d, size: %d, total_calculated: %llu", i, buffer.GetElapsed_ms(), RayRequests.size(), total_Rays);
-			total_Rays += rays.size();
-			rays.clear();
-		}
+		auto defl = lc_global_data()->g_deflectors()[D_ID];
 
-		i++;
+		//pack that shit in to task, but remember order
+		size_t SurfaceCount = defl->layer.SurfaceLightRequests.size();
+		RayRequests.reserve(SurfaceCount);
+		for (size_t SurfaceID = 0; SurfaceID < SurfaceCount; ++SurfaceID)
+		{
+			LightpointRequest& LRequest = defl->layer.SurfaceLightRequests[SurfaceID];
+		
+			RayRequestLMAPS rq;
+			rq.Position = LRequest.Position;
+			rq.Normal = LRequest.Normal;
+			rq.Deflector = D_ID;
+			rq.U = LRequest.X;
+			rq.V = LRequest.Y;
+			rq.FaceToSkip = LRequest.FaceToSkip;
+			RayRequests.push_back(rq);
+		}
 	}
 
-	Msg("!!! ID: %d, MS: %d, total: %llu", i, buffer.GetElapsed_ms(), total_Rays);
 
-	rays.clear();
+	xr_vector<ResultReqvest> FinalColors;
+	HardwareCalculator.PerformRaycastLMAPS(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | LP_UseFaceDisable, FinalColors);
+
+	//finalize rays
+
+	//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
+	//#TODO: Invoke several threads!	  
+
+
+	struct UV_Color
+	{
+		base_color_c C;
+		int count = 0;
+	};
 	
+
+	xr_map<int, UV_Color> map_uvs;
+ 
+	void* ptr = 0;
+
+	int DeflectorID = 0;
+	for (auto result : FinalColors)
+	{
+		CDeflector* d = lc_global_data()->g_deflectors()[result.Deflector];
+
+		if (d)
+		{
+			base_color_c C = result.C;
+			C.scale(1);
+			C.mul(0.5f);
+			d->layer.surface[result.V * d->layer.width + result.U]._set(C);
+
+			Msg_IN_FILE("DEFL[%d] Set V: %d, U: %d, ColorHemi: %f", result.Deflector, result.V, result.U, result.C.hemi);
+		}
+
+		DeflectorID++;
+
+		//if (DeflectorID % 256000 == 0)
+		//	Msg("Process: %d/%d", DeflectorID / FinalColors.size());
+	}
+
+	for (auto item : lc_global_data()->g_deflectors())
+	{
+		item->layer.SurfaceLightRequests.clear();
+	}
 }
 
-   
+ 

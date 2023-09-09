@@ -177,15 +177,9 @@ virtual	void Execute()
 		
 			 
 			if (use_intel)
-			{
 				RaysToHemiLight_Deflector(0, V->P, V->N, vC, pBuild->L_static(), 0);
-			}
 			else 
 				LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0, 1024);
-			 
-
-			//vC.hemi = 0.75;
-			
 
 			vC.mul(0.5f);
 			V->C._set(vC);
@@ -242,53 +236,67 @@ void CBuild::xrPhase_AdaptiveHT	()
 		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
 	}
 
+	log_vminfo();
+
 	// Tesselate + calculate
 	Status			("Precalculating...");
 	{
 		mem_Compact					();
 
+
+		Status("Load RcastModel");
 		// Build model
 		FPU::m64r					();
 		BuildRapid					(FALSE);
+
+		log_vminfo();
 
 		// Prepare
 		FPU::m64r					();
 		Status						("Precalculating : base hemisphere ...");
 		mem_Compact					();
 		Light_prepare				();
+
+
 		
 		if (strstr(Core.Params, "-use_intel"))
 		{
+			Status("Load Intel");
 			use_intel = true;
 			IntelEmbereLOAD();
 		}
 
-		if (!xrHardwareLight::IsEnabled())
+		log_vminfo();
+
+		xrHardwareLight& hw_light = xrHardwareLight::Get();
+
+		if (char* str = strstr(Core.Params, "-hw_light"))
 		{
-			// calc approximate normals for vertices + base lighting
-			for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
-				ThreadPrecalcHemi.push_back(i);
-
-			for (int i = 0; i < THREADS_COUNT(); i++)
-				precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
-
-			precalc_base_hemi.wait();
-		}	
+			hw_light.SetEnabled(true);
+  			int value = 1;
+			if (sscanf(str+9, "%d", &value) == 1)
+				hw_light.setMaxMem(value);
+ 	 
+			Status("Setup OptiX scene ... MaxMem: %d", value);
+			hw_light.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
+			log_vminfo();
+		}
 		else
 		{
-			Status("Setup OptiX scene ...");
-
-			xrHardwareLight& LightCalculator = xrHardwareLight::Get();
-			LightCalculator.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
-
-			Status("Calculate ...");
-
-			LightCalculator.PerformAdaptiveHT();
+			hw_light.SetEnabled(false);
 		}
-	 
+ 
+		// calc approximate normals for vertices + base lighting
+		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
+			ThreadPrecalcHemi.push_back(i);
 
-		 
-		//precalc_base_hemi
+		for (int i = 0; i < THREADS_COUNT(); i++)
+			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
+
+		
+		//hw_light.PerformAdaptiveHT();
+
+		precalc_base_hemi.wait();
 	}
 
 	//////////////////////////////////////////////////////////////////////////

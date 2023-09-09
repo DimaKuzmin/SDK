@@ -156,7 +156,7 @@ void CBuild::xrPhase_MergeLM()
 	u32 size_layer = 0;
 	u32 LayerID = 0;
 
-	bool fastWay = strstr(Core.Params, "-fast_lightmaps");
+	bool fastWay = true; //strstr(Core.Params, "-fast_lightmaps");
 
 	CTimer timer; timer.Start();
 	// Merge this layer (which left unmerged)
@@ -177,9 +177,7 @@ void CBuild::xrPhase_MergeLM()
 			lm_layer& L = Layer[it]->layer;
 			area += L.Area();
 		}
-
-
-
+ 
 		int use_size = 8192;
 
 		if (area < lm_1024)
@@ -372,9 +370,6 @@ void CBuild::xrPhase_MergeLM()
 			Progress(float(it) / float(merge_count));
 		}
 		 */
-
-		
-
  
 		clMsg("MERGED: %d, TOT: %d", MERGED, Layer.size());
 		int recvest = Layer.size() - MERGED;

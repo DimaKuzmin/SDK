@@ -178,8 +178,8 @@ void Startup(LPSTR     lpCmdLine)
 
 
 
-
-
+#include <ctime>
+ 
 int APIENTRY WinMain(HINSTANCE hInst,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -197,11 +197,28 @@ int APIENTRY WinMain(HINSTANCE hInst,
 
 	Startup				(lpCmdLine);
 	Core._destroy		();
+
+	// Get the current time
+	std::time_t currentTime = std::time(nullptr);
+
+	// Convert the time to a string representation
+	char* timeString = std::ctime(&currentTime);
+
+
+	string_path pp;
+	string128 tmp;
+	sprintf(tmp, "xrLC_compile_log_%s.log", timeString);
+
+
+	FS.update_path(pp, "$app_root$", tmp);
 	
+	IWriter * log_file_time = FS.w_open(pp);
 	for (auto phase : *phases_timers_Get())
 	{
-		Msg("%s", phase.c_str());
-	}
-
+		log_file_time->w_stringZ(phase.c_str());
+ 	}
+	
+	FS.w_close(log_file_time);
+	 
 	return 0;
 }

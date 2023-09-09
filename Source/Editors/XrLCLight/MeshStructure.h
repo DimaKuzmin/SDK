@@ -1,19 +1,8 @@
 #ifndef __MESHSTRUCTURE_H__
 #define __MESHSTRUCTURE_H__
 
-//#ifdef MESHSTRUCTURE_EXSPORTS_IMPORTS
 #	define MESHSTRUCTURE_API XRLC_LIGHT_API
-//#else
-//#	define MESHSTRUCTURE_API 
-//#endif
-
-	//typedef	xr_vector<_vertex*>		v_vertices;
-	//typedef	v_vertices::iterator	v_vertices_it;
-	
-	//typedef v_faces::iterator		v_faces_it;
-	//typedef xr_vector<_subdiv>		v_subdivs;
-	//typedef v_subdivs::iterator		v_subdivs_it;
-//extern	volatile	u32		dwInvalidFaces;
+ 
 class MESHSTRUCTURE_API vector_item
 {
 protected:
@@ -30,19 +19,22 @@ public:
 		return m_self_index; 
 	}
 };
-template <typename DataVertexType> struct Tvertex;
+
+
+template <typename DataVertexType>
+struct Tvertex;
+
 class CDeflector;
+
+
 template <typename DataVertexType>
 struct MESHSTRUCTURE_API Tface: public DataVertexType::DataFaceType, public vector_item
 {
 	typedef	Tvertex<DataVertexType>	type_vertex;
 	typedef	Tface<DataVertexType>	type_face;
-//private:
 	type_vertex*	v[3];
-//	u32				m_self_index;
+
 public:
-//IC	void			set_index	( u32 idx )		{ m_self_index = idx; }
-//IC	u32				self_index	( )	const		{return m_self_index ;}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 			Tface	();
 virtual		~Tface	();
@@ -50,7 +42,7 @@ static	Tface* read_create();
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	void	Verify		();
 	void 	Failure		();
-	void	OA_Unwarp	(CDeflector * d);
+	void	OA_Unwarp	(CDeflector * d, xr_vector<type_face*>& faces);
 
 virtual	void	read				( INetReader	&r );
 virtual	void	write				( IWriter	&w )const;
@@ -247,16 +239,14 @@ virtual	void	write		( IWriter	&w )const;
 		void	write_adjacents		( IWriter	&w )const;
 ///////////////////////////////////////////////////////////////
 	v_faces							m_adjacents;
-	
-
-
-
+ 
 	IC	type_vertex*	Tvertex::CreateCopy	( v_vertices& vertises_storage )							
-		{
-			type_vertex* V = CreateCopy_NOADJ( vertises_storage );	
-			V->m_adjacents = m_adjacents;	
-			return V;	
-		}
+	{
+		type_vertex* V = CreateCopy_NOADJ( vertises_storage );	
+		V->m_adjacents = m_adjacents;	
+		return V;	
+	}
+
 	IC	void	prep_add(type_face* F)
 	{	
 		 v_faces_it I = std::find(m_adjacents.begin(),m_adjacents.end(),F);
@@ -283,7 +273,7 @@ virtual	void	write		( IWriter	&w )const;
 
 
 
- template<typename typeVertex>
+template<typename typeVertex>
 IC  void   _destroy_vertex( typeVertex* &v, bool unregister )
 {
 	destroy_vertex( v, unregister );
@@ -307,8 +297,9 @@ struct remove_pred
 template<typename typeVertex>
 IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 {
-	if (bProgress)		Status		("Isolating vertices...");
-	//g_bUnregister		= false;
+	if (bProgress)	
+		Status		("Isolating vertices...");
+ 
 	const u32 verts_old		= vertices.size();
 
 	for (int it=0; it<int(verts_old); ++it)	
@@ -322,19 +313,13 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	}
 	VERIFY( verts_old == vertices.size() );
 
-	xr_vector<typeVertex*>::iterator	_end	= std::remove	(vertices.begin(),vertices.end(),(typeVertex*)0);
-
-/*
-	remove_pred<typeVertex> rp;
-	xr_vector<typeVertex*>::iterator	_end	= std::remove_if	(vertices.begin(),vertices.end(),rp);
-	
-*/
-	vertices.erase	(_end,vertices.end());
-	//g_bUnregister		= true;
+	xr_vector<typeVertex*>::iterator	_end	= std::remove	(vertices.begin(),vertices.end(), (typeVertex*) 0);
+	vertices.erase	(_end, vertices.end());
+ 
 	Memory.mem_compact	();
 	
 	if (bProgress)	
-			Progress	(1.f);
+		Progress	(1.f);
 
 	u32 verts_new		= vertices.size();
 	u32	_count			= verts_old-verts_new;

@@ -131,7 +131,8 @@ resplit:
 				// switch edge
 				iteration_per_edge	= 0	;
 				iteration_on_edge	++	;
-				if (iteration_on_edge<3)	{
+				if (iteration_on_edge<3)
+				{
 					box_edge		= (box_edge+1)%3;
 					setup_bbs		(b1,b2,bb,box_edge);
 					goto		resplit;

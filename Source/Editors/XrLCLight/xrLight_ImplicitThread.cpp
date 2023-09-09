@@ -49,7 +49,7 @@ int THREADS_COUNT()
 #define	NUM_THREADS	THREADS_COUNT()
 
 
-void RunCudaThread();
+
  
 void RunThread(ImplicitDeflector& defl)
 {
@@ -57,8 +57,7 @@ void RunThread(ImplicitDeflector& defl)
 
 	u32	stride = defl.Height() / NUM_THREADS;
 	
-	//Msg("Count: %d", NUM_THREADS);
-	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+ 	for (u32 thID = 0; thID < NUM_THREADS; thID++)
 	{
 		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
 		
@@ -71,13 +70,24 @@ void RunThread(ImplicitDeflector& defl)
 #include "xrHardwareLight.h"
 extern u64 results;
 
+void RunCudaThread();
+void RunGPU_CPU();
+
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 	// Start threads
-	if (!xrHardwareLight::IsEnabled())
-		RunThread(defl);
-	else
-		RunCudaThread(); 
+	
+	if (strstr(Core.Params, "-hwcpu"))
+	{
+		 RunGPU_CPU();
+	}
+	else 
+	{
+	   	if (!xrHardwareLight::IsEnabled())
+			RunThread(defl);
+		else
+			RunCudaThread();
+	} 
 }
 
  

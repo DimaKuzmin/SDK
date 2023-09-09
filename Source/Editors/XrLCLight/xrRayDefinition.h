@@ -184,12 +184,36 @@ struct Ray
 #endif
 };
 
+#include "base_color.h" 
+
+struct ResultReqvest
+{
+	base_color_c C;	
+
+	u16 U = 0; 
+	u16 V = 0;
+	int Deflector;
+};
+
 struct RayRequest
 {
 	HardwareVector Position;
 	HardwareVector Normal;
 
 	void* FaceToSkip;
+};
+
+struct RayRequestLMAPS
+{
+	HardwareVector Position;
+	HardwareVector Normal;
+
+	void* FaceToSkip;
+
+	// NEW
+	int Deflector;
+	u16 U = 0;
+	u16 V = 0;
 };
  
 enum class LightCategory
@@ -220,6 +244,12 @@ struct Hit
 	int   triId;
 	float u;
 	float v;
+};
+
+struct Hit256
+{
+	u8 count;
+	Hit hits[256];
 };
 
 struct xrHardwarePixel

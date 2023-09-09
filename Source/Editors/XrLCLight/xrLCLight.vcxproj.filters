@@ -614,6 +614,9 @@
     <ClCompile Include="xrLight_Embree.cpp">
       <Filter>Light\EmbreeLib</Filter>
     </ClCompile>
+    <ClCompile Include="xrHardwareLight_LMAP.cpp">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

@@ -37,6 +37,8 @@ IC BOOL	ValidateMerge	(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 	return TRUE;
 }
 
+#include <execution>
+
 void CSector::BuildHierrarhy	()
 {
 	Fvector		scene_size;
@@ -78,12 +80,36 @@ void CSector::BuildHierrarhy	()
 				// Find best object to connect with
 				int		best_id		= -1;
 				float	best_volume	= flt_max;
+	
+				 
+				auto it = std::find_if(std::execution::par, g_tree.begin(), g_tree.end(), [&] (OGF_Base* candidate) 
+				{
+ 					if ( candidate->bConnected || candidate->Sector != SelfID)
+						return false;
+					float V;
+					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
+					{
+						if (V<best_volume)	
+						{
+							best_volume		= V;
+							//best_id			= J;
+							return true;
+ 						}
+					}
+				});
 
+				if (it == g_tree.end())
+					break;
+
+				int index = std::distance(g_tree.begin(), it);
+				pNode->AddChield(index);
+				 
+ 				/*
 				for (int J=0; J<iSize; J++)
 				{
 					OGF_Base* candidate = g_tree[J];
-					if ( candidate->bConnected)			continue;
-					if ( candidate->Sector != SelfID)	continue;
+					if ( candidate->bConnected || candidate->Sector != SelfID)
+						continue ;
 
 					float V;
 					if (ValidateMerge(pNode->bbox,candidate->bbox,V,SizeLimit))
@@ -95,12 +121,15 @@ void CSector::BuildHierrarhy	()
 							break;
 						}
 					}
-				}
+				};
+				
 				
 				// Analyze
 				if (best_id<0)		
 					break;
-				pNode->AddChield	(best_id);
+
+				pNode->AddChield	(best_id);	 
+				*/
 			}
 
 			StatusNoMSG("Sector: %d/%d geometry_tree: %d", I, iSize, g_tree.size());

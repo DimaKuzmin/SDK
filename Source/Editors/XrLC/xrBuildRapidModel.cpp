@@ -57,12 +57,12 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 	size_t LightingInfoSize = (Lightings.rgb.size() + Lightings.sun.size() + Lightings.hemi.size()) * sizeof(R_Light);
 	size_t TotalMemorySize = VertexDataSize + TrisIndexSize + TrisAdditionalDataSize + OptixMeshDataOverhead + TextureMemorySize + LightingInfoSize;
 
-	clMsg(" [xrHardwareLight]: Vertex data size: %zu MB, Tris index size: %zu MB", VertexDataSize / 1024 / 1024, TrisIndexSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Tris Additional Data: %zu MB", TrisAdditionalDataSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: OptiX overhead: %zu MB", OptixMeshDataOverhead / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Overall texture memory: %zu MB", TextureMemorySize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Lighting: %zu MB", LightingInfoSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: TOTAL: %zu MB", TotalMemorySize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Vertex data size: %llu MB, Tris index size: %llu MB", VertexDataSize / 1024 / 1024, TrisIndexSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Tris Additional Data: %llu MB", TrisAdditionalDataSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: OptiX overhead: %llu MB", OptixMeshDataOverhead / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Overall texture memory: %llu MB", TextureMemorySize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: Lighting: %llu MB", LightingInfoSize / 1024 / 1024);
+	clMsg(" [xrHardwareLight]: TOTAL: %llu MB", TotalMemorySize / 1024 / 1024);
 
 	return TotalMemorySize;
 }
@@ -84,6 +84,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
  
 //	Status("Converting faces... (ONE CORE)");
 	 
+	
 	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
 	{
 		Face*	F				= (*it);
@@ -136,15 +137,17 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	Status					("Models...");
 
-	for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	//for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	
+	int id = 0;
+	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref ) 
 	{
-		//if (ref % 100 == 0)
-		//  clMsg("ModelID [%d]", ref);
-
-		Progress(float(ref / float(mu_refs().size())));
-		mu_refs()[ref]->export_cform_rcast(CL);
+		id++;
+		Progress(float(id / float(mu_refs().size())));
+		ref->export_cform_rcast(CL);
 	}
-		
+	);
+
 
 	// "Building tree..
 	Status					("Building search tree...");
@@ -171,11 +174,23 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		Status					("Saving...");
 		string_path				fn;
 
-		IWriter*		MFS		= FS.w_open	(strconcat(sizeof(fn),fn,pBuild->path,"build.cform"));
+		
 		xr_vector<b_rc_face>	rc_faces;
 		rc_faces.resize			(CL.getTS());
+
+		size_t rqface = (rc_faces.size() * sizeof(b_rc_face) );
+		size_t tri =  (CL.getTS() * CDB::TRI::Size());
+		size_t VS = (CL.getVS()*sizeof(Fvector)); 
+
+		size_t size_Rqface	=		rqface / 1024 / 1024;
+		size_t size_TRI		=		tri / 1024 / 1024;
+		size_t size_VS		=		VS / 1024 / 1024;
+
+		Status("Size: VS: %llu, TRI: %llu, RC_Faces: %llu", size_VS, size_TRI, size_Rqface );
+
 		// Prepare faces
-		for (u32 k=0; k<CL.getTS(); k++){
+		for (u32 k=0; k<CL.getTS(); k++)
+		{
 			CDB::TRI& T			= CL.getT( k );
 			base_Face* F		= (base_Face*)(T.pointer);
 			b_rc_face& cf		= rc_faces[k];
@@ -193,26 +208,77 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 				SaveUVM			(strconcat(sizeof(fn),fn,pBuild->path,"build_cform_source.uvm"),rc_faces);
 		}
 
-		MFS->open_chunk			(0);
-
-		// Header
-		hdrCFORM hdr;
-		hdr.version				= CFORM_CURRENT_VERSION;
-		hdr.vertcount			= (u32)CL.getVS();
-		hdr.facecount			= (u32)CL.getTS();
-		hdr.aabb				= scene_bb;
-		MFS->w					(&hdr,sizeof(hdr));
-
-		// Data
-		MFS->w					(CL.getV(),(u32)CL.getVS()*sizeof(Fvector));
-		for (size_t i = 0; i < CL.getTS(); i++)
+				
+		if (size_Rqface + size_TRI + size_VS > 4096)
 		{
-			MFS->w(&CL.getT()[i], CDB::TRI::Size());
-		}
-		MFS->close_chunk		();
+			IWriter*		MFS_TRI		= FS.w_open(strconcat(sizeof(fn),fn,pBuild->path,"build.cform_tri"));
+			IWriter*		MFS_VS		= FS.w_open(strconcat(sizeof(fn),fn,pBuild->path,"build.cform_vs"));
+			IWriter*		MFS_RQ		= FS.w_open(strconcat(sizeof(fn),fn,pBuild->path,"build.cform_rq"));
 
-		MFS->open_chunk			(1);
-		MFS->w					(&*rc_faces.begin(),(u32)rc_faces.size()*sizeof(b_rc_face));
-		MFS->close_chunk		();
+			//TRI
+			MFS_TRI->open_chunk			(0);
+
+			// Header
+			hdrCFORM hdr;
+			hdr.version				= CFORM_CURRENT_VERSION;
+			hdr.vertcount			= (u32)CL.getVS();
+			hdr.facecount			= (u32)CL.getTS();
+			hdr.aabb				= scene_bb;
+			MFS_TRI->w					(&hdr,sizeof(hdr));
+
+			MFS_TRI->close_chunk();
+
+			MFS_TRI->open_chunk(1);
+			for (size_t i = 0; i < CL.getTS(); i++)
+	 			MFS_TRI->w(&CL.getT()[i], CDB::TRI::Size());
+			MFS_TRI->close_chunk		();
+ 
+			FS.w_close(MFS_TRI);
+
+			// VS
+			MFS_VS->open_chunk(0);
+		    MFS_VS->w					(CL.getV(), (u32) CL.getVS() * sizeof(Fvector));
+			MFS_VS->close_chunk();
+
+			FS.w_close(MFS_VS);
+
+
+			// RQ
+			MFS_RQ->open_chunk(0);
+			MFS_RQ->w					(&*rc_faces.begin(),(u32)rc_faces.size()*sizeof(b_rc_face));
+			MFS_RQ->close_chunk();
+
+			FS.w_close(MFS_RQ);
+		}
+		else 
+		{
+			IWriter*		MFS		= FS.w_open(strconcat(sizeof(fn),fn,pBuild->path,"build.cform"));
+			MFS->open_chunk			(0);
+
+			// Header
+			hdrCFORM hdr;
+			hdr.version				= CFORM_CURRENT_VERSION;
+			hdr.vertcount			= (u32)CL.getVS();
+			hdr.facecount			= (u32)CL.getTS();
+			hdr.aabb				= scene_bb;
+			MFS->w					(&hdr,sizeof(hdr));
+
+			Status("Size: TRI: %llu, VS: %llu, RQ_Face: %llu", CL.getTS(), CL.getVS(), rc_faces.size() );
+
+			// Data
+			MFS->w					(CL.getV(),(u32)CL.getVS()*sizeof(Fvector));
+
+			for (size_t i = 0; i < CL.getTS(); i++)
+	 			MFS->w(&CL.getT()[i], CDB::TRI::Size());
+
+			MFS->close_chunk		();
+
+			MFS->open_chunk			(1);
+
+			MFS->w					(&*rc_faces.begin(),(u32)rc_faces.size()*sizeof(b_rc_face));
+			MFS->close_chunk		();
+
+			FS.w_close(MFS);
+		}
 	}
 }

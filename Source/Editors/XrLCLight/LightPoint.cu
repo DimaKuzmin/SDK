@@ -320,7 +320,8 @@ __device__ void ShiftRay(xrHardwareLCGlobalData* GlobalData, Ray* CurrentRay, Hi
 		CurrentRay->tmax = 0.0f;
 	}
 
-	CurrentRay->Origin.Mad_Self(CurrentRay->Direction, Distance + 0.01f);
+	CurrentRay->Origin.Mad_Self(CurrentRay->Direction, Distance + 0.1f);
+
 }
 
 // 1
@@ -562,88 +563,96 @@ __global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBu
 
 }
 
-
-// NEW TRIANGLE (NEED BVH SYSTEM TO FASTER WORKING)
-
-#include <assert.h>
- 
-__device__ void MSG(MsgData* data, char* val, int id)
+__global__ void FinalizeRaysLMAPS(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, ResultReqvest * OutColorBuffer, u32* AliveRayIndexes, u32 AliveRaysCount, bool CheckRGB, bool CheckSun, bool CheckHemi, int* SurfacePointStartLoc)
 {
-	for (int i = 0; i < 32; i++)
-		data->msg[i] = val[i];
-	data->value_int = id;
-}
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
-__device__ void HitSet(HitCDB* hit, int triID, int u, int v, int dist)
-{
-	hit->u = u;
-	hit->v = v;
-	hit->Distance = dist;
-	hit->triId = triID;
-}
+	//early exit condition
+	if (idx >= RequestedRaysCount) return;
 
-__device__ void __forceinline__ Tri(Model* data, int idx, RayRequest* ray, RcastResult * hit)
-{
-	
-	auto tri = data->tris[idx];
-	auto p0 = tri.p1;
-	auto p1 = tri.p2;
-	auto p2 = tri.p3;
+	//idx == SurfaceId
+	RayRequest& CurrentRequest = RequestedRays[idx];
+	base_color_c& OurFinalColor = OutColorBuffer[idx].C;
 
-	HardwareVector edge1, edge2, tvec, pvec, qvec;
-	float det, inv_det;
-	float u, v, range;
+	int RaysPerVertex = 0;
+	if (CheckRGB)  RaysPerVertex += GlobalData->LightSize->RGBLightCount;
+	if (CheckSun)  RaysPerVertex += GlobalData->LightSize->SunLightCount;
+	if (CheckHemi) RaysPerVertex += GlobalData->LightSize->HemiLightCount;
 
-	edge1.Subtract(p1, p0);
-	edge2.Subtract(p2, p0);
-	// begin calculating determinant - also used to calculate U parameter
-	// if determinant is near zero, ray lies in plane of triangle
-	pvec.CrossProduct(ray->Normal, edge2);
-	det = edge1.DotProduct(pvec);
+	//calc lower and high bounds
+	u32 SurfaceLightsStart = idx * RaysPerVertex;
+	u32 SurfaceLightsEnd = SurfaceLightsStart + RaysPerVertex;
 
-	if (det < 0.0000100f)
-		return;
+	//however, before starting cycle, we need found start point in AliveRayIndexes array
+	//#HOTFIX: Use precomputed start location
+	u32 AliveRayIndexCursor = SurfacePointStartLoc[idx];
 
-	tvec.Subtract(ray->Position, p0);						// calculate distance from vert0 to ray origin
-	u = tvec.DotProduct(pvec);					// calculate U parameter and test bounds
+	//next algorithm can do it self, but we need speed up process
 
-	if (u < 0.f || u > det)
-		return;
-
-	qvec.CrossProduct(tvec, edge1);				// prepare to test V parameter
-	v = ray->Position.DotProduct(qvec);			// calculate V parameter and test bounds
-
-	if (v < 0.f || u + v > det)
-		return;
-
-	range = edge2.DotProduct(qvec);				// calculate t, scale parameters, ray intersects triangle
-	inv_det = 1.0f / det;
-	range *= inv_det;
-	u *= inv_det;
-	v *= inv_det;
-
-	hit->result[1].triId = idx;
-	hit->result[1].u = u;
-	hit->result[1].v = v;
-	hit->result[1].Distance = range;
- 
-}
-
-__global__ void __forceinline__ TriCalculate(int id, Model * data, RayRequest* rays, RcastResult* hits)
-{
-	//int idx_cuda = blockIdx.x * blockDim.x;
-	//int result = 0;			
-	//int split = GlobalData->RaycastModel.TrisCount / 1024; 
-	//for (int idx = (split * threadIdx.x) - split; idx < split * threadIdx.x; idx++)
-	
-	int res = threadIdx.x + blockIdx.x * blockDim.x * id;
-
-	for (int idx = 0; idx < data->count; idx++)
+	for (; AliveRayIndexCursor < AliveRaysCount; ++AliveRayIndexCursor)
 	{
-		Tri(data, idx, &rays[res], &hits[res]);
+		u32 AliveRay = AliveRayIndexes[AliveRayIndexCursor];
+
+		if (AliveRay < SurfaceLightsEnd)
+		{
+			u32 LightForSurfaceID = AliveRay % RaysPerVertex;
+
+			LightSource LightType = LS_UNKNOWN;
+			int LinearLightIndex = 0;
+			GetLightTypeAndIndex(GlobalData, LightForSurfaceID, CheckRGB, CheckSun, CheckHemi, LightType, LinearLightIndex);
+			DoFinalizeRay(GlobalData, EnergyBuffer[AliveRayIndexCursor], CurrentRequest, GlobalData->LightData[LinearLightIndex], LightType, OurFinalColor);
+		}
+		else
+		{
+			break;
+		}
+	}
+
+}
+
+
+// NO TEXTURES
+
+/*
+__global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer,
+	float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime,
+	bool CheckRGB, bool CheckSun, bool CheckHemi, bool SkipFaceMode, u64* FacesToSkip, u32 * alive_rays_count, int Rounds)
+*/
+
+__global__ void ProcessHits_NO_TEXTURE(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, Hit256* HitsData, int* alive_rays)
+{
+	int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+	Hit* OurHit = &HitBuffer[idx];
+	Ray* OurRay = &RayBuffer[idx];
+	int cnt = HitsData[idx].count;
+
+	if (OurHit->triId == -1 || cnt == 256)
+	{
+		 OurRay->tmax = 0;
+	}
+	else 
+	{
+		HitsData[idx].hits[cnt+1] = *OurHit; 
+		HitsData[idx].count += 1;
+		ShiftRay(GlobalData, OurRay, OurHit);
+		atomicAdd(alive_rays, 1);
 	}
 }
 
+
+ extern "C" cudaError_t RunProcessHits_NO_TEXTURE(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, Hit256* HitsData, int* alive_rays)
+{
+	int BlockSize = 1024;
+	int GridSize = (*alive_rays / BlockSize) + 1;
+
+	ProcessHits_NO_TEXTURE << <GridSize, BlockSize >> > 
+	(
+		GlobalData, RayBuffer, HitBuffer, HitsData, alive_rays 
+	);
+
+	return cudaDeviceSynchronize();
+}
 
 //CALL
 
@@ -726,20 +735,19 @@ extern "C" cudaError_t RunFinalizeRays(xrHardwareLCGlobalData * GlobalData, floa
 	return cudaDeviceSynchronize();
 }
 
-//TEST
-
-extern "C" cudaError_t RunTriCollide(Model * model, RayRequest * ray, RcastResult * hits)
+extern "C" cudaError_t RunFinalizeRaysLMAPS(xrHardwareLCGlobalData * GlobalData, float* EnergyBuffer, RayRequest * RequestedRays, u32 RequestedRaysCount, ResultReqvest * OutColors, u32 * AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc)
 {
 	int BlockSize = 1024;
-	//int GridSize = (RequestedRaysCount / BlockSize) + 1;
-	//int GridSize = ( tris_count / BlockSize ) + 1;
+	int GridSize = (RequestedRaysCount / BlockSize) + 1;
 
-	//TriCalculate << <GridSize, BlockSize >> > (GlobalData, ray, hits);
+	//check flags
+	bool IsRGBLightsAllowed = true;
+	bool IsHemiLightsAllowed = true;
+	bool IsSunLightsAllowed = true;
+	if ((flag & LP_dont_rgb) != 0) IsRGBLightsAllowed = false;
+	if ((flag & LP_dont_sun) != 0) IsSunLightsAllowed = false;
+	if ((flag & LP_dont_hemi) != 0) IsHemiLightsAllowed = false;
 
-	for (int i = 1; i <= 8; i++)
-		TriCalculate << <4, 1024 >> > (i, &model[i - 1], ray, hits);
-	//TriCalculate <<<8, 1024 >>> (0, &model[0], ray, hits);
-
+	FinalizeRaysLMAPS << <GridSize, BlockSize >> > (GlobalData, EnergyBuffer, RequestedRays, RequestedRaysCount, OutColors, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SurfacePointStartLoc);
 	return cudaDeviceSynchronize();
 }
-

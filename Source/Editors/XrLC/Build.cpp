@@ -161,11 +161,224 @@ void CBuild::Light_prepare()
 void net_light ();
 #endif
 
-bool skip_sectors = false;
-
+ 
 extern string_path LEVEL_PATH;
 
 #include "..\XrLCLight\xrHardwareLight.h"
+
+void CBuild::TestMergeGeom(IWriter* writer)
+{
+
+	Phase("TEST MERGE");
+
+	log_vminfo();
+	
+	FPU::m64r();
+	Phase("Optimizing...");
+	mem_Compact();
+	if (!strstr(Core.Params, "-no_optimize"))
+		PreOptimize();
+	CorrectTJunctions();
+
+	FPU::m64r();
+	Phase("Building normals...");
+	mem_Compact();
+	CalcNormals();
+	//SmoothVertColors			(5);
+
+	FPU::m64r					();
+	Phase						("Building collision database...");
+	mem_Compact					();
+	log_vminfo();
+	BuildCForm					();
+	log_vminfo();
+ 
+	BuildPortals(*writer);
+
+	//****************************************** T-Basis
+	{
+		FPU::m64r();
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
+		mem_Compact();
+	}
+ 
+ 
+	//****************************************** GLOBAL-RayCast model
+	FPU::m64r();
+	Phase("Building rcast-CFORM model...");
+	mem_Compact();
+	log_vminfo();
+	Light_prepare();
+	BuildRapid(TRUE);
+	log_vminfo();
+ 
+	FPU::m64r					();
+	Phase						("Resolving materials...");
+	log_vminfo();
+	mem_Compact					();
+	xrPhase_ResolveMaterials	();
+	IsolateVertices				(TRUE);
+
+	log_vminfo();
+
+	//****************************************** UV mapping
+	{
+		FPU::m64r					();
+		Phase						("Build UV mapping...");
+		
+		mem_Compact					();
+		log_vminfo();
+		xrPhase_UVmap				();
+		IsolateVertices				(TRUE);
+	}
+	
+	log_vminfo();
+
+	
+	//****************************************** Subdivide geometry
+	FPU::m64r					();
+	Phase						("Subdividing geometry...");
+	
+	mem_Compact					();
+	log_vminfo();
+	xrPhase_Subdivide			();
+	//IsolateVertices				(TRUE);
+	lc_global_data()->vertices_isolate_and_pool_reload();
+
+	log_vminfo();
+
+
+	/*
+	
+	PART 2
+	-----------------------------------------------------------------------------------------------------
+	
+	*/
+
+	//****************************************** Merge geometry
+	FPU::m64r					();
+	Phase						("Merging geometry...");
+	mem_Compact					();
+	xrPhase_MergeGeometry		();
+
+	//****************************************** Convert to OGF
+	FPU::m64r					();
+	Phase						("Converting to OGFs...");
+	mem_Compact					();
+	Flex2OGF					();
+ 
+	//****************************************** Export MU-models
+	FPU::m64r					();
+	Phase						("Converting MU-models to OGFs...");
+	mem_Compact					();
+	{
+		u32 m;
+		Status			("MU : Models...");
+		for (m=0; m<mu_models().size(); m++)	
+		{
+			clMsg("ID[%d], size[%d]", m, mu_models().size());
+			calc_ogf			(*mu_models()[m]);
+			export_geometry		(*mu_models()[m]);
+		}
+
+		Status			("MU : References...");
+		for (m = 0; m < mu_refs().size(); m++)
+		{
+			clMsg("muref ID[%d], size[%d]", m, mu_models().size());
+			export_ogf(*mu_refs()[m]);
+		}
+	}
+
+	//****************************************** Destroy RCast-model
+	FPU::m64r		();
+	Phase			("Destroying ray-trace model...");
+	mem_Compact		();
+	lc_global_data()->destroy_rcmodel();
+
+	//****************************************** Build sectors
+	FPU::m64r();
+	Phase("Building sectors...");
+	mem_Compact();
+	BuildSectors();
+ 
+	//****************************************** Saving MISC stuff
+	FPU::m64r		();
+	Phase			("Saving...");
+	mem_Compact		();
+	SaveLights		(*writer);
+
+	writer->open_chunk	(fsL_GLOWS);
+	
+	for (u32 i=0; i<glows.size(); i++)
+	{
+		b_glow&	G	= glows[i];
+		writer->w		(&G,4*sizeof(float));
+		string1024	sid;
+		strconcat	(sizeof(sid),sid,
+			shader_render[materials()[G.dwMaterial].shader].name,
+			"/",
+			textures()		[materials()[G.dwMaterial].surfidx].name
+			);
+		writer->w_u16	(RegisterShader(sid));
+	}
+	writer->close_chunk	();
+
+	SaveTREE		(*writer);
+	SaveSectors		(*writer);
+
+	err_save		();
+ 
+	mem_Compact();
+
+}
+
+#include "../XrLCLight/xrDeflector.h"
+
+void CBuild::ExportDeflectors()
+{
+	Phase("Export Data For Lighting");
+
+	string256 s, sx;  
+ 
+	IWriter* write = FS.w_open(strconcat(sizeof(s), s, pBuild->path, "build.deflectors"));
+	
+	write->open_chunk(0);
+ 
+	int id = 0;
+	for (Face* faces : lc_global_data()->g_faces())
+	{
+		faces->set_index(id);
+ 		id++;
+	}
+
+	Status("SizeDeflectors: %d", lc_global_data()->g_deflectors().size());
+
+	for (auto defl : lc_global_data()->g_deflectors())
+	{
+		defl->Serialize(write);	
+	}
+ 	write->close_chunk();
+ 
+	 
+	IWriter* write_x = FS.w_open(strconcat(sizeof(sx), sx, pBuild->path, "build.splitx"));
+
+	write_x->open_chunk(0);
+			
+	write_x->w_u32(g_XSplit.size());
+	for (auto vec : g_XSplit)
+	{
+		write_x->w_u32(vec->size());
+		for (auto face : *vec)
+			write_x->w_u32(face->self_index());
+	}
+	write_x->close_chunk();
+	
+	Status("Size GXSplit: %d", g_XSplit.size());
+
+	FS.w_close(write_x);
+	 
+}
 
 void CBuild::Run(LPCSTR P)
 {
@@ -175,16 +388,14 @@ void CBuild::Run(LPCSTR P)
 	return;
 #endif
 
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
+
 	bool CformOnly = false;
 
 	if (strstr(Core.Params, "-cform"))
-	{
 		CformOnly = true;
-	}
 
-	if (strstr(Core.Params, "-no_sectors"))
-		skip_sectors = true;
-	//****************************************** Open Level
+  	//****************************************** Open Level
 	strconcat(sizeof(path), path, P, "\\");
 
 	xr_strcpy(LEVEL_PATH, path);
@@ -197,6 +408,12 @@ void CBuild::Run(LPCSTR P)
 	H.XRLC_quality = g_params().m_quality;
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
+
+	if (strstr(Core.Params,"-test_merge"))
+	{
+		TestMergeGeom(fs);
+		return;
+	}
     
 	if (strstr(Core.Params, "-sample_9"))
 		g_params().m_lm_jitter_samples = 9;
@@ -204,25 +421,6 @@ void CBuild::Run(LPCSTR P)
 		g_params().m_lm_jitter_samples = 4;
 	else if (strstr(Core.Params, "-sample_1"))
 		g_params().m_lm_jitter_samples = 1;
-
-	xrHardwareLight& hw_light = xrHardwareLight::Get();
-
-	if (strstr(Core.Params, "-hw_light"))
-	{
-		hw_light.SetEnabled(true);
-		LPCSTR impl_part = strstr(Core.Params, "-hw_light");
-		LPCSTR val = impl_part + 9;
-		int value = 1;
-		if (impl_part && sscanf(val, "%d", &value))
-		{
-			hw_light.setMaxMem(value);
-		}
- 	}
-
-	else
-	{
-		hw_light.SetEnabled(false);
-	}
 
 	LPCSTR pixel = strstr(Core.Params, "-pxpm");
 	LPCSTR val = pixel + 5;
@@ -244,6 +442,9 @@ void CBuild::Run(LPCSTR P)
 		fs->w_chunk(2, &*L_static().sun.begin(), L_static().sun.size() * sizeof(R_Light));
 		FS.w_close(fs);
 	}
+	
+
+
 
 	//****************************************** Optimizing + checking for T-junctions
 	log_vminfo();
@@ -257,7 +458,7 @@ void CBuild::Run(LPCSTR P)
 	
 	log_vminfo();
 
-	if (!CformOnly && !strstr(Core.Params, "-no_adaptive"))
+	if (!CformOnly && false)
 	{
 
 	//****************************************** HEMI-Tesselate
@@ -370,6 +571,10 @@ void CBuild::Run(LPCSTR P)
 
 	log_vminfo();
 
+	// Se7Kills
+	// Export Model DEFLECTORS 
+	ExportDeflectors();
+
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP
 	mu_base.wait				(500);
@@ -434,15 +639,13 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	mem_Compact		();
 	lc_global_data()->destroy_rcmodel();
 	
-	if (!skip_sectors)
-	{
-		//****************************************** Build sectors
-		FPU::m64r();
-		Phase("Building sectors...");
-		mem_Compact();
-		BuildSectors();
-	}
-
+ 
+	//****************************************** Build sectors
+	FPU::m64r();
+	Phase("Building sectors...");
+	mem_Compact();
+	BuildSectors();
+ 
 	//****************************************** Saving MISC stuff
 	FPU::m64r		();
 	Phase			("Saving...");
@@ -505,8 +708,8 @@ void CBuild::err_save	()
 
 void CBuild::MU_ModelsCalculateNormals()
 {
-		for		(u32 m=0; m<mu_models().size(); m++)
-			calc_normals( *mu_models()[m] );
+	for		(u32 m=0; m<mu_models().size(); m++)
+		calc_normals( *mu_models()[m] );
 }
 
 xr_vector<xrMU_Model*>&CBuild::mu_models()

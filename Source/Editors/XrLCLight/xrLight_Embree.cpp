@@ -16,6 +16,7 @@
 
 #include "embree4/rtcore.h"
 #include "EmbreeDataStorage.h"
+#include <atomic>
 
 RTCScene IntelScene;
 RTCGeometry IntelGeometry;
@@ -23,9 +24,11 @@ RTCDevice device;
 
 xr_map<u32, bool> opacity;
 xr_map<u32, bool> cast_shadowed;
+       
+xr_map<int, std::atomic<u64>> ticks_process;
+xr_map<int, std::atomic<u64>> ticks_process_hits;
 
-xrCriticalSection csTH;
-int last_id = 0;
+
   
 void SetRay8(RayOptimizedCPU* ray, RTCRayHit8& rayhit, int ray_id)
 {
@@ -144,43 +147,13 @@ void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
-  
-int count_rays = 0;
-CTimer tRQ;
+   
  
-RayOptimizedCPU preview;
-int prev_count;
-int prev_ticks;
 
-xr_vector<Hits_XR> hits_global;
- 
-u64 global_rays[8];
-u64 global_hits = 0;
-u64 global_set_data = 0;
-
-CTimer tRAY[8];
-CTimer timers[8];
-CTimer DWTIMER;
- 
-u32 old_DWTIME = 0;
-
-extern u64 results;
-extern u64 last_results;
-
-u64 ResEmbree = 0;
-u64 last_counts = 0;
-
-void IntelClearTimers()
+void IntelClearTimers(LPCSTR name)
 {
-	for (int i = 0; i < 8; i ++)
-		global_rays[i] = 0;
-	global_hits = 0;
-	global_set_data = 0;
-	Msg("Results: %llu, Embree: %llu", results, ResEmbree);
-	results = 0;
-	ResEmbree = 0;
-	last_counts = 0;
-	last_results = 0;
+	ticks_process.clear();
+	ticks_process_hits.clear();
 }
 
 // Сделать потом переключалку
@@ -219,8 +192,6 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
  
 	if (ctxt->count >= MAX_HITS )	 //|| opacity[hit->primID] 
 	{
-		//Msg("HITS > %d", MAX_HITS);
-		//ctxt->last_opactity = opacity[hit->primID] && !(ctxt->count >= MAX_HITS);
 		args->valid[0] = -1;
 		return;
 	}
@@ -236,6 +207,142 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	ctxt->count++;
 }
 
+void RatraceOneRay(int th, RayOptimizedCPU& ray, RayQueryContext& data_hits)
+{ 
+	RTCRayQueryContext context;
+	rtcInitRayQueryContext(&context);
+
+	data_hits.context = context;
+ 
+	RTCIntersectArguments args;
+	rtcInitIntersectArguments(&args);
+	args.filter = &FilterIntersectionOne;
+	args.context = &data_hits.context;	 
+	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER);
+	
+	//RTC_RAY_QUERY_FLAG_INCOHERENT = (0 << 16), // optimize for incoherent rays
+	//RTC_RAY_QUERY_FLAG_COHERENT = (1 << 16), // optimize for coherent rays
+											
+	//CYCL
+	//args.feature_mask = (RTCFeatureFlags) (RTC_FEATURE_FLAG_TRIANGLE | RTC_FEATURE_FLAG_INSTANCE | RTC_FEATURE_FLAG_FILTER_FUNCTION_IN_ARGUMENTS);
+ 
+	struct RTCRayHit rayhit;
+	SetRay1(&ray, rayhit);
+	rtcIntersect1(IntelScene, &rayhit, &args);    
+}
+
+void PrintTimeRayTrace()
+{
+	/*
+	for (auto i = 0; i < 8; i++)
+	{	
+		Msg("TH[%d] RayTrace: %f ms, RayHits: %f ms", i, float(ticks_process[i] / u64 (CPU::qpc_freq / 1000)), float(ticks_process_hits[i] / u64(CPU::qpc_freq / 1000) ) );
+	}
+
+	ticks_process.clear();
+	ticks_process_hits.clear();
+	*/
+}
+
+  
+float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU& ray, Face* skip, bool use_disabled)
+{
+	// First Chack Triangle
+	{
+		float _u, _v, range;
+		bool res = CDB::TestRayTri(ray.pos, ray.dir, L.tri, _u, _v, range, false);
+
+		if (res)
+		if (range > 0 && range < ray.tmax)
+		{
+			return 0;
+		}
+	}  
+ 	CTimer t;t.Start();
+	RayQueryContext data;
+	RatraceOneRay(th, ray, data);
+   	 
+	ticks_process[th] += t.GetElapsed_ticks();
+	
+
+	if (data.count == 0)
+		return 1;
+
+	float	scale = 1.f;
+	Fvector B;
+	t.Start();
+	for (u32 I = 0; I < data.count; I++)
+	{
+		Hits_XR* hit = &data.hits[I];
+ 
+		// Access to texture
+		CDB::TRI* clT = &MDL->get_tris()[hit->prim];
+		base_Face* F = (base_Face*)(clT->pointer);
+		
+		if (0 == F)											continue;	
+		if (skip == F)										continue;
+		 
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)					continue;
+ 
+		if (F->flags.bOpaque)
+		{
+			// Opaque poly - cache it
+			L.tri[0].set(MDL->get_verts()[clT->verts[0]]);
+			L.tri[1].set(MDL->get_verts()[clT->verts[1]]);
+			L.tri[2].set(MDL->get_verts()[clT->verts[2]]);
+			ticks_process_hits[th] += t.GetElapsed_ticks();
+			return 0;
+		}
+ 		
+		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+		if (T.pSurface.Empty())
+		{
+			F->flags.bOpaque = true;
+			clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...[%s]", T.name);
+			ticks_process_hits[th] += t.GetElapsed_ticks();
+			return 0;
+		}
+	    
+		// barycentric coords
+		// note: W,U,V order
+		B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+		// calc UV
+		Fvector2* cuv = F->getTC0();
+		Fvector2  uv;
+		uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
+		uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
+
+		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+		
+		U %= T.dwWidth;		
+		if (U < 0) 
+			U += T.dwWidth;
+		
+		V %= T.dwHeight;	
+		if (V < 0) 
+			V += T.dwHeight;
+		u32* raw = static_cast<u32*>(*T.pSurface);
+		u32 pixel = raw[V * T.dwWidth + U];
+		u32 pixel_a = color_get_A(pixel);
+		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+		
+		//Msg("Opac %f, u: %f, v: %f, id: %d", opac, hit->u, hit->v, hit->prim);
+		scale *= opac;
+	}
+
+	ticks_process_hits[th] += t.GetElapsed_ticks();
+
+	return scale;
+}
+
+
+
+ // 8 Rays
 void FilterIntersection8(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext8* ctxt = (RayQueryContext8*)args->context;
@@ -255,67 +362,10 @@ void FilterIntersection8(const struct RTCFilterFunctionNArguments* args)
 		ctxt->hits[id][ctxt->count[id]].prim = hit->primID[id];
 		ctxt->hits[id][ctxt->count[id]].dist = ray->tfar[id];
 
+ 
+
 		ctxt->count[id] += 1;
 	}
-}
-
-
-void RatraceOneRay(int th, RayOptimizedCPU& ray, RayQueryContext& data_hits)
-{ 
-	RTCRayQueryContext context;
-	rtcInitRayQueryContext(&context);
-
-	data_hits.context = context;
- 
-	RTCIntersectArguments args;
-	rtcInitIntersectArguments(&args);
-	args.filter = &FilterIntersectionOne;
-	args.context = &data_hits.context;	 
-	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER); // | RTC_RAY_QUERY_FLAG_INCOHERENT
-	//CYCL
-	//args.feature_mask = (RTCFeatureFlags) (RTC_FEATURE_FLAG_TRIANGLE | RTC_FEATURE_FLAG_INSTANCE | RTC_FEATURE_FLAG_FILTER_FUNCTION_IN_ARGUMENTS);
- 
-	struct RTCRayHit rayhit;
-	SetRay1(&ray, rayhit);
-    
-	rtcIntersect1(IntelScene, &rayhit, &args);
-
-	/*
-	if (MAX_HITS > data_hits.count && data_hits.last_opactity)
-	{
-		//Msg("data_hits.count:%d, dist: %f, u: %f, v: %f, prim: %d", 
-		//	data_hits.count, rayhit.ray.tfar, rayhit.hit.u, rayhit.hit.v, rayhit.hit.primID);
-		data_hits.hits[data_hits.count].dist = rayhit.ray.tfar;
-		data_hits.hits[data_hits.count].u = rayhit.hit.u;
-		data_hits.hits[data_hits.count].v = rayhit.hit.v;
-		data_hits.hits[data_hits.count].prim = rayhit.hit.primID;
-		data_hits.count++;
-	}
-	*/
-
-	//global_rays[th] += tRAY[th].GetElapsed_ticks();
-
-	//if (data_hits.count > 150)
-	//	Msg_IN_FILE("Ray: %d, cnt: %d", tRAY[th].GetElapsed_ticks(), data_hits.count);
-
-	/*
- 	while (rayhit.hit.primID != RTC_INVALID_GEOMETRY_ID)
-	{
- 		if (rayhit.hit.u != 0 || rayhit.hit.v != 0)
-		{
-			Hits_XR hit;
-			hit.dist = rayhit.ray.tfar;
-			hit.u = rayhit.hit.u;
-			hit.v = rayhit.hit.v;
-			hit.prim = rayhit.hit.primID;
- 			hits.push_back(hit);
-		}
-
-		SetRay1Hit(rayhit, ray.tmax);
-		rtcIntersect1(IntelScene, &rayhit);	  //, &argument_intersect[th]
-	}
-	*/
-    
 }
 
 int HitsTrace8Ray(int* valid, RTCRayHit8& hit8, xr_vector<Hits_XR>& hits)
@@ -369,94 +419,6 @@ void RayTrace8Ray(int th, xr_vector<RayOptimizedCPU> rays, RayQueryContext8 data
  		i++;
 	}
 	rtcIntersect8(valid, IntelScene, &rayhit); //, &args
-}
-  
-int count_HITS_PROCESSED = 0;
-
-
-
-float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU& ray, Face* skip)
-{
- 	if (last_counts + 10000000 < ResEmbree)
-	{
-		last_counts = ResEmbree;
-		Msg("ResultsIntel: %u mln", u64(ResEmbree / 1000000) );
-	}
- 
-	RayQueryContext data;
-	RatraceOneRay(th, ray, data);
- 
-	ResEmbree+=data.count;
-
-	if (data.count == 0)
-		return 1;
- 
-	float	scale = 1.f;
-	Fvector B;
-	for (u32 I = 0; I < data.count; I++)
-	{
-		Hits_XR* hit = &data.hits[I];
- 
-		// Access to texture
-		CDB::TRI* clT = &MDL->get_tris()[hit->prim];
-		base_Face* F = (base_Face*)(clT->pointer);
-				
-		if (0 == F)											continue;	
-		if (skip == F)										continue;
-
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)					continue;
- 
-		if (F->flags.bOpaque)
-		{
-			// Opaque poly - cache it
-			L.tri[0].set(MDL->get_verts()[clT->verts[0]]);
-			L.tri[1].set(MDL->get_verts()[clT->verts[1]]);
-			L.tri[2].set(MDL->get_verts()[clT->verts[2]]);
-			return 0;
-		}
- 		
-		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-		b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-		if (T.pSurface.Empty())
-		{
-			F->flags.bOpaque = true;
-			clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...");
-			return 0;
-		}
-	    
-		// barycentric coords
-		// note: W,U,V order
-		B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-		// calc UV
-		Fvector2* cuv = F->getTC0();
-		Fvector2  uv;
-		uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-		uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-
-		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-		
-		U %= T.dwWidth;		
-		if (U < 0) 
-			U += T.dwWidth;
-		
-		V %= T.dwHeight;	
-		if (V < 0) 
-			V += T.dwHeight;
-		u32* raw = static_cast<u32*>(*T.pSurface);
-		u32 pixel = raw[V * T.dwWidth + U];
-		u32 pixel_a = color_get_A(pixel);
-		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-		scale *= opac;
-
-		count_HITS_PROCESSED++;
-	}
- 
-	return scale;
 }
  
 void RaytraceEmbreeProcess_Hits8(int th, CDB::MODEL* MDL, xr_vector<RayOptimizedTyped>& rays, xr_vector<float> colors)
@@ -539,7 +501,9 @@ void RaytraceEmbreeProcess_Hits8(int th, CDB::MODEL* MDL, xr_vector<RayOptimized
  
 }
  
-void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip)
+ 
+
+void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled)
 {
 	Fvector		Ldir, Pnew;
 	Pnew.mad(P, N, 0.01f);
@@ -555,7 +519,7 @@ void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, 
 				Ldir.invert(L->direction);
 				float D = Ldir.dotproduct(N);
 				if (D <= 0) continue;
-
+				 
 				// Trace Light
 				Fvector		PMoved;
 				PMoved.mad(Pnew, Ldir, 0.001f);
@@ -565,10 +529,13 @@ void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, 
 				ray.dir = Ldir;
 				ray.tmax = 1000.f;
 				ray.tmin = 0.f;
- 
-				float scale = L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
-				C.hemi += scale;
 				
+				float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);;
+				//if (ray_trace == 0)
+				//	return;;
+
+				float scale = L->energy * ray_trace;
+				C.hemi += scale;
 			}
 			else
 			{
@@ -592,16 +559,22 @@ void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, 
 				ray.dir = Ldir;
 				ray.tmax = Range;
 				ray.tmin = 0.f;
- 
-				float scale = L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
-				float A = scale / (L->attenuation0 + L->attenuation1 * Range + L->attenuation2 * sqD);
+
+						
+				float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+				//if (ray_trace == 0)
+				//	return;;
+			
+				float scale = D * L->energy * ray_trace;
+				float A			= scale / (L->attenuation0 + L->attenuation1 * Range + L->attenuation2 * sqD);
 				C.hemi += A;
 			}
 		}
 	}
+
 }
 
-void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip)
+void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled)
 {
 	Fvector		Ldir, Pnew;
 	Pnew.mad(P, N, 0.01f);
@@ -624,7 +597,11 @@ void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
 				ray.tmax = 1000.0f;
 				ray.tmin = 0.f;
 
-				float scale = D * L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
+				float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+				//if (ray_trace == 0)
+				//	return;
+
+				float scale = D * L->energy * ray_trace;
 				C.rgb.x += scale * L->diffuse.x;
 				C.rgb.y += scale * L->diffuse.y;
 				C.rgb.z += scale * L->diffuse.z;
@@ -652,18 +629,26 @@ void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
 				ray.tmax = Range;
 				ray.tmin = 0.f;
  				 
-				float scale = D * L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
 				float A;
 				if (inlc_global_data()->gl_linear())
 					A = 1 - Range / L->range;
 				else
-					A = scale * (1 / (L->attenuation0 + L->attenuation1 * Range + L->attenuation2 * sqD) - Range * L->falloff);
-			
+				{
+					float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+					//if (ray_trace == 0)
+					//	return;
+					float scale = D * L->energy * ray_trace;
+
+					A = scale * 
+					(	
+						1 / (L->attenuation0 + L->attenuation1 * Range + L->attenuation2 * sqD) -
+						Range * L->falloff
+					);
+				}
+
 				C.rgb.x += A * L->diffuse.x;
 				C.rgb.y += A * L->diffuse.y;
 				C.rgb.z += A * L->diffuse.z;
-
-				//Msg("RGB COLOR");
 			}
 			break;
 			case LT_SECONDARY:
@@ -684,14 +669,21 @@ void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
  				Fvector	Psave = L->position, Pdir;
 				L->position.mad(Pdir.random_dir(L->direction, PI_DIV_4), .05f);
 				float R = _sqrt(sqD);
+			
 				RayOptimizedCPU ray;
 				ray.pos = Pnew;
 				ray.dir = Ldir;
 				ray.tmax = R;
 				ray.tmin = 0.f;
 
- 
-				float scale = powf(D, 1.f / 8.f) * L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
+
+ 				float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+				//if (ray_trace == 0)
+				//	return;
+
+				float scale = powf(D, 1.f / 8.f) * L->energy * ray_trace;
+
+
 				float A = scale * (1 - R / L->range);
 				L->position = Psave;
 
@@ -703,10 +695,12 @@ void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
 			}
 			break;
 		}
+
+
 	}
 }
 
-void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip)
+void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled)
 {
 	Fvector		Ldir, Pnew;
 	Pnew.mad(P, N, 0.01f);
@@ -728,9 +722,13 @@ void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
 			ray.tmax = 1000.f;
 			ray.tmin = 0.f;
 			
-			float scale = L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip);
+			float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+			//if (ray_trace == 0)
+			//	return;
+
+			float scale = L->energy * ray_trace;
 			C.sun += scale;
-			//rays.push_back(r);
+			 
 		}
 		else
 		{
@@ -753,11 +751,13 @@ void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, b
 			ray.tmax = Range;
 			ray.tmin = 0.f;
 			
-			float scale = D * L->energy * RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip) ;
+			float ray_trace = RaytraceEmbreeProcess(th, inlc_global_data()->RCAST_Model(), *L, ray, skip, use_disabled);  
+			//if (ray_trace == 0)
+			//	return;
+
+			float scale = D * L->energy * ray_trace;
 			float A = scale / (L->attenuation0 + L->attenuation1 * Range + L->attenuation2 * sqD);
 			C.sun += A;
-			
-			//rays.push_back(r);
 
 		}
 	}
@@ -773,29 +773,20 @@ void errorFunction(void* userPtr, enum RTCError error, const char* str)
 void IntelEmbereLOAD()
 {
 	std::string config;
-	if (strstr(Core.Params, "-use_avx"))
+	bool avx = false, sse = false;
+	if (avx = strstr(Core.Params, "-use_avx"))
 		config = "threads=8,isa=avx2";
-	else if (strstr(Core.Params, "-use_sse"))
+	else if (sse = strstr(Core.Params, "-use_sse"))
 		config = "threads=8,isa=sse4.2";
 	else
 		config = "threads=8,isa=sse2";
 
-	if (strstr(Core.Params, "-use_avx"))
-		Msg("Initilized AVX");
-	else
-		Msg("Initilized NO INSTRUCTION");
-
-
 	device = rtcNewDevice(config.c_str());
-	if (!device)
-		Msg("Cant Create Device !!!");
-
 	rtcSetDeviceErrorFunction(device, errorFunction, NULL);
 
-	Msg("Packed4: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED));
-	Msg("Packed8: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED));
-	Msg("Packed16: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED));
-
+	
+	Status("Intilized Intel Embree v4.1.0 - %s", avx ? "avx" : sse ? "sse" : "default");
+	
 	// Создание сцены и добавление геометрии
 	 
 	struct VertexEmbree { float x, y, z; };
@@ -803,19 +794,11 @@ void IntelEmbereLOAD()
 	struct TriEmbree { uint32_t point1, point2, point3; };
 	TriEmbree* triangles;
 	// Добавление вершин
+	
 	 
-	Msg("DEVICE CULLING: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED) );
-	Msg("DEVICE IGNORE FACES: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED));
-	Msg("DEVICE COMPACT FACES: %d", rtcGetDeviceProperty(device, RTC_DEVICE_PROPERTY_COMPACT_POLYS_ENABLED));
 
-
-
-	IntelScene = rtcNewScene(device);
-	 
-	//rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT);
-	//rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_ROBUST);
-	//rtcSetSceneBuildQuality(IntelScene, RTC_BUILD_QUALITY_HIGH);
- 
+	// Scene
+	IntelScene = rtcNewScene(device); 
 	IntelGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 
 	vertices = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), inlc_global_data()->RCAST_Model()->get_verts_count());
@@ -826,49 +809,23 @@ void IntelEmbereLOAD()
 		Fvector verts = inlc_global_data()->RCAST_Model()->get_verts()[i];
 		vertices[i] = VertexEmbree{ verts.x, verts.y, verts.z };
 	}
-
-	int TriOpaque = 0;
-	int TriNotOpque = 0;
-
-	int TriShadowed = 0;
-	int TriNotShadowed = 0;
-
+ 
 	for (int i = 0; i < inlc_global_data()->RCAST_Model()->get_tris_count(); i++)
 	{
 		CDB::TRI tri = inlc_global_data()->RCAST_Model()->get_tris()[i];
-		base_Face* F = (base_Face*)(tri.pointer);
-		const Shader_xrLC& SH = F->Shader();
-
-		opacity[i] = F->flags.bOpaque;
-		cast_shadowed[i] = SH.flags.bLIGHT_CastShadow;
-		if (opacity[i])
-			TriOpaque++;
-		else
-			TriNotOpque++;
-
-		if (cast_shadowed[i])
-			TriShadowed++;
-		else
-			TriNotShadowed++;
-
 		triangles[i] = TriEmbree{ tri.verts[0], tri.verts[1], tri.verts[2] };
 	}
 
-	Msg("Opacue: true: %d / false: %d", TriOpaque, TriNotOpque);
-	Msg("Shadowed: true: %d / false: %d", TriShadowed, TriNotShadowed);
-		
+	rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_HIGH);
+
 	rtcCommitGeometry(IntelGeometry);
 	rtcAttachGeometry(IntelScene, IntelGeometry);
-	
-
 	rtcCommitScene(IntelScene);
+
+
 
 	// Устанавливать обезательно иле будет в Колбеке PrimID	= 0 
 	rtcSetGeometryIntersectFilterFunction(IntelGeometry, &FilterIntersectionOne);		
- 
-	// Только для USER GEOM
-	//argument_intersect.intersect = &IntersectFunction;
-	//rtcSetGeometryIntersectFunction(geometry, &IntersectFunction);
 }
 
 void IntelEmbereUNLOAD()

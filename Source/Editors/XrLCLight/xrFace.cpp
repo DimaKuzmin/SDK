@@ -6,7 +6,8 @@
 #include "xrLC_globaldata.h"
 #include "serialize.h"
 #include "lightmap.h"
-volatile u32					dwInvalidFaces;//= 0;
+
+volatile u32					dwInvalidFaces;
 u32		InvalideFaces()
 {
 	return dwInvalidFaces;
@@ -43,24 +44,8 @@ Face*	Face::read_create( )
 	return f;
 }
 
-
-
-//
-//const int	edge2idx	[3][2]	= { {0,1},		{1,2},		{2,0}	};
-//const int	edge2idx3	[3][3]	= { {0,1,2},	{1,2,0},	{2,0,1}	};
-//const int	idx2edge	[3][3]  = {
-//	{-1,  0,  2},
-//	{ 0, -1,  1},
-//	{ 2,  1, -1}
-//};
-
-
-
-//extern CBuild*	pBuild;
-
 bool			g_bUnregister = true;
 
-//template<>
 void destroy_vertex( Vertex* &v, bool unregister )
 {
 	bool tmp_unregister = g_bUnregister;
@@ -68,6 +53,7 @@ void destroy_vertex( Vertex* &v, bool unregister )
 	inlc_global_data()->destroy_vertex( v );
 	g_bUnregister = tmp_unregister;
 }
+
 void destroy_face( Face* &v, bool unregister )
 {
 	bool tmp_unregister = g_bUnregister;
@@ -75,11 +61,6 @@ void destroy_face( Face* &v, bool unregister )
 	inlc_global_data()->destroy_face( v );
 	g_bUnregister = tmp_unregister;
 }
-//vecVertex		g_vertices;
-//vecFace			g_faces;
-
-//poolVertices	VertexPool;
-//poolFaces		FacePool;
 
 Tvertex<DataVertex>::Tvertex()
 {
@@ -87,8 +68,7 @@ Tvertex<DataVertex>::Tvertex()
 	VERIFY( inlc_global_data() );
 	if( inlc_global_data()->vert_construct_register() )
 	{	
-		//set_index( inlc_global_data()->g_vertices().size() );
-		inlc_global_data()->g_vertices().push_back(this);
+ 		inlc_global_data()->g_vertices().push_back(this);
 	}
 	m_adjacents.reserve	(4);
 }
@@ -96,18 +76,17 @@ Tvertex<DataVertex>::Tvertex()
 template <>
 Tvertex<DataVertex>::~Tvertex()
 {
-	if (g_bUnregister) {
+	if (g_bUnregister) 
+	{
 		vecVertexIt F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), this);
 		if (F!=inlc_global_data()->g_vertices().end())
 		{
 			vecVertex& verts = inlc_global_data()->g_vertices();
 			std::swap( *F, *( verts.end()-1 ) );
 			verts.pop_back();
-			//faces.erase(F);
-			
-			//inlc_global_data()->g_vertices().erase(F);
 		}
-		else clMsg("* ERROR: Unregistered VERTEX destroyed");
+		else 
+			clMsg("* ERROR: Unregistered VERTEX destroyed");
 	}
 }
 
@@ -127,15 +106,11 @@ Vertex*	Vertex::read_create( )
 	return inlc_global_data()->create_vertex();;
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
+ 
 
 template<>
 Tface<DataVertex>::Tface()
 {
-	
 	pDeflector				= 0;
 	flags.bSplitted			= false;
 	VERIFY( inlc_global_data() );
@@ -220,17 +195,19 @@ void start_unwarp_recursion()
 	affected				= 1;
 }
  
-void Face::OA_Unwarp( CDeflector *D )
+void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces )
 {
 	if (pDeflector)					return;
 	if (!D->OA_Place(this))		    return;
 	
+	faces.push_back(this);
+
 	// now iterate on all our neigbours
 	for (int i=0; i<3; ++i) 
 	for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
 	{
 		affected		+= 1;
-		(*it)->OA_Unwarp(D);
+		(*it)->OA_Unwarp(D, faces);
 	}
 }
 
@@ -238,8 +215,7 @@ void Face::OA_Unwarp( CDeflector *D )
 BOOL	DataFace::RenderEqualTo	(Face *F)
 {
 	if (F->dwMaterial	!= dwMaterial		)	return FALSE;
-	//if (F->tc.size()	!= F->tc.size()		)	return FALSE;	// redundant???
-	return TRUE;
+ 	return TRUE;
 }
 
 
@@ -260,84 +236,6 @@ BOOL	DataFace::hasImplicitLighting()
 	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
-
-
-/*	
-	Fvector					N;				// face normal
-
-	svector<_TCF,2>			tc;				// TC
-
-	void*					pDeflector;		// does the face has LM-UV map?
-	CLightmap*				lmap_layer;
-	u32						sm_group;
-*/
-
-
-/*
-BOOL	exact_normalize	(Fvector3& a)	{	return exact_normalize(&a.x);	}
-BOOL	exact_normalize (float* a)
-{
-	double	sqr_magnitude	= a[0]*a[0] + a[1]*a[1] + a[2]*a[2];
-	double	epsilon			= 1.192092896e-05F;
-	if		(sqr_magnitude > epsilon)
-	{
-		double	l	=	rsqrt(sqr_magnitude);
-		a[0]		*=	l;
-		a[1]		*=	l;
-		a[2]		*=	l;
-		return		TRUE;
-	}
-
-	double a0,a1,a2,aa0,aa1,aa2,l;
-	a0 = a[0];
-	a1 = a[1];
-	a2 = a[2];
-	aa0 = _abs(a0);
-	aa1 = _abs(a1);
-	aa2 = _abs(a2);
-	if (aa1 > aa0) {
-		if (aa2 > aa1) {
-			goto aa2_largest;
-		}
-		else {		// aa1 is largest
-			a0 /= aa1;
-			a2 /= aa1;
-			l = rsqrt (a0*a0 + a2*a2 + 1);
-			a[0] = a0*l;
-			a[1] = (double)_copysign(l,a1);
-			a[2] = a2*l;
-		}
-	}
-	else {
-		if (aa2 > aa0) {
-aa2_largest:	// aa2 is largest
-			a0 /= aa2;
-			a1 /= aa2;
-			l = rsqrt (a0*a0 + a1*a1 + 1);
-			a[0] = a0*l;
-			a[1] = a1*l;
-			a[2] = (double)_copysign(l,a2);
-		}
-		else {		// aa0 is largest
-			if (aa0 <= 0) {
-				// dDEBUGMSG ("vector has zero size"); ... this messace is annoying
-				a[0] = 0;	// if all a's are zero, this is where we'll end up.
-				a[1] = 1;	// return a default unit length vector.
-				a[2] = 0;
-				return	FALSE;
-			}
-			a1 /= aa0;
-			a2 /= aa0;
-			l = rsqrt (a1*a1 + a2*a2 + 1);
-			a[0] = (double)_copysign(l,a0);
-			a[1] = a1*l;
-			a[2] = a2*l;
-		}
-	}
-	return	TRUE;
-}
-*/
-
 
 void	DataFace::	read	(INetReader	&r )
 {
@@ -360,80 +258,7 @@ void	DataFace::	write	(IWriter	&w )const
 	write_lightmaps->write( w, lmap_layer );
 	w.w_u32( sm_group );
 }
-
-void DataFace::write_Reader(IWriter &w)
-{
-	base_Face::write_Reader(w);
-	w.w_fvector3(N);
-	w_vector(w, tc);
-	if (write_lightmaps)
-	{
-		//VERIFY(write_lightmaps);
-		w.w_u8(1);
-		write_lightmaps->write(w, lmap_layer);
-	}
-	w.w_u32(sm_group);
-}
-
-void DataFace::read_Reader(IReader& r)
-{
-	base_Face::read_Reader(r);
-
-	r.r_fvector3(N);
-	r_vector_reader(r, tc);
-	pDeflector = 0;
-	 
-	if (false)
-	{
-		//VERIFY(read_lightmaps);
-		read_lightmaps->read_Reader(r, lmap_layer);
-	}
-	sm_group = r.r_u32();
-}
-
-void DataFace::write_LTX(CInifile* file, LPCSTR sec, LPCSTR pref)
-{
-	base_Face::write_LTX(file, sec);
-
-	file->w_fvector3(sec, "vec", N);
-		
-	u32 id = 0;
-	for (auto t : tc)
-	{
-		string32 p = {0};
-		sprintf(p, "tcf_%d_", id);
-  		t.WriteLTX(file, sec, p);
-		id += 1;
-	}
-
-	file->w_u32(sec, "sm_group", sm_group);
-}
-
-void DataFace::read_LTX(CInifile* file, LPCSTR sec, LPCSTR pref)
-{
-	base_Face::write_LTX(file, sec);
-}
-
-
-void DataVertex::write_Reader(IWriter& w)
-{
-	base_Vertex::write_Reader(w);
-}
-void DataVertex::read_Reader(IReader& r)
-{
-	base_Vertex::read_Reader(r);
-}
-
-void DataVertex::write_LTX(CInifile* file, LPCSTR sec)
-{
-	base_Vertex::write_LTX(file, sec);
-}
-
-void DataVertex::read_LTX(CInifile* file, LPCSTR sec)
-{
-	base_Vertex::read_LTX(file, sec);
-}
-
+	
 void	DataVertex::	read	(INetReader	&r )
 {
 	base_Vertex::read( r );

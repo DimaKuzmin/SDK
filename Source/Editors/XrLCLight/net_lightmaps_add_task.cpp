@@ -81,8 +81,10 @@ namespace lc_net
 		
 		//
 		u32 total_weight = 0;
-		xr_vector<CDeflector*>::const_iterator i = inlc_global_data()->g_deflectors().begin(),
-			e = inlc_global_data()->g_deflectors().end();
+		xr_vector<CDeflector*>::const_iterator
+		i = inlc_global_data()->g_deflectors().begin(), 
+		e = inlc_global_data()->g_deflectors().end();
+
 		for( ; i!=e ; ++i )
 			total_weight += (*i)->weight();
 		

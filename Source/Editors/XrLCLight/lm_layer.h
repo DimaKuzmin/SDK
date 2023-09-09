@@ -25,24 +25,58 @@ struct XRLC_LIGHT_API LightpointRequest
 	}
 };
 
+struct XRLC_LIGHT_API LightpointRequestC : LightpointRequest
+{
+	base_color_c color;
 
+	LightpointRequestC(u32 InX, u32 InY, Fvector InPosition, Fvector InNormal, void* InFaceToSkip) : LightpointRequest(InX, InY, InPosition, InNormal, InFaceToSkip)
+	{
+ 	}
+};
 
-
+ 
 
 #define BORDER 1
 
 class INetReader;
 struct XRLC_LIGHT_API  lm_layer
 {
-	xr_vector <LightpointRequest> SurfaceLightRequests;
-
 	u32						width;
 	u32						height;
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
 private:
 //	LMODE					mode;	
-public:
+public:	  
+	xr_vector<LightpointRequest> SurfaceLightRequests;
+	xr_vector<xr_map<int, LightpointRequestC>> SurfaceLightRequestsColor;
+	
+	void Serilize(IWriter* w)
+	{
+		w->w_u32(surface.size());
+		w->w(&*surface.data(), surface.size() * sizeof(base_color));
+
+		w->w_u32(marker.size());
+		w->w(&*marker.data(), marker.size() * sizeof(u8));
+
+		w->w_u32(width);
+		w->w_u32(height);
+	}
+
+	void Deserilize(IReader* read)
+	{
+		u32 size = read->r_u32();
+		read->r(&*surface.data(), size * sizeof(base_color));
+
+		u32 sizem = read->r_u32();
+		read->r(&*marker.data(), sizem * sizeof(u8));
+
+		width  = read->r_u32();
+		height = read->r_u32();
+	}
+
+//	xr_vector <LightpointSampleRecvest> SurfaceLightRequestsSamples;
+
 	void					create			(u32 w, u32 h)
 	{
 		width				= w;
@@ -50,6 +84,8 @@ public:
 		u32		size		= w*h;
 		surface.clear();	surface.resize	(size);
 		marker.clear();		marker.assign	(size,0);
+
+//		SurfaceLightRequestsSamples.resize(size);
 	}
 	void					destroy			()
 	{

@@ -9,6 +9,7 @@ extern void Detach		(vecFace* S);
 
 IC BOOL	FaceEqual		(Face* F1, Face* F2)
 {
+	if (F1->v[0]->P.distance_to(F2->v[0]->P) > 256 ) return FALSE;
 	if (F1->dwMaterial  != F2->dwMaterial)		return FALSE;
 	if (F1->tc.size()	!= F2->tc.size())		return FALSE;
 	if (F1->lmap_layer  != F2->lmap_layer)		return FALSE;
@@ -235,8 +236,6 @@ void DoneMergeGmThreads()
 	mergegm_threads_initialized = FALSE;
 }
 
-bool USC = false;
-
 ICF void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume , u32 split , u32 split_size , vecFace* subdiv , Fbox* bb_base_orig , Fbox* bb_base )
 {
 	u32 m_range = ( split_size - split ) / mergegm_threads_count;
@@ -278,9 +277,6 @@ xrCriticalSection cs;
 ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base )
 {
 	int CUR_ID = *selected;
-	cs.Enter();
-	bool use_single = USC;
-	cs.Leave();
 
  	for ( u32 test = split ; test < split_size ; test++ ) 
 	{	
@@ -302,36 +298,85 @@ ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 sp
  		if ( volume < *selected_volume)
 		{
 			*selected = test;
-			*selected_volume	= volume;
-			
-			if (use_single)
-				break;			
+			*selected_volume	= volume;			
  		}
 	}
 }
 
 xr_vector<int> reserved;
-xr_map<int, xr_vector<int>> thread_faces;
+
+struct data_vec
+{
+	int face_id;
+};
+
+struct data_faces
+{
+	xr_vector<data_vec> faces_vec;
+};
+
+xr_map<int, data_faces> thread_faces;
 int ready_threads;
+
+#include <execution>
 
 IC void FindBestMergeCandidateTH(int ID, u32* selected, float* selected_volume, Fbox* bb_base_orig, Fbox* bb_base)
 {
 	int CUR_ID = *selected;
+ 
+	if (thread_faces[ID].faces_vec.size() > 1)
+	{
+		float volume;
+		auto it = std::find_if(std::execution::par, thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
+		[&] (data_vec test)
+		{
+			if (!g_XSplit[test.face_id])
+				return false;
 
-	for (auto test : thread_faces[ID])
+		  	if (g_XSplit[test.face_id]->empty())
+				return false;
+
+			Fbox bb;
+ 			vecFace& TEST = *(g_XSplit[test.face_id]);
+			vecFace* subdiv = (g_XSplit[CUR_ID]);
+ 
+ 			if (!FaceEqual(subdiv->front(), TEST.front()))
+				return false;
+
+  			if (!NeedMerge(TEST, bb, test.face_id))
+				return false;
+ 
+			if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
+				return false;
+			
+			if (volume < *selected_volume)
+				return true;
+			else 
+				return false;
+		});
+		
+		if (it != thread_faces[ID].faces_vec.end())
+		{
+			*selected = (*it).face_id;
+			*selected_volume = volume;
+		}
+
+	}
+	else 
+	for (auto test : thread_faces[ID].faces_vec)
 	{ 
-		if (g_XSplit[test]->empty())
+		if (g_XSplit[test.face_id]->empty())
 			continue;
 
 		Fbox bb;
 		float volume;
-		vecFace& TEST = *(g_XSplit[test]);
+		vecFace& TEST = *(g_XSplit[test.face_id]);
 		vecFace* subdiv = (g_XSplit[CUR_ID]);
 
  		if (!FaceEqual(subdiv->front(), TEST.front()))
 			continue;
 
-  		if (!NeedMerge(TEST, bb, test))
+  		if (!NeedMerge(TEST, bb, test.face_id))
 			continue;
  
 		if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
@@ -339,36 +384,35 @@ IC void FindBestMergeCandidateTH(int ID, u32* selected, float* selected_volume, 
 
  		if (volume < *selected_volume)
 		{
-			*selected = test;
+			*selected = test.face_id;
 			*selected_volume = volume;						
 			break;
 		}
 	}
+	
 }	  
 
-ICF void FindWhileMergeNeed(int th, int id)
-{
- 	int size = thread_faces[id].size();
-
+ICF void FindWhileMergeNeed(int id)
+{ 
 	for (;;)
 	{
 		lock.lock();
-		if (thread_faces[id].size() == 0)
+		if (thread_faces[id].faces_vec.size() == 0)
 		{
 			lock.unlock();
 			break;
 		}
 
-		int s = thread_faces[id].back();
-		thread_faces[id].pop_back();		
+		int s = thread_faces[id].faces_vec.back().face_id;
+		thread_faces[id].faces_vec.pop_back();		
 		lock.unlock();
 
 		if (g_XSplit[s]->empty())
 			continue;
 
-		Progress(1.0f / thread_faces[id].size());
+		Progress(1.0f / thread_faces[id].faces_vec.size());
 
-		StatusNoMSG("IDX: %d", thread_faces[id].size());
+		StatusNoMSG("IDX: %d", thread_faces[id].faces_vec.size());
 
 		vecFace& subdiv = *(g_XSplit[s]);
 		bool		bb_base_orig_inited = false;
@@ -396,16 +440,16 @@ ICF void FindWhileMergeNeed(int th, int id)
 
 			// **OK**. Perform merge
 			lock.lock();
-				subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
-				g_XSplit[selected]->clear_not_free();
- 				bb_bases.erase(s);
+			subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
+			g_XSplit[selected]->clear_not_free();
+ 			bb_bases.erase(s);
  			lock.unlock();
 			
 		}
 	}
 }
 
-IC void FindSelectedMaterialCandidate(int th_id)
+IC void FindSelectedMaterialCandidate()
 {
 	int current_id = 0;
 	int max_id = reserved.size();
@@ -427,8 +471,8 @@ IC void FindSelectedMaterialCandidate(int th_id)
 		reserved.pop_back();
 		lock.unlock();
 		
- 		clMsg("Merge id: %d/%d, p:%d, Second: %.0f", current_id, max_id, thread_faces[id].size(), t.GetElapsed_sec() );		
-		FindWhileMergeNeed(0, id);
+ 		clMsg("Merge id: %d/%d, candidates:%d, Second: %.0f", current_id, max_id, thread_faces[id].faces_vec.size(), t.GetElapsed_sec() );		
+		FindWhileMergeNeed(id);
 	}
 
 	ready_threads++;
@@ -436,74 +480,37 @@ IC void FindSelectedMaterialCandidate(int th_id)
 
 int THREADS_COUNT(); 
 #define MAX_THREADS THREADS_COUNT()
+ 
 
 void CBuild::xrPhase_MergeGeometry()
 {
 	Status("Processing...");
 	validate_splits();
 
-	// Initialize helper threads
-	//	 InitMergeGmThreads
+	bool use_fast_way = true;
 
-	bool use_fast_way = strstr(Core.Params, "-fast_merge");
-	bool use_single_core = strstr(Core.Params, "-single_core_merge");
-
-	USC = use_single_core;
-	CTimer t; t.Start();
+	CTimer t; 
+	t.Start();
 
 	if (use_fast_way)
 	{ 
  		for (int split = 0; split < g_XSplit.size(); split++)
-		{
-			thread_faces[g_XSplit[split]->front()->dwMaterial].push_back(split);
-		}
+			thread_faces[g_XSplit[split]->front()->dwMaterial].faces_vec.push_back(data_vec{split});
 
 		for (auto mat : thread_faces)
-		{
 			reserved.push_back(mat.first);
-		}
-
-	//	FindSelectedMaterialCandidate(1);
-
-		 
-		for (int i = 1; i <= MAX_THREADS; i++)
-		{
-			std::thread* th = new std::thread(FindSelectedMaterialCandidate, i);
-			th->detach();
-		}
-
-		while (ready_threads < MAX_THREADS)
-		{
-			clMsg("Ready THs: %d/%d, time: %.0f", ready_threads, MAX_THREADS, t.GetElapsed_sec());
-			Sleep(1000);
-		}
-		 
-
+ 		
+		// Run Work
+		FindSelectedMaterialCandidate();
+ 
+		// Clear Data
 		thread_faces.clear();
-		/* 
-		for (int split = 0; split < g_XSplit.size(); split++)
-		{
-			Progress(float (split / g_XSplit.size()) );
- 			if (split % 64 == 0)
-				StatusNoMSG("Progress ERASE: %d / %d, time: %.0f", split, g_XSplit.size(), t.GetElapsed_sec());
-			
-			if (g_XSplit[split]->empty())
-			{	
-				xr_delete(g_XSplit[split]);
-				g_XSplit.erase(g_XSplit.begin() + split);
-				if (split > 0)
-					split--;
-			}
-		}
-		*/
-
 		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { return ptr->empty(); }), g_XSplit.end());
 
 	}
 	else
 	{ 
-		if (!use_single_core)
-			InitMergeGmThreads();
+		InitMergeGmThreads();
 
 		for (u32 split = 0; split < g_XSplit.size(); split++)
 		{
@@ -525,10 +532,7 @@ void CBuild::xrPhase_MergeGeometry()
 				u32	selected = split;
 				float	selected_volume = flt_max;
 
-				if (use_single_core)
-					FindBestMergeCandidate(&selected, &selected_volume, split + 1, g_XSplit.size(), &bb_base_orig, &bb_base);
-				else
-					FindBestMergeCandidate_threads(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_base_orig, &bb_base);
+				FindBestMergeCandidate_threads(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_base_orig, &bb_base);
 
 				if (selected == split)
 					break;
@@ -544,13 +548,8 @@ void CBuild::xrPhase_MergeGeometry()
 			StatusNoMSG("Merge %d/%d, time: %.0f", split, g_XSplit.size(), t.GetElapsed_sec());
 		}
 
-		if (!use_single_core)
-			DoneMergeGmThreads();
-
+		DoneMergeGmThreads();
 	}
-
-	// Destroy helper threads
-	//DoneMergeGmThreads();
 	
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits			();

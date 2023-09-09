@@ -47,20 +47,28 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 
 void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	R_ASSERT(ds_x>=(ss_x+px));
-	R_ASSERT(ds_y>=(ss_y+py));
-	for (u32 y=0; y<ss_y; y++)
-		for (u32 x=0; x<ss_x; x++)
+	//R_ASSERT(ds_x>=(ss_x+px));
+	//R_ASSERT(ds_y>=(ss_y+py));
+	try
+	{
+		for (u32 y = 0; y < ss_y; y++)
+		for (u32 x = 0; x < ss_x; x++)
 		{
-			u32 dx = px+x;
-			u32 dy = py+y;
-			base_color	sc = src.surface[y*ss_x+x];
-			u8			sm = src.marker [y*ss_x+x];
-			if (sm>=aREF) {
-				dst.surface	[dy*ds_x+dx] = sc;
-				dst.marker	[dy*ds_x+dx] = sm;
+			u32 dx = px + x;
+			u32 dy = py + y;
+			base_color	sc = src.surface[y * ss_x + x];
+			u8			sm = src.marker[y * ss_x + x];
+			if (sm >= aREF)
+			{
+				dst.surface[dy * ds_x + dx] = sc;
+				dst.marker[dy * ds_x + dx] = sm;
 			}
 		}
+	}
+	catch(...)
+	{
+		Msg_IN_FILE("ERROR LM blit: ss_x %d, ss_y %d, src_size: %d, dst_size: %d, ", ss_x, ss_y, src.surface.size(), dst.surface.size());
+	}
 }
 
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
@@ -311,7 +319,7 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 }
 
 
-void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
 {
 	try 
 	{
@@ -333,7 +341,7 @@ void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSel
 		R_ASSERT		(lm.width	<=(getLMSIZE() -2*BORDER));
 		R_ASSERT		(lm.height	<=(getLMSIZE() -2*BORDER));
 		lm.create		(lm.width,lm.height);
-		L_Direct		(th, DB,LightsSelected,H);
+		L_Direct		(th, DB,LightsSelected,H, use_cpu);
 	} 
 	catch (...)
 	{
@@ -370,6 +378,50 @@ void	CDeflector::send_result			( IWriter	&w ) const
 #ifdef	COLLECT_EXECUTION_STATS
 	time_stat.write( w );
 #endif
+}
+
+void CDeflector::Serialize(IWriter* w)
+{
+	// UV Tri
+	w->w_u32(UVpolys.size());
+  	for (auto uv : UVpolys)
+	{
+		uv.Serialize(w);
+		//uv.owner->pDeflector = this;
+	}
+
+	// Deflector Data
+	w->w(&Sphere, sizeof(Sphere)) ; 
+	w->w_fvector3( normal );
+ 	w->w_u32 ( layer.width );
+	w->w_u32 ( layer.height );
+	w->w_u8( (u8) bMerged );
+
+	// Layer
+	layer.Serilize(w);
+}
+
+void CDeflector::Deserialize(IReader* read)
+{
+	// UV Tri
+	u32 size = read->r_u32();
+	UVpolys.resize(size);
+
+  	for (int i = 0; i < size; i++)
+	{
+		UVpolys[i].Deserialize(read);
+		UVpolys[i].owner->pDeflector = this;
+	}
+
+	// Deflector Data
+	read->r(&Sphere, sizeof(Sphere)) ; 
+	read->r_fvector3( normal );
+ 	layer.width		= read->r_u32 ();
+	layer.height	= read->r_u32 ();
+	bMerged = read->r_u8();
+
+	// Layer
+	layer.Deserilize(read);
 }
 
 void	CDeflector::read				( INetReader	&r )
@@ -447,6 +499,30 @@ bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 		layer.similar( D.layer, eps );
 }
 
+bool CDeflector::similar_pos(const CDeflector& D, float eps) const
+{
+	/*
+	if (Sphere.P.x != D.Sphere.P.x) 
+		return Sphere.P.x < D.Sphere.P.x;
+    if (Sphere.P.y != D.Sphere.P.y)
+		return Sphere.P.y < D.Sphere.P.y;
+    return Sphere.P.z < D.Sphere.P.z;
+	*/
+
+	if (Sphere.P.x < (D.Sphere.P.x - eps) || Sphere.P.x >(D.Sphere.P.x + eps))
+		return false;
+
+	if (Sphere.P.y < (D.Sphere.P.y - eps) || Sphere.P.y >(D.Sphere.P.y + eps))
+		return false;
+	
+	if (Sphere.P.z < (D.Sphere.P.z - eps) || Sphere.P.z >(D.Sphere.P.z + eps))
+		return false;
+
+	return true;
+	
+	//return Sphere.P.magnitude() < D.Sphere.P.magnitude();
+}
+
 
 CDeflector*		CDeflector::read_create					()
 {
@@ -497,12 +573,8 @@ void setLMSIZE(int size)
 
 u32 getLMSIZE()
 {
-	if (strstr(Core.Params, "-fast_lightmaps"))
+	//if (strstr(Core.Params, "-fast_lightmaps"))
 		return global_size_map;
 
-
-	//if (strstr(Core.Params, "-fast_lightmaps"))
-	//	return 8192; 
-
-	return 1024;
+	//return 1024;
 }

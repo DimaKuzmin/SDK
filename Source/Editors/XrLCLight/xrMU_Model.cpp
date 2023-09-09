@@ -6,9 +6,10 @@
 #include "vector_clear.h"
 #include "../../xrcore/xrPool.h"
 
-xrMU_Model::xrMU_Model(): 
-m_lod_ID(u16(-1)),read_faces(0),read_vertices(0),write_faces(0), write_vertices(0)
-{}
+xrMU_Model::xrMU_Model(): m_lod_ID(u16(-1)),read_faces(0),read_vertices(0),write_faces(0), write_vertices(0)
+{
+}
+
 xrMU_Model::~xrMU_Model()
 {
 	reading_close();
@@ -222,6 +223,7 @@ void	xrMU_Model::read_face_verts		( INetReader	&r, xrMU_Model::tread_vertices &r
 	read_verts.read( r, v.v[1] );
 	read_verts.read( r, v.v[2] );
 }
+
 void	xrMU_Model::write_face_verts	( IWriter	&w, xrMU_Model::twrite_vertices &write_verts, const _face &v )
 {
 	write_verts.write( w, v.v[0] );

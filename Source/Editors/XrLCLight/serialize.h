@@ -25,21 +25,9 @@ void r_pod( INetReader	&r, T& v  )
 }
 
 template <typename T>
-void r_pod_reader(IReader& r, T& v)
-{
-	r.r(&v, sizeof(T));
-}
-
-template <typename T>
 void w_pod( IWriter	&w, const T& v  )
 {
 	w.w(&v, sizeof( T ) );
-}
-
-template <typename T>
-void w_pod_writer(IWriter& w, const T& v)
-{
-	w.w(&v, sizeof(T));
 }
 
 template<typename T>
@@ -92,17 +80,6 @@ void r_vector( INetReader	&r, svector< T, dim > & v )
 	for(;i!=e;++i)
 		i->read(r);
 
-}
-
-template< typename T, const int dim >
-void r_vector_reader(IReader& r, svector< T, dim >& v)
-{
-	u32 cnt = r.r_u32();
- 	v.resize(cnt);
-
-	svector<T, dim>::iterator i = v.begin(), e = v.end();
-	for (; i != e; ++i)
-		i->readReader(r);
 }
 
 template< typename T, const int dim >
@@ -230,25 +207,13 @@ private:
 	void read(INetReader &r) 
 	{
 		vec.resize( r.r_u32(), 0 );
-		//xr_vector<T*>::iterator i = vec.begin(), e =  vec.end();
+ 
 		for( u32 i= 0 ;i < vec.size(); ++i )
 		{
 			vec[i] = T::read_create();
 			vec[i] ->read(r);
 		}
 	}
-
-	void readReader(IReader& r)
-	{
-		vec.resize(r.r_u32(), 0);
-		//xr_vector<T*>::iterator i = vec.begin(), e =  vec.end();
-		for (u32 i = 0; i < vec.size(); ++i)
-		{
-			vec[i] = T::read_create();
-			vec[i]->read(r);
-		}
-	}
-
 	void	read	( INetReader &r, T* &f ) const
 	{
 		VERIFY( !f );
@@ -258,27 +223,16 @@ private:
 		f = vec[ id ];
 	}
 
-	void	readReader(IReader& r, T*& f) const
-	{
-		VERIFY(!f);
-		u32 id = r.r_u32();
-		if (id == t_serialize::id_none)
-			return;
-		f = vec[id];
-	}
-
 	void	read_ref(  INetReader &r, xr_vector<T*>& ref_vec ) const
 	{
 		ref_vec.resize( r.r_u32(), 0 );
-		//xr_vector<T*>::iterator i = ref_vec.begin(), e =  ref_vec.end();
-		for( u32 i= 0 ;i < ref_vec.size(); ++i )
-					read( r, ref_vec[i] );
+ 		for( u32 i= 0 ;i < ref_vec.size(); ++i )
+			read( r, ref_vec[i] );
 	}
 
 	t_read(xr_vector<T*>	&_vec): vec( _vec )
 	{
-		//_vec.clear();	
-	}
+ 	}
 
 };
 
@@ -302,7 +256,7 @@ public:
 
 	}
 
-static	u32		get_id			(  const type* f, const xr_vector<type*>& vec )
+	static	u32		get_id			(  const type* f, const xr_vector<type*>& vec )
 	{
 		return id_type::get_id(f,vec);
 		//if( f == 0 )
@@ -317,28 +271,19 @@ static	u32		get_id			(  const type* f, const xr_vector<type*>& vec )
 		serialize.read( r );
 		id_type::preset(serialize.vec);
 	}
-
 	void write(IWriter &w) const
 	{
 		id_type::preset(serialize.vec);
 		serialize.write( w );
 	}
-
 	void read( INetReader &r, type* &f ) const
 	{
 		serialize.read( r, f );
 	}
-	
 	void write( IWriter &w, const type* f ) const
 	{
 		serialize.write( w, f );
 	}
-
-	void read_Reader(IReader& r, type*& f) const
-	{
-		serialize.readReader(r, f);
-	}
-	 
 
 	void read_ref(  INetReader &r, xr_vector<type*>& ref_vec ) const
 	{

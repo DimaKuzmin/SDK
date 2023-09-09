@@ -29,7 +29,7 @@ public:
 	{
 		if (size_in_bites > 1 * 1024 * 1024)
 		{
-			Msg("MEMSET: %d MB, buffer: %s", size_in_bites / 1024 / 1024, name);
+		//	Msg("MEMSET: %d MB, buffer: %s", size_in_bites / 1024 / 1024, name);
 		}
 
 		CHK_CUDA(cudaMalloc(ptr, size_in_bites));
@@ -69,6 +69,7 @@ public:
 				}
 				else
 				{
+					//Msg("use sys mem, buffer name : %s", name);
 					CHK_CUDA(cudaMallocHost(&m_ptr, sizeInBytes(), 0));
 				}
 				 

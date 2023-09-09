@@ -9,11 +9,13 @@ struct XRLC_LIGHT_API _TCF
 	IC bool	isInside	(float u, float v, float w)		{	return (u>=0 && u<=1) && (v>=0 && v<=1) && (w>=0 && w<=1); }
 	IC bool	isInside	(Fvector &B)					{	return	isInside	(B.x,B.y,B.z); }
 	IC bool	isInside	(Fvector2 &P, Fvector &B)		{	barycentric(P,B);	return isInside(B);	}
+	
 	void	read		( INetReader	&r );
+	void	readReader	( IReader	&r );
 	void	write		( IWriter	&w ) const ;
 
-	void	readReader	(IReader& r);
-	void	ReadLTX(CInifile* file, LPCSTR sec, LPCSTR pref);
-	void	WriteLTX(CInifile* file, LPCSTR sec, LPCSTR pref);
+	void Serialize(IWriter* write) { write->w(&uv, sizeof(Fvector2));};
+	void Deserialize(IReader* read) { read->r(&uv, sizeof(Fvector2));};
+
 	bool	similar		(  const _TCF &_tc, float eps = EPS ) const;
 };

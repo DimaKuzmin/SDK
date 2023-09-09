@@ -12,6 +12,20 @@
 #include "optix_primepp.h"
 #include "cuda_runtime.h"
 
+// GLOBAL MEMORY SETTINGS
+
+bool use_GPU_mem = true;
+bool use_GPU_mem_tex = true;
+bool use_GPU_mem_VertexTri = true;
+
+bool use_GPU_mem_stage_1 = true;
+bool use_GPU_mem_stage_2 = true;
+bool use_GPU_mem_stage_3 = true;
+
+
+
+
+
 
 optix::prime::Context PrimeContext;
 
@@ -45,6 +59,8 @@ extern "C"
 	cudaError_t RunGenerateRaysForTask(xrHardwareLCGlobalData* GlobalData, RayRequest* RequestedRays, Ray* RayBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag);
 	cudaError_t RunProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime, int flag, u64* FacesToSkip, u32 * aliverays, int Rounds);
 	cudaError_t RunFinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, base_color_c* OutColors, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc);
+
+	cudaError_t RunFinalizeRaysLMAPS(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, ResultReqvest* OutColors, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc);
 }
 
 
@@ -170,15 +186,6 @@ xrHardwareLight::~xrHardwareLight()
 
 xr_map<int, xr_vector<RayRequest>> cur_task;
 
-bool use_GPU_mem = true;
-bool use_GPU_mem_tex = true;
-
-bool use_GPU_mem_stage_1 = true;
-bool use_GPU_mem_stage_2 = true;
-bool use_GPU_mem_stage_3 = true;
-
-
-
 void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightings, xr_vector<b_BuildTexture>& Textures)
 {
 	Progress(0.0f);
@@ -193,8 +200,8 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 		string256 m;
 		xr_sprintf(m, "Build failed!\nFree video RAM (%zu MB) not enough to load level (%zu MB)", DeviceFreeMemory / 1024 / 1024, LevelMemoryRequired / 1024 / 1024);
 		Msg(m);
-		ExitProcess(1);
-		return;
+		//ExitProcess(1);
+		//return;
 	}
 
 	//###LEVEL GEOMETRY
@@ -203,9 +210,24 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 	//LOAD CDB::MODEL
 	HardwareModel OptimizedModel;
 
+	{
+	  	size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("START GPU USE: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
+
+
 	//vertexes
-	CDBVertexesBuffer.alloc(RaycastModel->get_verts_count(), GetBufferTypeByMode(mode), use_GPU_mem);
+	CDBVertexesBuffer.alloc(RaycastModel->get_verts_count(), GetBufferTypeByMode(mode), use_GPU_mem_VertexTri);
 	CDBVertexesBuffer.copyToBuffer(reinterpret_cast<HardwareVector*>(RaycastModel->get_verts()), RaycastModel->get_verts_count());
+
+	{
+	  	size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("CDBVertsBuffer: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
+
+
 	OptimizedModel.Vertexes = CDBVertexesBuffer.ptr();
 	OptimizedModel.VertexCount = CDBVertexesBuffer.count();
 	OptimizedModel.VertexNormal = nullptr;
@@ -223,9 +245,10 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 	{
 		CDB::TRI Tris = RaycastModel->get_tris()[i];
 		PolyIndexes indx{ (u32)Tris.verts[0], (u32)Tris.verts[1], (u32)Tris.verts[2] };
-
 		OptimizedMeshTris.push_back(indx);
 
+
+		/*
 		TrisAdditionInfo AdditionInfo;
 
 		base_Face& FaceRef = *(base_Face*) Tris.pointer;
@@ -243,69 +266,66 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 		//#WARNING: :(
 		AdditionInfo.FaceID = (u64)&FaceRef;
 		OptimizedTrisAdditionInfo.push_back(AdditionInfo);
+		*/
+
 	}
 
-	CDBTrisIndexBuffer.alloc(OptimizedMeshTris.size(), GetBufferTypeByMode(mode), use_GPU_mem);
+	CDBTrisIndexBuffer.alloc(OptimizedMeshTris.size(), GetBufferTypeByMode(mode), use_GPU_mem_VertexTri);
 	CDBTrisIndexBuffer.copyToBuffer(OptimizedMeshTris.data(), OptimizedMeshTris.size());
 
-	CDBTrisAdditionBuffer.alloc(OptimizedTrisAdditionInfo.size(), GetBufferTypeByMode(mode), use_GPU_mem);
+	{
+	  	size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("CDBTrisIndexBuffer: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
+
+
+	/* CDBTrisAdditionBuffer.alloc(OptimizedTrisAdditionInfo.size(), GetBufferTypeByMode(mode), use_GPU_mem_tex);
 	CDBTrisAdditionBuffer.copyToBuffer(OptimizedTrisAdditionInfo.data(), OptimizedTrisAdditionInfo.size());
+
+	
+	{
+	  	size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("CDBTrisAdditionBuffer: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
+	*/
 
 	OptimizedModel.Tris = CDBTrisIndexBuffer.ptr();
 	OptimizedModel.TrisCount = OptimizedMeshTris.size();
-	OptimizedModel.TrianglesAdditionInfo = CDBTrisAdditionBuffer.ptr();
-	OptimizedModel.TrisAditinalInfoCount = OptimizedTrisAdditionInfo.size();
+	//OptimizedModel.TrianglesAdditionInfo = CDBTrisAdditionBuffer.ptr();
+	//OptimizedModel.TrisAditinalInfoCount = OptimizedTrisAdditionInfo.size();
 
 	Progress(0.1f);
 
-	//ORIGINAL MODEL
-#if 0
-	HardwareModel OriginalModel;
-
-	vecVertex& LevelVertexesData = inlc_global_data()->g_vertices();
-
-	GetLevelIndices(LevelVertexesData, Polygons, LevelIndices, LevelVertexData);
-
-	//at this moment our Progress bar is on 0.6
-	TrisBuffer = new Buffer<PolyIndexes>(LevelIndices.size(), RTP_BUFFER_TYPE_CUDA_LINEAR, UNLOCKED);
-	VertBuffer = new Buffer<Fvector>(LevelVertexesData.size(), RTP_BUFFER_TYPE_CUDA_LINEAR, UNLOCKED);
-	VertNormalBuffer = new Buffer<HardwareVector>(LevelVertexesData.size(), RTP_BUFFER_TYPE_CUDA_LINEAR, UNLOCKED);
-
-	DebugErr = cudaMemcpy(TrisBuffer->ptr(), LevelIndices.data(), LevelIndices.size() * sizeof(PolyIndexes), cudaMemcpyHostToDevice);
-	DebugErr = cudaMemcpy(VertBuffer->ptr(), LevelVertexData.data(), LevelVertexData.size() * sizeof(HardwareVector), cudaMemcpyHostToDevice);
-	Progress(0.65f);
-
-	//load Vertex normals
-	xr_vector <HardwareVector> VertexNormals;
-	VertexNormals.reserve(LevelVertexesData.size());
-
-	for (Vertex* Vert : LevelVertexesData)
-	{
-
-		HardwareVector VertexNormal = Vert->N;
-		VertexNormals.push_back(VertexNormal);
-	}
-
-	DebugErr = cudaMemcpy(VertNormalBuffer->ptr(), VertexNormals.data(), VertexNormals.size() * sizeof(HardwareVector), cudaMemcpyHostToDevice);
-
-	OriginalModel.Tris = TrisBuffer->ptr();
-	OriginalModel.Vertexes = (HardwareVector*)VertBuffer->ptr();
-	OriginalModel.VertexCount = VertBuffer->count();
-	OriginalModel.VertexNormal = VertNormalBuffer->ptr();
-	//NYI
-	OriginalModel.TrianglesAdditionInfo = nullptr;
-#endif
 	//OPTIX INIT
 
 	LevelIndixes = PrimeContext->createBufferDesc(RTP_BUFFER_FORMAT_INDICES_INT3, RTP_BUFFER_TYPE_CUDA_LINEAR, CDBTrisIndexBuffer.ptr());
 	LevelIndixes->setRange(0, CDBTrisIndexBuffer.count());
+	
+	{
+	  	size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("LevelIndexes: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
 
 	LevelVertexes = PrimeContext->createBufferDesc(RTP_BUFFER_FORMAT_VERTEX_FLOAT3, RTP_BUFFER_TYPE_CUDA_LINEAR, CDBVertexesBuffer.ptr());
 	LevelVertexes->setRange(0, CDBVertexesBuffer.count());
 
+	{
+		size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("LevelVertexes: free: %llu, total: %llu", freeBytes, totalBytes);
+	}
+
+
 	LevelModel = PrimeContext->createModel();
 	LevelModel->setTriangles(LevelIndixes, LevelVertexes);
 	LevelModel->update(0);
+
+	size_t freeBytes, totalBytes;
+	cudaMemGetInfo(&freeBytes, &totalBytes);
+	Msg("OPTIXModel: free: %llu, total: %llu", freeBytes, totalBytes);
 
 	Progress(0.7f);
 
@@ -352,8 +372,15 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 
 		TextureBuffer = new DeviceBuffer<xrHardwareTexture>(Textures.size(), GetBufferTypeByMode(mode), use_GPU_mem_tex);
 		TextureBuffer->copyToBuffer(TextureDescription.data(), Textures.size());
+
 	}
-	 
+
+	{
+		size_t freeBytes, totalBytes;
+		cudaMemGetInfo(&freeBytes, &totalBytes);
+		Msg("TextureBuffer: free: %llu, total: %llu", freeBytes, totalBytes); 
+	}
+
 
 	Progress(0.95f);
 	//###LIGHT INFO
@@ -393,6 +420,8 @@ void xrHardwareLight::LoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightin
 
 }
 
+#include <execution>
+
 void xrHardwareLight::PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits, bool update_status)
 {
 	
@@ -425,47 +454,51 @@ void xrHardwareLight::PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr
 		Msg("All static lights RGB: %d Sun: %d Hemi: %d", AllLights.rgb.size(), AllLights.sun.size(), AllLights.hemi.size());
 		return;
 	}
-																	   
-	size_t MaxPotentialRays = MaxRaysPerPoint * InRays.size();
+
+	int cur_split = 0;
+	int i = 0;
+	xr_map<int, xr_vector<RayRequest>> rays_task;
  
-	if (InRays.size() > 1024*8)
+	size_t ray_racvest = 0;
+	size_t GB = 1024 * 1024 * 1024;
+	size_t ray_recvest_max = MaxMem() * GB;
+  
+	for (auto ray : InRays)
 	{
-		int cur_split = 0;
-		int i = 0;
-		xr_map<int, xr_vector<RayRequest>> rays_task;
-
-		for (auto ray : InRays)
+		if (ray_racvest > ray_recvest_max)
 		{
-			if (i > 1024 * MaxMem())
-			{
-				cur_split++;
-				i = 0;
-			}
-			rays_task[cur_split].push_back(ray);
-			i++;
+			cur_split++;
+			i = 0;
+			ray_racvest = 0;
 		}
 
-		for (auto rays : rays_task)
-		{
-			xr_vector<base_color_c>	hits;
-			Raycasting(rays.second, flag, hits);	 
-			for (auto hit : hits)
-				OutHits.push_back(hit);
-
-			StatusNoMSG("%d/%d", rays.first, rays_task.size());
-		}
+		rays_task[cur_split].push_back(ray);
+		i++;
+		ray_racvest += (MaxRaysPerPoint * 16);  //MAXIMAL BYTES
 	}
-	else
+
+	CTimer t;
+	t.Start();
+	
+ 	for (auto rays : rays_task)
 	{
- 		Raycasting(InRays, flag, OutHits);
-	}	
+		StatusNoMSG("xrHardwareLight %d/%d", rays.first, rays_task.size());
+
+		Msg("Start[%d] RayCast: %d", rays.first, t.GetElapsed_ms());
+
+		xr_vector<base_color_c>	hits;
+		Raycasting(rays.second, flag, hits);	 
+ 		std::move(hits.begin(), hits.end(), std::back_inserter(OutHits));
+	} 
+
+
+	Msg("RayCast: %d ms elapsed", t.GetElapsed_ms());
 }
 
+//#define DEBUG_TEXT
 
 void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits)
 {
-	//Msg("Raycasting");
-
 	base_lighting& AllLights = inlc_global_data()->L_static();
 	u32 MaxRaysPerPoint = 0;
 	if ((flag & LP_dont_rgb) == 0)
@@ -485,8 +518,8 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 	cudaError_t DebugErr = cudaError_t::cudaSuccess;
 
 	auto ZeroOutput = [](int RequestedRays, xr_vector<base_color_c>& TargetArray)
-	{
-		TargetArray.clear();
+	{			  
+ 		TargetArray.clear();
 		TargetArray.reserve(RequestedRays);
 
 		base_color_c ZeroColor;
@@ -495,7 +528,10 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 		{
 			TargetArray.push_back(ZeroColor);
 		}
-	};
+ 	};
+
+	CTimer t;
+	t.Start();
 
 	PrintMSG("MEM CPY START %u, Potential Rays = %u", InRays.size() * sizeof(RayRequest) / 1024 / 1024, MaxPotentialRays);
 
@@ -509,12 +545,12 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 
 	DebugErr = RunCheckRayOptimizeOut(GlobalData->ptr(), RayBuffer.ptr(), RayEnableStatusBuffer.ptr(), MaxPotentialRays, flag);
 	CheckCudaErr(DebugErr);
+#ifdef DEBUG_TEXT
+	Msg("GpuCheckRay: %d", t.GetElapsed_ms());
+#endif
 
 	const char* StatusBuffer = RayEnableStatusBuffer.hostPtr();
 	char* pItStatusBuffer = const_cast <char*> (StatusBuffer);
-
-	CTimer test;
-	test.Start();
 
 	xr_vector <int> SurfacePoint2StartLoc;
 	xr_vector <u32> AliveRaysIndexes;
@@ -547,6 +583,10 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 		pItStatusBuffer++;
 	}
 
+#ifdef DEBUG_TEXT
+	Msg("Cpu FOR CheckRay: %d", t.GetElapsed_ms());
+#endif
+
 	if (AliveRaysIndexes.empty())
 	{
 		//all rays are optimized
@@ -563,20 +603,17 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 	DebugErr = cudaMemcpy(DeviceSurfacePoint2StartLoc.ptr(), SurfacePoint2StartLoc.data(), SurfacePoint2StartLoc.size() * sizeof(int), cudaMemcpyHostToDevice);
 	CheckCudaErr(DebugErr);
 
-	//PrintMSG("MemSet RAYS: %u", AliveRaysIndexes.size() * sizeof(Ray) / 1024 / 1024);
-
 	DeviceBuffer<Ray> OptimizedRaysVec(AliveRaysIndexes.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_2, "Ray");  //use_GPU_mem
 	DebugErr = RunGenerateRaysForTask(GlobalData->ptr(), RayBuffer.ptr(), OptimizedRaysVec.ptr(), DeviceAliveRaysIndexes.ptr(), AliveRaysIndexes.size(), flag);
 	CheckCudaErr(DebugErr);
-
-	//PrintMSG("MemSet HITS: %u", AliveRaysIndexes.size() * sizeof(Hit) / 1024 / 1024);
+ 
+#ifdef DEBUG_TEXT
+	Msg("GPU RayGen: %d", t.GetElapsed_ms());	  
+#endif
 
 	DeviceBuffer <Hit> OptimizedHitsVec(AliveRaysIndexes.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_2, "Hit");
 	DebugErr = cudaMemset(OptimizedHitsVec.ptr(), 0, OptimizedHitsVec.count() * sizeof(Hit));
 	CheckCudaErr(DebugErr);
-
-	Msg("Hits: %d", OptimizedHitsVec.count());
-	Msg("Rays: %d", OptimizedRaysVec.count());
 
 	optix::prime::BufferDesc OptmizedHitDescBuffer = PrimeContext->createBufferDesc((RTPbufferformat)Hit::format, RTPbuffertype::RTP_BUFFER_TYPE_CUDA_LINEAR, OptimizedHitsVec.ptr());
 	OptmizedHitDescBuffer->setRange(0, OptimizedHitsVec.count());
@@ -588,6 +625,9 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 	LevelQuery->setHits(OptmizedHitDescBuffer);
 	LevelQuery->setRays(OptimizedRaysDescBuffer);
  	  
+#ifdef DEBUG_TEXT
+	Msg("Rays: %llu, tick: %d ms", OptimizedRaysVec.count(), t.GetElapsed_ms());
+#endif
 
 	//if "skip face" mode enabled - load special buffer for every requested surface point
 	bool SkipFaceMode = !!(flag & LP_UseFaceDisable);
@@ -619,16 +659,21 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 
 	DeviceBuffer<u32>  AliveCounts(1024);
 
-	while (AliveRays)
-	{
-		Msg("AliveRays: %d", AliveRays);
 
-		CTimer tt; tt.Start();
+
+
+
+	/* 
+	while (AliveRays>1)
+	{
+		CTimer tt; 
+		tt.Start();
 		LevelQuery->execute(0);
 
 		AliveRays = 0;
 		CPU_USED += tt.GetElapsed_ms();
 
+		 
 		tt.Start();
 
 		DebugErr = RunProcessHits(GlobalData->ptr(),
@@ -644,24 +689,31 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 			AliveCounts.ptr(),
 			Rounds);
 		CheckCudaErr(DebugErr);
+	 
 
 		int rays = AliveCounts.hostPtr()[0];
-		//Msg("Rays From GPU: %d", rays);
-		AliveRays = rays;
+ 		AliveRays = rays;
 
 		GPU_USED += tt.GetElapsed_ms();
 
 		if (IsFirstCall)
 			IsFirstCall = false;
 		++Rounds;
-		//
+ 
 		u32 zero = 0;
 		AliveCounts.copyToBuffer(&zero, 128);
+
+		StatusNoMSG("RaysAlive %d, ticks: %d ms", rays, t.GetElapsed_ms());
 	}
 
-	Msg("CPU ms:%d, GPU ms: %d", CPU_USED, GPU_USED);
+
+#ifdef DEBUG_TEXT
+	Msg("GPU OptixTrace: %d", t.GetElapsed_ms());
+#endif
 
 	/// OTHER
+	
+ 
 	ZeroOutput(InRays.size(), OutHits);
 
 	DeviceBuffer <base_color_c> FinalColorBuffer(InRays.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_3, "base_color_c");
@@ -683,6 +735,22 @@ void xrHardwareLight::Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vec
 	//copy directly back
 	DebugErr = cudaMemcpy(OutHits.data(), FinalColorBuffer.ptr(), FinalColorBuffer.count() * sizeof(base_color_c), cudaMemcpyDeviceToHost);
 	CheckCudaErr(DebugErr);
+	*/
+
+	xr_vector<base_color_c> temp_hits;
+
+
+	//DeviceBuffer <base_color_c> FinalColorBuffer(InRays.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_3, "base_color_c");
+	//DebugErr = cudaMemcpy(FinalColorBuffer.ptr(), OutHits.data(), OutHits.size() * sizeof(base_color_c), cudaMemcpyHostToDevice);
+	CheckCudaErr(DebugErr);
+
+
+
+
+
+#ifdef DEBUG_TEXT
+	Msg("GPU TraceResult U, V, Color: %d", t.GetElapsed_ms());
+#endif
 }
 
 void xrHardwareLight::PerformAdaptiveHT()
@@ -708,8 +776,7 @@ void xrHardwareLight::PerformAdaptiveHT()
 	Progress(0.1f);
 
 	xr_vector<base_color_c> tempColors;
-	//PerformRaycast(AdaptiveHTRays, LP_dont_rgb + LP_dont_sun, tempColors);
-	
+
 	CTimer t; t.Start();
 	PerformRaycast(AdaptiveHTRays, LP_dont_rgb + LP_dont_sun, tempColors);
 	PrintMSG("Elapsed: %.5f", t.GetElapsed_sec());
@@ -725,7 +792,7 @@ void xrHardwareLight::PerformAdaptiveHT()
 		VertexColor.mul(0.5f);
 		Vert->C._set(VertexColor);
 	}
-//	//Msg("Size(%d)", AdaptiveHTRays.size());
+
 	Progress(1.0f);
 }
 

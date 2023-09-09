@@ -126,7 +126,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				uv2.set				(B.t[1].x,B.t[1].y);
 				uv3.set				(B.t[2].x,B.t[2].y);
 				_F->AddChannel		( uv1, uv2, uv3 );
-			} catch (...)
+			} 
+			catch (...)
 			{
 				err_save	();
 				Debug.fatal	(DEBUG_INFO,"* ERROR: Can't process face #%d",i);
@@ -458,6 +459,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			BOOL			bLOD = FALSE;
 			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
 
+			/*
 			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
 			{	
 				if (strstr(Core.Params, "-cvrt_impl_texture_2"))
@@ -495,6 +497,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.dwWidth = 128;
 					BT.dwHeight = 128;
 				}
+			}	
+			*/
+
+			if (strstr(Core.Params, "-cvrt_impl_1024"))
+			if (BT.dwWidth > 1024 || BT.dwHeight > 1024)
+			{
+				BT.dwWidth = 1024;
+				BT.dwHeight = 1024;
 			}
 
 

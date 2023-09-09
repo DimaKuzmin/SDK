@@ -7,7 +7,7 @@
 #include "xrRayDefinition.h"
 #include "base_lighting.h"
 #include "b_build_texture.h"
-#include "optix\putil\Buffer.h"
+#include "optix_prime\putil\Buffer.h"
 #include "xrFaceDefs.h"
 #include "base_color.h"
 
@@ -66,7 +66,9 @@ public:
 	void PerformRaycast(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits, bool update_status = false);
 	void Raycasting(xr_vector<RayRequest>& InRays, int flag, xr_vector<base_color_c>& OutHits);
 
-	//void CalculateLightmap(int DeflectorID, struct lm_layer& LightMapRef);
+	void PerformRaycastLMAPS(xr_vector<RayRequestLMAPS>& InRays, int flag, xr_vector<ResultReqvest>& OutHits, bool update_status = false);
+	void RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRays, int flag, xr_vector<ResultReqvest>& OutHits);
+
 
 	void PerformAdaptiveHT();
 
@@ -76,10 +78,6 @@ public:
 	xr_vector<Fvector> GetDebugGPUHitData();
 
 	//here goes special functions for new batching concept
-
-	void LoadRaycastModel(CDB::MODEL* RaycastModel, xr_vector<RayRequest>& InRays);
- 
-	void TriFindPos(xr_vector<RayRequest>& InRays);
 
 private:
 

@@ -17,20 +17,21 @@ class execute_statistics;
 XRLC_LIGHT_API extern bool use_intel;
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
-XRLC_LIGHT_API void IntelClearTimers();
+XRLC_LIGHT_API void IntelClearTimers(LPCSTR name);
+XRLC_LIGHT_API xr_map<LPCSTR, int> get_result_mlns();
 
 
-XRLC_LIGHT_API void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
-XRLC_LIGHT_API void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
-XRLC_LIGHT_API void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip);
+XRLC_LIGHT_API void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
+XRLC_LIGHT_API void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
+XRLC_LIGHT_API void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
 
 XRLC_LIGHT_API void InitDB(CDB::COLLIDER* DB, bool print = true);
 
 
 
-
-
-class XRLC_LIGHT_API CDeflector
+#define OLD_METHOD_GPU_COMPUTE
+ 
+class XRLC_LIGHT_API CDeflector 
 {
 
 public:
@@ -58,12 +59,14 @@ static	CDeflector*		read_create					();
 	u32		GetFaceCount()		{ return (u32)UVpolys.size();	};
 		
 	void	Light				(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H	);
-	void	L_Direct			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
-	void	L_Direct_Edge		(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
-	void	L_Calculate			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H  );
+	void	LightEnd			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H);
+
+	void	L_Direct			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false);
+	void	L_Direct_Edge		(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, bool use_cpu = false);
+	void	L_Calculate			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false );
 
 	u32		weight				() { return layer.Area(); }	
-	u16	GetBaseMaterial		() ;
+	u16		GetBaseMaterial		() ;
 
 	void	Bounds				(u32 ID, Fbox2& dest)
 	{
@@ -88,24 +91,34 @@ static	CDeflector*		read_create					();
 	void	read				( INetReader	&r );
 	void	write				( IWriter	&w ) const ;
 	
-
+	
 
 
 	void	receive_result		( INetReader	&r );
 	void	send_result			( IWriter	&w ) const ;
+
+
+
+	void Serialize(IWriter* w);
+
+	void Deserialize(IReader* read);
 	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
-	
+	bool	similar_pos				( const CDeflector &D, float eps =EPS ) const;
+
 #ifdef	COLLECT_EXECUTION_STATS
 public:
 			execute_time_statistics	time_stat;
 	void	statistic_log			(  )const;
 
 #endif
+
+
+	void	GPU_CalculationOLD();
 };
 
 extern XRLC_LIGHT_API void GPU_Calculation();
-
+ 
 
 typedef xr_vector<UVtri>::iterator UVIt;
 
@@ -125,11 +138,6 @@ extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 extern XRLC_LIGHT_API u32		getLMSIZE();
 extern XRLC_LIGHT_API void		setLMSIZE(int size);
  
-
-
-
-
-//const u32	c_LMAP_size				= strstr(Core.Params, "-fast_lightmaps") ? 8192 : 1024;			// pixels
 
 #define rms_zero	((4+g_params().m_lm_rms_zero)/2)
 #define rms_shrink	((8+g_params().m_lm_rms)/2)

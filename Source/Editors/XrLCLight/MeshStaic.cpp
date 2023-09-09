@@ -79,8 +79,6 @@ void xrLC_GlobalData	::vertices_isolate_and_pool_reload()
 				::destroy_vertex( _g_vertices[i], false );
 				continue;
 			}
-//isolate_pool_clear_read	
-//isolate_pool_clear_write
 
 			v.isolate_pool_clear_write( *file );
 			::destroy_vertex( _g_vertices[i], false );
