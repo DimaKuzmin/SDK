@@ -161,11 +161,21 @@ void IntelClearTimers(LPCSTR name)
 // 1 - 8 - 32 - 64 - 96 - 128 - 256 - 512 - 1024
 #define MAX_HITS 1024 
 
+
+//#define USE_HIT_PROCESS
+
 struct RayQueryContext
 {
 	RTCRayQueryContext context;
 	//unsigned int max_next_hits; // maximal number of hits to collect in a single pass
 	//unsigned int ray_ID;	
+#ifndef USE_HIT_PROCESS
+	CDB::MODEL* model;
+	float energy = 1;
+	Face* skip;
+	R_Light* Light;
+#endif
+
 	Hits_XR hits[MAX_HITS];
 	int count = 0;
 	bool last_opactity = false;
@@ -182,6 +192,9 @@ struct RayQueryContext8
 
 };
 
+
+
+#ifdef USE_HIT_PROCESS
 
 void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 {
@@ -206,6 +219,95 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	ctxt->hits[ctxt->count].dist = ray->tfar;
 	ctxt->count++;
 }
+ 
+#else 
+
+void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
+{
+	RayQueryContext* ctxt = (RayQueryContext*) args->context;
+ 
+	RTCHit* hit = (RTCHit*) args->hit;
+	RTCRay* ray = (RTCRay*) args->ray;
+ 
+	if (ctxt->count >= MAX_HITS ) 
+	{
+		args->valid[0] = -1;
+		return;
+	}
+	else
+	{
+		args->valid[0] = 0;
+	}
+
+	ctxt->count++;
+ 
+	// Access to texture
+	CDB::TRI* clT = &ctxt->model->get_tris()[hit->primID];
+	base_Face* F = (base_Face*)(clT->pointer);
+		
+	if (0 == F)									
+		return;	
+	if (ctxt->skip == F)										
+		return;
+		 
+	const Shader_xrLC& SH = F->Shader();
+	if (!SH.flags.bLIGHT_CastShadow)					
+		return;
+ 
+	if (F->flags.bOpaque)
+	{
+		// Opaque poly - cache it
+		ctxt->Light->tri[0].set(ctxt->model->get_verts()[clT->verts[0]]);
+		ctxt->Light->tri[1].set(ctxt->model->get_verts()[clT->verts[1]]);
+		ctxt->Light->tri[2].set(ctxt->model->get_verts()[clT->verts[2]]);
+ 		
+		args->valid[0] = -1;
+		ctxt->energy = 0;
+		return;
+	}
+ 		
+	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (T.pSurface.Empty())
+	{
+		F->flags.bOpaque = true;
+  		
+		args->valid[0] = -1;
+		ctxt->energy = 0;
+		return;
+	}
+	    
+	// barycentric coords
+	// note: W,U,V order
+	Fvector B;
+	B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2  uv;
+	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
+	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+		
+	U %= T.dwWidth;		
+	if (U < 0) 
+		U += T.dwWidth;
+		
+	V %= T.dwHeight;	
+	if (V < 0) 
+		V += T.dwHeight;
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);	
+ 	ctxt->energy *= opac;
+}
+
+#endif
+
 
 void RatraceOneRay(int th, RayOptimizedCPU& ray, RayQueryContext& data_hits)
 { 
@@ -230,23 +332,14 @@ void RatraceOneRay(int th, RayOptimizedCPU& ray, RayQueryContext& data_hits)
 	SetRay1(&ray, rayhit);
 	rtcIntersect1(IntelScene, &rayhit, &args);    
 }
-
-void PrintTimeRayTrace()
-{
-	/*
-	for (auto i = 0; i < 8; i++)
-	{	
-		Msg("TH[%d] RayTrace: %f ms, RayHits: %f ms", i, float(ticks_process[i] / u64 (CPU::qpc_freq / 1000)), float(ticks_process_hits[i] / u64(CPU::qpc_freq / 1000) ) );
-	}
-
-	ticks_process.clear();
-	ticks_process_hits.clear();
-	*/
-}
-
   
+
+
+#ifdef USE_HIT_PROCESS
+
 float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU& ray, Face* skip, bool use_disabled)
 {
+
 	// First Chack Triangle
 	{
 		float _u, _v, range;
@@ -258,19 +351,23 @@ float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU
 			return 0;
 		}
 	}  
- 	CTimer t;t.Start();
-	RayQueryContext data;
+
+ 	RayQueryContext data;
+	data.Light = &L;
+	data.model = MDL;
+	data.skip = skip;
+	data.energy = 1.0f;
 	RatraceOneRay(th, ray, data);
    	 
-	ticks_process[th] += t.GetElapsed_ticks();
-	
-
+ 	
+ 
 	if (data.count == 0)
 		return 1;
 
+	
 	float	scale = 1.f;
 	Fvector B;
-	t.Start();
+ 
 	for (u32 I = 0; I < data.count; I++)
 	{
 		Hits_XR* hit = &data.hits[I];
@@ -291,8 +388,7 @@ float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU
 			L.tri[0].set(MDL->get_verts()[clT->verts[0]]);
 			L.tri[1].set(MDL->get_verts()[clT->verts[1]]);
 			L.tri[2].set(MDL->get_verts()[clT->verts[2]]);
-			ticks_process_hits[th] += t.GetElapsed_ticks();
-			return 0;
+ 			return 0;
 		}
  		
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
@@ -302,8 +398,7 @@ float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU
 		{
 			F->flags.bOpaque = true;
 			clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...[%s]", T.name);
-			ticks_process_hits[th] += t.GetElapsed_ticks();
-			return 0;
+ 			return 0;
 		}
 	    
 		// barycentric coords
@@ -331,15 +426,39 @@ float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU
 		u32 pixel_a = color_get_A(pixel);
 		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 		
-		//Msg("Opac %f, u: %f, v: %f, id: %d", opac, hit->u, hit->v, hit->prim);
-		scale *= opac;
+ 		scale *= opac;
 	}
-
-	ticks_process_hits[th] += t.GetElapsed_ticks();
 
 	return scale;
 }
 
+#else  
+
+float RaytraceEmbreeProcess(int th, CDB::MODEL* MDL, R_Light& L, RayOptimizedCPU& ray, Face* skip, bool use_disabled)
+{
+	// First Chack Triangle
+	{
+		float _u, _v, range;
+		bool res = CDB::TestRayTri(ray.pos, ray.dir, L.tri, _u, _v, range, false);
+
+		if (res)
+		if (range > 0 && range < ray.tmax)
+		{
+			return 0;
+		}
+	}  
+
+ 	RayQueryContext data;
+	data.Light = &L;
+	data.model = MDL;
+	data.skip = skip;
+	data.energy = 1.0f;
+	RatraceOneRay(th, ray, data);
+   
+	return data.energy;
+}
+
+#endif
 
 
  // 8 Rays
@@ -794,8 +913,6 @@ void IntelEmbereLOAD()
 	struct TriEmbree { uint32_t point1, point2, point3; };
 	TriEmbree* triangles;
 	// Добавление вершин
-	
-	 
 
 	// Scene
 	IntelScene = rtcNewScene(device); 

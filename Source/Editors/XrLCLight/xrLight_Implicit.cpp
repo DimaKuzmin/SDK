@@ -369,8 +369,6 @@ void ImplicitExecute::clear()
 	curHeight = 0;
 }
 
-extern void PrintTimeRayTrace();
-
 void	ImplicitExecute::Execute(net_task_callback* net_callback)
 {
 	InitDB(&DB);
@@ -414,7 +412,6 @@ void	ImplicitExecute::Execute(net_task_callback* net_callback)
 		if (ID % 128 == 0)
 		{	
 			Msg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
-			PrintTimeRayTrace();
 		}
 	}
 }

@@ -377,7 +377,7 @@ void CBuild::ExportDeflectors()
 	Status("Size GXSplit: %d", g_XSplit.size());
 
 	FS.w_close(write_x);
-	 
+	FS.w_close(write); 
 }
 
 void CBuild::Run(LPCSTR P)

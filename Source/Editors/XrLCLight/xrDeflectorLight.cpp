@@ -832,17 +832,8 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 }
 
 
-extern void PrintTimeRayTrace();
-
-std::atomic<u64> IDX;
-
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
-	IDX.fetch_add(1);
-
-	if (IDX.load() % 1024 == 0)
-		PrintTimeRayTrace();
-
 	// Geometrical bounds
 	Fbox bb;		bb.invalidate	();
 	try
