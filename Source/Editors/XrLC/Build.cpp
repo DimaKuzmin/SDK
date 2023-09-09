@@ -458,7 +458,7 @@ void CBuild::Run(LPCSTR P)
 	
 	log_vminfo();
 
-	if (!CformOnly && false)
+	if (!CformOnly )
 	{
 
 	//****************************************** HEMI-Tesselate
