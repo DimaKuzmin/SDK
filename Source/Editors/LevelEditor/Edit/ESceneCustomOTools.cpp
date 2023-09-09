@@ -145,12 +145,23 @@ void ESceneCustomOTool::OnObjectRemove(CCustomObject* O, bool bDeleting)
         (*_F)->OnObjectRemove(O);
 }
 
+#include <execution>
+
 void ESceneCustomOTool::SelectObjects(bool flag)
 {
+    std::for_each(std::execution::par, m_Objects.begin(), m_Objects.end(), [&] (CCustomObject* object) 
+    {
+       if (object->Visible())
+           object->Select(flag);    
+    });
+    
+    /*
     for(ObjectIt _F = m_Objects.begin();_F!=m_Objects.end();_F++)
-        if((*_F)->Visible()){
-            (*_F)->Select( flag );
-        }
+    if((*_F)->Visible())
+    {
+        (*_F)->Select( flag );
+    }
+    */
     UI->RedrawScene		();
 }
 
@@ -272,16 +283,37 @@ int ESceneCustomOTool::GetQueryObjects(ObjectList& lst, int iSel, int iVis, int 
     return count;
 }
 
+#include <execution>
+
 CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* pass)
 {
 	ObjectIt _I = m_Objects.begin();
     ObjectIt _E = m_Objects.end();
-	for(;_I!=_E;_I++) 
+	
+    auto find = std::find_if(std::execution::par_unseq, _I, _E, [&] (CCustomObject* object) 
+    {
+       LPCSTR _name = object->GetName();
+       if (!_name || _name == "" || _name == " ")
+       {
+            object->SetName(Scene->GetOTool(object->FClassID)->ClassName());
+            _name = object->GetName();
+       }
+        
+       if((pass!=object) && (0==strcmp(_name,name)) ) 
+           return true;
+       else 
+           return false;
+    });
+
+    if (find != m_Objects.end())
+        return (*find);
+
+    /*
+    for(;_I!=_E;_I++) 
     {
     	CCustomObject* CO = (*_I);
     	LPCSTR _name = CO->GetName();
-        //R_ASSERT	(_name);
-        if (!_name || _name == "" || _name == " ")
+         if (!_name || _name == "" || _name == " ")
         {
             Msg("!!! Error _name = %s, %s, %s", Scene->GetOTool(CO->FClassID)->ClassName(), CO->GetName(), CO->FName);
             Msg("!!! Try FIX name");
@@ -292,6 +324,7 @@ CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* p
     	if((pass!=*_I) && (0==strcmp(_name,name)) ) 
         	return (*_I);
     }
+    */
     return 0;
 }
 

@@ -465,9 +465,7 @@ void CInifile::save_as_new(IWriter& writer, bool bCheck) const
 	string4096		temp, val;
 	for (auto sec : data_new)
 	{
-		Msg("SEC: %d", sec->ID);
-
-
+ 
 		xr_sprintf(temp, sizeof(temp), "[%s]", sec->Name.c_str());
 
 		int id = 0;

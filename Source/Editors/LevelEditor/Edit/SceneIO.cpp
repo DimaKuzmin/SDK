@@ -67,6 +67,8 @@ void st_LevelOptions::SaveLTX( CInifile& ini )
 
 	ini.w_u8		(section, "light_hemi_quality", m_LightHemiQuality );
 	ini.w_u8		(section, "light_sun_quality", m_LightSunQuality );
+    ini.w_u8        (section, "light_sun_dispersion", m_LightSunDispersion);
+
 
     m_mapUsage.SaveLTX(ini,section);
 }
@@ -133,6 +135,7 @@ void st_LevelOptions::ReadLTX(CInifile& ini)
 
     m_LightHemiQuality 				= ini.r_u8(section, "light_hemi_quality" );
     m_LightSunQuality 				= ini.r_u8(section, "light_sun_quality" );
+    m_LightSunDispersion            = ini.line_exist(section, "light_sun_dispersion") ? ini.r_u8(section, "light_sun_dispersion") : 3;
 
     m_mapUsage.SetDefaults			();
     if(vers_op > 0x0000000A)
@@ -413,7 +416,7 @@ void EScene::SaveToolLTX(ObjClassID clsid, LPCSTR fn)
     int fc = tool->SaveFileCount();
     if (fc == 1)
     {
-         
+        /*
         ThreadData data;
         data.fn = fn;
         data.scene = this;
@@ -425,13 +428,13 @@ void EScene::SaveToolLTX(ObjClassID clsid, LPCSTR fn)
         csSave.Leave();
  
         thread_spawn(SaveToFileMT, "MT_THREAD_SAVE", 0, &data_threads.back());
+        */ 
          
-        /*
         CInifile ini_part(fn, FALSE, FALSE, FALSE);
         tool->SaveLTX(ini_part, 0);
         m_GUID.SaveLTX(ini_part, "guid", "guid");
         ini_part.save_as();
-        */
+        
     }
     else
     {

@@ -253,6 +253,7 @@ void	IWriter::open_chunk	(u32 type)
 	w_u32(type);
 	chunk_pos.push(tell());
 	w_u32(0);	// the place for 'size'
+	//Msg("OpenChunk: %u", tell());
 }
 void	IWriter::close_chunk	()
 {
@@ -263,6 +264,8 @@ void	IWriter::close_chunk	()
 	w_u32			(pos-chunk_pos.top()-4);
 	seek			(pos);
 	chunk_pos.pop	();
+
+	//Msg("CloseChunk: %u", tell());
 }
 u32	IWriter::chunk_size	()					// returns size of currently opened chunk, 0 otherwise
 {

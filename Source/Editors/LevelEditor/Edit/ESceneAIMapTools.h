@@ -84,7 +84,9 @@ class ESceneAIMapTool: public ESceneToolBase
     ObjectList			m_SnapObjects;
 	// hash
 	AINodeVec			m_HASH[HDIM_X+1][HDIM_Z+1];
+public:
     AINodeVec			m_Nodes;
+private:
 
     SAIParams			m_Params;
 	Fbox				m_AIBBox;

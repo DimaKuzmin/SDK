@@ -223,13 +223,18 @@ bool EDetailManager::UpdateSlots()
 
     for (u32 z=0; z<dtH.size_z; z++)
     {
+        string32 tmp;
+        sprintf(tmp, "Box Z: %d/%d", z, dtH.size_z);
+        pb->Info(tmp);
         for (u32 x=0; x<dtH.size_x; x++)
         {
+
         	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
         	UpdateSlotBBox	(x,z,*slot);
  	        pb->Inc();
          }
     }
+
     UI->ProgressEnd(pb);  
  
 
@@ -316,9 +321,6 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
     Irect		R;
     GetSlotTCRect(R,x,z);
 
-
-//    Msg("TC [%d,%d]-[%d,%d]",R.x1,R.y1,R.x2,R.y2);
-
     SIndexDistVec best;
     // find best color index
     {
@@ -336,7 +338,9 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
             }
         }
     }
+
     std::sort(best.begin(),best.end(),CompareWeightFunc);
+
     // пройдем по 4 частям слота и определим плотность заполнения (учесть переворот V)
     Irect P[4];
     float dx=float(R.x2-R.x1) / 2.f;
@@ -394,7 +398,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
     }
 
     // заполним палитру и установим Random'ы
-//	Msg("Slot: %d %d",x,z);
+ 
     for(u32 k=0; k<best.size(); k++)
     {
      	// objects

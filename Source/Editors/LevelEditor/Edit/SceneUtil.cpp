@@ -28,22 +28,42 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
             if (mt&&(0!=(object=mt->FindObjectByName(name))))
             	return object;
         }
-    }else{
+    }
+    else
+    {
         ESceneCustomOTool* mt = GetOTool(classfilter); VERIFY(mt);
         if (mt&&(0!=(object=mt->FindObjectByName(name)))) return object;
     }
     return object;
 }
 
+#include <execution>
+
 CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
 	CCustomObject* object = 0;
     SceneToolsMapPairIt _I = m_SceneTools.begin();
     SceneToolsMapPairIt _E = m_SceneTools.end();
-    for (; _I!=_E; _I++){
+    /*
+    for (; _I!=_E; _I++)
+    {
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
-        if (mt&&(0!=(object=mt->FindObjectByName(name,pass_object)))) return object;
+        if (mt&&(0!=(object=mt->FindObjectByName(name,pass_object))))
+            return object;
     }
+    */
+
+ 
+    std::for_each(std::execution::par, _I, _E, [&] (const std::pair<ObjClassID, ESceneToolBase*>& tool)
+    {   
+        ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
+        if (mt)
+            object = mt->FindObjectByName(name, pass_object);
+    });
+
+    if (object != 0)
+        return object;
+
     return 0;
 }
 

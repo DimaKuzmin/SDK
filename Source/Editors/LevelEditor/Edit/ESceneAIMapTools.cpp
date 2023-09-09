@@ -715,7 +715,7 @@ int ESceneAIMapTool::AddNode(const Fvector& pos, bool bIgnoreConstraints, bool b
         }
         else
         {
-            ELog.Msg		(mtError,"Can't create node.");
+            //ELog.Msg		(mtError,"Can't create node.");
             return 			0;
         }
     }

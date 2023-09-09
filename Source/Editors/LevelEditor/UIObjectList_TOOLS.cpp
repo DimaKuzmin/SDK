@@ -12,6 +12,8 @@
 #include "SpawnPoint.h"
 #include "CustomObject.h"
 
+
+
 struct LevelSDK
 {
 	Fvector offset;
@@ -20,30 +22,26 @@ struct LevelSDK
 };
 
 xr_map<int, LevelSDK> level_offsets;
-int size_merge_levels = 0;
+
 int cur_merge_levels = 0;
-
-int sector = 0;
-int cur_light_type = 0;
-const char* light_type[] = { "all", "lightmap", "dynamic", "animated" };
-int cur_smart = 0;
 bool ai_ignore_stractures = false;
-int value_ai;
 
-
-xr_map<int, Fvector3> merge_offsets;	
-
-struct OBJECT_POS
-{
-	CCustomObject* obj;
-	Fvector3 pos;
-};
-
-xr_map<xr_string, xr_vector<OBJECT_POS> > objects_original_POS;	 //CCustomObject*, Fvector3
-
+xr_map<int, Fvector3> merge_offsets;	 
 xr_map<int, xr_vector<CCustomObject*> > objects_loaded;
+
+xr_map<CCustomObject*, Fvector> objects_to_move;
+
+
 u16 loaded = 0;
 Fvector3 vec_offset = Fvector().set(0, 0, 0);
+
+// BOX Выборка Обьектов
+bool use_outside_box =  false;
+
+Fvector3 vec_box_min =  Fvector().set(0, 0, 0);
+Fvector3 vec_box_max =  Fvector().set(0, 0, 0);
+
+
 xr_string last_file;
 
 string_path prefix_name;
@@ -93,6 +91,131 @@ void UIObjectList::ExportSelectObjects()
 
 	}
 }
+
+void UIObjectList::ExportInsideBox()
+{
+ 	Fbox box;
+	box.min = vec_box_min;
+	box.max = vec_box_max;
+
+	xr_string temp_fn = "";
+
+	if (EFS.GetSaveName(_import_, temp_fn))
+	{
+		CInifile file(temp_fn.c_str(), false, false, false);
+		
+		int i = 0;
+
+		for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+		{
+			ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+			if (!ot)
+				continue;
+
+			if (ot->FClassID == OBJCLASS_DUMMY)
+				continue;
+ 
+			if (!ot->can_use_inifile())
+				continue;
+
+			ObjectList& lst = ot->GetObjects();
+			for (auto obj : lst)
+			{
+				if (!use_outside_box && box.contains(obj->GetPosition()) || use_outside_box && !box.contains(obj->GetPosition()))
+				{
+					string32 buffer = { 0 };
+					sprintf(buffer, "object_%d", i);
+					Scene->SaveObjectLTX(obj, buffer, file);
+					++i;
+				}
+			}
+		}  
+		file.save_as(temp_fn.c_str());
+	
+		ESceneAIMapTool* ai_tool = (ESceneAIMapTool*)Scene->GetTool(OBJCLASS_AIMAP); 
+
+		if (ai_tool)
+		{
+			string_path p;
+			sprintf(p, "%s_ai", temp_fn.c_str());
+			IWriter* ai_map = FS.w_open_ex(p);
+			ai_map->open_chunk(2);			
+			int cnt= 0;
+			for (auto node : ai_tool->Nodes())
+			{
+				if (box.contains(node->Pos))
+					cnt++;
+			}
+
+			ai_map->w_u32(cnt);
+			for (auto node : ai_tool->Nodes())
+			{
+				if (!use_outside_box && box.contains(node->Pos) || use_outside_box && !box.contains(node->Pos))
+					ai_map->w_fvector3(node->Pos);					 
+			}
+
+			ai_map->close_chunk();
+			FS.w_close(ai_map);
+		}
+
+	}
+
+
+
+}
+
+void UIObjectList::RemoveAllInsideBox()
+{
+	Fbox box;
+	box.min = vec_box_min;
+	box.max = vec_box_max;
+
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+			
+		ObjectList& lst = ot->GetObjects();
+		
+		for (auto obj : lst)
+		{
+			if (obj && box.contains(obj->GetPosition()) )
+			{
+				obj->DeleteThis();
+				Scene->RemoveObject(obj, false, true);
+			}
+		}
+	}
+}
+
+void UIObjectList::SetListToMove()
+{
+   	Fbox box;
+	box.min = vec_box_min;
+	box.max = vec_box_max;
+
+	objects_to_move.clear();
+
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+			
+		ObjectList& lst = ot->GetObjects();
+		
+		for (auto obj : lst)
+		{
+			if (obj && box.contains(obj->GetPosition()) )
+			{
+				objects_to_move[obj] = obj->GetPosition();
+			}
+		}
+	}
+}
+
+
 
 void UIObjectList::ExportAllObjects()
 {
@@ -189,7 +312,6 @@ void UIObjectList::ExportAIMap()
 		IWriter* writer = FS.w_open_ex(path);
 		ESceneAIMapTool* ai_tool = (ESceneAIMapTool*)Scene->GetTool(OBJCLASS_AIMAP);
 		ai_tool->SaveStreamPOS(*writer);
-
 		FS.w_close(writer);
 
 	}
@@ -277,10 +399,7 @@ void UIObjectList::CheckCustomData()
 			Msg("Add To Ignore: %s", name);
 		}
 	}
-
-
-
-
+ 
 	IWriter* w = FS.w_open(path);
 	
 	xr_vector<shared_str> list_file;
@@ -300,29 +419,6 @@ void UIObjectList::CheckCustomData()
 
 				list_file.push_back(tmp);
 			}
-
-			/*
-			shared_str custom_data = sp->m_SpawnData.ReadCustomData();
-			if (custom_data.size() > 2)
-			{
-
-
-				if (w)
-				{
-					string128 tmp;
-					sprintf(tmp, "[%s]", sp->GetName());
- 					w->w_string(tmp);
-					w->w_string(custom_data.c_str());
-					w->w_string("\n");
-					w->w_string("\n");
-					w->w_string("\n");
-				}
-
-				// Name: %s, size: %d,  : sp->GetName(), custom_data.size(), 
-				//Msg("custom_data: {\n"
-				//	"%s \n}", custom_data.c_str());
-			}
-			*/
 		}
 	}
 
@@ -365,28 +461,28 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 	xr_string temp_fn = "";
 
 	loaded += 1;
-	//objects_original_POS.clear();
- 
+
 	if (!use_path && EFS.GetOpenName(EDevice.m_hWnd, _import_, temp_fn) || use_path)
 	{
+		objects_to_move.clear();
+
 		if (use_path)
 			temp_fn = path;
 
-		CInifile file(temp_fn.c_str(), true, true, true);
-		 
-
-
-
+		CInifile* file = xr_new<CInifile>(temp_fn.c_str(), true, true, true);
+ 
 		string32 tmp; int i = 0;
 		sprintf(tmp, "object_%d", i);
-
-		u32 old_class = 0;
-
-		while (file.section_exist(tmp))
+ 		
+		if (!file)
 		{
-			//Msg("Read %s", tmp);
-
-			if (file.r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
+			Msg("Cant Read Inifile");
+			return;
+		}
+		 
+		while (file->section_exist(tmp))
+		{
+			if (file->r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
 			{
 				i++;
 				sprintf(tmp, "object_%d", i);
@@ -394,7 +490,7 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 			}
 
 			CCustomObject* obj = NULL;
-			bool load = Scene->ReadObjectLTX(file, tmp, obj);
+			bool load = Scene->ReadObjectLTX(*file, tmp, obj);
 			if (load)
 			{
 				Msg("Load: Sec: %s, Name: %s", tmp, obj->GetName());
@@ -413,23 +509,13 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 				if (!Scene->OnLoadAppendObject(obj))
 					xr_delete(obj);
 
-				OBJECT_POS data;
-				data.obj = obj;
-				data.pos = obj->GetPosition();
-
-				objects_original_POS[temp_fn.c_str()].push_back(data);
+				objects_to_move[obj] = obj->GetPosition();
 
 				Fvector3 pos = obj->GetPosition();
 				pos.add(offset);
 				obj->SetPosition(pos);
 
-				if (old_class != obj->FClassID)
-				{
-					//Msg("Load [%d]", obj->FClassID);
-					old_class = obj->FClassID;
-				}
-
-				objects_loaded[loaded].push_back(obj);
+				
 			}
 
 			i++;
@@ -455,15 +541,10 @@ void UIObjectList::ImportMultiply()
 
 		xr_string buf_path = { 0 };
 		xr_string buf_name = { 0 };
-
-
 		for (int i = 0; i < cur_merge_levels; i++)
 		{
 			if (EFS.GetOpenPathName(EDevice.m_hWnd, _import_, buf_path, buf_name) )
 			{
-				//Msg("Load: %s", buf_path.c_str());
-				//Msg("Name: %s", buf_name.c_str());
- 
 				LevelSDK l;
 				l.path = buf_path;
 				l.name = buf_name;
@@ -476,20 +557,7 @@ void UIObjectList::ImportMultiply()
 	}
 	
 	if (ImGui::Button("LoadFromOffsets", ImVec2(-1, 0)))
-	{
 		LoadFromMultiply();
-	}
-
-	/*
-	for (int i = 0; i != cur_merge_levels; i++)
-	{
-		float value[3] = { level_offsets[i].x, level_offsets[i].y, level_offsets[i].z };
-		string32 offset = { 0 };
-		sprintf(offset, "offset_%d", i);
-		if (ImGui::InputFloat3(offset, value, 0.0001f))
-			level_offsets[i].set(value);
-	}
-	*/
 }
 
 void UIObjectList::LoadFromMultiply()
@@ -606,19 +674,7 @@ bool UIObjectList::LoadAiMAP()
 	return false;
 }
 
-void UIObjectList::UndoLoad()
-{
-	if (loaded > 0)
-	{
-		for (auto obj : objects_loaded[loaded])
-		{
-			obj->DeleteThis();
-			Scene->RemoveObject(obj, false, true);
-		}
-		objects_loaded[loaded].clear_and_free();
-		loaded -= 1;
-	}
-}
+
 
 void UIObjectList::SelectLoaded()
 {
@@ -631,19 +687,36 @@ void UIObjectList::SelectLoaded()
 	}
 }
 
-void UIObjectList::MoveObjectsToOffset(xr_string& load)
+void UIObjectList::MoveObjectsToOffset()
 {
-	Msg("Move: %s", load);
-
-	for (auto object : objects_original_POS[load])
+	for (auto object : objects_to_move)
 	{
-		Fvector pos;
-		pos.set(object.pos);
-		pos.add(vec_offset);
-		object.obj->SetPosition(pos);
+		if (object.first != nullptr)
+		{
+			Fvector pos;
+			pos.set(object.second);
+			pos.add(vec_offset);
+			object.first->SetPosition(pos);
+		}
 	}
 
 	Scene->OnObjectsUpdate();
+}
+
+void UIObjectList::UndoLoad()
+{
+	if (loaded > 0)
+	{
+		for (auto obj : objects_loaded[loaded])
+		{
+			obj->DeleteThis();
+			Scene->RemoveObject(obj, false, true);
+		}
+		objects_loaded[loaded].clear_and_free();
+		loaded -= 1;
+	}
+
+	objects_to_move.clear();
 }
 
 void UIObjectList::CheckDuplicateNames()
@@ -820,11 +893,15 @@ void UIObjectList::BboxSelectedObject()
 		Msg("BBOX y[%f][%f]", box.y1, box.y2);
 		Fvector pos = item->GetPosition();
 		Msg("Position: %f, %f, %f", pos.x, pos.y, pos.z );
+
+		vec_box_min = box.min;
+		vec_box_max = box.max;
 	}
 
 	Msg("Selected BBOX x[%f][%f]", box_all.x1, box_all.x2);
 	Msg("Selected BBOX z[%f][%f]", box_all.z1, box_all.z2);
 	Msg("Selected BBOX y[%f][%f]", box_all.y1, box_all.y2);
+
 
 }
 
@@ -1366,115 +1443,13 @@ string_path prefix_cfg_prefix;
 string_path prefix_cfg_map;
 
 bool use_genarate_cfgs = false;
+bool use_name_fixes = false;
+bool ShowEXPORT = false;
 
-void UIObjectList::UpdateUIObjectList()
+
+void UIObjectList::UpdateDefaultMeny()
 {
- 	{
-		ImGui::Checkbox("LoadMenu", &ShowLOAD);
-		ImGui::Checkbox("MultiplySelect", &MultiplySelect);
-		ImGui::Checkbox("ShowError", &use_errored);
-	}
-
-	ImGui::Separator();
-
-	/*
-	if (LTools->CurrentClassID() == OBJCLASS_SECTOR)
-	{
-		ImGui::InputInt("sector_id", &sector, 1, 100);
-		if (ImGui::Button("FIND SECTOR BY ID"))
-			FindObjectSector(sector);
-	}
-
-	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
-	{
-		ImGui::ListBox("list_light", &cur_light_type, light_type, IM_ARRAYSIZE(light_type), 8);
-	}
-	*/
-	
-	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP)
-	{
-		ImGui::InputInt("Distance", &DistanceObjects, 1, 100);
-		ImGui::Checkbox("Use Distances", &use_distance);
-		ImGui::InputInt("MaxName", &_sizetext, 1, 10);
-
-		ImGui::InputText("#repace_name", prefix_name, sizeof(prefix_name));
-		if (ImGui::Button("rename_selected", ImVec2(-1, 0)))
-			RenameSelectedObjects();
-
-
-		if (ImGui::Button("selected_names_to_log", ImVec2(-1, 0)))
-		{
-			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
-			ObjectList list = scene_object->GetObjects();
-
-			for (auto obj : list)
-			{
-				if (obj->Selected())
-					Msg("%s", obj->GetName());
-			}
-		}
-
-		if (ImGui::Button("check_for_duplicate", ImVec2(-1, 0)))
-			FindALL_Duplicate();
-
-
-	}
-	
-	
-	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP && ShowLOAD)
-	{
-		ImGui::Text("LOAD_FUNCTS:");
-
-		ImGui::Text("OFFSET: ");
-		float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
-
-		if (ImGui::InputFloat3("x", vec, 0.001f))
-			vec_offset.set(vec[0], vec[1], vec[2]);
-
-		if (objects_original_POS.size() > 0)
-		{
- 			const char* items[] = {"first"};
 		
- 			int i = 0;
-			for (auto name : objects_original_POS)
-			{	
-				items[i] = name.first.c_str();
- 				i++;
-			}
-			ImGui::ListBox("", &current_in_list, items, IM_ARRAYSIZE(items), 8);
- 
-			if (ImGui::Button("Move Loaded to Offset", ImVec2(-1, 0)))
-			{
-				xr_string str = items[current_in_list];
-				// str.sprintf("%s", items[current_in_list]);
- 				MoveObjectsToOffset(str);
-			}
-		}
-
-		if (ImGui::Button("Load Objects", ImVec2(-1, 0)))
-			ImportObjects(vec_offset);
-
-		if (ImGui::Button("Export Objects", ImVec2(-1, 0)))
-			ExportSelectObjects();
-
-		if (ImGui::Button("Undo load", ImVec2(-1, 0)))
-			UndoLoad();
-
-		if (ImGui::Button("Select Loaded", ImVec2(-1, 0)))
-			SelectLoaded();
-
-		if (ImGui::Button("Check For Duplicate", ImVec2(-1, 0)))
-			CheckDuplicateNames();
-
-		if (ImGui::Button("Rename All Objects", ImVec2(-1, 0) ) )
-			RenameALLObjectsToObject();
-
-
-
-		ImGui::Separator();
-
-	}
-
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
 		ImGui::Text("AIMAP: ");
@@ -1484,20 +1459,6 @@ void UIObjectList::UpdateUIObjectList()
 
 		if (ImGui::InputFloat3("x", vec, 0.001f))
 			vec_offset.set(vec[0], vec[1], vec[2]);
-
-		/*
-		ImGui::InputInt("SelectID: ", &value_ai, 0, 100000000);
-
-		if (ImGui::Button("SelectNode", ImVec2(-1, 0)))
-		{
-			ESceneAIMapTool* ai_tool = (ESceneAIMapTool*)Scene->GetTool(OBJCLASS_AIMAP);
-			if (ai_tool)
-				ai_tool->SelectNode(value_ai);
-		}
-		
-		if (ImGui::Button("Set SnapList", ImVec2(-1, 0)))
-			AddSceneObjectToList();
-		*/
 
 		ImGui::Checkbox("ignore_construction_on_load", &ai_ignore_stractures);
 
@@ -1562,24 +1523,14 @@ void UIObjectList::UpdateUIObjectList()
 	{
 		ImGui::Text("SCENE: ");
 
-		ImGui::Checkbox("use_prefix_by_refname", &use_prefix_refname);
-
 		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
 			CopyTempLODforObjects();
 
 		if (ImGui::Button("save object", ImVec2(-1, 0)))
 			SaveSelectedObjects();
 
-		if (ImGui::Button("bbox object", ImVec2(-1, 0)))
-			BboxSelectedObject();
-
 		if (ImGui::Button("pos_objects_save_ltx", ImVec2(-1, 0) ))
 			POS_ObjectsToLTX();
-
-		if (ImGui::Button("Export Level ALL", ImVec2(-1, 0)))
-			ExportAllObjects();
-
-		
 
 		ImportMultiply();
 
@@ -1616,62 +1567,140 @@ void UIObjectList::UpdateUIObjectList()
 			if (ImGui::Button("Clear_CustomData", ImVec2(-1, 0)))
 				ClearCustomData();
 		}
-
-		/*
-		ImGui::InputInt("smart_mask", &cur_smart, 1, 10);
-
-		if (ImGui::Button("smart_terrain_mask export", ImVec2(-1, 0)))
-		{
-			ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
-			ObjectList list = scene_object->GetObjects();
-
-			for (auto obj : list)
-			{
-			   if (obj->Selected())
-			   {
-				   Msg("[%s]", obj->GetName());
-				   Msg("  255, 255, 255, %d", cur_smart);
-						  
-			   }
-			}
-		}	
-
- 
 		
-		if (create_cfg_file)
-		{
-			ImGui::InputText("#logic_sec", logic_sec, sizeof(logic_sec));
-			ImGui::InputText("#path_sec", path_sec, sizeof(path_sec));
-		}
-		else
-		{
-			if (!select_file)
-			{
-				ImGui::InputText("#custom_data", custom_data, sizeof(custom_data));
-			}
-		}
-
-	  
-		ImGui::Checkbox("#create_file", &create_cfg_file);
-		ImGui::Checkbox("#select_file", &select_file);
-
-		if (ImGui::Button("#custom_logic", ImVec2(-1, 0)) )
-		{
-			SetCustomData(true, logic_sec, path_sec);
-		}
- 
-		
-		if (ImGui::Button("#create_logic", ImVec2(-1, 0)))
-		{
-			CreateLogicConfigs();
-		} 
-		*/ 
-
-
-
 		ImGui::Separator();
 
 	}
+}
+
+void UIObjectList::UpdateUIObjectList()
+{
+ 	{
+		ImGui::Text("New Menu: ");
+		ImGui::Checkbox("LoadMenu", &ShowLOAD);
+		ImGui::Checkbox("ExportMenu", &ShowEXPORT);
+		ImGui::Checkbox("Rename_CheckForErrors", &use_name_fixes);
+
+		ImGui::Separator();
+
+		ImGui::Text("Feature: ");
+		ImGui::Checkbox("MultiplySelect", &MultiplySelect);
+		ImGui::Checkbox("ShowError", &use_errored);
+		ImGui::Checkbox("Use Distances", &use_distance);
+		if (use_distance)
+			ImGui::InputInt("Distance", &DistanceObjects, 1, 100);
+
+		ImGui::Separator();
+	}
+
+	UpdateDefaultMeny();
+		
+	if (LTools->CurrentClassID() != OBJCLASS_AIMAP && LTools->CurrentClassID() != OBJCLASS_DO && LTools->CurrentClassID() != OBJCLASS_GROUP)
+	{
+		if (use_name_fixes)
+		{		
+			ImGui::Text("Rename Menu: (TOOL CURRENT)");
+			ImGui::Checkbox("use_prefix_by_refname", &use_prefix_refname);
+
+			if (use_prefix_refname)
+				ImGui::InputText("#repace_name (prefix)", prefix_name, sizeof(prefix_name));
+
+			if (ImGui::Button("rename (selected)", ImVec2(-1, 0)))
+				RenameSelectedObjects();
+ 
+			if (ImGui::Button("Rename All (group#_No)", ImVec2(-1, 0) ) )
+				RenameALLObjectsToObject();
+
+			if (ImGui::Button("To Log All (only dup)", ImVec2(-1, 0)))
+				FindALL_Duplicate();
+
+			if (ImGui::Button("Rename All (only dup)", ImVec2(-1, 0)))
+				CheckDuplicateNames();
+
+			if (ImGui::Button("Names to LOG (FOR LTX)", ImVec2(-1, 0)))
+			{
+				ESceneCustomOTool* scene_object = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+				ObjectList list = scene_object->GetObjects();
+
+				for (auto obj : list)
+				{
+					if (obj->Selected())
+						Msg("%s", obj->GetName());
+				}
+			}
+
+			ImGui::InputInt("MaxName (In Search)", &_sizetext, 1, 10);
+			ImGui::Separator();
+ 		}
+		 
+		
+
+		if (ShowLOAD)
+		{
+			ImGui::Text("Load Menu:");
+
+			ImGui::Text("OFFSET: ");
+			float vec[3] = { vec_offset.x, vec_offset.y, vec_offset.z };
+
+			if (ImGui::InputFloat3("x", vec, 0.001f))
+				vec_offset.set(vec[0], vec[1], vec[2]);
+
+			if (ImGui::Button("Move Loaded to Offset", ImVec2(-1, 0)))
+  				MoveObjectsToOffset();
+	 
+			if (ImGui::Button("Load Objects", ImVec2(-1, 0)))
+				ImportObjects(vec_offset);
+
+			if (ImGui::Button("Undo load", ImVec2(-1, 0)))
+				UndoLoad();
+ 
+			if (ImGui::Button("Select Loaded", ImVec2(-1, 0)))
+				SelectLoaded();
+
+			ImGui::Separator();
+
+		}	  
+
+		if (ShowEXPORT)
+		{
+			ImGui::Text("Export Menu: ");
+
+			if (ImGui::Button("Export Objects (Selected)", ImVec2(-1, 0)))
+				ExportSelectObjects();
+			if (ImGui::Button("Export Level ALL", ImVec2(-1, 0)))
+				ExportAllObjects();
+
+			float vec_min[3] = { vec_box_min.x, vec_box_min.y, vec_box_min.z };
+			float vec_max[3] = { vec_box_max.x, vec_box_max.y, vec_box_max.z };
+
+			if (ImGui::InputFloat3("box_min", vec_min, 0.001f))
+				vec_box_min = {vec_min[0], vec_min[1], vec_min[2]};
+
+			if (ImGui::InputFloat3("box_max", vec_max, 0.001f))
+				vec_box_max = {vec_max[0], vec_max[1], vec_max[2]};
+
+			if (ImGui::Button("bbox object", ImVec2(-1, 0)))
+				BboxSelectedObject();
+
+
+			ImGui::Checkbox("use_outside (EXPORT_IN_BOX)", &use_outside_box);
+
+			if (ImGui::Button("Export Objects InBox" , ImVec2(-1, 0)  ) )
+				ExportInsideBox();
+			
+			if (ImGui::Button("Remove Objects InBox", ImVec2(-1, 0)))
+				RemoveAllInsideBox();
+
+			if (ImGui::Button("Set ListMove From InBox", ImVec2(-1, 0)))
+				SetListToMove();
+
+
+			ImGui::Separator();
+		}	 
+	}
+ 
+
+
 }
  
 int current_selected_item = 0;
@@ -1739,18 +1768,13 @@ void UIObjectList::FindALL_Duplicate()
 		ObjectList& lst = mt->GetObjects();
 		for (auto object : lst)
 		{
-			for (auto object_cmp : lst)
+			if (Scene->FindObjectByName(object->GetName(), object))
 			{
-				if (object->FName.equal(object_cmp->FName) && object != object_cmp)
-				{
-					Msg("Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", object->GetName(), (mt->FClassID), object->RefName(), VPUSH(object->GetPosition()));
-					Errored_objects.push_back(object->FName);
-				}
+				Msg("Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", object->GetName(), (mt->FClassID), object->RefName(), VPUSH(object->GetPosition()));
+				Errored_objects.push_back(object->FName);
 			}
 		}
 	}
-
-
 }
 
 void UIObjectList::LoadErrorsGraphs()
@@ -1778,9 +1802,7 @@ void UIObjectList::LoadErrorsGraphs()
 	}
 
 }
-
-
-
+ 
 bool UIObjectList::CheckNameForType(CCustomObject* obj)
 {
 	if (!CheckForError(obj))
@@ -1850,31 +1872,6 @@ bool UIObjectList::CheckNameForType(CCustomObject* obj)
 				return false;
 		}
 	}
-	
-	if (LTools->CurrentClassID() == OBJCLASS_LIGHT)
-	{
-		CLight* light = (CLight*)obj;
-		if (light)
-		{
-			bool light_map = light->m_Flags.is(ELight::flAffectStatic);
-			bool dynamic   = light->m_Flags.is(ELight::flAffectDynamic);
-			bool animated = light->m_Flags.is(ELight::flProcedural);
-			if (light_map && cur_light_type == 1)
-				return true;
-
-			if (dynamic && cur_light_type == 2)
-				return true;
-			
-			if (animated && cur_light_type == 3)
-				return true;
-
-			if (cur_light_type == 0)
-				return true;
-
-			return false;
-		}
-	}
-
 
 	return true;
 }

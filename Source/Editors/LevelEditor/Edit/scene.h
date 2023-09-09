@@ -92,6 +92,7 @@ struct st_LevelOptions{
     
     u8	 			m_LightHemiQuality;
     u8 				m_LightSunQuality;
+	u8				m_LightSunDispersion;
 
     b_params		m_BuildParams;
 

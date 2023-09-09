@@ -239,9 +239,9 @@ private:
 class XRCORE_API IReader : public IReaderBase<IReader> {
 protected:
 	char *			data	;
-	int				Pos		;
-	int				Size	;
-	int				iterpos	;
+	u32				Pos		;
+	u32				Size	;
+	u32				iterpos	;
 
 public:
 	IC				IReader			()
@@ -270,10 +270,10 @@ protected:
 	u32 			advance_term_string			();
 
 public:
-	IC int			elapsed		()	const		{	return Size-Pos;		};
-	IC int			tell		()	const		{	return Pos;				};
+	IC u32			elapsed		()	const		{	return Size-Pos;		};
+	IC u32			tell		()	const		{	return Pos;				};
 	IC void			seek		(int ptr)		{	Pos=ptr; VERIFY((Pos<=Size) && (Pos>=0));};
-	IC int			length		()	const		{	return Size;			};
+	IC u32			length		()	const		{	return Size;			};
 	IC void*		pointer		()	const		{	return &(data[Pos]);	};
 	IC void			advance		(int cnt)		{	Pos+=cnt;VERIFY((Pos<=Size) && (Pos>=0));};
 

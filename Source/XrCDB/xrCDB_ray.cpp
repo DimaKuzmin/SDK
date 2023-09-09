@@ -185,16 +185,10 @@ public:
 	TRI* tris;
 	Fvector* verts;
 
-	bool stop_cycle = false;
-
-	//bool use_opacity = false;
-	//xr_map<int, bool> * prim_opacity = 0;
-
 	ray_t			ray;
 	float			rRange;
 	float			rRange2;
-	u32 rays_count_max = 1024;
-
+ 
 	ICF void			_init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R, u32 max_rays = 1024)
 	{
 		dest = CL;
@@ -215,8 +209,6 @@ public:
 			if (_abs(D.z) > flt_eps) {}
 			else ray.inv_dir.z = 0;
 		}
-
-		rays_count_max = max_rays;
 	}
 
 	// fpu
@@ -341,27 +333,11 @@ public:
 			R.verts[0] = verts[tris[prim].verts[0]];
 			R.verts[1] = verts[tris[prim].verts[1]];
 			R.verts[2] = verts[tris[prim].verts[2]];
-			R.dummy = tris[prim].dummy;
-			
-		 	/*
-			if (rays_count_max <= dest->r_count())
-				stop_cycle = true;
-			
-			if (use_opacity)
-			{
-				bool value = &prim_opacity[R.id];				
-				if (value)
-					stop_cycle = true;
-			}
-			 */
-			 
+			R.dummy = tris[prim].dummy;		 
 		}
 	}
 	void			_stab(const AABBNoLeafNode* node)
 	{
-		//if (stop_cycle)
-		//	return;
-
 		// Should help
 		_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
@@ -437,11 +413,6 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				{
 					ray_collider<true, true, false, false>		RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range, hits);
-					if (use_triangles_opacity)
-					{
-						//RC.prim_opacity = triangle_opacity;
-						//RC.use_opacity = true;
-					}
  					RC._stab(N); 
 				}
 			}
@@ -471,11 +442,6 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 				{
 					ray_collider<true, false, false, false>	RC;
 					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range, hits);
-					if (use_triangles_opacity)
-					{
-						//RC.prim_opacity = triangle_opacity;
-						//RC.use_opacity = true;
-					}
  					RC._stab(N);
 				}
 			}

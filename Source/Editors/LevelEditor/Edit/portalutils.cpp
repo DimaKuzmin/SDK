@@ -168,14 +168,17 @@ bool CPortalUtils::Validate(bool bMsg)
 {
     Fbox box;
     bool bResult 	= false;
-	if (Scene->GetBox(box,OBJCLASS_SCENEOBJECT)){
+	if (Scene->GetBox(box,OBJCLASS_SCENEOBJECT))
+    {
 	    bResult 	= true;
 		CSector* sector_def=xr_new<CSector>((LPVOID)0,DEFAULT_SECTOR_NAME);
         sector_def->CaptureAllUnusedMeshes();
         int f_cnt;
         sector_def->GetCounts(0,0,&f_cnt);
-		if (f_cnt!=0){
-        	if (bMsg){ 
+		if (f_cnt!=0)
+        {
+        	if (bMsg)
+            { 
             	ELog.DlgMsg(mtError,"*ERROR: Scene has '%d' non associated face!",f_cnt);
                 for (SItemIt it=sector_def->sector_items.begin();it!=sector_def->sector_items.end();it++)
                 	Msg		("! - scene object: '%s' [O:'%s', M:'%s']",it->object->GetName(), it->object->RefName(), it->mesh->Name().c_str());
@@ -188,7 +191,9 @@ bool CPortalUtils::Validate(bool bMsg)
         ObjectList& s_lst=Scene->ListObj(OBJCLASS_SECTOR);
         for(ObjectIt _F=s_lst.begin(); _F!=s_lst.end(); _F++)
         	if (!((CSector*)(*_F))->Validate(bMsg)) bResult = false;
-    }else{
+    }
+    else
+    {
 		if (bMsg) ELog.DlgMsg(mtInformation,"Validation failed! Can't compute bbox.");
     }
     return bResult;
@@ -250,6 +255,8 @@ DEFINE_VECTOR(sFace, sFaceVec, sFaceIt);
 DEFINE_VECTOR(sEdge, sEdgeVec, sEdgeIt);
 DEFINE_VECTOR(sPortal, sPortalVec, sPortalIt);
 
+
+
 void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges, int start, int end)
 {
     int ps = portals.size();
@@ -293,15 +300,16 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
             // append portal
             string256 namebuffer = {0};
             sprintf(namebuffer, "portal_%d", id);
-            //Scene->GenObjectName(OBJCLASS_PORTAL, namebuffer);
-
+ 
             CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
     
             for (u32 i = 0; i < vlist.size(); i++)
                 _O->Vertices().push_back(verts[vlist[i]]);
  
             _O->SetSectors(p_it->s[0], p_it->s[1]);
-            _O->Update();
+            _O->Update();    
+
+
 
             if (_O->Valid()) 
             {
@@ -311,7 +319,9 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
             {
                 xr_delete(_O);
                 ELog.Msg(mtError, "Can't simplify Portal :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
-            }          
+            }   
+
+
         }
         else
             if (p_it->e.size() == 0) {
@@ -329,6 +339,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
     UI->ProgressEnd(pb);
 }
 
+#include <execution>
 
 class sCollector
 {
@@ -354,11 +365,25 @@ public:
         iz         = floorf(float(V.z-VMmin.z)/VMscale.z*clpMZ);
         R_ASSERT	(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 
-        // PACKING TOO LONG FOR BIG GEOMETRY 
         // Se7Kills
        
-        if (false)
+        if (true)
         {
+            U32Vec* vl = &(VM[ix][iy][iz]);
+            U32It it = vl->begin();
+            U32It it_e = vl->end();
+            xr_vector<sVert>::iterator verts_begin = verts.begin();
+
+            auto it_found = std::find_if(std::execution::par, it, it_e, [&](const auto& element) {
+                return (*(verts_begin + element)).similar(V);
+            });
+
+            if (it_found != it_e)
+            {
+                P = *it_found;
+            }
+
+            /*
             U32Vec* vl;
             vl 			= &(VM[ix][iy][iz]);
             U32It it	= vl->begin();
@@ -367,13 +392,13 @@ public:
             
             for(;it!=it_e; ++it)
             {
-//              if(verts[*it].similar(V) )	
                 if( (*(verts_begin+*it)).similar(V) )	
                 {
                     P = *it;
                     break;
                 }
             }
+            */
         }
 
         if (0xffffffff==P)
@@ -539,7 +564,8 @@ public:
             current.s[1] = edges[e_it].s[1];
             edges[e_it].used= true;
 
-            for (;;) {
+            for (;;) 
+            {
                 sEdge& 	eFirst 	= edges[current.e[0]];
                 sEdge& 	eLast  	= edges[current.e.back()];
                 u32	vFirst	= eFirst.v[0];

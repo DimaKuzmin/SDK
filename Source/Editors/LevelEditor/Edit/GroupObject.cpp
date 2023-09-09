@@ -228,10 +228,12 @@ bool CGroupObject::LoadStream(IReader& F)
             F.r_stringZ				(m_ObjectsInGroup.back().ObjectName);
         }
 */        
-    }else
+    }
+    else
     {
 	    Scene->ReadObjectsStream(F,GROUPOBJ_CHUNK_OBJECT_LIST, EScene::TAppendObject(this, &CGroupObject::AppendObjectLoadCB),0);
     }
+
     VERIFY(m_ObjectsInGroup.size());
 
     if (F.find_chunk(GROUPOBJ_CHUNK_REFERENCE))	

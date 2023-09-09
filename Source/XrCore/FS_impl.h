@@ -154,7 +154,7 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 	VERIFY ((u32)impl().tell() + dwSize <= (u32)impl().length());
 	if (bCompressed) *bCompressed = dwType & CFS_CompressMark;
 
-	const int dwPos = impl().tell();
+	const u32 dwPos = impl().tell();
 	if ( dwPos + dwSize < (u32)impl().length() )
 	{
 		m_last_pos = dwPos + dwSize;

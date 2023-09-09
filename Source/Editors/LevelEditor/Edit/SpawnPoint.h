@@ -5,7 +5,7 @@
 #ifndef SpawnPointH
 #define SpawnPointH
 
-#define SPAWNPOINT_VERSION   			0x0017
+#define SPAWNPOINT_VERSION   			0x0018
 
 #include "../../xrServerEntities/LevelGameDef.h"
 #include "../../xrServerEntities/xrServer_Objects_abstract.h"
@@ -106,13 +106,17 @@ public:
 
     EPointType		m_Type;
     shared_str		m_rpProfile;
-    union{
-    	struct{
+    union
+    {
+    	struct
+        {
 		    u8					m_RP_TeamID;
 		    u8					m_RP_Type;
 			GameTypeChooser     m_GameType;
         };
-        struct{
+
+        struct
+        {
         	float	m_EM_Radius;
             float 	m_EM_Power;
             float	m_EM_ViewDist;
@@ -121,6 +125,8 @@ public:
             u32		m_EM_AmbientColor;
             u32		m_EM_SkyColor;
             u32		m_EM_HemiColor;
+            u32     m_EM_SunColor;
+
             Flags16	m_EM_Flags;
         };
     };

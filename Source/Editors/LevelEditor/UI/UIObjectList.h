@@ -31,6 +31,11 @@ public:
 	void SetScale(Fvector size);
 
 	void ExportSelectObjects();
+	void ExportInsideBox();
+	void RemoveAllInsideBox();
+	
+	void SetListToMove();
+
 	void ExportAllObjects();
 	void ExportAIMap();
 
@@ -55,7 +60,7 @@ public:
 
 	void GenSpawnCFG(xr_string section, xr_string map, xr_string prefix);
 
-	void MoveObjectsToOffset(xr_string& load);
+	void MoveObjectsToOffset();
 	void CheckDuplicateNames();
 
 	void RenameALLObjectsToObject();
@@ -78,6 +83,7 @@ public:
 
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
 
+	void UpdateDefaultMeny();
 	void UpdateUIObjectList();
 	void ListBoxForTypes();
 

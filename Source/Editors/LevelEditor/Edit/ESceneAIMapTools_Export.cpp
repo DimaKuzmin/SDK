@@ -39,7 +39,8 @@ bool ESceneAIMapTool::Export(LPCSTR path)
     // export
     IWriter* F		= FS.w_open(fn.c_str());
 
-    if (F){
+    if (F)
+    {
         F->open_chunk	(E_AIMAP_CHUNK_VERSION);
         F->w_u16		(E_AIMAP_VERSION);
         F->close_chunk	();

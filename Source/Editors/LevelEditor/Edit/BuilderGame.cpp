@@ -59,6 +59,9 @@ BOOL SceneBuilder::BuildGame(bool static_iclude)
         CMemoryWriter GAME; 
         GAME.w_chunk(WAY_PATROLPATH_CHUNK,	F.patrolpath.stream.pointer(),	F.patrolpath.stream.size());
         GAME.w_chunk(RPOINT_CHUNK,			F.rpoint.stream.pointer(),		F.rpoint.stream.size());
+
+        Msg("Rpoint: %u, size: %d",F.rpoint.stream.pointer(), F.rpoint.stream.size());
+
         xr_string lev_game 					= MakeLevelPath("level.game");
         EFS.MarkFile						(lev_game.c_str(),true);
         if (GAME.size())

@@ -43,6 +43,8 @@ public:
 	Fvector3			ambient;
 	Fvector3			sky_color;		
 	Fvector3			hemi_color;
+	Fvector3			sun_color;
+
 	Flags16				use_flags;
 
 	void				load		(IReader* fs, u32 version);

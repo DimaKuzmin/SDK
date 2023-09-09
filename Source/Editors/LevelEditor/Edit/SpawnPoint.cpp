@@ -36,6 +36,8 @@
 #define SPAWNPOINT_CHUNK_ENVMOD			0xE422
 #define SPAWNPOINT_CHUNK_ENVMOD2		0xE423
 #define SPAWNPOINT_CHUNK_ENVMOD3		0xE424
+#define SPAWNPOINT_CHUNK_ENVMOD4		0xE435
+
 #define SPAWNPOINT_CHUNK_FLAGS			0xE425
 
 //----------------------------------------------------
@@ -646,6 +648,7 @@ void CSpawnPoint::Construct(LPVOID data)
             m_EM_AmbientColor	= 0x00000000;
             m_EM_SkyColor		= 0x00FFFFFF;
             m_EM_HemiColor		= 0x00FFFFFF;
+            m_EM_SunColor       = 0x00FFFFFF;
         }else{
             CreateSpawnData(LPCSTR(data));
             if (!m_SpawnData.Valid())
@@ -1116,6 +1119,8 @@ bool CSpawnPoint::LoadLTX(CInifile& ini, LPCSTR sect_name)
             m_EM_HemiColor		= ini.r_u32(sect_name, "hemi_color");
             if(version>=0x0016)
             	m_EM_Flags.assign	(ini.r_u16(sect_name, "em_flags"));
+            if (version >= 0x0018)
+                m_EM_SunColor		= ini.r_u32(sect_name, "sun_color");
         }
     break;
     default: THROW;
@@ -1176,6 +1181,8 @@ void CSpawnPoint::SaveLTX(CInifile& ini, LPCSTR sect_name)
         ini.w_u32		(sect_name, "sky_color", m_EM_SkyColor);
         ini.w_u32		(sect_name, "hemi_color", m_EM_HemiColor);
         ini.w_u16		(sect_name, "em_flags", m_EM_Flags.get());
+
+        ini.w_u32       (sect_name, "sun_color", m_EM_SunColor);
     }break;
 
     default: THROW;
@@ -1236,6 +1243,8 @@ bool CSpawnPoint::LoadStream(IReader& F)
                     m_EM_HemiColor	= F.r_u32();
                 if (F.find_chunk(SPAWNPOINT_CHUNK_ENVMOD3))
                     m_EM_Flags.assign(F.r_u16());
+                if (F.find_chunk(SPAWNPOINT_CHUNK_ENVMOD4))
+                    m_EM_SunColor	= F.r_u32();
             }
         break;
         default: THROW;
@@ -1293,12 +1302,17 @@ void CSpawnPoint::SaveStream(IWriter& F)
         	F.w_u32		(m_EM_AmbientColor);
             F.w_u32		(m_EM_SkyColor);
             F.close_chunk();
-        	F.open_chunk(SPAWNPOINT_CHUNK_ENVMOD2);
+        	
+            F.open_chunk(SPAWNPOINT_CHUNK_ENVMOD2);
             F.w_u32		(m_EM_HemiColor);
             F.close_chunk();
 
         	F.open_chunk(SPAWNPOINT_CHUNK_ENVMOD3);
             F.w_u16		(m_EM_Flags.get());
+            F.close_chunk();
+
+            F.open_chunk(SPAWNPOINT_CHUNK_ENVMOD4);
+            F.w_u32		(m_EM_SunColor);
             F.close_chunk();
         break;
         default: THROW;
@@ -1354,6 +1368,8 @@ bool CSpawnPoint::ExportGame(SExportStreams* F)
             F->envmodif.stream.w_fvector3(u32_3f(m_EM_SkyColor));
             F->envmodif.stream.w_fvector3(u32_3f(m_EM_HemiColor));
             F->envmodif.stream.w_u16(m_EM_Flags.get());
+            F->envmodif.stream.w_fvector3(u32_3f(m_EM_SunColor));
+
 			F->envmodif.stream.close_chunk();
         break;
         default: THROW;
@@ -1487,20 +1503,30 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
             if(m_EM_Flags.test(eFogDensity))
         		PHelper().CreateFloat	(items, PrepareKey(pref,"Environment Modificator\\Fog Density\\ "), 	&m_EM_FogDensity, 0.f,10000.f);
                 
+
+            // Ambient Color
 	        FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Ambient Color"), &m_EM_Flags, eAmbientColor);
             FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
             if(m_EM_Flags.test(eAmbientColor))
 	        	PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Ambient Color\\ "), 	&m_EM_AmbientColor);
 
+            // SkyColor
 	        FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Sky Color"), &m_EM_Flags, eSkyColor);
             FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
             if(m_EM_Flags.test(eSkyColor))
         		PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Sky Color\\ "), 		&m_EM_SkyColor);
-                
+            
+            // Hemi Color
 	        FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Hemi Color"), &m_EM_Flags, eHemiColor);
             FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
             if(m_EM_Flags.test(eHemiColor))
         		PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Hemi Color\\ "), 	&m_EM_HemiColor);
+
+            // Sun Color
+	        FV = PHelper().CreateFlag16(items, PrepareKey(pref,"Environment Modificator\\Sun Color"), &m_EM_Flags, eSunColor);
+            FV->OnChangeEvent.bind	 (this,&CSpawnPoint::OnEnvModFlagChange);
+            if(m_EM_Flags.test(eSunColor))
+        		PHelper().CreateColor	(items, PrepareKey(pref,"Environment Modificator\\Sun Color\\ "), 	&m_EM_SunColor);
         }break;
         default: THROW;
         }

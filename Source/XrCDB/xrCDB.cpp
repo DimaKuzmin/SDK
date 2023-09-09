@@ -148,7 +148,8 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	// if (Memory.debug_mode) OPCC.KeepOriginal = true;
 
 	tree			= CNEW(OPCODE_Model) ();
-	if (!tree->Build(OPCC)) {
+	if (!tree->Build(OPCC))
+	{
 		CFREE		(verts);
 		CFREE		(tris);
 		CFREE		(temp_tris);

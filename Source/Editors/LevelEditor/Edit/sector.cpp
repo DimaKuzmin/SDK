@@ -79,9 +79,20 @@ bool CSector::FindSectorItem(const char* O, const char* M, SItemIt& it){
     return false;
 }
 
-bool CSector::FindSectorItem(CSceneObject* o, CEditableMesh* m, SItemIt& it){
-	for (it=sector_items.begin();it!=sector_items.end();it++)
-    	if ((*it).IsItem(o,m)) return true;
+#include <execution>
+
+bool CSector::FindSectorItem(CSceneObject* o, CEditableMesh* m, SItemIt& it)
+{
+	
+    for (it=sector_items.begin();it!=sector_items.end();it++)
+    if ((*it).IsItem(o,m)) 
+        return true;
+
+    // auto iter = std::find_if(std::execution::par, sector_items.begin(), sector_items.end(), [&](CSectorItem item) { return item.IsItem(o, m); });
+    
+    //if (iter != sector_items.end()) 
+    //    return true;
+   
     return false;
 }
 
@@ -91,11 +102,12 @@ bool CSector::AddMesh	(CSceneObject* O, CEditableMesh* M)
 	SItemIt it;
 	if (!(O->IsStatic()||O->IsMUStatic())) return false;
 	if (!PortalUtils.FindSector(O,M))
-	    if (!FindSectorItem(O, M, it)){
-    	 	sector_items.push_back(CSectorItem(O, M));
-		    m_Flags.set(flNeedUpdateVolume,TRUE);
-            return true;
-        }
+	if (!FindSectorItem(O, M, it))
+    {
+    	sector_items.push_back(CSectorItem(O, M));
+		m_Flags.set(flNeedUpdateVolume,TRUE);
+        return true;
+    }
     return false;
 }                  
 
@@ -104,8 +116,10 @@ int CSector::DelMesh	(CSceneObject* O, CEditableMesh* M)
 	VERIFY(O&&M);
 	int res = 0;
 	SItemIt it;
-    if (FindSectorItem(O, M, it)){
-    	sector_items.erase(it);
+    if (FindSectorItem(O, M, it)) 
+    {   
+        if (it < sector_items.end())
+    	    sector_items.erase(it);
 	    m_Flags.set(flNeedUpdateVolume,TRUE);
         res = 1;
     }
@@ -385,13 +399,17 @@ bool CSector::IsEmpty()
 
 void CSector::GetCounts(int* objects, int* meshes, int* faces)
 {
-	if (faces){
+	if (faces)
+    {
     	*faces=0;
 	    for (SItemIt it=sector_items.begin();it!=sector_items.end();it++)
     	    *faces+=it->mesh->GetFaceCount(true);
     }
-	if (meshes) *meshes=sector_items.size();
-	if (objects){
+	if (meshes)
+        *meshes=sector_items.size();
+	
+    if (objects)
+    {
         xr_set<CSceneObject*> objs;
 	    for (SItemIt it=sector_items.begin();it!=sector_items.end();it++)
         	objs.insert(it->object);
@@ -526,6 +544,7 @@ void CSector::SaveLTX(CInifile& ini, LPCSTR sect_name)
     int count=0;
 	ini.w_u32			(sect_name, "items_count", sector_items.size());
     string512			buff;
+ 
     for(SItemIt it=sector_items.begin(); it!=sector_items.end(); ++it)
     {
             sprintf			(buff,"item_object_name_%.4d",count);
@@ -534,6 +553,7 @@ void CSector::SaveLTX(CInifile& ini, LPCSTR sect_name)
             ini.w_string	(sect_name, buff, it->mesh->Name().c_str());
             ++count;
     }
+   
    	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);
     
 }
@@ -544,7 +564,8 @@ bool CSector::LoadStream(IReader& F)
 
     char buf[1024];
     R_ASSERT(F.r_chunk(SECTOR_CHUNK_VERSION,&version));
-    if( version!=SECTOR_VERSION ){
+    if( version!=SECTOR_VERSION )
+    {
         ELog.Msg( mtError, "CSector: Unsupported version.");
         return false;
     }
@@ -642,26 +663,37 @@ bool CSector::GetSummaryInfo(SSceneSummary* inf)
 
 bool CSector::Validate(bool bMsg)
 {
-	bool bRes		= true;
+ 	bool bRes		= true;
     // verify face count
     int f_cnt;
     GetCounts		(0,0,&f_cnt);
-    if (f_cnt<=4){
+   
+    if (f_cnt<=4)
+    {
         if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - face count < 4!",GetName());
         bRes		= false;
     }
+
+
     // verify shader compatibility
 	bool bRenderableFound	= false;    
-    for (SItemIt it=sector_items.begin();it!=sector_items.end();it++){
-        for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++){
+
+    for (SItemIt it=sector_items.begin();it!=sector_items.end();it++)
+    {
+        for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++)
+        {
             CSurface* surf 		= sf_it->first;
             Shader_xrLC* c_sh	= EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
             if (c_sh->flags.bRendering)	bRenderableFound = true;
         }
 	}
+
+
     if (!bRenderableFound){
         if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
     	bRes 		= false;
 	}        
+ 
+
    	return bRes;
 }

@@ -88,7 +88,8 @@ public:
     int		BuildLightControl(LPCSTR name);
     void 	BuildHemiLights	(u8 quality, LPCSTR lcontrol);
 	void	AppendLight		();
-    BOOL 	BuildSun		(u8 quality, Fvector2 dir);
+    BOOL 	BuildSun		(u8 quality, u8 dispersion, Fvector2 dir);
+
     BOOL 	BuildPointLight	(b_light* b, const Flags32& usage, svector<WORD,16>* sectors, FvectorVec* soft_points, const Fmatrix* soft_transform=0);
     BOOL    BuildLight		(CLight* e);
 
