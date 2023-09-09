@@ -173,11 +173,11 @@ void UIPropertiesForm::RemoveMixed(Node* N)
 
 		node->BeforeEdit<U32Value, u32>(edit_val);
 		if (node->AfterEdit<U32Value, u32>(edit_val))
-			if (node->ApplyValue<U32Value, u32>(edit_val))
-			{
-				change = true;
+		if (node->ApplyValue<U32Value, u32>(edit_val))
+		{
+			change = true;
 				
-			}
+		}
 	}
 	break;
 	case PROP_FCOLOR:
@@ -186,10 +186,11 @@ void UIPropertiesForm::RemoveMixed(Node* N)
 		Fcolor edit_val = V->GetValue();
 
 		node->BeforeEdit<ColorValue, Fcolor>(edit_val);
-			if (node->AfterEdit<ColorValue, Fcolor>(edit_val))
-				if (node->ApplyValue<ColorValue, Fcolor>(edit_val)) {
-					change = true;
-				}
+		if (node->AfterEdit<ColorValue, Fcolor>(edit_val))
+		if (node->ApplyValue<ColorValue, Fcolor>(edit_val)) 
+		{
+			change = true;
+		}
 	}
 		break;
 	case PROP_VCOLOR:

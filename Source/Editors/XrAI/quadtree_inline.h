@@ -23,8 +23,11 @@ IC	CSQuadTree::CQuadTree		(const Fbox &box, float min_cell_size, u32 max_node_co
 	VERIFY				(m_radius > min_cell_size);
 	m_max_depth			= iFloor(log(2.f*m_radius/min_cell_size)/log(2.f) + .5f);
 
+	Msg("m_radius: %f, m_center: [%f][%f][%f], m_max_depth: %d", m_radius, VPUSH(m_center), m_max_depth);
+
 	m_nodes				= xr_new<CQuadNodeStorage>(max_node_count);
 	m_list_items		= xr_new<CListItemStorage>(max_list_item_count);
+		
 	m_root				= 0;
 }
 
@@ -86,13 +89,19 @@ IC	void CSQuadTree::insert		(_object_type *object)
 	Fvector				center = m_center;
 	float				distance = m_radius;
 	CQuadNode			**node = &m_root;
-	for (int depth = 0; ; ++depth) {
-		if (depth == m_max_depth) {
+	for (int depth = 0; ; ++depth)
+	{
+		if (depth == m_max_depth) 
+		{
 			CListItem			*list_item = m_list_items->get_object();
-			list_item->m_object = object;
-			list_item->m_next	= (CListItem*)((void*)(*node));
-			*node				= (CQuadNode*)((void*)list_item);
-			++m_leaf_count;
+			
+			//if (list_item != nullptr )
+			{
+				list_item->m_object = object;
+				list_item->m_next	= (CListItem*)((void*)(*node));
+				*node				= (CQuadNode*)((void*)list_item);
+				++m_leaf_count;
+			}
 			return;
 		}
 

@@ -134,6 +134,9 @@ BOOL FlagOnEdit(PropItem* prop, bool& change)
 void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 {
 	EPropType type = node->Type();
+
+ 
+
 	switch (type)
 	{
 	case PROP_NUMERIC:
@@ -228,13 +231,13 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 	{
 		U32Value* V = dynamic_cast<U32Value*>(node->GetFrontValue()); R_ASSERT(V);
 		u32 edit_val = V->GetValue();
-
+ 
 		node->BeforeEdit<U32Value, u32>(edit_val);
 		u32 a = color_get_A(edit_val);
-		float color[3] = { color_get_B(edit_val) / 255.f, color_get_G(edit_val) / 255.f, color_get_R(edit_val) / 255.f };
+		float color[3] = { color_get_R(edit_val) / 255.f, color_get_G(edit_val) / 255.f, color_get_B(edit_val) / 255.f };
 		if (ImGui::ColorEdit3("##value", color))
 		{
-			edit_val = color_rgba_f(color[2], color[1], color[0], 1.f);
+			edit_val = color_rgba_f(color[0], color[1], color[2], 1.f);
 			edit_val = subst_alpha(edit_val, a);
 			if (node->AfterEdit<U32Value, u32>(edit_val))
 				if (node->ApplyValue<U32Value, u32>(edit_val)) {
@@ -248,10 +251,10 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 	{
 		ColorValue* V = dynamic_cast<ColorValue*>(node->GetFrontValue()); R_ASSERT(V);
 		Fcolor edit_val = V->GetValue();
-
+ 
 		node->BeforeEdit<ColorValue, Fcolor>(edit_val);
 		float a = edit_val.a;
-		float color[3] = { edit_val.r,edit_val.b,edit_val.b };
+		float color[3] = { edit_val.r, edit_val.g, edit_val.b };
 		if (ImGui::ColorEdit3("##value", color))
 		{
 			edit_val.r = color[0];
@@ -259,12 +262,14 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 			edit_val.b = color[2];
 			edit_val.a = a;
 			if (node->AfterEdit<ColorValue, Fcolor>(edit_val))
-				if (node->ApplyValue<ColorValue, Fcolor>(edit_val)) {
-					Modified();
-				}
+			if (node->ApplyValue<ColorValue, Fcolor>(edit_val)) 
+			{
+				Modified();
+			}
 		}
 	}
 	break;
+
 	case PROP_VCOLOR:
 	{
 		VectorValue* V = dynamic_cast<VectorValue*>(node->GetFrontValue()); R_ASSERT(V);

@@ -13,16 +13,18 @@
 template <typename _object_type>
 class CQuadTree {
 public:
-	struct CQuadNode {
+	struct CQuadNode
+	{
 		CQuadNode				*m_neighbours[4];
-
+ 
 		IC	CQuadNode	*&next				()
 		{
 			return				(m_neighbours[0]);
 		}
 	};
 
-	struct CListItem {
+	struct CListItem 
+	{
 		_object_type			*m_object;
 		CListItem				*m_next;
 		
@@ -38,8 +40,7 @@ public:
 		T						*m_free;
 		u32						m_max_object_count;
 
-		IC			CFixedStorage			(u32 max_object_count) :
-						m_max_object_count	(max_object_count)
+		IC			CFixedStorage			(u32 max_object_count) :  m_max_object_count	(max_object_count)
 		{
 			m_objects			= xr_alloc<T>(m_max_object_count);
 			T					*B = 0;
@@ -47,7 +48,7 @@ public:
 			T					*E = m_objects + m_max_object_count;
 			for ( ; I != E; B = I, ++I)
 				I->next	()		= B;
-			m_free				= E - 1;
+			m_free				= E - 1;   
 		}
 
 		virtual		~CFixedStorage			()
@@ -60,7 +61,7 @@ public:
 			VERIFY				(m_free);
 			T					*node = m_free;
 			m_free				= m_free->next();
-			ZeroMemory			(node,sizeof(T));
+ 			ZeroMemory			(node,sizeof(T));
 			return				(node);
 		}
 
@@ -110,6 +111,6 @@ public:
 	IC		void				nearest			(const Fvector	&position,	float radius, xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		void				all				(xr_vector<_object_type*> &objects, bool clear = true) const;
 	IC		size_t				size			() const;
-};
+ };
 
 #include "quadtree_inline.h"

@@ -80,50 +80,123 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		// Load CFORM
 		{
 			strconcat			(sizeof(N),N,name,"build.cform");
-			IReader*			fs = FS.r_open(N);
-			R_ASSERT			(fs->find_chunk(0));
 
-			hdrCFORM			H;
-			fs->r				(&H,sizeof(hdrCFORM));
-			R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
-
-			Fvector*	verts	= (Fvector*)fs->pointer();
-			
-			/*
-			CDB::TRI_Build* build_tris = (CDB::TRI_Build*)(verts + H.vertcount);
-			auto tris = std::make_unique<CDB::TRI[]>(H.facecount);
-			for (u32 i = 0; i != H.facecount; i++)
+			if (FS.exist(N))
 			{
-				memcpy(tris[i].verts, build_tris[i].verts, sizeof(tris[i].verts));
-				tris[i].dummy = build_tris[i].dummy_low;
-			}
+				IReader*			fs = FS.r_open(N);
+				R_ASSERT			(fs->find_chunk(0));
 
-			Level.build(verts, H.vertcount, tris.get(), H.facecount);
-			 */
+				hdrCFORM			H;
+				fs->r				(&H,sizeof(hdrCFORM));
+				R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 
-			 
-			xr_vector< CDB::TRI> tris(H.facecount);
-			{
+				Fvector*	verts	= (Fvector*)fs->pointer();
+						 
+				xr_vector< CDB::TRI> tris(H.facecount);
 				u8* tris_pointer = (u8*)(verts + H.vertcount);
 				for (u32 i = 0; i < H.facecount; i++)
 				{
 					memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
 					tris_pointer += CDB::TRI::Size();
-				}
+				}				
+ 
+				Level.build			( verts, H.vertcount, tris.data(), H.facecount );
+				Level.syncronize	();
+				Msg("* Level CFORM: %dK",Level.memory()/1024);
 
+				g_rc_faces.resize	(H.facecount);
+				R_ASSERT(fs->find_chunk(1));
+				fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));			
+				LevelBB.set			(H.aabb);
+				FS.r_close			(fs);
 			}
-			Level.build			( verts, H.vertcount, tris.data(), H.facecount );
-			 
+			else 
+			{
+				string_path path_vs, path_tri, path_rq;
+				strconcat			(sizeof(path_vs), path_vs, name,"build.cform_vs");
+				strconcat			(sizeof(path_tri), path_tri, name,"build.cform_tri");
+				strconcat			(sizeof(path_rq), path_rq, name,"build.cform_rq");
 
-			Level.syncronize	();
-			Msg("* Level CFORM: %dK",Level.memory()/1024);
+				bool vs = FS.exist(path_vs);
+				bool rq = FS.exist(path_rq);
+				bool tri = FS.exist(path_tri);
 
-			g_rc_faces.resize	(H.facecount);
-			R_ASSERT(fs->find_chunk(1));
-			fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));
+				if (vs && tri && rq)
+				{
+					IReader*			fs_tri = FS.r_open(path_tri);
+					IReader*			fs_rq = FS.r_open(path_rq);
+					IReader*			fs_vs = FS.r_open(path_vs);
+				   	
+					hdrCFORM			H;					
+					if (fs_tri && fs_tri->find_chunk(0))
+ 						fs_tri->r				(&H,sizeof(hdrCFORM));			
 
-			LevelBB.set			(H.aabb);
-			FS.r_close			(fs);
+ 					xr_vector<Fvector> verts(H.vertcount);
+
+					if (fs_vs && fs_vs->find_chunk(0))
+					{
+						Msg("Read VB");
+						for (auto i = 0;i < H.vertcount;i++)	
+							fs_vs->r(&verts[i], sizeof(Fvector));
+						Msg("End VB size: %d", verts.size());
+					}
+										
+					xr_vector< CDB::TRI> tris(H.facecount); 
+					if (fs_tri && fs_tri->find_chunk(1))
+					{		
+						Msg("Read IB");
+ 						for (u32 i = 0; i < H.facecount; i++)
+							fs_tri->r(&tris[i], CDB::TRI::Size());
+ 						Msg("End IB Size: %d", tris.size());
+					}
+
+					if (fs_rq && fs_rq->find_chunk(0))
+					{
+						Msg("Read RQ");
+						g_rc_faces.resize	(H.facecount);
+  						fs_rq->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));		
+						Msg("End RQ size: %d", g_rc_faces.size());
+					}
+
+					FS.r_close(fs_rq);
+					FS.r_close(fs_tri);
+					FS.r_close(fs_vs);
+
+					xr_delete(fs_rq);
+					xr_delete(fs_tri);
+					xr_delete(fs_vs);
+					
+
+					size_t commited;
+					size_t free;
+					size_t reserved;
+					vminfo(&free, &reserved, &commited);
+					Msg("Files Unload, commeted: %llu, free: %llu, reserved: %llu", 
+						commited / 1024 / 1024, free / 1024 / 1024, reserved / 1024 / 1024);
+
+					Msg("IB: %llu, VS: %llu, RQ: %llu",
+						
+						tris.size() * sizeof(CDB::TRI::Size()) / 1024 / 1024, 
+						verts.size() * sizeof(Fvector) / 1024 / 1024, 
+						g_rc_faces.size() * sizeof(b_rc_face) / 1024 / 1024 
+					);
+
+					Msg("RayQast Init");
+ 				    
+					Level.build			( verts.data(), H.vertcount, tris.data(), H.facecount );
+					Level.syncronize	();
+					Msg("* Level CFORM: %dK",Level.memory()/1024);
+		
+					LevelBB.set			(H.aabb);
+					
+					Msg("RayQ Model End");
+
+				}
+				else 
+				{
+					Msg("!!! xrLC CFORM Check: VS: %d, RQ: %d, TRI: %d", vs, rq, tri);
+				}
+			}
 		}
 
 		// Load level data
@@ -177,7 +250,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					} else {
 						xr_strcat		(N,".thm");
 						IReader* THM	= FS.r_open("$game_textures$",N);
-//						if (!THM)		continue;
+						if (!THM)	
+							continue;
 
 
 						R_ASSERT2		(THM,	N);
@@ -333,6 +407,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 		R_ASSERT2			(N < ((u32(1) << u32(MAX_NODE_BIT_COUNT)) - 2),"Too many nodes!");
 		
+		Msg("Load Nodes Size: %d", N);
 		g_nodes.resize		(N);
 
 		hdrNODES			H;
@@ -341,6 +416,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		H.size				= g_params.fPatchSize;
 		H.size_y			= 1.f;
 		H.aabb				= LevelBB;
+
+
+		string_path path;
+		FS.update_path(path, "$app_data_root$", "logs\\xrAI_NodesLoad_Errors.log");
+		
+		IWriter* w = FS.w_open(path);
 		
 		for (u32 i=0; i<N; i++)
 		{
@@ -355,8 +436,15 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				F->r(&id, 3);
 				g_nodes[i].n[j] = (*LPDWORD(&id)) & 0x00ffffff;
 
+//				if (id > (1 << 23))
+//					Msg("Check ID: %d", id);
+				 
 				if (id > (1 << 23))
-					Msg("Check ID: %d", id);
+				{
+					string64 tmp;
+					sprintf(tmp, "Check: Node Link: [%d], n[%d] = value: %d", i, j, id);
+					w->w_string(tmp);
+				}
 #else 
 				u32 id = F->r_u32();
  				g_nodes[i].n[j]	= id;
@@ -374,7 +462,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
  
 		}
 
-		Msg("Level Nodes %d", N);
+		FS.w_close(w);
+
+		Msg("Level Nodes %d", g_nodes.size());
 		Msg("Level Min BB [%f][%f][%f]", LevelBB.min.x, LevelBB.min.y, LevelBB.min.z);
 		Msg("Level Max BB [%f][%f][%f]", LevelBB.max.x, LevelBB.max.y, LevelBB.max.z);
 

@@ -135,18 +135,15 @@ ETOOLS_API VIPM_Result*	  VIPM_Convert		(u32 max_sliding_window, float error_tol
 {	
 	
 	g_pObject->Initialize	();
-	if (!g_pObject->Valid())return NULL;
-	CTimer t; t.Start();
-	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
-	Msg("Time CalculateAllCollapses: %d", t.GetElapsed_ms());
-	
-	t.Start();
-	if (CalculateSW(g_pObject, g_pResult, optimize_vertex_order))
-	{
-		Msg("Time CalculateSW: %d", t.GetElapsed_ms());
-		return g_pResult;
-	}
-	else					return NULL;
+	if (!g_pObject->Valid())
+		return NULL;
+
+ 	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
+ 	
+ 	if (CalculateSW(g_pObject, g_pResult, optimize_vertex_order))
+ 		return g_pResult;
+	else				
+		return NULL;
 }
 
 ETOOLS_API void			  VIPM_Destroy		()

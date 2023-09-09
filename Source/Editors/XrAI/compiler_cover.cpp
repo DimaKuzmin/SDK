@@ -18,8 +18,7 @@ xr_vector<b_rc_face>			g_rc_faces		;
 typedef xr_vector<bool>			COVER_NODES;
 COVER_NODES						g_cover_nodes;
 
-typedef CQuadTree<CCoverPoint>	CPointQuadTree;
-static CPointQuadTree			*g_covers = 0;
+
 typedef xr_vector<CCoverPoint*>	COVERS;
 
 // -------------------------------- Ray pick
@@ -228,20 +227,21 @@ public:
 };
 struct	RC { RayCache	C; };
 
+xrCriticalSection csAI;
+int IDS_THREADS = 0;
+int CurrentPos = 0;
+
 class	CoverThread : public CThread
 {
-	u32					Nstart, Nend;
-	xr_vector<RC>		cache;
+ 	xr_vector<RC>		cache;
 	CDB::COLLIDER		DB;
 	Query				Q;
 
 	typedef float	Cover[4];
 
 public:
-	CoverThread			(u32 ID, u32 _start, u32 _end) : CThread(ID)
+	CoverThread			(u32 ID) : CThread(ID)
 	{
-		Nstart	= _start;
-		Nend	= _end;
 	}
 
 	void				compute_cover_value	(u32 const &N, vertex &BaseNode, float const &cover_height, Cover &cover)
@@ -311,10 +311,23 @@ public:
 		FPU::m24r		();
 
 		Q.Begin			(g_nodes.size());
-		for (u32 N=Nstart; N<Nend; N++) {
+
+		//for (u32 N=Nstart; N<Nend; N++) 
+		for (;;)
+		{
+			csAI.Enter();
+			if (CurrentPos >= IDS_THREADS)
+			{
+			    csAI.Leave();
+				break;
+			}
+			int N = CurrentPos;
+			CurrentPos++;
+			csAI.Leave();
+
 			// initialize process
-			thProgress	= float(N-Nstart)/float(Nend-Nstart);
-			vertex&		BaseNode= g_nodes[N];
+			thProgress	= float(N)/float(IDS_THREADS);
+			vertex&		BaseNode = g_nodes[N];
 
 			if (!g_cover_nodes[N])
 			{
@@ -373,24 +386,41 @@ bool is_cover				(const vertex &v)
 
 extern float	CalculateHeight(Fbox& BB);
 
+typedef CQuadTree<CCoverPoint>	CPointQuadTree;
+static CPointQuadTree			*g_covers = 0;
+
 void compute_cover_nodes	()
 {
 	Fbox					aabb;
 	CalculateHeight			(aabb);
 	VERIFY					(!g_covers);
-	g_covers				= xr_new<CPointQuadTree>(aabb,g_params.fPatchSize*.5f,8*65536,4*65536);
-
+ 
+	g_covers				= xr_new<CPointQuadTree>(aabb,g_params.fPatchSize*.5f, 32*65536, 8*65536);
 	g_cover_nodes.assign	(g_nodes.size(),false);
-
+ 
 	Nodes::const_iterator	B = g_nodes.begin(), I = B;
 	Nodes::const_iterator	E = g_nodes.end();
 	COVER_NODES::iterator	J = g_cover_nodes.begin();
-	for ( ; I != E; ++I, ++J) {
+
+	int ID = 0;
+	for ( ; I != E; ++I, ++J, ++ID) 
+	{
 		if (!is_cover(*I))
 			continue;
 
 		*J					= true;
-		g_covers->insert	(xr_new<CCoverPoint>((*I).Pos, u32(I - B)));
+
+		//if (ID % 1024 == 0)
+			Msg_IN_FILE("ID: %llu, nodes: %llu, g_covers: %llu", ID, g_cover_nodes.size(), g_covers->size());
+		
+		try
+		{
+			g_covers->insert	(xr_new<CCoverPoint>((*I).Pos, u32(I - B)));
+		}
+		catch(...)
+		{
+			Msg("!!! ID: %llu, nodes: %llu, g_covers: %llu", ID, g_cover_nodes.size(), g_covers->size());
+		}
 	}
 }
 
@@ -459,7 +489,7 @@ void compute_non_covers		()
 		Fbox					aabb;
 		CalculateHeight			(aabb);
 		VERIFY					(!g_covers);
-		g_covers				= xr_new<CPointQuadTree>(aabb,g_params.fPatchSize*.5f,8*65536,4*65536);
+		g_covers				= xr_new<CPointQuadTree>(aabb,g_params.fPatchSize*.5f,32*65536,8*65536);
 
 		Nodes::iterator			B = g_nodes.begin(), I = B;
 		Nodes::iterator			E = g_nodes.end();
@@ -565,7 +595,21 @@ void compute_non_covers		()
 	}
 }
 
-#define NUM_THREADS	16
+int GetMAXTH()
+{
+	if (char* str = strstr(Core.Params, "-th"))
+	{
+		int value = 1;
+		sscanf(str+3, "%d", &value);
+		return value;
+	}
+
+	return 1;
+}
+
+#define NUM_THREADS	GetMAXTH()
+
+
 extern	void mem_Optimize();
 void	xrCover	(bool pure_covers)
 {
@@ -579,18 +623,21 @@ void	xrCover	(bool pure_covers)
 	// Start threads, wait, continue --- perform all the work
 	u32	start_time		= timeGetTime();
 	CThreadManager		Threads;
-	u32	stride			= g_nodes.size()/NUM_THREADS;
-	u32	last			= g_nodes.size()-stride*(NUM_THREADS-1);
+	//u32	stride			= g_nodes.size()/NUM_THREADS;
+	//u32	last			= g_nodes.size()-stride*(NUM_THREADS-1);
+	
+	IDS_THREADS = g_nodes.size();
+	CurrentPos = 0;
+
 	for (u32 thID=0; thID<NUM_THREADS; thID++)
 	{
-		Threads.start(xr_new<CoverThread>(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)));
-//		CoverThread(thID,thID*stride,thID*stride+((thID==(NUM_THREADS-1))?last:stride)).Execute();
-//		Threads.wait		();
+		Threads.start( xr_new<CoverThread>(thID) );
 	}
 	Threads.wait			();
 	Msg("%d seconds elapsed.",(timeGetTime()-start_time)/1000);
 
-	if (!pure_covers) {
+	if (!pure_covers) 
+	{
 		compute_non_covers	();
 
 		COVERS				nearest;

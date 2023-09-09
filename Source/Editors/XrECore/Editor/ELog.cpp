@@ -85,32 +85,41 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		R_ASSERT(0);
 		break;
 	}
+
 	if (btn == mbYes)
 	{
 		Flags |=  MB_OK;
 	}
+
 	if (btn == mbOK)
 	{
 		Flags |= MB_OK;
 	}
-	else if(btn==(mbYes|mbNo))
+	else
+	if(btn==(mbYes|mbNo))
 	{
 		Flags |= MB_YESNO;
 	}
-	else if (btn == (mbYes | mbNo|mbCancel))
+	else
+	if (btn == (mbYes | mbNo|mbCancel))
 	{
 		Flags |= MB_YESNOCANCEL;
 	}
 	else
 	{
-		R_ASSERT(0);
+		//R_ASSERT(0);
+		Msg("R_ASSERT (0), Check Button %d", btn);
 	}
+
+
 	int msgboxID = MessageBox(
 		NULL,
 		text,
 		Title,
 		Flags
 	);
+
+
 	switch (msgboxID)
 	{
 	case IDCANCEL:
@@ -126,6 +135,7 @@ inline TMsgDlgButtons MessageDlg(const char*text, TMsgDlgType mt, int btn)
 		return mrOK;
 		break;
 	}
+
 	if (btn | mbCancel)return mrCancel;
 	if (btn | mbNo)return mrNo;
 	if (btn == mbOK)return mrOK;

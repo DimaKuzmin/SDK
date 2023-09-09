@@ -173,6 +173,11 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	Msg("Min[%f][%f][%f]", H.aabb.min.x, H.aabb.min.y, H.aabb.min.z);
 	Msg("Max[%f][%f][%f]", H.aabb.max.x, H.aabb.max.y, H.aabb.max.z);
  
+	string_path path;
+	FS.update_path(path, "$app_data_root$", "logs\\xrAI_NodesSave_Errors.log");
+		
+	IWriter* w = FS.w_open(path);
+
 	for (u32 i=0; i<g_nodes.size(); ++i) 
 	{
 		vertex			&N	= g_nodes[i];
@@ -182,26 +187,32 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	  
 		if (NC.p.xz() > MAX_PX)
 			MAX_PX = NC.p.xz();
-		 
-
-
+		
+		// Unpack For Check Validate
 		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
-		//int pxz = iFloor((x_o - H.aabb.min.x) * H.size + EPS_L + .5f) * m_row_length + iFloor((z_o - H.aabb.min.z) * H.size + EPS_L + .5f);
-		float py = float(  (NC.p.y()  / 65535.f) * H.size_y + H.aabb.min.y);
-		
-		//float(source_position.y()) / 65535) * header().factor_y() + header().box().min.y
-		
+				
 		float x, z;
 		x = NC.p.xz() / m_row_length;
 		z = NC.p.xz() % m_row_length;
 		x = float(x) * H.size + H.aabb.min.x;
 		z = float(z) * H.size + H.aabb.min.z;
 		
+		float py = float(  (NC.p.y()  / 65535.f) * H.size_y + H.aabb.min.y);
+
+
 #ifdef _USE_NODE_POSITION_11
 		int max_px = 0xffffffff;
 #else 
 		int max_px = 0x00ffffff;
 #endif
+
+		if (NC.p.xz() > max_px)
+		{
+			string64 tmp;
+			sprintf(tmp, "Check: Node XZ: [%d], POS[%f][%f][%f] = value: %d, UX: %f, UY: %f, UZ: %f", i, VPUSH(N.Pos), NC.p.xz(), x, py, z);
+			w->w_string(tmp);
+		}
+
 
 		if (NC.p.xz() > max_px)	  
 		{
@@ -217,6 +228,7 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		//	clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
 	}
 
+	FS.w_close(w);
  
 	int n_e = errored_nodes;
  
