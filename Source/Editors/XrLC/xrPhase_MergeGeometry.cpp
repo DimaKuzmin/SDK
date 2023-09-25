@@ -7,14 +7,166 @@
 
 extern void Detach		(vecFace* S);
 
+#include <immintrin.h>
+#include <xmmintrin.h>
+
+//#define TEST_OLDER
+#define TEST_OLDER_NEW
+
+ICF Fbox box_modify_avx	(Fbox& p, Fbox& current) 
+{		
+	Fbox newb;
+
+	__m256 min_avx = _mm256_loadu_ps((float*) &p.min);
+	__m256 max_avx = _mm256_loadu_ps((float*) &p.max);
+
+	__m256 cur_min = _mm256_loadu_ps((float*) &current.min);
+	__m256 cur_max = _mm256_loadu_ps((float*) &current.max);
+
+	min_avx = _mm256_min_ps(min_avx, cur_min);
+	max_avx = _mm256_max_ps(max_avx, cur_max);
+
+	_mm256_storeu_ps((float*) &newb.min, min_avx);
+	_mm256_storeu_ps((float*) &newb.max, max_avx);
+
+	return newb;
+}
+
+IC	Fbox	box_merge_avx		(Fbox b1, Fbox b2)		
+{ 
+#ifdef TEST_OLDER
+	Fbox newb; 
+	newb.merge(b1,b2);
+	return newb;
+#else 
+	Fbox newb;
+	newb.invalidate(); 
+	newb = box_modify_avx(b1, b2); 
+ 	return newb;	
+#endif 
+}
+
+IC	Fvector	box_getsize_avx		(Fbox box)		
+{ 
+	 Fvector vector;
+#ifndef TEST_OLDER
+ 	__m256 min_avx = _mm256_loadu_ps((float*) &box.min);
+	__m256 max_avx = _mm256_loadu_ps((float*) &box.max);
+
+	__m256 result = _mm256_sub_ps(max_avx, min_avx);
+	 _mm256_storeu_ps((float*) &vector, result);
+#else 
+	 box.getsize(vector);
+#endif
+ 	return vector;	
+}
+
+// NEW ----------------------------------------------------------
+
+IC	float	box_getvolume_avx		(Fbox box)		
+{ 
+	float final_result;
+#ifdef TEST_OLDER_NEW
+	final_result = box.getvolume();
+#else 
+ 	Fvector& sz = box_getsize_avx(box);
+      
+	__m256 x = _mm256_set1_ps(sz.x);
+    __m256 y = _mm256_set1_ps(sz.y);
+    __m256 z = _mm256_set1_ps(sz.z);
+
+    __m256 result = _mm256_mul_ps(_mm256_mul_ps(x, y), z);
+
+    // Здесь можно провести дополнительные операции с результатом, если это необходимо
+
+    // Преобразование результата в скалярное значение
+    _mm256_storeu_ps(&final_result, result);
+#endif
+
+ 	return final_result;	
+}
+
+
+IC void box_grow_avx(Fbox& box, float value)
+{
+#ifdef TEST_OLDER_NEW
+	box.grow(value);
+#else 
+	float vector[8] = { -value, -value, -value, 0, value, value, value, 0};
+	float box_vec[8] = { box.min.x, box.min.y, box.min.z, 0, box.max.x, box.max.y, box.max.z, 0};
+	
+	__m256 box_vector = _mm256_loadu_ps((float*) &box_vec);
+ 	__m256 add_vector = _mm256_loadu_ps((float*) &vector);
+
+	__m256 recalc = _mm256_add_ps(box_vector, add_vector);
+
+	float result[8];  
+    _mm256_storeu_ps((float*)&result, recalc);
+
+	box.min.x = result[0];
+	box.min.y = result[1];
+	box.min.z = result[2];
+
+	box.max.x = result[4];
+	box.max.y = result[5];
+	box.max.z = result[6];
+#endif
+
+	/*
+	
+
+		// Загрузка вектора s в регистр AVX
+		float vector[3] = { value, value, value};
+
+		// Создание векторов min и max и инициализация их значениями по умолчанию
+		__m256 min_vector = _mm256_loadu_ps((float*) &box.min);
+		__m256 max_vector = _mm256_loadu_ps((float*) &box.max);
+		__m256 add_vector = _mm256_loadu_ps((float*) &vector);
+
+		// Нахождение минимального и максимального значения и выполнение операций
+		min_vector = _mm256_sub_ps(min_vector, add_vector);
+		max_vector = _mm256_add_ps(max_vector, add_vector);
+
+		// Выгрузка результатов в массивы
+ 
+		_mm256_storeu_ps((float*)&box.min, min_vector);
+		_mm256_storeu_ps((float*)&box.max, max_vector);
+	*/
+}
+
+
+IC void box_modify_avx(Fbox& box, Fvector& p)
+{
+#ifdef TEST_OLDER_NEW
+	box.modify(p);
+#else 
+	// Загрузка вектора s в регистр AVX
+	__m256 s_vector = _mm256_loadu_ps((float*) &p);
+
+	// Нахождение минимального значения
+	__m256 min_vector = _mm256_loadu_ps((float*) &box.min);  // Инициализация min_vector максимальными значениями
+	min_vector = _mm256_min_ps(min_vector, s_vector);
+
+	// Нахождение максимального значения
+	__m256 max_vector = _mm256_loadu_ps((float*) &box.max);  // Инициализация max_vector минимальными значениями
+	max_vector = _mm256_max_ps(max_vector, s_vector);
+
+	// Выгрузка результатов в массивы
+ 
+	_mm256_storeu_ps((float*)&box.min, min_vector);
+	_mm256_storeu_ps((float*)&box.max, max_vector);
+#endif
+}
+
 IC BOOL	FaceEqual		(Face* F1, Face* F2)
 {
-	if (F1->v[0]->P.distance_to(F2->v[0]->P) > 256 ) return FALSE;
+	if (F1->v[0]->P.distance_to(F2->v[0]->P) > 64 ) return FALSE;
 	if (F1->dwMaterial  != F2->dwMaterial)		return FALSE;
 	if (F1->tc.size()	!= F2->tc.size())		return FALSE;
 	if (F1->lmap_layer  != F2->lmap_layer)		return FALSE;
 	return TRUE;
 }
+
 #include <mutex>
 std::mutex lock;
 
@@ -30,6 +182,7 @@ ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 			bb_base.modify(F->v[0]->P);
 			bb_base.modify(F->v[1]->P);
 			bb_base.modify(F->v[2]->P);
+			 
 		}
 		lock.lock();
 		bb_bases[id] = bb_base;
@@ -50,9 +203,11 @@ BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base, u32 id)
 	bb_base.invalidate	();
 	CreateBox(subdiv, bb_base, id);
 	
-	bb_base.grow		(EPS_S);	// Enshure non-zero volume
-	Fvector sz_base;
-	bb_base.getsize(sz_base);
+	box_grow_avx(bb_base, EPS_S);
+	//bb_base.grow		(EPS_S);	// Enshure non-zero volume
+	
+	Fvector sz_base = box_getsize_avx(bb_base);		
+	//bb_base.getsize(sz_base);
 
 	
 	if (sz_base.x<c_SS_maxsize)		return TRUE;
@@ -61,18 +216,6 @@ BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base, u32 id)
 	return FALSE;
 }
  
-float	Cuboid			(Fbox& BB)
-{
-	Fvector sz;			BB.getsize(sz);
-	float	min			= sz.x;
-	if (sz.y<min)	min = sz.y;
-	if (sz.z<min)	min = sz.z;
-	
-	float	volume_cube	= min*min*min;
-	float	volume		= sz.x*sz.y*sz.z;
-	return  powf(volume_cube / volume, 1.f/7.f);
-}
-
 IC void	MakeCube		(Fbox& BB_dest, const Fbox& BB_src)
 {
 	Fvector C,D;
@@ -82,7 +225,9 @@ IC void	MakeCube		(Fbox& BB_dest, const Fbox& BB_src)
 	if (D.z>max)	max = D.z;
 
 	BB_dest.set			(C,C);
-	BB_dest.grow		(max);
+	
+	box_grow_avx(BB_dest, max);
+	//BB_dest.grow		(max);
 }
 
 IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, const Fvector & orig2, int iAxis)
@@ -95,16 +240,22 @@ IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, 
 		return TRUE;
 }
 
+
+
 IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u32 f2, const Fbox& bb, float& volume)
 {
 	// Polygons
 	if ((f1+f2) > u32(4*c_SS_HighVertLimit/3))		return FALSE;	// Don't exceed limits (4/3 max POLY)	
 
 	// Size
-	Fbox	merge;	merge.merge		(bb_base,bb);
-	Fvector sz;		merge.getsize	(sz);
-	Fvector orig1;	bb_base_orig.getsize(orig1);
-	Fvector orig2;	bb.getsize		(orig2);
+	Fbox	merge  = box_merge_avx(bb_base, bb);
+	//merge.merge		(bb_base,bb);
+	Fvector sz	   = box_getsize_avx(merge);	
+	//merge.getsize	(sz);
+	Fvector orig1 = box_getsize_avx(bb_base_orig);	
+	//bb_base_orig.getsize(orig1);
+	Fvector orig2 = box_getsize_avx(bb);	
+	//bb.getsize		(orig2);
  
 	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
 	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
@@ -112,12 +263,15 @@ IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u3
 
 	// Volume
 	Fbox		bb0,bb1;
-	MakeCube	(bb0,bb_base);	float	v1	= bb0.getvolume	();
-	MakeCube	(bb1,bb);		float	v2	= bb1.getvolume	();
-	volume		= merge.getvolume	(); 
+	MakeCube	(bb0,bb_base);
+	float	v1	= box_getvolume_avx(bb0); // bb0.getvolume	();
+	MakeCube	(bb1,bb);	
+	float	v2	= box_getvolume_avx(bb1); // bb1.getvolume	();
+
+	volume		= box_getvolume_avx(merge); // merge.getvolume	(); 
 	
-	//Cuboid(merge);
-	if (volume > 2*2*2*(v1+v2))						return FALSE;	// Don't merge too distant groups (8 vol)
+ 	if (volume > 8 * ( v1 + v2)) // 2 * 2 * 2		
+		return FALSE;	// Don't merge too distant groups (8 vol)
 
 	// OK
 	return TRUE;
@@ -271,13 +425,13 @@ ICF void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume
 	}
 }
 
-xrCriticalSection cs;
 
 
 ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base )
 {
 	int CUR_ID = *selected;
 
+	
  	for ( u32 test = split ; test < split_size ; test++ ) 
 	{	
 		if (g_XSplit[test]->empty())
@@ -303,37 +457,45 @@ ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 sp
 	}
 }
 
-xr_vector<int> reserved;
-
 struct data_vec
 {
 	int face_id;
+	bool merged = false;
 };
 
 struct data_faces
 {
 	xr_vector<data_vec> faces_vec;
+
 };
 
 xr_map<int, data_faces> thread_faces;
-int ready_threads;
-
+ 
 #include <execution>
 
-IC void FindBestMergeCandidateTH(int ID, u32* selected, float* selected_volume, Fbox* bb_base_orig, Fbox* bb_base)
+// TH, MERGED
+ 
+CTimer tGlobalMerge; 
+
+IC void FindBestMergeCandidateTH(bool USE_MT, int ID, u32* selected, float* selected_volume, Fbox* bb_base_orig, Fbox* bb_base, xr_vector<data_vec>::iterator& vec_it)
 {
 	int CUR_ID = *selected;
- 
-	if (thread_faces[ID].faces_vec.size() > 1)
-	{
-		float volume;
-		auto it = std::find_if(std::execution::par, thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
-		[&] (data_vec test)
-		{
-			if (!g_XSplit[test.face_id])
-				return false;
+	 
+   	float volume;
 
-		  	if (g_XSplit[test.face_id]->empty())
+
+	if (thread_faces[ID].faces_vec.size() > 24000 && USE_MT)
+	{
+		auto it = std::find_if(std::execution::par, thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
+		[&] (data_vec& test)
+		{
+			//if (!g_XSplit[test.face_id])
+			//	return false;
+
+		  	//if (g_XSplit[test.face_id]->empty())
+			//	return false;
+
+			if (test.merged)
 				return false;
 
 			Fbox bb;
@@ -351,76 +513,105 @@ IC void FindBestMergeCandidateTH(int ID, u32* selected, float* selected_volume, 
 			
 			if (volume < *selected_volume)
 				return true;
-			else 
-				return false;
+ 
+			return false;
 		});
 		
 		if (it != thread_faces[ID].faces_vec.end())
 		{
+			vec_it = it;
 			*selected = (*it).face_id;
 			*selected_volume = volume;
 		}
-
 	}
 	else 
-	for (auto test : thread_faces[ID].faces_vec)
-	{ 
-		if (g_XSplit[test.face_id]->empty())
-			continue;
+	{
+		//for (auto test : thread_faces[ID].faces_vec)
+		auto it = std::find_if(thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
+		[&] (data_vec test)
+		{ 
+			if (test.merged)
+				return false; 		 
 
-		Fbox bb;
-		float volume;
-		vecFace& TEST = *(g_XSplit[test.face_id]);
-		vecFace* subdiv = (g_XSplit[CUR_ID]);
+			Fbox bb;
+			float volume;
+			vecFace& TEST = *(g_XSplit[test.face_id]);
+			vecFace* subdiv = (g_XSplit[CUR_ID]);
 
- 		if (!FaceEqual(subdiv->front(), TEST.front()))
-			continue;
+ 			if (!FaceEqual(subdiv->front(), TEST.front()))
+				return false;
 
-  		if (!NeedMerge(TEST, bb, test.face_id))
-			continue;
+  			if (!NeedMerge(TEST, bb, test.face_id))
+				return false;
  
-		if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
-			continue;
+			if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
+				return false;
+	 			
+			if (volume < *selected_volume)
+				return true;
 
- 		if (volume < *selected_volume)
+			/* 
+ 			if (volume < *selected_volume)
+			{
+			
+				*selected = test.face_id;
+				*selected_volume = volume;						
+				break;
+			}
+			*/
+		});
+
+		if (it != thread_faces[ID].faces_vec.end())
 		{
-			*selected = test.face_id;
-			*selected_volume = volume;						
-			break;
+			vec_it = it;
+			*selected = (*it).face_id;
+			*selected_volume = volume;
 		}
 	}
-	
-}	  
 
-ICF void FindWhileMergeNeed(int id)
+}
+
+std::atomic<bool> stopped = false;
+
+ICF void FindWhileMergeNeed(bool USE_MT, int id)
 { 
+ 
 	for (;;)
 	{
+		xr_vector<data_vec>& faces_vect = thread_faces[id].faces_vec;
+
 		lock.lock();
-		if (thread_faces[id].faces_vec.size() == 0)
+		if (faces_vect.size() == 0)
 		{
 			lock.unlock();
 			break;
 		}
 
-		int s = thread_faces[id].faces_vec.back().face_id;
-		thread_faces[id].faces_vec.pop_back();		
+		auto s = faces_vect.back().face_id;
+		faces_vect.pop_back();		
 		lock.unlock();
-
+ 
 		if (g_XSplit[s]->empty())
 			continue;
 
-		Progress(1.0f / thread_faces[id].faces_vec.size());
+		Progress(1.0f / faces_vect.size());
 
-		StatusNoMSG("IDX: %d", thread_faces[id].faces_vec.size());
+		//StatusNoMSG("IDX: %d", faces_vect.size());
 
 		vecFace& subdiv = *(g_XSplit[s]);
 		bool		bb_base_orig_inited = false;
 		Fbox		bb_base_orig;
 		Fbox		bb_base;
-
+ 
+		xr_vector<data_vec>::iterator vec_iter;
+	
+		int IDwhile = 0;
 		while (NeedMerge(subdiv, bb_base, s))
 		{
+			StatusNoMSG("IDX_Works[%d] MERGE: %d TIMESEC: [%d], TRY_FIND: %d", thread_faces.size(), faces_vect.size(), (u32) tGlobalMerge.GetElapsed_sec(), IDwhile);
+			IDwhile++;
+ 
+
 			//	Save original AABB for later tests
 			if (!bb_base_orig_inited)
 			{
@@ -432,8 +623,8 @@ ICF void FindWhileMergeNeed(int id)
 			u32	selected = s;
 			float	selected_volume = flt_max;
 
-
-			FindBestMergeCandidateTH(id, &selected, &selected_volume, &bb_base_orig, &bb_base);
+			
+			FindBestMergeCandidateTH(USE_MT, id, &selected, &selected_volume, &bb_base_orig, &bb_base, vec_iter);
 			
 			if (selected == s)
 				break;
@@ -443,49 +634,37 @@ ICF void FindWhileMergeNeed(int id)
 			subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
 			g_XSplit[selected]->clear_not_free();
  			bb_bases.erase(s);
+			(*vec_iter).merged = true;  
  			lock.unlock();
-			
 		}
-	}
-}
 
-IC void FindSelectedMaterialCandidate()
-{
-	int current_id = 0;
-	int max_id = reserved.size();
-//#define MAX_THREADS 8
-	CTimer t; t.Start();
- 
-	for (;;)
-	{
-		current_id++;
-
-		lock.lock();
-		if (reserved.empty())
+		// REMOVE MERGED
 		{
+		   	lock.lock();
+			xr_vector<data_vec>& vec = thread_faces[id].faces_vec; 
+			vec.erase(std::remove_if(vec.begin(), vec.end(), [] (data_vec& vec){return vec.merged;}), vec.end()); 
 			lock.unlock();
-			break;
-		}
+		} 
 
-		int id = reserved.back();
-		reserved.pop_back();
-		lock.unlock();
-		
- 		clMsg("Merge id: %d/%d, candidates:%d, Second: %.0f", current_id, max_id, thread_faces[id].faces_vec.size(), t.GetElapsed_sec() );		
-		FindWhileMergeNeed(id);
+
 	}
-
-	ready_threads++;
 }
 
+// Thread Pools
+xr_vector<int> reserved;
+xr_vector<int> reserved_big_objects;
+ 
 int THREADS_COUNT(); 
 #define MAX_THREADS THREADS_COUNT()
  
+#define MAX_BIG_THREADS 2
 
 void CBuild::xrPhase_MergeGeometry()
 {
 	Status("Processing...");
 	validate_splits();
+
+	tGlobalMerge.Start();
 
 	bool use_fast_way = true;
 
@@ -494,17 +673,93 @@ void CBuild::xrPhase_MergeGeometry()
 
 	if (use_fast_way)
 	{ 
- 		for (int split = 0; split < g_XSplit.size(); split++)
-			thread_faces[g_XSplit[split]->front()->dwMaterial].faces_vec.push_back(data_vec{split});
-
-		for (auto mat : thread_faces)
-			reserved.push_back(mat.first);
- 		
-		// Run Work
-		FindSelectedMaterialCandidate();
+  		for (int split = 0; split < g_XSplit.size(); split++)
+ 			thread_faces[g_XSplit[split]->front()->dwMaterial].faces_vec.push_back(data_vec{split});
  
+  
+		for (auto mat : thread_faces)
+		{
+			if (mat.second.faces_vec.size() < 40000)
+				reserved.push_back(mat.first);
+			else 
+				reserved_big_objects.push_back(mat.first);
+		}
+		// Run Work
+		//FindSelectedMaterialCandidate();
+ 
+		{
+			std::thread* th = new std::thread[MAX_THREADS];
+			for (auto i = 0; i < MAX_THREADS; i++)
+			{	
+				th[i] =	std::thread([&] ()
+				{
+						u32 last_ms = 0;
+						for (;;)
+						{
+							lock.lock();
+							if (reserved.empty())
+							{
+								lock.unlock();
+								break;
+							}
+		 
+ 
+							auto id = reserved.back();
+							clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
+							Progress( float ( 1 / reserved.size()) );
+							reserved.pop_back();
+							lock.unlock();
+		
+							CTimer t;t.Start();		  
+							FindWhileMergeNeed(false, id);
+							last_ms = t.GetElapsed_ms();
+						}
+				} 
+				);
+			}
+
+
+			for (auto i = 0; i < MAX_THREADS; i++)
+				th[i].join();
+		
+		}
+
+
+		
+		{
+			std::thread* th = new std::thread[MAX_BIG_THREADS];
+			for (auto i = 0; i < MAX_BIG_THREADS; i++)
+				th[i] = std::thread([&] () 
+			{
+				u32 last_ms = 0;
+				for (;;)
+				{
+					lock.lock();
+					if (reserved_big_objects.empty())
+					{
+						lock.unlock();
+						break;
+					}
+ 
+					auto id = reserved_big_objects.back();
+					clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
+					Progress( float ( 1 / reserved_big_objects.size()) );
+					reserved_big_objects.pop_back();
+					lock.unlock();
+		
+					CTimer t;t.Start();
+					FindWhileMergeNeed(true, id);
+					last_ms = t.GetElapsed_ms();
+				}
+			});
+
+			for (auto i = 0; i < MAX_BIG_THREADS; i++)
+				th[i].join();
+		}
+
 		// Clear Data
 		thread_faces.clear();
+		
 		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { return ptr->empty(); }), g_XSplit.end());
 
 	}

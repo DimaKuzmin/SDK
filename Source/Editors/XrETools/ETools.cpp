@@ -5,7 +5,8 @@ auto __vsnprintf = _vsnprintf;
 #pragma warning(disable:4267)
 
 
-namespace ETOOLS{
+namespace ETOOLS
+{
 	ETOOLS_API bool   TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull)
 	{
 		Fvector edge1, edge2, tvec, pvec, qvec;

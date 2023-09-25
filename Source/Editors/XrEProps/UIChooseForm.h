@@ -24,6 +24,8 @@ private:
     SChooseItem* m_SelectedItem;
     SChooseItem m_ItemNone;
     ChooseItemVec	m_Items;
+
+
     u32 m_ChooseID;
     void  FillItems(u32 choose_id);
 protected:
@@ -31,7 +33,9 @@ protected:
     DEFINE_MAP(u32, SChooseEvents, EventsMap, EventsMapIt);
     static EventsMap			m_Events;
 private:
-    static xr_string 			m_LastSelection;
+    static xr_string 			m_LastSelection;       
+    static xr_string            m_LastClickItem;
+
     SChooseEvents 	E;
     static UIChooseForm* Form;
     static ImTextureID NullTexture;
@@ -50,6 +54,7 @@ public:
     virtual void Draw();
     static void SetNullTexture(ImTextureID Texture);
     static void Update();
+    static xr_string GetLastSelected();
     static bool IsActive();
     static bool GetResult(bool&change,shared_str&result);
     static bool GetResult(bool& change, xr_string& result);

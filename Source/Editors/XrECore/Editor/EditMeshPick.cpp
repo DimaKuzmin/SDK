@@ -57,7 +57,8 @@ void CEditableMesh::GenerateCFModel()
 
 void CEditableMesh::RayQuery(SPickQuery& pinf)
 {
-    if (!m_CFModel) GenerateCFModel();
+    if (!m_CFModel) 
+        GenerateCFModel();
 
 	ETOOLS::ray_query	(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
 	for (int r=0; r<ETOOLS::r_count(); r++)
@@ -180,16 +181,30 @@ void CEditableMesh::GetTiesFaces(int start_id, U32Vec& fl, float fSoftAngle, boo
 }
 //----------------------------------------------------
 
-bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf)
-{
-    if (!m_CFModel) GenerateCFModel();
 
-   ETOOLS::box_query_m(inv_parent, m_CFModel, box);
-    if (ETOOLS::r_count()){
+
+
+xrXRC DB[8];
+
+bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf, int TH)
+{
+    if (!m_CFModel) 
+        GenerateCFModel();
+ 
+    DB[TH].box_query(inv_parent, m_CFModel, box);
+    
+    //ETOOLS::box_query_m(inv_parent, m_CFModel, box);
+ 
+    if (DB[TH].r_count())//(ETOOLS::r_count())
+    {
     	pinf.push_back(SBoxPickInfo());
 		pinf.back().e_obj 	= m_Parent;
 	    pinf.back().e_mesh	= this;
-	    for (CDB::RESULT* I=ETOOLS::r_begin(); I!=ETOOLS::r_end(); I++) pinf.back().AddRESULT(m_CFModel,I);
+	   
+      //  for (CDB::RESULT* I=ETOOLS::r_begin(); I!=ETOOLS::r_end(); I++) 
+        for (auto I = DB[TH].r_begin(); I != DB[TH].r_end();I++)
+            pinf.back().AddRESULT(m_CFModel,I);
+
         return true;
     }
 

@@ -58,9 +58,10 @@ class EDetailManager:
 	IC u32				toSlotZ			(float z)	{return (z/DETAIL_SLOT_SIZE+0.5f)+dtH.offs_z;}
 	IC float			fromSlotX		(int x)		{return (x-dtH.offs_x)*DETAIL_SLOT_SIZE+DETAIL_SLOT_SIZE_2;}
 	IC float			fromSlotZ		(int z)		{return (z-dtH.offs_z)*DETAIL_SLOT_SIZE+DETAIL_SLOT_SIZE_2;}
+public:
+    void				UpdateSlotBBox	(int x, int z, DetailSlot& slot, int ID = 0);
 
-    void				UpdateSlotBBox	(int x, int z, DetailSlot& slot);
-
+private:
     void				GetSlotRect		(Frect& rect, int sx, int sz);
     void				GetSlotTCRect	(Irect& rect, int sx, int sz);
     u8					GetRandomObject	(u32 color_index);

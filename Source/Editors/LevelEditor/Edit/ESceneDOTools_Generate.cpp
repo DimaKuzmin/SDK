@@ -154,7 +154,10 @@ bool EDetailManager::UpdateHeader(){
 }
 
 #define EPS_L_VAR 0.0012345f
-void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
+
+xrCriticalSection csMT;
+
+void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot, int ID)
 {
 	Fbox bbox;
     Frect rect;
@@ -164,7 +167,12 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
 
     SBoxPickInfoVec pinf;
     ETOOLS::box_options(0);
-    if (Scene->BoxPickObjects(bbox,pinf,&m_SnapObjects))
+
+    //csMT.Enter();
+    bool ray_pick = Scene->BoxPickObjects(bbox,pinf,&m_SnapObjects, ID);
+    //csMT.Leave();
+
+    if (ray_pick)
     {
 		bbox.grow		(EPS_L_VAR);
     	Fplane			frustum_planes[4];
@@ -188,8 +196,10 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
                 sPoly sSrc	(verts,3);
                 sPoly sDest;
                 sPoly* sRes = frustum.ClipPoly(sSrc, sDest);
-                if (sRes){
-                    for (u32 k=0; k<sRes->size(); k++){
+                if (sRes)
+                {
+                    for (u32 k=0; k<sRes->size(); k++)
+                    {
                         float H = (*sRes)[k].y;
                         if (H>y_max) y_max = H+0.03f;
                         if (H<y_min) y_min = H-0.03f;
@@ -213,6 +223,44 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
     }
 }
 
+#include <execution> 
+
+xrCriticalSection csMTDT;
+xr_vector<int> mt_work;
+
+void MT_Thread(DetailHeader* dtH, DetailSlot* dtSlots, EDetailManager* manager, SPBItem* pb, int ID)
+{
+    while (true)
+    {
+        csMTDT.Enter();
+
+        if (mt_work.empty())
+        {
+            csMTDT.Leave();
+            break;
+        }
+
+        int z = mt_work.back();
+        mt_work.pop_back();
+
+        csMTDT.Leave();
+
+
+        string32 tmp;
+        sprintf(tmp, "Box Z: %d/%d", z, dtH->size_z);
+        pb->Info(tmp);
+
+        for (u32 x=0; x < dtH->size_x; x++)
+        {
+
+        	DetailSlot* slot = dtSlots+z*dtH->size_x+x;
+        	manager->UpdateSlotBBox	(x,z,*slot, ID);
+ 	        pb->Inc();
+         }
+    }
+
+}
+
 bool EDetailManager::UpdateSlots()
 {
 	// clear previous slots
@@ -221,7 +269,21 @@ bool EDetailManager::UpdateSlots()
 
     SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating bounding boxes...");
 
+    for (u32 z = 0; z < dtH.size_z; z++)
+        mt_work.push_back(z);
+ 
+    std::thread* th[8];
+    for (int i = 0; i < 8; i++)
+    {
+        th[i] = new std::thread(MT_Thread, &dtH, dtSlots, this, pb, i);        
+    }
+
+    for (int i = 0; i < 8; i++)
+        th[i]->join();
+
+   /*
     for (u32 z=0; z<dtH.size_z; z++)
+ //   std::for_each(std::execution::par, mt_work.begin(), mt_work.end(), [&] (int z)
     {
         string32 tmp;
         sprintf(tmp, "Box Z: %d/%d", z, dtH.size_z);
@@ -234,6 +296,9 @@ bool EDetailManager::UpdateSlots()
  	        pb->Inc();
          }
     }
+    
+    //);
+    */
 
     UI->ProgressEnd(pb);  
  
@@ -454,14 +519,20 @@ bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
     // update objects
     SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating objects...");
     for (u32 z=0; z<dtH.size_z; z++)
-    for (u32 x=0; x<dtH.size_x; x++)
     {
-        if (!bUpdateSelectedOnly||(bUpdateSelectedOnly&&m_Selected[z*dtH.size_x+x]))
-	        UpdateSlotObjects(x,z);
+        for (u32 x=0; x<dtH.size_x; x++)
+        {
+            if (!bUpdateSelectedOnly||(bUpdateSelectedOnly&&m_Selected[z*dtH.size_x+x]))
+	            UpdateSlotObjects(x,z);
         
-        data_image[z * x] = color_argb(255, 255, 0, 0);
+            data_image[z * x] = color_argb(255, 255, 0, 0);
+	        pb->Inc();
+        }
 
-	    pb->Inc();
+        
+        string32 tmp;
+        sprintf(tmp, "Update Slot Z: %d/%d", z, dtH.size_z);
+        pb->Info(tmp);
     }
     UI->ProgressEnd(pb);
     ETextureThumbnail thm("detail_test.dds", false);

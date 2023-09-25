@@ -38,11 +38,27 @@ void ESceneObjectTool::RemoveControls()
 }
 //----------------------------------------------------
 
+struct DATA_LOD
+{
+    xr_string lod_name;
+    int count;
+};
+
+xr_vector<DATA_LOD> allready_textures;  
+
 bool ESceneObjectTool::Validate(bool full_test)
 {
+
+    allready_textures.clear();
+
     bool bRes = inherited::Validate(full_test);
+   
+     Msg("SceneObject PRE CHECK RES: %d", bRes);
+    
     // verify position & refs duplicate
     CSceneObject *A, *B;
+
+    int LOD_ID = 0;
     for (ObjectIt a_it=m_Objects.begin(); a_it!=m_Objects.end(); a_it++)
     {
         A = (CSceneObject*)(*a_it);
@@ -51,7 +67,8 @@ bool ESceneObjectTool::Validate(bool full_test)
             B = (CSceneObject*)(*b_it);
         	if (A==B) continue;
             if (A->RefCompare(B->GetReference())){
-            	if (A->GetPosition().similar(B->GetPosition(),EPS_L)){
+            	if (A->GetPosition().similar(B->GetPosition(),EPS_L))
+                {
                 	bRes = false;
                     ELog.Msg(mtError,"Duplicate object position '%s'-'%s' with reference '%s'.",A->GetName(),B->GetName(),A->RefName());
                 }
@@ -73,6 +90,43 @@ bool ESceneObjectTool::Validate(bool full_test)
             if (age == -1)
                 Msg("!There is no texture '%s'", fn);
 
+            if (age == -1)
+            {
+                if (allready_textures.size() > 0)
+                {
+                    auto it = std::find_if(allready_textures.begin(), allready_textures.end(), 
+                    [&](DATA_LOD& lod)
+                    {
+                         if (0 == xr_strcmp(lod.lod_name.c_str(), l_name.c_str()) )
+                            return true;
+                         else 
+                            return false;                    
+                    });
+
+                    if (it != allready_textures.end())
+                    {
+                        (*it).count++;
+                    }
+                    else 
+                    {
+                        DATA_LOD data;
+                        data.lod_name = E->GetLODTextureName().c_str();
+                        data.count = 1;
+                        allready_textures.push_back(data); 
+                    }
+    
+                }
+                else 
+                {
+                    DATA_LOD data;
+                    data.lod_name = E->GetLODTextureName().c_str();
+                    data.count = 1;
+                    allready_textures.push_back(data); 
+                }
+    
+            }
+
+
             l_name 				+= "_nm";
 //.         FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
             FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
@@ -82,6 +136,7 @@ bool ESceneObjectTool::Validate(bool full_test)
 
             if(age_nm==-1 || age==-1)
                bRes 			= false;
+
 /*
             if ((age!=E->Version()) || (age_nm!=E->Version()) )
             {
@@ -93,6 +148,15 @@ bool ESceneObjectTool::Validate(bool full_test)
 */            
         }
     }
+
+    int ID = 0;
+    for (auto tex : allready_textures)
+    {
+        ID++;
+        Msg("!!! Cant Load LOD Texture: ID[%d], NAME: %s : N: %d", ID, tex.lod_name.c_str(), tex.count);
+    }
+
+    Msg("SceneObject RES: %d", bRes);
     
     return bRes;
 }

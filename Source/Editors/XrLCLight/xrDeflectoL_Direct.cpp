@@ -19,7 +19,7 @@ extern bool use_intel = false;
 
 
 
-void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, bool use_cpu)
+void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 {
 	Fvector		vdir;
 	vdir.sub	(v2,v1);
@@ -57,36 +57,16 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 
 		if (!xrHardwareLight::IsEnabled())
 		{
-			if (use_intel)
-			{
-				u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
-
-				if (0 == (flags & LP_dont_sun))
-					RaysToSUNLight_Deflector(th, P, N, C, *LightsSelected, skip);
-				if (0 == (flags & LP_dont_hemi))
-					RaysToHemiLight_Deflector(th, P, N, C, *LightsSelected, skip);
-				if (0 == (flags & LP_dont_rgb))
-					RaysToRGBLight_Deflector(th, P, N, C, *LightsSelected, skip);
-			}
-			else
-				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT, skip, 1024); //.
-			
+			int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
+			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip); //.
 			C.mul(.5f);
 			lm.surface[_y * lm.width + _x]._set(C);
 			lm.marker[_y * lm.width + _x] = 255;
 		}
 		else
 		{
- 			if (use_cpu)
-			{
-				LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, skip, 1024);
-			}
-			else
-			{
-				lm.SurfaceLightRequests.push_back(LightpointRequest(_x, _y, P, N, skip));
-				lm.marker[_y * lm.width + _x] = 255;
-			}
- 
+			lm.SurfaceLightRequests.push_back(LightpointRequest(_x, _y, P, N, skip));
+			lm.marker[_y * lm.width + _x] = 255; 
 		}
 	}
 }
@@ -171,19 +151,9 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 								{
 									VERIFY(inlc_global_data());
 									VERIFY(inlc_global_data()->RCAST_Model());
-									if (use_intel)
-									{
- 										u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0);
-
-										if (0 == (flags & LP_dont_sun))
-											RaysToSUNLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
-										if (0 == (flags & LP_dont_hemi))
-											RaysToHemiLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
-										if (0 == (flags & LP_dont_rgb))
-											RaysToRGBLight_Deflector(th, wP, wN, C, *LightsSelected, F, true);
-									}
-									else
-										LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable, F, 1024); //.
+ 									   
+									int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
+									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);  
 									
 									Fcount += 1;
 								}
@@ -247,7 +217,8 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 	}
 
 #ifdef OLD_METHOD_GPU_COMPUTE
-	GPU_CalculationOLD();
+	if (xrHardwareLight::Get().IsEnabled())
+		GPU_CalculationOLD();
 #endif
 
  
@@ -403,44 +374,77 @@ void GPU_Calculation()
 
 	//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
 	//#TODO: Invoke several threads!	  
-
-
-	struct UV_Color
-	{
-		base_color_c C;
-		int count = 0;
-	};
-	
-
-	xr_map<int, UV_Color> map_uvs;
- 
-	void* ptr = 0;
-
+  
 	int DeflectorID = 0;
-	for (auto result : FinalColors)
+   
+	std::sort(FinalColors.begin(), FinalColors.end(), [&] (ResultReqvest& reqvest, ResultReqvest& reqvest_2) 
 	{
-		CDeflector* d = lc_global_data()->g_deflectors()[result.Deflector];
+		return reqvest.Deflector < reqvest_2.Deflector;
+	}); 
 
-		if (d)
+	xr_map<int, xr_vector<ResultReqvest>> FinalColors_MAP;
+	for (ResultReqvest& item : FinalColors)
+		FinalColors_MAP[item.Deflector].push_back(item);
+
+	struct ColorUVData
+	{
+		int Samples;
+		base_color_c color;
+	};
+
+	for (auto item : FinalColors_MAP)
+	{
+		CDeflector* d = lc_global_data()->g_deflectors()[item.first];
+
+		StatusNoMSG("Deflector %d / %d", item.first , lc_global_data()->g_deflectors().size());
+
+		if (d != nullptr)
 		{
-			base_color_c C = result.C;
-			C.scale(1);
-			C.mul(0.5f);
-			d->layer.surface[result.V * d->layer.width + result.U]._set(C);
+			xr_vector<ColorUVData> Samples;
+			Samples.resize(d->layer.SizeArea());
 
-			Msg_IN_FILE("DEFL[%d] Set V: %d, U: %d, ColorHemi: %f", result.Deflector, result.V, result.U, result.C.hemi);
-		}
+			//Msg_IN_FILE("Deflector %d / %d", item.first, lc_global_data()->g_deflectors().size());
 
-		DeflectorID++;
+			for (ResultReqvest& ColorsData : item.second)
+			{	
+				int IDX = ColorsData.V * d->layer.width + ColorsData.U;
+ 
+			   	Samples[IDX].Samples += 1;
+				Samples[IDX].color.hemi += ColorsData.C.hemi;
+				Samples[IDX].color.sun += ColorsData.C.sun;
+				Samples[IDX].color.rgb.add(ColorsData.C.rgb);
 
-		//if (DeflectorID % 256000 == 0)
-		//	Msg("Process: %d/%d", DeflectorID / FinalColors.size());
+				base_color_c& C = Samples[IDX].color;
+
+				Msg_IN_FILE("D[%d] : U: %u, V: %u : I: %d  HEMI: %f, SUN: %f, RGB(%f, %f, %f)",
+					item.first, ColorsData.U, ColorsData.V, IDX,  C.hemi, C.sun, C.rgb.x, C.rgb.y, C.rgb.z
+				);
+			}
+
+			for (ResultReqvest& ColorsData : item.second)
+			{
+				int IDX = ColorsData.V * d->layer.width + ColorsData.U;
+			   	
+				base_color_c& C = Samples[IDX].color;
+				C.scale(Samples[IDX].Samples);
+				C.mul(0.5f);
+				d->layer.surface[IDX]._set(C);
+
+				/*
+				Msg_IN_FILE("D[%d] : IDX: %d, SCALE: %d, HEMI: %f, SUN: %f, RGB(%f, %f, %f)",
+					item.first, IDX, Samples[IDX].Samples, C.hemi, C.sun, C.rgb.x, C.rgb.y, C.rgb.z
+				);
+				*/
+			}
+		}		
 	}
 
+	
 	for (auto item : lc_global_data()->g_deflectors())
 	{
 		item->layer.SurfaceLightRequests.clear();
 	}
+
 }
 
  

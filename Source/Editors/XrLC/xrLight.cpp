@@ -27,8 +27,7 @@ xrCriticalSection	task_CS
 
 xr_vector<int>		task_pool;
  
-XRLC_LIGHT_API void InitDB(CDB::COLLIDER* DB, bool print);
-
+ 
 class CLMThread		: public CThread
 {
 private:
@@ -45,8 +44,7 @@ public:
 
 	virtual void	Execute()
 	{
-		InitDB(&DB);
-
+ 
 		CDeflector* D	= 0;
 
 		for (;;) 
@@ -109,8 +107,7 @@ public:
 
 	virtual void	Execute()
 	{
-		InitDB(&DB);
-
+ 
 		CDeflector* D = 0;
 
 		for (;;)
@@ -201,14 +198,8 @@ void	CBuild::LMapsLocal				()
 		{
 			return defl->similar_pos(*defl2, 0.1f);	    
 		});
-		 
-		for (auto defl : lc_global_data()->g_deflectors())
-		{
-			Msg_IN_FILE("Defl Sphere: [%f][%f][%f]", VPUSH(defl->Sphere.P) );
-		}
 
-		//std::shuffle (lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), std::random_device() );
-#endif
+ #endif
 
  
 		 
@@ -222,8 +213,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		task_pool.push_back(14);
 		task_pool.push_back(16);
 #endif
-		
-
+ 
 		// Main process (4 threads) (-th MAX_THREADS)
 		Status			("Lighting...");
 		CThreadManager	threads;
@@ -238,15 +228,17 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		
 #ifndef OLD_METHOD_GPU_COMPUTE		 
 		if (xrHardwareLight::IsEnabled())
+		{
 			GPU_Calculation();
 
-		for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
-			task_pool.push_back(dit);
+			for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
+				task_pool.push_back(dit);
 
-		for (int L = 0; L < th; L++)
-			threads.start(xr_new<CLMThreadEndJob>(L));
+			for (int L = 0; L < th; L++)
+				threads.start(xr_new<CLMThreadEndJob>(L));
+			threads.wait(500);
+		}
 	
-		threads.wait(500);
 #endif
 
 		clMsg			("%f seconds",start_time.GetElapsed_sec());

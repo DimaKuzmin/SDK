@@ -276,12 +276,12 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 		Fvector edit_val = V->GetValue();
 
 		node->BeforeEdit<VectorValue, Fvector>(edit_val);
-		float color[3] = { edit_val[0],edit_val[0],edit_val[0] };
+		float color[3] = { edit_val[0],edit_val[1],edit_val[2] };
 		if (ImGui::ColorEdit3("##value", color))
 		{
 			edit_val[0] = color[0];
-			edit_val[0] = color[1];
-			edit_val[0] = color[2];
+			edit_val[1] = color[1];
+			edit_val[2] = color[2];
 			if (node->AfterEdit<VectorValue, Fvector>(edit_val))
 				if (node->ApplyValue<VectorValue, Fvector>(edit_val))
 				{
@@ -434,7 +434,9 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 	
 		case PROP_CTEXT:
 		{
-			CTextValue* V = dynamic_cast<CTextValue*>(node->GetFrontValue()); R_ASSERT(V);
+			CTextValue* V = dynamic_cast<CTextValue*>(node->GetFrontValue());
+			R_ASSERT(V);
+			
 			{
 				 
 				char text[20];
@@ -450,7 +452,7 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 						a++;
 					text[i] = str[a];
 				}
-				if(str.size()> 16 ||str.size()==0)
+				if(str.size() > 16 || str.size()==0)
 				for (; i < std::min(size_t(16), str.size()) + 3; i++)
 				{
 					text[i] = '.';
@@ -459,22 +461,28 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 			 
  				ImGui::Text(text);
 			}
+
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))
 			{
-				if (m_EditTextValueData)xr_delete(m_EditTextValueData);
+				if (m_EditTextValueData)
+					xr_delete(m_EditTextValueData);
+				
 				m_EditTextValueData = xr_strdup(V->GetValue());
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData)+1;
 				m_EditTextValue = node;
 			}
 			
-			//Msg("PropCtext: %s", name);
-			DrawEditText();
+ 			DrawEditText();
 		}
-			break;
+		break;
+		
 		case PROP_RTEXT:
 		{
-			RTextValue* V = dynamic_cast<RTextValue*>(node->GetFrontValue()); R_ASSERT(V);
+			RTextValue* V = dynamic_cast<RTextValue*>(node->GetFrontValue()); 
+			R_ASSERT(V);
+			
 			{
+				//Msg("RTEXT");
 				char text[20];
 				xr_string str = node->GetDrawText();
 				int i = 0;
@@ -497,9 +505,12 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 
    				ImGui::Text("%s\n     ", node->GetDrawText().c_str()); 
 			}
+
+
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))
 			{
-				if (m_EditTextValueData)xr_delete(m_EditTextValueData);
+				if (m_EditTextValueData)
+					xr_delete(m_EditTextValueData);
 				m_EditTextValueData = xr_strdup(V->GetValue().c_str()? V->GetValue().c_str():"");
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData) + 1;
 				m_EditTextValue = node;
@@ -511,7 +522,9 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 		
 		case PROP_STEXT:
 		{
-			STextValue* V = dynamic_cast<STextValue*>(node->GetFrontValue()); R_ASSERT(V);
+			STextValue* V = dynamic_cast<STextValue*>(node->GetFrontValue()); 
+			R_ASSERT(V);
+
 			{
 				char text[20];
 				xr_string str = node->GetDrawText();
@@ -538,7 +551,8 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 			}
 			if (ImGui::OpenPopupOnItemClick("EditText", 0))
 			{
-				if (m_EditTextValueData)xr_delete(m_EditTextValueData);
+				if (m_EditTextValueData)
+					xr_delete(m_EditTextValueData);
 				m_EditTextValueData = xr_strdup(V->GetValue().c_str());
 				m_EditTextValueDataSize = xr_strlen(m_EditTextValueData) + 1;
 				m_EditTextValue = node;

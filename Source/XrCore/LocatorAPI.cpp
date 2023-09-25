@@ -1586,8 +1586,18 @@ FS_Path* CLocatorAPI::append_path(LPCSTR path_alias, LPCSTR root, LPCSTR add, BO
 
 FS_Path* CLocatorAPI::get_path(LPCSTR path)
 {
-    PathPairIt P 			= pathes.find(path); 
-    R_ASSERT2(P!=pathes.end(),path);
+    PathPairIt P 			= pathes.find(path); 	
+	
+	if (P==pathes.end())
+	{
+		for (auto p : pathes)
+		{
+			Msg("Path: %s == %s", p.first, p.second->m_Path);
+		}
+	}
+
+
+	R_ASSERT2(P!=pathes.end(),path);
     return P->second;
 }
 

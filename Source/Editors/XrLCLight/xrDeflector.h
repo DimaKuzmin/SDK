@@ -18,18 +18,8 @@ XRLC_LIGHT_API extern bool use_intel;
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
 XRLC_LIGHT_API void IntelClearTimers(LPCSTR name);
-XRLC_LIGHT_API xr_map<LPCSTR, int> get_result_mlns();
 
-
-XRLC_LIGHT_API void RaysToSUNLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
-XRLC_LIGHT_API void RaysToHemiLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
-XRLC_LIGHT_API void RaysToRGBLight_Deflector(int th, Fvector& P, Fvector& N, base_color_c& C, base_lighting& lights, Face* skip, bool use_disabled = false);
-
-XRLC_LIGHT_API void InitDB(CDB::COLLIDER* DB, bool print = true);
-
-
-
-#define OLD_METHOD_GPU_COMPUTE
+//#define OLD_METHOD_GPU_COMPUTE
  
 class XRLC_LIGHT_API CDeflector 
 {
@@ -62,7 +52,7 @@ static	CDeflector*		read_create					();
 	void	LightEnd			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H);
 
 	void	L_Direct			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false);
-	void	L_Direct_Edge		(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip, bool use_cpu = false);
+	void	L_Direct_Edge		(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
 	void	L_Calculate			(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false );
 
 	u32		weight				() { return layer.Area(); }	
@@ -128,7 +118,7 @@ extern XRLC_LIGHT_API void		blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer&
 extern void		blit_r			(u32* dest,		u32 ds_x, u32 ds_y, u32* src,		u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern XRLC_LIGHT_API void		blit_r			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, u32 max_hits);
+extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode = false);
 extern XRLC_LIGHT_API BOOL		ApplyBorders	(lm_layer &lm, u32 ref);
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );
 extern XRLC_LIGHT_API void		DumpDeflctor	( const CDeflector &d );

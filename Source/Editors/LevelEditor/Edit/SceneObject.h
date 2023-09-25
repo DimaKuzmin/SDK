@@ -88,7 +88,7 @@ public:
 	void		    EvictObject				();
 
     // pick methods
-    bool 			BoxPick					(const Fbox& box, SBoxPickInfoVec& pinf);
+    bool 			BoxPick					(const Fbox& box, SBoxPickInfoVec& pinf, int TH = 0);
 	virtual bool 	RayPick					(float& dist, const Fvector& S, const Fvector& D, SRayPickInfo* pinf=0);
 	virtual void 	RayQuery				(SPickQuery& pinf);
 	virtual void 	BoxQuery				(SPickQuery& pinf);

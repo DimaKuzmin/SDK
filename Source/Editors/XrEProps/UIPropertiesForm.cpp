@@ -433,6 +433,9 @@ void UIPropertiesForm::DrawEditText()
 		ImGui::BeginGroup();
 		if (ImGui::Button("Ok"))
 		{
+			if (!m_EditTextValue)
+				return;
+
 			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
 			if (V1)
 			{

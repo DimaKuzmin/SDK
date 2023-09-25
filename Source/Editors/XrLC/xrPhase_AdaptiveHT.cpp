@@ -128,28 +128,23 @@ int id = 0;
 
 xr_vector<int> ThreadPrecalcHemi;
 
+
+
 class CPrecalcBaseHemiThread: 
 public CThread
 {
-	//u32 _from, _to;
-	CDB::COLLIDER	DB;
+ 	CDB::COLLIDER	DB;
 	
 public:
-	CPrecalcBaseHemiThread(u32 ID): CThread(ID) //,_from( from ), _to( to )
+	CPrecalcBaseHemiThread(u32 ID): CThread(ID)  
 	{	
-		/*
-		R_ASSERT(from!=u32(-1));
-		R_ASSERT(to!=u32(-1));
-		R_ASSERT( from < to );
-		R_ASSERT(from>=0);
-		R_ASSERT(to>0);
-		*/
+ 
 	}
  
-virtual	void Execute()
-{
+	virtual	void Execute()
+	{
 		DB.ray_options	(0);
-	
+
 		for (;;)
 		{
 			int ID = 0;
@@ -175,38 +170,12 @@ virtual	void Execute()
  			Vertex* V = verts[ID];
 			V->normalFromAdj();
 		
-			 
-			if (use_intel)
-				RaysToHemiLight_Deflector(0, V->P, V->N, vC, pBuild->L_static(), 0);
-			else 
-				LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0, 1024);
+ 
+			LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
 
 			vC.mul(0.5f);
 			V->C._set(vC);
 		}	
-
-		/*
-		for (u32 vit =_from; vit < _to; vit++)	
-		{
-			base_color_c		vC;
-			R_ASSERT( vit != u32(-1) );
-			vecVertex			&verts = lc_global_data()->g_vertices();
-			R_ASSERT( vit>=0 );
-			R_ASSERT( vit<verts.size() );
-			Vertex*		V		= verts[vit];
-			
-			R_ASSERT( V );
-			V->normalFromAdj	();
-			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
-			vC.mul				(0.5f);
-			V->C._set			(vC);
-
-			csAdaptive.Enter();
-			id++;
-			StatusNoMSG("Vertex %d/%d", id, lc_global_data()->g_vertices().size());
-			csAdaptive.Leave();	
-		}
-		*/
 	}
 };
 
@@ -217,6 +186,8 @@ int THREADS_COUNT();
 #define MAX_THREADS THREADS_COUNT()
 
 #include "../XrLCLight/xrHardwareLight.h"
+
+void SetOpacityRaycastModel();
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -236,7 +207,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
 	}
 
-	log_vminfo();
+
 
 	// Tesselate + calculate
 	Status			("Precalculating...");
@@ -245,33 +216,35 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 
 		Status("Load RcastModel");
+ 		CTimer t;t.Start();
 		// Build model
 		FPU::m64r					();
 		BuildRapid					(FALSE);
-
 		log_vminfo();
-
-		// Prepare
+		
+		Msg("RcastModel LoadTime: %d", t.GetElapsed_ms());
+ 
+ 		// Prepare
 		FPU::m64r					();
 		Status						("Precalculating : base hemisphere ...");
 		mem_Compact					();
 		Light_prepare				();
-
-
-		
+ 
+		// Intel Embree
 		if (strstr(Core.Params, "-use_intel"))
 		{
 			Status("Load Intel");
 			use_intel = true;
 			IntelEmbereLOAD();
-		}
 
-		log_vminfo();
+			log_vminfo();
+		}
 
 		xrHardwareLight& hw_light = xrHardwareLight::Get();
 
 		if (char* str = strstr(Core.Params, "-hw_light"))
 		{
+			Status("Load GPU Model");
 			hw_light.SetEnabled(true);
   			int value = 1;
 			if (sscanf(str+9, "%d", &value) == 1)
@@ -286,17 +259,16 @@ void CBuild::xrPhase_AdaptiveHT	()
 			hw_light.SetEnabled(false);
 		}
  
+		Status("Start AdaptiveHT");	
+ 
 		// calc approximate normals for vertices + base lighting
 		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
 			ThreadPrecalcHemi.push_back(i);
 
 		for (int i = 0; i < THREADS_COUNT(); i++)
 			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
-
-		
-		//hw_light.PerformAdaptiveHT();
-
-		precalc_base_hemi.wait();
+ 
+  		precalc_base_hemi.wait();
 	}
 
 	//////////////////////////////////////////////////////////////////////////

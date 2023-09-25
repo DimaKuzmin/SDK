@@ -3,8 +3,11 @@
 
 #include "cl_intersect.h"
 
+
 CDB::MODEL			Level;
 CDB::COLLIDER		XRC;
+CDB::Embree::SceneEmbree SceneEmbree;
+
 
 
 Nodes				g_nodes;
@@ -58,7 +61,7 @@ void vertex::PointBL(Fvector& D)
 void	mem_Optimize	()
 {
 	Memory.mem_compact	();
-	Msg("* Memory usage: %d M",Memory.mem_usage()/(1024*1024));
+	Msg("* Memory usage: %llu M", Memory.mem_usage()/(1024*1024));
 }
 
 void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)

@@ -3,6 +3,8 @@
 UIChooseForm::EventsMap	UIChooseForm::m_Events;
 UIChooseForm* UIChooseForm::Form = 0;
 xr_string UIChooseForm::m_LastSelection;
+xr_string UIChooseForm::m_LastClickItem = "null";
+
 ImTextureID   UIChooseForm::NullTexture = nullptr;
 
 void UIChooseForm::SelectedFOLDER(Node* N)
@@ -78,6 +80,7 @@ void UIChooseForm::DrawItem(Node* Node)
             if (ImGui::GetIO().KeyCtrl || !m_Flags.is(cfMultiSelect))
             {
                 m_ClickItem = Node->Object;
+                m_LastClickItem = Node->Object->name.c_str();
                // Msg("Path [%s]", Node->Path.c_str());
             }
               
@@ -108,7 +111,7 @@ bool UIChooseForm::IsDrawFloder(Node*node)
 
 void UIChooseForm::AppendItem(SChooseItem& item)
 {
-   Msg("node name = %s", item.name.c_str());
+   //Msg("node name = %s", item.name.c_str());
    Node*node =  AppendObject(&m_GeneralNode, item.name.c_str());
   // VERIFY(node);
    if (node)
@@ -143,6 +146,8 @@ void UIChooseForm::FillItems(u32 choose_id)
     u32 ss = m_Items.size();
     ChooseItemVecIt  it = m_Items.begin();
     ChooseItemVecIt  _E = m_Items.end();
+
+    Msg("Fill Item: %d ", choose_id);
 
     //SPBItem* pb	= UI->ProgressStart(ss,"Fill items..."); //sky to all: no idea how to do it
 
@@ -186,7 +191,8 @@ void UIChooseForm::Draw()
     if (!m_LastSelection.empty())
     {
         Node* N = FindObject(&m_GeneralNode, m_LastSelection.c_str());
-        if (N)SelectObject(&m_GeneralNode, m_LastSelection.c_str());
+        if (N)
+            SelectObject(&m_GeneralNode, m_LastSelection.c_str());
         m_LastSelection.clear();
     }
 
@@ -312,7 +318,7 @@ void UIChooseForm::Draw()
     if (m_ClickItem)
     {       
         {
-           
+            Msg("Click Item: %s", m_ClickItem->name.c_str());
 
             if (!m_Flags.is(cfMultiSelect))
             {
@@ -347,6 +353,7 @@ void UIChooseForm::SetNullTexture(ImTextureID Texture)
 {
     NullTexture = Texture;
 }
+
 void UIChooseForm::Update()
 {
     // ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings
@@ -358,9 +365,20 @@ void UIChooseForm::Update()
             Form->Draw();
             ImGui::EndPopup();
         }
+    
+         
+
     }
 
+    
+
 }
+
+xr_string UIChooseForm::GetLastSelected()
+{
+    return m_LastClickItem;
+}
+
 bool UIChooseForm::IsActive()
 {
     return Form;
@@ -461,6 +479,8 @@ bool UIChooseForm::GetResult(bool& change, xr_vector<xr_string>& result)
 }
 void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnChooseFillItems item_fill, void* fill_param, TOnChooseSelectItem item_select, ChooseItemVec* items, u32 mask)
 {
+    Msg("SelectItem: %d, maxselects: %d", choose_ID, sel_cnt);
+
     VERIFY(!Form);
 
     Form = xr_new<UIChooseForm>();

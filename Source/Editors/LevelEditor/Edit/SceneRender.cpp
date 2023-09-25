@@ -86,47 +86,45 @@ DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
  
 void EScene::UpdateRenderList(void* tools)
 {
-   // if (EDevice.dwFrame > LastUpdateRender)
-    {   
-   //     LastUpdateRender = EDevice.dwFrame + 10;
+    // extract and sort object tools
 
-        // extract and sort object tools
-
-        SceneOToolsSet* object_tools = (SceneOToolsSet*)tools;
-
-        mapRenderObjects.clear();
-
-        // insert objects
+    SceneOToolsSet* object_tools = (SceneOToolsSet*)tools;
+    mapRenderObjects.clear();
+  
+    SceneOToolsIt t_it = object_tools->begin();
+    SceneOToolsIt t_end = object_tools->end();
+    for (; t_it != t_end; t_it++)
+    {
+        ObjectList& lst = (*t_it)->GetObjects();
+        ObjectIt o_it = lst.begin();
+        ObjectIt o_end = lst.end();
+        for (; o_it != o_end; o_it++)
         {
-            SceneOToolsIt t_it = object_tools->begin();
-            SceneOToolsIt t_end = object_tools->end();
-            for (; t_it != t_end; t_it++)
+            if ((*o_it)->Visible() && (*o_it)->IsRender())
             {
-                ObjectList& lst = (*t_it)->GetObjects();
-                ObjectIt o_it = lst.begin();
-                ObjectIt o_end = lst.end();
-                for (; o_it != o_end; o_it++)
-                {
-                    if ((*o_it)->Visible() && (*o_it)->IsRender())
-                    {
-                        float distSQ = EDevice.vCameraPosition.distance_to_sqr((*o_it)->FPosition);
-                        mapRenderObjects.insertInAnyWay(distSQ, *o_it);
-                    }
-                }
+                float distSQ = EDevice.vCameraPosition.distance_to_sqr((*o_it)->FPosition);
+                mapRenderObjects.insertInAnyWay(distSQ, *o_it);
             }
         }
     }
+   
 };
 
 
 
+ObjectList list_mt_work[4];
+ 
+void MT_Render(int TH_ID)
+{
+    
+}
+
 void EScene::Render( const Fmatrix& camera )
 {
 	if( !valid() )	return;
-
-
-    CTimer total;
-    CTimer t;  t.Start();
+ 
+    CTimer t; 
+    t.Start();
 
     SceneOToolsSet object_tools;
     SceneMToolsSet scene_tools;
@@ -148,59 +146,45 @@ void EScene::Render( const Fmatrix& camera )
 
     UpdateRenderList(&object_tools);
 
-    //Msg("T: %u", t.GetElapsed_ticks());
-
-
-    u32 TimerT = 0;
+    u64 UpdateList = t.GetElapsed_ticks();
+ 
+    CTimer total;
     total.Start();
 
 // priority #0
     // normal
-    t.Start();
     mapRenderObjects.traverseLR		(object_Normal_0);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(0,false);
     // alpha
-    t.Start();
     mapRenderObjects.traverseRL		(object_StrictB2F_0);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(0,true);
 
 // priority #1
     // normal
-    t.Start();
     mapRenderObjects.traverseLR		(object_Normal_1);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(1,false);
     // alpha
-    t.Start();
     mapRenderObjects.traverseRL		(object_StrictB2F_1);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(1,true);
-// priority #2
+
+    // priority #2
     // normal
-    t.Start();
     mapRenderObjects.traverseLR		(object_Normal_2);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(2,false);
+ 
     // alpha
-    t.Start();
     mapRenderObjects.traverseRL		(object_StrictB2F_2);
-    TimerT += t.GetElapsed_ticks();
     RENDER_SCENE_TOOLS				(2,true);
 
-// priority #3
+    // priority #3
     
     // normal
-    t.Start();
-    mapRenderObjects.traverseLR		(object_Normal_3);
-    TimerT += t.GetElapsed_ticks();
-    RENDER_SCENE_TOOLS				(3,false);
-    // alpha
-    t.Start();
-    mapRenderObjects.traverseRL		(object_StrictB2F_3);
-    TimerT += t.GetElapsed_ticks();
-    RENDER_SCENE_TOOLS				(3,true);
+     mapRenderObjects.traverseLR		(object_Normal_3);
+     RENDER_SCENE_TOOLS				(3,false);
+   
+     // alpha
+     mapRenderObjects.traverseRL		(object_StrictB2F_3);
+     RENDER_SCENE_TOOLS				(3,true);
 
     // render snap
     RenderSnapList			();
@@ -208,13 +192,16 @@ void EScene::Render( const Fmatrix& camera )
     // clear
     //mapRenderObjects.clear			();
     
-    EDevice.PrintDP_Stats();
-   // Msg("TRender: %u, TCACL: %u", total.GetElapsed_ticks(), TimerT);
+    //EDevice.PrintDP_Stats();
+  
+    
+    //Msg("TRender: %u, ListUpdate: %u", total.GetElapsed_ticks(), UpdateList);
 
 
     SceneMToolsIt s_it 	= scene_tools.begin();
     SceneMToolsIt s_end	= scene_tools.end();
-    for (; s_it!=s_end; s_it++) (*s_it)->AfterRender();
+    for (; s_it!=s_end; s_it++) 
+        (*s_it)->AfterRender();
 }
 //------------------------------------------------------------------------------
 

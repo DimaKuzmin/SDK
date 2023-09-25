@@ -5,6 +5,7 @@
 #pragma hdrstop
 
 #include "xrCDB.h"
+#include "xrCDB_Embree.h"
 
 #ifdef USE_ARENA_ALLOCATOR
 static const u32	s_arena_size = (128+16)*1024*1024;
@@ -103,6 +104,8 @@ void	MODEL::build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc,
 #endif
 }
 
+
+
 void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
 {
 	// verts
@@ -115,6 +118,32 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	tris		= CALLOC(TRI,tris_count);
 	CopyMemory	(tris,T,tris_count*sizeof(TRI));
 
+	tris_edges_count = Tcnt;
+	tris_edges = CALLOC(TRI_Edge, tris_count);
+
+	CTimer t;t.Start();
+	for (auto i = 0; i < Tcnt; i++)
+	{	 			 		
+		Fvector& p0	= verts[ T[i].verts[0] ];
+		Fvector& p1	= verts[ T[i].verts[1] ];
+		Fvector& p2	= verts[ T[i].verts[2] ];
+		
+ 		Fvector edge1, edge2;
+   		edge1.sub			(p1, p0);
+		edge2.sub			(p2, p0);
+
+		tris_edges[i].edge1 = edge1;
+		tris_edges[i].edge2 = edge2;
+		tris_edges[i].v0 = p0;
+
+		tris_edges[i].edge1_128 = _mm_load_ps((float*) &edge1);
+		tris_edges[i].edge2_128 = _mm_load_ps((float*) &edge2);
+		tris_edges[i].v0_128 = _mm_load_ps((float*) &p0);
+
+	}
+
+	Msg("Reycast Model Loading Edges: %d", t.GetElapsed_ms());
+
 	// callback
 	if (bc)		bc	(verts,Vcnt,tris,Tcnt,bcp);
 
@@ -123,11 +152,13 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	
 	// Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
 	u32*		temp_tris	= CALLOC(u32,tris_count*3);
-	if (0==temp_tris)	{
+	if (0==temp_tris)	
+	{
 		CFREE		(verts);
 		CFREE		(tris);
 		return;
 	}
+
 	u32*		temp_ptr	= temp_tris;
 	for (int i=0; i<tris_count; i++)
 	{

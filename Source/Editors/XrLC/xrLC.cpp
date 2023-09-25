@@ -28,7 +28,7 @@ extern volatile BOOL bClose;
 static const char* h_str = 
 	"The following keys are supported / required:\n"
 	"-? or -h			== this help\n"
-	"-o					== modify build options\n"
+	"-modify_options	== modify build options\n"
 	"-nosun				== disable sun-lighting\n"
 	"-norgb				== disable static lighting\n"
 	"-nohemi			== disable hemi lighting\n"
@@ -68,7 +68,7 @@ void Startup(LPSTR     lpCmdLine)
 	strlwr(cmd);
 	if (strstr(cmd,"-?") || strstr(cmd,"-help"))			{ Help(); return; }
 	if (strstr(cmd,"-f")==0)							{ Help(); return; }
-	if (strstr(cmd,"-o"))								bModifyOptions	= TRUE;
+	if (strstr(cmd,"-modify_options"))								bModifyOptions	= TRUE;
 	if (strstr(cmd,"-gi"))								g_build_options.b_radiosity		= TRUE;
 	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
 	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
@@ -98,6 +98,8 @@ void Startup(LPSTR     lpCmdLine)
 		clMsg("*** Failed to expand working set");
 	};
 	*/
+
+	log_vminfo();
 	
 	// Load project
 	name[0]=0;				sscanf(strstr(cmd,"-f")+2,"%s",name);
@@ -107,20 +109,23 @@ void Startup(LPSTR     lpCmdLine)
 	xr_sprintf				(temp, "%s - Levels Compiler", name);
 	SetWindowText			(logWindow, temp);
 
+ 
+
 	string_path				prjName;
 	FS.update_path			(prjName,"$game_levels$",strconcat(sizeof(prjName),prjName,name,"\\build.prj"));
 	string256				phaseName;
 	Phase					(strconcat(sizeof(phaseName),phaseName,"Reading project [",name,"]..."));
-
+ 
 	string256 inf;
 	IReader*	F			= FS.r_open(prjName);
-	if (NULL==F){
+	if (NULL==F)
+	{
 		xr_sprintf				(inf,"Build failed!\nCan't find level: '%s'",name);
 		clMsg				(inf);
 		MessageBox			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
 		return;
 	}
-
+ 
 	// Version
 	F->r_chunk			(EB_Version,&version);
 	clMsg				("version: %d",version);
@@ -131,6 +136,7 @@ void Startup(LPSTR     lpCmdLine)
 	F->r_chunk			(EB_Parameters,&Params);
 
 	// Show options if needed
+	/* 
 	if (bModifyOptions)		
 	{
 		Phase		("Project options...");
@@ -144,13 +150,21 @@ void Startup(LPSTR     lpCmdLine)
 			ExitProcess(0);
 		}
 	}
-	
+	*/
+ 
 	// Conversion
 	Phase					("Converting data structures...");
 	pBuild					= xr_new<CBuild>();
 	pBuild->Load			(Params,*F);
+	
+	Msg("Pre Close File");
+	log_vminfo();
 	FS.r_close				(F);
 	
+	Msg("After Close File");
+	log_vminfo();
+
+
 	// Call for builder
 	string_path				lfn;
 	CTimer	dwStartupTime;	dwStartupTime.Start();

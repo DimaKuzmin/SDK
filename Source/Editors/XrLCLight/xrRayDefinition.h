@@ -235,6 +235,28 @@ struct Ray_Detail
 	LightCategory RayLightCategory;
 	LightType RayLightType;
 };
+
+enum RLightTypes
+{
+   HEMI = 1,
+   SUN = 2, 
+   RGB = 3
+};
+
+#ifndef __CUDACC__
+struct RayAdditionalData
+{
+	int U;
+	int V;
+	R_Light* L;
+	RLightTypes type_light;
+	Face* skip;
+
+	float SquaredDir;
+ 	float DotProduct;
+
+};
+#endif
  
 struct Hit
 {
@@ -246,10 +268,21 @@ struct Hit
 	float v;
 };
 
-struct Hit256
+#define MAX_RAYS_OPTIX 32 
+#define MAX_RAYS_TASK 1024 * 1024 * 8
+
+#ifndef __CUDACC__
+struct HitsResultVector
 {
 	u8 count;
-	Hit hits[256];
+	xr_vector<Hit> hits;
+};
+#endif
+
+struct Hit256
+{
+	int count = 0;
+	Hit hits[MAX_RAYS_OPTIX];
 };
 
 struct xrHardwarePixel
@@ -285,13 +318,13 @@ struct TrisAdditionInfo
 
 struct HardwareModel
 {
-	HardwareVector* Vertexes;
-	HardwareVector* VertexNormal;
+//	HardwareVector* Vertexes;
+//	HardwareVector* VertexNormal;
 	TrisAdditionInfo* TrianglesAdditionInfo;
-	PolyIndexes* Tris;
-	int			TrisCount;
+//	PolyIndexes* Tris;
+//	int			TrisCount;
 	int			TrisAditinalInfoCount;
-	int			VertexCount;
+//	int			VertexCount;
 };
 
 struct xrHardwareLCGlobalData

@@ -2,6 +2,8 @@
 
 
 #include "../../xrcdb/xrCDB.h"
+#include "../../XrCDB/xrCDB_Embree.h"
+
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"
@@ -100,6 +102,8 @@ extern	Lights				g_lights;
 extern	SAIParams			g_params;
 extern	CDB::MODEL			Level;
 extern	CDB::COLLIDER		XRC;
+extern	CDB::Embree::SceneEmbree SceneEmbree;
+
 extern	Fbox				LevelBB;
 //extern	Vectors				Emitters;
 

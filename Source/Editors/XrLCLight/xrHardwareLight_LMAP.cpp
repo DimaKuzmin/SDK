@@ -31,8 +31,6 @@ extern "C"
 	cudaError_t RunGenerateRaysForTask(xrHardwareLCGlobalData* GlobalData, RayRequest* RequestedRays, Ray* RayBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag);
 	cudaError_t RunProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime, int flag, u64* FacesToSkip, u32* aliverays, int Rounds);
 	cudaError_t RunFinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, base_color_c* OutColors, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc);
-
-	cudaError_t RunFinalizeRaysLMAPS(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, ResultReqvest* OutColors, u32* AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc);
 }
 
 
@@ -42,6 +40,7 @@ inline DeviceBufferType GetBufferTypeByMode(xrHardwareLight::Mode mode);
 
 void xrHardwareLight::PerformRaycastLMAPS(xr_vector<RayRequestLMAPS>& InRays, int flag, xr_vector<ResultReqvest>& OutHits, bool update_status)
 {
+
 	//We use all static light in our calculations for now
 	if (InRays.empty())
 	{
@@ -90,24 +89,30 @@ void xrHardwareLight::PerformRaycastLMAPS(xr_vector<RayRequestLMAPS>& InRays, in
 
 		rays_task[cur_split].push_back(ray);
 		i++;
-		ray_racvest += (MaxRaysPerPoint * 16);	 //Byte To Allocate MAX ~= 16 
+		ray_racvest += (MaxRaysPerPoint * 48);	 //Byte To Allocate MAX ~= 16 
 	}
 
 	CTimer t; t.Start();
 	for (auto rays : rays_task)
 	{
-		StatusNoMSG("xrHardwareLight %d/%d", rays.first, rays_task.size());
-		//Msg("StartRay: %d", t.GetElapsed_ms());
+		Msg("xrHardwareLight %d/%d, Start[%d] RayCast: %d", rays.first, rays_task.size(), rays.first, t.GetElapsed_ms());
+ 
 		xr_vector<ResultReqvest>	hits;
 		RaycastingLMAPS(rays.second, flag, hits);
 		std::move(hits.begin(), hits.end(), std::back_inserter(OutHits));
+
+		Progress( (float) (rays.first / rays_task.size()) );
 	}
 
 	Msg("RayEnd: %d", t.GetElapsed_ms());
 }
 
+
+
 void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, int flag, xr_vector<ResultReqvest>& OutHits)
 {
+	xr_vector<base_color_c> out_colors;
+
 	xr_vector<RayRequest> InRays;
 
 	for (auto ray : InRaysLMAP)
@@ -131,46 +136,40 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 
 	cudaError_t DebugErr = cudaError_t::cudaSuccess;
 
-	auto ZeroOutput = [](int RequestedRays, xr_vector<RayRequestLMAPS>& TargetRays, xr_vector<ResultReqvest>& TargetArray)
-	{
-		TargetArray.clear();
+	auto ZeroOutput = [](int RequestedRays, xr_vector<base_color_c>& TargetArray)
+	{			  
+ 		TargetArray.clear();
 		TargetArray.reserve(RequestedRays);
 
 		base_color_c ZeroColor;
 
 		for (int i = 0; i < RequestedRays; ++i)
 		{
-			ResultReqvest data;
-			data.C = ZeroColor;
-			//data.deflector = TargetRays[i].Deflector;
-			//data.U = TargetRays[i].U;
-			//data.V = TargetRays[i].V;
-			TargetArray.push_back(data);
+			TargetArray.push_back(ZeroColor);
 		}
-	};
+ 	};
 
-	auto CopyOutBufferDEFFLECTOR = [](xr_vector<RayRequestLMAPS>& TargetRays, xr_vector<ResultReqvest>& TargetArray)
+	auto CopyOutBufferDEFFLECTOR = [](xr_vector<RayRequestLMAPS>& TaskRays, xr_vector<ResultReqvest>& TargetArray, xr_vector<base_color_c>& FinalColorBuffer)
 	{
 		base_color_c ZeroColor;
+ 
+		Msg("TaskRays: %d, TargetArray: %d, FinalColors: %d", TaskRays.size(), TargetArray.size(), FinalColorBuffer.size() );
 
-		for (int i = 0; i < TargetRays.size(); ++i)
+		TargetArray.resize(TaskRays.size());
+
+		for (int i = 0; i < TaskRays.size(); ++i)
 		{
-			TargetArray[i].U = TargetRays[i].U;
-			TargetArray[i].V = TargetRays[i].V;
-			TargetArray[i].Deflector = TargetRays[i].Deflector;
-
-			/* 
-			ResultReqvest data;
-			data.C = ZeroColor;
-			data.deflector = TargetRays[i].Deflector;
-			data.U = TargetRays[i].U;
-			data.V = TargetRays[i].V;
-			TargetArray.push_back(data);
-			*/
+			TargetArray[i].U = TaskRays[i].U;
+			TargetArray[i].V = TaskRays[i].V;
+			TargetArray[i].Deflector = TaskRays[i].Deflector;
+			TargetArray[i].C = FinalColorBuffer[i];
 		}
 	};
 
-	PrintMSG("MEM CPY START %u, Potential Rays = %u", InRays.size() * sizeof(RayRequest) / 1024 / 1024, MaxPotentialRays);
+	CTimer t;
+	t.Start();
+
+	//PrintMSG("MEM CPY START %u, Potential Rays = %u", InRays.size() * sizeof(RayRequest) / 1024 / 1024, MaxPotentialRays);
 
 	DeviceBuffer < RayRequest > RayBuffer(InRays.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_1, "RayReqvest");
 	DebugErr = cudaMemcpy(RayBuffer.ptr(), InRays.data(), InRays.size() * sizeof(RayRequest), cudaMemcpyHostToDevice);			  //
@@ -186,8 +185,9 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 	const char* StatusBuffer = RayEnableStatusBuffer.hostPtr();
 	char* pItStatusBuffer = const_cast <char*> (StatusBuffer);
 
-	CTimer test;
-	test.Start();
+	u32 GPU_LightPoints = t.GetElapsed_ms();
+
+	t.Start();
 
 	xr_vector <int> SurfacePoint2StartLoc;
 	xr_vector <u32> AliveRaysIndexes;
@@ -223,9 +223,12 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 	if (AliveRaysIndexes.empty())
 	{
 		//all rays are optimized
-		ZeroOutput(InRays.size(), InRaysLMAP, OutHits);
+		ZeroOutput(InRays.size(), out_colors);
 		return;
 	}
+
+	u32 CPU_LightPointsFOR = t.GetElapsed_ms();
+
 
 	//create rays buffer and fill them through cuda
 	DeviceBuffer <u32> DeviceAliveRaysIndexes(AliveRaysIndexes.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_2, "AliveRaysIndexer");
@@ -236,21 +239,16 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 	DebugErr = cudaMemcpy(DeviceSurfacePoint2StartLoc.ptr(), SurfacePoint2StartLoc.data(), SurfacePoint2StartLoc.size() * sizeof(int), cudaMemcpyHostToDevice);
 	CheckCudaErr(DebugErr);
 
-	//PrintMSG("MemSet RAYS: %u", AliveRaysIndexes.size() * sizeof(Ray) / 1024 / 1024);
+	// HITS RAYS
 
 	DeviceBuffer<Ray> OptimizedRaysVec(AliveRaysIndexes.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_2, "Ray");  //use_GPU_mem
 	DebugErr = RunGenerateRaysForTask(GlobalData->ptr(), RayBuffer.ptr(), OptimizedRaysVec.ptr(), DeviceAliveRaysIndexes.ptr(), AliveRaysIndexes.size(), flag);
 	CheckCudaErr(DebugErr);
 
-	//PrintMSG("MemSet HITS: %u", AliveRaysIndexes.size() * sizeof(Hit) / 1024 / 1024);
-
 	DeviceBuffer <Hit> OptimizedHitsVec(AliveRaysIndexes.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_2, "Hit");
 	DebugErr = cudaMemset(OptimizedHitsVec.ptr(), 0, OptimizedHitsVec.count() * sizeof(Hit));
 	CheckCudaErr(DebugErr);
-
-	//Msg("Hits: %d", OptimizedHitsVec.count());
-	//Msg("Rays: %d", OptimizedRaysVec.count());
-
+ 
 	optix::prime::BufferDesc OptmizedHitDescBuffer = PrimeContext->createBufferDesc((RTPbufferformat)Hit::format, RTPbuffertype::RTP_BUFFER_TYPE_CUDA_LINEAR, OptimizedHitsVec.ptr());
 	OptmizedHitDescBuffer->setRange(0, OptimizedHitsVec.count());
 
@@ -287,11 +285,13 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 		FacesToSkip = FaceToSkip.ptr();
 	}
 
+	Msg("Start RayTrace");
+
 	u32 CPU_USED = 0;
 	u32 GPU_USED = 0;
 
 	DeviceBuffer<u32>  AliveCounts(1024);
-
+ 
 	while (AliveRays)
 	{
 		CTimer tt; tt.Start();
@@ -327,32 +327,54 @@ void xrHardwareLight::RaycastingLMAPS(xr_vector<RayRequestLMAPS>& InRaysLMAP, in
 
 		u32 zero = 0;
 		AliveCounts.copyToBuffer(&zero, 128);
+
+		StatusNoMSG("RaysAlive %d", rays);
 	} 
 
-	Msg("CPU ms:%d, GPU ms: %d", CPU_USED, GPU_USED);
-
+	t.Start();
+	
 	/// OTHER
-	ZeroOutput(InRays.size(), InRaysLMAP, OutHits);
+	ZeroOutput(InRays.size(), out_colors);
 
-	DeviceBuffer <ResultReqvest> FinalColorBuffer(InRays.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_3, "base_color_c");
-	DebugErr = cudaMemcpy(FinalColorBuffer.ptr(), OutHits.data(), OutHits.size() * sizeof(ResultReqvest), cudaMemcpyHostToDevice);
+	Msg("InRays: %d == OutHits: %d == RayEnergy: %d == RayBuffer: %d",  InRaysLMAP.size(), OutHits.size(), RayEnergy.count(), RayBuffer.count());
+
+   
+	DeviceBuffer <base_color_c> FinalColorBuffer(InRays.size(), GetBufferTypeByMode(mode), use_GPU_mem_stage_3, "base_color_c");
+	DebugErr = cudaMemcpy(FinalColorBuffer.ptr(), OutHits.data(), OutHits.size() * sizeof(base_color_c), cudaMemcpyHostToDevice);
 	CheckCudaErr(DebugErr);
 
-	DebugErr = RunFinalizeRaysLMAPS(
+	Msg("AliveRays: %d, FColorBuf: %d, AliveRaysIndex: %d", SurfacePoint2StartLoc.size(), FinalColorBuffer.count(), DeviceAliveRaysIndexes.count());
+
+
+	DebugErr = RunFinalizeRays( // 
 		GlobalData->ptr(),
 		RayEnergy.ptr(),
 		RayBuffer.ptr(),
 		RayBuffer.count(),
+		 
 		FinalColorBuffer.ptr(),
 		DeviceAliveRaysIndexes.ptr(),
 		DeviceAliveRaysIndexes.count(),
 		flag,
-		DeviceSurfacePoint2StartLoc.ptr());
-	CheckCudaErr(DebugErr);
+		DeviceSurfacePoint2StartLoc.ptr()
+ 	);
+
+	CheckCudaErr(DebugErr);	
 
 	//copy directly back
-	DebugErr = cudaMemcpy(OutHits.data(), FinalColorBuffer.ptr(), FinalColorBuffer.count() * sizeof(ResultReqvest), cudaMemcpyDeviceToHost);
+	Msg("Start CopyOutBuffer");
+
+	
+	DebugErr = cudaMemcpy(out_colors.data(), FinalColorBuffer.ptr(), FinalColorBuffer.count() * sizeof(base_color_c), cudaMemcpyDeviceToHost);
 	CheckCudaErr(DebugErr);
 
-	CopyOutBufferDEFFLECTOR(InRaysLMAP, OutHits);
+
+	// Copy To OUT
+	CopyOutBufferDEFFLECTOR(InRaysLMAP, OutHits, out_colors);
+ 
+
+	u32 GPU_ColorMemory = t.GetElapsed_ms();
+
+	Msg("--- CPU_LIGHT ms: %d == GPU_LIGHT ms: %d", CPU_LightPointsFOR, GPU_LightPoints);
+	Msg("--- GPU_OPTIX ms:%d GPU_COLOR ms: %d, FROM_GPU_TO_CPU ms: %d", CPU_USED, GPU_USED, GPU_ColorMemory);
 }

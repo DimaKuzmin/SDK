@@ -191,6 +191,8 @@ class CSector;
 	DEFINE_MAP(CSurface*,RBVector,RBMap,RBMapPairIt);
 #endif
 
+	#include "../XrETools/xrXRC.h"
+
 class ECORE_API CEditableMesh {
 	friend class MeshExpUtility;
 	friend class CEditableObject;
@@ -205,6 +207,7 @@ class ECORE_API CEditableMesh {
 	friend class CXRayObjectExport;
 	friend class CXRaySkinExport;
 
+	
 	shared_str			m_Name;
 
     CEditableObject*	m_Parent;
@@ -317,7 +320,7 @@ public:
 	void            RayQuery				(SPickQuery& pinf);
 	void            RayQuery				(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf);
 	void            BoxQuery				(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf);
-    bool 			BoxPick					(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf);
+    bool 			BoxPick					(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf, int TH = 0);
 	bool            FrustumPick				(const CFrustum& frustum, const Fmatrix& parent);
     void            FrustumPickFaces		(const CFrustum& frustum, const Fmatrix& parent, U32Vec& fl);
     bool			CHullPickMesh			(PlaneVec& pl, const Fmatrix& parent);

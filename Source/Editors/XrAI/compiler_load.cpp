@@ -65,6 +65,130 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 
 #include <memory>
 
+void filter_embree_function(const struct RTCFilterFunctionNArguments* args) 
+{
+ 
+	CDB::Embree::RayQuaryStructure* ctxt = (CDB::Embree::RayQuaryStructure*) args->context;
+ 
+	RTCHit* hit = (RTCHit*) args->hit;
+	RTCRay* ray = (RTCRay*) args->ray;
+
+	args->valid[0] = 0;
+	ctxt->count++;
+
+	b_rc_face& F								= g_rc_faces		[hit->primID];
+
+	if (F.dwMaterial >= g_materials.size())
+		Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
+
+	b_material& M	= g_materials				[F.dwMaterial];
+	b_texture&	T	= (*g_textures)				[M.surfidx];
+	Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
+		
+	if (M.shader_xrlc>=LIB.size())
+	{
+		ctxt->energy = 0;
+		args->valid[0] = -1; 
+		return;		 
+	}
+
+	Shader_xrLC& SH	= LIB						[M.shader_xrlc];
+	if (!SH.flags.bLIGHT_CastShadow)			
+	{
+		ctxt->energy = 0;
+		args->valid[0] = -1; 
+		return;
+	}
+
+	if (T.pSurface.Empty())	
+		T.bHasAlpha = FALSE;
+			
+	if (!T.bHasAlpha)
+	{
+		// Opaque poly - cache it
+		//C[0].set	(rpinf.verts[0]);
+		//C[1].set	(rpinf.verts[1]);
+		//C[2].set	(rpinf.verts[2]);
+		args->valid[0] = -1; 
+		ctxt->energy = 0;
+		return;
+	}
+
+	// barycentric coords
+	// note: W,U,V order
+	Fvector B;
+	B.set	(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	// calc UV
+	Fvector2*	cuv = F.t;
+	Fvector2	uv;
+	uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
+	uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
+
+	int U = iFloor(uv.x*float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
+	U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
+	V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
+
+	u32 pixel		=((u32*)*T.pSurface)[V*T.dwWidth+U];
+	u32 pixel_a		= color_get_A(pixel);
+	float opac		= 1.f - float(pixel_a)/255.f;
+	ctxt->energy	*= opac;
+}
+
+#include "cl_intersect.h"
+
+float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R/*, RayCache& C*/)
+{
+	R_ASSERT	(DB);
+
+	// 1. Check cached polygon
+	/*
+	float _u,_v,range;
+	bool res = CDB::TestRayTri(P,D,C,_u,_v,range,false);
+	if (res) {
+		if (range>0 && range<R) return 0;
+	}
+	*/
+
+	/*
+	// 2. Polygon doesn't pick - real database query
+	DB->ray_query	(&Level,P,D,R);
+
+	// 3. Analyze polygons and cache nearest if possible
+	if (0==DB->r_count()) {
+		return 1;
+	}
+	else
+	{
+		return getLastRP_Scale(DB,C);
+	}
+	*/
+
+	RTCRayHit rayhit;
+	rayhit.ray.tfar = R; 
+	rayhit.ray.tnear = 0;
+
+	rayhit.ray.org_x = P.x;
+	rayhit.ray.org_y = P.y;
+	rayhit.ray.org_z = P.z;
+
+	rayhit.ray.dir_x = D.x;
+	rayhit.ray.dir_y = D.y;
+	rayhit.ray.dir_z = D.z;
+
+	CDB::Embree::RayQuaryStructure data;
+	data.energy = 1;
+
+ 	SceneEmbree.RayTrace(&rayhit, &data, &filter_embree_function, false);
+ 
+	if (data.count == 0)
+		return 1;
+
+	return data.energy;
+}
+
+
 void xrLoad(LPCSTR name, bool draft_mode)
 {
 	FS.get_path					("$level$")->_set	((LPSTR)name);
@@ -100,9 +224,14 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					tris_pointer += CDB::TRI::Size();
 				}				
  
-				Level.build			( verts, H.vertcount, tris.data(), H.facecount );
-				Level.syncronize	();
-				Msg("* Level CFORM: %dK",Level.memory()/1024);
+				//Level.build			( verts, H.vertcount, tris.data(), H.facecount );
+				//Level.syncronize	();
+
+				CTimer t;t.Start();
+ 				SceneEmbree.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
+ 				Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
+
+				//Msg("* Level CFORM: %dK", Level.memory()/1024);
 
 				g_rc_faces.resize	(H.facecount);
 				R_ASSERT(fs->find_chunk(1));

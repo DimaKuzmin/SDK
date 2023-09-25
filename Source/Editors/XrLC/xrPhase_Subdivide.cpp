@@ -33,6 +33,7 @@ void CBuild::xrPhase_Subdivide()
 	Fbox	b1, b2;
 	for (int X=0; X<int(g_XSplit.size()); X++)
 	{
+		StatusNoMSG("Progress: %d / %d", X, g_XSplit.size());
 		if (g_XSplit[X]->empty()) 
 		{
 			xr_delete		(g_XSplit[X]);
@@ -60,11 +61,14 @@ void CBuild::xrPhase_Subdivide()
 		
 		// analyze if we need to split
 		size.sub(bb.max,bb.min);
+		
 		BOOL	bSplit	= FALSE;
 		if  	(size.x>c_SS_maxsize)					bSplit	= TRUE;
 		if		(size.y>c_SS_maxsize)					bSplit	= TRUE;
 		if		(size.z>c_SS_maxsize)					bSplit	= TRUE;
-		if		(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit	= TRUE;
+		if		(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	
+			bSplit	= TRUE;
+		
 		CDeflector*	defl_base	= (CDeflector*)g_XSplit[X]->front()->pDeflector;
 		
 		if		(!bSplit && defl_base)	
@@ -138,7 +142,9 @@ resplit:
 					goto		resplit;
 				}
 			}
-		} else {
+		} 
+		else 
+		{
 			// split deflector into TWO
 			if (defl_base)	
 			{

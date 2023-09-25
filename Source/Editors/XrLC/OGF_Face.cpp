@@ -201,7 +201,8 @@ void OGF::Optimize	()
 		R_ASSERT			(data.vertices.size());
 		dwRelevantUV		= data.vertices.front().UV.size();
 		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);
-		if (!SH->flags.bOptimizeUV)		return;
+		if (!SH->flags.bOptimizeUV)	
+			return;
 	} catch(...) {
 		Msg	("* ERROR: optimize: std-geom : find relevant UV");
 	}
@@ -222,7 +223,8 @@ void OGF::Optimize	()
 	xr_vector<bool>	vmarker;	vmarker.assign	(data.vertices.size(),false);
 	xr_vector<bool>	fmarker;	fmarker.assign	(data.faces.size(),false);
 
-	for (;;)	{
+	for (;;)	
+	{
 		// 0. Search for the group
 		xr_vector<u32>	selection		;
 		for (;;)	{
@@ -301,45 +303,24 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 	{
 		VIPM_Result* VR = 0;
 
-		if (use_mt_progresive)
+ 
+		VIPM_Init();
+		for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
+			VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
+		for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
+			VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
+
+ 
+		try
 		{
-			mt_vipm.VIPM_Init(0);
-			for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
-				mt_vipm.VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
-			for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
-				mt_vipm.VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
-
-			try
-			{
-				VR = mt_vipm.VIPM_Convert(u32(25), 1.f, 1);
-			}
-			catch (...)
-			{
-				progressive_clear();
-				clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
-			}
+			VR = VIPM_Convert(u32(25), 1.f, 1);
 		}
-		else
+		catch (...)
 		{
-			VIPM_Init();
-			for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
-				VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
-			for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
-				VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
-
-			VIPM_Result* VR = 0;
-
-			try
-			{
-				VR = VIPM_Convert(u32(25), 1.f, 1);
-			}
-			catch (...)
-			{
-				progressive_clear();
-				clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
-			}
+			progressive_clear();
+			clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
 		}
-   
+    
 		if (0==VR)				
 		{
 			progressive_clear	()		;
@@ -393,10 +374,7 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 		}
     
 		// cleanup
-		if (use_mt_progresive)
-			mt_vipm.VIPM_Destroy();
-		else
-			VIPM_Destroy();
+ 		VIPM_Destroy();
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -406,47 +384,25 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
  		// prepare progressive geom
 		VIPM_Result* VR = 0;
 
-		if (use_mt_progresive)
+ 
+		VIPM_Init();
+		Fvector2				zero; zero.set(0, 0);
+		for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
+		for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
+
+
+		try
 		{
-			mt_vipm.VIPM_Init(0);
-			Fvector2				zero; zero.set(0, 0);
-			for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	mt_vipm.VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
-			for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	mt_vipm.VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
-
-
-			try
-			{
-				VR = mt_vipm.VIPM_Convert(u32(25), 1.f, 1);
-			}
-			catch (...)
-			{
-				data.faces = _saved_faces;
-				data.vertices = _saved_vertices;
-				progressive_clear();
-				clMsg("[%d] * X-mesh simplification failed: access violation", MODEL_ID);
-			}
+			VR = VIPM_Convert(u32(25), 1.f, 1);
 		}
-		else
+		catch (...)
 		{
-			VIPM_Init();
-			Fvector2				zero; zero.set(0, 0);
-			for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
-			for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
-
-
-			try
-			{
-				VR = VIPM_Convert(u32(25), 1.f, 1);
-			}
-			catch (...)
-			{
-				data.faces = _saved_faces;
-				data.vertices = _saved_vertices;
-				progressive_clear();
-				clMsg("[%d] * X-mesh simplification failed: access violation", MODEL_ID);
-			}
+			data.faces = _saved_faces;
+			data.vertices = _saved_vertices;
+			progressive_clear();
+			clMsg("[%d] * X-mesh simplification failed: access violation", MODEL_ID);
 		}
-	
+ 	
 		if (0==VR)			
 		{
 			data.faces				= _saved_faces		;
@@ -498,10 +454,7 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 		}
  
 		// cleanup
-		if (use_mt_progresive)
-			mt_vipm.VIPM_Destroy();
-		else
-			VIPM_Destroy();
+ 		VIPM_Destroy();
 	}
  
 }

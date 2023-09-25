@@ -157,10 +157,12 @@ void UIObjectTool::RefreshList()
 {
     ListItemsVec items;
     FS_FileSet lst;
-    if (Lib.GetObjects(lst)) {
+    if (Lib.GetObjects(lst)) 
+    {
         FS_FileSetIt	it = lst.begin();
         FS_FileSetIt	_E = lst.end();
-        for (; it != _E; it++) {
+        for (; it != _E; it++) 
+        {
             xr_string fn;
             ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
         }
@@ -188,6 +190,7 @@ void UIObjectTool::OnDrawUI()
 
         UIChooseForm::Update();
     }
+
     if (m_MultiAppend)
     {
         bool change = false;
@@ -221,7 +224,32 @@ void UIObjectTool::OnDrawUI()
             m_MultiAppend = false;
         }
         UIChooseForm::Update();
+        xr_string last_selected = UIChooseForm::GetLastSelected();
+      
+       // if (!strcmp(last_selected.c_str(), "null"))
+       
+
+       if (false)
+       {
+           
+            auto * m_Thm = ImageLib.CreateThumbnail(last_selected.c_str(), EImageThumbnail::ETObject);
+            if (m_Thm)
+            {
+               // Msg("Set THM %s", last_selected.c_str());
+
+                if (m_RealTexture)
+                    m_RemoveTexture = m_RealTexture;
+                m_RealTexture = nullptr;
+                m_Props->ClearProperties();
+
+                m_Thm->Update(m_RealTexture);
+                PropItemVec Info;
+                m_Thm->FillInfo(Info);
+                m_Props->AssignItems(Info);
+            }
+        }
     }
+  
     if (m_PropRandom)
     {
         if (ParentTools->FillAppendRandomPropertiesEnd())
@@ -235,7 +263,8 @@ void UIObjectTool::OnDrawUI()
 
 void UIObjectTool::OnItemFocused(ListItem* item)
 {
-    if (m_RealTexture)m_RemoveTexture = m_RealTexture;
+    if (m_RealTexture)
+        m_RemoveTexture = m_RealTexture;
     m_RealTexture = nullptr;
     m_Props->ClearProperties();
     m_Current = nullptr;
@@ -272,8 +301,10 @@ void UIObjectTool::MultiSelByRefObject(bool clear_prev)
 {
     ObjectList 	objlist;
     LPU32Vec 	sellist;
-    if (Scene->GetQueryObjects(objlist, OBJCLASS_SCENEOBJECT, 1, 1, -1)) {
-        for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) {
+    if (Scene->GetQueryObjects(objlist, OBJCLASS_SCENEOBJECT, 1, 1, -1))
+    {
+        for (ObjectIt it = objlist.begin(); it != objlist.end(); it++) 
+        {
             LPCSTR N = ((CSceneObject*)*it)->RefName();
             ObjectIt _F = Scene->FirstObj(OBJCLASS_SCENEOBJECT);
             ObjectIt _E = Scene->LastObj(OBJCLASS_SCENEOBJECT);

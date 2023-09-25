@@ -324,6 +324,7 @@ __device__ void ShiftRay(xrHardwareLCGlobalData* GlobalData, Ray* CurrentRay, Hi
 
 }
 
+
 // 1
 __global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer,
 	float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime,
@@ -516,7 +517,8 @@ __device__ void DoFinalizeRay(xrHardwareLCGlobalData* GlobalData, float InputEne
 	}
 }
 
-__global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, base_color_c* OutColorBuffer, u32* AliveRayIndexes, u32 AliveRaysCount, bool CheckRGB, bool CheckSun, bool CheckHemi, int* SurfacePointStartLoc)
+__global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount,
+	base_color_c* OutColorBuffer, u32* AliveRayIndexes, u32 AliveRaysCount, bool CheckRGB, bool CheckSun, bool CheckHemi, int* SurfacePointStartLoc)
 {
 	int idx = threadIdx.x + blockIdx.x * blockDim.x;
 
@@ -538,8 +540,10 @@ __global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBu
 
 	//however, before starting cycle, we need found start point in AliveRayIndexes array
 	//#HOTFIX: Use precomputed start location
-	u32 AliveRayIndexCursor = SurfacePointStartLoc[idx];
+	int AliveRayIndexCursor = SurfacePointStartLoc[idx];
 
+	//if (AliveRayIndexCursor == -2)
+	//	return;
 	//next algorithm can do it self, but we need speed up process
 
 	for (; AliveRayIndexCursor < AliveRaysCount; ++AliveRayIndexCursor)
@@ -561,97 +565,6 @@ __global__ void FinalizeRays(xrHardwareLCGlobalData* GlobalData, float* EnergyBu
 		}
 	}
 
-}
-
-__global__ void FinalizeRaysLMAPS(xrHardwareLCGlobalData* GlobalData, float* EnergyBuffer, RayRequest* RequestedRays, u32 RequestedRaysCount, ResultReqvest * OutColorBuffer, u32* AliveRayIndexes, u32 AliveRaysCount, bool CheckRGB, bool CheckSun, bool CheckHemi, int* SurfacePointStartLoc)
-{
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-	//early exit condition
-	if (idx >= RequestedRaysCount) return;
-
-	//idx == SurfaceId
-	RayRequest& CurrentRequest = RequestedRays[idx];
-	base_color_c& OurFinalColor = OutColorBuffer[idx].C;
-
-	int RaysPerVertex = 0;
-	if (CheckRGB)  RaysPerVertex += GlobalData->LightSize->RGBLightCount;
-	if (CheckSun)  RaysPerVertex += GlobalData->LightSize->SunLightCount;
-	if (CheckHemi) RaysPerVertex += GlobalData->LightSize->HemiLightCount;
-
-	//calc lower and high bounds
-	u32 SurfaceLightsStart = idx * RaysPerVertex;
-	u32 SurfaceLightsEnd = SurfaceLightsStart + RaysPerVertex;
-
-	//however, before starting cycle, we need found start point in AliveRayIndexes array
-	//#HOTFIX: Use precomputed start location
-	u32 AliveRayIndexCursor = SurfacePointStartLoc[idx];
-
-	//next algorithm can do it self, but we need speed up process
-
-	for (; AliveRayIndexCursor < AliveRaysCount; ++AliveRayIndexCursor)
-	{
-		u32 AliveRay = AliveRayIndexes[AliveRayIndexCursor];
-
-		if (AliveRay < SurfaceLightsEnd)
-		{
-			u32 LightForSurfaceID = AliveRay % RaysPerVertex;
-
-			LightSource LightType = LS_UNKNOWN;
-			int LinearLightIndex = 0;
-			GetLightTypeAndIndex(GlobalData, LightForSurfaceID, CheckRGB, CheckSun, CheckHemi, LightType, LinearLightIndex);
-			DoFinalizeRay(GlobalData, EnergyBuffer[AliveRayIndexCursor], CurrentRequest, GlobalData->LightData[LinearLightIndex], LightType, OurFinalColor);
-		}
-		else
-		{
-			break;
-		}
-	}
-
-}
-
-
-// NO TEXTURES
-
-/*
-__global__ void ProcessHits(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer,
-	float* ColorBuffer, char* RayStatusBuffer, u32* AliveRaysIndexes, u32 AliveRaysCount, bool IsFirstTime,
-	bool CheckRGB, bool CheckSun, bool CheckHemi, bool SkipFaceMode, u64* FacesToSkip, u32 * alive_rays_count, int Rounds)
-*/
-
-__global__ void ProcessHits_NO_TEXTURE(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, Hit256* HitsData, int* alive_rays)
-{
-	int idx = threadIdx.x + blockIdx.x * blockDim.x;
-
-	Hit* OurHit = &HitBuffer[idx];
-	Ray* OurRay = &RayBuffer[idx];
-	int cnt = HitsData[idx].count;
-
-	if (OurHit->triId == -1 || cnt == 256)
-	{
-		 OurRay->tmax = 0;
-	}
-	else 
-	{
-		HitsData[idx].hits[cnt+1] = *OurHit; 
-		HitsData[idx].count += 1;
-		ShiftRay(GlobalData, OurRay, OurHit);
-		atomicAdd(alive_rays, 1);
-	}
-}
-
-
- extern "C" cudaError_t RunProcessHits_NO_TEXTURE(xrHardwareLCGlobalData* GlobalData, Ray* RayBuffer, Hit* HitBuffer, Hit256* HitsData, int* alive_rays)
-{
-	int BlockSize = 1024;
-	int GridSize = (*alive_rays / BlockSize) + 1;
-
-	ProcessHits_NO_TEXTURE << <GridSize, BlockSize >> > 
-	(
-		GlobalData, RayBuffer, HitBuffer, HitsData, alive_rays 
-	);
-
-	return cudaDeviceSynchronize();
 }
 
 //CALL
@@ -731,23 +644,9 @@ extern "C" cudaError_t RunFinalizeRays(xrHardwareLCGlobalData * GlobalData, floa
 	if ((flag & LP_dont_sun) != 0) IsSunLightsAllowed = false;
 	if ((flag & LP_dont_hemi) != 0) IsHemiLightsAllowed = false;
 
+
 	FinalizeRays << <GridSize, BlockSize >> > (GlobalData, EnergyBuffer, RequestedRays, RequestedRaysCount, OutColors, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SurfacePointStartLoc);
 	return cudaDeviceSynchronize();
 }
 
-extern "C" cudaError_t RunFinalizeRaysLMAPS(xrHardwareLCGlobalData * GlobalData, float* EnergyBuffer, RayRequest * RequestedRays, u32 RequestedRaysCount, ResultReqvest * OutColors, u32 * AliveRaysIndexes, u32 AliveRaysCount, int flag, int* SurfacePointStartLoc)
-{
-	int BlockSize = 1024;
-	int GridSize = (RequestedRaysCount / BlockSize) + 1;
-
-	//check flags
-	bool IsRGBLightsAllowed = true;
-	bool IsHemiLightsAllowed = true;
-	bool IsSunLightsAllowed = true;
-	if ((flag & LP_dont_rgb) != 0) IsRGBLightsAllowed = false;
-	if ((flag & LP_dont_sun) != 0) IsSunLightsAllowed = false;
-	if ((flag & LP_dont_hemi) != 0) IsHemiLightsAllowed = false;
-
-	FinalizeRaysLMAPS << <GridSize, BlockSize >> > (GlobalData, EnergyBuffer, RequestedRays, RequestedRaysCount, OutColors, AliveRaysIndexes, AliveRaysCount, IsRGBLightsAllowed, IsSunLightsAllowed, IsHemiLightsAllowed, SurfacePointStartLoc);
-	return cudaDeviceSynchronize();
-}
+ 

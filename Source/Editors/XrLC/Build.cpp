@@ -166,19 +166,25 @@ extern string_path LEVEL_PATH;
 
 #include "..\XrLCLight\xrHardwareLight.h"
 
+
 void CBuild::TestMergeGeom(IWriter* writer)
 {
 
 	Phase("TEST MERGE");
-
-	log_vminfo();
 	
 	FPU::m64r();
 	Phase("Optimizing...");
 	mem_Compact();
-	if (!strstr(Core.Params, "-no_optimize"))
-		PreOptimize();
 	CorrectTJunctions();
+
+	//****************************************** HEMI-Tesselate
+	/*
+	FPU::m64r();
+	Phase("Adaptive HT...");
+	mem_Compact();
+	log_vminfo();
+	xrPhase_AdaptiveHT();
+	*/
 
 	FPU::m64r();
 	Phase("Building normals...");
@@ -189,13 +195,12 @@ void CBuild::TestMergeGeom(IWriter* writer)
 	FPU::m64r					();
 	Phase						("Building collision database...");
 	mem_Compact					();
-	log_vminfo();
 	BuildCForm					();
-	log_vminfo();
  
 	BuildPortals(*writer);
 
 	//****************************************** T-Basis
+	
 	{
 		FPU::m64r();
 		Phase("Building tangent-basis...");
@@ -203,24 +208,22 @@ void CBuild::TestMergeGeom(IWriter* writer)
 		mem_Compact();
 	}
  
- 
 	//****************************************** GLOBAL-RayCast model
 	FPU::m64r();
 	Phase("Building rcast-CFORM model...");
 	mem_Compact();
-	log_vminfo();
 	Light_prepare();
+
+	CTimer t;t.Start();
 	BuildRapid(TRUE);
-	log_vminfo();
+	Msg("RcastModel LoadTime: %d", t.GetElapsed_ms());
  
 	FPU::m64r					();
 	Phase						("Resolving materials...");
-	log_vminfo();
 	mem_Compact					();
 	xrPhase_ResolveMaterials	();
 	IsolateVertices				(TRUE);
 
-	log_vminfo();
 
 	//****************************************** UV mapping
 	{
@@ -228,25 +231,60 @@ void CBuild::TestMergeGeom(IWriter* writer)
 		Phase						("Build UV mapping...");
 		
 		mem_Compact					();
-		log_vminfo();
-		xrPhase_UVmap				();
+ 		xrPhase_UVmap				();
 		IsolateVertices				(TRUE);
 	}
 	
-	log_vminfo();
 
-	
 	//****************************************** Subdivide geometry
 	FPU::m64r					();
 	Phase						("Subdividing geometry...");
 	
 	mem_Compact					();
-	log_vminfo();
-	xrPhase_Subdivide			();
+ 	xrPhase_Subdivide			();
 	//IsolateVertices				(TRUE);
 	lc_global_data()->vertices_isolate_and_pool_reload();
 
-	log_vminfo();
+ 
+	/*
+	MU MODELS LIGHT
+	
+	
+	*/
+
+	// Se7Kills Opacity BUFFERS
+
+	// LOAD OPACITY TO MODEL
+ 
+ 	/*
+
+	FPU::m64r();
+	Phase("LIGHT: Starting MU...");
+	mem_Compact();
+	Light_prepare();
+	if (g_build_options.b_net_light)
+	{
+		lc_global_data()->mu_models_calc_materials();
+		RunNetCompileDataPrepare();
+	}
+	StartMu();
+
+
+	//****************************************** Wait for MU
+	FPU::m64r();
+				
+ 	string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", 1 ? "intel" : "opcode");
+	Phase(tmp);
+	mem_Compact();
+	wait_mu_base();
+
+	if (!g_build_options.b_net_light)
+	{
+		Phase("LIGHT: Waiting for MU-Secondary threads...");
+		wait_mu_secondary();
+	}
+	*/
+
 
 
 	/*
@@ -573,7 +611,10 @@ void CBuild::Run(LPCSTR P)
 
 	// Se7Kills
 	// Export Model DEFLECTORS 
-	ExportDeflectors();
+	// ExportDeflectors();
+
+
+	// Se7Kills Opacity BUFFERS
 
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP

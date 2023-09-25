@@ -27,9 +27,9 @@ public:
 	template<class T>
 	void SafeCudaMemalloc(T** ptr, size_t size_in_bites)
 	{
-		if (size_in_bites > 1 * 1024 * 1024)
+		if (size_in_bites > 1024 * 1024 * 1024)
 		{
-		//	Msg("MEMSET: %d MB, buffer: %s", size_in_bites / 1024 / 1024, name);
+			//Msg("MEMSET: %d MB, buffer: %s", size_in_bites / 1024 / 1024, name);
 		}
 
 		CHK_CUDA(cudaMalloc(ptr, size_in_bites));

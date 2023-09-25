@@ -65,16 +65,19 @@ namespace ChoseEvents
     void   FillObject(ChooseItemVec& items, void* param)
     {
         FS_FileSet lst;
-        if (Lib.GetObjects(lst)) {
+        if (Lib.GetObjects(lst))
+        {
             FS_FileSetIt	it = lst.begin();
             FS_FileSetIt	_E = lst.end();
-            for (; it != _E; it++)		items.push_back(SChooseItem(it->name.c_str(), ""));
+            for (; it != _E; it++)		
+                items.push_back(SChooseItem(it->name.c_str(), ""));
         }
     }
     void   SelectObject(SChooseItem* item, PropItemVec& info_items)
     {
         EObjectThumbnail* thm = xr_new<EObjectThumbnail>(*item->name);
-        if (thm->Valid()) thm->FillInfo(info_items);
+        if (thm->Valid())
+            thm->FillInfo(info_items);
         xr_delete(thm);
     }
     void   UpdateObjectTHM(LPCSTR name, ImTextureID&ID)

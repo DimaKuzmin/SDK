@@ -292,7 +292,12 @@ void CBuild::mem_CompactSubdivs()
 }
 void CBuild::mem_Compact()
 {
+	Msg("Start Memory Compact");
+	log_vminfo();
 	Memory.mem_compact	();
+	log_vminfo();
+	Msg("End Memory Compact");
+
 	/*
 	u32					bytes,blocks_used,blocks_free;
 	bytes				= Memory.mem_usage(&blocks_used,&blocks_free);

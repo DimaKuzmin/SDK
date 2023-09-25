@@ -2,7 +2,8 @@
 #include <malloc.h>
 #include <errno.h>
 
-XRCORE_API void vminfo (size_t *_free, size_t *reserved, size_t *committed) {
+XRCORE_API void vminfo (size_t *_free, size_t *reserved, size_t *committed)
+{
 	MEMORY_BASIC_INFORMATION memory_info;
 	memory_info.BaseAddress = 0;
 	*_free = *reserved = *committed = 0;
@@ -141,8 +142,10 @@ u32	mem_usage_impl	(HANDLE heap_handle, u32* pBlocksUsed, u32* pBlocksFree)
 			blocks_free	+= 1;
 		}
 	}
-	if (pBlocksFree)	*pBlocksFree= 1024*(u32)blocks_free;
-	if (pBlocksUsed)	*pBlocksUsed= 1024*(u32)blocks_used;
+	if (pBlocksFree)	
+        *pBlocksFree = 1024 * (u32)blocks_free;
+	if (pBlocksUsed)	
+        *pBlocksUsed = 1024 * (u32)blocks_used;
 
 	switch( heapstatus )
 	{

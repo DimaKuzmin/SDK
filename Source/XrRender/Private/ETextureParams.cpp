@@ -80,16 +80,19 @@ void STextureParams::Load(IReader& F)
     width		= F.r_u32();
     height		= F.r_u32();
 
-    if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE)){
+    if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE))
+    {
         type	= (ETType)F.r_u32();
     }
 
-    if (F.find_chunk(THM_CHUNK_DETAIL_EXT)){
+    if (F.find_chunk(THM_CHUNK_DETAIL_EXT))
+    {
         F.r_stringZ(detail_name);
         detail_scale = F.r_float();
     }
 
-    if (F.find_chunk(THM_CHUNK_MATERIAL)){
+    if (F.find_chunk(THM_CHUNK_MATERIAL))
+    {
     	material		= (ETMaterial)F.r_u32		();
 	    material_weight = F.r_float	();
     }

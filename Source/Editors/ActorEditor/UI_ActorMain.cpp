@@ -470,7 +470,8 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 
         CTimer T;
         T.Start();
-        if (!Load(temp_fn.c_str())) {
+        if (!Load(temp_fn.c_str())) 
+        {
             return FALSE;
         }
         m_LastFileName = temp_fn.c_str();

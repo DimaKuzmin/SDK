@@ -1160,7 +1160,8 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 
 		// build viewport xform
 		float	view_dim			= float(RImplementation.o.smapsize);
-		Fmatrix	m_viewport			= {
+		Fmatrix	m_viewport			=
+		{
 			view_dim/2.f,	0.0f,				0.0f,		0.0f,
 			0.0f,			-view_dim/2.f,		0.0f,		0.0f,
 			0.0f,			0.0f,				1.0f,		0.0f,
@@ -1291,7 +1292,8 @@ void CRender::render_sun_cascade ( u32 cascade_ind )
 	{
 		bool	bNormal							= mapNormalPasses[0][0].size() || mapMatrixPasses[0][0].size();
 		bool	bSpecial						= mapNormalPasses[1][0].size() || mapMatrixPasses[1][0].size() || mapSorted.size();
-		if ( bNormal || bSpecial)	{
+		if ( bNormal || bSpecial)	
+		{
 			Target->phase_smap_direct			(fuckingsun	, SE_SUN_FAR	);
 			RCache.set_xform_world				(Fidentity					);
 			RCache.set_xform_view				(Fidentity					);

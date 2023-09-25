@@ -525,9 +525,7 @@ bool MeshMender::Mend(
 	SetUpData( theVerts, theIndices, mappingNewToOldVert, computeNormals);
 
 	//for each unique position
-	for(VertexChildrenMap::iterator vert = m_VertexChildrenMap.begin();
-		vert!= m_VertexChildrenMap.end();
-		++vert)
+	for(VertexChildrenMap::iterator vert = m_VertexChildrenMap.begin(); vert!= m_VertexChildrenMap.end(); ++vert)
 	{
 		D3DXVECTOR3 workingPosition = vert->first;
 

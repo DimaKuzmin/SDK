@@ -64,11 +64,11 @@ public:
 	xr_vector<xrMU_Reference*>		&mu_refs();
 
 	Shader_xrLC_LIB					&shaders();
-
-
+ 
 	void	mem_Compact				();
 	void	mem_CompactSubdivs		();
 public:
+	void	CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w);
 	void	Load					(const b_params& P, const IReader&  fs);
 
 	void	TestMergeGeom(IWriter* writer);

@@ -30,7 +30,7 @@ void ThreadLog()
 		if (filelog)
 			filelog->flush();
 
-		Sleep(1000);
+		Sleep(500);
 	}
 }
 
@@ -217,10 +217,10 @@ void InitLog()
 void CreateLog			(BOOL nl)
 {
     no_log				= nl;
-	strconcat			(sizeof(log_file_name),log_file_name,Core.ApplicationName,"_",Core.UserName,".log");
+	strconcat			(sizeof(log_file_name), log_file_name, Core.ApplicationName,"_",Core.UserName,".log");
 	
 	if (FS.path_exist("$logs$"))
-		FS.update_path	(logFName,"$logs$",log_file_name);
+		FS.update_path	(logFName,"$logs$", log_file_name);
 	
 	if (!no_log)
 	{
@@ -239,13 +239,22 @@ void CreateLog			(BOOL nl)
 		filelog->w_string(s.c_str());
 	}
 	
-	string_path path;
-	sprintf(path, "%s_dump", logFName);
+	if (FS.path_exist("$logs$"))
+	{
+		string_path path;
+		string128 name = {0};
 
-	filelog_dump_data = FS.w_open(path);
+		sprintf(name, "dump_data\\%s_%s.dump", Core.ApplicationName, Core.UserName);
 
-	std::thread* th = new std::thread(ThreadLog);
-	th->detach();
+		FS.update_path	(path, "$logs$", name);
+	
+
+		filelog_dump_data = FS.w_open(path);
+
+		std::thread* th = new std::thread(ThreadLog);
+		th->detach();
+	}
+
 }
 
 void CloseLog(void)

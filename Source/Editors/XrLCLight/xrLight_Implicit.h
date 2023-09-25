@@ -22,7 +22,6 @@ class ImplicitExecute
 public:
 	ImplicitExecute( u32 _y_start, u32 _y_end , int ID): y_start(_y_start), y_end( _y_end ), TH_ID(ID)
 	{
-
 	}
 	ImplicitExecute(): y_start( u32(-1) ),y_end( u32(-1) )
 	{

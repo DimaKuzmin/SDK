@@ -98,14 +98,14 @@ public:
  			task_CS.Enter();
 			int id = task_id.load();
 			thProgress = (float(id) / float(lc_global_data()->mu_refs().size()));
-				if ( (task_id.load()) % 16 == 0)
-					Status("Progress %d / %d", id, lc_global_data()->mu_refs().size());
-				if (id < inlc_global_data()->mu_refs().size())
-					ref = inlc_global_data()->mu_refs()[id];
-				else
-					ref = 0;
+			if ( (task_id.load()) % 16 == 0)
+				Status("Progress %d / %d", id, lc_global_data()->mu_refs().size());
+			if (id < inlc_global_data()->mu_refs().size())
+				ref = inlc_global_data()->mu_refs()[id];
+			else
+				ref = 0;
 
-				task_id.fetch_add(1);
+			task_id.fetch_add(1);
 			task_CS.Leave();
 
 			if (!ref)
@@ -114,8 +114,11 @@ public:
 			}
 				  
 			try
-			{
+			{	
+				CTimer t;
+				t.Start();
 				ref->calc_lighting();
+				clMsg("MuRefModel: %s, time: %d", ref->model->m_name.c_str(), t.GetElapsed_ms());
 			}
 			catch (...)
 			{

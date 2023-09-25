@@ -56,6 +56,61 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 	return false;
 }
 
+void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
+{
+	//Msg("Cant Load THM %s", th_name);
+	{
+		string_path path = { 0 }, gamedata = { 0 };
+		string32 name_thm = { 0 };
+		sprintf(name_thm, "textures\\%s.thm", N);
+
+		FS.update_path(path, "$xrlc_textures$", name_thm);
+		FS.update_path(gamedata, _game_data_, name_thm);
+
+		if (FS.exist(path))
+		{
+			FS.file_copy(path, gamedata);
+			Msg("(NEED RESTART xrLC) Load THM from _import_: %s", path);
+		}
+		else
+		{	
+			Msg("Cant Find Thm in %s", path);
+			string128 tmp = {0};
+			sprintf(tmp, "Texture: %s.thm", N);
+			w->w_string(tmp);
+						 
+		}
+	}
+
+	{
+		string_path path = { 0 }, gamedata = { 0 };
+		string32 name_file = { 0 };
+		sprintf(name_file, "textures\\%s.dds", N);
+		FS.update_path(path, "$xrlc_textures$", name_file);
+		FS.update_path(gamedata, _game_data_, name_file);
+
+		if (FS.exist(path))
+		{
+			FS.file_copy(path, gamedata);
+			Msg("(NEED RESTART xrLC) Load DDS from _import_: %s", path);
+		}
+		else
+		{	
+			Msg("Cant Find DDS in %s", path);
+			string128 tmp = {0};
+			sprintf(tmp, "Texture: %s.dds", N);
+			w->w_string(tmp);
+		}
+	}
+
+	BT.dwWidth = 1024;
+	BT.dwHeight = 1024;
+	BT.bHasAlpha = FALSE;
+	BT.THM.SetHasSurface(FALSE);
+	BT.pSurface.Clear();
+
+}
+
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 {
 	IReader&	fs	= const_cast<IReader&>(_in_FS);
@@ -73,6 +128,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	string_path				sh_name;
 	FS.update_path			(sh_name,"$game_data$","shaders_xrlc.xr");
 	shaders().Load			(sh_name);
+
+	Status("Start Loading Project");
+	log_vminfo();
+
 
 	//*******
 	Status					("Vertices...");
@@ -92,6 +151,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		clMsg				("* %16s: %d","vertices",lc_global_data()->g_vertices().size());
 		F->close			();
 	}
+
+	log_vminfo();
+
 
 	//*******
 	Status					("Faces...");
@@ -164,6 +226,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}
 	}
 
+	log_vminfo();
+
+
 	//*******
 	Status	("Models and References");
 	F = fs.open_chunk		(EB_MU_models);
@@ -186,6 +251,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}		
 		F->close				();
 	}
+
+	log_vminfo();
+
 
 	//*******
 	Status	("Other transfer...");
@@ -229,7 +297,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			for	(i=0; i<cnt; i++)
 			{
 				R_Light		RL;
-				F->r		(&temp,sizeof(temp));
+				F->r		(&temp, sizeof(temp));
 				Flight	L	= temp.data;
 
 				// type
@@ -283,9 +351,11 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				L_static().rgb			= TEST.lights;
 			}
 		}
+
 		clMsg	("*lighting*: HEMI:   %d lights",L_static().hemi.size());
 		clMsg	("*lighting*: SUN:    %d lights",L_static().sun.size());
 		clMsg	("*lighting*: STATIC: %d lights",L_static().rgb.size());
+
 		R_ASSERT(L_static().hemi.size());
 		R_ASSERT(L_static().sun.size());
 		R_ASSERT(L_static().rgb.size());
@@ -294,9 +364,15 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		transfer("d-lights",	L_dynamic,			fs,		EB_Light_dynamic);
 	}
 
-	string_path p;
-	FS.update_path(p, "$app_data_root$", "xr_LC.error_textures");
-	IWriter* w = FS.w_open(p);
+	log_vminfo();
+
+
+ 	string_path path;
+	string128 name = {0};
+	sprintf(name, "dump_data\\%s", "xrlc_error_textures.dump");
+	FS.update_path(path, "$logs$", name);
+ 
+	IWriter* w = FS.w_open(path);
 	
 	// process textures
 	Status			("Processing textures...");
@@ -335,46 +411,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
 				clMsg			("processing: %s",th_name);
 				IReader* THM	= FS.r_open(th_name);
-				
 				 
 				if (!THM)
 				{
-					//Msg("Cant Load THM %s", th_name);
-					{
-						string_path path = { 0 }, gamedata = { 0 };
-						string32 name_thm = { 0 }, name_file = { 0 };
-						sprintf(name_thm, "textures\\%s.thm", N);
-
-						FS.update_path(path, _import_, name_thm);
-						FS.update_path(gamedata, _game_data_, name_thm);
-
-						if (FS.exist(path))
-							FS.file_copy(path, gamedata);
-						else
-							Msg("Cant Find Thm in %s", path);
-					}
-
-					{
-						string_path path = { 0 }, gamedata = { 0 };
-						string32 name_thm = { 0 }, name_file = { 0 };
-						sprintf(name_file, "textures\\%s.dds", N);
-						FS.update_path(path, _import_, name_file);
-						FS.update_path(gamedata, _game_data_, name_file);
-
-						if (FS.exist(path))
-							FS.file_copy(path, gamedata);
-						else
-							Msg("Cant Find DDS in %s", path);
-					}
-
-
-
-
-					BT.dwWidth = 1024;
-					BT.dwHeight = 1024;
-					BT.bHasAlpha = FALSE;
-					BT.THM.SetHasSurface(FALSE);
-					BT.pSurface.Clear();
+					CopyTexture(N, BT, w);
 				}
 				else
 				{
@@ -402,21 +442,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.dwWidth = BT.THM.width;
 					BT.dwHeight = BT.THM.height;
 					BT.bHasAlpha = BT.THM.HasAlphaChannel();
-
-					/*
-					Msg("THM flags(%d), border(%d), fade(%d), face_amount(%d), mip_filter(%d), width(%d), height(%d), alpha(%d) )",
-						BT.THM.flags.flags,
-						BT.THM.border_color,
-						BT.THM.fade_color,
-						BT.THM.fade_amount,
-						BT.THM.mip_filter,
-						BT.THM.width,
-						BT.THM.height,
-						BT.bHasAlpha
-					);	 
-					*/
-
-
+ 
 					if (!bLOD)
 					{
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
@@ -426,7 +452,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							
 							if (!Surface_Detect(name, N) || !BT.pSurface.LoadFromFile(name))
 							{
-								Msg("Skip Loading: %s", N);
+								Msg("Not Find Texture, Try Copy: %s", N);
+								CopyTexture(N, BT, w);
+
 								string128 tmp = {0};
 								sprintf(tmp, "Texture: %s.dds", N);
 								w->w_string(tmp);
@@ -443,7 +471,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
 							{
-								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
+								
+								string256 msg;
+								sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
+								Msg(msg);
+								w->w_string(msg);
+
 								BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
 								BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
 							}
@@ -523,6 +556,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	CopyMemory(&g_params(),&Params,sizeof(b_params));
 
 	FS.w_close(w);
+
+	log_vminfo();
+
 	// 
 	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
 }

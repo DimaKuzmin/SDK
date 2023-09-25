@@ -15,7 +15,7 @@ xrCriticalSection						g_trans_CS
 	(MUTEX_PROFILE_ID(g_trans_CS))
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, u32 max_hits);
+extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode = false);
 
 void	g_trans_register_internal		(Vertex* V)
 {
@@ -134,7 +134,7 @@ public:
 
 				CDB::COLLIDER	DB;
 				DB.ray_options	(0);
-				LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), (lc_global_data()->b_nosun()?LP_dont_sun:0)|LP_dont_hemi, 0, 1024);
+				LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), (lc_global_data()->b_nosun()?LP_dont_sun:0)|LP_dont_hemi, 0);
 				vC._tmp_			= v_trans;
 				vC.mul				(.5f);
 				vC.hemi				= old.hemi;			// preserve pre-calculated hemisphere

@@ -26,6 +26,43 @@ namespace Opcode {
 	class AABBNoLeafNode;
 };
 
+
+
+struct OpcodeArgs
+{
+	struct Hit
+	{
+	   	float dist;
+		float u,v; 
+		u64 prim;
+	} hit_struct;
+
+	bool valid = 1;
+
+	xr_vector<Hit> hits;
+
+	//int Thread;
+	float energy;
+
+	int count = 0;
+	void * MDL;
+	void * skip;
+	void * Light;
+};
+
+typedef void (*OpcodeFilterFunction)(OpcodeArgs* args);
+
+struct OpcodeContext
+{
+	OpcodeFilterFunction filter;
+	OpcodeArgs* result;
+
+ 	Fvector r_start;
+	Fvector r_dir;
+	float r_range;
+};
+
+
 #pragma pack(push,4)
 namespace CDB
 {
@@ -55,6 +92,17 @@ namespace CDB
 	public:
 		IC static size_t Size() { return 16; }
 		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
+	};
+
+	struct TRI_Edge
+	{
+		Fvector edge1;
+		Fvector edge2;
+		Fvector v0;
+
+		__m128 edge1_128;
+		__m128 edge2_128;
+		__m128 v0_128;
 	};
 
 
@@ -92,8 +140,7 @@ namespace CDB
 		IC u32			IDvert(u32 ID) { return verts[ID]; }
 	};
 
-
-
+   
 
 	// Build callback
 	typedef		void 	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
@@ -112,6 +159,10 @@ namespace CDB
 	private:
 		xrCriticalSection		cs;
 		Opcode::OPCODE_Model*	tree;
+		
+
+
+
 		u32						status;		// 0=ready, 1=init, 2=building
 
 		// tris
@@ -119,6 +170,10 @@ namespace CDB
 		int						tris_count;
 		Fvector*				verts;
 		int						verts_count;
+
+		TRI_Edge*				tris_edges;
+		int						tris_edges_count;
+
 	public:
 		MODEL();
 		~MODEL();
@@ -129,6 +184,9 @@ namespace CDB
 		IC const TRI*			get_tris		()	const 	{ return tris;		}
 		IC TRI*					get_tris		()			{ return tris;		}
 		IC int					get_tris_count	()	const	{ return tris_count;}
+		
+		IC TRI_Edge*			get_tris_edges()  	{ return tris_edges; }	
+
 		IC void					syncronize		()	const
 		{
 			if (S_READY!=status)
@@ -152,7 +210,8 @@ namespace CDB
 		Fvector			verts	[3];
 		union	{
 			u32			dummy;				// 4b
-			struct {
+			struct 
+			{
 				u32		material:14;		// 
 				u32		suppress_shadows:1;	// 
 				u32		suppress_wm:1;		// 
@@ -162,6 +221,8 @@ namespace CDB
 		int				id;
 		float			range;
 		float			u,v;
+
+		//Fvector			Barry;
 	};
 
 	// Collider Options
@@ -171,6 +232,8 @@ namespace CDB
 		OPT_ONLYNEAREST	= (1<<2),
 		OPT_FULL_TEST   = (1<<3)		// for box & frustum queries - enable class III test(s)
 	};
+
+
 
 	// Collider itself
 	class XRCDB_API COLLIDER
@@ -185,20 +248,24 @@ namespace CDB
 
 		
 	public:
-		xr_map<int, bool>* triangle_opacity = 0;
-		bool use_triangles_opacity = false;
+		//OpcodeFilterFunction* filter_function;
 
+		
 		COLLIDER		();
 		~COLLIDER		();
 
+		//ICF void		InitFilterFunction(OpcodeFilterFunction* funct);
+		ICF void		rayTrace1(OpcodeContext* context);
+
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
-		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f, u32 max_hits = 1024); //0 = FPU, 1= SSE, 2 = AVX
+		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);  
 
 		ICF void		box_options		(u32 f)	{	box_mode = f;		}
 		void			box_query		(const MODEL *m_def, const Fvector& b_center, const Fvector& b_dim);
 
 		ICF void		frustum_options	(u32 f)	{	frustum_mode = f;	}
 		void			frustum_query	(const MODEL *m_def, const CFrustum& F);
+
 
 		ICF RESULT*		r_begin			()	{	return &*rd.begin();		};
 		ICF RESULT*		r_end			()	{	return &*rd.end();			};
@@ -231,7 +298,8 @@ namespace CDB
 		void			clear			()	{ verts.clear(); faces.clear();	}
 	};
 
-	struct non_copyable {
+	struct non_copyable 
+	{
 						non_copyable	() {}
 	private:
 						non_copyable	(const non_copyable &) {}

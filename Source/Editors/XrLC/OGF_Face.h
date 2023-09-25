@@ -106,8 +106,7 @@ extern xr_vector<OGF_Base *>		g_tree;
 
 struct OGF : public OGF_Base
 {
-	bool use_mt_progresive;
-
+ 
 	u32					material	;
 	vecOGF_T			textures	;
 /*

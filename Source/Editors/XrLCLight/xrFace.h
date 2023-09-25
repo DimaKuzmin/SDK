@@ -31,6 +31,7 @@ public:
 	typedef		DataFace			DataFaceType;
 
 	IC	BOOL	 similar			( Tvertex<DataVertex> &V, float eps );
+	IC  BOOL	 similar_avx		( Tvertex<DataVertex> &V, float eps );
 
 	virtual	void		read	(INetReader	&r );
 	virtual	void		write	(IWriter	&w )const;

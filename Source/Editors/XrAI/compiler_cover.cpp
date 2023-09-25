@@ -62,22 +62,29 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 		for (u32 I=0; I<tris_count; I++)
 		{
 			CDB::RESULT& rpinf = DB->r_begin()[I];
-			// Access to texture
-//			CDB::TRI& clT								= 
-				Level.get_tris()	[rpinf.id];
+		
+//			Access to texture
+//			CDB::TRI& clT								=   Level.get_tris()	[rpinf.id];
+
 			b_rc_face& F								= g_rc_faces		[rpinf.id];
 
 			if (F.dwMaterial >= g_materials.size())
 				Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
+
 			b_material& M	= g_materials				[F.dwMaterial];
 			b_texture&	T	= (*g_textures)				[M.surfidx];
 			Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
-			if (M.shader_xrlc>=LIB.size()) return		0;		//. hack
+			if (M.shader_xrlc>=LIB.size())
+				return		0;		//. hack
+
 			Shader_xrLC& SH	= LIB						[M.shader_xrlc];
 			if (!SH.flags.bLIGHT_CastShadow)			continue;
 
-			if (T.pSurface.Empty())	T.bHasAlpha = FALSE;
-			if (!T.bHasAlpha)	{
+			if (T.pSurface.Empty())	
+				T.bHasAlpha = FALSE;
+			
+			if (!T.bHasAlpha)
+			{
 				// Opaque poly - cache it
 				C[0].set	(rpinf.verts[0]);
 				C[1].set	(rpinf.verts[1]);
@@ -114,29 +121,7 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 	return scale;
 }
 
-// IC bool RayPick(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float r, RayCache& C)	//, Face* skip)
-IC float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
-{
-	R_ASSERT	(DB);
 
-	// 1. Check cached polygon
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,C,_u,_v,range,false);
-	if (res) {
-		if (range>0 && range<R) return 0;
-	}
-
-	// 2. Polygon doesn't pick - real database query
-	DB->ray_query	(&Level,P,D,R);
-
-	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) {
-		return 1;
-	} else {
-		return getLastRP_Scale(DB,C);
-	}
-//	return 0;
-}
 
 IC int	calcSphereSector(Fvector& dir)
 {
@@ -231,6 +216,8 @@ xrCriticalSection csAI;
 int IDS_THREADS = 0;
 int CurrentPos = 0;
 
+float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R/*, RayCache& C*/);
+
 class	CoverThread : public CThread
 {
  	xr_vector<RC>		cache;
@@ -273,7 +260,7 @@ public:
 			// raytrace
 			int			sector		=	calcSphereSector(Dir);
 			c_total		[sector]	+=	1.f;
-			c_passed	[sector]	+=	rayTrace (&DB, TestPos, Dir, range, cache[ID].C); //
+			c_passed	[sector]	+=	rayTrace (&DB, TestPos, Dir, range  /*cache[ID].C */); //
 		}
 		Q.Clear			();
 		
@@ -409,9 +396,6 @@ void compute_cover_nodes	()
 			continue;
 
 		*J					= true;
-
-		//if (ID % 1024 == 0)
-			Msg_IN_FILE("ID: %llu, nodes: %llu, g_covers: %llu", ID, g_cover_nodes.size(), g_covers->size());
 		
 		try
 		{
@@ -517,12 +501,15 @@ void compute_non_covers		()
 	Nodes::iterator			B = g_nodes.begin(), I = B;
 	Nodes::iterator			E = g_nodes.end();
 	COVER_NODES::iterator	J = g_cover_nodes.begin();
-	for ( ; I != E; ++I, ++J) {
+	for ( ; I != E; ++I, ++J)
+	{
+		StatusNoMsg();
 		if (*J)
 			continue;
 
 		g_covers->nearest	((*I).Pos,cover_distance,nearest);
-		if (nearest.empty()) {
+		if (nearest.empty()) 
+		{
 			for (int i=0; i<4; ++i) {
 				VERIFY		((*I).high_cover[i] == flt_max);
 				(*I).high_cover[i]	= 1.f;
@@ -578,7 +565,8 @@ void compute_non_covers		()
 
 		COVER_PAIRS::const_iterator		i = cover_pairs.begin();
 		COVER_PAIRS::const_iterator		e = cover_pairs.end();
-		for ( ; i != e; ++i) {
+		for ( ; i != e; ++i)
+		{
 			vertex						&current = g_nodes[(*i).second->level_vertex_id()];
 			float						factor = (*i).first/cumulative_weight;
 			for (int j=0; j<4; ++j) {
@@ -636,13 +624,17 @@ void	xrCover	(bool pure_covers)
 	Threads.wait			();
 	Msg("%d seconds elapsed.",(timeGetTime()-start_time)/1000);
 
+	Status("Calculating non covers...");
 	if (!pure_covers) 
 	{
 		compute_non_covers	();
+		Status("g_covers->all");
 
 		COVERS				nearest;
 		VERIFY				(g_covers);
 		g_covers->all		(nearest);
+
+
 		delete_data			(nearest);
 		xr_delete			(g_covers);
 		return;

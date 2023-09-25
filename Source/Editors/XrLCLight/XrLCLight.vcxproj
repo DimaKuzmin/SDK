@@ -225,10 +225,12 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>cuda.lib;cudart_static.lib;optix_prime.1.lib;embree4.lib;tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>$(IntermediateOutputPath)LightPoint.cu.obj %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(IntermediateOutputPath)LightPoint.cu.obj  $(IntermediateOutputPath)LightPoint_Refactored.cu.obj %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>
-      <Command>nvcc.exe -gencode=arch=compute_60,code=\"sm_60,compute_60\" -IA:\SDK\SDK\SDK\Include\cuda\ -IA:\SDK\SDK\Source\Engine\xrLC_Light\ --use-local-env -x cu -G --keep-dir $(Platform)\$(Configuration) -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DFORCE_NO_EXCEPTIONS -D_USE_MATH_DEFINES -DWIN32 -DDEBUG -D_WINDOWS -D_USRDLL -DXRLC_LIGHT_EXPORTS -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_VC80_UPGRADE=0x0710 -DWIN32 -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINDLL -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MD " -o $(IntermediateOutputPath)LightPoint.cu.obj "$(ProjectDir)LightPoint.cu"</Command>
+      <Command>nvcc.exe -gencode=arch=compute_60,code=\"sm_60,compute_60\" -IA:\SDK\SDK\SDK\Include\cuda\ -IA:\SDK\SDK\Source\Engine\xrLC_Light\ --use-local-env -x cu -G --keep-dir $(Platform)\$(Configuration) -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DFORCE_NO_EXCEPTIONS -D_USE_MATH_DEFINES -DWIN32 -DDEBUG -D_WINDOWS -D_USRDLL -DXRLC_LIGHT_EXPORTS -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_VC80_UPGRADE=0x0710 -DWIN32 -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINDLL -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MD " -o $(IntermediateOutputPath)LightPoint.cu.obj "$(ProjectDir)LightPoint.cu"
+
+nvcc.exe -gencode=arch=compute_60,code=\"sm_60,compute_60\" -IA:\SDK\SDK\SDK\Include\cuda\ -IA:\SDK\SDK\Source\Engine\xrLC_Light\ --use-local-env -x cu -G --keep-dir $(Platform)\$(Configuration) -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DFORCE_NO_EXCEPTIONS -D_USE_MATH_DEFINES -DWIN32 -DDEBUG -D_WINDOWS -D_USRDLL -DXRLC_LIGHT_EXPORTS -D_SECURE_SCL=0 -D_ITERATOR_DEBUG_LEVEL=0 -D_VC80_UPGRADE=0x0710 -DWIN32 -D_WINSOCK_DEPRECATED_NO_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D_WINDLL -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MD " -o $(IntermediateOutputPath)LightPoint_Refactored.cu.obj "$(ProjectDir)LightPoint_Refactored.cu"</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\embree4.dll" "$(SolutionDir)..\Bin\$(Platform)\$(Configuration)\"
@@ -420,6 +422,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="xrDeflectorLight.cpp" />
     <ClCompile Include="xrFace.cpp" />
     <ClCompile Include="xrHardwareLight_LMAP.cpp" />
+    <ClCompile Include="xrHardwareLight_OptitxOnly.cpp" />
     <ClCompile Include="xrHardwareTest.cpp" />
     <ClCompile Include="xrImage_Filter.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
@@ -470,6 +473,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
   </ItemGroup>
   <ItemGroup>
     <None Include="LightPoint.cu" />
+    <None Include="LightPoint_Refactored.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

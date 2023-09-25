@@ -28,6 +28,7 @@ public:
 
 	ICF	SelfRef	add(const Self &v)						{ x+=v.x;	y+=v.y;		z+=v.z;			return *this;	};
 	ICF SelfRef	add(T s)								{ x+=s;		y+=s;		z+=s;			return *this;	};
+
 	ICF SelfRef	add(const Self &a, const Self &v)		{ x=a.x+v.x;y=a.y+v.y;	z=a.z+v.z;		return *this;	};
 	ICF SelfRef	add(const Self &a, T s)					{ x=a.x+s;  y=a.y+s;	z=a.z+s;		return *this;	};
 

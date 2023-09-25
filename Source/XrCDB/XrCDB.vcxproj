@@ -236,7 +236,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;d3d9.lib;d3dx9.lib;embree4.lib;tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -345,6 +345,7 @@
     <ClCompile Include="xrCDB_Collector.cpp">
       <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
     </ClCompile>
+    <ClCompile Include="xrCDB_Embree.cpp" />
     <ClCompile Include="xrCDB_frustum.cpp">
       <MinimalRebuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</MinimalRebuild>
       <AssemblerOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AssemblyAndSourceCode</AssemblerOutput>
@@ -405,6 +406,7 @@
     <ClInclude Include="OPC_VolumeCollider.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="xrCDB.h" />
+    <ClInclude Include="xrCDB_Embree.h" />
     <ClInclude Include="xrXRC.h" />
     <ClInclude Include="xr_area.h" />
     <ClInclude Include="xr_collide_defs.h" />

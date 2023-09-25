@@ -548,7 +548,8 @@ void ECORE_API xrHemisphereBuild	(int quality, float energy, xrHemisphereIterato
     float E			= 1.f/total;
 		
     // Iterate
-    for (int i=0; i<h_count; i++){
+    for (int i=0; i<h_count; i++)
+	{
         float x		=	-float	(hemi[i][0]);
         float y		=	-float	(hemi[i][1]);
         float z		=	-float	(hemi[i][2]);

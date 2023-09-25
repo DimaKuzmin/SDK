@@ -155,7 +155,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 	extern void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL);
 	
-	GetMemoryRequiredForLoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
+	//GetMemoryRequiredForLoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
 
 	// save source SMF
 	string_path				fn;
@@ -173,8 +173,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	{
 		Status					("Saving...");
 		string_path				fn;
-
-		
+ 
 		xr_vector<b_rc_face>	rc_faces;
 		rc_faces.resize			(CL.getTS());
 

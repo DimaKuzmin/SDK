@@ -72,8 +72,10 @@ BOOL SceneBuilder::Compile(bool b_selected_only)
 	        // check debug
             bool bTestPortal = Scene->ObjCount(OBJCLASS_SECTOR)||Scene->ObjCount(OBJCLASS_PORTAL);
 	        // validate scene
-    	    VERIFY_COMPILE(Scene->Validate(false,bTestPortal,true,true,true,true),"Validation failed.","Invalid scene.");
-			// fill simple hemi
+            //VERIFY_COMPILE(Scene->Validate(false,bTestPortal,true,true,true,true),"Validation failed.","Invalid scene.");
+			
+            
+            // fill simple hemi
             simple_hemi.clear	();
 	        xrHemisphereBuild	(1,2.f,simple_hemi_callback,&simple_hemi);
         	// build

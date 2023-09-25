@@ -23,6 +23,12 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 	return false;
 }
 
+#include <execution>
+
+#include <immintrin.h>
+#include <xmmintrin.h>
+#include <smmintrin.h>
+
 void CBuild::PreOptimize()
 {
 	// We use overlapping hash table to avoid boundary conflicts
@@ -30,7 +36,7 @@ void CBuild::PreOptimize()
 	Fvector				VMmin,	VMscale, VMeps, scale;
 	
 	// Calculate offset,scale,epsilon
-	Fbox				bb = scene_bb;
+ 	Fbox				bb = scene_bb;
 	VMscale.set			(bb.max.x-bb.min.x, bb.max.y-bb.min.y, bb.max.z-bb.min.z);
 	VMmin.set			(bb.min);
 	VMeps.set			(VMscale.x/HDIM_X/2,VMscale.y/HDIM_Y/2,VMscale.z/HDIM_Z/2);
@@ -44,6 +50,7 @@ void CBuild::PreOptimize()
 	u32	Fcount		= lc_global_data()->g_faces().size(),		Fremoved=0;
 	
 	// Pre-alloc memory
+	Status("Pre alloc memory...");
 	int		_size	= (HDIM_X+1)*(HDIM_Y+1)*(HDIM_Z+1);
 	int		_average= (Vcount/_size)/2;	if (_average<2)	_average = 2;
 	{
@@ -61,11 +68,10 @@ void CBuild::PreOptimize()
 	g_bUnregister		= false;
 	for (int it = 0; it<(int)lc_global_data()->g_vertices().size(); it++)
 	{
+		if (0==(it%1000))
+		  Progress( float(it)/float(lc_global_data()->g_vertices().size()) );
 		if (0==(it%100000))
-		{
-			Progress( float(it)/float(lc_global_data()->g_vertices().size()) );
 			Status	("Processing... (%d verts removed)",Vremoved);
-		}
 
 		if (it>=(int)lc_global_data()->g_vertices().size()) break;
 
@@ -81,6 +87,31 @@ void CBuild::PreOptimize()
 		vecVertex &H	= *(HASH[ix][iy][iz]);
 
 		// Search similar vertices in hash table
+ 
+
+		// Replace Stupid GSC Code 
+		// By Se7kills
+		 
+		auto parsed = std::find_if(std::execution::par_unseq, H.begin(), H.end(), [&] (Vertex* v) 
+		{ 
+			if (v->similar(*pTest, g_params().m_weld_distance) )
+				return true; 
+			else 
+				return false;
+		}) ;
+
+		if (parsed != H.end())
+		{
+			while(pTest->m_adjacents.size())	
+				pTest->m_adjacents.front()->VReplace(pTest, *parsed);
+
+			lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
+			Vremoved			+= 1;
+			pTest				= NULL;
+		} 
+		 
+		
+		/*
 		for (vecVertexIt T=H.begin(); T!=H.end(); T++)
 		{
 			Vertex *pBase = *T;
@@ -95,6 +126,7 @@ void CBuild::PreOptimize()
 				break;
 			}
 		}
+		*/
 		
 		// If we get here - there is no similar vertices - register in hash tables
 		if (pTest) 
@@ -132,6 +164,7 @@ void CBuild::PreOptimize()
 		}
 		Progress	(float(it)/float(lc_global_data()->g_faces().size()));
 	}
+
 	if (InvalideFaces())	
 	{
 		err_save		();

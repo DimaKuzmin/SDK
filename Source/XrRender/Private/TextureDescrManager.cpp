@@ -50,6 +50,8 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		R_ASSERT			(F->find_chunk(THM_CHUNK_TYPE));
 		F->r_u32			();
 		tp.Clear			();
+		  
+		Msg("Loading: %s", fn);
 		tp.Load				(*F);
 		FS.r_close			(F);
 		if (STextureParams::ttImage		== tp.type ||

@@ -74,7 +74,8 @@ bool EScene::FindDuplicateName()
     SceneToolsMapPairIt _E = m_SceneTools.end();
     for (; _I!=_E; _I++){
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
-        if (mt){
+        if (mt)
+        {
         	ObjectList& lst = mt->GetObjects(); 
             for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
                 if (FindObjectByName((*_F)->GetName(), *_F)){

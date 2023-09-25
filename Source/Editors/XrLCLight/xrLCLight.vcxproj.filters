@@ -617,12 +617,18 @@
     <ClCompile Include="xrHardwareLight_LMAP.cpp">
       <Filter>Light\Lights\Hardware_code</Filter>
     </ClCompile>
+    <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
+      <Filter>Light\Lights\Hardware_code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="LightPoint.cu">
+      <Filter>Light\Lights\Hardware</Filter>
+    </None>
+    <None Include="LightPoint_Refactored.cu">
       <Filter>Light\Lights\Hardware</Filter>
     </None>
   </ItemGroup>

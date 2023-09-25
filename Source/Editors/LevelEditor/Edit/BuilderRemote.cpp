@@ -942,20 +942,24 @@ void SceneBuilder::BuildHemiLights(u8 quality, LPCSTR lcontrol)
     // set def params
     RL.type				= D3DLIGHT_DIRECTIONAL;
     RL.diffuse.set		(1.f,1.f,1.f,1.f);
-    if (quality){
+    if (quality)
+    {
         SHemiData		h_data;
         h_data.dest 	= &dest;
         h_data.T.light	= RL;
-        xrHemisphereBuild(quality,2.f,hemi_callback,&h_data);   //. hack
+        xrHemisphereBuild(quality, 2.f, hemi_callback, &h_data);   //. hack
         int control_ID	= BuildLightControl(lcontrol);
-        for (BLIt it=dest.begin(); it!=dest.end(); it++){
+        for (BLIt it=dest.begin(); it!=dest.end(); it++)
+        {
             l_light_static.push_back(b_light_static());
             b_light_static& sl	= l_light_static.back();
             sl.controller_ID 	= control_ID;
             sl.data			    = it->light;
             sl.data.mul			(it->energy);
         }
-    }else{
+    }
+    else
+    {
         int control_ID		= BuildLightControl(lcontrol);
         l_light_static.push_back(b_light_static());
         b_light_static& sl	= l_light_static.back();
@@ -1274,16 +1278,22 @@ int SceneBuilder::BuildMaterial(LPCSTR esh_name, LPCSTR csh_name, LPCSTR tx_name
     int mtl_idx;
 	VERIFY			(tx_cnt==1);
     
-    if (allow_draft&&(Scene->m_LevelOp.m_BuildParams.m_quality==ebqDraft)){
+    if (allow_draft&&(Scene->m_LevelOp.m_BuildParams.m_quality==ebqDraft))
+    {
         Shader_xrLC* c_sh	= EDevice.ShaderXRLC.Get(csh_name);
-        if (c_sh->flags.bRendering){
+        if (c_sh->flags.bRendering)
+        {
             mtl.shader      = (u16)BuildShader		("def_shaders\\def_vertex");
             mtl.shader_xrlc	= (u16)BuildShaderXRLC	("def_shaders\\def_vertex");
-        }else{
+        }
+        else
+        {
             mtl.shader      = (u16)BuildShader		(esh_name);
             mtl.shader_xrlc	= (u16)BuildShaderXRLC	(csh_name);
         }
-    }else{
+    }
+    else
+    {
 	    mtl.shader      = (u16)BuildShader		(esh_name);
     	mtl.shader_xrlc	= (u16)BuildShaderXRLC	(csh_name);
     }

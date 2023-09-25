@@ -13,9 +13,8 @@
 
 #include "DeviceBuffer.h"
 #include "cuda_runtime.h"
+#include "lm_layer.h"
  
-
-
 class XRLC_LIGHT_API xrHardwareLight
 {
 public:
@@ -72,8 +71,6 @@ public:
 
 	void PerformAdaptiveHT();
 
-	float GetEnergyFromSelectedLight(xr_vector<int>& RGBLightIndexes, xr_vector<int>& SunLightIndexes, xr_vector<int>& HemiLightIndexes);
-
 	xr_vector<Fvector> GetDebugPCHitData();
 	xr_vector<Fvector> GetDebugGPUHitData();
 
@@ -82,10 +79,7 @@ public:
 private:
 
 	Mode mode;
-	void GetLevelIndices(vecVertex& InLevelVertices, vecFace& InLevelFaces, xr_vector <PolyIndexes>& OutLevelIndices, xr_vector<HardwareVector>& OutLevelVertexes);
-
-	__forceinline void CheckCudaError(cudaError_t ErrorCode);
-
+ 
 	size_t GetDeviceFreeMem();
 	size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightings, xr_vector<b_BuildTexture>& Textures);
 

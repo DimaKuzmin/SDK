@@ -429,21 +429,27 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 	bool bRes = true;
     SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
     SceneToolsMapPairIt t_end 	= m_SceneTools.end();
-    for (; t_it!=t_end; t_it++){
-        if (t_it->second){
-        	if (!t_it->second->Validate(bFullTest)){
+    for (; t_it!=t_end; t_it++)
+    {
+        if (t_it->second)
+        {
+        	if (!t_it->second->Validate(bFullTest))
+            {
 				ELog.Msg(mtError,"ERROR: Validate '%s' failed!",t_it->second->ClassDesc());
                 bRes = false;
             }
         }
     }
 
-	if (bTestPortal){
+	if (bTestPortal)
+    {
         if (Scene->ObjCount(OBJCLASS_SECTOR)||Scene->ObjCount(OBJCLASS_PORTAL))
             if (!PortalUtils.Validate(true))
 				bRes = false;
     }
-    if (bTestHOM){
+
+    if (bTestHOM)
+    {
         bool bHasHOM=false;
         ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
         for(ObjectIt it=lst.begin();it!=lst.end();it++){
@@ -455,36 +461,47 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
 //.			if (mrNo==ELog.DlgMsg(mtConfirmation,mbYes |mbNo,"Level doesn't contain HOM.\nContinue anyway?"))
 //.				return false;
     }
-    if (ObjCount(OBJCLASS_SPAWNPOINT)==0){
+
+    if (ObjCount(OBJCLASS_SPAWNPOINT)==0)
+    {
     	ELog.Msg(mtError,"*ERROR: Can't find any Spawn Object.");
         bRes = false;
     }
-    if (ObjCount(OBJCLASS_LIGHT)==0){
+    if (ObjCount(OBJCLASS_LIGHT)==0)
+    {
     	ELog.Msg(mtError,"*ERROR: Can't find any Light Object.");
         bRes = false;
     }
-    if (ObjCount(OBJCLASS_SCENEOBJECT)==0){
+    if (ObjCount(OBJCLASS_SCENEOBJECT)==0)
+    {
     	ELog.Msg(mtError,"*ERROR: Can't find any Scene Object.");
         bRes = false;
     }
-    if (bTestGlow){
-        if (ObjCount(OBJCLASS_GLOW)==0){
+  
+    if (bTestGlow)
+    {
+        if (ObjCount(OBJCLASS_GLOW)==0)
+        {
             ELog.Msg(mtError,"*ERROR: Can't find any Glow Object.");
             bRes = false;
         }
     }
-    if (FindDuplicateName()){
+
+    if (FindDuplicateName())
+    {
     	ELog.Msg(mtError,"*ERROR: Found duplicate object name.");
         bRes = false;
     }
     
-    if (bTestShaderCompatible){
+    if (bTestShaderCompatible)
+    {
     	bool res = true;
         ObjectList& lst = ListObj(OBJCLASS_SCENEOBJECT);
 		DEFINE_SET(CEditableObject*,EOSet,EOSetIt);
         EOSet objects;
         int static_obj = 0; 
-        for(ObjectIt it=lst.begin();it!=lst.end();it++){
+        for(ObjectIt it=lst.begin();it!=lst.end();it++)
+        {
         	CSceneObject* S = (CSceneObject*)(*it);
         	if (S->IsStatic()||S->IsMUStatic()){
             	static_obj++;

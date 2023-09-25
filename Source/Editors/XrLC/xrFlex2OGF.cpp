@@ -64,7 +64,7 @@ xr_vector<int> thread_list;
 xrCriticalSection csOGF;
  
 
-void ThreadOgf(bool use_mt, u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
+void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
 {
 	try 
 	{
@@ -127,23 +127,22 @@ void ThreadOgf(bool use_mt, u32 MODEL_ID,  vecFace* faces , Face* F, b_material*
 	  
 	try
 	{
-		pOGF->use_mt_progresive = use_mt;
-
-		csOGF.Enter();
+		
  		clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->Optimize();
  		
 		clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->CalcBounds();
- 		csOGF.Leave();
-		
- 		clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
- 
+ 	
 		csOGF.Enter();
+ 	
+		clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+		pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
+
 		clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->Stripify();
-		csOGF.Leave();
+
+		 csOGF.Leave();
 		 
 	}
 	catch (...) 
@@ -173,7 +172,7 @@ void MainThreadOGF(CBuild* build, int thID, bool use_mt_progresive)
 		Face* F = g_XSplit[id]->front();			// first face
 		b_material* M = &(build->materials()[F->dwMaterial]);	// and it's material
 
-		ThreadOgf(use_mt_progresive, id, g_XSplit[id], F, M, pOGF, build);
+		ThreadOgf(id, g_XSplit[id], F, M, pOGF, build);
 		
 		g_tree.push_back(pOGF);
  	}
@@ -202,17 +201,20 @@ void CBuild::Flex2OGF()
 	for (int i = 0; i < g_XSplit.size(); i++)
 		thread_list.push_back(i);
 
-#ifdef USE_MT
-	std::thread* th = new std::thread[8];
+	if (strstr(Core.Params, "-use_converter_mt"))
+	{
+		std::thread* th = new std::thread[MAX_THREADS];
 
-	for (int i = 0; i < MAX_THREADS; i++)
-		th[i] = std::thread(MainThreadOGF, this, i, true);
+		for (int i = 0; i < MAX_THREADS; i++)
+			th[i] = std::thread(MainThreadOGF, this, i, true);
 
-	for (int i = 0; i < MAX_THREADS; i++)
-		th[i].join();
-#else
-	MainThreadOGF(this, 0, false);
-#endif
+		for (int i = 0; i < MAX_THREADS; i++)
+			th[i].join();
+	}
+	else 
+	{
+	  	MainThreadOGF(this, 0, false);
+	}
 
 	g_XSplit.clear_and_free();
 }

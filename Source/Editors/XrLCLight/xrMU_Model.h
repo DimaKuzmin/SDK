@@ -80,7 +80,7 @@ public:
 //	void					calc_normals		();
 	void					calc_materials		();
 	void					calc_faceopacity	();
-	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* M, base_lighting& lights, u32 flags );
+	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* M, base_lighting& lights, u32 flags , bool referense);
 	void					calc_lighting		();
 //	void					calc_ogf			();
 //	void					export_geometry		();

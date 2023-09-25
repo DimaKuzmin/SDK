@@ -1,6 +1,9 @@
 #ifndef __FBOX
 #define __FBOX
 
+#include <immintrin.h>
+#include <xmmintrin.h>
+
 template <class T>
 class _box3
 {
@@ -54,8 +57,10 @@ public:
 	
 	ICF	SelfRef	modify		(const Tvector &p)				{ min.min(p); max.max(p);				return *this;	}
 	ICF	SelfRef	modify		(T x, T y, T z)					{ _vector3<T> tmp = {x,y,z}; return		modify(tmp);	}
+
 	IC	SelfRef	merge		(SelfCRef b)					{ modify(b.min); modify(b.max);			return *this;	};
 	IC	SelfRef	merge		(SelfCRef b1, SelfCRef b2)		{ invalidate(); merge(b1); merge(b2);	return *this;	}
+
 	ICF	SelfRef	xform		(SelfCRef B, const Tmatrix &m)
 	{
 		// The three edges transformed: you can efficiently transform an X-only vector3
