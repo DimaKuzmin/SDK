@@ -72,7 +72,8 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 
 	// save source SMF
 	bool					keep_temp_files = !!strstr(Core.Params,"-keep_temp_files");
-	if (keep_temp_files) {
+	if (keep_temp_files)
+	{
 		string_path			fn;
 		SaveAsSMF			(strconcat(sizeof(fn),fn,pBuild->path,"cform_source.smf"),CL);
 	}
@@ -106,7 +107,8 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 	// constraint material&sector vertex
 	Ivector2 f_rm[3]={{0,1}, {1,2}, {2,0}};
 	for (u32 f_idx=0; f_idx<slim->valid_faces; f_idx++){
-		if (mdl->face_is_valid(f_idx)){
+		if (mdl->face_is_valid(f_idx))
+		{
 			MxFace& base_f				= mdl->face(f_idx);
 			for (u32 edge_idx=0; edge_idx<3; edge_idx++){
 				int K;

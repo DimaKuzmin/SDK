@@ -411,8 +411,8 @@ bool EScene::ExportGameNoStatic(SExportStreams* F)
     SceneToolsMapPairIt t_end = m_SceneTools.end();
     for (; t_it != t_end; t_it++)
     {
-        if (t_it->second->FClassID == OBJCLASS_SCENEOBJECT)
-            continue;
+        //if (t_it->second->FClassID == OBJCLASS_SCENEOBJECT)
+        //   continue;
         if (t_it->second)
         if (!t_it->second->ExportGame(F))
         {

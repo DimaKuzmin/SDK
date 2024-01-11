@@ -71,6 +71,11 @@ enum {
 
     COMMAND_SHOWCONTEXTMENU,
     COMMAND_SHOW_CLIP_EDITOR,
+
+    // NEW SE7kills
+    COMMAND_XRLC_COMPILE,
+    COMMAND_XRAI_COMPILE,
+    COMMAND_XRDO_COMPILE
 };
 //------------------------------------------------------------------------------
 

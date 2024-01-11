@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "UILods.h"
 
 UIMainMenuForm::UIMainMenuForm()
 {
@@ -19,6 +20,7 @@ void UIMainMenuForm::Draw()
             if (ImGui::MenuItem("Save", "")) { ExecCommand(COMMAND_SAVE, xr_string(ATools->m_LastFileName.c_str()), 0); }
             if (ImGui::MenuItem("Save as ...", "")) { ExecCommand(COMMAND_SAVE,0, 1); }
             ImGui::Separator();
+          
             if (ImGui::BeginMenu("Open Recent", "")) 
             {
                 for (auto& str : EPrefs->scene_recent_list)
@@ -28,16 +30,19 @@ void UIMainMenuForm::Draw()
                 ImGui::EndMenu();
             }
             ImGui::Separator();
+
             if (ImGui::MenuItem("Import...", "")) { ExecCommand(COMMAND_IMPORT); }
             ImGui::Separator();
+
             if (ImGui::MenuItem("Optimize Motions", "")) { ExecCommand(COMMAND_OPTIMIZE_MOTIONS); }
             ImGui::Separator();
+
             if (ImGui::MenuItem("Batch Convert...", "")) { ExecCommand(COMMAND_BATCH_CONVERT); }
             ImGui::Separator();
+
             if (ImGui::MenuItem("SurfaceTexturesExp...", ""))
-            {
-                ExecCommand(COMMAND_SURFACE_EXPORT);
-            };
+                 ExecCommand(COMMAND_SURFACE_EXPORT);
+ 
             if (ImGui::BeginMenu("Export"))
             {
                 if (ImGui::MenuItem("Export OGF...", "")) { ExecCommand(COMMAND_EXPORT_OGF); }
@@ -48,7 +53,11 @@ void UIMainMenuForm::Draw()
                 ImGui::EndMenu();
             }
             ImGui::Separator();
-            if (ImGui::MenuItem("Quit", "")) { ExecCommand(COMMAND_QUIT); }
+
+            if (ImGui::MenuItem("Quit", "")) 
+                ExecCommand(COMMAND_QUIT); 
+
+
             ImGui::EndMenu();
         }
         if (ImGui::BeginMenu("Preview Object"))
@@ -61,6 +70,16 @@ void UIMainMenuForm::Draw()
         }
         if (ImGui::BeginMenu("Editors"))
         {
+            if (ImGui::MenuItem("LODs"))
+            {
+                bool Active = UILods::IsOpen();
+                if (Active)
+                    UILods::Close();
+                else 
+                    UILods::Show();
+            
+            }
+
             if (ImGui::BeginMenu("Image"))
             {
                 if (ImGui::MenuItem("Image Editor", "")) { ExecCommand(COMMAND_IMAGE_EDITOR); }

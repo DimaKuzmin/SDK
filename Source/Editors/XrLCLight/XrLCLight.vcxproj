@@ -224,7 +224,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>cuda.lib;cudart_static.lib;optix_prime.1.lib;embree4.lib;tbb.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>cuda.lib;cudart_static.lib;optix_prime.1.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>$(IntermediateOutputPath)LightPoint.cu.obj  $(IntermediateOutputPath)LightPoint_Refactored.cu.obj %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PreBuildEvent>

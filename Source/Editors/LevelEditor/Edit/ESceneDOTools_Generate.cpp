@@ -269,6 +269,7 @@ bool EDetailManager::UpdateSlots()
 
     SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating bounding boxes...");
 
+    /*
     for (u32 z = 0; z < dtH.size_z; z++)
         mt_work.push_back(z);
  
@@ -280,10 +281,10 @@ bool EDetailManager::UpdateSlots()
 
     for (int i = 0; i < 8; i++)
         th[i]->join();
+    */
 
-   /*
+ 
     for (u32 z=0; z<dtH.size_z; z++)
- //   std::for_each(std::execution::par, mt_work.begin(), mt_work.end(), [&] (int z)
     {
         string32 tmp;
         sprintf(tmp, "Box Z: %d/%d", z, dtH.size_z);
@@ -296,9 +297,7 @@ bool EDetailManager::UpdateSlots()
  	        pb->Inc();
          }
     }
-    
-    //);
-    */
+ 
 
     UI->ProgressEnd(pb);  
  

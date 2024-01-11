@@ -43,6 +43,7 @@ void UIMainForm::Draw()
 
 bool UIMainForm::Frame()
 {
-    if(UI)  return UI->Idle();
+    if(UI) 
+        return UI->Idle();
     return false;
 }

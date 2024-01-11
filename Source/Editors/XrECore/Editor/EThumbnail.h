@@ -46,13 +46,17 @@ protected:
     U32Vec 			m_Pixels;
 protected:
 	void 			CreatePixels	(u32* p, u32 w, u32 h);
-    void			VFlip			();
+   
 public:
 					EImageThumbnail	(LPCSTR src_name, THMType type):ECustomThumbnail(src_name, type){};
 	virtual			~EImageThumbnail();
 	virtual void 	Update			(ImTextureID&Texture);
 //	virtual void 	Draw			(TMxPanel* panel){Irect r; r.set(1,1,1+panel->Width,1+panel->Height); Draw(panel->Canvas->Handle,r);}
     u32*			Pixels			(){return &*m_Pixels.begin();}
+	 void			VFlip			();
+
+	int PixelsSize() {return m_Pixels.size();}
+
     virtual	int		MemoryUsage		(){return 0;};
 };
 

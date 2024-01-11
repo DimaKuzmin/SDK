@@ -202,7 +202,7 @@ bool CPortalUtils::Validate(bool bMsg)
 // calculate portals
 //--------------------------------------------------------------------------------------------------
 
-const int clpMX = 64, clpMY=24, clpMZ=64;
+
 
 
 struct sFace
@@ -341,6 +341,71 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
 
 #include <execution>
 
+
+bool similar_vectorAVX(sVert v1[8], Fvector v2[8], float E = 0.001f)  
+{
+    /*
+    __m256 EVector = _mm256_set1_ps(E);
+    
+    __m256 diffX = _mm256_sub_ps(_mm256_set1_ps(v1.x), _mm256_set1_ps(v2.x));
+    __m256 diffY = _mm256_sub_ps(_mm256_set1_ps(v1.y), _mm256_set1_ps(v2.y));
+    __m256 diffZ = _mm256_sub_ps(_mm256_set1_ps(v1.z), _mm256_set1_ps(v2.z));
+
+    __m256 absDiffX = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffX);
+    __m256 absDiffY = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffY);
+    __m256 absDiffZ = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffZ);
+
+    __m256 comparisonX = _mm256_cmp_ps(absDiffX, EVector, _CMP_LT_OS);
+    __m256 comparisonY = _mm256_cmp_ps(absDiffY, EVector, _CMP_LT_OS);
+    __m256 comparisonZ = _mm256_cmp_ps(absDiffZ, EVector, _CMP_LT_OS);
+
+
+
+    // Оператор "и" для всех трех компонентов
+    __m256 comparisonResult = _mm256_and_ps(_mm256_and_ps(comparisonX, comparisonY), comparisonZ);
+    */
+   
+    /* __m256 EVector = _mm256_set1_ps(E);
+
+    __m256 v1Vector = _mm256_load_ps((float*) &v1);
+    __m256 v2Vector = _mm256_load_ps((float*) &v2);
+ 
+    __m256 diffVector = _mm256_sub_ps(v1Vector, v2Vector);
+    __m256 absDiffVector = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffVector);
+
+    __m256 comparisonResult = _mm256_cmp_ps(absDiffVector, EVector, _CMP_LT_OS);
+
+    // Проверка, все ли компоненты удовлетворяют условию
+    int mask = _mm256_movemask_ps(comparisonResult);
+    return (mask == 0xff);
+    */
+          
+    float vector_1[] = 
+    { 
+        v1[0].x, v1[1].x, v1[2].x, v1[3].x, 
+        v1[4].x, v1[5].x, v1[6].x, v1[7].x
+    };
+
+    float vector_2[] = 
+    { 
+        v2[0].x, v2[1].x, v2[2].x, v2[3].x, 
+        v2[4].x, v2[5].x, v2[6].x, v2[7].x
+    };
+
+    __m256 dd = _mm256_load_ps(( float*) &vector_1);
+
+
+   // return std::abs(v1.x-v2.x)<E && std::abs(v1.y-v2.y)<E && std::abs(v1.z-v2.z)<E;
+}
+
+//#define USE_MT_FAST
+
+#ifdef USE_MT_FAST
+const int clpMX = 64, clpMY=24, clpMZ=64;
+#else 
+const int clpMX = 512, clpMY=48, clpMZ=512;
+#endif
+
 class sCollector
 {
 
@@ -350,8 +415,9 @@ public:
     sFaceVec		faces;
     sEdgeVec		edges;
    	sPortalVec	 	portals;
+    xrCriticalSection csCollector;
 
-    Fvector			VMmin, VMscale;
+    Fvector			VMmin, VMscale;                   
     U32Vec			VM[clpMX+1][clpMY+1][clpMZ+1];
     Fvector			VMeps;
 
@@ -369,45 +435,41 @@ public:
        
         if (true)
         {
+            csCollector.Enter();
             U32Vec* vl = &(VM[ix][iy][iz]);
             U32It it = vl->begin();
             U32It it_e = vl->end();
             xr_vector<sVert>::iterator verts_begin = verts.begin();
+            csCollector.Leave();
 
-            auto it_found = std::find_if(std::execution::par, it, it_e, [&](const auto& element) {
-                return (*(verts_begin + element)).similar(V);
+#ifndef USE_MT_FAST
+            auto iterator = std::find_if(it, it_e, [&](auto vector)  // 
+            {
+                 return (*( verts_begin + vector) ).similar(V); 
+                 //return similar_vectorAVX( (sVert&) (*( verts_begin + vector) ), V); 
             });
-
-            if (it_found != it_e)
+#else 
+            auto iterator = std::find_if(std::execution::par_unseq, it, it_e, [&](auto vector)  // 
             {
-                P = *it_found;
-            }
-
-            /*
-            U32Vec* vl;
-            vl 			= &(VM[ix][iy][iz]);
-            U32It it	= vl->begin();
-            U32It it_e	= vl->end();
-            xr_vector<sVert>::iterator verts_begin = verts.begin();
-            
-            for(;it!=it_e; ++it)
+                 return (*( verts_begin + vector) ).similar(V); 
+                 //return similar_vectorAVX( (sVert&) (*( verts_begin + vector) ), V); 
+            });
+#endif
+           
+            if (iterator != it_e)
             {
-                if( (*(verts_begin+*it)).similar(V) )	
-                {
-                    P = *it;
-                    break;
-                }
-            }
-            */
+                P = *iterator;
+            } 
         }
-
+ 
         if (0xffffffff==P)
         {
             P 					= verts.size();
             sVert 				sV; 
             sV.set				(V);
-            verts.push_back		(sV);
 
+            csCollector.Enter();
+            verts.push_back		(sV);
             VM[ix][iy][iz].push_back(P);
 
             u32 ixE,iyE,izE;
@@ -437,7 +499,10 @@ public:
                 
             if ((ixE!=ix)&&(iyE!=iy)&&(izE!=iz))	
             	VM[ixE][iyE][izE].push_back	(P);
+
+            csCollector.Leave();
         }
+ 
         return P;
     }
 
@@ -463,18 +528,25 @@ public:
         T.v[1] 	= VPack(v1);
         T.v[2] 	= VPack(v2);
         T.sector = sector;
+       
+        csCollector.Enter();
         faces.push_back(T);
+        csCollector.Leave();
     }
-    void update_adjacency(){
-    	for (u32 i=0; i<faces.size(); i++){
+    void update_adjacency()
+    {
+    	for (u32 i=0; i<faces.size(); i++)
+        {
         	sFace& F=faces[i];
 			verts[F.v[0]].adj.push_back(i);
 			verts[F.v[1]].adj.push_back(i);
 			verts[F.v[2]].adj.push_back(i);
         }
     }
-    void find_edges(){
-    	for (u32 i=0; i<faces.size(); i++){
+    void find_edges()
+    {
+    	for (u32 i=0; i<faces.size(); i++)
+        {
         	sFace& F=faces[i];
             U32It a_it;
             sVert& v0=verts[F.v[0]];
@@ -618,27 +690,30 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
     Fbox bb;
     Scene->GetBox(bb,OBJCLASS_SCENEOBJECT);
     sCollector* CL = xr_new<sCollector>(bb);
-    Fmatrix T;
+
 
     //1. xform + weld
     SPBItem* pb = UI->ProgressStart(sectors.size(), "xForm + weld portals...");
-    int i = 0, ii = 0;
+    int i = 0; //ii = 0;
 
+    CTimer t;
+    t.Start();
     UI->SetStatus("xform + weld...");
+   
+    CTimer tfun;
+
     for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++, i++)
     {
         CSector* S=(CSector*)(*s_it);
    
-        ii = 0;
-        for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end();s_it++, ii++)
+        // ii = 0;
+        /*
+        for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end(); s_it++)
         {
-        	if (s_it->object->IsMUStatic()) 
+            if (s_it->object->IsMUStatic()) 
                 continue;
-            string64 tmp;
-            sprintf(tmp, "sector(%d/%d) item: %d/%d, Faces: %d", i, sectors.size(), ii, S->sector_items.size(), s_it->mesh->GetFCount());
-            pb->Info(tmp);
-            
             pb->Update(i);
+
             s_it->GetTransform(T);
             Fvector* m_verts=s_it->mesh->m_Vertices;
             for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++)
@@ -649,18 +724,59 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
                 T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
                 T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
                 CL->add_face		(v0,v1,v2, S);
-                 /*
-                if (f_id % 1024 * 10 == 0)
-                {
-                    string64 tmp;
-                    sprintf(tmp, "item: %d/%d, face: %d/%d", ii, S->sector_items.size(), f_id, s_it->mesh->GetFCount());
-                    pb->Info(tmp);
-                } */
-
             }
         }
+        */
+
+
+        tfun.Start();
+        int id = 0;
+
+        xrCriticalSection csForEach;
+
+#ifdef USE_MT_FAST  
+        std::for_each(S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //     
+#else
+        std::for_each(std::execution::par, S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //  
+#endif
+        {
+            if (s_it.object->IsMUStatic()) 
+                return;
+            csForEach.Enter();
+            //Msg("Process: %d", id);
+            string128 info;
+            sprintf(info, "ID: %d,  Sector Size: %d", id, S->sector_items.size());
+            pb->Info(info);
+            id++;
+            csForEach.Leave();
+
+            Fmatrix T;
+            s_it.GetTransform(T);
+
+            Fvector* m_verts=s_it.mesh->m_Vertices;
+            
+            for (u32 f_id=0; f_id<s_it.mesh->GetFCount(); f_id++)
+            {
+                Fvector v0, v1, v2;
+                const st_Face& P			= s_it.mesh->GetFaces()[f_id];
+                T.transform_tiny	(v0,m_verts[P.pv[0].pindex]);
+                T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
+                T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
+                CL->add_face		(v0,v1,v2, S);
+            }
+        }
+        );
+        
+
+              
+        string128 info;
+        sprintf(info, "ID: %d, Time: %u ms elapsed, Sector Size: %d", i, tfun.GetElapsed_ms(), S->sector_items.size());
+        pb->Info(info);
+         //  pb->Update(i);
+
     }
     UI->ProgressEnd(pb);
+    Msg("[Portal] Timer: Weld: %u", t.GetElapsed_ms());
 
     //2. update pervertex adjacency
     UI->SetStatus("updating per-vertex adjacency...");

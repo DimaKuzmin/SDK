@@ -112,24 +112,64 @@ void CActorTools::OnMotionEditClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
 	R_ASSERT(m_pEditObject);
     xr_string fn;
-    switch (V->btn_num){
-    case 0:{ // append
+    switch (V->btn_num)
+    {
+    case 0:
+    { // append
         xr_string folder,nm,full_name;
-        xr_string fnames;
-        if (EFS.GetOpenName(EDevice.m_hWnd, _smotion_,fnames,true)){
-            AStringVec lst;
-            _SequenceToList(lst,fnames.c_str());
-            bool bRes = false;
-            for (AStringIt it=lst.begin(); it!=lst.end(); it++)
-                if (AppendMotion(it->c_str())) bRes=true;
-            ExecCommand	(COMMAND_UPDATE_PROPERTIES);
-			if (bRes)	OnMotionKeysModified();
-            else 		ELog.DlgMsg(mtError,"Append not completed.");
-            bModif = false;
-        }else
-        	bModif = false;
+        
+        {
+            xr_string directory_or_file;
+            xr_vector<xr_string> files;
+ 
+            if (EFS.GetOpenNameMulty(EDevice.m_hWnd, _smotion_, directory_or_file, files))
+            {  
+               bool bRes = false;
+
+               int id = 0;
+               if (files.size() >= 1 )
+               {
+                    for (auto file : files)
+                    {
+                        // Msg("File[%d]: %s", id, item.c_str());
+                    
+                        string_path p;
+                        sprintf(p, "%s\\%s", directory_or_file.c_str(), file.c_str());
+
+                        if (!AppendMotion(p)) 
+                            Msg("Check Motion Path: %s", p);
+                   
+                        Msg("Load IDS: %d", id);
+
+                        id++;
+                    }
+
+                    Msg("Size of Files: %d", files.size());
+               }
+               else 
+               {
+                   AppendMotion(directory_or_file.c_str());
+                   Msg("Load Motion: %s", directory_or_file.c_str());
+               }
+              
+
+                /*for (AStringIt it=lst.begin(); it!=lst.end(); it++)
+                    if (AppendMotion(it->c_str())) bRes=true;
+           
+                ExecCommand	(COMMAND_UPDATE_PROPERTIES);
+			    if (bRes)
+                    OnMotionKeysModified();
+                else 		
+                    ELog.DlgMsg(mtError,"Append not completed.");
+                bModif = false;
+                */
+             }
+        }
+     
+
     }break;
-    case 1:{ // delete
+    case 1:
+    { // delete
     	ListItemsVec items;
      if (m_ObjectItems->GetSelected(MOTIONS_PREFIX,items,true)){
             if (ELog.DlgMsg(mtConfirmation,  mbYes |mbNo, "Delete selected %d item(s)?",items.size()) == mrYes){

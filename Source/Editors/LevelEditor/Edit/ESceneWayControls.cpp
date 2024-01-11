@@ -41,24 +41,30 @@ bool  TUI_ControlWayPointAdd::Start(TShiftState Shift)
 {
 	ObjectList lst; Scene->GetQueryObjects(lst,OBJCLASS_WAY,1,1,-1);
     UIWayTool* frame=(UIWayTool*)parent_tool->pForm;
-    if (1!=lst.size()){
+    
+    if (1!=lst.size())
+    {
         ELog.DlgMsg(mtInformation,"Select one WayObject.");
         return false;
     }
+
     Fvector p;
     if (LUI->PickGround(p,UI->m_CurrentRStart,UI->m_CurrentRDir,1))
     {
-        CWayObject* obj = (CWayObject*)lst.front(); R_ASSERT(obj);
+        CWayObject* obj = (CWayObject*)lst.front(); 
+        R_ASSERT(obj);
         CWayPoint* last_wp=obj->GetFirstSelected();
         CWayPoint* wp=obj->AppendWayPoint();
         wp->MoveTo(p);
+     
         if (frame->IsAutoLink())
-        {
-            if (last_wp) last_wp->AddSingleLink(wp);
-        }
+        if (last_wp)
+            last_wp->AddSingleLink(wp);
+         
         Scene->UndoSave();
     }
-    if (!(Shift&ssAlt)) ResetActionToSelect();
+    if (!(Shift&ssAlt))
+        ResetActionToSelect();
     return false;
 }
 

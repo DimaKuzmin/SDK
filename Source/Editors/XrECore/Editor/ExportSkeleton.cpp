@@ -953,6 +953,11 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
     F.open_chunk			(0);
     F.w_u32					(m_Source->SMotionCount());
     F.close_chunk			();
+
+    
+    
+
+
     int smot 				= 1;
 
     // use global transform
@@ -975,6 +980,8 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
         F.open_chunk		(smot);
         F.w_stringZ			(cur_motion->Name());
         F.w_u32				(cur_motion->Length());
+
+        Msg("Smot: %u, Motions: %u", smot, cur_motion->Length());
 
         u32 dwLen			= cur_motion->Length();
         BoneVec& b_lst 		= m_Source->Bones();
@@ -1156,6 +1163,12 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
 #ifdef _EDITOR
 	UI->ProgressEnd					(pb);
 #endif
+
+
+
+    Msg("RESULT Smot: %u, Motions: %u", smot, m_Source->SMotionCount());
+
+
     // restore active motion
     m_Source->SetActiveSMotion		(active_motion);
     return 							true;

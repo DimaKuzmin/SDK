@@ -28,29 +28,18 @@ bool EFS_Utils::GetOpenName(HWND hWnd,LPCSTR initial, xr_string& buffer, bool bM
 {
 	char			buf	[255*255]; //max files to select
 	xr_strcpy		(buf, buffer.c_str());
-
-/*
-char* g_SHBF_Folder =("C:\\Program Files");
-TCHAR path[_MAX_PATH];
-BROWSEINFO info={NULL,NULL,path,"title",BIF_USENEWUI,BrowseCallbackProc, (LPARAM)g_SHBF_Folder };
-SHBrowseForFolder       (&info);
-*/
-/*
-	{
-		HANDLE hDialog = OSDInit(true, "SDITEST", 0, 0, 0, 0, 0, 0);
-		if(hDialog)
-		{
-			OSDRET osResult=OSDDoModal(hDialog, 0);
-			OSDRelease(hDialog);
-		}
-
-	}
-*/
-//	bool bRes = false;
+ 
 	bool bRes		= GetOpenNameInternal(hWnd,initial, buf, sizeof(buf), bMulti, offset, start_flt_ext);
 
 	if (bRes)
 		buffer=(char*)buf;
+
+	return bRes;
+}
+
+bool EFS_Utils::GetOpenNameMulty(HWND hWnd, LPCSTR initial, xr_string& path, xr_vector<xr_string>& files, LPCSTR offset, int start_flt_ext)
+{ 
+	bool bRes		= GetOpenNameInternalMulty(hWnd, initial, path, files, offset, start_flt_ext);
 
 	return bRes;
 }

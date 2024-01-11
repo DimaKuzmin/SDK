@@ -6,6 +6,7 @@
 #define IC __forceinline
 #endif
 
+ 
 template <class T>
 struct _vector3 {
 public:
@@ -57,6 +58,8 @@ public:
 
 	IC	SelfRef	abs(const Self &v)						{ x = _abs(v.x); y=_abs(v.y); z=_abs(v.z);							return *this;	}
 	ICF BOOL	similar(const Self &v, T E=EPS_L) const	{ return _abs(x-v.x)<E && _abs(y-v.y)<E && _abs(z-v.z)<E;};
+
+
 
 	IC	SelfRef	set_length(T l)
 	{

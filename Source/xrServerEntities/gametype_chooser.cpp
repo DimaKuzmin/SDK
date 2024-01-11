@@ -5,25 +5,34 @@
 #include "gametype_chooser.h"
 #include "xrServer_Objects_Abstract.h"
 //old
-enum ERPGameType{		// [0..255]
+enum ERPGameType
+{		// [0..255]
 	rpgtGameAny							= u8(0),
 	rpgtGameDeathmatch,
 	rpgtGameTeamDeathmatch,
 	rpgtGameArtefactHunt,
 	rpgtGameCaptureTheArtefact,
+    // NEW
+    rpgtGameFreeMp,
+    rpgtGameRolePlay,
     rpgtGameCoop,
-    rpgtGameRoleplay,
+    rpgtGameDeffense,
 	rpgtGameCount,
 };
 
-xr_token rpoint_game_type[]={
+xr_token rpoint_game_type[]=
+{
 	{ "Any game",			rpgtGameAny					},
 	{ "Deathmatch",			rpgtGameDeathmatch			},
 	{ "TeamDeathmatch",		rpgtGameTeamDeathmatch		},
 	{ "ArtefactHunt",		rpgtGameArtefactHunt		},
 	{ "CaptureTheArtefact",	rpgtGameCaptureTheArtefact	},
+    // NEW
+    { "Freemp",             rpgtGameFreeMp},
+    { "Roleplay",           rpgtGameRolePlay},
+    { "Deffense",           rpgtGameDeffense},
     { "Coop",               rpgtGameCoop},
-    { "Roleplay",           rpgtGameRoleplay},
+
 	{ 0,					0	}
 };
 
@@ -62,11 +71,21 @@ bool GameTypeChooser::LoadLTX(CInifile& ini, LPCSTR sect_name, bool bOldFormat)
             case rpgtGameCoop:
                 m_GameType.set(eGameIDCoop, TRUE);
                 break;
-            case rpgtGameRoleplay:
-                m_GameType.set(eGameIDRoleplay, TRUE);
+            case rpgtGameRolePlay:
+                m_GameType.set(eGameIDRolePlay, TRUE);
                 break;
+             case rpgtGameFreeMp:
+                m_GameType.set(eGameIDFreeMp, TRUE);
+                break;
+            case rpgtGameDeffense:
+                m_GameType.set(eGameIDDeffense, TRUE);
+                break;
+
+
+
         }
-    }else
+    }
+    else
         m_GameType.assign		(ini.r_u16	(sect_name, "game_type"));
     return true;
 }

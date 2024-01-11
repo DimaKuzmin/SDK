@@ -26,6 +26,7 @@ IC	Fvector	box_getsize_avx		(Fbox box);
 IC	float	box_getvolume_avx	(Fbox box);
 IC  void	box_modify_avx		(Fbox& box, Fvector& p);  
 
+extern bool use_avx;
 
 IC BOOL	ValidateMerge	(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 {
@@ -42,8 +43,11 @@ IC BOOL	ValidateMerge	(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 
 	// Volume
 	//volume		= merge.getvolume	();
-
-	volume = box_getvolume_avx(merge);
+	
+	if (use_avx)
+		volume = box_getvolume_avx(merge);
+	else 
+		volume =  merge.getvolume	();
 
 	// OK
 	return TRUE;

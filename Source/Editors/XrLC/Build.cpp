@@ -172,10 +172,10 @@ void CBuild::TestMergeGeom(IWriter* writer)
 
 	Phase("TEST MERGE");
 	
-	FPU::m64r();
-	Phase("Optimizing...");
-	mem_Compact();
-	CorrectTJunctions();
+	//FPU::m64r();
+	//Phase("Optimizing...");
+	//mem_Compact();
+	//CorrectTJunctions();
 
 	//****************************************** HEMI-Tesselate
 	/*
@@ -195,9 +195,12 @@ void CBuild::TestMergeGeom(IWriter* writer)
 	FPU::m64r					();
 	Phase						("Building collision database...");
 	mem_Compact					();
+
+	
 	BuildCForm					();
- 
-	BuildPortals(*writer);
+  	BuildPortals(*writer);
+
+	log_vminfo();
 
 	//****************************************** T-Basis
 	
@@ -207,6 +210,9 @@ void CBuild::TestMergeGeom(IWriter* writer)
 		xrPhase_TangentBasis();
 		mem_Compact();
 	}
+
+	log_vminfo();
+
  
 	//****************************************** GLOBAL-RayCast model
 	FPU::m64r();
@@ -214,15 +220,23 @@ void CBuild::TestMergeGeom(IWriter* writer)
 	mem_Compact();
 	Light_prepare();
 
+	log_vminfo();
+
+
 	CTimer t;t.Start();
 	BuildRapid(TRUE);
-	Msg("RcastModel LoadTime: %d", t.GetElapsed_ms());
+	Status("RcastModel LoadTime: %d", t.GetElapsed_ms());
+
+	log_vminfo();
+
  
 	FPU::m64r					();
 	Phase						("Resolving materials...");
 	mem_Compact					();
 	xrPhase_ResolveMaterials	();
 	IsolateVertices				(TRUE);
+
+	log_vminfo();
 
 
 	//****************************************** UV mapping
@@ -235,6 +249,7 @@ void CBuild::TestMergeGeom(IWriter* writer)
 		IsolateVertices				(TRUE);
 	}
 	
+	log_vminfo();
 
 	//****************************************** Subdivide geometry
 	FPU::m64r					();
@@ -242,9 +257,14 @@ void CBuild::TestMergeGeom(IWriter* writer)
 	
 	mem_Compact					();
  	xrPhase_Subdivide			();
+
+	log_vminfo();
+
 	//IsolateVertices				(TRUE);
+	Phase						("Clear Isolated Vertex Pool...");
 	lc_global_data()->vertices_isolate_and_pool_reload();
 
+	log_vminfo();
  
 	/*
 	MU MODELS LIGHT
@@ -371,6 +391,42 @@ void CBuild::TestMergeGeom(IWriter* writer)
 
 }
 
+void CBuild::ExportRayCastModel(IWriter* writer)
+{
+	Phase("Export XFORM, RAYCAST GEOM");
+ 
+	FPU::m64r();
+	Phase("Building normals...");
+	mem_Compact();
+	CalcNormals();
+ 
+	FPU::m64r					();
+	Phase						("Building collision database...");
+	mem_Compact					();
+	BuildCForm					();
+ 
+	BuildPortals(*writer);
+
+	//****************************************** T-Basis
+	
+	{
+		FPU::m64r();
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
+		mem_Compact();
+	}
+ 
+	//****************************************** GLOBAL-RayCast model
+	FPU::m64r();
+	Phase("Building rcast-CFORM model...");
+	mem_Compact();
+	Light_prepare();
+
+	CTimer t;t.Start();
+	BuildRapid(TRUE);
+	Msg("RcastModel LoadTime: %d", t.GetElapsed_ms());
+}
+
 #include "../XrLCLight/xrDeflector.h"
 
 void CBuild::ExportDeflectors()
@@ -418,6 +474,432 @@ void CBuild::ExportDeflectors()
 	FS.w_close(write); 
 }
 
+
+IC bool				FaceEqual(Face& F1, Face& F2);
+#include "../XrLCLight/xrMU_Model_Reference.h"
+#include <iostream>
+#include <fstream>			 
+
+struct VertexMAP
+{
+	int v1,v2,v3;
+};
+
+void SaveToBin(size_t v_count, Fvector* verts, size_t t_count, std::vector<VertexMAP>& mapindexes, char* filename)
+{
+	string_path p_sdk ;
+	string256 ff;
+	sprintf(ff, "worldobj\\chunks_bin\\%s",filename);
+
+	FS.update_path(p_sdk, "$fs_root$", ff);
+
+	Status("Save File: %s", ff);
+	
+	 
+
+
+	IWriter* write = FS.w_open(ff);
+ 
+    // Записываем вершины
+	write->w_u32(v_count);
+	for (int i = 0; i < v_count;i ++)
+	{	
+ 
+		if (i % 1024 == 0)
+		StatusNoMSG("Size: %d/%d", i, v_count);
+        //file << "v " << verts[i].x << " " << verts[i].y << " " << verts[i].z << "\n";
+		write->w_fvector3(verts[i]);
+    }
+
+    // Записываем индексы 
+	write->w_u32(t_count);
+	for (int i = 0; i < t_count; i ++) 
+	{
+		 
+		if (i % 1024 == 0)
+			StatusNoMSG("Size: %d/%d", i, t_count);
+        //file << "f " << mapindexes[i].v1 + 1 << " " << mapindexes[i].v2 + 1 << " " << mapindexes[i].v3 + 1 << "\n";
+
+		write->w_ivector3({mapindexes[i].v1, mapindexes[i].v2, mapindexes[i].v3});
+    }
+	FS.w_close(write);
+
+ //   file.close();
+ //   Msg("Object data saved to: %s" , p_sdk);
+}
+
+void SaveToObject_CFORM(size_t v_count, Fvector* verts, size_t t_count, CDB::TRI* tris, char* filename)
+{
+	string_path p_sdk ;
+	string256 ff;
+	sprintf(ff, "worldobj\\cform\\%s",filename);
+
+	FS.update_path(p_sdk, "$fs_root$", ff);
+
+	Status("Save File: %s", ff);
+
+ 
+	
+
+	std::ofstream file(p_sdk);
+    if (!file.is_open()) 
+	{
+        Msg("Unable to create file: %s", p_sdk );
+        return;
+    }
+
+    // Записываем вершины
+	for (int i = 0; i < v_count;i ++)
+	{	
+ 
+		if (i % 1024 == 0)
+		StatusNoMSG("Size: %d/%d", i, v_count);
+        file << "v " << verts[i].x << " " << verts[i].y << " " << verts[i].z << "\n";
+    }
+
+    // Записываем индексы 
+	for (int i = 0; i < t_count; i ++) 
+	{
+		 
+		if (i % 1024 == 0)
+			StatusNoMSG("Size: %d/%d", i, t_count);
+        file << "f " << tris[i].verts[0] + 1 << " " << tris[i].verts[1] + 1 << " " << tris[i].verts[2] + 1 << "\n";
+    }
+
+    file.close();
+    Msg("Object data saved to: %s" , p_sdk);
+}
+
+void SaveToObject(size_t v_count, Fvector* verts, size_t t_count, std::vector<VertexMAP>& mapindexes, char* filename)
+{
+	string_path p_sdk ;
+	string256 ff;
+	sprintf(ff, "worldobj\\chunks\\%s",filename);
+
+	FS.update_path(p_sdk, "$fs_root$", ff);
+
+	Status("Save File: %s", ff);
+	
+
+	std::ofstream file(p_sdk);
+    if (!file.is_open()) 
+	{
+        Msg("Unable to create file: %s", p_sdk );
+        return;
+    }
+
+    // Записываем вершины
+	for (int i = 0; i < v_count;i ++)
+	{	
+ 
+		if (i % 1024 == 0)
+		StatusNoMSG("Size: %d/%d", i, v_count);
+        file << "v " << verts[i].x << " " << verts[i].y << " " << verts[i].z << "\n";
+    }
+
+    // Записываем индексы 
+	for (int i = 0; i < t_count; i ++) 
+	{
+		 
+		if (i % 1024 == 0)
+			StatusNoMSG("Size: %d/%d", i, t_count);
+        file << "f " << mapindexes[i].v1 + 1 << " " << mapindexes[i].v2 + 1 << " " << mapindexes[i].v3 + 1 << "\n";
+    }
+
+    file.close();
+    Msg("Object data saved to: %s" , p_sdk);
+}
+
+
+void SaveToGroup(std::ofstream& file, char* prefix, size_t v_count, Fvector* verts, size_t t_count, std::vector<VertexMAP>& mapindexes, int previosly_vertex)
+{
+	file << "g " << prefix << "\n";
+	file << "\n";
+
+    // Записываем вершины
+	for (int i = 0; i < v_count;i ++)
+	{	
+ 
+		if (i % 1024 == 0)
+		StatusNoMSG("Size: %d/%d", i, v_count);
+        file << "v " << verts[i].x << " " << verts[i].y << " " << verts[i].z << "\n";
+    }
+
+    // Записываем индексы 
+	for (int i = 0; i < t_count; i ++) 
+	{
+		 
+		if (i % 1024 == 0)
+			StatusNoMSG("Size: %d/%d", i, t_count);
+        file << "f " << mapindexes[i].v1 + 1 + previosly_vertex << " " << mapindexes[i].v2 + 1 + previosly_vertex << " " << mapindexes[i].v3 + 1 + previosly_vertex << "\n";
+    }
+}
+
+Fbox calculateAABB_for_triangle(Face& triangle) 
+{
+	Fvector v1 =  triangle.v[0]->P;
+	Fvector v2 =  triangle.v[1]->P;
+	Fvector v3 =  triangle.v[2]->P;
+
+    Fbox aabb;
+    aabb.min.x = std::min({v1.x, v2.x, v3.x});
+    aabb.min.y = std::min({v1.y, v2.y, v3.y});
+	aabb.min.z = std::min({v1.z, v2.z, v3.z});
+
+	aabb.max.x = std::min({v1.x, v2.x, v3.x});
+    aabb.max.y = std::min({v1.y, v2.y, v3.y});
+	aabb.max.z = std::min({v1.z, v2.z, v3.z});
+ 
+    return aabb;
+}
+ 
+void CollectFaces(CDB::CollectorPacked& CL)
+{
+	xr_vector<Face*>			adjacent_vec;
+	adjacent_vec.reserve		(6*2*3); 
+
+	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
+	{
+		Face*	F				= (*it);
+		const Shader_xrLC&	SH		= F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)					continue;
+
+		Progress	(float(it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
+				
+		// Collect
+		adjacent_vec.clear	();
+		for (int vit=0; vit<3; ++vit)
+		{
+			Vertex* V = F->v[vit];
+			for (u32 adj=0; adj<V->m_adjacents.size(); adj++)
+			{
+				adjacent_vec.push_back(V->m_adjacents[adj]);
+			}
+		}
+
+		std::sort		(adjacent_vec.begin(),adjacent_vec.end());
+		adjacent_vec.erase	(std::unique(adjacent_vec.begin(),adjacent_vec.end()),adjacent_vec.end());
+
+		// Unique
+		BOOL			bAlready	= FALSE;
+
+		for (u32 ait=0; ait<adjacent_vec.size(); ++ait)
+		{
+			Face*	Test					= adjacent_vec[ait];
+			if (Test==F)					continue;
+			if (!Test->flags.bProcessed)	continue;
+			if (FaceEqual(*F,*Test))
+			{
+				bAlready					= TRUE;
+				break;
+			}
+		}
+
+		//
+		if (!bAlready) 
+		{
+			F->flags.bProcessed	= true;
+			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, F, F->sm_group);
+		}
+ 
+	}
+	 
+}
+
+
+int positiveMod(int a, int b) 
+{
+    return (a % b + b) % b; // Функция для получения положительного остатка от деления
+}
+
+/*
+void CBuild::RunCollideFormNEW()
+{
+	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
+   
+	CollectFaces(CL);
+   
+	vecVertex verts = lc_global_data()->g_vertices();
+	vecFace faces = lc_global_data()->g_faces();
+
+
+	Msg("Size Vertex[%u], Tris[%u]", verts.size(), faces.size() );
+	
+	Fbox RQBox;
+	Fvector* vertsCL = CL.getV();
+	for (int i = 0; i < CL.getVS(); i++)
+	{
+		RQBox.modify(vertsCL[i]);
+ 	}
+
+	Msg("BBox: min[%f][%f][%f], max[%f][%f][%f]", VPUSH(RQBox.min), VPUSH(RQBox.max));
+ 
+	int chunkSize = 128; // Размер чанка
+
+
+	int worldX = abs(RQBox.min.x) + RQBox.max.x + (chunkSize * 2); // Предположим X мира
+	int worldY = abs(RQBox.min.y) + RQBox.max.y; // Предположим Y мира
+    int worldZ = abs(RQBox.min.z) + RQBox.max.z + (chunkSize * 2); // Предположим Z мира
+
+	Msg("WorldZ: %d / min: %f / max: %f", worldZ, RQBox.min.z, RQBox.max.z);
+
+	u32 numberOfChunksX = worldX / chunkSize;
+	u32 numberOfChunksY = worldY / chunkSize;
+    u32 numberOfChunksZ = worldZ / chunkSize;
+
+	if (numberOfChunksY < 1)
+		numberOfChunksY = 1;
+
+	if (numberOfChunksX < 1)
+		numberOfChunksX = 1;
+
+	if (numberOfChunksZ < 1)
+		numberOfChunksZ = 1;
+
+	Msg("Calculate Chunks: %u / %u / %u", numberOfChunksX, numberOfChunksY, numberOfChunksZ);
+
+	std::vector<std::vector<Face*>> chunks(numberOfChunksX * numberOfChunksY * numberOfChunksZ);
+		
+	Msg("Size Chunks: %d", chunks.size());
+
+
+	
+
+	for (int i = 0;i < faces.size();i++ )
+	{
+		Fbox box = calculateAABB_for_triangle(*faces[i]);
+		
+	
+		// Определяем, в какой чанк попадает треугольник
+        int chunkX = floorf(box.min.x / static_cast<float>(chunkSize)); //box.min.x / chunkSize;
+	    int chunkY = floorf(box.min.y / static_cast<float>(chunkSize)); //box.min.y / chunkSize;
+        int chunkZ = floorf(box.min.z / static_cast<float>(chunkSize));  //box.min.z / chunkSize;
+		
+
+ 
+		int chunkIndex =
+				 positiveMod(chunkX, numberOfChunksX) +
+                 positiveMod(chunkY, numberOfChunksY) * numberOfChunksX +
+                 positiveMod(chunkZ, numberOfChunksZ) * (numberOfChunksX * numberOfChunksY);
+
+		// Помещаем треугольник в соответствующий чанк
+
+		if (chunkIndex < chunks.size() )
+		{
+			chunks[chunkIndex].push_back(faces[i]);
+		}
+		else 
+		{
+			Msg("Tri: %d", i);
+			Msg("min.x: %u", (u32)box.min.x);
+			Msg("min.z: %u", (u32)box.min.z);
+			
+			Msg("chunkX: %u", chunkX);
+			Msg("chunkZ: %u", chunkZ);
+
+			Msg("Save Chunk In Memory: %u / Max: %u", chunkZ * numberOfChunksX + chunkX, numberOfChunksX * numberOfChunksZ);
+		}
+	}
+ 
+	Msg("Save Chunks");
+ 
+
+#ifdef OTHER_FILES
+	
+	string_path p_sdk ;
+	string256 ff;
+	sprintf(ff, "worldobj\\%s", "chunked_world.obj");
+
+	FS.update_path(p_sdk, "$fs_root$", ff);
+
+	Status("Save File: %s", ff);
+	
+	std::ofstream file(p_sdk);
+	  
+	if (!file.is_open()) 
+	{
+        Msg("Unable to create file: %s", p_sdk );
+        return;
+    }
+
+	int previosly_vertex = 0;
+
+	for (int i = 0; i < chunks.size(); i++)
+	{
+		std::vector<Face*> triangles = chunks[i];
+		std::vector<Fvector> vertexes;
+	
+
+		std::vector<VertexMAP> indexes(triangles.size());
+
+		
+		for (int tri_id = 0; tri_id < triangles.size(); tri_id++)
+		{
+			VertexMAP d;
+			d.v1 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[0]->P);
+			d.v2 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[1]->P);
+			d.v3 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[2]->P);
+			
+
+			indexes[tri_id] = d;
+		}
+
+		
+		string128 pref = {0};
+		sprintf(pref, "Region_%d", i);
+		
+		
+		if (vertexes.size() > 0)
+		{
+ 			SaveToGroup(file, pref, vertexes.size(), vertexes.data(), triangles.size(), indexes, previosly_vertex);
+ 			file << "\n";
+		}
+
+		previosly_vertex += vertexes.size();
+	}
+
+	   
+	file.close();
+    Msg("Object data saved to: %s" , p_sdk);
+#else 
+
+	for (int i = 0; i < chunks.size(); i++)
+	{
+		std::vector<Face*> triangles = chunks[i];
+		std::vector<Fvector> vertexes;
+		std::vector<VertexMAP> indexes(triangles.size());
+
+		
+		for (int tri_id = 0; tri_id < triangles.size(); tri_id++)
+		{
+			VertexMAP d;
+			d.v1 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[0]->P);
+			d.v2 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[1]->P);
+			d.v3 = vertexes.size(); 
+			vertexes.push_back(triangles[tri_id]->v[2]->P);
+			
+
+			indexes[tri_id] = d;
+		}
+
+		
+		string128 pref = {0};
+		sprintf(pref, "Region_%d.obj", i);
+		
+ 		SaveToBin(vertexes.size(), vertexes.data(), triangles.size(), indexes, pref);
+  
+	}
+  
+
+#endif
+}
+*/
+
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
@@ -452,13 +934,38 @@ void CBuild::Run(LPCSTR P)
 		TestMergeGeom(fs);
 		return;
 	}
+
+	/*
+	if (strstr(Core.Params,"##out_rcast_model_object"))
+	{
+		Phase("Rcast CFORM model");
+		//RunCollideFormNEW();
+		 return; 
+	}
+
+
+	
+
+	
+
+	if (strstr(Core.Params, "--rq_build_cform"))
+	{
+		ExportRayCastModel(fs);
+		return;
+	}
+	*/
     
-	if (strstr(Core.Params, "-sample_9"))
-		g_params().m_lm_jitter_samples = 9;
-	else if (strstr(Core.Params, "-sample_4"))
-		g_params().m_lm_jitter_samples = 4;
-	else if (strstr(Core.Params, "-sample_1"))
-		g_params().m_lm_jitter_samples = 1;
+	if (char* str = strstr(Core.Params, "-sample"))
+	{	   
+		int value = 0;
+		sscanf(str+7, "%d", &value);
+
+		if (value != 1 && value != 4 && value != 9)
+		  	value = 1;
+	 
+		//Msg("set samples: %d", value);
+		g_params().m_lm_jitter_samples = value;
+	}
 
 	LPCSTR pixel = strstr(Core.Params, "-pxpm");
 	LPCSTR val = pixel + 5;

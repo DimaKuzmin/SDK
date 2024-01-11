@@ -570,6 +570,7 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 			ImGui::Text(node->GetDrawText().c_str());
 			
 			node->BeforeEdit<GameTypeValue, GameTypeChooser>(m_EditGameTypeChooser);
+			
 			if (ImGui::OpenPopupOnItemClick("EditGameType", 0))
 			{
 				m_EditGameTypeChooser = V->GetValue();
@@ -579,7 +580,8 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 
 			DrawEditGameType();
 		}
-			break;
+		break;
+
 	default:
 		//not_implemented();
 		ImGui::Text("");

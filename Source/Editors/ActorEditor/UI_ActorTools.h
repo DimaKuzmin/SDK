@@ -164,7 +164,9 @@ class CActorTools: public CToolCustom
     void OnMakeThumbnailClick(ButtonValue* sender, bool& bModif, bool& bSafe);
     void OnMakeLODClick(ButtonValue* sender, bool& bModif, bool& bSafe);
     SMotionVec 			appended_motions;
-protected:
+
+
+public:
 	// flags
     enum{
     	flRefreshProps 		= (1<<0),
@@ -179,12 +181,14 @@ protected:
         flGenerateLODHQ = (1 << 9),
     };
     Flags32				m_Flags;
-    
+
     void				RefreshSubProperties	(){m_Flags.set(flRefreshSubProps,TRUE);}
     void				RefreshShaders			(){m_Flags.set(flRefreshShaders,TRUE);}
     void				MakeThumbnail           (){ m_Flags.set(flMakeThumbnail, TRUE); }
+ 
     void				GenerateLOD(bool hq) { m_Flags.set(hq? flGenerateLODHQ: flGenerateLODLQ, TRUE); }
-  //  void   	PMMotionItemClick		(TObject *Sender);
+protected:
+    //  void   	PMMotionItemClick		(TObject *Sender);
     
     void				RealUpdateProperties	();
 
@@ -308,6 +312,7 @@ public:
     void				RealGenerateLOD(bool hq);
     bool				BatchConvert		(LPCSTR fn);
 
+    bool                StitchOmfs();
 
     void				PhysicsSimulate			( );
     void 				PhysicsStopSimulate		( );

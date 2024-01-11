@@ -398,11 +398,13 @@ void	IReader::r	(void *p,int cnt)
 	VERIFY			(Pos+cnt<=Size);
 	CopyMemory		(p,pointer(),cnt);
 	advance			(cnt);
+
 #ifdef DEBUG
 	BOOL	bShow		= FALSE		;
 	if (dynamic_cast<CFileReader*>(this))			bShow = TRUE;
 	if (dynamic_cast<CVirtualFileReader*>(this))	bShow = TRUE;
-	if (bShow)			{
+	if (bShow)			
+	{
   		FS.dwOpenCounter	++		;
 	}
 #endif

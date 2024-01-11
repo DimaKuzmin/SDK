@@ -63,7 +63,7 @@ int MU_SAMPL()
 		return mu_sample;
 	}
 
-	return 6;
+	return 12;
 }
 
 #define MU_SAMPLES MU_SAMPL()
@@ -102,10 +102,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	if	(bDisableFaces)
 		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
 	*/
-
-	bool check = strstr(Core.Params, "-HemiOFF");
-
-
+ 
 	// Perform lighting
 	for (I = 0; I<m_vertices.size(); I++)
 	{

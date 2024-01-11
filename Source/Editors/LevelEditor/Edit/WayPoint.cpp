@@ -748,7 +748,8 @@ bool CWayObject::ExportGame(SExportStreams* F)
         int l_cnt		= 0;
         F->patrolpath.stream.open_chunk	(WAYOBJECT_CHUNK_POINTS);
         F->patrolpath.stream.w_u16		((u16)m_WayPoints.size());
-        for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++){
+        for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++)
+        {
             CWayPoint* W = *it;
             F->patrolpath.stream.w_fvector3	(W->m_vPosition);
             F->patrolpath.stream.w_u32		(W->m_Flags.get());

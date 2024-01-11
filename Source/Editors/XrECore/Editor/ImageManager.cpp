@@ -279,6 +279,26 @@ bool CImageManager::LoadTextureData(LPCSTR src_name, U32Vec& data, u32& w, u32& 
     return true;
 }
 
+bool CImageManager::LoadTextureDataFromPath(LPCSTR path, LPCSTR src_name, U32Vec& data, u32& w, u32& h, int* age)
+{
+
+    string_path 			fn;
+ 	FS.update_path			(fn, path, src_name);
+    
+    if (FS.path_exist(fn))
+    {
+        u32 a;
+        if (!Stbi_Load(fn,data,w,h,a))
+            return false;
+
+        if (age)
+            *age			= FS.get_file_age(fn);
+             return true;
+    }
+
+    return false;
+}
+
 //------------------------------------------------------------------------------
 // копирует обновленные текстуры с Import'a в Textures
 // files - список файлов для копирование
@@ -365,19 +385,30 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
         BOOL bUpdated 	= FALSE;
         BOOL bFailed 	= FALSE;
     	// check thumbnail
-    	if (sync_thm&&bThm){
+    	if (sync_thm&&bThm)
+        {
         	THM = xr_new<ETextureThumbnail>(it->name.c_str());
-		bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);
+		    bool bRes = Stbi_Load(fn,data,w,h,a); 
+            R_ASSERT(bRes);
 //.             MakeThumbnailImage(THM,data.begin(),w,h,a);
             THM->Save	(it->time_write);
             bUpdated = TRUE;
         }
         // check game textures
-    	if (bForceGame||(sync_game&&bGame)){
-        	if (!THM) THM = xr_new<ETextureThumbnail>(it->name.c_str());
+    	if (bForceGame||(sync_game&&bGame))
+        {
+        	if (!THM) 
+                THM = xr_new<ETextureThumbnail>(it->name.c_str());
+
             R_ASSERT(THM);
-            if (data.empty()){ bool bRes = Stbi_Load(fn,data,w,h,a); R_ASSERT(bRes);}
-			if (IsValidSize(w,h)){
+            if (data.empty())
+            { 
+                bool bRes = Stbi_Load(fn,data,w,h,a); 
+                R_ASSERT(bRes);
+            }
+
+			if (IsValidSize(w,h))
+            {
                 string_path 			game_name;
                 strconcat				(sizeof(game_name), game_name, base_name.c_str(), ".dds");
 
@@ -390,7 +421,9 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 					bFailed				= TRUE;
                 }
                 bUpdated 				= TRUE;
-            }else{
+            }
+            else
+            {
 		    	ELog.DlgMsg(mtError,"Can't make game texture '%s'.\nInvalid size (%dx%d).",base_name.c_str(),w,h);
             }
 		}
@@ -400,7 +433,8 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
         if (bProgress) 
 		    pb->Inc(bUpdated?xr_string(base_name+(bFailed?" - FAILED":" - UPDATED.")).c_str():base_name.c_str(),bUpdated);
             
-        if (bUpdated){
+        if (bUpdated)
+        {
             string_path             tga_fn,thm_fn,dds_fn;
             FS.update_path			(tga_fn,_textures_,		 EFS.ChangeFileExt(base_name,".tga").c_str());
             FS.update_path			(thm_fn,_game_textures_, EFS.ChangeFileExt(base_name,".thm").c_str());
@@ -651,6 +685,11 @@ BOOL CImageManager::CreateOBJThumbnail(LPCSTR tex_name, CEditableObject* obj, in
     psDeviceFlags 				= old_flag;
 //	EPrefs.scene_clear_color 	= cc;
     return bResult;
+}
+
+void CImageManager::Compress(LPCSTR out_name, u8* raw_data, u8* ext_data, u32 w, u32 h, u32 pitch, STextureParams* options, u32 depth)
+{
+    DXTCompress(out_name, raw_data, ext_data, w, h, pitch, options, depth);
 }
 
 void CImageManager::RemoveTexture(LPCSTR fname, EItemType type)

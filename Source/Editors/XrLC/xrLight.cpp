@@ -181,6 +181,7 @@ void IntelClearTimers(LPCSTR name);
 void IntelEmbereLOAD();
 XRLC_LIGHT_API extern bool use_intel;
 
+
 #include <tbb/parallel_for_each.h>
 #include <random>
 
@@ -275,7 +276,7 @@ void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 
-	if (g_params().m_quality != ebqDraft && !strstr(Core.Params, "-no_light"))
+	if (g_params().m_quality != ebqDraft )	//&& !strstr(Core.Params, "-no_light")
 	{
 		IntelClearTimers("Pre Implicit");
 
@@ -323,7 +324,8 @@ void CBuild::Light()
 	}
 
 	//****************************************** Starting MU
-	if ( !strstr(Core.Params, "-no_light_mu"))
+	
+	//if ( !strstr(Core.Params, "-no_light_mu") )
 	{
 		FPU::m64r();
 		Phase("LIGHT: Starting MU...");

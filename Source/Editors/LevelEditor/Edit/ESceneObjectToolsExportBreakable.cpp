@@ -171,14 +171,25 @@ IC BOOL OrientToNorm(Fvector& local_norm, Fmatrix33& form, Fvector& hs)
 {
     Fvector * ax_pointer= (Fvector*)&form;
     int 	max_proj=0,min_size=0;
-    for (u32 k=1; k<3; k++){
+    for (u32 k=1; k<3; k++)
+    {
     	if (_abs(local_norm[k])>_abs(local_norm[max_proj]))
         	max_proj=k;
         if (hs[k]<hs[min_size])
         	min_size=k; 
     }
-    if (min_size!=max_proj) return FALSE;
-    if (local_norm[max_proj]<0.f){
+  
+    /*
+    if (min_size!=max_proj)  
+    {   
+        Msg("Size Climable: %d, max_proj: %d", min_size, max_proj);
+        return FALSE;
+    }
+    */
+
+
+    if (local_norm[max_proj]<0.f)
+    {
     	local_norm.invert();
         ax_pointer[max_proj].invert();
         ax_pointer[(max_proj+1)%3].invert();
@@ -190,6 +201,8 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
 {
 	bool bResult                    = true;
     CGeomPartExtractor* extractor   = 0;
+
+    Msg("Export Climable");
 
     Fbox 		bb;
     if (!GetBox(bb))
@@ -224,6 +237,11 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
     }
     if (!extractor->Process())
         bResult                     = false;
+
+    Msg("Extractor Result");
+
+    int size = 0;
+    int invalides = 0;
 
     // export parts
     if (bResult)
@@ -269,13 +287,17 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                                                 (P->m_BBox.max.z-P->m_BBox.min.z)*0.5f);
                     m_Shape->assign_shapes		(&shape,1);
 					// orientate object
-	          		if (!OrientToNorm(local_normal,P->m_OBB.m_rotate,P->m_OBB.m_halfsize))
+	          		if (!OrientToNorm(local_normal, P->m_OBB.m_rotate, P->m_OBB.m_halfsize))
                     {
                     	ELog.Msg(mtError,"Invalid climable object found. [%3.2f, %3.2f, %3.2f]",VPUSH(P->m_RefOffset));
+                        invalides++;
 					}
                     else
                     {
-                        Fmatrix M; M.set			(P->m_OBB.m_rotate.i,P->m_OBB.m_rotate.j,P->m_OBB.m_rotate.k,P->m_OBB.m_translate);
+                        Msg_IN_FILE("Export climable object found. [%3.2f, %3.2f, %3.2f]",VPUSH(P->m_RefOffset));
+
+                        Fmatrix M; 
+                        M.set			(P->m_OBB.m_rotate.i,P->m_OBB.m_rotate.j,P->m_OBB.m_rotate.k,P->m_OBB.m_translate);
                         M.getXYZ					(P->m_RefRotate); // не i потому что в движке так
                         m_Data->position().set		(P->m_RefOffset); 
                         m_Data->angle().set			(P->m_RefRotate);
@@ -294,16 +316,20 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                             M.transform_dir				(local_normal);
                             Tools->m_DebugDraw.AppendLine(P->m_RefOffset,Fvector().mad(P->m_RefOffset,local_normal,1.f));
                         }
+                        size++;
                     }
                     XrSE_Factory::destroy_entity				(m_Data);
                 }
-            }else
+            }
+            else
             {
             	ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
             }
         }
 	    UI->ProgressEnd     (pb);
     }
+
+    Msg("Export Climable Size: %d, Invalid: %d", size, invalides );
     // clean up
     xr_delete               (extractor);
 

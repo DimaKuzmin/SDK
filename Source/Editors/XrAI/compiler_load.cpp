@@ -205,6 +205,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		{
 			strconcat			(sizeof(N),N,name,"build.cform");
 
+			if (!FS.exist(N))
+			{
+				string_path tmp; sprintf(tmp, "No Find File: %s", N); 
+				R_ASSERT2(0, tmp);
+			}
+
 			if (FS.exist(N))
 			{
 				IReader*			fs = FS.r_open(N);

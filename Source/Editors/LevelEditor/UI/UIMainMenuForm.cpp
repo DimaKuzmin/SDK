@@ -1,5 +1,9 @@
 #include "stdafx.h"
 #include "UI\UIObjectList.h"
+#include "UI_CompilerXR.h"
+#include "UIDxtConverter.h"
+#include "UI_TreesReplacer.h"
+
 UIMainMenuForm::UIMainMenuForm()
 {
 }
@@ -110,6 +114,44 @@ void UIMainMenuForm::Draw()
             }
             ImGui::EndMenu();
         }
+
+        if (ImGui::BeginMenu("Se7Kills_Features"))
+        {
+            
+            ImGui::Separator();
+            bool opened = UI_CompilerXR::IsOpen();
+            if (ImGui::MenuItem("Compilers RUN", ""))
+            {
+                 if (!opened)
+                     UI_CompilerXR::Show();
+                 else
+                     UI_CompilerXR::Close(); 
+                //ExecCommand(COMMAND_XRLC_COMPILE);
+            }
+            
+            bool DXTopened = UIDxtConverter::IsOpen();
+            if (ImGui::MenuItem("DXT CONVERTER", ""))
+            {
+               if (!DXTopened)
+                     UIDxtConverter::Show();
+                 else
+                     UIDxtConverter::Close(); 
+            }
+            
+            bool Trees_opened = UI_TreesReplacer::IsOpen();
+            if (ImGui::MenuItem("Tree Replacer", ""))
+            {
+               if (!Trees_opened)
+                     UI_TreesReplacer::Show();
+                 else
+                     UI_TreesReplacer::Close(); 
+            }
+
+
+            ImGui::EndMenu();
+        }
+         
+
         if (ImGui::BeginMenu("Editors"))
         {
             if (ImGui::BeginMenu("Objects"))

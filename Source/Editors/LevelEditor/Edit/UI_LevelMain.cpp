@@ -16,6 +16,9 @@
 #include "SoundManager_LE.h"
 #include "LevelPreferences.h"
 #include "UI\UIObjectList.h"
+#include "UI_CompilerXR.h"
+#include "UIDxtConverter.h"
+#include "UI_TreesReplacer.h"
 
 #ifdef _LEVEL_EDITOR
 //.    if (m_Cursor->GetVisible()) RedrawScene();
@@ -872,6 +875,8 @@ CCommandVar CommandToggleAiMapVisibility(CCommandVar p1, CCommandVar p2)
 	ai_map_shown 				= !ai_map_shown;
     return 						TRUE;
 }
+ 
+
 
 void CLevelMain::RegisterCommands()
 {
@@ -970,6 +975,9 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_SE	    (COMMAND_TOGGLE_AIMAP_VISIBILITY,   "Visibility\\Toggle AIMap",			CommandToggleAiMapVisibility,true);
 	REGISTER_CMD_S	    (COMMAND_SHOW_CLIP_EDITOR,			CommandShowClipEditor);
     
+
+    // REGISTER COMPILERS
+      
 }
 
 char* CLevelMain::GetCaption()
@@ -1312,6 +1320,10 @@ void CLevelMain::OnDrawUI()
 {
     inherited::OnDrawUI();
     UIObjectList::Update();
+    UI_CompilerXR::Update();
+    UIDxtConverter::Update();
+    UI_TreesReplacer::Update();
+
     if (LTools->GetToolForm())
     {
         LTools->GetToolForm()->OnDrawUI();

@@ -172,7 +172,10 @@ const float joint_size = 0.025f;
 
 void CActorTools::Render()
 {
-    if (!m_bReady) return;
+ 
+    if (!m_bReady) 
+        return;
+
     PrepareLighting();
     m_PreviewObject.Render();
     if (m_pEditObject) 
@@ -182,6 +185,9 @@ void CActorTools::Render()
             m_pEditObject->UpdateObjectXform(World);
         }
         m_RenderObject.OnRender();
+
+ 
+       
         if (m_RenderObject.IsRenderable() && MainForm->GetLeftBarForm()->GetRenderMode() == UILeftBarForm::Render_Engine)
         {
             ::Render->model_RenderSingle(m_RenderObject.m_pVisual, m_RenderObject.ObjectXFORM(), m_RenderObject.m_fLOD);
@@ -213,7 +219,9 @@ void CActorTools::Render()
         else
         {
             // update transform matrix
-            if (!IsPhysics())World = m_AVTransform;
+            if (!IsPhysics())
+                World = m_AVTransform;
+
             m_pEditObject->RenderSkeletonSingle(World);
         }
     }
@@ -435,12 +443,14 @@ bool CActorTools::Load(LPCSTR obj_name)
     VERIFY(m_bReady);
     CEditableObject* O = xr_new<CEditableObject>(obj_name);
     if (FS.exist(full_name.c_str()) && O->Load(full_name.c_str())) 
-    {
+    {   
+        m_RenderObject.Clear();
+
         xr_delete(m_pEditObject);
         m_pEditObject = O;
         ///  m_pEditObject->Optimize ();
           // delete visual
-        m_RenderObject.Clear();
+  
         
         MainForm->GetLeftBarForm()->SetRenderMode(false);
 
@@ -1024,7 +1034,8 @@ void CActorTools::OptimizeMotions()
 
 void CActorTools::RealMakeThumbnail()
 {
-    if (CurrentObject()) {
+    if (CurrentObject()) 
+    {
         CEditableObject* obj = CurrentObject();
         xr_string tex_name, obj_name;
         tex_name = ChangeFileExt(obj->GetName(), ".thm");
@@ -1148,6 +1159,76 @@ bool CActorTools::BatchConvert(LPCSTR fn)
         }
     }
     return bRes;
+}
+
+bool CActorTools::StitchOmfs()
+{        
+    xr_string path, file;
+    bool bRes;
+    /*
+    if (bRes = EFS.GetOpenPathName(EDevice.m_hWnd, "$import$", path, file))
+    {
+         
+    // Motions
+    F.open_chunk			(OGF_S_MOTIONS);
+    F.open_chunk			(0);
+    F.w_u32					(m_Source->SMotionCount());
+    F.close_chunk			();
+
+
+  
+    for (int idx_motion = 1; idx_motion < m_Source->SMotionCount(); idx_motion ++)
+    {
+        int Lenght;
+        xr_string name;
+        
+        F.r_stringZ			(name);
+        F.r_u32				(Lenght);
+
+        u8 flags;
+        F.w_u8	(flags);
+
+        bool r_present = flags & flRKeyAbsent;
+        bool t_present = flags & flTKeyPresent;
+        bool bTransform16Bit = flags & flTKey16IsBit;
+      
+        u32 crc32;
+
+        if (r_present)
+        {	
+            F.w_u32	(crc32(BM._keysQR,dwLen*sizeof(CKeyQR)));
+            F.w		(BM._keysQR,dwLen*sizeof(CKeyQR));
+        }
+        else
+        {
+            F.w		(&BM._keysQR[0],sizeof(BM._keysQR[0]));
+        }
+
+        if (t_present)
+        {	
+            if(bTransform16Bit)
+            {
+                F.w_u32(crc32(BM._keysQT16,u32(dwLen*sizeof(CKeyQT16))));
+                F.w	(BM._keysQT16,dwLen*sizeof(CKeyQT16));
+            }
+            else
+            {
+                F.w_u32(crc32(BM._keysQT8,u32(dwLen*sizeof(CKeyQT8))));
+                F.w	(BM._keysQT8,dwLen*sizeof(CKeyQT8));
+            }
+	        F.w_fvector3		(St);
+    	    F.w_fvector3		(Ct);
+        }else
+        {
+            F.w_fvector3		(Mt);
+        }
+
+
+         }
+    }
+    */
+
+    return false;
 }
 
 void CActorTools::PhysicsSimulate()

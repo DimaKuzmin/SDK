@@ -22,6 +22,9 @@
     <Filter Include="UI\UI_TOOLS_SE7">
       <UniqueIdentifier>{f5af6c00-6166-463c-bc71-0cc9c0f36c4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\Menus">
+      <UniqueIdentifier>{84804673-c3da-4dad-ba59-4895bd588736}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Edit\SceneSummaryInfo.cpp">
@@ -427,6 +430,15 @@
     <ClCompile Include="UIObjectList_TOOLS.cpp">
       <Filter>UI\UI_TOOLS_SE7</Filter>
     </ClCompile>
+    <ClCompile Include="UI_CompilerXR.cpp">
+      <Filter>UI\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="UIDxtConverter.cpp">
+      <Filter>UI\Menus</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_TreesReplacer.cpp">
+      <Filter>UI\Menus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit\SceneSummaryInfo.h">
@@ -684,6 +696,15 @@
     </ClInclude>
     <ClInclude Include="UI\UIObjectList.h">
       <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_CompilerXR.h">
+      <Filter>UI\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="UIDxtConverter.h">
+      <Filter>UI\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_TreesReplacer.h">
+      <Filter>UI\Menus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

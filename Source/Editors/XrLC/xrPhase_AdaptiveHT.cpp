@@ -240,6 +240,17 @@ void CBuild::xrPhase_AdaptiveHT	()
 			log_vminfo();
 		}
 
+		if (strstr(Core.Params, "-use_opcode_old"))
+		{
+			Msg("LogOpcode: !!! USE_OLD");
+			Msg("LogOpcode: !!! USE_OLD");
+			Msg("LogOpcode: !!! USE_OLD");
+			Msg("LogOpcode: !!! USE_OLD");
+			Msg("LogOpcode: !!! USE_OLD");
+ 			use_opcode_old = true;
+		}
+		 
+
 		xrHardwareLight& hw_light = xrHardwareLight::Get();
 
 		if (char* str = strstr(Core.Params, "-hw_light"))

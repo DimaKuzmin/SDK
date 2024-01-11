@@ -172,6 +172,8 @@ std::mutex lock;
 
 xr_map<u32, Fbox > bb_bases;
 
+extern bool use_avx = false;
+
 ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
 	if (bb_bases.find(id) == bb_bases.end())
@@ -196,18 +198,32 @@ ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
  
 BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
+
+
 	// 1. Amount of polygons
 	if (subdiv.size()>=u32(3*c_SS_HighVertLimit/4))	return FALSE;
+	  
+	Fvector sz_base;
 	
-	// 2. Bounding box
-	bb_base.invalidate	();
-	CreateBox(subdiv, bb_base, id);
+	if (use_avx)
+	{
+		// 2. Bounding box
+		bb_base.invalidate	();
+		CreateBox(subdiv, bb_base, id);
 	
-	box_grow_avx(bb_base, EPS_S);
-	//bb_base.grow		(EPS_S);	// Enshure non-zero volume
+		box_grow_avx(bb_base, EPS_S);	
+		sz_base = box_getsize_avx(bb_base);		
+ 	}
+	else 
+	{
+		// 2. Bounding box
+		bb_base.invalidate	();
+		CreateBox(subdiv, bb_base, id);
 	
-	Fvector sz_base = box_getsize_avx(bb_base);		
-	//bb_base.getsize(sz_base);
+		bb_base.grow		(EPS_S);	// Enshure non-zero volume
+		bb_base.getsize(sz_base);
+	}
+
 
 	
 	if (sz_base.x<c_SS_maxsize)		return TRUE;
@@ -226,8 +242,10 @@ IC void	MakeCube		(Fbox& BB_dest, const Fbox& BB_src)
 
 	BB_dest.set			(C,C);
 	
-	box_grow_avx(BB_dest, max);
-	//BB_dest.grow		(max);
+	if (use_avx)
+		box_grow_avx(BB_dest, max);
+	else 
+		BB_dest.grow		(max); 
 }
 
 IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, const Fvector & orig2, int iAxis)
@@ -244,34 +262,65 @@ IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, 
 
 IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u32 f2, const Fbox& bb, float& volume)
 {
+	
 	// Polygons
 	if ((f1+f2) > u32(4*c_SS_HighVertLimit/3))		return FALSE;	// Don't exceed limits (4/3 max POLY)	
 
-	// Size
-	Fbox	merge  = box_merge_avx(bb_base, bb);
-	//merge.merge		(bb_base,bb);
-	Fvector sz	   = box_getsize_avx(merge);	
-	//merge.getsize	(sz);
-	Fvector orig1 = box_getsize_avx(bb_base_orig);	
-	//bb_base_orig.getsize(orig1);
-	Fvector orig2 = box_getsize_avx(bb);	
-	//bb.getsize		(orig2);
+
+	if (use_avx)
+	{
+		// Size
+		Fbox	merge  = box_merge_avx(bb_base, bb);
+ 		Fvector sz	   = box_getsize_avx(merge);	
+ 		Fvector orig1 = box_getsize_avx(bb_base_orig);	
+ 		Fvector orig2 = box_getsize_avx(bb);	
+  
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
+
+		// Volume
+		Fbox		bb0,bb1;
+		MakeCube	(bb0,bb_base);
+		float	v1	= box_getvolume_avx(bb0);  
+		MakeCube	(bb1,bb);	
+		float	v2	= box_getvolume_avx(bb1);  
+
+		volume		= box_getvolume_avx(merge); 
  
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
-	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
+ 		if (volume > 8 * ( v1 + v2))  
+			return FALSE;	// Don't merge too distant groups (8 vol)
+	}
+	else 
+	{
+				// Size
+		Fbox	merge;
+		merge.merge		(bb_base,bb);
 
-	// Volume
-	Fbox		bb0,bb1;
-	MakeCube	(bb0,bb_base);
-	float	v1	= box_getvolume_avx(bb0); // bb0.getvolume	();
-	MakeCube	(bb1,bb);	
-	float	v2	= box_getvolume_avx(bb1); // bb1.getvolume	();
+		Fvector sz, orig1, orig2;
+		merge.getsize	(sz);		
+		bb_base_orig.getsize(orig1);
+		bb.getsize		(orig2);
+ 
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
+		if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
 
-	volume		= box_getvolume_avx(merge); // merge.getvolume	(); 
+		// Volume
+		Fbox		bb0,bb1;
+		MakeCube	(bb0,bb_base);
+		float	v1	= bb0.getvolume	();  
+		MakeCube	(bb1,bb);	
+		float	v2	= bb1.getvolume	();
+
+		volume		= merge.getvolume	(); 
+
+		
 	
- 	if (volume > 8 * ( v1 + v2)) // 2 * 2 * 2		
-		return FALSE;	// Don't merge too distant groups (8 vol)
+ 		if (volume > 8 * ( v1 + v2)) // 2 * 2 * 2		
+			return FALSE;	// Don't merge too distant groups (8 vol)
+	}
+
 
 	// OK
 	return TRUE;
@@ -659,12 +708,16 @@ int THREADS_COUNT();
  
 #define MAX_BIG_THREADS 2
 
+
+
 void CBuild::xrPhase_MergeGeometry()
 {
 	Status("Processing...");
 	validate_splits();
 
 	tGlobalMerge.Start();
+
+	use_avx = strstr(Core.Params, "-use_avx");
 
 	bool use_fast_way = true;
 

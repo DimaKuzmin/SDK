@@ -211,7 +211,8 @@ void TUI::OnAppActivate()
 {
     m_bAppActive = true;
     if (!m_bReady)return;
-	if (pInput){
+	if (pInput)
+    {
         m_ShiftState = ssNone;
      	pInput->OnAppActivate();
         EDevice.seqAppActivate.Process	(rp_AppActivate);
@@ -223,7 +224,8 @@ void TUI::OnAppDeactivate()
 {
     m_bAppActive = false;
     if (!m_bReady)return;
-	if (pInput){
+	if (pInput)
+    {
 		pInput->OnAppDeactivate();
         m_ShiftState = ssNone;
         EDevice.seqAppDeactivate.Process(rp_AppDeactivate);
@@ -529,11 +531,13 @@ bool TUI::Idle()
     Sleep(1);
 
     OnFrame			();
-    if (m_bAppActive && !m_Flags.is(flNeedQuit) && !m_AppClosed)
-    RealRedrawScene();
+    
+    if ( !m_Flags.is(flNeedQuit) && !m_AppClosed)  //m_bAppActive &&
+        RealRedrawScene();
 
     // test quit
-    if (m_Flags.is(flNeedQuit))	RealQuit();
+    if (m_Flags.is(flNeedQuit))
+        RealQuit();
     return !m_AppClosed;
 }
 //---------------------------------------------------------------------------

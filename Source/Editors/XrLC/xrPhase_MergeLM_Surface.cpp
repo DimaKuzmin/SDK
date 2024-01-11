@@ -172,10 +172,12 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 	{
 		int x_max = c_LMAP_size - r.b.y;
 		int y_max = c_LMAP_size - r.b.x;
-		for (int _Y = 0; _Y < y_max; _Y++) {
+		for (int _Y = 0; _Y < y_max; _Y++) 
+		{
 			temp_surf = surface + _Y * c_LMAP_size;
 			// accelerated part
-			for (_X = 0; _X < x_max - 8; ) {
+			for (_X = 0; _X < x_max - 8; ) 
+			{
 				__m128i mm_reg = _mm_set1_epi64x(*(__int64*)(temp_surf + _X));
 				__m128i m64_cmp = _mm_cmpeq_epi8(mm_reg, _mm_setzero_si128());
 				__m128i m64_work = _mm_sad_epu8(m64_cmp, _mm_setzero_si128());

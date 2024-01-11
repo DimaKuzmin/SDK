@@ -43,6 +43,8 @@
 	{
 		public:
 		// Constructor/Destructor
+		void Load(IReader* stream);
+		void Save(IWriter* stream) const;
 											OPCODE_Model();
 											~OPCODE_Model();
 

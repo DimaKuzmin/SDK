@@ -91,7 +91,7 @@ void CBuild::xrPhase_UVmap()
 	clMsg("SP_SIZE %d, pixel_per_metter %f, Jitter = %d", g_XSplit.size(), g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
  
 	orig_size = g_XSplit.size();
-	bool use_fast_method = true; // strstr(Core.Params, "-fast_uv");
+	bool use_fast_method = true;  
 
 	CTimer timer_gl, timer_c;
 	timer_gl.Start();
@@ -101,8 +101,31 @@ void CBuild::xrPhase_UVmap()
 	u64 ticks_find = 0;
 	u64 ticks_find_affected = 0;
 	u64 ticks_clear_finded = 0;
+	
+	u64 LastSP = 0;	
+	u64 LastXSplit = g_XSplit.size();
+
 	for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
 	{
+
+		if (LastSP != SP && LastSP < LastXSplit)
+		{
+			LastSP = SP;
+
+			int matterial  = g_XSplit[SP]->front()->dwMaterial;
+			int surfaceID  = lc_global_data()->materials()[matterial].surfidx;
+			int shaderID  = lc_global_data()->materials()[matterial].shader;
+
+			Fvector pos;
+			g_XSplit[SP]->front()->CalcCenter(pos);
+ 
+			auto shader = lc_global_data()->shaders().Get(shaderID);
+			auto texture = lc_global_data()->textures()[surfaceID];
+
+			clMsg("SP[%d], mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s", SP, matterial, surfaceID, shaderID, texture.name, shader->Name);
+			clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
+		}
+
 		Progress			(p_total+=p_cost);
  
 		// ManOwaR, unsure:
@@ -165,7 +188,7 @@ void CBuild::xrPhase_UVmap()
 			{
  				if (remove_count == g_XSplit[SP]->size())
 				{
-					clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
+					// clMsg("SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
 					xr_delete(g_XSplit[SP]);
 					g_XSplit.erase(g_XSplit.begin() + SP);
 					SP--;
@@ -200,44 +223,6 @@ void CBuild::xrPhase_UVmap()
 
 		
 				// Detach affected faces
-
-
-				/*
-				timer_c.Start();
-				if (!use_fast_method)
-				{ 
-					for (int i = 0; i<int(g_XSplit[SP]->size()); i++)
-					{
-						Face* F = (*g_XSplit[SP])[i];
-						if (F->pDeflector == D)
-						{
-							faces_affected.push_back(F);
-							g_XSplit[SP]->erase		(g_XSplit[SP]->begin()+i); 
-							i--;
-						}
-					}
-				}
-				else
-				{
- 					auto it = std::find_if(std::execution::par, g_XSplit[SP]->begin(), g_XSplit[SP]->end(), [&D](const auto& face) {
-						return face->pDeflector == D;
-					});
-
-					while (it != g_XSplit[SP]->end())
-					{
-						faces_affected.push_back(*it);
-						remove_count += 1;
-						it = std::find_if(std::execution::par, std::next(it), g_XSplit[SP]->end(), [&D](const auto& face)
-						{
-							return face->pDeflector == D;
-						});
-					}
-				}
-				ticks_find_affected += timer_c.GetElapsed_ticks();
-			
-			
-				*/
-
 				// detaching itself
 				
 				timer_c.Start();

@@ -184,7 +184,7 @@ void CLightmap::Save( LPCSTR path )
 		u32	pitch				= w*4;
 
 		STextureParams fmt;
-		fmt.fmt					= STextureParams::tfDXT5;
+		fmt.fmt					= strstr(Core.Params, "-texformat_rgba") ? STextureParams::tfRGBA : STextureParams::tfDXT5;
 		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
@@ -207,7 +207,7 @@ void CLightmap::Save( LPCSTR path )
 		BYTE*	raw_data		= LPBYTE(&*hemi_packed.begin());
 
 		STextureParams fmt;
-		fmt.fmt					= STextureParams::tfDXT5;
+		fmt.fmt					= strstr(Core.Params, "-texformat_rgba") ? STextureParams::tfRGBA : STextureParams::tfDXT5;
 		fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 		fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);

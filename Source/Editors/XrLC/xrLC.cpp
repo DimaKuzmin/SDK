@@ -30,25 +30,49 @@ static const char* h_str =
 	"-? or -h			== this help\n"
 	"-modify_options	== modify build options\n"
 	"-nosun				== disable sun-lighting\n"
-	"-norgb				== disable static lighting\n"
-	"-nohemi			== disable hemi lighting\n"
-	"-nosmg				== disable smoth groops\n"
+	"-nosmg				== disable smoth groops\n"		    
+	
 	//NEW SDK 8.0
-	"-no_invalidefaces  == disable check invalidate faces\n"
-	"-fast_lightmaps	== fast lightmaps dds pos x,y calculation\n"
-	"-fast_merge		== fast merge geometry (like single core calculation but threaded)\n" 
-	"-single_core_merge == calculation Stage MergeGeometry single core (faster way break; cycle for if find merge volume)\n"
-	"-fast_uv			== fast calculation Unwrap UV\n"
-	"-no_optimize		== OFF optimize geometry Pre stage AdaptiveHT\n"
- 	//NEW THREADING AND CUSTOMIZE PARAMS
-	"-pxpm				== pixel per meter from SDK\n"
-	"-sample_1			== Jitter from SDK (1, 4, 9)\n"
-	"-mu_samples		== mu samples for calcuation Light for MU MODELS (1-6) \n"
-	"-th (num)			== Count Threads For Light CALCULATION IMPLICIT, LMAPS \n"
- 
-	"-f<NAME>			== compile level in GameData\\Levels\\<NAME>\\\n" 
+	"-no_invalidefaces  == OFF invalidate faces\n"
+	"-no_optimize		== OFF optimize geometry\n"
+//Se7Kills
+	 
+//	"-fast_lightmaps	== fast lightmaps dds pos x,y calculation\n"
+//	"-fast_merge		== fast merge geometry (like single core calculation but threaded)\n" 
+//	"-single_core_merge == calculation Stage MergeGeometry single core (faster way break; cycle for if find merge volume)\n"
+//	"-fast_uv			== fast calculation Unwrap UV\n"
+
 	"\n"
-	"NOTE: The last key is required for any functionality\n";
+	"New Se7Kills Flags: \n"
+	"-norgb		== Отключить статику\n"		 
+	"-nohemi	== Отключить Hemi\n"		 
+
+ 	//NEW THREADING AND CUSTOMIZE PARAMS
+	"-pxpm		== пиксели из SDK\n"
+	"-sample 	== колво сэмполов из SDK (1, 4, 9)\n"
+	"-mu_samples== колво сэмполов для mu моделей (1-6) \n"
+	"-th (num)	== кол-во потоков для IMPLICIT, LMAPS \n"
+	"-no_simplify == не делать Упрощение CFORM (Иногда по памяти затратно)\n "
+	
+	"\n"
+	"Новая Компиляция света IntelEmbree:\n"
+	"-use_intel	== Включить IntelEmbree \n"
+	"-use_avx	== Включить AVX \n" 
+	"-use_sse	== Включить SSE \n"
+ 	"-hw_light  == Не допилено\n"
+	"-use_opcode_old == использовать не оптимизированый OPCODE\n"
+
+	"\n"
+	"Пример: start bin\\x64\\dev\\xrLC.exe -nosmg -f jupiter -no_invalidefaces -no_simplify -noise -th 16 -sample 9 -mu_samples 6 -use_intel -use_avx \n"
+ 	
+	"\n"
+	"Важный параметр:\n"
+	"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n" 
+	"\n"
+	"NOTE: The last key is required for any functionality\n"
+	
+	
+	;
 
 void Help()
 {

@@ -490,7 +490,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			}
 
 			BOOL			bLOD = FALSE;
-			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
+			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') 
+				bLOD = TRUE;
 
 			/*
 			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
@@ -531,15 +532,18 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.dwHeight = 128;
 				}
 			}	
-			*/
+			
 
 			if (strstr(Core.Params, "-cvrt_impl_1024"))
-			if (BT.dwWidth > 1024 || BT.dwHeight > 1024)
 			{
-				BT.dwWidth = 1024;
-				BT.dwHeight = 1024;
-			}
+				if (BT.dwWidth > 1024 || BT.dwHeight > 1024)
+				{
+					BT.dwWidth = 1024;
+					BT.dwHeight = 1024;
+				}
 
+			}
+			*/
 
 			// save all the stuff we've created
 			textures().push_back	(BT);

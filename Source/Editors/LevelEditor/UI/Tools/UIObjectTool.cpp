@@ -130,7 +130,7 @@ void UIObjectTool::Draw()
     if (ImGui::TreeNode("Preview"))
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
-        ImGui::Image(m_RealTexture? m_RealTexture:( m_TextureNull->surface_get()), ImVec2(128, 128));
+        ImGui::Image(m_RealTexture? m_RealTexture : ( m_TextureNull->surface_get()), ImVec2(128, 128));
         ImGui::SameLine();
         ImGui::BeginChild("Props", ImVec2(0,128));
         m_Props->Draw();
@@ -164,10 +164,11 @@ void UIObjectTool::RefreshList()
         for (; it != _E; it++) 
         {
             xr_string fn;
-            ListItem* I = LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
+            LHelper().CreateItem(items, it->name.c_str(), 0, ListItem::flDrawThumbnail, 0);
         }
     }
-    if (m_RealTexture)m_RemoveTexture = m_RealTexture;
+    if (m_RealTexture)
+        m_RemoveTexture = m_RealTexture;
     m_RealTexture = nullptr;
     m_Props->ClearProperties();
     m_ObjectList->AssignItems(items);
@@ -268,6 +269,9 @@ void UIObjectTool::OnItemFocused(ListItem* item)
     m_RealTexture = nullptr;
     m_Props->ClearProperties();
     m_Current = nullptr;
+
+    Msg("Focused: %s", item->Key());
+
     if (item)
     {
         m_Current = item->Key();

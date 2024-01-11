@@ -34,20 +34,27 @@ bool EObjectThumbnail::Load(LPCSTR src_name, LPCSTR path)
 {
 	string_path fn;
     strcpy(fn,EFS.ChangeFileExt(src_name?src_name:m_Name.c_str(),".thm").c_str());
-    if (path) 		FS.update_path(fn,path,fn);
-    else			FS.update_path(fn,_objects_,fn);
-    if (!FS.exist(fn)) return false;
+    if (path) 		
+        FS.update_path(fn,path,fn);
+    else	
+        FS.update_path(fn,_objects_,fn);
+    
+    if (!FS.exist(fn))
+        return false;
 
     IReader* F 		= FS.r_open(fn);
     u16 version 	= 0;
 
     R_ASSERT(F->r_chunk(THM_CHUNK_VERSION,&version));
-    if( version!=THM_OBJECT_VERSION ){
+    
+    if( version!=THM_OBJECT_VERSION )
+    {
 		Msg			("!Thumbnail: Unsupported version.");
         return 		false;
     }
 
-    IReader* D 		= F->open_chunk(THM_CHUNK_DATA); R_ASSERT(D);
+    IReader* D 		= F->open_chunk(THM_CHUNK_DATA);
+    R_ASSERT(D);
     m_Pixels.resize	(THUMB_SIZE);
     D->r			(m_Pixels.data(),THUMB_SIZE*sizeof(u32));
     D->close		();

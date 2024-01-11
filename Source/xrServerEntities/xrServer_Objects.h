@@ -175,6 +175,7 @@ public:
 	virtual							~CSE_Shape		();
 	virtual ISE_Shape*  	shape			() = 0;
 	virtual void 			assign_shapes	(CShapeData::shape_def* shapes, u32 cnt);
+ 
 };
 add_to_type_list(CSE_Shape)
 #define script_type_list save_type_list(CSE_Shape)

@@ -337,6 +337,8 @@ public:
 				FloderFlags |= ImGuiTreeNodeFlags_Selected;
 			}
 
+			if (N->Name.size())
+
 			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
 			{
 				//Msg("Selected");

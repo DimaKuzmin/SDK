@@ -6,6 +6,10 @@ class CCustomObject;
 
 class UIObjectList:public XrUI
 {
+private:
+	static UIObjectList* Form;
+
+public:
 	xr_vector<shared_str> Errored_objects;
 	xr_vector<CCustomObject*> customdata_objects;
 
@@ -19,7 +23,7 @@ class UIObjectList:public XrUI
 	bool use_errored = false;
 	bool use_distance = false;
 	int _sizetext = 64;
-public:
+
 	UIObjectList();
 	virtual ~UIObjectList();
 	virtual void Draw();
@@ -27,6 +31,27 @@ public:
 	static void Show();
 	static void Close();
 	static IC bool IsOpen()  { return Form; }
+
+ private:
+	void DrawObjects();
+	void DrawObject(CCustomObject* obj,const char*name);
+
+	ObjClassID m_cur_cls;
+	enum EMode
+	{
+		M_All,
+		M_Visible,
+		M_Inbvisible
+	};
+	EMode m_Mode;
+	CCustomObject* m_SelectedObject;
+	bool serch_mode;
+	string_path m_Filter = {0};
+	string_path m_Filter_type = { 0 };
+	string_path m_Filter_visual = { 0 };
+
+public:
+// NEW se7kills
 
 	void SetScale(Fvector size);
 
@@ -96,29 +121,10 @@ public:
 	void FindObjectSector(u16 id);
 
 private:
-	static UIObjectList* Form;
 	xr_vector<CCustomObject*> objects_selected;
 	int merge_ai_map_size = 0;
 
 	void ClearCustomData();
 
-private:
-	void DrawObjects();
-	void DrawObject(CCustomObject* obj,const char*name);
-private:
-	ObjClassID m_cur_cls;
-	enum EMode
-	{
-		M_All,
-		M_Visible,
-		M_Inbvisible
-	};
-	EMode m_Mode;
-	CCustomObject* m_SelectedObject;
-	bool serch_mode;
-	string_path m_Filter = {0};
-	string_path m_Filter_type = { 0 };
-	string_path m_Filter_visual = { 0 };
-
-
+ 
 };

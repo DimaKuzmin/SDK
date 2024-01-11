@@ -66,6 +66,9 @@ void CBuild::PreOptimize()
 	// 
 	Status("Processing...");
 	g_bUnregister		= false;
+
+	bool SkipWeld = strstr(Core.Params, "-skip_weld");
+
 	for (int it = 0; it<(int)lc_global_data()->g_vertices().size(); it++)
 	{
 		if (0==(it%1000))
@@ -91,26 +94,28 @@ void CBuild::PreOptimize()
 
 		// Replace Stupid GSC Code 
 		// By Se7kills
-		 
-		auto parsed = std::find_if(std::execution::par_unseq, H.begin(), H.end(), [&] (Vertex* v) 
-		{ 
-			if (v->similar(*pTest, g_params().m_weld_distance) )
-				return true; 
-			else 
-				return false;
-		}) ;
 
-		if (parsed != H.end())
+		if (!SkipWeld) 
 		{
-			while(pTest->m_adjacents.size())	
-				pTest->m_adjacents.front()->VReplace(pTest, *parsed);
+			auto parsed = std::find_if(std::execution::par, H.begin(), H.end(), [&] (Vertex* v) 
+			{ 
+				if (v->similar(*pTest, g_params().m_weld_distance) )
+					return true; 
+				else 
+					return false;
+			}) ;
+	 
+			if (parsed != H.end())
+			{
+				while(pTest->m_adjacents.size())	
+					pTest->m_adjacents.front()->VReplace(pTest, *parsed);
 
-			lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
-			Vremoved			+= 1;
-			pTest				= NULL;
-		} 
+				lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
+				Vremoved			+= 1;
+				pTest				= NULL;
+			} 
+		}
 		 
-		
 		/*
 		for (vecVertexIt T=H.begin(); T!=H.end(); T++)
 		{

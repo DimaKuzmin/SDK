@@ -181,11 +181,17 @@ xr_string	ShortcutValue::GetDrawText		(TOnDrawTextEvent )
 xr_string GameTypeValue::GetDrawText(TOnDrawTextEvent)
 {
 	string512 str;
-    xr_sprintf(str,sizeof(str),"%s%s%s%s%s",
-	GetValue().MatchType(eGameIDSingle)?"Single ":"",
-	GetValue().MatchType(eGameIDDeathmatch)?"DM ":"",
-	GetValue().MatchType(eGameIDTeamDeathmatch)?"TDM ":"",
-	GetValue().MatchType(eGameIDArtefactHunt)?"AH ":"",
-	GetValue().MatchType(eGameIDCaptureTheArtefact)?"CTA":""    );
+    xr_sprintf(str,sizeof(str),"MODES: %s %s %s %s %s %s %s %s %s",
+	GetValue().MatchType(eGameIDSingle)?"Single":"",
+	GetValue().MatchType(eGameIDDeathmatch)?"DM":"",
+	GetValue().MatchType(eGameIDTeamDeathmatch)?"TDM":"",
+	GetValue().MatchType(eGameIDArtefactHunt)?"AH":"",
+	GetValue().MatchType(eGameIDCaptureTheArtefact)?"CTA":"",     
+	GetValue().MatchType(eGameIDFreeMp) ? "FMP" : "",
+	GetValue().MatchType(eGameIDRolePlay) ? "ROLEPLAY" : "",
+	GetValue().MatchType(eGameIDDeffense) ? "DEFFENSE" : "",
+	GetValue().MatchType(eGameIDCoop) ? "COOP" : ""
+	);
+
 	return xr_string(str);
 }

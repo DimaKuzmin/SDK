@@ -4,7 +4,8 @@
 #pragma once
 
 //new
-enum EGameIDs {
+enum EGameIDs 
+{
         eGameIDNoGame                                   = u32(0),
         eGameIDSingle                                   = u32(1) << 0,
         eGameIDDeathmatch                               = u32(1) << 1,
@@ -13,8 +14,10 @@ enum EGameIDs {
         eGameIDCaptureTheArtefact                       = u32(1) << 4,
         eGameIDDominationZone                           = u32(1) << 5,
         eGameIDTeamDominationZone                       = u32(1) << 6,
-        eGameIDCoop                                     = u32(1) << 7,
-        eGameIDRoleplay                                 = u32(1) << 8
+        eGameIDFreeMp                                   = u32(1) << 7,
+        eGameIDRolePlay                                 = u32(1) << 8,
+        eGameIDDeffense                                 = u32(1) << 9,
+        eGameIDCoop                                     = u32(1) << 10
 };
 
 class PropValue;
@@ -34,7 +37,8 @@ struct GameTypeChooser
 	void 	SaveStream		(IWriter&);
 	void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
 
-    void    SetValue(const u16& mask, bool& value) { 
+    void    SetValue(const u16& mask, bool& value) 
+    { 
         Msg("set[%d] value [%d]", mask, value);
         m_GameType.set(mask, value);
     };

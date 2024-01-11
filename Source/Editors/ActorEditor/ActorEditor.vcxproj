@@ -236,6 +236,7 @@
     <ClCompile Include="UIBoneForm.cpp" />
     <ClCompile Include="UIKeyForm.cpp" />
     <ClCompile Include="UILeftBarForm.cpp" />
+    <ClCompile Include="UILods.cpp" />
     <ClCompile Include="UIMainForm.cpp" />
     <ClCompile Include="UIMainMenuForm.cpp" />
     <ClCompile Include="UITest.cpp" />
@@ -271,6 +272,7 @@
     <ClInclude Include="UIBoneForm.h" />
     <ClInclude Include="UIKeyForm.h" />
     <ClInclude Include="UILeftBarForm.h" />
+    <ClInclude Include="UILods.h" />
     <ClInclude Include="UIMainForm.h" />
     <ClInclude Include="UIMainMenuForm.h" />
     <ClInclude Include="UITopBarForm.h" />

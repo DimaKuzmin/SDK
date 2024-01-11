@@ -3,6 +3,7 @@
 #pragma hdrstop
 
 #include "UI_ActorMain.h"
+#include "UILods.h"
 
 //---------------------------------------------------------------------------
 CActorMain*	AUI=(CActorMain*)UI;
@@ -442,7 +443,8 @@ CCommandVar CActorTools::CommandClear(CCommandVar p1, CCommandVar p2)
 CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
 {
     xr_string temp_fn = p1.IsString() ? xr_string(p1) : xr_string("");
-    if (!p1.IsString()) {
+    if (!p1.IsString()) 
+    {
         temp_fn = EFS.ChangeFileExt(m_LastFileName.c_str(), "");
         if (!EFS.GetOpenName(EDevice.m_hWnd,_objects_, temp_fn))
             return  	FALSE;
@@ -476,6 +478,7 @@ CCommandVar CActorTools::CommandLoad(CCommandVar p1, CCommandVar p2)
         }
         m_LastFileName = temp_fn.c_str();
         ELog.Msg(mtInformation, "Object '%s' successfully loaded. Loading time - %3.2f(s).", m_LastFileName.c_str(), T.GetElapsed_sec());
+        
         EPrefs->AppendRecentFile(m_LastFileName.c_str());
         ExecCommand(COMMAND_UPDATE_CAPTION);
         ExecCommand(COMMAND_UPDATE_PROPERTIES);
@@ -590,6 +593,8 @@ void CActorMain::OnDrawUI()
 {
     TUI::OnDrawUI();
     UIBoneForm::Update();
+
+    UILods::Update();
 }
 
 Ivector2 CActorMain::GetRenderMousePosition() const

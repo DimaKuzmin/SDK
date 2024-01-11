@@ -16,6 +16,7 @@
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
 extern bool use_intel = false;
+extern bool use_opcode_old = false;
 
 
 

@@ -262,7 +262,11 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
     Fmatrix 					M, Mi;
     bb.getradius				(o_size);
     bb.getcenter				(o_center);
-    SPBItem* PB					= UI->ProgressStart(LOD_SAMPLE_COUNT*LOD_IMAGE_SIZE,OBJECT->GetName());
+   
+    
+    
+    //SPBItem* PB					= UI->ProgressStart(LOD_SAMPLE_COUNT*LOD_IMAGE_SIZE,OBJECT->GetName());
+    
     float dW 					= _max(o_size.x,o_size.z)/(LOD_IMAGE_SIZE/2);
     float dH 					= o_size.y/(LOD_IMAGE_SIZE/2);
     float dR					= bb.getradius();
@@ -282,7 +286,8 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
         Shader_xrLC* c_sh		= EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
         if (!c_sh->flags.bRendering) continue;
         if (0==surf->m_ImageData)surf->CreateImageData();
-    }    
+    }   
+ 
 
     // calculate
     for (u32 sample_idx=0; sample_idx<LOD_SAMPLE_COUNT; sample_idx++){
@@ -290,8 +295,14 @@ void CImageManager::CreateLODTexture(CEditableObject* OBJECT, U32Vec& lod_pixels
         M.setXYZ				(0,angle,0);
         M.translate_over		(o_center);
         Mi.invert				(M);
-	    for (s32 iH=0; iH<LOD_IMAGE_SIZE; iH++){
-        	PB->Inc				();
+        Msg("GenerationLOD sample: %d / %d", sample_idx, LOD_SAMPLE_COUNT );
+ 
+	    for (s32 iH=0; iH<LOD_IMAGE_SIZE; iH++)
+        {
+           
+         
+
+        	//PB->Inc				();
         	float Y				= (iH-(LOD_IMAGE_SIZE-1)/2)*dH;
 		    for (s32 iW=0; iW<LOD_IMAGE_SIZE; iW++){
 	        	float X			= (iW-(LOD_IMAGE_SIZE)/2)*dW;
@@ -417,7 +428,9 @@ tH+=TT.GetElapsed_sec();
     for (int px_idx=0; px_idx<int(nm_pixels.size()); px_idx++)
         nm_pixels[px_idx]			= subst_alpha(nm_pixels[px_idx],color_get_R(hemi_tmp[px_idx]));
     
-    UI->ProgressEnd(PB);
+    
+        
+    //UI->ProgressEnd(PB);
 }
 
 //------------------------------------------------------------------------------

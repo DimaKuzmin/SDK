@@ -39,6 +39,7 @@ class CDUInterface;
 class ISE_Shape{
 public:
 	virtual void 			assign_shapes			(CShapeData::shape_def* shapes, u32 cnt)=0;
+ 
 };
 
 SERVER_ENTITY_DECLARE_BEGIN0(CSE_Visual)

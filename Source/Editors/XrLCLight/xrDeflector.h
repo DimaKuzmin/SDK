@@ -15,6 +15,8 @@ class CDeflector;
 class execute_statistics;
 
 XRLC_LIGHT_API extern bool use_intel;
+XRLC_LIGHT_API extern bool use_opcode_old;
+
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
 XRLC_LIGHT_API void IntelClearTimers(LPCSTR name);

@@ -81,10 +81,14 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 }
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
 
+ 
 void CBuild::BuildCForm	()
 {
+	
+
 	// Collecting data
 	Phase		("CFORM: creating...");
+ 
 	vecFace*	cfFaces		= xr_new<vecFace>	();
 	vecVertex*	cfVertices	= xr_new<vecVertex>	();
 	
@@ -174,11 +178,11 @@ void CBuild::BuildCForm	()
 		//	clMsg("Model %d", ref);
 	}
 
-	Status("SimplifyCFORM");
-	
 	// Simplification
 	if (g_params().m_quality!=ebqDraft && !strstr(Core.Params, "-no_simplify"))
-		SimplifyCFORM	(CL);
+	{	
+		SimplifyCFORM	(CL); 
+	} 
 
 	// bb?
 	BB.invalidate	();
@@ -214,6 +218,17 @@ void CBuild::BuildCForm	()
 	}
 
 	FS.w_close		(MFS);
+
+
+	
+	Phase("CFORM: OPCODE TREE");
+ 
+	CDB::MODEL* RQ				= xr_new<CDB::MODEL> ();
+	RQ->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
+	RQ->build_levelcdb_tree_save(strconcat(sizeof(fn),fn,pBuild->path,"level.cdbtree"));
+	Msg("RQ Model Memory: %llu", RQ->memory());
+ 	xr_delete(RQ);
+
 }
 
 void CBuild::BuildPortals(IWriter& fs)

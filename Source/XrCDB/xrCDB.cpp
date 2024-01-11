@@ -47,15 +47,21 @@ MODEL::MODEL	()
 	tris_count	= 0;
 	verts		= 0;
 	verts_count	= 0;
+	tris_edges  = 0;
+	tris_edges_count = 0;
+
 	status		= S_INIT;
 }
 MODEL::~MODEL()
 {
 	syncronize	();		// maybe model still in building
 	status		= S_INIT;
+	 
+ 
 	CDELETE		(tree);
 	CFREE		(tris);		tris_count = 0;
 	CFREE		(verts);	verts_count= 0;
+	CFREE		(tris_edges); tris_edges_count = 0;
 }
 
 struct	BTHREAD_params
@@ -117,11 +123,11 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	tris_count	= Tcnt;
 	tris		= CALLOC(TRI,tris_count);
 	CopyMemory	(tris,T,tris_count*sizeof(TRI));
-
+	
+	/*
 	tris_edges_count = Tcnt;
 	tris_edges = CALLOC(TRI_Edge, tris_count);
 
-	CTimer t;t.Start();
 	for (auto i = 0; i < Tcnt; i++)
 	{	 			 		
 		Fvector& p0	= verts[ T[i].verts[0] ];
@@ -138,12 +144,11 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 
 		tris_edges[i].edge1_128 = _mm_load_ps((float*) &edge1);
 		tris_edges[i].edge2_128 = _mm_load_ps((float*) &edge2);
-		tris_edges[i].v0_128 = _mm_load_ps((float*) &p0);
+		tris_edges[i].v0_128	= _mm_load_ps((float*) &p0);
 
 	}
-
-	Msg("Reycast Model Loading Edges: %d", t.GetElapsed_ms());
-
+	*/
+ 
 	// callback
 	if (bc)		bc	(verts,Vcnt,tris,Tcnt,bcp);
 
@@ -192,12 +197,28 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	return;
 }
 
-u32 MODEL::memory	()
+void CDB::MODEL::build_levelcdb_tree_save(string_path filename)
+{
+	IWriter* wstream = FS.w_open(filename);
+	CMemoryWriter memory;
+
+	if (tree)
+		tree->Save(&memory);
+	
+	wstream->w(memory.pointer(), memory.size());
+	FS.w_close(wstream);
+
+ 	memory.free();
+}
+
+size_t MODEL::memory	()
 {
 	if (S_BUILD==status)	{ Msg	("! xrCDB: model still isn't ready"); return 0; }
-	u32 V					= verts_count*sizeof(Fvector);
-	u32 T					= tris_count *sizeof(TRI);
-	return tree->GetUsedBytes()+V+T+sizeof(*this)+sizeof(*tree);
+	size_t V					= verts_count*sizeof(Fvector);
+	size_t T					= tris_count *sizeof(TRI);	
+	size_t TEdge				= tris_edges_count * sizeof(TRI_Edge);
+	size_t TreeOpcode			= sizeof(*tree) + tree->GetUsedBytes();
+	return sizeof(*this)+ V + T + TreeOpcode + TEdge;
 }
 
 // This is the constructor of a class that has been exported.

@@ -238,6 +238,9 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>dxerr.lib;comdlg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y A:\X-Ray_CoP_SDK\SDK\SDK\Bin\x64\Development\*.* A:\X-Ray_CoP_SDK\editors\Bin\x64\Development\*.*</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="clsid.cpp" />

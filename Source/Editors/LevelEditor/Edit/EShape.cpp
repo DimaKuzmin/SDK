@@ -315,7 +315,8 @@ bool CEditShape::LoadLTX(CInifile& ini, LPCSTR sect_name)
 
        	sprintf			(buff,"shape_radius_%d", i);
 		shapes[i].data.sphere.R = ini.r_float		(sect_name, buff);
-       }else
+       }
+       else
        {
        	 R_ASSERT		(shapes[i].type==CShapeData::cfBox);
          sprintf			(buff,"shape_matrix_i_%d", i);
@@ -358,7 +359,8 @@ void CEditShape::SaveLTX(CInifile& ini, LPCSTR sect_name)
 
        	sprintf			(buff,"shape_radius_%d", i);
 		ini.w_float		(sect_name, buff, shapes[i].data.sphere.R);
-       }else
+       }
+       else
        {
        		R_ASSERT		(shapes[i].type==CShapeData::cfBox);
             sprintf			(buff,"shape_matrix_i_%d", i);

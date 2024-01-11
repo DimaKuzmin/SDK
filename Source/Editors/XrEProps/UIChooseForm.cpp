@@ -15,7 +15,7 @@ void UIChooseForm::SelectedFOLDER(Node* N)
 
         for (Node& Node : N->Nodes)
         {
-            Msg("Node [%s]", Node.Name.c_str());
+           // Msg("Node [%s]", Node.Name.c_str());
             m_ClickItem = Node.Object;
 
             m_SelectedItems.push_back(m_ClickItem);
@@ -147,7 +147,7 @@ void UIChooseForm::FillItems(u32 choose_id)
     ChooseItemVecIt  it = m_Items.begin();
     ChooseItemVecIt  _E = m_Items.end();
 
-    Msg("Fill Item: %d ", choose_id);
+   //  Msg("Fill Item: %d ", choose_id);
 
     //SPBItem* pb	= UI->ProgressStart(ss,"Fill items..."); //sky to all: no idea how to do it
 
@@ -318,7 +318,7 @@ void UIChooseForm::Draw()
     if (m_ClickItem)
     {       
         {
-            Msg("Click Item: %s", m_ClickItem->name.c_str());
+          //  Msg("Click Item: %s", m_ClickItem->name.c_str());
 
             if (!m_Flags.is(cfMultiSelect))
             {
@@ -365,13 +365,7 @@ void UIChooseForm::Update()
             Form->Draw();
             ImGui::EndPopup();
         }
-    
-         
-
     }
-
-    
-
 }
 
 xr_string UIChooseForm::GetLastSelected()
@@ -545,11 +539,7 @@ void UIChooseForm::SelectItem(u32 choose_ID, int sel_cnt, LPCSTR init_name, TOnC
         }
     }
 
-    for (auto item : Form->m_Items)
-    {
-         
-    }
-
+   
 
     /*ImGui::GetBack*/
     //.	Form->paItemsCount->Caption		= AnsiString(" Items in list: ")+AnsiString(Form->tvItems->Items->Count);

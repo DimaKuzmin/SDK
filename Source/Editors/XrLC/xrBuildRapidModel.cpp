@@ -75,7 +75,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	
 	lc_global_data()->destroy_rcmodel();
 	Status			("Converting faces...");
-	for				(u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
+	for				(u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
+		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
 
 	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve		(6*2*3);
@@ -207,6 +208,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 				SaveUVM			(strconcat(sizeof(fn),fn,pBuild->path,"build_cform_source.uvm"),rc_faces);
 		}
 
+
+
 				
 		if (size_Rqface + size_TRI + size_VS > 4096)
 		{
@@ -279,5 +282,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 			FS.w_close(MFS);
 		}
+
+
 	}
 }

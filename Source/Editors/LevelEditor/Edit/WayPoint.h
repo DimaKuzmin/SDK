@@ -24,13 +24,15 @@ class CWayPoint{
     friend class TfrmPropertiesWayPoint;
     shared_str		m_Name;
     Fvector		m_vPosition;
-    Flags32		m_Flags;
+
     BOOL		m_bSelected;
     WPLVec		m_Links;
     void		CreateLink		(CWayPoint* P, float pb);
     bool		AppendLink		(CWayPoint* P, float pb);
     bool		DeleteLink		(CWayPoint* P);
 public:
+    Flags32		m_Flags;
+
                 CWayPoint		(LPCSTR name);
                 ~CWayPoint		();
     void    	Render      	(LPCSTR parent_name, bool bParentSelect);
@@ -111,6 +113,7 @@ public:
 
     virtual bool 	OnSelectionRemove();
 
+    virtual WPVec GetWPoints() {return m_WayPoints;};
     virtual const Fvector& GetPosition	()	const { return m_WayPoints.front()->m_vPosition; 	}
     virtual void 	SetPosition		(const Fvector& pos)	{ MoveTo(pos, Fvector().set(0,1,0) );	UpdateTransform();}
 };

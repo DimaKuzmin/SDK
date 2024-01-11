@@ -368,11 +368,14 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 				CDB::TRI&	T		= tris	[*tit];
 				Fvector		V[3]	= { verts[T.verts[0]], verts[T.verts[1]], verts[T.verts[2]] };
 				
+				// Fast Check (se7kills)
 				if (CDB::TestRayTri(start,dir,V,r_u,r_v,r_range,TRUE))
 				{
-					if (r_range>=0.f)	{
+					if (r_range>=0.f)	
+					{
 						float y_test	= start.y - r_range;
-						if (y_test>P.y)	{
+						if (y_test>P.y)
+						{
 							P.y			= y_test+EPS;
 							t_n.mknormal(V[0],V[1],V[2]);
 						}

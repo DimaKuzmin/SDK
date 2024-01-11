@@ -1,6 +1,8 @@
 #pragma once
 class XREPROPS_API UIPropertiesForm :public XrUI, private FolderHelper<PropItem,true>
 {
+	string_path prop_search = "";
+
 public:
 	void SetModifiedEvent(TOnModifiedEvent modif = 0) { OnModifiedEvent = modif; }
 	UIPropertiesForm();
@@ -9,6 +11,9 @@ public:
 	void AssignItems(PropItemVec& items);
 	PropItem* FindItem(const char* path);
 	PropItem* FindItemOfName(shared_str name);
+
+	LPCSTR GetNameItem(PropItem* item);
+
 	void ClearProperties();
 	IC void SetReadOnly(bool enable) { m_Flags.set(plReadOnly, enable); }
 	IC bool IsModified() { return m_bModified;}

@@ -359,6 +359,7 @@ void CSMotion::SaveMotion(const char* buf){
 
 bool CSMotion::LoadMotion(const char* buf)
 {
+    Msg("File Motion: %s", buf);
 	destructor<IReader>	F(FS.r_open(buf));
 	R_ASSERT		(F().find_chunk(EOBJ_SMOTION));
 	return Load		(F());

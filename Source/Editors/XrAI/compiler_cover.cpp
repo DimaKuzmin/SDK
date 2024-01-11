@@ -503,7 +503,7 @@ void compute_non_covers		()
 	COVER_NODES::iterator	J = g_cover_nodes.begin();
 	for ( ; I != E; ++I, ++J)
 	{
-		StatusNoMsg();
+		//StatusNoMsg();
 		if (*J)
 			continue;
 

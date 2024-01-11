@@ -72,7 +72,11 @@ public:
 	void	Load					(const b_params& P, const IReader&  fs);
 
 	void	TestMergeGeom(IWriter* writer);
+	void	ExportRayCastModel(IWriter* writer);
+
 	void	ExportDeflectors();
+
+	// void RunCollideFormNEW();
 
 
 	void	Run						(LPCSTR path);

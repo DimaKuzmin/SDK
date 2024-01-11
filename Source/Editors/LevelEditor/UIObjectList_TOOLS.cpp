@@ -7,10 +7,12 @@
 #include "ESceneAIMapTools.h"
 #include "ESceneSpawnTools.h"
 #include "ESceneObjectTools.h"
+#include "ESceneWayTools.h"
 
 #include "SceneObject.h"
 #include "SpawnPoint.h"
 #include "CustomObject.h"
+#include "WayPoint.h"
 
 
 
@@ -500,10 +502,14 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 					CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
 					xr_string name;
 					string32 tmp;
-					name = obj_find->FName.c_str();
-					name += "_";
-					name += itoa(Random.randI(1, 20), tmp, 10);
-					obj_find->SetName(name.c_str());
+					if (obj_find!=nullptr)
+					{
+					    name = obj_find->FName.c_str();
+						name += "_";
+						name += itoa(Random.randI(1, 20), tmp, 10);
+						obj_find->SetName(name.c_str());
+					}
+					
  				}
 
 				if (!Scene->OnLoadAppendObject(obj))
@@ -1700,6 +1706,48 @@ void UIObjectList::UpdateUIObjectList()
 	}
  
 
+	if (LTools->CurrentClassID() == OBJCLASS_WAY)
+	{
+		if (ImGui::Button("check ways"))
+		{
+			ESceneWayTool* way_tool = (ESceneWayTool*)Scene->GetTool(OBJCLASS_WAY);
+		
+			if (way_tool)
+			{
+				auto list = way_tool->GetObjects();
+				
+				for (auto way : list)
+				{
+					int id = 0;
+					CWayObject* way_object = smart_cast<CWayObject*>(way);
+					
+					if (way_object && way_object->Selected())
+					{
+	  					Msg("Test Way: %s", way->GetName());
+
+						for (auto wayp : way_object->GetWPoints())
+						{
+							if (wayp)
+							{  
+ 								Msg("Way[%u] Flag Set1: %u", id, wayp->m_Flags);
+								//Msg("Flag Set2: %d", wayp->m_Flags.test(1));
+								//Msg("Flag Set3: %d", wayp->m_Flags.test(2));
+								//Msg("Flag Set4: %d", wayp->m_Flags.test(3));
+								//Msg("Flag Set5: %d", wayp->m_Flags.test(4));
+								//Msg("Flag Set6: %d", wayp->m_Flags.test(5));
+								//Msg("Flag Set7: %d", wayp->m_Flags.test(6));
+								//Msg("Flag Set8: %d", wayp->m_Flags.test(7));
+							}
+							id++;
+						}
+					}
+				}
+
+			}
+
+		}
+
+	}
 
 }
  

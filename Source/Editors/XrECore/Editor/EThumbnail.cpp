@@ -29,7 +29,8 @@ void DrawThumbnail(TCanvas* pCanvas, TRect& r, U32Vec& data, bool bDrawWithAlpha
     pBitmap->Height		 	= _h;
     pBitmap->Width		 	= _w;
         
-    if (bDrawWithAlpha){
+    if (bDrawWithAlpha)
+    {
     	Fcolor back;
         back.set		(bgr2rgb(pCanvas->Brush->Color));  back.mul_rgb(255.f);
         for (int y = 0; y < pBitmap->Height; y++)
@@ -72,7 +73,8 @@ void EImageThumbnail::VFlip()
 	u32 line[THUMB_WIDTH];
     u32 sz_ln=sizeof(u32)*THUMB_WIDTH;
     u32 y2 = THUMB_WIDTH-1;
-    for (int y=0; y<THUMB_HEIGHT/2; y++,y2--){
+    for (int y=0; y<THUMB_HEIGHT/2; y++,y2--)
+    {
     	CopyMemory(line,m_Pixels.data()+y2*THUMB_WIDTH,sz_ln);
     	CopyMemory(m_Pixels.data()+y2*THUMB_WIDTH,m_Pixels.data()+y*THUMB_WIDTH,sz_ln);
     	CopyMemory(m_Pixels.data()+y*THUMB_WIDTH,line,sz_ln);
@@ -86,6 +88,7 @@ void EImageThumbnail::CreatePixels(u32* p, u32 w, u32 h)
 	m_Pixels.resize(THUMB_SIZE);
 	imf_Process(m_Pixels.data(),THUMB_WIDTH,THUMB_HEIGHT,p,w,h,imf_box);
 }
+
 void EImageThumbnail::Update(ImTextureID& Texture)
 {
     if (m_Pixels.size() == 0)

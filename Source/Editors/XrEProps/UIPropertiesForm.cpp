@@ -88,6 +88,9 @@ void UIPropertiesForm::Draw()
 			}
 		}
 	}
+
+	ImGui::InputText("#prop_sercher", prop_search, sizeof(prop_search));
+
 	if (m_GeneralNode.Nodes.size())
 	{
 		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(0, 0));
@@ -102,11 +105,27 @@ void UIPropertiesForm::Draw()
 	}
 }
 
-
+bool str_sort(PropItem* n1, PropItem* n2)
+{
+	return n1->Key() < n2->Key();
+}
+ 
 void UIPropertiesForm::AssignItems(PropItemVec& items)
 {
 	m_GeneralNode = Node();
 	m_Items = items;
+
+	/*
+	std::sort(items.begin(), items.end(), str_sort);
+
+	int id = 0;
+	for (PropItem* item : items)
+	{
+		id++;
+		Msg("item Key[%s]", item->Key());
+	}
+	*/
+
 	for (PropItem* item : items)
 	{
 		item->m_Owner = this;
@@ -131,6 +150,11 @@ PropItem* UIPropertiesForm::FindItemOfName(shared_str name)
 		}
 	}
 	return nullptr;
+}
+
+LPCSTR UIPropertiesForm::GetNameItem(PropItem* item)
+{
+	return strrchr(item->Key(), '\\') + 1;;
 }
 
 void UIPropertiesForm::ClearProperties()
@@ -606,6 +630,23 @@ int UIPropertiesForm::DrawEditText_Callback(ImGuiInputTextCallbackData* data)
 bool Selected[6];
 #include "../../xrServerEntities/gametype_chooser.h"
 
+/*
+eGameIDSingle                                   = u32(1) << 0,
+eGameIDDeathmatch                               = u32(1) << 1,
+eGameIDTeamDeathmatch                           = u32(1) << 2,
+eGameIDArtefactHunt                             = u32(1) << 3,
+eGameIDCaptureTheArtefact                       = u32(1) << 4,
+eGameIDDominationZone                           = u32(1) << 5,
+eGameIDTeamDominationZone                       = u32(1) << 6,
+eGameIDFreemp                                   = u32(1) << 7,
+eGameIDRoleplay                                 = u32(1) << 8,
+eGameIDDeffense                                 = u32(1) << 9,
+eGameIDCoop                                     = u32(1) << 10
+*/
+
+char* mapModes[9] = {"Single", "DM", "TDM", "ArtefactHunt", "CTA", "FMP", "RP", "DEFFENSE", "COOP"};
+EGameIDs mapModes_GAMEID[9] = {eGameIDSingle, eGameIDDeathmatch, eGameIDTeamDeathmatch, eGameIDArtefactHunt, eGameIDCaptureTheArtefact, eGameIDFreemp, eGameIDRoleplay, eGameIDDeffense, eGameIDCoop};
+
 void UIPropertiesForm::DrawEditGameType()
 {
 	if (ImGui::BeginPopupContextItem("EditGameType", 0))
@@ -616,7 +657,19 @@ void UIPropertiesForm::DrawEditGameType()
 		ImGui::PopStyleVar(3);
 		{
 			ImGui::BeginGroup();
+			 
+			for (auto i = 0; i < 9; i++)
+			{
+				bool cheked = m_EditGameTypeChooser.MatchType(mapModes_GAMEID[i]);
+				//m_EditGameTypeChooser.MatchType(eGameIDSingle);
+				if (ImGui::Checkbox(mapModes[i], &cheked))
+				{
+					m_EditGameTypeChooser.m_GameType.set(mapModes_GAMEID[i], cheked);
+ 					//Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
+				}
+			}
 
+			/*
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
 				//m_EditGameTypeChooser.MatchType(eGameIDSingle);
@@ -661,10 +714,12 @@ void UIPropertiesForm::DrawEditGameType()
 				}
 			}
 
-			//Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-
+			*/
+ 
 			ImGui::EndGroup(); ImGui::SameLine();
 		}
+
+		
 		{
 			ImGui::BeginGroup();
 			if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))

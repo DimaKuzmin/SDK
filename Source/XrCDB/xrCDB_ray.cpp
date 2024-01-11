@@ -129,18 +129,22 @@ static const float _MM_ALIGN16
 ps_cst_plus_inf[4] = { flt_plus_inf,  flt_plus_inf,  flt_plus_inf,  flt_plus_inf },
 ps_cst_minus_inf[4] = { -flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf };
 
-ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist) {
+__m128 plus_inf = loadps(ps_cst_plus_inf);
+__m128 minus_inf = loadps(ps_cst_minus_inf);
+
+ICF BOOL isect_sse(const aabb_t& box, const __m128 pos, const __m128 inv_dir, float& dist) 
+{
 	// you may already have those values hanging around somewhere
-	const __m128
-		plus_inf = loadps(ps_cst_plus_inf),
-		minus_inf = loadps(ps_cst_minus_inf);
+	//const __m128
+	//	plus_inf = loadps(ps_cst_plus_inf),
+	//	minus_inf = loadps(ps_cst_minus_inf);
 
 	// use whatever's apropriate to load.
 	const __m128
 		box_min = loadps(&box.min),
-		box_max = loadps(&box.max),
-		pos = loadps(&ray.pos),
-		inv_dir = loadps(&ray.inv_dir);
+		box_max = loadps(&box.max);
+		//pos = loadps(&ray.pos),
+		//inv_dir = loadps(&ray.inv_dir);
 
 	// use a div if inverted directions aren't available
 	const __m128 l1 = mulps(subps(box_min, pos), inv_dir);
@@ -177,6 +181,56 @@ ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist) {
 
 	return  ret;
 }
+
+ICF BOOL isect_sse_old(const aabb_t& box, const ray_t ray, float& dist) 
+{
+	// you may already have those values hanging around somewhere
+	const __m128
+		plus_inf_old = loadps(ps_cst_plus_inf),
+		minus_inf_old = loadps(ps_cst_minus_inf);
+
+	// use whatever's apropriate to load.
+	const __m128
+		box_min = loadps(&box.min),
+		box_max = loadps(&box.max),
+		pos = loadps(&ray.pos),
+		inv_dir = loadps(&ray.inv_dir);
+
+	// use a div if inverted directions aren't available
+	const __m128 l1 = mulps(subps(box_min, pos), inv_dir);
+	const __m128 l2 = mulps(subps(box_max, pos), inv_dir);
+
+	// the order we use for those min/max is vital to filter out
+	// NaNs that happens when an inv_dir is +/- inf and
+	// (box_min - pos) is 0. inf * 0 = NaN
+	const __m128 filtered_l1a = minps(l1, plus_inf_old);
+	const __m128 filtered_l2a = minps(l2, plus_inf_old);
+
+	const __m128 filtered_l1b = maxps(l1, minus_inf_old);
+	const __m128 filtered_l2b = maxps(l2, minus_inf_old);
+
+	// now that we're back on our feet, test those slabs.
+	__m128 lmax = maxps(filtered_l1a, filtered_l2a);
+	__m128 lmin = minps(filtered_l1b, filtered_l2b);
+
+	// unfold back. try to hide the latency of the shufps & co.
+	const __m128 lmax0 = rotatelps(lmax);
+	const __m128 lmin0 = rotatelps(lmin);
+	lmax = minss(lmax, lmax0);
+	lmin = maxss(lmin, lmin0);
+
+	const __m128 lmax1 = muxhps(lmax, lmax);
+	const __m128 lmin1 = muxhps(lmin, lmin);
+	lmax = minss(lmax, lmax1);
+	lmin = maxss(lmin, lmin1);
+
+	const BOOL ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
+
+	storess(lmin, &dist);
+	//storess	(lmax, &rs.t_far);
+
+	return  ret;
+}
  
 
 
@@ -186,8 +240,9 @@ class _MM_ALIGN16	ray_collider
 public:
 	COLLIDER* dest;
 	TRI* tris;
-	TRI_Edge* tris_edges;
+	//TRI_Edge* tris_edges;
 	MODEL* MDL;
+
 
 	OpcodeContext* context_opcode = 0;
 	
@@ -198,16 +253,18 @@ public:
 	float			rRange2;
 
 	bool			continue_work = true;
-	
+
+ 	
 	__m128 ray_pos;
 	__m128 fwd_dir;
+	__m128 inv_dir;
  
 	ICF void			_init(COLLIDER* CL, CDB::MODEL* model,  const Fvector& C, const Fvector& D, float R)
 	{
 		dest = CL;
 		tris = model->get_tris();
 		verts = model->get_verts();
-		tris_edges = model->get_tris_edges();
+		//tris_edges = model->get_tris_edges();
 
 		MDL = model;
 
@@ -219,6 +276,7 @@ public:
 
 		ray_pos = loadps(&ray.pos);
 		fwd_dir = loadps(&ray.fwd_dir);
+		inv_dir = loadps(&ray.inv_dir);
 
 		if (!bUseSSE) 
 		{
@@ -257,7 +315,8 @@ public:
 		_mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
 		_mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
 
-		return 		isect_sse(box, ray, dist);
+		//return isect_sse_old(box, ray, dist);
+		return 		isect_sse(box, ray_pos, inv_dir, dist);
 	}
 	
 
@@ -282,6 +341,53 @@ public:
 		);  
 	}
 
+		
+	IC bool			_tri		(u32* p, float& u, float& v, float& range)
+	{
+		Fvector edge1, edge2, tvec, pvec, qvec;
+		float	det,inv_det;
+		
+		// find vectors for two edges sharing vert0
+		Fvector&			p0	= verts[ p[0] ];
+		Fvector&			p1	= verts[ p[1] ];
+		Fvector&			p2	= verts[ p[2] ];
+		edge1.sub			(p1, p0);
+		edge2.sub			(p2, p0);
+		// begin calculating determinant - also used to calculate U parameter
+		// if determinant is near zero, ray lies in plane of triangle
+		pvec.crossproduct	(ray.fwd_dir, edge2);
+		det = edge1.dotproduct(pvec);
+		if (bCull)
+		{						
+			if (det < EPS)  return false;
+			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			u = tvec.dotproduct(pvec);					// calculate U parameter and test bounds
+			if (u < 0.f || u > det) return false;
+			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+			v = ray.fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
+			if (v < 0.f || u + v > det) return false;
+			range = edge2.dotproduct(qvec);				// calculate t, scale parameters, ray intersects triangle
+			inv_det = 1.0f / det;
+			range	*= inv_det;
+			u		*= inv_det;
+			v		*= inv_det;
+		}
+		else
+		{			
+			if (det > -EPS && det < EPS) return false;
+			inv_det = 1.0f / det;
+			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			u = tvec.dotproduct(pvec)*inv_det;			// calculate U parameter and test bounds
+			if (u < 0.0f || u > 1.0f)    return false;
+			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+			v = ray.fwd_dir.dotproduct(qvec)*inv_det;	// calculate V parameter and test bounds
+			if (v < 0.0f || u + v > 1.0f) return false;
+			range = edge2.dotproduct(qvec)*inv_det;		// calculate t, ray intersects triangle
+		}
+		return true;
+	}
+
+	/*
 	ICF bool			_tri(TRI_Edge& tri, float& u, float& v, float& range)
 	{			
 		if (!bCull)
@@ -317,14 +423,6 @@ public:
 
 			//if (v < 0.0f || u + v > 1.0f) return false;
 			range = dot_product_sse(tri.edge2_128, qvec) * inv_det;		// calculate t, ray intersects triangle
- 
-			/*
-			__m128 failed = _mm_or_ps(_mm_or_ps(condition0, condition1), condition2);
-
-			int mask = _mm_movemask_ps(failed);
-			if (mask != 0)
-				return false;
-			*/
 		}
 		else 
 		{
@@ -360,6 +458,7 @@ public:
 	    
 		return true;
 	}
+	*/
 	 
 	void			_prim(DWORD prim)
 	{
@@ -369,7 +468,9 @@ public:
 		//	find_opacity = true;
   
 		float	u, v, r;
-		if (!_tri(tris_edges[prim], u, v, r))	return;
+		//if (!_tri(tris_edges[prim], u, v, r))	return;
+		if (!_tri(tris[prim].verts, u, v, r)) return;
+
 		if (r <= 0 || r > rRange)					return;
 
 		if (bNearest)
@@ -488,6 +589,9 @@ ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 	RC._init(this, MDL, context->r_start, context->r_dir, context->r_range);
  	RC._stab(N);
 }
+
+ 
+ 
 
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {

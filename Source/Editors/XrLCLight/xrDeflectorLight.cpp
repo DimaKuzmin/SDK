@@ -430,7 +430,7 @@ void FilterFunction(OpcodeArgs* args)
 	// Access to texture
 	CDB::TRI& clT										= MDL->get_tris()[args->hit_struct.prim];
 	base_Face* F										= (base_Face*)(clT.pointer);
-	
+	 
 	if (0==F || args->skip==F)							
 		return;
  
@@ -492,11 +492,11 @@ void FilterFunction(OpcodeArgs* args)
  
 	args->energy *= opac;
 
-
+	// Energy Dead
+	if (args->energy < 0.001f)
+		args->valid = false; 
 };
-
-
- 
+  
 float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 { 
 	R_ASSERT	(DB);
@@ -511,8 +511,7 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
 	}
  
   	// 2. Polygon doesn't pick - real database query
-	//DB->ray_query(MDL, P, D, R);
-    
+     
 	OpcodeContext ctxt;
 	ctxt.filter = &FilterFunction;
 	ctxt.r_dir = D;
@@ -577,13 +576,21 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
  
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
 extern bool use_intel;
+extern bool use_opcode_old;
 
+bool readed = false;
+bool return_parrams = false;
+ 
+
+ 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
 { 	
 	if (use_intel && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
-	else 
+ 	
+	if (!use_opcode_old)
 		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
+
 
 	R_ASSERT	(DB);
  
@@ -593,10 +600,8 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
 	if (res) 
 	if (range > 0 && range < R) 
-	{
 		return 0;
-	}
- 
+  
   	// 2. Polygon doesn't pick - real database query
 	DB->ray_query(MDL, P, D, R);
 
@@ -607,7 +612,12 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 		return getLastRP_Scale(DB,MDL, L, skip, bUseFaceDisable);
 
 	return 0;
+ 
 }
+
+#define USE_RGB_OPCODE true
+#define USE_SUN_OPCODE false
+#define USE_HEMI_OPCODE false
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
 {
@@ -618,13 +628,14 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
  
 	if (0==(flags&LP_dont_rgb))
 	{
+		 
 		DB->ray_options	(0);
 		R_Light	*L	= &*lights.rgb.begin(), *E = &*lights.rgb.end();
 		for (;L!=E; L++)
 		{
 			switch (L->type)
 			{
-			case LT_DIRECT:
+				case LT_DIRECT:
 				{
 					// Cos
 					Ldir.invert	(L->direction);
@@ -632,13 +643,13 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 					if( D <=0 ) continue;
 
 					// Trace Light
-					float scale	=	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, true);
+					float scale	=	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, USE_RGB_OPCODE || use_opcode);  
 					C.rgb.x		+=	scale * L->diffuse.x; 
 					C.rgb.y		+=	scale * L->diffuse.y;
 					C.rgb.z		+=	scale * L->diffuse.z;
 				}
 				break;
-			case LT_POINT:
+				case LT_POINT:
 				{
 					// Distance
 					float sqD	=	P.distance_to_sqr	(L->position);
@@ -652,7 +663,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 					// Trace Light
 					float R		= _sqrt(sqD);
-					float scale = D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, true);
+					float scale = D*L->energy * rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_RGB_OPCODE || use_opcode); 
 					float A		;
 					
 					if (inlc_global_data()->gl_linear())
@@ -675,7 +686,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 					C.rgb.z += A * L->diffuse.z;
 				}
 				break;
-			case LT_SECONDARY:
+				case LT_SECONDARY:
 				{
 					// Distance
 					float sqD	=	P.distance_to_sqr	(L->position);
@@ -694,7 +705,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 					L->position.mad	(Pdir.random_dir(L->direction,PI_DIV_4),.05f);
 					
 					float R			= _sqrt(sqD);
-					float scale		= powf(D, 1.f/8.f)*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, true);
+					float scale		= powf(D, 1.f/8.f)*L->energy * rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_RGB_OPCODE || use_opcode);	  
 					float A			= scale * (1-R/L->range);
 					L->position		= Psave;
 
@@ -721,7 +732,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, use_opcode);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, USE_SUN_OPCODE || use_opcode);
 				C.sun		+=	scale;
 			} 
 			else 
@@ -738,7 +749,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, use_opcode);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable,  USE_SUN_OPCODE || use_opcode);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.sun		+=	A;
@@ -761,7 +772,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				// Trace Light
 				Fvector		PMoved;
 				PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable, use_opcode);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable, USE_HEMI_OPCODE || use_opcode);
 				C.hemi		+=	scale;
  			}
 			else
@@ -778,7 +789,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, use_opcode);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_HEMI_OPCODE ||  use_opcode);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.hemi		+=	A;

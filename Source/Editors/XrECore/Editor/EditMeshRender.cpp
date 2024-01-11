@@ -199,6 +199,8 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 //----------------------------------------------------
 void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 {
+  
+
     if (0==m_RenderBuffers) GenerateRenderBuffers();
     // visibility test
     if (!m_Flags.is(flVisible)) return;

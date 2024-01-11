@@ -122,11 +122,35 @@ UINT_PTR CALLBACK OFNHookProcOldStyle(HWND , UINT , WPARAM , LPARAM )
 	return 0;
 }
 
+std::vector<LPCSTR> GetSelectedFiles(const OPENFILENAME& ofn)
+{
+    std::vector<LPCSTR> selectedFiles;
+
+    // Получаем строку с путями к выбранным файлам
+    LPCSTR fileNames = ofn.lpstrFile;
+
+    // Разделяем строку на отдельные пути к файлам
+    int offset = 0;
+    while (fileNames[offset] != L'\0')
+    {
+        // Добавляем каждый путь к файлу в вектор
+        selectedFiles.push_back(&fileNames[offset]);
+        
+        // Переходим к следующему пути
+        offset += static_cast<int>(strlen(&fileNames[offset])) + 1;
+    }
+
+    Msg("Size Offset: %d", offset);
+
+    return selectedFiles;
+}
+
 bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext )
 {
 	VERIFY				(buffer&&(sz_buf>0));
 	FS_Path& P			= *FS.get_path(initial);
-	string1024 			flt;
+	
+    string1024 			flt;
 	MakeFilter			(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 
 	OPENFILENAME 		ofn;
@@ -186,10 +210,12 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
         }
 	}
 
+    
+
     if (bRes && bMulti)
     {
-    	Log				("buff=", buffer);
-		int cnt			= _GetItemCount(buffer,0x0);
+ 		int cnt			= _GetItemCount(buffer,0x0);
+ 
         if (cnt>1)
         {
             char 		dir	  [255*255];
@@ -199,21 +225,109 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
             xr_strcpy		(dir, buffer);
             xr_strcpy		(fns, dir);
             xr_strcat		(fns, "\\");
-            xr_strcat		(fns, _GetItem	(buffer,1,buf,0x0));
+            
+            LPCSTR item = _GetItem	(buffer,1,buf,0x0);
+            xr_strcat		(fns, item);
 
             for (int i=2; i<cnt; i++)
             {
                 xr_strcat	(fns,",");
                 xr_strcat	(fns,dir);
                 xr_strcat	(fns,"\\");
-                xr_strcat	(fns,_GetItem(buffer,i,buf,0x0));
+                
+                LPCSTR item = _GetItem	(buffer, i, buf, 0x0);
+                xr_strcat	(fns, item);
+                
             }
             xr_strcpy		(buffer, sz_buf, fns);
-        }
+        }  
     }
 
     strlwr				(buffer);
     return 				bRes;
+}
+
+bool EFS_Utils::GetOpenNameInternalMulty(HWND hWnd, LPCSTR initial, xr_string& pathdir, xr_vector<xr_string>& files, LPCSTR offset, int start_flt_ext )
+{
+    VERIFY				(buffer&&(sz_buf>0));
+	FS_Path& P			= *FS.get_path(initial);
+	
+    string1024 			flt;
+	MakeFilter			(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
+
+	OPENFILENAME 		ofn;
+	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
+
+    ofn.lStructSize		= sizeof(OPENFILENAME);
+	ofn.hwndOwner 		= hWnd;
+	ofn.lpstrDefExt 	= P.m_DefExt;
+    
+    //BUFFER TO EXIT
+    char filepath[256 * 1024];
+	ofn.lpstrFile 		= filepath;
+	ofn.nMaxFile 		= 256 * 1024;
+
+    //FILTER
+	ofn.lpstrFilter 	= flt;
+	ofn.nFilterIndex 	= start_flt_ext+2;
+
+    // COMMON
+    ofn.lpstrTitle      = "Open a File";
+    string512 path; 
+	xr_strcpy				(path,(offset&&offset[0])?offset:P.m_Path);
+	ofn.lpstrInitialDir = path;   
+
+	ofn.Flags =         OFN_PATHMUSTEXIST	|
+                        OFN_FILEMUSTEXIST	|
+                        OFN_HIDEREADONLY	|
+                        OFN_FILEMUSTEXIST	|
+                        OFN_NOCHANGEDIR		|
+                        OFN_ALLOWMULTISELECT|OFN_EXPLORER;
+                        
+    ofn.FlagsEx			= 0;
+
+	bool bRes 			= !!GetOpenFileName( &ofn );
+    if (!bRes)
+    {
+	    u32 err 		= CommDlgExtendedError();
+	    switch(err)
+        {
+        	case FNERR_BUFFERTOOSMALL:
+            	Log("Too many files selected.");
+             break;
+        }
+	}
+
+    
+
+    if (bRes)
+    {
+        int cnt			= _GetItemCount(filepath, 0x0);
+
+        if (cnt == 1)
+        {
+           strlwr(filepath);
+           pathdir = filepath;
+        }
+        else 
+        {
+            auto vector_files = GetSelectedFiles(ofn);
+        
+            int id = 0;
+            for (auto file : vector_files)
+            {
+                if (id == 0)
+                    pathdir = file;
+                else
+                     files.push_back(file);
+                id ++;
+            }
+        }
+
+
+    }
+
+    return bRes;
 }
 
 bool EFS_Utils::GetOpenNameInternal_2(HWND hWnd, LPCSTR initial, LPSTR file, LPSTR path)
@@ -302,7 +416,8 @@ bool EFS_Utils::GetSaveName( LPCSTR initial, string_path& buffer, LPCSTR offset,
 	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
     if (xr_strlen(buffer)){ 
         string_path		dr;
-        if (!(buffer[0]=='\\' && buffer[1]=='\\')){ // if !network
+        if (!(buffer[0]=='\\' && buffer[1]=='\\'))
+        { // if !network
             _splitpath		(buffer,dr,0,0,0);
             if (0==dr[0])	P._update(buffer,buffer); 
         }

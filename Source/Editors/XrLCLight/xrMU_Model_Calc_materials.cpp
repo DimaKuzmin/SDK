@@ -6,6 +6,7 @@ bool	cmp_face_material		(_face* f1, _face* f2)
 {
 	return f1->dwMaterial < f2->dwMaterial;
 }
+
 //static xrMU_Model::v_faces temp_vector;
 void xrMU_Model::calc_materials	()
 {
@@ -41,7 +42,8 @@ void xrMU_Model::calc_materials	()
 	for (s32 it=0; it<s32(m_subdivs.size()); it++)
 	{
 		_face*		first	= temp_vector[m_subdivs[it].start];
-		if (first->Shader().flags.bRendering)	continue;
+		if (first->Shader().flags.bRendering)	
+			continue;
 
 		m_subdivs.erase	(m_subdivs.begin()+it);
 		it--;

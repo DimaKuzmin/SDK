@@ -93,28 +93,11 @@ void StartThread(int TH, vecDefl Layer, CLightmap* lmap, int start, int end, int
 	for (int it = start; it != end; it++)
 	{
 		csLM.Enter();
-		/*
-		if (LM_AREA_USED > (1024 * 1024 ))
-		{
-			csLM.Leave();
-			break;
-		}
-		*/
 	 
-
 		if (it % 2048 == 0)
 			Msg("State [%d]", it);
 
 		csLM.Leave();
-		
-		/*
-		if (it % 256 == 0)
-		{
-			csLM.Enter();
-			Msg("TH[%d] defl %d", TH, it);
-			csLM.Leave();
-		}
-		*/
 
 		lm_layer& L = Layer[it]->layer;
 		L_rect		rT, rS;
@@ -135,7 +118,6 @@ void StartThread(int TH, vecDefl Layer, CLightmap* lmap, int start, int end, int
 
 	}
 
-	//Msg("End TH [%d]", TH);
 }
 
 void CBuild::xrPhase_MergeLM()
@@ -156,7 +138,7 @@ void CBuild::xrPhase_MergeLM()
 	u32 size_layer = 0;
 	u32 LayerID = 0;
 
-	bool fastWay = true; //strstr(Core.Params, "-fast_lightmaps");
+	bool fastWay = true;  
 
 	CTimer timer; timer.Start();
 	// Merge this layer (which left unmerged)

@@ -131,6 +131,7 @@ public:
 	}
 };
 
+#include <execution>
 
 	//void LC_WaitRefModelsNet();
 class CMUThread : public CThread
@@ -155,11 +156,19 @@ public:
 			return;
  		} 
 		
+		 
+		/*
 		for (u32 m=0; m<inlc_global_data()->mu_models().size(); m++)
 		{
 			inlc_global_data()->mu_models()[m]->calc_materials();
 			inlc_global_data()->mu_models()[m]->calc_lighting	();
 		}
+		*/
+
+		std::for_each(std::execution::par, inlc_global_data()->mu_models().begin(), inlc_global_data()->mu_models().end(), [&](xrMU_Model* model) {
+		   model->calc_materials();
+		   model->calc_lighting();
+		});
 
 		SetMuModelsLocalCalcLighteningCompleted();
 

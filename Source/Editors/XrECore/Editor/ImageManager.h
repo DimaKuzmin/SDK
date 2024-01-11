@@ -25,6 +25,9 @@ public:
 public:
 				CImageManager		(){;}
 				~CImageManager		(){;}
+
+    void        Compress(LPCSTR out_name, u8* raw_data, u8* ext_data, u32 w, u32 h, u32 pitch, STextureParams* options, u32 depth);
+
 	// texture routines
     void  	RemoveTexture	(LPCSTR fname, EItemType type);
     BOOL		CheckCompliance		(LPCSTR fname, int& compl);
@@ -46,6 +49,8 @@ public:
     void		CreateLODTexture	(CEditableObject* object, LPCSTR tex_name, 	u32 tgt_w, u32 tgt_h, int samples, int age, int quality);
     void		CreateGameTexture	(LPCSTR src_name, ETextureThumbnail* thumb=0);
     bool		LoadTextureData		(LPCSTR src_name, U32Vec& data, u32& w, u32& h, int* age=0);
+
+    bool		LoadTextureDataFromPath		(LPCSTR path, LPCSTR src_name, U32Vec& data, u32& w, u32& h, int* age=0);
 
     // result 0-can't fit images, 1-ok, -1 can't load image 
     void		MergedTextureRemapUV(float& dest_u, float& dest_v, float src_u, float src_v, const Fvector2& offs, const Fvector2& scale, bool bRotate);

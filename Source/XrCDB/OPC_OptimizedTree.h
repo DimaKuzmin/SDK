@@ -122,6 +122,8 @@
 		/* Stats */																							\
 		virtual			udword				GetUsedBytes()	const	{ return mNbNodes*sizeof(volume);	}	\
 		private:																							\
+		void* GetData() const override								{ return static_cast<void*>(mNodes);	}\
+		void SetData(void* ptr, udword nbNodes) override			{ mNodes = static_cast<volume*>(ptr); mNbNodes = nbNodes; }\
 						volume*				mNodes;
 
 	class OPCODE_API AABBOptimizedTree
@@ -136,6 +138,10 @@
 
 		virtual			udword				GetUsedBytes()	const	= 0;
 		virtual			bool				Build(AABBTree* tree)	= 0;
+
+		virtual void*						GetData() const = 0;
+		virtual void						SetData(void* ptr, udword nbNodes) = 0;
+
 		protected:
 						udword				mNbNodes;
 	};

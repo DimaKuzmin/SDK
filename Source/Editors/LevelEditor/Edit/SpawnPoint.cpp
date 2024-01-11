@@ -452,12 +452,16 @@ bool CSpawnPoint::SSpawnData::ExportGame(SExportStreams* F, CSpawnPoint* owner)
     // export cform (if needed)
     ISE_Shape* cform 			= m_Data->shape();
 // SHAPE
-    if (cform&&!(owner->m_AttachedObject&&(owner->m_AttachedObject->FClassID==OBJCLASS_SHAPE))){
+    if (cform&&!(owner->m_AttachedObject&&(owner->m_AttachedObject->FClassID==OBJCLASS_SHAPE)))
+    {
 		ELog.DlgMsg				(mtError,"Spawn Point: '%s' must contain attached shape.",owner->GetName());
     	return false;
     }
-    if (cform){
-	    CEditShape* shape		= dynamic_cast<CEditShape*>(owner->m_AttachedObject); R_ASSERT(shape);
+
+    if (cform)
+    {
+	    CEditShape* shape		= dynamic_cast<CEditShape*>(owner->m_AttachedObject); 
+        R_ASSERT(shape);
 		shape->ApplyScale		();
         owner->SetScale( 			 shape->GetScale());
     	cform->assign_shapes	(&*shape->GetShapes().begin(),shape->GetShapes().size());
