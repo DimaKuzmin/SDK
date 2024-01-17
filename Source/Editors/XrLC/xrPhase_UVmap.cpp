@@ -113,16 +113,22 @@ void CBuild::xrPhase_UVmap()
 			LastSP = SP;
 
 			int matterial  = g_XSplit[SP]->front()->dwMaterial;
+			int mm = g_XSplit[SP]->front()->dwMaterialGame;
+
 			int surfaceID  = lc_global_data()->materials()[matterial].surfidx;
 			int shaderID  = lc_global_data()->materials()[matterial].shader;
-
+			int shaderIDGAME = lc_global_data()->materials()[mm].shader;
+			
+			
 			Fvector pos;
 			g_XSplit[SP]->front()->CalcCenter(pos);
  
 			auto shader = lc_global_data()->shaders().Get(shaderID);
+			auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
+
 			auto texture = lc_global_data()->textures()[surfaceID];
 
-			clMsg("SP[%d], mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s", SP, matterial, surfaceID, shaderID, texture.name, shader->Name);
+			clMsg("SP[%d], mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s", SP, matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
 			clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
 		}
 

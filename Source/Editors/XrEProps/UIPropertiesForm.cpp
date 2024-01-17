@@ -645,7 +645,7 @@ eGameIDCoop                                     = u32(1) << 10
 */
 
 char* mapModes[9] = {"Single", "DM", "TDM", "ArtefactHunt", "CTA", "FMP", "RP", "DEFFENSE", "COOP"};
-EGameIDs mapModes_GAMEID[9] = {eGameIDSingle, eGameIDDeathmatch, eGameIDTeamDeathmatch, eGameIDArtefactHunt, eGameIDCaptureTheArtefact, eGameIDFreemp, eGameIDRoleplay, eGameIDDeffense, eGameIDCoop};
+EGameIDs mapModes_GAMEID[9] = {eGameIDSingle, eGameIDDeathmatch, eGameIDTeamDeathmatch, eGameIDArtefactHunt, eGameIDCaptureTheArtefact, eGameIDFreeMp, eGameIDRolePlay, eGameIDDeffense, eGameIDCoop};
 
 void UIPropertiesForm::DrawEditGameType()
 {

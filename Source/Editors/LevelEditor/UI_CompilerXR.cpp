@@ -201,8 +201,8 @@ void UI_CompilerXR::Draw()
 	modified |= ImGui::Checkbox("Draft aimap", &draft_aimap);
 	modified |= ImGui::Checkbox("NO Separator Check", &no_separator_check);
 	
-	modified |= ImGui::InputText("SPAWN Levels: ", levels_spawn, sizeof(levels_spawn));
-	modified |= ImGui::InputText("SPAWN Levels Out: ", levels_out, sizeof(levels_out));
+	//modified |= ImGui::InputText("SPAWN Levels: ", levels_spawn, sizeof(levels_spawn));
+	//modified |= ImGui::InputText("SPAWN Levels Out: ", levels_out, sizeof(levels_out));
 
 	if (ImGui::Button("Start xrAI (ai-map)"))
 	{
@@ -231,6 +231,28 @@ void UI_CompilerXR::Draw()
 		CreateProcess(file, start_params, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	}
 
+	if (ImGui::Button("Start xrAI (current level alife)"))
+	{
+		char* args = "-out alife -no_separator_check";
+		string256 start_params_new = {0};
+		sprintf(start_params_new, "%s -s %s", args,  Scene->m_LevelOp.m_FNLevelPath.c_str() );
+  
+		
+		string_path file;
+		FS.update_path(file, "$fs_root$", "");
+		xr_strcat(file, "Bin\\x64\\Compilers_x64\\xrAI.exe ");
+ 
+	
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+		ZeroMemory(&si, sizeof(si));
+		si.cb = sizeof(si);
+		ZeroMemory(&pi, sizeof(pi));
+
+		CreateProcess(file, start_params_new, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+	}
+
+	/*
 	if (ImGui::Button("Start xrAI (spawn)"))
 	{	
 		if (no_separator_check)
@@ -258,6 +280,7 @@ void UI_CompilerXR::Draw()
 
 		CreateProcess(file, start_params, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
 	}
+	*/
 
 	ImGui::End();
 
