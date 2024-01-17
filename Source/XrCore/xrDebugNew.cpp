@@ -29,7 +29,7 @@ extern bool shared_str_initialized;
         static BOOL			bException	= FALSE;
 #endif
 #ifndef _DEBUG
-#define USE_BUG_TRAP
+	//#define USE_BUG_TRAP
 #endif
 #ifndef USE_BUG_TRAP
 #	include <exception>

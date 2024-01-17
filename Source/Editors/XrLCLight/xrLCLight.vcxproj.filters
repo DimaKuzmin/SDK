@@ -53,9 +53,6 @@
     <Filter Include="Light\Textures">
       <UniqueIdentifier>{f8e1b7b3-3f73-4e52-98b8-9deaf48ffd8f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Light\Lights">
-      <UniqueIdentifier>{418c9bc0-cfa1-4103-85f4-b0f901fde28e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Light\color">
       <UniqueIdentifier>{469c42ff-f1ee-4fb4-94a1-ac4e326f78b9}</UniqueIdentifier>
     </Filter>
@@ -69,17 +66,20 @@
     <Filter Include="do_light">
       <UniqueIdentifier>{56804a38-c24a-4fa0-a5e2-617c53a49bbc}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Light\Lights\Hardware">
-      <UniqueIdentifier>{dd12f59c-10a9-4b02-a736-28fba4419f24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Lights\Hardware_code">
-      <UniqueIdentifier>{1078e1d6-564d-4052-9cb6-450d4da0ea40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Lights\base_lighting">
-      <UniqueIdentifier>{0855af4f-c4de-4e7c-b110-78baa227bfa8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Light\EmbreeLib">
       <UniqueIdentifier>{1ca33de4-acd0-4360-b03d-706b4b4ee8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\LightsHW">
+      <UniqueIdentifier>{418c9bc0-cfa1-4103-85f4-b0f901fde28e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\LightsHW\Hardware">
+      <UniqueIdentifier>{dd12f59c-10a9-4b02-a736-28fba4419f24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\LightsHW\Hardware_code">
+      <UniqueIdentifier>{1078e1d6-564d-4052-9cb6-450d4da0ea40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Light\LightsHW\base_lighting">
+      <UniqueIdentifier>{0855af4f-c4de-4e7c-b110-78baa227bfa8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -328,22 +328,22 @@
     </ClInclude>
     <ClInclude Include="..\Shader_xrLC.h" />
     <ClInclude Include="R_light.h">
-      <Filter>Light\Lights\base_lighting</Filter>
+      <Filter>Light\LightsHW\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="base_lighting.h">
-      <Filter>Light\Lights\base_lighting</Filter>
+      <Filter>Light\LightsHW\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="light_point.h">
-      <Filter>Light\Lights\base_lighting</Filter>
+      <Filter>Light\LightsHW\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="xrHardwareLight.h">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClInclude>
     <ClInclude Include="xrRayDefinition.h">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClInclude>
     <ClInclude Include="DeviceBuffer.h">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClInclude>
     <ClInclude Include="EmbreeDataStorage.h">
       <Filter>Light\EmbreeLib</Filter>
@@ -603,22 +603,22 @@
       <Filter>kernel</Filter>
     </ClCompile>
     <ClCompile Include="base_lighting.cpp">
-      <Filter>Light\Lights\base_lighting</Filter>
+      <Filter>Light\LightsHW\base_lighting</Filter>
     </ClCompile>
     <ClCompile Include="xrHardwareLight.cpp">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClCompile>
     <ClCompile Include="xrHardwareTest.cpp">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClCompile>
     <ClCompile Include="xrLight_Embree.cpp">
       <Filter>Light\EmbreeLib</Filter>
     </ClCompile>
     <ClCompile Include="xrHardwareLight_LMAP.cpp">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClCompile>
     <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
-      <Filter>Light\Lights\Hardware_code</Filter>
+      <Filter>Light\LightsHW\Hardware_code</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -626,10 +626,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="LightPoint.cu">
-      <Filter>Light\Lights\Hardware</Filter>
+      <Filter>Light\LightsHW\Hardware</Filter>
     </None>
     <None Include="LightPoint_Refactored.cu">
-      <Filter>Light\Lights\Hardware</Filter>
+      <Filter>Light\LightsHW\Hardware</Filter>
     </None>
   </ItemGroup>
 </Project>

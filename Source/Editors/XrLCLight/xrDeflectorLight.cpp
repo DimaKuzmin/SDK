@@ -980,8 +980,10 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 	return FALSE;
 }
 
-#include "xrHardwareLight.h"
 
+#ifndef DevCPU 
+	#include "xrHardwareLight.h"
+#endif
 
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
@@ -1011,8 +1013,10 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 
 	if(_net_session && !_net_session->test_connection())
 			 return;
-    
+   
+#ifndef DevCPU 
 	if (xrHardwareLight::Get().IsEnabled())
+ 
 	{
 #ifdef OLD_METHOD_GPU_COMPUTE
 		LightEnd(th, DB, LightsSelected, H);
@@ -1022,19 +1026,26 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 	{
 		LightEnd(th, DB, LightsSelected, H);
 	}
+#else 
+	LightEnd(th, DB, LightsSelected, H);
+#endif
 	
 }
 
 void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
-#ifndef OLD_METHOD_GPU_COMPUTE
+ 
+#ifndef DevCPU
+#ifndef OLD_METHOD_GPU_COMPUTE  
 	if (xrHardwareLight::Get().IsEnabled())	
-	{	LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
+	{	
+		LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
 	
 		// UV & HASH
  		Fbox2			bounds;
 		Bounds_Summary	(bounds);
 		H.initialize	(bounds,(u32)UVpolys.size());
+
 		for (u32 fid=0; fid<UVpolys.size(); fid++)
 		{
 			UVtri* T	= &(UVpolys[fid]);
@@ -1043,6 +1054,8 @@ void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelect
 		}
 	}
 #endif
+#endif
+	
 
  	for (u32 ref = 254; ref > 0; ref--)
 	if (!ApplyBorders(layer, ref))

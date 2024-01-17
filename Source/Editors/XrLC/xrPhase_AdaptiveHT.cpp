@@ -185,7 +185,9 @@ CThreadManager	precalc_base_hemi;
 int THREADS_COUNT();
 #define MAX_THREADS THREADS_COUNT()
 
-#include "../XrLCLight/xrHardwareLight.h"
+#ifndef DevCPU
+	#include "../XrLCLight/xrHardwareLight.h"
+#endif
 
 void SetOpacityRaycastModel();
 
@@ -250,7 +252,7 @@ void CBuild::xrPhase_AdaptiveHT	()
  			use_opcode_old = true;
 		}
 		 
-
+#ifndef DevCPU
 		xrHardwareLight& hw_light = xrHardwareLight::Get();
 
 		if (char* str = strstr(Core.Params, "-hw_light"))
@@ -269,7 +271,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 		{
 			hw_light.SetEnabled(false);
 		}
- 
+#endif
+
 		Status("Start AdaptiveHT");	
  
 		// calc approximate normals for vertices + base lighting

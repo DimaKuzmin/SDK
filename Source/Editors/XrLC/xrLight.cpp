@@ -172,7 +172,11 @@ int THREADS_COUNT()
 }
 
 #define TH_NUM THREADS_COUNT()
-#include "..\XrLCLight\xrHardwareLight.h"
+
+
+#ifndef DevCPU
+	#include "..\XrLCLight\xrHardwareLight.h"
+#endif
 
 
 void IntelEmbereUNLOAD();
@@ -227,6 +231,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 			threads.start(xr_new<CLMThread>(L));
 		threads.wait(500);
 		
+#ifndef DevCPU
 #ifndef OLD_METHOD_GPU_COMPUTE		 
 		if (xrHardwareLight::IsEnabled())
 		{
@@ -240,6 +245,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 			threads.wait(500);
 		}
 	
+#endif
 #endif
 
 		clMsg			("%f seconds",start_time.GetElapsed_sec());

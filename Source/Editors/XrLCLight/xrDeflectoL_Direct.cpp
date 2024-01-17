@@ -8,7 +8,10 @@
 #include "xrface.h"
 #include "net_task.h"
 
+#ifndef DevCPU
 #include "xrHardwareLight.h"
+#endif
+
 #include "EmbreeDataStorage.h"
 
 #include "xrLight_Implicit.h"
@@ -56,7 +59,9 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 		VERIFY(inlc_global_data());
 		VERIFY(inlc_global_data()->RCAST_Model());
 
+#ifndef DevCPU
 		if (!xrHardwareLight::IsEnabled())
+#endif
 		{
 			int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
 			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip); //.
@@ -64,11 +69,16 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 			lm.surface[_y * lm.width + _x]._set(C);
 			lm.marker[_y * lm.width + _x] = 255;
 		}
+
+#ifndef DevCPU
 		else
 		{
 			lm.SurfaceLightRequests.push_back(LightpointRequest(_x, _y, P, N, skip));
 			lm.marker[_y * lm.width + _x] = 255; 
 		}
+#endif 
+
+
 	}
 }
   
@@ -146,7 +156,9 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 								wN.add		(F->N);					exact_normalize	(wN);
 							}
 							
+#ifndef DevCPU
 							if (!xrHardwareLight::IsEnabled())
+#endif
 							{
 								try
 								{
@@ -163,12 +175,15 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 									clMsg("* ERROR (CDB). Recovered. ");
 								}
 							}
+#ifndef DevCPU
 							else
 							{
 								Fcount += 1;
 								lm.SurfaceLightRequests.push_back(LightpointRequest(U, V, wP, wN, F));
 								lm.marker[V * lm.width + U] = 255;
 							}
+#endif
+
 
 							break;
 						}
@@ -180,7 +195,9 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 				clMsg("* ERROR (Light). Recovered. ");
 			}
 
+#ifndef DevCPU 
 			if (!xrHardwareLight::IsEnabled())
+#endif
 			{
 				if (Fcount)
 				{
@@ -195,7 +212,11 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 					lm.marker[V * lm.width + U] = 0;
 				}
 			}
+
+
 		}
+
+
 	}										     
  
 	// *** Render Edges
@@ -268,6 +289,8 @@ void ExecuteOptix(xr_vector<Ray>& rays, xr_vector<Hit>& hits)
 
 
 // GPU By xrHardware RayTrace
+
+#ifndef DevCPU
 
 void CDeflector::GPU_CalculationOLD()
 {
@@ -449,3 +472,4 @@ void GPU_Calculation()
 }
 
  
+#endif

@@ -6,8 +6,9 @@
 
 #include "tga.h"
 
-
+#ifndef DevCPU
 #include "xrHardwareLight.h"
+#endif
 
 
 #include "light_point.h"
@@ -41,262 +42,9 @@ void		ImplicitExecute::write			( IWriter	&w ) const
 	w.w_u32( y_start );
 	w.w_u32( y_end );
 }
-
-
-
-#include <algorithm>
-#include <execution>
-#include "xrRayDefinition.h"
-
-/** NEW CUDA OPTIX FAST (NO RAM USAGE TO TEXTURES)  **/
-
-
-float GetHitColor(u32 u, u32 v, u32 prim_id, Face* skip)
-{
-	CDB::MODEL* MDL = lc_global_data()->RCAST_Model();
-
-  	// Access to texture
-	CDB::TRI& clT										= MDL->get_tris()[prim_id];
-	base_Face* F										= (base_Face*)(clT.pointer);
-	if (0==F)										
-		return 1;
-	if (skip==F)										
-		return 1;
-
-	const Shader_xrLC&	SH								= F->Shader();
-	if (!SH.flags.bLIGHT_CastShadow)					
-		return 1;
-
-	if (F->flags.bOpaque)	
-	{
-		// Opaque poly - cache it
-		//L.tri[0].set	(rpinf.verts[0]);
-		//L.tri[1].set	(rpinf.verts[1]);
-		//L.tri[2].set	(rpinf.verts[2]);
-		return 0;
-	}
-
-	b_material& M	= inlc_global_data()->materials()			[F->dwMaterial];
-	b_texture&	T	= inlc_global_data()->textures()			[M.surfidx];
-
-	if (T.pSurface.Empty())	
-	{
-		F->flags.bOpaque	= true;
-		return 0;
-	}
-
-	// barycentric coords
-	// note: W,U,V order
-	Fvector B;
-	B.set	(1.0f - u - v, u, v);
-
-	// calc UV
-	Fvector2*	cuv = F->getTC0					();
-	Fvector2	uv;
-	uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-	uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-	int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-	U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
-	V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel		= raw[V*T.dwWidth+U];
-	u32 pixel_a		= color_get_A(pixel);
-	float opac		= 1.f - _sqr(float(pixel_a)/255.f);
  
-	return opac;
- }
- 
-void GetLightColor(Ray& ray, RayAdditionalData& r_data, R_Light* L, float opacity, base_color_c& C)
-{
-	if (r_data.type_light == RLightTypes::RGB)
-	{
-		if (r_data.L->type == LT_DIRECT)
-		{
-			float scale = r_data.DotProduct * L->energy * opacity;
-			C.rgb.x += scale * L->diffuse.x;
-			C.rgb.y += scale * L->diffuse.y;
-			C.rgb.z += scale * L->diffuse.z;			
-		}
-
-		if (r_data.L->type == LT_POINT)
-		{
-			float A;
-			if (inlc_global_data()->gl_linear())
-				A = 1 - ray.tmax / L->range;
-			else
-			{
- 				float scale = r_data.DotProduct * L->energy * opacity;
-
-				A = scale * 
-				(	
-					1 / (L->attenuation0 + L->attenuation1 * ray.tmax + L->attenuation2 * r_data.SquaredDir) - ray.tmax * L->falloff
-				);
-			}
-
-			C.rgb.x += A * L->diffuse.x;
-			C.rgb.y += A * L->diffuse.y;
-			C.rgb.z += A * L->diffuse.z;		
-		}
-
-		if (r_data.L->type == LT_SECONDARY)
-		{	
- 			float scale = powf(r_data.DotProduct, 1.f / 8.f) * L->energy * opacity;
-			float A = scale * (1 - ray.tmax / L->range);
-			C.rgb.x += A * L->diffuse.x;
-			C.rgb.y += A * L->diffuse.y;
-			C.rgb.z += A * L->diffuse.z;		
-		}
-	}
- 
-	if (r_data.type_light == RLightTypes::HEMI)
-	{
-		if (r_data.L->type == LT_DIRECT)
-		{				
- 			float scale = L->energy * opacity;
-			C.hemi += scale;			
-		}
-
-		if (r_data.L->type == LT_POINT)
-		{  
-			float scale = r_data.DotProduct * L->energy * opacity;
-			float A			= scale / (L->attenuation0 + L->attenuation1 * ray.tmax + L->attenuation2 * r_data.SquaredDir);
-			C.hemi += A;		
-		}
- 
-	}
-
-	if (r_data.type_light == RLightTypes::SUN)
-	{
-		if (r_data.L->type == LT_DIRECT)
-		{
-			float scale = L->energy * opacity;
-			C.sun += scale;
-		}
-
-		if (r_data.L->type == LT_POINT)
-		{
-			float scale = r_data.DotProduct * L->energy * opacity;
-			float A = scale / (L->attenuation0 + L->attenuation1 * ray.tmax + L->attenuation2 * r_data.SquaredDir);
-			C.sun += A;		
-		}
-	}
-}
-
-extern void RaycastOptix(std::vector<Ray>& rays, std::vector<HitsResultVector>& outbuffer, size_t BUFFER_ID_MAX);
-extern void GetLightsForOPTIX(LightpointRequest& reqvest, std::vector<Ray>& rays_buffer, std::vector<RayAdditionalData>& additional, int flag, size_t& BUFFER_ID) ;
-
-
-void RunOptixThread(ImplicitDeflector& defl)
-{
-	//cast and finalize
-	if (defl.lmap.SurfaceLightRequests.empty())
-		return;
-
-	//pack that shit in to task, but remember order
-	
-	CTimer t; 
-
-	Msg("Start Getting Rays");
-
-	int ids = 0;
- 
-
-
-	t.Start();
-
-	u64 GlobalLightCPU = 0;
-	u64 GlobalGPU_TIME = 0;
-
-	CTimer tGlobal;
-	tGlobal.Start();
-	u32 prev_print = 0;
-
- 
-	std::vector<Ray> rays_buff;	
-	rays_buff.resize(MAX_RAYS_TASK);
-	std::vector<RayAdditionalData> rays_aditional;
-	rays_aditional.resize(MAX_RAYS_TASK);
-	
-	u32 MAX_POSIBLE_RAYS =
-		lc_global_data()->L_static().hemi.size() + lc_global_data()->L_static().sun.size() +lc_global_data()->L_static().sun.size();
-	
-	size_t IDS_BUFFER = 0;
-
-	xr_vector<base_color_c> final_colors;
-	final_colors.resize(defl.lmap.SizeArea());
-
-	u32 IMPL_DEFL_Width = defl.lmap.width;
-
-	for (LightpointRequest& reqvest : defl.lmap.SurfaceLightRequests)
-	{
-		ids++;
- 
-		if (IDS_BUFFER + MAX_POSIBLE_RAYS > MAX_RAYS_TASK)
-		{
-			GlobalLightCPU += t.GetElapsed_ms();
-
-			StatusNoMSG("CPU_LIGHT: %d, GPU_TIME: %d, Update: %d/%d", 
-				GlobalLightCPU,
-				GlobalGPU_TIME,
-				ids,
-				defl.lmap.SurfaceLightRequests.size()
-			);
-		 
-			Msg("Start RayTace: %u", IDS_BUFFER);
-			t.Start();
-			std::vector<HitsResultVector> hits;
-			RaycastOptix(rays_buff, hits, IDS_BUFFER);
-			GlobalGPU_TIME+=t.GetElapsed_ms();
- 
-			Msg("Start Collect Colors");
-
-			// TODO MOVE TO LMAP COLORS
-			for (u64 i = 0;  i < hits.size(); i++)
-			{
-				Ray& ray = rays_buff[i];
- 				auto hits_reqvest = hits[i];
-				RayAdditionalData& r_data = rays_aditional[i];
-				int calc = r_data.V * IMPL_DEFL_Width + r_data.U;
-				base_color_c& color = final_colors[calc];   
-
-				//if (h256.count > 1)
-				//	Msg_IN_FILE("Cnt: %d", h256.count);	
-
-				for (int hit_id = 0; hit_id < hits_reqvest.hits.size(); hit_id++)
-				{
-					Hit& h = hits_reqvest.hits[hit_id];		
-					
-					//if (h.triId != -1 && h.triId != 0 && hit_id > 1)
-					//	Msg_IN_FILE("BUFFERID[%d] HIT[%d]: {TRI: %d, u: %f, v: %f, Distance: %f} ", i, hit_id, h.triId, h.u, h.v, h.Distance);
-
-					float opac = GetHitColor(h.u, h.v, h.triId, r_data.skip);
-					if (opac == 0)
-						break;
-					GetLightColor(ray, r_data, r_data.L, opac, color);
-				}
-			}
-			// TEST THIS
-
- 			t.Start();
-			IDS_BUFFER = 0;
-		}
-
-		GetLightsForOPTIX(reqvest, rays_buff, rays_aditional, 0, IDS_BUFFER);
-	}
-
-	for (int V = 0; V < defl.lmap.height; V++)
-	{
-		for (int U = 0; U < defl.lmap.width; U++)
-		{
-			int column = V * IMPL_DEFL_Width + U;
-			defl.Lumel(U, V)._set(final_colors[column]);
-		}
-	}
-}
-
-
+#ifndef DevCPU 
+  
 /** CUDA DEFINATION **/
 
 void FinalizeImplicit(ImplicitDeflector& defl, xr_vector<base_color_c>& FinalColors )
@@ -371,7 +119,7 @@ void CalculateGPU(ImplicitDeflector& defl)
 	}
 }
 
-void RunCudaThread(bool optix)
+void RunCudaThread()
 {
 	ImplicitDeflector& defl = cl_globs.DATA();
 	CDB::COLLIDER			DB;
@@ -432,11 +180,10 @@ void RunCudaThread(bool optix)
 		}
 	}
 
-	if (!optix)
-		CalculateGPU(defl);
-	else 
-		RunOptixThread(defl);
+	CalculateGPU(defl);
 }
+
+#endif
  
  
 /** NETWORK PROCESS **/

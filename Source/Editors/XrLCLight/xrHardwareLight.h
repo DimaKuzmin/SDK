@@ -12,9 +12,11 @@
 #include "base_color.h"
 
 #include "DeviceBuffer.h"
+#ifndef DevCPU
 #include "cuda_runtime.h"
 #include "lm_layer.h"
- 
+#endif 
+
 class XRLC_LIGHT_API xrHardwareLight
 {
 public:

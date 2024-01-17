@@ -67,31 +67,27 @@ void RunThread(ImplicitDeflector& defl)
 	tmanager.wait();
 }	   
 
+#ifndef DevCPU
 #include "xrHardwareLight.h"
-extern u64 results;
+void RunCudaThread();
+#endif
 
-void RunCudaThread(bool optix);
+
+extern u64 results;
  
-extern void LoadLevelOptix();
-extern void UnLoadLevelOptix();
+ 
 
 void RunImplicitMultithread(ImplicitDeflector& defl)
 {
 	// Start threads
-
-	if (strstr(Core.Params, "--fast_optix"))
-	{
-		LoadLevelOptix();
- 		RunCudaThread(true);
-		return ;
-	}
-
-	
+#ifdef DevCPU
+	RunThread(defl);
+#else 
 	if (!xrHardwareLight::IsEnabled())
 		RunThread(defl);
 	else
-		RunCudaThread(false);
-
+		RunCudaThread();
+#endif
 
 }
 
