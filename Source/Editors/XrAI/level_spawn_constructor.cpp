@@ -552,41 +552,60 @@ void CLevelSpawnConstructor::generate_artefact_spawn_positions	()
 
 void CLevelSpawnConstructor::fill_level_changers				()
 {
-	for (u32 i=0, n=(u32)level_changers().size(); i<n; ++i) {
+	for (u32 i=0, n=(u32)level_changers().size(); i<n; ++i)
+	{
 		if (level_id(level_changers()[i]->m_caLevelToChange) != m_level.id())
+		{
+			Msg("Try Find connection point: %s Level Not correct for Changer: %s != %s (1st(NULL) then NOT FIND LEVEL) OR ( 2st (NULL) Refresh name level in LEVEL CHANGER!!!! )", level_changers()[i]->name_replace(), m_level.name().c_str(), level_changers()[i]->m_caLevelToChange.c_str());
 			continue;
+		}
 
 		bool found = false;
 		GRAPH_POINT_STORAGE::const_iterator I = m_graph_points.begin();
 		GRAPH_POINT_STORAGE::const_iterator E = m_graph_points.end();
-		for ( ; I != E; ++I)
-			if (!xr_strcmp(*level_changers()[i]->m_caLevelPointToChange,(*I)->name_replace())) {
+		for (; I != E; ++I)
+		{
+			if (!xr_strcmp(*level_changers()[i]->m_caLevelPointToChange, (*I)->name_replace()))
+			{
+			//	Msg("Try Find connection point: %s", level_changers()[i]->name_replace());
 				bool ok = false;
-				for (u32 ii=0, nn = game_graph().header().vertex_count(); ii<nn; ++ii) {
-					if ((game_graph().vertex(ii)->level_id() != m_level.id()) || !game_graph().vertex(ii)->level_point().similar((*I)->o_Position,.001f))
+				for (u32 ii = 0, nn = game_graph().header().vertex_count(); ii < nn; ++ii) 
+				{
+					if ((game_graph().vertex(ii)->level_id() != m_level.id()) || !game_graph().vertex(ii)->level_point().similar((*I)->o_Position, .001f))
 						continue;
-					level_changers()[i]->m_tNextGraphID		= (GameGraph::_GRAPH_ID)ii;
-					level_changers()[i]->m_tNextPosition	= (*I)->o_Position;
-					level_changers()[i]->m_tAngles			= (*I)->o_Angle;
-					level_changers()[i]->m_dwNextNodeID		= game_graph().vertex(ii)->level_vertex_id();
-					ok										= true;
+
+					level_changers()[i]->m_tNextGraphID = (GameGraph::_GRAPH_ID)ii;
+					level_changers()[i]->m_tNextPosition = (*I)->o_Position;
+					level_changers()[i]->m_tAngles = (*I)->o_Angle;
+					level_changers()[i]->m_dwNextNodeID = game_graph().vertex(ii)->level_vertex_id();
+					ok = true;
 					break;
 				}
 
-				R_ASSERT3					(ok,"Cannot find a correspndance between graph and graph points from level editor! Rebuild graph for the level ",*level_changers()[i]->m_caLevelToChange);
+				R_ASSERT3(ok, "Cannot find a correspndance between graph and graph points from level editor! Rebuild graph for the level ", *level_changers()[i]->m_caLevelToChange);
 
-				level_changers().erase		(level_changers().begin() + i);
+				if (!ok)
+					clMsg("Cant Find GameGraph For Level Chenger: %s", level_changers()[i]->m_caLevelToChange.c_str() );
+
+				level_changers().erase(level_changers().begin() + i);
 				--i;
 				--n;
-				found		= true;
+				found = true;
 				break;
 			}
 
-		if (!found) {
+		}
+
+
+		if (!found)
+		{
 			clMsg			("Graph point %s not found (level changer %s)",*level_changers()[i]->m_caLevelPointToChange,level_changers()[i]->name_replace());
 			VERIFY			(false);
 		}
 	}
+
+	Msg("Size LevelChangers: %d IF == 0 (IS GOOD ALL FINDED CONNECTION) ", level_changers().size());
+
 }
 
 void CLevelSpawnConstructor::update_artefact_spawn_positions	()

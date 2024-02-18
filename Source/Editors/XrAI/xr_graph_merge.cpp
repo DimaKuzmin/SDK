@@ -621,21 +621,22 @@ CGraphMerger::CGraphMerger(
 					CGameGraph::CEdge			tGraphEdge;
 					SConnectionVertex			&tConnectionVertex = (*i).second;
 					K							= tpGraphs.find(tConnectionVertex.dwLevelID);
-					if (K == tpGraphs.end()) {
+					if (K == tpGraphs.end())
+					{
 						Msg						("Cannot find level with level_id %d. Connection point will not be generated!",tConnectionVertex.dwLevelID);
 						continue;
 					}
 					R_ASSERT					(K != tpGraphs.end());
 					M							= (*K).second->m_tVertexMap.find(tConnectionVertex.caConnectName);
 					if (M == (*K).second->m_tVertexMap.end()) {
-						Msg						("Level %s with id %d has an INVALID connection point %s,\nwhich references to graph point %s on the level %s with id %d\n",*(*I).second->m_tLevel.name(),(*I).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
+						Msg						("Level %s with id %d has an INVALID connection point %s, which references to graph point %s on the level %s with id %d",*(*I).second->m_tLevel.name(),(*I).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
 						R_ASSERT				(M != (*K).second->m_tVertexMap.end());
 					}
 
 //					if (!stricmp("l06_rostok",*(*I).second->m_tLevel.name())) {
 //						__asm int 3;
 //					}
-					Msg							("Level %s with id %d has VALID connection point %s,\nwhich references to graph point %s on the level %s with id %d\n",*(*I).second->m_tLevel.name(),(*I).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
+					Msg							("Level %s with id %d has VALID connection point %s, which references to graph point %s on the level %s with id %d\n",*(*I).second->m_tLevel.name(),(*I).second->m_tLevel.id(),(*i).first,tConnectionVertex.caConnectName,*(*K).second->m_tLevel.name(),(*K).second->m_tLevel.id());
 
 					VERIFY						(((*M).second.tGraphID + (*K).second->m_dwOffset) < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));
 					tGraphEdge.m_vertex_id		= (GameGraph::_GRAPH_ID)((*M).second.tGraphID + (*K).second->m_dwOffset);
