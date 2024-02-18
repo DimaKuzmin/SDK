@@ -7,6 +7,7 @@ xr_token rpoint_type[]={
 	{ "Actor Spawn",	rptActorSpawn	},
 	{ "Artefact Spawn",	rptArtefactSpawn	},
 	{ "Item Spawn",	rptItemSpawn	},
+	{ "Respawn Visaul", rptReSpawnVisual},
 	{ 0,				0	}
 };
 

@@ -81,19 +81,34 @@ void ELocatorAPI::_initialize	(u32 flags, LPCSTR target_folder, LPCSTR fs_fname)
 		LPCSTR			lp_add, lp_def, lp_capt;
 		string16		b_v;
 		while(!F->eof()){
-			F->r_string	(buf,sizeof(buf));
+			
+            F->r_string	(buf,sizeof(buf));
 			_GetItem(buf,0,id,'=');
-			if (id[0]==';') continue;
+			
+            if (id[0]==';') 
+                continue;
 			_GetItem(buf,1,temp,'=');
-			int cnt		= _GetItemCount(temp,_delimiter);  R_ASSERT(cnt>=3);
+			
+            int cnt		= _GetItemCount(temp,_delimiter); 
+            R_ASSERT(cnt>=3);
 			u32 fl		= 0;
-			_GetItem	(temp,0,b_v,_delimiter);	if (CInifile::IsBOOL(b_v)) fl |= FS_Path::flRecurse;
-			_GetItem	(temp,1,b_v,_delimiter);	if (CInifile::IsBOOL(b_v)) fl |= FS_Path::flNotif;
+			
+            _GetItem	(temp,0,b_v,_delimiter);	
+            if (CInifile::IsBOOL(b_v)) 
+                fl |= FS_Path::flRecurse;
+			_GetItem	(temp,1,b_v,_delimiter);
+            if (CInifile::IsBOOL(b_v))
+                fl |= FS_Path::flNotif;
+
 			_GetItem	(temp,2,root,_delimiter);
 			_GetItem	(temp,3,add,_delimiter);
 			_GetItem	(temp,4,def,_delimiter);
 			_GetItem	(temp,5,capt,_delimiter);
-			xr_strlwr	(id);			if (!m_Flags.is(flBuildCopy)&&(0==xr_strcmp(id,"$build_copy$"))) continue;
+			xr_strlwr	(id);		
+          
+            if (!m_Flags.is(flBuildCopy)&&(0==xr_strcmp(id,"$build_copy$")))
+                continue;
+
 			xr_strlwr	(root);
 			lp_add		=(cnt>=4)?xr_strlwr(add):0;
 			lp_def		=(cnt>=5)?def:0;

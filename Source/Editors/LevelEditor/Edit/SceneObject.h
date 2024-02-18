@@ -9,13 +9,17 @@
 class CSceneObject : public CCustomObject
 {
 	shared_str		m_ReferenceName;
-	CEditableObject*m_pReference;
+
 	void 			ReferenceChange			(PropValue* sender);
 	void			OnChangeShader(PropValue* sender);
 	void			OnChangeSurface(PropValue* sender);
+
 	bool			AfterEditGameMtl(PropValue* sender, shared_str& str);
 	void			OnClickClearSurface(ButtonValue*, bool&, bool&);
 public:
+	void			OnChangeSurfaces();
+
+	CEditableObject* m_pReference;
 
 	SurfaceVec m_Surfaces;
 	enum {

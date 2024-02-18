@@ -30,6 +30,8 @@ protected:
     ref_shader 			CreateIcon	(shared_str name);
     ref_shader 			GetIcon		(shared_str name);
     xr_vector<CEditableObject*> m_draw_RP_visuals;
+    xr_vector<CEditableObject*> m_draw_RP_visuals_SE7kIlls;
+
 public:
 						ESceneSpawnTool		();
 	virtual				~ESceneSpawnTool		();

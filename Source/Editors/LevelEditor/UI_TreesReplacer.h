@@ -30,6 +30,7 @@ public:
 	xr_vector<shared_str> refs_vec;
 	xr_vector<shared_str> refs_objects_vec;
 
+	bool ShowWindowsList = false;
 	
 	static IC bool IsOpen()  { return Form_Tree; }
 };

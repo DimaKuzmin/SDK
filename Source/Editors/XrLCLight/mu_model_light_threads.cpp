@@ -165,10 +165,12 @@ public:
 		}
 		*/
 
-		std::for_each(std::execution::par, inlc_global_data()->mu_models().begin(), inlc_global_data()->mu_models().end(), [&](xrMU_Model* model) {
+		std::for_each(std::execution::par, inlc_global_data()->mu_models().begin(), inlc_global_data()->mu_models().end(), [&](xrMU_Model* model) 
+		{
 		   model->calc_materials();
 		   model->calc_lighting();
-		});
+		}
+		);
 
 		SetMuModelsLocalCalcLighteningCompleted();
 

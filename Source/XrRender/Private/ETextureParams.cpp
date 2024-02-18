@@ -109,7 +109,7 @@ void STextureParams::Load(IReader& F)
     // Se7Kills
    // if (F.elapsed() != 18)
     {
-         Msg("Elapsed: %d", F.elapsed());
+       //  Msg("Elapsed: %d", F.elapsed());
 
 
         if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))

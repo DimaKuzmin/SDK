@@ -105,6 +105,7 @@ public:
 
 	void CreateLogicConfigs();
 
+	void ClearGraphs();
 
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
 

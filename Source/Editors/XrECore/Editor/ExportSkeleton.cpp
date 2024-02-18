@@ -1199,7 +1199,9 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 #ifdef _EDITOR
 	    pb->Inc		();
 #endif
-    }else{
+    }
+    else
+    {
         // save smparams
         F.open_chunk	(OGF_S_SMPARAMS);
         F.w_u16			(xrOGF_SMParamsVersion);
@@ -1230,7 +1232,8 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
                 ELog.Msg(mtError,"Invalid bone parts (missing or duplicate bones).");
                 bRes 	= false;
             }
-        }else
+        }
+        else
 		{
             F.w_u16(1);
             F.w_stringZ("default");
@@ -1238,12 +1241,17 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
             for (int i=0; i<m_Source->BoneCount(); i++) 
 				F.w_u32(i);
         }
+
 #ifdef _EDITOR
 	    pb->Inc		();
 #endif
         // motion defs
         SMotionVec& sm_lst	= m_Source->SMotions();
         F.w_u16((u16)sm_lst.size());
+
+
+        Msg("List SMotionVec Size: %u", sm_lst.size());
+
         for (SMotionIt motion_it=m_Source->FirstSMotion(); motion_it!=m_Source->LastSMotion(); ++motion_it)
 		{
             CSMotion* motion = *motion_it;
@@ -1259,6 +1267,7 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
             }
             if (bRes)
 			{
+                
                 // export
                 F.w_stringZ	(motion->Name());
                 F.w_u32		(motion->m_Flags.get());
@@ -1272,6 +1281,8 @@ bool CExportSkeleton::ExportMotionDefs(IWriter& F)
 #ifdef _EDITOR
     			u32 sz		= motion->marks.size();
 				F.w_u32		(sz);
+ 
+                Msg("Export Def: %s, Motion Marks: %u", motion->Name(), sz);
                 for(u32 i=0; i<sz; ++i)
                 {
                 	motion->marks[i].Save(&F);

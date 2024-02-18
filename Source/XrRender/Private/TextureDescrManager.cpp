@@ -51,7 +51,7 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		F->r_u32			();
 		tp.Clear			();
 		  
-		Msg("Loading: %s", fn);
+	//	Msg("Loading: %s", fn);
 		tp.Load				(*F);
 		FS.r_close			(F);
 		if (STextureParams::ttImage		== tp.type ||

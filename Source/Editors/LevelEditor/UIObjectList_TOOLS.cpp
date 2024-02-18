@@ -927,7 +927,25 @@ void UIObjectList::POS_ObjectsToLTX()
 			if (!item->Selected())
 				continue;
 
+			Fbox box;
+			item->GetBox(box);
+
+			Fvector center;
+			box.getcenter(center);	
+
 			ini_file->w_fvector3(item->GetName(), "position", item->GetPosition());
+			
+			ini_file->w_fvector3(item->GetName(), "box_min", box.min);
+			ini_file->w_fvector3(item->GetName(), "box_max", box.max);
+
+			ini_file->w_fvector3(item->GetName(), "box_center", center);
+
+			CSceneObject* object = smart_cast<CSceneObject*>(item);
+			if (object)
+			{
+				ini_file->w_fvector3(item->GetName(), "ref_pos", object->m_pReference->ObjectXFORM().c);
+			}
+
 		}
 
 		ini_file->save_as(file.c_str());
@@ -1280,7 +1298,7 @@ void UIObjectList::SetCustomData(bool autoNumarate, LPCSTR logic, LPCSTR path_na
 		}
 	}
 }
-
+ 
 void UIObjectList::CreateLogicConfigs()
 {
 	xr_string file_path;
@@ -1402,6 +1420,34 @@ void UIObjectList::CreateLogicConfigs()
 		ini_smart->save_as(smart_path);
 	}
 }
+
+
+#include "../xrServerEntities/xrServer_Objects_ALife.h"
+
+void UIObjectList::ClearGraphs()
+{
+	ESceneCustomOTool* base = Scene->GetOTool(OBJCLASS_SPAWNPOINT);
+	int i = 0;
+	for (auto item : base->GetObjects())
+	{
+		CSpawnPoint* sp = (CSpawnPoint*)item;
+		if (strstr(item->RefName(), "graph_point"))
+		{
+			//Msg("TGraph: %s", sp->GetName());
+			CSE_ALifeGraphPoint* graph = smart_cast<CSE_ALifeGraphPoint*>( sp->m_SpawnData.m_Data);
+ 
+			if (graph)
+			{
+				graph->m_caConnectionPointName._set("");
+				graph->m_tLocations[0] = 0;
+				graph->m_tLocations[1] = 0;
+				graph->m_tLocations[2] = 0;
+				graph->m_tLocations[3] = 0;
+				//Msg("Graph: %s, DATA: %u, %u, %u, %u, %s, %s", graph->name_replace(), graph->m_tLocations[0], graph->m_tLocations[1], graph->m_tLocations[2], graph->m_tLocations[3], graph->m_caConnectionLevelName.c_str(), graph->m_caConnectionPointName.c_str());
+			}
+		}
+	}
+}
  
 int current_in_list = 0;
 bool current_only_customdata = 0;
@@ -1455,6 +1501,14 @@ bool ShowEXPORT = false;
 
 void UIObjectList::UpdateDefaultMeny()
 {
+	if (ImGui::Button("graphs test"))
+		try {
+			ClearGraphs();
+		}
+		catch (std::exception p)
+		{
+			Msg("Exception: %s", p.what());
+		}
 		
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
 	{
@@ -1528,6 +1582,7 @@ void UIObjectList::UpdateDefaultMeny()
 	if (LTools->CurrentClassID() == OBJCLASS_SCENEOBJECT)
 	{
 		ImGui::Text("SCENE: ");
+		
 
 		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
 			CopyTempLODforObjects();

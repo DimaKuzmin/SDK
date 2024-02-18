@@ -183,6 +183,7 @@
     <ClCompile Include="UI\UIPropertiesModal.cpp" />
     <ClCompile Include="UI\UITopBarForm.cpp" />
     <ClCompile Include="UI_CompilerXR.cpp" />
+    <ClCompile Include="UI_TexturesReplacerSOC.cpp" />
     <ClCompile Include="UI_TreesReplacer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -276,6 +277,7 @@
     <ClInclude Include="UI\UITopBarForm.h" />
     <ClInclude Include="UI\UITopBarForm_ButtonList.h" />
     <ClInclude Include="UI_CompilerXR.h" />
+    <ClInclude Include="UI_TexturesReplacerSOC.h" />
     <ClInclude Include="UI_TreesReplacer.h" />
   </ItemGroup>
   <ItemGroup>

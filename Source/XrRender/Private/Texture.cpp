@@ -410,12 +410,12 @@ ID3DBaseTexture* CRender::texture_load_software(LPCSTR fRName, u32& ret_msize)
 	}
 	else
 	{
-		if (!FS.exist(fn, "$level$", fname, ".dds"))
-			if (!FS.exist(fn, "$game_saves$", fname, ".dds"))
+				if (!FS.exist(fn, "$level$", fname, ".dds"))
+				if (!FS.exist(fn, "$game_saves$", fname, ".dds"))
 				if (!FS.exist(fn, "$game_textures$", fname, ".dds"))
 				{
 #ifdef _EDITOR
-					ELog.Msg(mtError, "Can't find texture '%s'", fname);
+					ELog.Msg(mtError, "Can't find texture Software '%s'", fname);
 					return 0;
 #endif
 				}
@@ -556,6 +556,9 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 
 #ifdef _EDITOR
 	ELog.Msg(mtError,"Can't find texture '%s'",fname);
+
+	goto _IMPORT;
+
 	return 0;
 #else
 
@@ -566,6 +569,35 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 //	Debug.fatal(DEBUG_INFO,"Can't find texture '%s'",fname);
 
 #endif
+
+_IMPORT:
+	{
+		 
+		FS.append_path("$game_tex_exports_import$", FS.get_path("$fs_root$")->m_Path, "exports\\import_textures\\", 0);
+		FS.append_path("$game_tex_exports_export$", FS.get_path("$fs_root$")->m_Path, "exports\\export_textures\\", 0);
+
+		string_path _current_export_, _current_import_;
+		xr_strcat(fname, ".dds");
+		FS.update_path(_current_import_, "$game_tex_exports_import$", fname);
+		FS.update_path(_current_export_, "$game_tex_exports_export$", fname);
+
+	 
+		
+		
+		if (FS.exist(_current_import_))
+		{	
+			Msg("FS.file_copy [Texture] : %s", fname);
+			FS.file_copy(_current_import_, _current_export_);
+		}
+		else
+		{
+			Msg("[CAN'T] FS.file_copy [Texture] : %s", _current_import_);
+		}
+
+
+	} 
+
+	return 0;
 
 _DDS:
 	{

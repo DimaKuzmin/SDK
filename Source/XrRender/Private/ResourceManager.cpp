@@ -380,9 +380,7 @@ void CResourceManager::ExportTexturesToDir(LPCSTR name)
 	{
 		if (xr_strcmp("$null", t->second->cName.c_str()) == 0)
 			continue;
-		
-
-
+		 
 		{
 			string_path new_path, old_path;
 			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());

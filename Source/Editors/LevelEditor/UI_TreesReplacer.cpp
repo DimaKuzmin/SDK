@@ -120,9 +120,17 @@ bool UI_TreesReplacer::ReadSceneObjects_RefUsed()
 			if (strstr(ref.first.c_str(), "trees\\") || strstr(ref.first.c_str(), "new_trees\\"))
 			if (strstr(ref.first.c_str(), search_prefix))
 				refs_vec.push_back(ref.first);
+			
 		}
+
 		//std::sort(refs_vec.begin(), refs_vec.end());
 		std::sort(refs_vec.begin(), refs_vec.end(), sort_text);
+
+		for (auto ref : refs)
+		{
+			if (strstr(ref.first.c_str(), "trees\\") || strstr(ref.first.c_str(), "new_trees\\"))
+				Msg("REF[%s] = %d", ref.first.c_str(), ref.second);
+		}
    }
 
    return true;
@@ -216,65 +224,75 @@ void UI_TreesReplacer::Draw()
 	float PosX = ImGui::GetCursorPosX();
 	float PosY = ImGui::GetCursorPosY();
 
+	ImGui::Checkbox("tresslist", &ShowWindowsList);
 
-	if (ImGui::BeginChild("#ListObjects", ImVec2(500, 500) ) )
+	if (ShowWindowsList)
 	{
-
-		ImGui::ListBoxHeader("##list", ImVec2(500, 200));
+		if (ImGui::BeginChild("#ListObjects", ImVec2(500, 500)))
 		{
-			for (int i = 0; i < refs_vec.size(); ++i) 
+			if (refs_vec.size() > 0)
 			{
-				if (ImGui::Selectable(refs_vec[i].c_str(), current_item == i, 0, ImVec2(350, 14))) 
+				ImGui::ListBoxHeader("##list", ImVec2(500, 200));
 				{
-					current_item = i;
+					for (int i = 0; i < refs_vec.size(); ++i)
+					{
+						if (ImGui::Selectable(refs_vec[i].c_str(), current_item == i, 0, ImVec2(350, 14)))
+						{
+							current_item = i;
+						}
+					}
 				}
+				ImGui::ListBoxFooter();
+			}
+
+
+			if (ImGui::InputText("#serch_1", search_prefix, 520))
+			{
+				ReadSceneObjects_RefUsed();
+			}
+
+			if (m_RealTexture_scene)
+			{
+				//ImGui::SetCursorPos(ImVec2(355, PosY));
+				ImGui::Image(m_RealTexture_scene, ImVec2(250, 250));
 			}
 		}
-		ImGui::ListBoxFooter();
+		ImGui::EndChild();
 
-		if (ImGui::InputText("#serch_1", search_prefix, 520))
+		ImGui::SetCursorPos(ImVec2(550, PosY));
+
+		if (ImGui::BeginChild("#ListObjects_REFS", ImVec2(500, 500)))
 		{
-			ReadSceneObjects_RefUsed();
-		}
-
-		if (m_RealTexture_scene)
-		{
-			//ImGui::SetCursorPos(ImVec2(355, PosY));
-			ImGui::Image(m_RealTexture_scene, ImVec2(250, 250));
-		}
-	}
-	ImGui::EndChild();
-
-	ImGui::SetCursorPos(ImVec2(550, PosY));
-
-	if (ImGui::BeginChild("#ListObjects_REFS", ImVec2(500, 500) ) )
-	{
-
-		ImGui::ListBoxHeader("##list_objects", ImVec2(500, 200));
-		{
-			for (int i = 0; i < refs_objects_vec.size(); ++i) 
+			if (refs_objects_vec.size() > 0)
 			{
-				if (ImGui::Selectable(refs_objects_vec[i].c_str(), current_item_object == i, 0, ImVec2(350, 14))) 
+				ImGui::ListBoxHeader("##list_objects", ImVec2(500, 200));
 				{
-					current_item_object = i;
-				}
-			}
-		}
-		ImGui::ListBoxFooter();
 
-		if (ImGui::InputText("#serch_2", search_prefix_o, 520))
-		{
-			Refresh_ObjectsRef();
+					for (int i = 0; i < refs_objects_vec.size(); ++i)
+					{
+						if (ImGui::Selectable(refs_objects_vec[i].c_str(), current_item_object == i, 0, ImVec2(350, 14)))
+						{
+							current_item_object = i;
+						}
+					}
+				}
+				ImGui::ListBoxFooter();
+			}
+
+			if (ImGui::InputText("#serch_2", search_prefix_o, 520))
+			{
+				Refresh_ObjectsRef();
+			}
+
+			if (m_RealTexture_replace)
+			{
+				//ImGui::SetCursorPos(ImVec2(1100, PosY));
+				ImGui::Image(m_RealTexture_replace, ImVec2(250, 250));
+			}
+
 		}
- 
-		if (m_RealTexture_replace)
-		{
-			//ImGui::SetCursorPos(ImVec2(1100, PosY));
-			ImGui::Image(m_RealTexture_replace, ImVec2(250, 250));
-		}
-		 
+		ImGui::EndChild();
 	}
-	ImGui::EndChild();
 
 	
 	if (ImGui::Button("Refresh"))
@@ -282,12 +300,8 @@ void UI_TreesReplacer::Draw()
 		ReadSceneObjects_RefUsed();		
 		Refresh_ObjectsRef();
 	}						  
-
-
-
-
-	//if (ImGui::Button("Image Load"))
-	
+ 
+	/*
 	if (last_selected_object != current_item_object)
 	{
 		if (refs_objects_vec.size() > 0)
@@ -320,8 +334,8 @@ void UI_TreesReplacer::Draw()
  			}
 		}
 	}
-	
-
+	*/
+ 
 	if (ImGui::Button("ExportLTX"))
 	{
 		if (refs_vec.size() > 0)

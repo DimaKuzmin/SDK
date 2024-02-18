@@ -21,7 +21,7 @@ extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 extern bool use_intel = false;
 extern bool use_opcode_old = false;
 
-
+extern bool use_opcode_to_lmaps = false;
 
 void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 {
@@ -64,7 +64,7 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 #endif
 		{
 			int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
-			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip); //.
+			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip, use_opcode_to_lmaps); //.
 			C.mul(.5f);
 			lm.surface[_y * lm.width + _x]._set(C);
 			lm.marker[_y * lm.width + _x] = 255;
@@ -166,7 +166,7 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 									VERIFY(inlc_global_data()->RCAST_Model());
  									   
 									int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
-									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);  
+									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F, use_opcode_to_lmaps);
 									
 									Fcount += 1;
 								}

@@ -318,7 +318,8 @@ bool CParticleTool::Save(bool bAsXR)
 	if(bAsXR)
     {
         bRes 			= ::Render->PSLibrary.Save();
-    }else
+    }
+    else
     {
         bRes 			= ::Render->PSLibrary.Save2();
     }

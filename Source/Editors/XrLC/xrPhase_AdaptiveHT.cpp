@@ -218,7 +218,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 
 		Status("Load RcastModel");
- 		CTimer t;t.Start();
+ 		CTimer t;
+		t.Start();
 		// Build model
 		FPU::m64r					();
 		BuildRapid					(FALSE);
@@ -240,6 +241,12 @@ void CBuild::xrPhase_AdaptiveHT	()
 			IntelEmbereLOAD();
 
 			log_vminfo();
+		}
+
+		if (strstr(Core.Params, "-use_intel_for_mu"))
+		{
+			Status("Set Opcode For LMAPS");
+			use_opcode_to_lmaps = true;
 		}
 
 		if (strstr(Core.Params, "-use_opcode_old"))

@@ -8,6 +8,9 @@
 #include "serialize.h"
 #include "xrdeflectordefs.h"
 #include "execute_statistics.h"
+
+#include "R_light.h"
+
 class  base_lighting;
 class net_task_callback;
 class CDeflector;
@@ -16,12 +19,14 @@ class execute_statistics;
 
 XRLC_LIGHT_API extern bool use_intel;
 XRLC_LIGHT_API extern bool use_opcode_old;
+XRLC_LIGHT_API extern bool use_opcode_to_lmaps;
 
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
 XRLC_LIGHT_API void IntelClearTimers(LPCSTR name);
 
 //#define OLD_METHOD_GPU_COMPUTE
+
  
 class XRLC_LIGHT_API CDeflector 
 {

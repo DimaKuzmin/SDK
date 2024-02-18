@@ -43,15 +43,41 @@
 //----------------------------------------------------
 #define RPOINT_SIZE 0.5f
 #define ENVMOD_SIZE 0.25f
-#define MAX_TEAM 6
+#define MAX_TEAM 32
 const u32 RP_COLORS[MAX_TEAM]=
 {
-    0xff0000,
-    0x00ff00,
-    0x0000ff,
-    0xffff00,
-    0x00ffff,
-    0xff00ff
+    RGB(255, 0, 0),         // 0
+    RGB(0, 255, 0),         // 1
+    RGB(0, 0, 255),         // 2
+    RGB(255, 255, 0),       // 3
+    RGB(0, 255, 255),       // 4
+    RGB(255, 0, 255),       // 5
+    RGB(22, 0, 128),      // 6
+    RGB(44, 0, 128),      // 7
+    RGB(66, 0, 128),      // 8 
+    RGB(88, 0, 128),      // 9
+    RGB(108, 0, 128),     // 10
+    RGB(128, 0, 128),     // 11
+    RGB(148, 0, 128),     // 12
+    RGB(168, 0, 128),     // 13
+    RGB(188, 0, 128),     // 14
+    RGB(208, 0, 128),     // 15
+    RGB(228, 0, 128),     // 16
+    RGB(248, 0, 128),     // 17
+    RGB(255, 255, 22),      // 18
+    RGB(255, 255, 44),      // 19
+    RGB(255, 255, 66),      // 20
+    RGB(255, 255, 88),      // 21
+    RGB(255, 255, 108),     // 22
+    RGB(255, 255, 128),     // 23
+    RGB(255, 255, 148),     // 24
+    RGB(255, 255, 168),     // 25
+    RGB(255, 255, 188),     // 26
+    RGB(255, 255, 208),     // 27
+    RGB(255, 255, 228),     // 28
+    RGB(255, 255, 248),     // 29
+    RGB(255, 255, 255),     // 30
+    RGB(255, 128, 255)      // 31 
 };
 //----------------------------------------------------
 void CSE_Visual::set_visual	   	(LPCSTR name, bool load)
@@ -920,6 +946,16 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
                             c.mul_rgb(k*0.9f+0.1f);
                             DU_impl.DrawEntity(c.get(),EDevice.m_WireShader);
                         }
+                        else
+                        {
+                           // float k = 1.f / (float(m_RP_TeamID + 1) / float(MAX_TEAM));
+                           // int r = m_RP_TeamID % MAX_TEAM;
+
+                           // Fcolor c;
+                           // c.set(RP_COLORS[r]);
+                           // c.mul_rgb(k * 0.9f + 0.1f);
+                           // DU_impl.DrawEntity(c.get(), EDevice.m_WireShader);
+                        }
                     }break;
                     case ptEnvMod:
                     {
@@ -941,7 +977,9 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
                 if (m_SpawnData.Valid())
                 {
                     s_name	= m_SpawnData.m_Data->name();
-                }else{
+                }
+                else
+                {
                     switch (m_Type)
                     {
                     case ptRPoint: 	s_name.sprintf("RPoint T:%d",m_RP_TeamID); break;
@@ -971,11 +1009,13 @@ void CSpawnPoint::Render( int priority, bool strictB2F )
     
 	if(m_Type==ptRPoint)
     {
-        ESceneSpawnTool* st		= dynamic_cast<ESceneSpawnTool*>(FParentTools); VERIFY(st);
+        ESceneSpawnTool* st		= dynamic_cast<ESceneSpawnTool*>(FParentTools); 
+        VERIFY(st);
         CEditableObject* v		= st->get_draw_visual(m_RP_TeamID, m_RP_Type, m_GameType); 
         if(v)
         	v->Render				(FTransformRP, priority, strictB2F);
     }
+
     FTransformRP = SaveTransform;
 }
 

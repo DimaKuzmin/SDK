@@ -341,8 +341,7 @@ public:
 
 			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
 			{
-				//Msg("Selected");
-				SelectedFOLDER(N);
+ 				SelectedFOLDER(N);
 
 				DrawAfterFloderNode(true, N);
 				if (ImGui::IsItemClicked() && N->Object)

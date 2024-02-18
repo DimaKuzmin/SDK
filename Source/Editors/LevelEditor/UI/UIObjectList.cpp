@@ -222,6 +222,7 @@ void UIObjectList::DrawObjects()
 #include "SpawnPoint.h"
 #include "SceneObject.h"
  
+#pragma optimize("", off)
 void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 { 
 	CSpawnPoint* spawn = smart_cast<CSpawnPoint*>(obj);
@@ -260,13 +261,25 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 		Flags |= ImGuiTreeNodeFlags_Selected;
 	}
 
+	shared_str name_tmp;
+
 	if (name)
-		ImGui::TreeNodeEx(name, Flags);
+		name_tmp._set(name); 
 	else
 	if (spawn && spawn->m_SpawnData.m_Visual && spawn->m_SpawnData.m_Visual->source)
-		ImGui::TreeNodeEx(obj->GetName(), Flags, "%s (%s)", obj->GetName(), spawn->m_SpawnData.m_Visual->source->visual_name.c_str());
+	{
+		string128 tmp;
+		sprintf(tmp, "%s (%s)", obj->GetName(), spawn->m_SpawnData.m_Visual->source->visual_name.c_str());
+		name_tmp._set(tmp);
+	}
 	else
-		ImGui::TreeNodeEx(obj->GetName(), Flags);
+		name_tmp._set(obj->GetName());
+		//ImGui::TreeNodeEx(obj->GetName(), Flags);
+ 
+	if (name_tmp.size() > 0)
+		ImGui::TreeNodeEx(name_tmp.c_str(), Flags);
+	else
+		ImGui::TreeNodeEx("(~~~) NULL", Flags);
 
 	if (ImGui::IsItemClicked())
 	{
@@ -295,6 +308,7 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
  	}
  
 }
+#pragma optimize("", on)
 
 
 

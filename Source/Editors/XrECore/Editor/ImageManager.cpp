@@ -363,10 +363,14 @@ void CImageManager::SynchronizeTextures(bool sync_thm, bool sync_game, bool bFor
 
     // sync assoc
 	SPBItem* pb=0;
-    if (bProgress) pb = UI->ProgressStart(M_BASE.size(),"Synchronize textures...");
+    if (bProgress) 
+        pb = UI->ProgressStart(M_BASE.size(),"Synchronize textures...");
+
     FS_FileSetIt it=M_BASE.begin();
 	FS_FileSetIt _E = M_BASE.end();
-	for (; it!=_E; it++){
+	
+    for (; it!=_E; it++)
+    {
 	    U32Vec data;
     	u32 w, h, a;
 

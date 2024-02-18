@@ -272,15 +272,30 @@ void CSceneObject::ReferenceChange(PropValue* sender)
     Scene->BeforeObjectChange(this);
 	UpdateReference	();
 }
+
 void CSceneObject::OnChangeShader(PropValue* sender)
 {
     OnChangeSurface(sender);
-    for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); }
+    for (CSurface* i : m_Surfaces) 
+    { 
+        i->OnDeviceDestroy(); 
+    }
 }
+
 void CSceneObject::OnChangeSurface(PropValue* sender)
 {
     m_Flags.set(flUseSurface, 1);
 }
+
+void CSceneObject::OnChangeSurfaces()
+{
+    m_Flags.set(flUseSurface, 1);
+    for (CSurface* i : m_Surfaces)
+    {
+        i->OnDeviceDestroy();
+    }
+}
+
 bool CSceneObject::AfterEditGameMtl(PropValue* sender,shared_str&str)
 {
     return str != "materials\\occ";
@@ -308,10 +323,18 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
                 if ((*s_it)->m_GameMtlName != occ_name)
                 {
                     PropValue* V;
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); V->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
-                    auto VA = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); VA->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface); VA->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
+                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		
+                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                  
+                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		
+                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                  
+                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); 
+                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+                  
+                    auto VA = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); 
+                    VA->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface); 
+                    VA->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
                 }
                
             }

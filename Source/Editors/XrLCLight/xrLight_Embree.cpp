@@ -138,7 +138,6 @@ void SetRay1(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 
  }
 
-
 void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
 {
 	rayhit.ray.tnear = rayhit.ray.tfar + 0.01f;
@@ -155,9 +154,6 @@ void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
-
-   
- 
 
 void IntelClearTimers(LPCSTR name)
 {
@@ -191,6 +187,53 @@ struct RayQueryContext
 	float energy = 1.0f;
 	float last_far = 1000.0f;
 };
+
+struct RayQueryContext8
+{
+	RTCRayQueryContext context;
+
+	CDB::MODEL* model;
+	Face* skip[8];
+	R_Light* Light;
+	Fvector B;
+
+	int count = 0;
+	float energy = 1.0f;
+	float last_far = 1000.0f;
+};
+
+void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
+{
+	for (int i = 0; i < 8; i++)
+	{
+		rayhit8.ray.dir_x[i] = buffer->dir[i].x;
+		rayhit8.ray.dir_y[i] = buffer->dir[i].y;
+		rayhit8.ray.dir_z[i] = buffer->dir[i].z;
+
+		rayhit8.ray.org_x[i] = buffer->pos[i].x;
+		rayhit8.ray.org_y[i] = buffer->pos[i].y;
+		rayhit8.ray.org_z[i] = buffer->pos[i].z;
+
+		rayhit8.ray.mask[i] = (unsigned int)(-1);
+		rayhit8.ray.flags[i] = 0;
+
+		rayhit8.hit.Ng_x[i] = 0;
+		rayhit8.hit.Ng_y[i] = 0;
+		rayhit8.hit.Ng_z[i] = 0;
+
+		rayhit8.hit.u[i] = 0;
+		rayhit8.hit.v[i] = 0;
+
+		rayhit8.hit.geomID[i] = RTC_INVALID_GEOMETRY_ID;
+		rayhit8.hit.instID[0][i] = RTC_INVALID_GEOMETRY_ID;
+		rayhit8.hit.primID[i] = RTC_INVALID_GEOMETRY_ID;
+
+
+		rayhit8.ray.tfar[i] = buffer->tmax[i];
+		rayhit8.ray.tnear[i] = 0.f;
+
+	}
+}
 
 void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 {
@@ -289,6 +332,8 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 
 }
 
+
+
 xrCriticalSection csEmbree;
 
 void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
@@ -327,13 +372,230 @@ void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 	csEmbree.Leave();
 	*/
 }
+
+
+void FilterIntersection8(const struct RTCFilterFunctionNArguments* args)
+{
+	/*
+
+ 	//for (unsigned int i = 0; i < args->N; i++)
+	{
+		if (args->valid[i] != -1) 
+			continue;
+
+	 
+		//if (RTCHitN_primID(args->hit, args->N, i) & 2) 
+		//{
+		//	args->valid[i] = 0;
+		//}
+
+		rtcGetRayFromRayN(args->ray, args->N, i);
+		rtcGetRayFromRayN(args->hit, i);
+
+
+	}
+	*/
+
+	Msg("Ray: %d", args->N);
+}
  
-  
+void Raytrace8Ray(PackedBuffer* buffer, RayQueryContext8& data_hits)
+{
+	Msg("Raytrace 8 Rays");
+
+	RTCRayQueryContext context;
+	rtcInitRayQueryContext(&context);
+
+	data_hits.context = context;
+
+	RTCIntersectArguments args;
+	rtcInitIntersectArguments(&args);
+	args.filter = &FilterIntersection8;
+	args.context = &data_hits.context;
+	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER /*| RTC_RAY_QUERY_FLAG_COHERENT*/);
+ 
+	RTCRayHit8 rayhit8;
+	SetRayHit8(rayhit8, buffer);
+	
+	rtcIntersect8(buffer->valid, IntelScene, &rayhit8, &args);
+
+	/*
+	csEmbree.Enter();
+	if (data_hits.water_hitted)
+	{
+		int id = 0;
+		for (auto map : data_hits.faces_hitted)
+		{
+			id++;
+
+			b_material& M = inlc_global_data()->materials()[map.face->dwMaterial];
+			b_texture& T = inlc_global_data()->textures()[M.surfidx];
+			const Shader_xrLC& SH = map.face->Shader();
+
+			Msg_IN_FILE("ID[%d] face: TEX: %s, SH: %s, opac: %d, energy: %f, far: %f", id, T.name, SH.Name, map.face->flags.bOpaque, map.energy, map.tfar);
+		}
+
+	}
+	csEmbree.Leave();
+	*/
+}
+
+
+
+
+void RayTraceEmbree8Preocess(PackedBuffer* buffer, ELightType type_lightpoint, ELights type_LIGHTs)
+{
+
+	/* RGB */
+	/*
+	if (LT_DIRECT == type_lightpoint)
+	{
+		// Trace Light
+		//float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, 1000.f, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode);
+
+
+		float scale[8];
+
+		for (auto i = 0; i < 8; i++)
+		{
+			buffer->tmax[i] = 1000.0f;
+		}
+
+		SetRayHit8(rayhit8, buffer, type_lightpoint);
+
+		for (auto i = 0; i < 8; i++)
+		{
+			buffer->color[i].rgb.x += scale[i] * buffer->light->diffuse.x;
+			buffer->color[i].rgb.y += scale[i] * buffer->light->diffuse.y;
+			buffer->color[i].rgb.z += scale[i] * buffer->light->diffuse.z;
+		}
+
+
+		//C.rgb.x += scale * L->diffuse.x;
+		//C.rgb.y += scale * L->diffuse.y;
+		//C.rgb.z += scale * L->diffuse.z;
+
+	}
+
+	if (LT_POINT == type_lightpoint)
+	{
+		// Trace Light
+		float scale[8]; //= D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode);
+		float A[8];
+		float R[8];
+
+		for (auto i = 0; i < 8; i++)
+		{
+			R[i]  = _sqrt(buffer->Dist2Light[i]);
+			buffer->tmax[i] = R[i];
+
+			/// buffer->MDL = MDL;
+			//DB, MDL, * L, Pnew, Ldir, R, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode)
+
+
+			//	SetRayHit8(rayhit8, buffer, type_lightpoint);
+
+			if (inlc_global_data()->gl_linear())
+			{
+				A[i] = 1 - R[i] / buffer->light->range;
+			}
+			else
+			{
+				//	Igor: let A equal 0 at the light boundary
+				A[i] = scale[i] *
+				( 1 / (
+					buffer->light[i].attenuation0 +
+					buffer->light[i].attenuation1 * R[i] +
+					buffer->light[i].attenuation2 * buffer->Dist2Light[i]) -
+
+					R[i] * buffer->light[i].falloff // LAST MININUS
+				);
+
+			}
+
+			buffer->color[i].rgb.x += A[i] * buffer->light->diffuse.x;
+			buffer->color[i].rgb.y += A[i] * buffer->light->diffuse.y;
+			buffer->color[i].rgb.z += A[i] * buffer->light->diffuse.z;
+		}
+
+		//SetRayHit8(rayhit8, buffer, type_lightpoint);
+	}
+
+	if (LT_SECONDARY == type_lightpoint)
+	{
+		/*
+			// Jitter + trace light -> monte-carlo method
+			Fvector	Psave = L->position, Pdir;
+			L->position.mad(Pdir.random_dir(L->direction, PI_DIV_4), .05f);
+
+			float R = _sqrt(sqD);
+			float scale = powf(D, 1.f / 8.f) * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode);
+			float A = scale * (1 - R / L->range);
+			L->position = Psave;
+
+			C.rgb.x += A * L->diffuse.x;
+			C.rgb.y += A * L->diffuse.y;
+			C.rgb.z += A * L->diffuse.z;
+		*
+	}
+	*/
+
+	/* HEMI */
+
+	if (type_LIGHTs == ELights::Hemi)
+	{
+		switch (type_lightpoint)
+		{
+			case LT_Direct:
+			{
+				//float scale = L->energy * rayTrace(DB, MDL, *L, PMoved, Ldir, 1000.f, skip);
+				//C.hemi += scale;
+				RayQueryContext8 data;
+				data.Light  = buffer->light;
+				data.model  = buffer->MDL;
+				for (auto i = 0; i < 8; i++)
+				data.skip[i] = buffer->skip[i];
+				data.energy = 1.0f;
+				data.count   = 0;
+ 
+				Raytrace8Ray(buffer, data);
+			
+
+			}
+			break;
+
+			case LT_Point:
+			{
+				//float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable);
+				//float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
+
+				//C.hemi += A;
+
+				RayQueryContext8 data;
+				data.Light = buffer->light;
+				data.model = buffer->MDL;
+				for (auto i = 0; i < 8; i++)
+					data.skip[i] = buffer->skip[i];
+				data.energy = 1.0f;
+				data.count = 0;
+
+				Raytrace8Ray(buffer, data);
+
+
+			}
+			break;
+
+			default:
+				break;
+		}
+	}
+
+}
+
   
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
 {
-	 
-	float _u,_v, R;
+ 	float _u,_v, R;
 	bool res = CDB::TestRayTri(P, N, L.tri, _u,_v, R,false);
 	if (res) 
 	if (range > 0 && range < R) 
@@ -624,3 +886,5 @@ void IntelEmbereUNLOAD()
 }
 
 // END INTEL CODE
+
+ 

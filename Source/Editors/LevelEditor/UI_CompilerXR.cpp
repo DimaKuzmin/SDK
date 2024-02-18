@@ -165,31 +165,38 @@ void UI_CompilerXR::Draw()
 
 		sprintf(tmp, "-sample %d ", sample);
  		xr_strcat(start_params, tmp);
-
-		
+ 
 		sprintf(tmp, "-f %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 		xr_strcat(start_params, tmp);
 
+//		Msg("SizeLevel2: %s", Scene->m_LevelOp.m_FNLevelPath.c_str());
 		 
-		string_path file;
-		FS.update_path(file, "$fs_root$", "");
+		if (FS_Path* Path = smart_cast<FS_Path*>(FS.get_path("$sdk_root$")) )
+		{
+ 			string256 path;
+			sprintf(path, "%s", Path->m_Path);
+			Msg(path);
+			//Msg("Root: %s", FS.get_path("$fs_root$")->m_Path);
 
-		xr_strcat(file, "Bin\\x64\\Compilers_x64\\xrLC.exe ");
-		//xr_strcat(file, start_params);		
+			string_path file;
+			sprintf(file, "%s\\Bin\\x64\\Compilers_x64\\xrLC.exe", Path->m_Path);
+			//xr_strcat(file, start_params);		
 
-		Msg("Start: %s, Args: %s", file, start_params);
+			Msg("Start: %s, Args: %s", file, start_params);
 
-		//std::system(file);
-		 
-		STARTUPINFO si;
-		PROCESS_INFORMATION pi;
-		ZeroMemory(&si, sizeof(si));
-		si.cb = sizeof(si);
-		ZeroMemory(&pi, sizeof(pi));
+			//std::system(file);
+
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+			ZeroMemory(&si, sizeof(si));
+			si.cb = sizeof(si);
+			ZeroMemory(&pi, sizeof(pi));
 
 
-		CreateProcess(file, start_params, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
-		
+			CreateProcess(file, start_params, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+
+		}
+
 		
 		//LPSTR buffer;
 		//GetModuleFileName(NULL, buffer, MAX_PATH);

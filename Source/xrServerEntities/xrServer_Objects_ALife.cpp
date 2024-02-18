@@ -283,8 +283,8 @@ void CSE_ALifeGraphPoint::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 	tNetPacket.r_u8				(m_tLocations[3]);
 	
 	//Msg("Version %d, packet_pos: %d, size %d", m_wVersion, tNetPacket.r_pos, tNetPacket.B.count);
-	if (m_wVersion > 128)
-		tNetPacket.r_stringZ(m_SimLevelName);
+//	if (m_wVersion > 128)
+//		tNetPacket.r_stringZ(m_SimLevelName);
 };
 
 void CSE_ALifeGraphPoint::STATE_Write		(NET_Packet	&tNetPacket)
@@ -296,7 +296,7 @@ void CSE_ALifeGraphPoint::STATE_Write		(NET_Packet	&tNetPacket)
 	tNetPacket.w_u8				(m_tLocations[2]);
 	tNetPacket.w_u8				(m_tLocations[3]);
 	
-	tNetPacket.w_stringZ(m_SimLevelName);
+//	tNetPacket.w_stringZ(m_SimLevelName);
 };
 void CSE_ALifeGraphPoint::UPDATE_Read		(NET_Packet	&tNetPacket)
 {
@@ -316,7 +316,7 @@ void CSE_ALifeGraphPoint::FillProps			(LPCSTR pref, PropItemVec& items)
 	PHelper().CreateRToken8		(items,	PrepareKey(pref,*s_name, "Location\\4"),				&m_tLocations[3],			&*fp_data.locations[3].begin(), fp_data.locations[3].size());
 	PHelper().CreateRList	 	(items,	PrepareKey(pref,*s_name, "Connection\\Level name"),	&m_caConnectionLevelName,	&*fp_data.level_ids.begin(),	fp_data.level_ids.size());
 	PHelper().CreateRText	 	(items,	PrepareKey(pref,*s_name, "Connection\\Point name"),	&m_caConnectionPointName);
-	PHelper().CreateRText		(items, PrepareKey(pref, *s_name,"se7kill\\level_attach"),				&m_SimLevelName );
+//	PHelper().CreateRText		(items, PrepareKey(pref, *s_name,"se7kill\\level_attach"),				&m_SimLevelName );
 #	endif // #ifdef XRSEFACTORY_EXPORTS
 }
 

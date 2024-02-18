@@ -102,6 +102,8 @@ char* GetFormat(u32 fmt)
 		return ETFormatNAMES[fmt];
 }
 
+#include "SceneObject.h"
+
 void UIDxtConverter::Draw()
 {
 	if (!ImGui::Begin("DxtConverter", &bOpen))	// ImGuiWindowFlags_NoResize
@@ -326,6 +328,118 @@ void UIDxtConverter::Draw()
 		
 	}
 
+
+	
+
+	if (ImGui::Button("Check And Replace SOC textures"))
+	{
+		string_path p;
+		FS.update_path(p, _import_, "REPLACE_TEXTURES_LTX.ltx");
+		CInifile* file = xr_new<CInifile>(p);
+
+		struct Replace
+		{
+			shared_str first;
+			shared_str second;
+			shared_str section_ID;
+		};
+
+		xr_vector<Replace> sections;
+
+		for (auto i : file->sections())
+		{
+			string128 name, replace;
+			sprintf(name, "texture_%d", 1);
+			sprintf(replace, "texture_%d_replace", 1);
+
+			int ID = 2;
+			while (i->line_exist(name))
+			{				
+				Replace namedata;
+				namedata.first = file->r_string(i->Name.c_str(), name);
+				namedata.second = file->r_string(i->Name.c_str(), replace);
+				namedata.section_ID = replace;
+				
+
+				sections.push_back(namedata);
+				//Msg("Push[%d] {%s = %s}", ID, namedata.first.c_str(), namedata.second.c_str());
+				ID++;
+
+				sprintf(name, "texture_%d", ID);
+				sprintf(replace, "texture_%d_replace", ID);
+			}
+		
+		}
+
+		auto tools = Scene->GetOTool(OBJCLASS_SCENEOBJECT);
+
+		Msg("ListSize: Replace: %d, Objects: %d", sections.size(), tools->ObjCount());
+
+		struct CheckSurface
+		{
+			CSceneObject* obj;
+			xr_vector<shared_str> replaces;
+		};
+
+		xr_vector<CheckSurface> objects_replaced;
+
+		for (auto e : tools->GetObjects())
+		{
+			CSceneObject* obj = smart_cast<CSceneObject*>(e);
+			if (obj)
+			{
+				bool updated = false;
+				CheckSurface data;
+
+				for (auto surface : obj->m_Surfaces)
+				{
+					bool finded_for_replace = false;
+					shared_str replace;
+					shared_str current_tex;
+					shared_str texture_ID;
+
+					for (auto sec : sections)
+					{
+						if (xr_strcmp(surface->m_Texture.c_str(), sec.first.c_str()) == 0)
+						{
+  							finded_for_replace = true; 
+							
+							current_tex = sec.first;
+							replace = sec.second;
+							texture_ID = sec.section_ID;
+ 
+							break;
+						}
+					}
+
+					if (finded_for_replace)
+					{
+						updated = true;
+						surface->m_Texture = replace;
+						Msg("Replace[%s] Surface: %s to %s on onject: %s", texture_ID.c_str(), current_tex.c_str(), replace.c_str(), obj->GetName());
+						data.replaces.push_back(surface->m_Texture);
+					}
+				
+				}
+			
+				if (updated)
+				{
+					data.obj = obj;
+					objects_replaced.push_back(data);
+					obj->OnChangeSurfaces();
+				}
+			}
+		}
+
+		for (auto sdata : objects_replaced)
+ 		for (auto surface : sdata.obj->m_Surfaces)
+		for (auto name : sdata.replaces)
+		if (strstr(surface->m_Texture.c_str(), name.c_str()))
+		{
+			Msg("ReCheck Object[%s] Surface[%s]", sdata.obj->GetName(), surface->m_Texture.c_str());
+			break;
+		}
+ 	}
 
 	ImGui::End();
 }

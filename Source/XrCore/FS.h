@@ -278,7 +278,7 @@ public:
 	IC void			advance		(int cnt)		{	Pos+=cnt;VERIFY((Pos<=Size) && (Pos>=0));};
 
 public:
-	void			r			(void *p,int cnt);
+	void			r			(void *p, u32 cnt);
 
 	void			r_string	(char *dest, u32 tgt_sz);
 	void			r_string	(xr_string& dest);

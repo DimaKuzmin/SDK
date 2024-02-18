@@ -28,6 +28,25 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
         m_draw_RP_visuals.push_back(Lib.CreateEditObject("editor\\spectator"));        		//8
         m_draw_RP_visuals.push_back(Lib.CreateEditObject("editor\\item_spawn"));       		//9
     }
+
+    if (m_draw_RP_visuals_SE7kIlls.empty())
+    {
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\item_spawn"));   //0
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team1"));    //1
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team2"));    //2
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team3"));    //3
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team4"));    //4
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team5"));    //5
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team6"));    //6
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team7"));    //7
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team8"));    //8
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team9"));    //9
+        m_draw_RP_visuals_SE7kIlls.push_back(Lib.CreateEditObject("editor\\mp\\Team10"));   //10
+
+
+      //  m_draw_RP_visuals.push_back(Lib.CreateEditObject("editor\\item_spawn"));       		//11 Default
+    }
+
     switch (_RP_Type)
     {
     	case rptActorSpawn: //actor spawn
@@ -37,6 +56,7 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
             	if(_RP_TeamID==0)
             		ret = m_draw_RP_visuals[5];
             };
+
 			if(_GameType.MatchType(eGameIDTeamDeathmatch))
             {
             	if(_RP_TeamID==2)
@@ -57,6 +77,7 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
             	if(_RP_TeamID==2)
             		ret = m_draw_RP_visuals[3];
             };
+
 			if(_GameType.MatchType(eGameIDArtefactHunt))
             {
             	if(_RP_TeamID==0)
@@ -81,7 +102,8 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
             		ret = m_draw_RP_visuals[1];
                 else
                 	Msg("! incorrect AF teamID [%d] for CTA",_RP_TeamID);
-            }else
+            }
+            else
 			if(_GameType.MatchType(eGameIDArtefactHunt))
             {
           		ret = m_draw_RP_visuals[0];
@@ -90,6 +112,18 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
     	case rptItemSpawn:
         {
         	ret = m_draw_RP_visuals[9];
+        }break;
+        case rptReSpawnVisual:
+        {
+             
+            if (_RP_TeamID > 10)
+            {
+                //     ret = m_draw_RP_visuals_SE7kIlls[0];
+            }
+            else if (_RP_TeamID > 0)
+                ret = m_draw_RP_visuals_SE7kIlls[_RP_TeamID];
+             
+            
         }break;
     }
     return ret;

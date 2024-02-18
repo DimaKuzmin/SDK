@@ -589,7 +589,8 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
 
-	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
+	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert")) 
+	{
 		CONTEXT				save = *pExceptionInfo->ContextRecord;
 		*pExceptionInfo->ContextRecord = save;
 
@@ -634,10 +635,15 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 #if 1
-	ReportFault				( pExceptionInfo, 0 );
+	//ReportFault				( pExceptionInfo, 0 );
 #endif
 
-	if (!previous_filter) {
+
+	MessageBox(NULL, "Fatal error occured\n\nPress OK to abort program execution", "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+	exit(-1);
+
+	if (!previous_filter) 
+	{
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		if (Debug.get_on_dialog())
 			Debug.get_on_dialog()	(false);

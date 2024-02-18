@@ -228,6 +228,7 @@ xrCriticalSection csOpacity;
 void ImplicitExecute::Execute(net_task_callback* net_callback)
 {
 	net_cb = net_callback;
+
  
 	ImplicitDeflector& defl = cl_globs.DATA();
 
@@ -236,6 +237,9 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 	//Fvector2	dim,half;
 	//Fvector2	JS;
 	//Fvector2*	Jitter;
+
+	Msg("Implicit Execute: %s", defl.texture->name);
+
 
 	dim.set(float(defl.Width()), float(defl.Height()));
 	half.set(.5f / dim.x, .5f / dim.y);
@@ -270,6 +274,8 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 		}
 	}
 }
+
+extern bool use_opcode_to_lmaps;
   
 void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 {
@@ -313,7 +319,8 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 							(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
 							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
-							F);
+							F,
+							use_opcode_to_lmaps);
 						 
 						
 						
