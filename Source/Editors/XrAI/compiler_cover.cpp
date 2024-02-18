@@ -51,7 +51,7 @@ IC bool RayPick(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float r, RayCache& C)
 }
 */
 
-IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
+float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 {
 	u32	tris_count		= DB->r_count();
 	float	scale		= 1.f;
@@ -107,7 +107,7 @@ IC float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 			U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
 			V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
 
-			u32 pixel		=((u32*)*T.pSurface)[V*T.dwWidth+U];
+			u32 pixel		=((u32*)*T.pSurface)[V * T.dwWidth + U];
 			u32 pixel_a		= color_get_A(pixel);
 			float opac		= 1.f - float(pixel_a)/255.f;
 			scale			*= opac;
@@ -216,7 +216,7 @@ xrCriticalSection csAI;
 int IDS_THREADS = 0;
 int CurrentPos = 0;
 
-float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R/*, RayCache& C*/);
+float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C);
 
 class	CoverThread : public CThread
 {
@@ -260,7 +260,7 @@ public:
 			// raytrace
 			int			sector		=	calcSphereSector(Dir);
 			c_total		[sector]	+=	1.f;
-			c_passed	[sector]	+=	rayTrace (&DB, TestPos, Dir, range  /*cache[ID].C */); //
+			c_passed	[sector]	+=	rayTrace (&DB, TestPos, Dir, range, cache[ID].C);  
 		}
 		Q.Clear			();
 		

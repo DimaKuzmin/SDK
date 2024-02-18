@@ -73,7 +73,13 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*) args->hit;
 	RTCRay* ray = (RTCRay*) args->ray;
 
+
+
 	args->valid[0] = 0;
+	
+	if (!ctxt)
+		return;
+
 	ctxt->count++;
 
 	b_rc_face& F								= g_rc_faces		[hit->primID];
@@ -133,59 +139,72 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 	u32 pixel		=((u32*)*T.pSurface)[V*T.dwWidth+U];
 	u32 pixel_a		= color_get_A(pixel);
 	float opac		= 1.f - float(pixel_a)/255.f;
+
+	if (ctxt == nullptr)
+		Msg("CTXT == nullptr");
+
 	ctxt->energy	*= opac;
 }
 
 #include "cl_intersect.h"
 
-float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R/*, RayCache& C*/)
+typedef Fvector	RayCache[3];
+
+float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C);
+
+float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
 {
 	R_ASSERT	(DB);
 
 	// 1. Check cached polygon
-	/*
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,C,_u,_v,range,false);
-	if (res) {
-		if (range>0 && range<R) return 0;
-	}
-	*/
 
-	/*
-	// 2. Polygon doesn't pick - real database query
-	DB->ray_query	(&Level,P,D,R);
+	if (!SceneEmbree.InitedDevice)
+	{
+		 
+		float _u,_v,range;
+		bool res = CDB::TestRayTri(P,D,C,_u,_v,range,false);
+		if (res) 
+		{
+			if (range>0 && range<R) return 0;
+		}
+		 
 
-	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) {
-		return 1;
+		// 2. Polygon doesn't pick - real database query
+		DB->ray_query(&Level, P, D, R);
+
+		// 3. Analyze polygons and cache nearest if possible
+		if (0 == DB->r_count()) {
+			return 1;
+		}
+		else
+		{
+			return getLastRP_Scale(DB, C);
+		}
 	}
 	else
 	{
-		return getLastRP_Scale(DB,C);
+		RTCRayHit rayhit;
+		rayhit.ray.tfar = R;
+		rayhit.ray.tnear = 0;
+
+		rayhit.ray.org_x = P.x;
+		rayhit.ray.org_y = P.y;
+		rayhit.ray.org_z = P.z;
+
+		rayhit.ray.dir_x = D.x;
+		rayhit.ray.dir_y = D.y;
+		rayhit.ray.dir_z = D.z;
+
+		CDB::Embree::RayQuaryStructure data;
+		data.energy = 1;
+
+		SceneEmbree.RayTrace(&rayhit, &data, &filter_embree_function, false);
+
+		if (data.count == 0)
+			return 1;
+
+		return data.energy;
 	}
-	*/
-
-	RTCRayHit rayhit;
-	rayhit.ray.tfar = R; 
-	rayhit.ray.tnear = 0;
-
-	rayhit.ray.org_x = P.x;
-	rayhit.ray.org_y = P.y;
-	rayhit.ray.org_z = P.z;
-
-	rayhit.ray.dir_x = D.x;
-	rayhit.ray.dir_y = D.y;
-	rayhit.ray.dir_z = D.z;
-
-	CDB::Embree::RayQuaryStructure data;
-	data.energy = 1;
-
- 	SceneEmbree.RayTrace(&rayhit, &data, &filter_embree_function, false);
- 
-	if (data.count == 0)
-		return 1;
-
-	return data.energy;
 }
 
 
@@ -230,14 +249,21 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					tris_pointer += CDB::TRI::Size();
 				}				
  
-				//Level.build			( verts, H.vertcount, tris.data(), H.facecount );
-				//Level.syncronize	();
+				if (strstr(Core.Params, "-use_intel"))
+				{
+ 					CTimer t; t.Start();
+					SceneEmbree.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
+					Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
+				}
+				else
+				{
+					CTimer t; t.Start();
 
-				CTimer t;t.Start();
- 				SceneEmbree.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
- 				Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
+					Level.build			( verts, H.vertcount, tris.data(), H.facecount );
+					Level.syncronize	();
 
-				//Msg("* Level CFORM: %dK", Level.memory()/1024);
+					Msg("Loading Opcode Geom: %d", t.GetElapsed_ms());
+				}
 
 				g_rc_faces.resize	(H.facecount);
 				R_ASSERT(fs->find_chunk(1));
@@ -318,9 +344,25 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					Msg("RayQast Init");
  				    
-					Level.build			( verts.data(), H.vertcount, tris.data(), H.facecount );
-					Level.syncronize	();
-					Msg("* Level CFORM: %dK",Level.memory()/1024);
+					if (strstr(Core.Params, "-use_intel"))
+					{
+						CTimer t; t.Start();
+						SceneEmbree.InitGeometry(tris.data(), H.facecount, verts.data(), H.vertcount, &filter_embree_function);
+						Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
+					}
+					else
+					{
+						CTimer t; t.Start();
+
+						Level.build(verts.data(), H.vertcount, tris.data(), H.facecount);
+						Level.syncronize();
+					
+						//Msg("* Level CFORM: %dK", Level.memory() / 1024);
+
+						Msg("Loading Opcode Geom: %d", t.GetElapsed_ms());
+					}
+
+
 		
 					LevelBB.set			(H.aabb);
 					
