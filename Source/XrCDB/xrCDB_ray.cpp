@@ -462,12 +462,7 @@ public:
 	 
 	void			_prim(DWORD prim)
 	{
-		//if (MDL->use_triangles_opacity && !MDL->shadowed_face[prim])
-		//	return;
- 		//if (MDL->use_triangles_opacity && MDL->triangle_opacity[prim])
-		//	find_opacity = true;
-  
-		float	u, v, r;
+ 		float	u, v, r;
 		//if (!_tri(tris_edges[prim], u, v, r))	return;
 		if (!_tri(tris[prim].verts, u, v, r)) return;
 
@@ -561,15 +556,20 @@ public:
 		}
 
 		// 1st chield
-		if (node->HasLeaf())	_prim(node->GetPrimitive());
-		else					_stab(node->GetPos());
+		if (node->HasLeaf())	
+			_prim(node->GetPrimitive());
+		else	
+			_stab(node->GetPos());
 
 		// Early exit for "only first"
-		if (bFirst && dest->r_count())														return;
+		if (bFirst && dest->r_count())	
+			return;
 
 		// 2nd chield
-		if (node->HasLeaf2())	_prim(node->GetPrimitive2());
-		else					_stab(node->GetNeg());
+		if (node->HasLeaf2())
+			_prim(node->GetPrimitive2());
+		else	
+			_stab(node->GetNeg());
 	}
 };
 	

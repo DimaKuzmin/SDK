@@ -139,5 +139,6 @@ void CDB::Embree::SceneEmbree::RayTrace(RTCRayHit* rayhit, RayQuaryStructure* co
  	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER | RTC_RAY_QUERY_FLAG_COHERENT );
 
 	rtcIntersect1(IntelScene, rayhit, &args);
+ 
 }
  

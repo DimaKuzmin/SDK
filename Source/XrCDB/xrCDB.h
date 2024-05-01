@@ -30,21 +30,22 @@ namespace Opcode {
 
 struct OpcodeArgs
 {
+	 
 	struct Hit
 	{
 	   	float dist;
 		float u,v; 
 		u64 prim;
-	} hit_struct;
+ 	} hit_struct;
+	 
+
+	//xr_vector<Hit> hits;
+	
 
 	bool valid = 1;
-
-	xr_vector<Hit> hits;
-
-	//int Thread;
 	float energy;
 
-	int count = 0;
+	//int count = 0;
 	void * MDL;
 	void * skip;
 	void * Light;
