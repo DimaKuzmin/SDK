@@ -167,7 +167,7 @@ void LightVertex	( bool net )
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
-		for (u32 thID=0; thID<NUM_THREADS; thID++)	Threads.start(xr_new<CVertexLightThread>(thID));
+		for (u32 thID=0; thID<NUM_THREADS; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 

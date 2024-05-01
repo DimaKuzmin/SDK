@@ -287,7 +287,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 			ThreadPrecalcHemi.push_back(i);
 
 		for (int i = 0; i < THREADS_COUNT(); i++)
-			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i));
+			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i), i);
  
   		precalc_base_hemi.wait();
 	}

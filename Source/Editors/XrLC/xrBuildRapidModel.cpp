@@ -54,6 +54,7 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 		TextureMemorySize += TextureSize;
 	}
 
+
 	size_t LightingInfoSize = (Lightings.rgb.size() + Lightings.sun.size() + Lightings.hemi.size()) * sizeof(R_Light);
 	size_t TotalMemorySize = VertexDataSize + TrisIndexSize + TrisAdditionalDataSize + OptixMeshDataOverhead + TextureMemorySize + LightingInfoSize;
 
@@ -91,6 +92,15 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		Face*	F				= (*it);
 		const Shader_xrLC&	SH		= F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow)					continue;
+		
+		if (F->Shader().flags.bLIGHT_Vertex)
+		{
+			bool LightVertex = strstr(F->Shader().Name, "_noshadow") == 0;
+			F->flags.bShadowSkip = LightVertex;
+		}
+
+		if (F->flags.bShadowSkip)
+			continue;
 
 		Progress	(float(it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
 				

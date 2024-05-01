@@ -28,7 +28,7 @@ void	xrLightDO()
 		CThread* T = xr_new<LightThread>(thID, thID * stride, thID * stride + ((thID == (NUM_THREADS - 1)) ? last : stride));
 		T->thMessages = FALSE;
 		T->thMonitor = FALSE;
-		Threads.start(T);
+		Threads.start(T, thID);
 	}
 	Threads.wait();
 	Msg("%d seconds elapsed.", (start_time.GetElapsed_ms()) / 1000);

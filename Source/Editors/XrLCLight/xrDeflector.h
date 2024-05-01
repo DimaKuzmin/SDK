@@ -23,8 +23,7 @@ XRLC_LIGHT_API extern bool use_opcode_to_lmaps;
 
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
-XRLC_LIGHT_API void IntelClearTimers(LPCSTR name);
-
+ 
 //#define OLD_METHOD_GPU_COMPUTE
 
  

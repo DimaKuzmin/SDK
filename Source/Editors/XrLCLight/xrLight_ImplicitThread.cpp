@@ -25,7 +25,8 @@ void	ImplicitThread ::	Execute	()
 	// Priority
 	SetThreadPriority		(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	Sleep					(0);
-	execute.Execute(0);
+
+ 	execute.Execute(0);
 }
 
 
@@ -54,14 +55,14 @@ int THREADS_COUNT()
 void RunThread(ImplicitDeflector& defl)
 {
 	CThreadManager			tmanager;
-
+ 
 	u32	stride = defl.Height() / NUM_THREADS;
 	
  	for (u32 thID = 0; thID < NUM_THREADS; thID++)
 	{
 		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
 		
-		tmanager.start(th);
+		tmanager.start(th, thID);
 	}
 
 	tmanager.wait();

@@ -19,8 +19,10 @@ public:
 		u16					bProcessed			:		1;
 		u16					bOpaque				:		1;	// For ray-tracing speedup
 		u16					bLocked				:		1;	// For tesselation
-		u16					bEmbreeSkip			: 1;
-	}						flags;
+		//u16					bEmbreeSkip			:		1;
+		u16					bShadowSkip			:		1;
+	}					
+	flags;
 
 	virtual	const Shader_xrLC&	Shader			( )const;
 	virtual void			CacheOpacity		( );

@@ -626,12 +626,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				u32 id = F->r_u32();
  				g_nodes[i].n[j]	= id;
 #endif
-
 			}
 
 			pl				= F->r_u16();
 			pvDecompress	(g_nodes[i].Plane.n,pl);
 			F->r			(&_np,sizeof(_np));
+			
 			CNodePositionConverter(_np,H,np);
 			g_nodes[i].Pos	= vertex_position(np, LevelBB, g_params);
 

@@ -80,7 +80,7 @@ public:
 
 
 	void	Run						(LPCSTR path);
-	void	StartMu					();
+ 
 	void	RunAfterLight			( IWriter* fs	);
 	void	Tesselate				();
 	void	PreOptimize				();

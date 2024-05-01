@@ -38,15 +38,14 @@ private:
 public:
 	CLMThread	(u32 ID) : CThread(ID)
 	{
-		// thMonitor= TRUE;
-		thMessages	= FALSE;
+ 		thMessages	= TRUE;
 	}
 
 	virtual void	Execute()
 	{
  
 		CDeflector* D	= 0;
-
+ 
 		for (;;) 
 		{
 			// Get task
@@ -62,22 +61,17 @@ public:
 
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
 
-			/*
-			if (task_pool.size() % 1 == 0)
-				StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
-					lc_global_data()->g_deflectors().size() - task_pool.size(), 
-					lc_global_data()->g_deflectors().size(),
-					D->layer.width, D->layer.height
-				);
-			*/
+			 
+ 			StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
+				lc_global_data()->g_deflectors().size() - task_pool.size(), 
+				lc_global_data()->g_deflectors().size(),
+				D->layer.width, D->layer.height
+			);
+			 
 			
 			task_pool.pop_back	();
 			task_CS.Leave		();
-
-			//base_Vertex* vert = (base_Vertex*) D->UVpolys.front().owner;
-			//if (vert)
-			//Msg("POS [%.2f][%.2f][%.2f]", vert->P.x, vert->P.y, vert->P.z );
-
+ 
 			// Perform operation
 			try 
 			{
@@ -109,7 +103,7 @@ public:
 	{
  
 		CDeflector* D = 0;
-
+		Status("Thread Execute: %d", thID);
 		for (;;)
 		{
 			// Get task
@@ -125,14 +119,14 @@ public:
 
 			D = lc_global_data()->g_deflectors()[task_pool.back()];
 
-			/*
-			if (task_pool.size() % 1 == 0)
-			StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]",
+			 
+		//	if (task_pool.size() % 1 == 0)
+			Status("DEFL[%d]/[%d], layer w[%d], h[%d]",
 				lc_global_data()->g_deflectors().size() - task_pool.size(),
 				lc_global_data()->g_deflectors().size(),
 				D->layer.width, D->layer.height
 			);
-			*/
+		 
 
 			task_pool.pop_back();
 			task_CS.Leave();
@@ -180,8 +174,7 @@ int THREADS_COUNT()
 
 
 void IntelEmbereUNLOAD();
-void IntelClearTimers(LPCSTR name);
-
+ 
 void IntelEmbereLOAD();
 XRLC_LIGHT_API extern bool use_intel;
 
@@ -199,18 +192,23 @@ void	CBuild::LMapsLocal				()
 		// Randomize deflectors
 #ifndef NET_CMP
 		 
+		Status("Sorting Deflectors : Start");
 		std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [] (const CDeflector* defl, const CDeflector* defl2) 
 		{
 			return defl->similar_pos(*defl2, 0.1f);	    
 		});
+		Status("Sorting Deflectors : End");
 
  #endif
 
  
 		 
 #ifndef NET_CMP	
+		Status(" Deflectors Move TO POOL: Start");
 for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
 		task_pool.push_back(dit);
+		Status(" Deflectors Move TO POOL: End");
+
 
 //for (u32 dit = lc_global_data()->g_deflectors().size(); dit > 0; dit--)
 //	 task_pool.push_back(dit);
@@ -228,7 +226,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 		int th = TH_NUM;
 		 
 		for (int L = 0; L < th; L++)
-			threads.start(xr_new<CLMThread>(L));
+			threads.start(xr_new<CLMThread>(L), L);
 		threads.wait(500);
 		
 #ifndef DevCPU
@@ -284,8 +282,7 @@ void CBuild::Light()
 
 	if (g_params().m_quality != ebqDraft )	//&& !strstr(Core.Params, "-no_light")
 	{
-		IntelClearTimers("Pre Implicit");
-
+ 
 		//****************************************** Implicit
 		{
 			FPU::m64r();
@@ -295,8 +292,7 @@ void CBuild::Light()
 			ImplicitLighting();
 		}
 
-		IntelClearTimers("Implicit");
-
+ 
  		{
  			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", use_intel ? "intel" : "opcode");
 			Phase			(tmp);
@@ -307,8 +303,7 @@ void CBuild::Light()
 			Phase("LIGHT: Vertex...");
 			mem_Compact();
 
-			IntelClearTimers("LMAPS");
-			LightVertex();
+ 			LightVertex();
 
 
 			ImplicitNetWait();
@@ -326,8 +321,7 @@ void CBuild::Light()
 
 		}
 
-		IntelClearTimers("LM Vertex");
-	}
+ 	}
 
 	//****************************************** Starting MU
 	
@@ -342,27 +336,18 @@ void CBuild::Light()
 			lc_global_data()->mu_models_calc_materials();
 			RunNetCompileDataPrepare();
 		}
-		StartMu();
-
-
+ 
 		//****************************************** Wait for MU
 		FPU::m64r();
 				
  		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", use_intel ? "intel" : "opcode");
 		Phase(tmp);
-		mem_Compact();
-		wait_mu_base();
+ 		
+ 		wait_mu_base();
 
-		if (!g_build_options.b_net_light)
-		{
-			Phase("LIGHT: Waiting for MU-Secondary threads...");
-			wait_mu_secondary();
-		}
+ 	}
 
-	}
-
-	IntelClearTimers("LM MuModels");
-
+ 
 	if (use_intel)
 		IntelEmbereUNLOAD();
 }

@@ -25,7 +25,7 @@
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 xrCriticalSection crImplicit;
-int curHeight = 0;
+ 
 ImplicitCalcGlobs cl_globs;
 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
@@ -215,6 +215,7 @@ void	ImplicitExecute::	send_result				( IWriter	&w ) const
 	}
 }
 
+u32 curHeight = 0;
 void ImplicitExecute::clear()
 {
 	curHeight = 0;
@@ -224,6 +225,7 @@ void ImplicitExecute::clear()
 
  
 xrCriticalSection csOpacity;
+
 
 void ImplicitExecute::Execute(net_task_callback* net_callback)
 {
@@ -238,9 +240,8 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 	//Fvector2	JS;
 	//Fvector2*	Jitter;
 
-	Msg("Implicit Execute: %s", defl.texture->name);
-
-
+//	Msg("Implicit Execute: %s", defl.texture->name);
+	 
 	dim.set(float(defl.Width()), float(defl.Height()));
 	half.set(.5f / dim.x, .5f / dim.y);
 
@@ -268,7 +269,7 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 		crImplicit.Leave();
 
 		ForCycle(&defl, ID, TH_ID);
-		if (ID % 128 == 0)
+		if (ID % 256 == 0)
 		{	
 			Msg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
 		}

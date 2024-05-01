@@ -170,6 +170,11 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	int count = 0;
 	int MAX_PX = 0;
 
+	int MAX_X = 0;
+	int MAX_Y = 0;
+	int MAX_Z = 0;
+	int ROW_SIZE = 0;
+
 	Msg("Min[%f][%f][%f]", H.aabb.min.x, H.aabb.min.y, H.aabb.min.z);
 	Msg("Max[%f][%f][%f]", H.aabb.max.x, H.aabb.max.y, H.aabb.max.z);
  
@@ -184,10 +189,35 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		NodeCompressed	NC;
 		Compress		(NC,N,H);
 		compressed_nodes.push_back(NC);
+
+		if (NC.p.y() > MAX_Y)
+		{
+			Fvector Psrc = N.Pos;
+			//int iFloorPosY = iFloor(65535.f * (Psrc.y - H.aabb.min.y) / (H.size_y) + EPS_L);
+			MAX_Y = NC.p.y(); //iFloorPosY;
+
+		}
 	  
 		if (NC.p.xz() > MAX_PX)
+		{
 			MAX_PX = NC.p.xz();
-		
+
+			float sp = 1 / g_params.fPatchSize;
+			int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
+
+			Fvector Psrc = N.Pos;
+
+			//int pxz = iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
+
+			int iFloorPosX =  ( (Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f );
+			int iFloorPosZ = iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
+			MAX_X = iFloorPosX;
+			MAX_Z = iFloorPosZ;
+
+			ROW_SIZE = row_length;
+		}
+	
+		/*
 		// Unpack For Check Validate
 		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
 				
@@ -226,13 +256,21 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 		//if (i % 1024 == 0)
 		//	clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
+		*/
 	}
 
 	FS.w_close(w);
  
 	int n_e = errored_nodes;
  
-	clMsg("nodes Size[%u], memory[%u] KB, MAXPXZ[%u], count_error: %u",  compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), MAX_PX, count);
+	clMsg("nodes Size[%u], memory[%u] KB, count_error: %u", 
+		compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed),
+		count
+	);
+
+	clMsg(" MAXPXZ[%u], MAX_X[%u], MAX_Z[%u], MAX_Y[%u] ROW[%u]",
+		MAX_PX, MAX_X, MAX_Z, MAX_Y, ROW_SIZE
+		);
  
 	xr_vector<u32>	sorted;
 	xr_vector<u32>	renumbering;

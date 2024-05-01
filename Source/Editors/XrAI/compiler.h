@@ -178,11 +178,20 @@ IC CNodePositionCompressor::CNodePositionCompressor(NodePosition& Pdest, Fvector
 {
 	float sp = 1/g_params.fPatchSize;
 	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
-	int pxz	= iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z)*sp   + EPS_L + .5f);
+
+	int pxz	= iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp   + EPS_L + .5f);
 	int py	= iFloor(65535.f*(Psrc.y-H.aabb.min.y)/(H.size_y)+EPS_L);
 	
+	//int iFloorPosX =  ( (Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f );
+	//int iFloorPosZ = iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
+
+	//if (pxz > (u32) 1 << 24)
+	//Msg("IFloorPosX: %u * ROW, IFloorPosZ: %u, ROW: %u, IFLOOR_PosX_ROW: %u", iFloorPosX, iFloorPosZ, row_length, iFloorPosX * row_length);
+ 
+	//	Msg("g_params.fPatchSize: %f, H.size: %f", g_params.fPatchSize, H.size);
+
 	if (pxz > u32 ( 1 << MAX_NODE_BIT_COUNT) )	   
-	{
+	{ 
  		xrADD_ERRORED_NODE(pxz);
 	}
 

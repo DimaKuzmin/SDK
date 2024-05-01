@@ -1,8 +1,11 @@
 #pragma once
+#include <thread>
+
 
 class XRLC_LIGHT_API CThread
 {
 	static void			startup(void* P);
+
 public:
 	volatile u32		thID;
 	volatile float		thProgress;
@@ -11,7 +14,7 @@ public:
 	volatile BOOL		thMonitor;
 	volatile float		thPerformance;
 	volatile BOOL		thDestroyOnComplete;
-
+	
 	CThread				(u32 _ID)	
 	{
 		thID				= _ID;
@@ -22,18 +25,22 @@ public:
 		thDestroyOnComplete	= TRUE;
 	}
 	virtual				~CThread(){}
+	
+ 	
 	void				Start	()
 	{
 		thread_spawn	(startup,"worker-thread",1024*1024,this);
 	}
+
 	virtual		void	Execute	()	= 0;
 };
 
 class XRLC_LIGHT_API CThreadManager
 {
 	xr_vector<CThread*>	threads;
+	xr_vector<std::thread*> std_threads;
 public:
-	void				start	(CThread*	T);
+	void				start	(CThread*	T, u32 TH_ID);
 	void				wait	(u32		sleep_time=1000);
 };
 

@@ -58,19 +58,30 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 
 void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
 {
-	//Msg("Cant Load THM %s", th_name);
+	clMsg("Cant Load THM %s", N);
+
+	//FS.append_path("$game_tex_exports_import$", FS.get_path("$fs_root$")->m_Path, "exports\\import_textures\\", 0);
+	//FS.append_path("$game_tex_exports_export$", FS.get_path("$fs_root$")->m_Path, "exports\\export_textures\\", 0);
+
+	//FS.get_path("$game_tex_exports_import$")->rescan_path_cb();
+	//FS.get_path("$game_tex_exports_export$")->rescan_path_cb();
+  
+	/*
 	{
 		string_path path = { 0 }, gamedata = { 0 };
 		string32 name_thm = { 0 };
-		sprintf(name_thm, "textures\\%s.thm", N);
+		sprintf(name_thm, "%s.thm", N);
 
-		FS.update_path(path, "$xrlc_textures$", name_thm);
-		FS.update_path(gamedata, _game_data_, name_thm);
+		FS.update_path(path, "$game_tex_exports_import$", name_thm);
+		FS.update_path(gamedata, "$game_tex_exports_export$", name_thm);
 
-		if (FS.exist(path))
+		IReader* THM = FS.r_open(path);
+
+		if (THM)
 		{
 			FS.file_copy(path, gamedata);
 			Msg("(NEED RESTART xrLC) Load THM from _import_: %s", path);
+			Msg("You need copy file from %s", path);
 		}
 		else
 		{	
@@ -80,19 +91,25 @@ void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
 			w->w_string(tmp);
 						 
 		}
+		if (THM)
+		FS.r_close(THM);
 	}
 
 	{
 		string_path path = { 0 }, gamedata = { 0 };
 		string32 name_file = { 0 };
-		sprintf(name_file, "textures\\%s.dds", N);
-		FS.update_path(path, "$xrlc_textures$", name_file);
-		FS.update_path(gamedata, _game_data_, name_file);
+		sprintf(name_file, "%s.dds", N);
+		
+		FS.update_path(path, "$game_tex_exports_import$", name_file);
+		FS.update_path(gamedata, "$game_tex_exports_export$", name_file);
 
-		if (FS.exist(path))
+		IReader* DDS = FS.r_open(path);
+
+		if (DDS)
 		{
 			FS.file_copy(path, gamedata);
 			Msg("(NEED RESTART xrLC) Load DDS from _import_: %s", path);
+			Msg("You need copy file from %s", path);
 		}
 		else
 		{	
@@ -101,7 +118,12 @@ void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
 			sprintf(tmp, "Texture: %s.dds", N);
 			w->w_string(tmp);
 		}
+
+
+		if (DDS)
+			FS.r_close(DDS);
 	}
+	*/
 
 	BT.dwWidth = 1024;
 	BT.dwHeight = 1024;
@@ -173,7 +195,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 				_F->dwMaterial		= u16(B.dwMaterial);
 				_F->dwMaterialGame	= B.dwMaterialGame;
-
+				
+							
 				// Vertices and adjacement info
 				for (u32 it=0; it<3; ++it)
 				{
@@ -476,6 +499,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
 								Msg(msg);
 								w->w_string(msg);
+
+								CopyTexture(N, BT, w);
 
 								BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
 								BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;

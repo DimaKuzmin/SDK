@@ -1,5 +1,5 @@
 #pragma once
-
+ 
 class ENGINE_API CThread
 {
 	static void			startup(void* P);
@@ -32,6 +32,7 @@ public:
 class ENGINE_API CThreadManager
 {
 	xr_vector<CThread*>	threads;
+ 
 public:
 	void				start	(CThread*	T);
 	void				wait	(u32		sleep_time=1000);

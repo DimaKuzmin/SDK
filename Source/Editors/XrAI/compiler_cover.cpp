@@ -501,9 +501,14 @@ void compute_non_covers		()
 	Nodes::iterator			B = g_nodes.begin(), I = B;
 	Nodes::iterator			E = g_nodes.end();
 	COVER_NODES::iterator	J = g_cover_nodes.begin();
-	for ( ; I != E; ++I, ++J)
+
+
+	int maxsize = g_nodes.size();
+	int startID = 0;
+	for ( ; I != E; ++I, ++J, startID++)
 	{
-		//StatusNoMsg();
+		Progress((float) (startID / maxsize) );
+
 		if (*J)
 			continue;
 

@@ -265,48 +265,7 @@ void CBuild::TestMergeGeom(IWriter* writer)
 	lc_global_data()->vertices_isolate_and_pool_reload();
 
 	log_vminfo();
- 
-	/*
-	MU MODELS LIGHT
-	
-	
-	*/
-
-	// Se7Kills Opacity BUFFERS
-
-	// LOAD OPACITY TO MODEL
- 
- 	/*
-
-	FPU::m64r();
-	Phase("LIGHT: Starting MU...");
-	mem_Compact();
-	Light_prepare();
-	if (g_build_options.b_net_light)
-	{
-		lc_global_data()->mu_models_calc_materials();
-		RunNetCompileDataPrepare();
-	}
-	StartMu();
-
-
-	//****************************************** Wait for MU
-	FPU::m64r();
-				
- 	string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", 1 ? "intel" : "opcode");
-	Phase(tmp);
-	mem_Compact();
-	wait_mu_base();
-
-	if (!g_build_options.b_net_light)
-	{
-		Phase("LIGHT: Waiting for MU-Secondary threads...");
-		wait_mu_secondary();
-	}
-	*/
-
-
-
+  
 	/*
 	
 	PART 2
@@ -1126,8 +1085,7 @@ void CBuild::Run(LPCSTR P)
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP
 	mu_base.wait				(500);
-	mu_secondary.wait			(500);
-#endif
+ #endif
 
 	if(g_build_options.b_net_light)
 		SetGlobalLightmapsDataInitialized();
@@ -1136,11 +1094,7 @@ void CBuild::Run(LPCSTR P)
 	RunAfterLight				( fs );
 
 }
-void	CBuild::StartMu	()
-{
-  //mu_base.start				(xr_new<CMUThread> (0));
-  run_mu_light( !!g_build_options.b_net_light );
-}
+ 
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
  	//****************************************** Merge geometry
