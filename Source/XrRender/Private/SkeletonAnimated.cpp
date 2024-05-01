@@ -324,6 +324,9 @@ void CKinematicsAnimated::IFXBlendSetup(CBlend &B, MotionID motion_ID, float ble
 	B.channel		= 0;
 	B.fall_at_end	= FALSE;	
 }
+
+#		define DEBUG_INFO				__FILE__,__LINE__,__FUNCTION__
+
 CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bMixing, float blendAccrue, float blendFalloff, float Speed, BOOL noloop, PlayCallback Callback, LPVOID CallbackParam,u8 channel/*=0*/ )
 {
 	// validate and unroll
@@ -334,6 +337,13 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 		return 0;
 	}
 	if (part>=MAX_PARTS)	return 0;
+
+	if (m_Partition == 0)
+	{
+ 		Msg("m_Partition == 0 : DEBUG_INFO: %s ", DEBUG_INFO);
+		return 0;
+	}
+
 	if (0==m_Partition->part(part).Name)	return 0;
 
 //	shared_motions* s_mots	= &m_Motions[motion.slot];
@@ -343,8 +353,10 @@ CBlend*	CKinematicsAnimated::LL_PlayCycle(u16 part, MotionID motion_ID, BOOL  bM
 	if( channel == 0 )
 	{
 		_DBG_SINGLE_USE_MARKER;
-		if (bMixing)	LL_FadeCycle	(part,blendFalloff,1<<channel);
-		else			LL_CloseCycle	(part,1<<channel);
+		if (bMixing)
+			LL_FadeCycle	(part,blendFalloff,1<<channel);
+		else
+			LL_CloseCycle	(part,1<<channel);
 	}
 	CPartDef& P	=	(*m_Partition)[part];
 	CBlend*	B	=	IBlend_Create	();
@@ -679,6 +691,8 @@ void CKinematicsAnimated::Load(const char* N, IReader *data, u32 dwFlags)
 	blend_instances		= NULL;
     m_Partition			= NULL;
 	Update_LastTime 	= 0;
+
+	Msg("Load KinematicsAnimated: %s", N);
 
 	// Load animation
     if (data->find_chunk(OGF_S_MOTION_REFS))
