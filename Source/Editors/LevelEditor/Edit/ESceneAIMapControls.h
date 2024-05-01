@@ -32,5 +32,13 @@ public:
 	virtual bool End    (TShiftState _Shift);
 	virtual void Move   (TShiftState _Shift);
 };
+
+class TUI_ControlAIMapNodeSelect : public TUI_CustomControl {
+public:
+	TUI_ControlAIMapNodeSelect(int st, int act, ESceneToolBase* parent);
+	virtual bool Start(TShiftState _Shift);
+	virtual bool End(TShiftState _Shift);
+	virtual void Move(TShiftState _Shift);
+};
 //---------------------------------------------------------------------------
 #endif //UI_AIMapToolsH

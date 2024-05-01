@@ -130,3 +130,29 @@ bool  TUI_ControlAIMapNodeRotate::End(TShiftState _Shift)
 	return RotateEnd(_Shift);
 }
 
+
+
+
+//------------------------------------------------------------------------------------
+// Select Node
+//------------------------------------------------------------------------------------
+TUI_ControlAIMapNodeSelect::TUI_ControlAIMapNodeSelect(int st, int act, ESceneToolBase* parent) :TUI_CustomControl(st, act, parent)
+{
+}
+bool  TUI_ControlAIMapNodeSelect::Start(TShiftState Shift)
+{
+    //Msg("StartL: %u", Shift);
+    return SelectStart(Shift);
+}
+
+void  TUI_ControlAIMapNodeSelect::Move(TShiftState Shift)
+{
+   // Msg("Move: %u", Shift);
+    SelectProcess(Shift);
+}
+bool  TUI_ControlAIMapNodeSelect::End(TShiftState Shift)
+{
+    //Msg("Start: %u", Shift);
+    return SelectEnd(Shift);
+}
+

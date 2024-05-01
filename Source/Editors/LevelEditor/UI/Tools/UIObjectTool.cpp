@@ -144,8 +144,11 @@ void UIObjectTool::Draw()
     {
         ImGui::Unindent(ImGui::GetTreeNodeToLabelSpacing());
         ImGui::BeginChild("Object List");
+        ImGui::InputText("search: ", m_ObjectList->search_predicate, 256);
         ImGui::Separator();
+
         m_ObjectList->Draw();
+      
         ImGui::Separator();
         ImGui::EndChild();
         ImGui::Indent(ImGui::GetTreeNodeToLabelSpacing());

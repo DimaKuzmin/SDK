@@ -23,15 +23,18 @@ public:
 	};
 public:
 	char		Name		[128];
-	union{
+	union
+	{
 		Flags32	m_Flags;
         Flags	flags;
     };
 	float		vert_translucency;
 	float		vert_ambient;
 	float		lm_density;
+ 
 
-	Shader_xrLC()	{
+	Shader_xrLC()	
+	{
 		xr_strcpy					(Name,"unknown");
 		m_Flags.assign			(0);
 		flags.bCollision		= TRUE;

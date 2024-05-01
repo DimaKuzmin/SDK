@@ -144,6 +144,15 @@ protected:
     virtual void 	SetPosition		(const Fvector& pos);
     virtual void 	SetRotation		(const Fvector& rot);
     virtual void 	SetScale		(const Fvector& scale);
+    virtual void	SetName(LPCSTR N) 
+    {
+        string256 tmp;
+        strcpy(tmp, N);
+        strlwr(tmp);
+        FName = tmp; 
+        if (m_SpawnData.m_Data != nullptr)
+            m_SpawnData.m_Data->set_name_replace(FName.c_str());
+    }
 protected:
 	virtual void 	Move			(Fvector& amount);
 public:

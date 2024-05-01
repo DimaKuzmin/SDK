@@ -813,14 +813,14 @@ void CWayObject::FillProp(LPCSTR pref, PropItemVec& items)
         	CWayPoint* W = *it;
             if ((*it)->m_bSelected)
             {
-            	PHelper().CreateNameCB	(items, PrepareKey(pref,"Way Point\\Name"),&W->m_Name,0,0, RTextValue::TOnAfterEditEvent(this,&CWayObject::OnWayPointNameAfterEdit));
-                PHelper().CreateVector	(items, PrepareKey(pref,"Way Point\\Transform\\Position"),	&W->m_vPosition,	-10000,	10000, 0.01, 2);
+            	PHelper().CreateNameCB	(items, PrepareKey(pref, "Way Point\\Name", W->m_Name.c_str()),&W->m_Name,0,0, RTextValue::TOnAfterEditEvent(this,&CWayObject::OnWayPointNameAfterEdit));
+                PHelper().CreateVector	(items, PrepareKey(pref, "Way Point\\Transform\\Position", W->m_Name.c_str()),	&W->m_vPosition,	-10000,	10000, 0.01, 2);
                 
                 for (WPLIt l_it=W->m_Links.begin(); l_it!=W->m_Links.end(); l_it++)
-                    PHelper().CreateFloat	(items,	PrepareKey(pref,"Way Point\\Links",*(*l_it)->way_point->m_Name),&(*l_it)->probability);
+                    PHelper().CreateFloat	(items,	PrepareKey(pref, "Way Point\\Links", W->m_Name.c_str(), *(*l_it)->way_point->m_Name), &(*l_it)->probability);
                     
                 for (int k=0; k<32; k++)
-                    PHelper().CreateFlag32(items,	PrepareKey(pref,"Way Point\\Flags",xr_string(k).c_str()),	&W->m_Flags,	1<<k);
+                    PHelper().CreateFlag32(items,	PrepareKey(pref, "Way Point\\Flags", W->m_Name.c_str(), xr_string(k).c_str()),	&W->m_Flags,	1<<k);
             }
     	}
     }

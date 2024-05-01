@@ -195,12 +195,15 @@ void CLE_Visual::PlayAnimationFirstFrame()
         {		
         	KA->PlayCycle	(M);
             PauseAnimation	();
-        }else
-         Msg("! visual [%s] has no animation [%s]", source->visual_name.c_str(), source->startup_animation.c_str());
+        }
+        else
+            Msg("! visual [%s] has no animation [%s]", source->visual_name.c_str(), source->startup_animation.c_str());
     }
+  
     if (K)
     	K->CalculateBones();
 }
+
 struct SetBlendLastFrameCB : public IterateBlendsCallback
 {
 	virtual	void	operator () ( CBlend &B )
@@ -213,7 +216,8 @@ struct SetBlendLastFrameCB : public IterateBlendsCallback
 
 void CLE_Visual::PlayAnimationLastFrame()
 {
-     if(g_tmp_lock) return;
+    if(g_tmp_lock)
+        return;
     // play motion if skeleton
 
     StopAllAnimations		();
@@ -229,6 +233,7 @@ void CLE_Visual::PlayAnimationLastFrame()
 	    	KA->LL_IterateBlends(g_Set_blend_last_frame_CB);
         }
     }
+
     if (K)
     	K->CalculateBones();
 }
@@ -1507,7 +1512,9 @@ void CSpawnPoint::FillProp(LPCSTR pref, PropItemVec& items)
         C->OnChooseFillEvent.bind	(this,&CSpawnPoint::OnFillChooseItems);
         C->OnChangeEvent.bind		(this,&CSpawnPoint::OnProfileChange);
     	m_SpawnData.FillProp		(pref,items);
-    }else{
+    }
+    else
+    {
     	switch (m_Type)
         {
         case ptRPoint:

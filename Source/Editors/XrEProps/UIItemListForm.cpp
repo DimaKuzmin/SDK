@@ -27,6 +27,8 @@ void UIItemListForm::Draw()
 		m_edit_node = nullptr;
 	}
 
+//	search_predicate = { 0 };
+
 }
 
 void UIItemListForm::ClearList()
@@ -39,6 +41,8 @@ void UIItemListForm::ClearList()
 		xr_delete(item);
 	}
 	m_Items.clear();
+
+//	search_predicate = { 0 };
 
 }
 
@@ -381,7 +385,13 @@ void UIItemListForm::DrawAfterFloderNode(bool is_open, Node* Node)
 
 void UIItemListForm::DrawItem(Node* Node)
 {
-	if (!Node->Object->Visible())return;
+	if (!Node->Object->Visible())
+		return;
+	
+  	if (xr_strlen(search_predicate) != 0 && strstr(Node->Name.c_str(), search_predicate) == 0)
+		return;
+
+
 	ImGuiTreeNodeFlags Flags = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen;
 	if (m_Flags.test(fMultiSelect))
 	{
@@ -449,7 +459,9 @@ void UIItemListForm::DrawItem(Node* Node)
 bool UIItemListForm::IsDrawFloder(Node* node)
 {
 
-	if (node->Object )return node->Object->Visible();
+	if (node->Object )
+		return node->Object->Visible() && (xr_strlen(search_predicate) == 0 || strstr(node->Name.c_str(), search_predicate) != 0);
+
 	bool result = m_Flags.test(fMenuEdit);;
 	for (Node& N : node->Nodes)
 	{
@@ -500,7 +512,8 @@ void UIItemListForm::EventRenameNode(Node* Node, const char* old_path, const cha
 		Node->Object->key = new_path;
 
 	}
-	if(!OnItemRenameEvent.empty())OnItemRenameEvent(old_path, new_path, type);
+	if(!OnItemRenameEvent.empty())
+		OnItemRenameEvent(old_path, new_path, type);
 }
 
 void UIItemListForm::EventRemoveNode(Node* Node, const char* path)
@@ -510,7 +523,8 @@ void UIItemListForm::EventRemoveNode(Node* Node, const char* path)
 	{
 		type = TYPE_OBJECT;
 	}
-	if (!OnItemRemoveEvent.empty())OnItemRemoveEvent(path, type);
+	if (!OnItemRemoveEvent.empty())
+		OnItemRemoveEvent(path, type);
 }
 
 void UIItemListForm::ClearSelectedItems()

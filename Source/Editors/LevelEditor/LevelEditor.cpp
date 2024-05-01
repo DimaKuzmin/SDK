@@ -22,6 +22,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     Scene = xr_new<EScene>();
 
+
+
     UIMainForm* MainForm = xr_new< UIMainForm>();
     ::MainForm = MainForm;
     UI->Push(MainForm, false);

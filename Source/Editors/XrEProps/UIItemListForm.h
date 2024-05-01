@@ -53,6 +53,9 @@ public:
 	Node m_GeneralNode;
 	ListItemsVec m_Items;
 	ListItemsVec m_SelectedItems;
+
+	string256 search_predicate;
+
 	void ClearSelectedItems();
 	bool m_UseMenuEdit;
 	void ClearObject(Node* Node);

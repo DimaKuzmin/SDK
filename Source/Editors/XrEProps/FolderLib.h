@@ -338,7 +338,6 @@ public:
 			}
 
 			if (N->Name.size())
-
 			if (ImGui::TreeNodeEx(N->Name.c_str(), FloderFlags))
 			{
  				SelectedFOLDER(N);

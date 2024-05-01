@@ -447,8 +447,7 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 
 bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
 { 
-      
-    if (F.find_chunk(3))
+    if (F.open_chunk(3))
     {
         Fbox ai_box;
         F.r(&ai_box, sizeof(ai_box));
@@ -466,54 +465,51 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
         AINodeVec vec;
         vec.resize(size);
 
-        //for (int i = 0; i < size; i++)
-        for (auto it = vec.begin(); it != vec.end(); it++, id++)
+         for (auto it = vec.begin(); it != vec.end(); it++, id++)
         {   
            Fvector3 pos;
            F.r_fvector3(pos);
+           pos.add(offset);
+           AddNode(pos, ignore, true, 1);
+
            Fvector3 norm;
            F.r_fvector3(norm);
            
+           F.r_u8();
+           F.r_u32();
+           F.r_u32();
+           F.r_u32();
+           F.r_u32();
+
+
+           /*
            u8 flag = F.r_u8();
-
-           pos.add(offset);
-
+             
            u32 n1, n2, n3, n4;
            n1 = F.r_u32();
            n2 = F.r_u32();
            n3 = F.r_u32();
            n4 = F.r_u32();
-  
-           //SAINode* node = xr_new<SAINode>();
-           //node->Plane.n = norm;
-           //node->Pos = pos;
-           //m_Nodes.push_back(node);
 
+           
            *it = xr_new<SAINode>();
            (*it)->Plane.n = norm;
            (*it)->Pos = pos;
-           
-           (*it)->Plane.build(pos, norm);
-           //(*it)->flags.flags = flag;
-           //(*it)->idx = id;
-           
+                      
            (*it)->n1 = (SAINode*) n1;
            (*it)->n2 = (SAINode*) n2;
            (*it)->n3 = (SAINode*) n3;
            (*it)->n4 = (SAINode*) n4;
-
-           // BuildNode(pos, pos, true, true);
-           // AddNode(pos, true, true, 1);
-
+           */
+            
            if (id % 25048 == 0)
            {
                pb->Update(id);
                Msg("Load %d", id);
            }
         }
-
-        //DenumerateNodes();
-
+          
+        /*
         for (auto it = vec.begin() ; it != vec.end();it++ )
         {
             (*it)->n1 = ((u32)(*it)->n1 >= size) ? 0 : vec[(u32)(*it)->n1];
@@ -526,6 +522,9 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
         {
             m_Nodes.push_back(node);
         }
+        
+        hash_FillFromNodes();
+        */
 
         Scene->unlock();
          
@@ -535,15 +534,13 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
         Msg("Box AI min[%f][%f][%f], max[%f][%f][%f]", VPUSH(ai_box.min), VPUSH(ai_box.max));
 
     
-        hash_FillFromNodes();
-
-        
+       
 
         return true;
     }
      
 
-    if (F.find_chunk(2))
+    if (F.open_chunk(2))
     {
         Msg("!!! OLD VERSION AI EXPORT V2");
       //  return false;

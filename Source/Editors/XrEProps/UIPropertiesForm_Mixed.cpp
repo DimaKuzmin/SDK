@@ -210,27 +210,19 @@ void UIPropertiesForm::RemoveMixed(Node* N)
 	case PROP_STEXT:
 	case PROP_CTEXT:
 	{
-		CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
-		if (V1)
+		if (m_EditTextValue == nullptr)
 		{
-			xr_string out = node->GetDrawText();
-			if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
-			{
-				if (m_EditTextValue->ApplyValue<CTextValue, LPCSTR>(out.c_str()))
-				{
-					change = true;
-				}
-			}
+			
 		}
 		else
 		{
-			RTextValue* V2 = dynamic_cast<RTextValue*>(m_EditTextValue->GetFrontValue());
-			if (V2)
+			CTextValue* V1 = dynamic_cast<CTextValue*>(m_EditTextValue->GetFrontValue());
+			if (V1)
 			{
-				shared_str out = node->GetDrawText().c_str();
-				if (m_EditTextValue->AfterEdit<RTextValue, shared_str>(out))
+				xr_string out = node->GetDrawText();
+				if (m_EditTextValue->AfterEdit<CTextValue, xr_string>(out))
 				{
-					if (m_EditTextValue->ApplyValue<RTextValue, shared_str>(out))
+					if (m_EditTextValue->ApplyValue<CTextValue, LPCSTR>(out.c_str()))
 					{
 						change = true;
 					}
@@ -238,13 +230,13 @@ void UIPropertiesForm::RemoveMixed(Node* N)
 			}
 			else
 			{
-				STextValue* V3 = dynamic_cast<STextValue*>(m_EditTextValue->GetFrontValue());
-				if (V3)
+				RTextValue* V2 = dynamic_cast<RTextValue*>(m_EditTextValue->GetFrontValue());
+				if (V2)
 				{
-					xr_string out = node->GetDrawText();;
-					if (m_EditTextValue->AfterEdit<STextValue, xr_string>(out))
+					shared_str out = node->GetDrawText().c_str();
+					if (m_EditTextValue->AfterEdit<RTextValue, shared_str>(out))
 					{
-						if (m_EditTextValue->ApplyValue<STextValue, xr_string>(out))
+						if (m_EditTextValue->ApplyValue<RTextValue, shared_str>(out))
 						{
 							change = true;
 						}
@@ -252,10 +244,23 @@ void UIPropertiesForm::RemoveMixed(Node* N)
 				}
 				else
 				{
-					R_ASSERT(false);
+					STextValue* V3 = dynamic_cast<STextValue*>(m_EditTextValue->GetFrontValue());
+					if (V3)
+					{
+						xr_string out = node->GetDrawText();;
+						if (m_EditTextValue->AfterEdit<STextValue, xr_string>(out))
+						{
+							if (m_EditTextValue->ApplyValue<STextValue, xr_string>(out))
+							{
+								change = true;
+							}
+						}
+					}
+ 
 				}
 			}
 		}
+		
 	}
 		break;
 	case PROP_CLIST:

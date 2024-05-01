@@ -18,7 +18,7 @@ struct b_rc_face
 	u16					dwMaterial;
 	u32					dwMaterialGame;
 	Fvector2			t[3];				// TC
-	//u16					reserved;
+	u16					reserved;
 };
 // All types to interact with xrLC
 typedef Fvector			b_vertex;

@@ -112,6 +112,7 @@ public:
 	void			SetName			(LPCSTR N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
 
     virtual const Fvector& GetPosition	()	const { return FPosition; 	}
+ 
     virtual const Fvector& GetRotation	()	const { return FRotation;	}
     virtual const Fvector& GetScale		()	const { return FScale; 		}
 
