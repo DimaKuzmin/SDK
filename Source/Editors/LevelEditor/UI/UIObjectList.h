@@ -9,14 +9,52 @@ class UIObjectList:public XrUI
 private:
 	static UIObjectList* Form;
 
-public:
+	// AIMAP
+	xr_string last_fileaimap;
+	bool ai_ignore_stractures = false;
+	xr_map<int, Fvector3> merge_offsets;
+
+	// MOVE OFFSETS
+	Fvector3 vec_offset = Fvector().set(0, 0, 0);
+	Fvector3 vec_box_min = Fvector().set(0, 0, 0);
+	Fvector3 vec_box_max = Fvector().set(0, 0, 0);
+
+	// BOX Выборка Обьектов
+	bool use_outside_box = false;
+	xr_map<CCustomObject*, Fvector> objects_to_move;
+
+ 
+
+private:
+	// SPAWNES
+	bool IgnoreCombatCovers = false;
+	string_path logic_sec = "smart_terrain", path_sec = "level_", name_sec = "test_";
+
+	string_path spawnnew_custom_data;
+
+ 	bool current_only_customdata = 0;
+	bool IgnoreVisual = false;
+	bool IgnoreNotVisual = false;
 	xr_vector<shared_str> Errored_objects;
 	xr_vector<CCustomObject*> customdata_objects;
 
+public:
+	// RENAME CFG
+	// PREFIXES
+	string_path prefix_cfg_section;
+	string_path prefix_cfg_prefix;
+	string_path prefix_cfg_map;
+
+	bool use_genarate_cfgs = false;
+
+	string_path rename_prefix_name;
+
+
 	bool MultiplySelect = false;
-	bool IgnoreVisual = false;
-	bool IgnoreNotVisual = false;
-	bool ShowLOAD = false;
+
+
+	// DISTANCE IN OBJECT LIST ITEMS
+
 	int DistanceObjects = 0;
 	bool use_prefix_refname = false;
 
@@ -33,6 +71,13 @@ public:
 	static IC bool IsOpen()  { return Form; }
 
  private:
+	 // GLOBAL MENU CHECKBOXES
+	 bool ShowEXPORT = false;
+ 	 bool ShowLOAD = false;
+	 bool ShowRenamer = false;
+
+
+
 	void DrawObjects();
 	void DrawObject(CCustomObject* obj,const char*name);
 
@@ -53,8 +98,8 @@ public:
 public:
 // NEW se7kills
 
-	void SetScale(Fvector size);
-
+	void HideCombatCovers();
+ 
 	void ExportSelectObjects();
 	void ExportInsideBox();
 	void RemoveAllInsideBox();
@@ -62,7 +107,7 @@ public:
 	void SetListToMove();
 
 	void ExportAllObjects();
-	void ExportAIMap();
+	void ExportAIMap(Fbox* box, LPCSTR name);
 
 	void ImportObjects(Fvector offset = Fvector(), bool use_path = false, xr_string path = {0});
 
@@ -76,8 +121,7 @@ public:
 	bool ExportDir(xr_string& dir);
 
 	bool LoadAiMAP();
-	void AddSceneObjectToList();
-
+ 
 	void UndoLoad();
 	void SelectLoaded();
 	void CheckCustomData();

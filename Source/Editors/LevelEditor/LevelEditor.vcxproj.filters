@@ -103,6 +103,9 @@
     <Filter Include="MAIN TOOLS\Scene">
       <UniqueIdentifier>{d1e8655c-2131-4206-88ec-1b0445641d36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\UI_TOOLS_SE7\Functions_Write By se7kills">
+      <UniqueIdentifier>{590d0a2b-536a-4fba-8ee6-483c02481e4c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Edit\SoundManager_LE.cpp">
@@ -167,9 +170,6 @@
       <Filter>UI\Tools</Filter>
     </ClCompile>
     <ClCompile Include="UI\Tools\UIShapeTool.cpp">
-      <Filter>UI\Tools</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\Tools\UIWayTool.cpp">
       <Filter>UI\Tools</Filter>
     </ClCompile>
     <ClCompile Include="UI\Tools\UISectorTool.cpp">
@@ -520,6 +520,27 @@
     <ClCompile Include="UI_TexturesReplacerSOC.cpp">
       <Filter>UI\Menus</Filter>
     </ClCompile>
+    <ClCompile Include="UIObjectList_FunctionsExport.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UIObjectList_FunctionsImport.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UIObjectList_FunctionsSpawn.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UIObjectList_FunctionsAImap.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UIObjectLIST_FunctionsStatic.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UIObjectList_Renamer.cpp">
+      <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\Tools\UIWayTool.cpp">
+      <Filter>MAIN TOOLS\ETools\TOOLS\WAY</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit\SoundManager_LE.h">
@@ -566,9 +587,6 @@
       <Filter>UI\Tools</Filter>
     </ClInclude>
     <ClInclude Include="UI\Tools\UIShapeTool.h">
-      <Filter>UI\Tools</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\Tools\UIWayTool.h">
       <Filter>UI\Tools</Filter>
     </ClInclude>
     <ClInclude Include="UI\Tools\UIPortalTool.h">
@@ -789,6 +807,9 @@
     </ClInclude>
     <ClInclude Include="UI_TexturesReplacerSOC.h">
       <Filter>UI\Menus</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Tools\UIWayTool.h">
+      <Filter>MAIN TOOLS\ETools\TOOLS\WAY</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
