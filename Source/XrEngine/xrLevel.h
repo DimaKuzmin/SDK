@@ -170,30 +170,30 @@ private:
 		value &= 0x007fffff;
 		switch (link_index)
 		{
-		case 0:
-		{
-			value |= (*(u32*)data) & 0xff800000;
-			CopyMemory(data, &value, sizeof(u32));
-			break;
-		}
-		case 1: {
-			value <<= 7;
-			value |= (*(u32*)(data + 2)) & 0xc000007f;
-			CopyMemory(data + 2, &value, sizeof(u32));
-			break;
-		}
-		case 2: {
-			value <<= 6;
-			value |= (*(u32*)(data + 5)) & 0xe000003f;
-			CopyMemory(data + 5, &value, sizeof(u32));
-			break;
-		}
-		case 3: {
-			value <<= 5;
-			value |= (*(u32*)(data + 8)) & 0xf000001f;
-			CopyMemory(data + 8, &value, sizeof(u32));
-			break;
-		}
+			case 0:
+			{
+				value |= (*(u32*)data) & 0xff800000;
+				CopyMemory(data, &value, sizeof(u32));
+				break;
+			}
+			case 1: {
+				value <<= 7;
+				value |= (*(u32*)(data + 2)) & 0xc000007f;
+				CopyMemory(data + 2, &value, sizeof(u32));
+				break;
+			}
+			case 2: {
+				value <<= 6;
+				value |= (*(u32*)(data + 5)) & 0xe000003f;
+				CopyMemory(data + 5, &value, sizeof(u32));
+				break;
+			}
+			case 3: {
+				value <<= 5;
+				value |= (*(u32*)(data + 8)) & 0xf000001f;
+				CopyMemory(data + 8, &value, sizeof(u32));
+				break;
+			}
 		}
 #else 
 		data[link_index] = value;
