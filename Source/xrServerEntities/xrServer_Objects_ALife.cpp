@@ -514,7 +514,11 @@ void CSE_ALifeObject::FillProps				(LPCSTR pref, PropItemVec& items)
 {
 #	ifdef XRSEFACTORY_EXPORTS
 	inherited::FillProps		(pref, 	items);
-	PHelper().CreateRText		(items,	PrepareKey(pref,*s_name,"Custom data"),&m_ini_string);
+
+	string256 tmp;
+	sprintf(tmp, "%s\\%s", s_name.c_str(), name_replace());
+
+	PHelper().CreateRText		(items,	PrepareKey("Custom_Datas", tmp, "Custom data"), &m_ini_string);
 	if (m_flags.is(flUseSwitches)) {
 		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch online"),	&m_flags,			flSwitchOnline);
 		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch offline"),	&m_flags,			flSwitchOffline);
