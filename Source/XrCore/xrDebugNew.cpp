@@ -55,6 +55,7 @@ extern bool shared_str_initialized;
 #	define USE_OWN_MINI_DUMP
 #endif // DEBUG
 
+ 
 XRCORE_API	xrDebug		Debug;
 
 static bool	error_after_dialog = false;
@@ -169,15 +170,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	string4096			assertion_info;
 
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	LPCSTR				endline = "\r\n";
-	LPSTR				buffer = assertion_info + xr_strlen(assertion_info);
-	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"%sPress CANCEL to abort execution%s",endline,endline);
-	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press TRY AGAIN to continue execution%s",endline);
-	buffer				+= xr_sprintf(buffer,sizeof(assertion_info) - u32(buffer - &assertion_info[0]),"Press CONTINUE to continue execution and ignore all the errors of this type%s%s",endline,endline);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
+	 
 	if (handler)
 		handler			();
 
@@ -185,46 +178,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 		get_on_dialog()	(true);
 
 	FlushLog			();
-
-#ifdef XRCORE_STATIC
-	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
-#else
-#	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		int					result = 
-			MessageBox(
-				GetTopWindow(NULL),
-				assertion_info,
-				"Fatal Error",
-				MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
-			);
-
-		switch (result) {
-			case IDCANCEL : {
-#		ifdef USE_BUG_TRAP
-				BT_SetUserMessage	(assertion_info);
-#		endif // USE_BUG_TRAP
-				DEBUG_INVOKE;
-				break;
-			}
-			case IDTRYAGAIN : {
-				error_after_dialog	= false;
-				break;
-			}
-			case IDCONTINUE : {
-				error_after_dialog	= false;
-				ignore_always	= true;
-				break;
-			}
-			default : NODEFAULT;
-		}
-#	else // USE_OWN_ERROR_MESSAGE_WINDOW
-#		ifdef USE_BUG_TRAP
-			BT_SetUserMessage	(assertion_info);
-#		endif // USE_BUG_TRAP
-		DEBUG_INVOKE;
-#	endif // USE_OWN_ERROR_MESSAGE_WINDOW
-#endif
-
+ 
 	if (get_on_dialog())
 		get_on_dialog()	(false);
 
@@ -829,6 +783,26 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	static void illegal_instruction_handler	(int signal)
 	{
+		Msg("ERROR Signal: %d", signal);
+		
+		/*
+		constexpr int MAX_STACK_SIZE = 64;
+		void* stackTrace[MAX_STACK_SIZE];
+		int stackSize = backtrace(stackTrace, MAX_STACK_SIZE);
+		char** symbols = backtrace_symbols(stackTrace, stackSize);
+		if (symbols == nullptr) {
+			std::cerr << "Ошибка при получении стека вызовов." << std::endl;
+			return;
+		}
+
+		std::cerr << "Стек вызовов:" << std::endl;
+		for (int i = 0; i < stackSize; ++i) {
+			std::cerr << symbols[i] << std::endl;
+		}
+
+		free(symbols);
+		*/
+
 		handler_base					("illegal instruction");
 	}
 
