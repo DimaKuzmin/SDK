@@ -4,6 +4,7 @@
 #include "math.h"
 #include "build.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
+#include "xrLC.h"
 
 //#pragma comment(linker,"/STACK:0x800000,0x400000")
 //#pragma comment(linker,"/HEAP:0x70000000,0x10000000")
@@ -217,7 +218,21 @@ void Startup(LPSTR     lpCmdLine)
 
 
 #include <ctime>
- 
+
+
+void StartupWorking(LPSTR lpCmdLine)
+{
+	Debug._initialize(false);
+	Core._initialize("xrLC");
+
+	if (strstr(Core.Params, "-nosmg"))
+		g_using_smooth_groups = false;
+
+	Startup(lpCmdLine);
+	Core._destroy();
+}
+
+
 int APIENTRY WinMain(HINSTANCE hInst,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,

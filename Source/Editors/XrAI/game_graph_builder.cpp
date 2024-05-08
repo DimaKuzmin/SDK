@@ -145,7 +145,8 @@ void CGameGraphBuilder::load_graph_point	(NET_Packet &net_packet)
 	vertex.tLevelID			= 0;
 	vertex.tDeathPointCount = 0;
 	vertex.dwPointOffset	= 0;
-	Msg("VertexCount: %d, name: %s", graph().vertex_count(), entity->name_replace());
+	
+	//Msg("VertexCount: %d, name: %s", graph().vertex_count(), entity->name_replace());
 	graph().add_vertex		(vertex,graph().vertices().size());
 
 	F_entity_Destroy		(entity);
@@ -563,6 +564,7 @@ float CGameGraphBuilder::path_distance		(const u32 &game_vertex_id0, const u32 &
 	Msg						("Cannot build path from [%d] to [%d]",game_vertex_id0,game_vertex_id1);
 	Msg						("Cannot build path from [%f][%f][%f] to [%f][%f][%f]",VPUSH(vertex0.data().level_point()),VPUSH(vertex1.data().level_point()));
 	R_ASSERT2				(false,"Cannot build path, check AI map");
+
 	return					(flt_max);
 }
 

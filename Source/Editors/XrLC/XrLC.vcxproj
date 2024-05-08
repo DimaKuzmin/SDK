@@ -534,6 +534,7 @@
     <ClInclude Include="xrDXTC.h" />
     <ClInclude Include="xrGameMaterials.h" />
     <ClInclude Include="xrHemisphere.h" />
+    <ClInclude Include="xrLC.h" />
     <ClInclude Include="xrOcclusion.h" />
     <ClInclude Include="xrPhase_MergeLM_Rect.h" />
     <ClInclude Include="xrSpherical.h" />

@@ -143,7 +143,7 @@ public:
 		GRAPH_VERTEX_IT			E = m_tpVertices.end();
 		for ( ; I != E; I++, ids++) 
 		{
-			Msg("AddGraph: %d, level: %d, POS[%f][%f][%f]", ids, dwLevelID, VPUSH(m_tpGraph->vertex(int(I - B))->level_point()) );
+		//	Msg("AddGraph: %d, level: %d, POS[%f][%f][%f]", ids, dwLevelID, VPUSH(m_tpGraph->vertex(int(I - B))->level_point()) );
 
 			(*I).tLocalPoint		= m_tpGraph->vertex(int(I - B))->level_point();
 			(*I).tGlobalPoint.add	(m_tpGraph->vertex(int(I - B))->game_point(),m_tLevel.offset());
