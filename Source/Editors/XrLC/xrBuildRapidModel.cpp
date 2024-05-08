@@ -68,6 +68,8 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 	return TotalMemorySize;
 }
 
+#include "../../xrcdb/xrcdb.h"
+  
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
 	float	p_total			= 0;
@@ -85,22 +87,33 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
  
 //	Status("Converting faces... (ONE CORE)");
-	 
+
+	bool SkipNoShadow = strstr(Core.Params, "-skip_noshadow");
 	
 	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
 	{
 		Face*	F				= (*it);
 		const Shader_xrLC&	SH		= F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)					continue;
 		
-		if (F->Shader().flags.bLIGHT_Vertex)
-		{
-			bool LightVertex = strstr(F->Shader().Name, "_noshadow") == 0;
-			F->flags.bShadowSkip = LightVertex;
-		}
-
-		if (F->flags.bShadowSkip)
+		if (!SH.flags.bLIGHT_CastShadow)		
 			continue;
+		
+
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+
+		if (!SkipNoShadow)
+		if (strstr(lc_global_data()->shaders().Get(M.shader_xrlc)->Name, "_noshadow") || strstr(lc_global_data()->shaders().Get(M.shader)->Name, "_noshadow") )
+		{
+			// Msg("skipped: xrlc: %s, %s", lc_global_data()->shaders().Get(M.shader_xrlc)->Name, lc_global_data()->shaders().Get(M.shader)->Name);
+
+			F->flags.bShadowSkip = true;
+			continue;
+		}
+		 
+		//b_material& M = lc_global_data()->materials()[F->dwMaterial];
+		//Msg_IN_FILE("Shader xrLC : %s", lc_global_data()->shaders().Get(M.shader_xrlc)->Name);
+		//Msg_IN_FILE("Shader game : %s", lc_global_data()->shaders().Get(M.shader)->Name);
+		//Msg_IN_FILE("Shader Face : %s", F->Shader().Name);
 
 		Progress	(float(it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
 				

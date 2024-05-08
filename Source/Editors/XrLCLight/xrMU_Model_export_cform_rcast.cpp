@@ -4,6 +4,12 @@
 
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
+
+  
+ 
+//extern xr_vector<b_material>* materials_globaldata = 0;
+//extern Shader_xrLC_LIB* shaders_globaldata = 0;
+
 void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 {
 	for		(u32 fit=0; fit<m_faces.size(); fit++)
@@ -11,12 +17,29 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 
 	v_faces			adjacent;	adjacent.reserve(6*2*3);
 
+	bool SkipNoShadow = strstr(Core.Params, "-skip_noshadow");
+
 	for (v_faces_it it = m_faces.begin(); it!=m_faces.end(); it++)
 	{
 		_face*	F				= (*it);
 		const Shader_xrLC&	SH		= F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)		continue;
+		if (!SH.flags.bLIGHT_CastShadow)	
+			continue;
 
+ 		 
+ 
+  		/*b_material& M = (*materials_globaldata)[F->dwMaterial];
+		
+		if (!SkipNoShadow)
+		if (strstr(shaders_globaldata->Get(M.shader_xrlc)->Name, "_noshadow") || strstr(shaders_globaldata->Get(M.shader)->Name, "_noshadow") )
+		{
+			// Msg("skipped: xrlc: %s, %s", shaders_globaldata->Get(M.shader_xrlc)->Name, shaders_globaldata->Get(M.shader)->Name);
+			F->flags.bShadowSkip = true;
+			continue;
+ 		}
+		*/
+ 
+		 
 		// Collect
 		adjacent.clear	();
 		for (int vit=0; vit<3; vit++)

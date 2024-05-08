@@ -25,6 +25,8 @@ public:
 	flags;
 
 	virtual	const Shader_xrLC&	Shader			( )const;
+	virtual const Shader_xrLC& Shader_xrLC() const;
+
 	virtual void			CacheOpacity		( );
 	virtual Fvector2*		getTC0				( ) = 0;
 

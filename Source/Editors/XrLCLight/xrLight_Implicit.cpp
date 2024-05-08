@@ -225,8 +225,7 @@ void ImplicitExecute::clear()
 
  
 xrCriticalSection csOpacity;
-
-
+ 
 void ImplicitExecute::Execute(net_task_callback* net_callback)
 {
 	net_cb = net_callback;

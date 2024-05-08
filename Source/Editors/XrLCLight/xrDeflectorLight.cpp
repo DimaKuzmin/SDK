@@ -347,6 +347,14 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 // OLDER GARBAGE
 
 extern u64 RayID = 0;
+  
+extern bool use_intel;
+extern bool use_opcode_old;
+
+bool readed = false;
+bool return_parrams = false;
+
+ 
 
 float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip, BOOL bUseFaceDisable)
 {
@@ -361,10 +369,6 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 		{
 			CDB::RESULT& rpinf = DB->r_begin()[I];
  
-			//if (RayID < 100)
-			//	Msg_IN_FILE("[OPCODE] Ray[%d] TFar[%f] prim[%d]", RayID, rpinf.range, rpinf.id);
-
-
 			// Access to texture
 			CDB::TRI& clT										= MDL->get_tris()[rpinf.id];
 			base_Face* F										= (base_Face*)(clT.pointer);
@@ -395,7 +399,8 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 			if (T.pSurface.Empty())	
 			{
 				F->flags.bOpaque	= true;
-				clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...");
+			
+				clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...: %s", build_texture.name);
 				return 0;
 			}
 
@@ -428,7 +433,6 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 	return scale;
 }
- 
 
 // NEW CDB_RAY
 void FilterFunction(OpcodeArgs* args)
@@ -469,7 +473,8 @@ void FilterFunction(OpcodeArgs* args)
 	if (T.pSurface.Empty())	
 	{
 		F->flags.bOpaque	= true;
-		clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...");
+
+		clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
 		
 		args->valid = false;
 		args->energy = 0;
@@ -588,12 +593,7 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
 }
  
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
-extern bool use_intel;
-extern bool use_opcode_old;
 
-bool readed = false;
-bool return_parrams = false;
- 
 
  
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
@@ -766,6 +766,7 @@ void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& ligh
 	}
 	*/
  
+
 	 
 	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
 	

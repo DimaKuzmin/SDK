@@ -200,7 +200,8 @@ void CBuild::xrPhase_UVmap()
 					SP--;
 					break;
 				}
-				else if (remove_count > 0)
+				else 
+				if (remove_count > 0)
 				{
 					clMsg("CHECK ERROR SP[%d], Removed: %d, size %d", SP, remove_count, g_XSplit[SP]->size());
 				}  

@@ -13,7 +13,7 @@
 bool g_using_smooth_groups = true;
 bool g_smooth_groups_by_faces = false;
 
-xrLC_GlobalData* data =0;
+xrLC_GlobalData* data = 0;
 
 tread_lightmaps		*read_lightmaps		= 0;
 twrite_lightmaps	*write_lightmaps	= 0;
@@ -47,12 +47,16 @@ void	destroy_global_data()
 	xr_delete(data);
 }
 
+//extern xr_vector<b_material>*	materials_globaldata;
+//extern Shader_xrLC_LIB*			shaders_globaldata;
 
 xrLC_GlobalData::xrLC_GlobalData	(): _b_nosun(false),_gl_linear(false), b_vert_not_register( false )
 {
 	_cl_globs._RCAST_Model = 0;
 	write_faces = xr_new< twrite_faces	>( &_g_faces );
 	read_faces = xr_new< tread_faces	>( &_g_faces );
+//	materials_globaldata = &_cl_globs._materials;
+//	shaders_globaldata = &_cl_globs._shaders;
 }
 
 void	xrLC_GlobalData	::destroy_rcmodel	()

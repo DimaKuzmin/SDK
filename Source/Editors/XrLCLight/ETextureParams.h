@@ -141,7 +141,7 @@ struct		 STextureParams{
 	{
 		switch (fmt)
 		{
-		case tfADXT1:
+ 		case tfADXT1:
 		case tfDXT3:
 		case tfDXT5:
 		case tf4444:

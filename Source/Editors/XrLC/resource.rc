@@ -64,6 +64,29 @@ BEGIN
     PUSHBUTTON      "Debug",IDCANCEL,50,0,50,14,BS_FLAT
 END
 
+IDD_LOG1 DIALOGEX 0, 0, 596, 402
+STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_NOFAILCREATE | DS_CENTER | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU
+CAPTION "XRay Engine Components Compiler"
+FONT 10, "Lucida Console", 400, 0, 0xCC
+BEGIN
+    LISTBOX         IDC_LOG,0,0,345,253,NOT LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_VSCROLL
+    CTEXT           "Starting...",IDC_STAGE,0,255,345,17,SS_CENTERIMAGE | SS_SUNKEN
+    CONTROL         "Progress1",IDC_PROGRESS,"msctls_progress32",PBS_SMOOTH,7,375,353,14
+    GROUPBOX        "Stage information",IDC_STATIC,0,273,218,35
+    LTEXT           "",IDC_INFO,5,281,207,22
+    GROUPBOX        "Phase Timing",IDC_STATIC,220,274,125,34
+    LTEXT           "",IDC_TIMING,225,283,115,19
+    CTEXT           "",IDC_P_TEXT,313,387,32,14,SS_CENTERIMAGE | SS_SUNKEN
+    LISTBOX         IDC_PHASE_TIME,366,0,158,401,NOT LBS_NOTIFY | LBS_NOINTEGRALHEIGHT | WS_VSCROLL
+END
+
+IDD_FORMVIEW DIALOGEX 0, 0, 882, 442
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "TODO: представление формы макета",IDC_STATIC,55,42,74,26
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -94,8 +117,36 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 8
     END
+
+    IDD_LOG1, DIALOG
+    BEGIN
+        RIGHTMARGIN, 524
+        BOTTOMMARGIN, 401
+    END
+
+    IDD_FORMVIEW, DIALOG
+    BEGIN
+        RIGHTMARGIN, 320
+        BOTTOMMARGIN, 167
+    END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_LOG1 AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_FORMVIEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 #endif    // Русский (Россия) resources
 /////////////////////////////////////////////////////////////////////////////

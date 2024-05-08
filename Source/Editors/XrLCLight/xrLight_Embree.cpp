@@ -179,9 +179,11 @@ struct RayQueryContext
 	 	
 
 	float energy = 1.0f;
-	unsigned int LastPrimitive = 0;
 	int Ended = 0;
-	float initial_far = 0;
+ 
+	//float last_far = 1000.0f;
+	unsigned int LastPrimitive = 0;
+
 };
 
  
@@ -233,7 +235,7 @@ void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
 }
 
 int RAY_ID = 0;
- 
+  
 void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*) args->context;
@@ -242,28 +244,34 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	RTCRay* ray = (RTCRay*)args->ray;
 	
 	if (ctxt->Ended || hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
-		return;
+ 		return;
  
-	args->valid[0] = 0;
 	if (hit->primID == ctxt->LastPrimitive)
+	{
+		args->valid[0] = 0;
 		return;
+	}
 
 	ctxt->LastPrimitive = hit->primID;
 
-	//Msg("ray[%d] [%f][%f][%f] far[%f] near[%f] prim[%d]", RAY_ID, ray->org_x, ray->org_y, ray->org_z, ray->tfar, ray->tnear, hit->primID);
- 	 
 	// Access to texture
 	CDB::TRI* clT = &ctxt->model->get_tris()[hit->primID];	 
 
 	base_Face* F = (base_Face*)(clT->pointer);
  
 	if (0 == F || ctxt->skip == F)
- 		return;
+	{
+		args->valid[0] = 0;
+		return;
+	}
 
 	const Shader_xrLC& SH = F->Shader();
-	if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
- 		return;
- 
+	if (!SH.flags.bLIGHT_CastShadow ) // || F->flags.bShadowSkip
+	{
+		args->valid[0] = 0;
+		return;
+	}
+
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
   
@@ -289,9 +297,10 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		F->flags.bOpaque = true;
 		args->valid[0] = -1;
 		ctxt->energy = 0;
-		
-		ctxt->Ended = 1;
-  		Msg("Texture: %s surface", T.name);
+ 		ctxt->Ended = 1;
+ 
+		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...: %s", T.name);
+
   		return;
 	}
  
@@ -319,13 +328,17 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	float opac		= 1.f - _sqr(float(pixel_a)/255.f);
  
 	ctxt->energy *= opac;  
- 
+  
 	// Energy Loose
 	if (ctxt->energy <= 0.001f)
 	{
 		args->valid[0] = -1;
 		ctxt->energy = 0;
 		ctxt->Ended = 1;
+	}
+	else
+	{
+		args->valid[0] = 0;
 	}
 }
 
@@ -357,8 +370,7 @@ void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
 {
- 
- 	float _u,_v, R;
+  	float _u,_v, R;
 	bool res = CDB::TestRayTri(P, N, L.tri, _u,_v, R, false);
 	if (res) 
 	if (range > 0 && range < R) 
@@ -370,8 +382,7 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	data.skip  = skip;
 	data.energy = 1.0f;
 	data.Ended = 0;
-	data.initial_far = range;
-  			
+   			
 	RayOptimizedCPU ray;
 	ray.pos = P;
 	ray.dir = N;
@@ -632,17 +643,29 @@ void IntelEmbereLOAD()
 	IntelScene = rtcNewScene(device); 
 	IntelGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 
-	// Check need
-	rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_REFIT ); // REFIT
+ 	// CHECK THIS (”скор€ет ли)
 	
-	//rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_FILTER_FUNCTION_IN_ARGUMENTS);
-
-	rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST  /* RTC_SCENE_FLAG_ROBUST */);
+	if ( strstr(Core.Params, "-intel_quality_low") )
+	{
+		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_LOW);
+	}
+	else
+	{
+		// CHECK THIS (Ѕьет ли по производительности)
+		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_REFIT );  
+		rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST);
+	}
+	
+	
 
  
 	vertices = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), inlc_global_data()->RCAST_Model()->get_verts_count());
 	triangles = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), inlc_global_data()->RCAST_Model()->get_tris_count());
  	 
+	Msg("Intel Embree, Geometry 0: Vertices: %d", inlc_global_data()->RCAST_Model()->get_verts_count());
+	Msg("Intel Embree, Geometry 0: Triangles: %d", inlc_global_data()->RCAST_Model()->get_tris_count());
+
+
 	Fvector* vertex_CDB = inlc_global_data()->RCAST_Model()->get_verts();
 	CDB::TRI* tri = inlc_global_data()->RCAST_Model()->get_tris();
  

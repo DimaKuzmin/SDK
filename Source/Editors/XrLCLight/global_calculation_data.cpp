@@ -132,6 +132,7 @@ void global_claculation_data::xrLoad()
 		// Load level data
 		transfer("materials",	g_materials,			*fs,		EB_Materials);
 		transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
+
 		post_process_materials( *g_shaders_xrlc, g_shader_compile, g_materials );
 		// process textures
 #ifdef	DEBUG

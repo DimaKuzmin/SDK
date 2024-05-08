@@ -56,51 +56,34 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 	return false;
 }
 
-void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
+void CopyTextureToBuildPC(LPCSTR N)
 {
-	clMsg("Cant Load THM %s", N);
-
 	//FS.append_path("$game_tex_exports_import$", FS.get_path("$fs_root$")->m_Path, "exports\\import_textures\\", 0);
-	//FS.append_path("$game_tex_exports_export$", FS.get_path("$fs_root$")->m_Path, "exports\\export_textures\\", 0);
+	FS.append_path("$game_tex_exports_export$", FS.get_path("$fs_root$")->m_Path, "exports\\export_textures\\", 0);
 
-	//FS.get_path("$game_tex_exports_import$")->rescan_path_cb();
-	//FS.get_path("$game_tex_exports_export$")->rescan_path_cb();
-  
-	/*
 	{
 		string_path path = { 0 }, gamedata = { 0 };
 		string32 name_thm = { 0 };
 		sprintf(name_thm, "%s.thm", N);
 
-		FS.update_path(path, "$game_tex_exports_import$", name_thm);
+		FS.update_path(path, "$game_textures$", name_thm);
 		FS.update_path(gamedata, "$game_tex_exports_export$", name_thm);
 
 		IReader* THM = FS.r_open(path);
 
 		if (THM)
-		{
-			FS.file_copy(path, gamedata);
-			Msg("(NEED RESTART xrLC) Load THM from _import_: %s", path);
-			Msg("You need copy file from %s", path);
-		}
-		else
-		{	
-			Msg("Cant Find Thm in %s", path);
-			string128 tmp = {0};
-			sprintf(tmp, "Texture: %s.thm", N);
-			w->w_string(tmp);
-						 
-		}
+ 			FS.file_copy(path, gamedata);
+ 		 
 		if (THM)
-		FS.r_close(THM);
+			FS.r_close(THM);
 	}
 
 	{
 		string_path path = { 0 }, gamedata = { 0 };
 		string32 name_file = { 0 };
 		sprintf(name_file, "%s.dds", N);
-		
-		FS.update_path(path, "$game_tex_exports_import$", name_file);
+
+		FS.update_path(path, "$game_textures$", name_file);
 		FS.update_path(gamedata, "$game_tex_exports_export$", name_file);
 
 		IReader* DDS = FS.r_open(path);
@@ -108,29 +91,57 @@ void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
 		if (DDS)
 		{
 			FS.file_copy(path, gamedata);
-			Msg("(NEED RESTART xrLC) Load DDS from _import_: %s", path);
-			Msg("You need copy file from %s", path);
 		}
-		else
-		{	
-			Msg("Cant Find DDS in %s", path);
-			string128 tmp = {0};
-			sprintf(tmp, "Texture: %s.dds", N);
-			w->w_string(tmp);
-		}
-
 
 		if (DDS)
 			FS.r_close(DDS);
 	}
-	*/
+}
+
+void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
+{
+	string128 tmp;
+	sprintf(tmp, "Cant Load THM %s", N);
+
+	clMsg(tmp);
+	w->w_string(tmp);	 
 
 	BT.dwWidth = 1024;
 	BT.dwHeight = 1024;
 	BT.bHasAlpha = FALSE;
 	BT.THM.SetHasSurface(FALSE);
 	BT.pSurface.Clear();
+}
 
+
+char* ETFormatNAMES[] =
+{
+	"tfDXT1",
+	"tfADXT1",
+	"tfDXT3",
+	"tfDXT5",
+	"tf4444",
+	"tf1555",
+	"tf565",
+	"tfRGB",
+	"tfRGBA",
+	"tfNVHS",
+	"tfNVHU",
+	"tfA8",
+	"tfL8",
+	"tfA8L8",
+	"tfBC4",
+	"tfBC5",
+	"tfBC6",
+	"tfBC7",
+};
+
+char* GetFormat(u32 fmt)
+{
+	if (fmt == -1)
+		return "tfForceU32";
+	else
+		return ETFormatNAMES[fmt];
 }
 
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
@@ -402,8 +413,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	{
 		F = fs.open_chunk	(EB_Textures);
 		u32 tex_count	= F->length()/sizeof(b_texture_real);
+
+		bool ParamExport = strstr(Core.Params, "-export_textures");
+
 		for (u32 t=0; t<tex_count; t++)
 		{
+		
 			Progress		(float(t)/float(tex_count));
 
 			b_texture_real		TEX;
@@ -414,8 +429,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 			// load thumbnail
 			LPSTR N			= BT.name;
-			if (strchr(N,'.')) *(strchr(N,'.')) = 0;
+			if ( strchr(N,'.')) *(strchr(N,'.') ) = 0;
 			strlwr			(N);
+
+			//if (ParamExport)
+				CopyTextureToBuildPC(N);
+
 			
 			if (0==xr_strcmp(N,"level_lods"))	
 			{
@@ -429,10 +448,11 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			} 
 			else
 			{
-
-				string_path			th_name;
+ 				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
+				
 				clMsg			("processing: %s",th_name);
+				
 				IReader* THM	= FS.r_open(th_name);
 				 
 				if (!THM)
@@ -459,7 +479,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					BT.THM.width = THM->r_u32();
 					BT.THM.height = THM->r_u32();
 					BOOL			bLOD = FALSE;
-					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
+
+					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') 
+						bLOD = TRUE;
 
 					// load surface if it has an alpha channel or has "implicit lighting" flag
 					BT.dwWidth = BT.THM.width;
@@ -468,48 +490,55 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
+						//clMsg("Start Reading: %s, BT.hasAlpha: %s, BT.implicit: %s ", N, BT.bHasAlpha ? "true" : "false", BT.THM.flags.test(STextureParams::flImplicitLighted) ? "true" : "false");
+
+						if ( ( BT.THM.fmt == STextureParams::tfDXT1)  ||  
+						 BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
-							clMsg("- loading: %s", N);
+
+							if (BT.THM.fmt == STextureParams::tfDXT1)
+								clMsg("- loading: DXT no ALPHA: %s", N);
+							else 
+								clMsg("- loading: %s", N);
+							
 							string_path name;
 							
-							if (!Surface_Detect(name, N) || !BT.pSurface.LoadFromFile(name))
-							{
-								Msg("Not Find Texture, Try Copy: %s", N);
-								CopyTexture(N, BT, w);
+							if  ( Surface_Detect(name, N) && BT.pSurface.LoadFromFile(name))
+							{		
+								BT.pSurface.ClearMipLevels();
+								BT.THM.SetHasSurface(true);
+								BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
+								BT.pSurface.SwapRB();
 
-								string128 tmp = {0};
-								sprintf(tmp, "Texture: %s.dds", N);
-								w->w_string(tmp);
-								continue;
+								if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
+								{
+
+									string256 msg;
+									sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s",
+										BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
+									Msg(msg);
+									w->w_string(msg);
+
+									BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
+									BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
+								}
 							}
-
-							//R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-							//R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
-
-							BT.pSurface.ClearMipLevels();
-							BT.THM.SetHasSurface(true);
-							BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
-							BT.pSurface.SwapRB();
-
-							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
+							else
 							{
-								
-								string256 msg;
-								sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
-								Msg(msg);
-								w->w_string(msg);
-
-								CopyTexture(N, BT, w);
-
-								BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
-								BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
+								clMsg("- can't load %s", N);
 							}
-
-							//BT.Vflip	();
+ 						}
+						else
+						{
+							clMsg("- not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
 						}
+					
 					}
+ 
+
+
 				}
+				
 
 				
 			}
@@ -572,6 +601,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 			// save all the stuff we've created
 			textures().push_back	(BT);
+
+			///string128 tmp;
+			//sprintf(tmp, "Loading Texture: %s", BT.name);
+			//w->w_string(tmp);
 		}
 	}
 
@@ -583,6 +616,29 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 	// Parameter block
 	CopyMemory(&g_params(),&Params,sizeof(b_params));
+
+
+	// sizeof(b_rc_face)
+
+	/* 
+	m_sm_angle = ini.r_float(section, "smooth_angle");
+	m_weld_distance = ini.r_float(section, "weld_distance");
+	m_lm_pixels_per_meter = ini.r_float(section, "light_pixel_per_meter");
+	m_lm_jitter_samples = ini.r_u32(section, "light_jitter_samples");
+	m_lm_rms_zero = ini.r_u32(section, "light_rms_zero");
+	m_lm_rms = ini.r_u32(section, "light_rms");
+	m_quality = ini.r_u16(section, "light_quality");
+	u_reserved = ini.r_u16(section, "light_quality_reserved");
+	*/
+
+	Msg("sm_angle: %f", g_params().m_sm_angle);
+	Msg("jitter: %u", g_params().m_lm_jitter_samples);
+	Msg("pixel_per_meter: % f", g_params().m_lm_pixels_per_meter);
+	Msg("m_lm_rms: %u", g_params().m_lm_rms);
+	Msg("m_lm_rms_zero: %u", g_params().m_lm_rms_zero);
+	Msg("m_quality: %u", g_params().m_quality);
+ 	Msg("weld distance: %f", g_params().m_weld_distance);
+
 
 	FS.w_close(w);
 

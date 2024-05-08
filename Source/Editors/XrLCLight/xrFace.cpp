@@ -19,6 +19,12 @@ const Shader_xrLC&	base_Face::Shader		()const
 	return shader( dwMaterial, inlc_global_data()->shaders(), inlc_global_data()->materials() );
 }
 
+const Shader_xrLC& base_Face::Shader_xrLC()		const
+{
+	VERIFY(inlc_global_data());
+	return shader( dwMaterialGame, inlc_global_data()->shaders(), inlc_global_data()->materials());
+}
+
 void			base_Face::CacheOpacity	()
 {
 	flags.bOpaque				= true;
@@ -26,12 +32,15 @@ void			base_Face::CacheOpacity	()
 
 	b_material& M		= inlc_global_data()->materials()		[dwMaterial];
 	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
-	if (T.bHasAlpha)	flags.bOpaque = false;
-	else				flags.bOpaque = true;
-	if ( !flags.bOpaque && !(T.THM.HasSurface()) )	//(0==T.pSurface)//	pSurface was possible deleted
+	if (T.bHasAlpha)	
+		flags.bOpaque = false;
+	else	
+		flags.bOpaque = true;
+
+	if ( !flags.bOpaque && !(T.THM.HasSurface()))	//(0==T.pSurface)//	pSurface was possible deleted
 	{
 		flags.bOpaque	= true;
-		clMsg			("Strange face detected... Has alpha without texture...");
+		clMsg			("[Prepare Light] Strange face detected... Has alpha without texture...: %s", T.name);
 	}
 }
 static bool do_not_add_to_vector_in_global_data = false;
