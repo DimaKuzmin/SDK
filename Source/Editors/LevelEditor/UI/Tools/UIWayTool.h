@@ -1,7 +1,7 @@
 #pragma once
 class UIWayTool :public UIToolCustom
 {
-	string_path object_prefix;
+	string_path object_prefix = { 0 };
 	int work_id = 0;
 	 
 	enum WayWorks

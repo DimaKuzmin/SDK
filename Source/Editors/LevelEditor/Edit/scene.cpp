@@ -166,7 +166,9 @@ bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
         }
         UI->UpdateScene	();
     }
-    if (bUndo)		   	UndoSave();
+   
+    if (bUndo)
+        UndoSave();
     return true;
 }
 
@@ -324,8 +326,9 @@ bool EScene::IfModified()
     while (!ReadySave())
         Sleep(1);
 
-
-    if (m_RTFlags.is(flRT_Unsaved) && (ObjCount()||!Tools->GetEditFileName().empty())){
+ 
+    if (m_RTFlags.is(flRT_Unsaved) && (ObjCount()||!Tools->GetEditFileName().empty()))
+    {
         int mr = ELog.DlgMsg(mtConfirmation, "The scene has been modified. Do you want to save your changes?");
         switch(mr){
         case mrYes: if (!ExecCommand(COMMAND_SAVE)) return false; break;
@@ -336,6 +339,7 @@ bool EScene::IfModified()
         case mrCancel: return false;
         }
     }
+
     return true;
 }
 

@@ -101,7 +101,6 @@ char* GetFormat(u32 fmt)
 	else 
 		return ETFormatNAMES[fmt];
 }
-
 #include "SceneObject.h"
 
 void UIDxtConverter::Draw()
@@ -112,53 +111,73 @@ void UIDxtConverter::Draw()
 		ImGui::End();
 		return;
 	}
-	/*
-	if (ImGui::Button("Select To Convert"))
+ 
+	if (ImGui::Button("THM Export"))
 	{
-		xr_strcpy(path_dir, SelectFolder());
+		
+		FS_FileSet fileset;
+		string_path filepath;
+		FS.update_path(filepath, "$game_textures$", "");
+		FS.file_list(fileset, filepath, FS_ListFiles | FS_ClampExt, "*.thm");
 
-		//xr_string name, path; 
-		//if (EFS.GetOpenPathName(EDevice.m_hWnd, "$fs_root$", path, name))
- 		//	xr_strcpy(path_dir,path.c_str());
- 	}
+  		string_path p;
+		FS.update_path(p, _import_, "export_thms.json");
+ 
+		IWriter* writer = FS.w_open(p);
 
- 	ImGui::Text("SelectDir: %s", path_dir);
+		jsonxx::Object file_json;
+		jsonxx::Object array_json;
 
-	if (ImGui::Button("Select To Out"))
-	{	 
-		xr_strcpy(path_dir_out, SelectFolder());
+
+		int ID = 0;
+ 
+
+
+		for (auto thm : fileset)
+		{
+			ID++;
+			 
+			Msg("[%d] Save To File: %s", ID, thm.name.c_str());
+			string128 tmp_name;
+			sprintf(tmp_name, "%s.thm", thm.name.c_str());
+
+			string_path file_dir;
+			FS.update_path(file_dir, "$game_textures$", tmp_name);
+
+			IReader* F = FS.r_open(file_dir);
+
+
+			string128 tmp;
+			_GetItem(thm.name.c_str(), 0, tmp, '\\');
+			
+			jsonxx::Object* object = 0;
+			if (!array_json.has<jsonxx::Object>(tmp))
+  				array_json << tmp << jsonxx::Object();
+
+			object = &array_json.get<jsonxx::Object>(tmp);
+
+			if (F)
+			{
+				THM thm_params;
+				thm_params.ReadFromReader(F, thm.name.c_str());
+				//thm_params.save_thm(ini_file);
+				if (object)
+					*object << thm.name.c_str() << thm_params.save_json();
+				 
+			}
+
+		
+
+			FS.r_close(F);	
+		}
+ 
+		writer->w_string(array_json.json().c_str());
+
+
+		//ini_file->save_as();
+		//xr_delete(ini_file);
+		FS.w_close(writer);
 	}
-	*/
-
-	/*
-					    ETFormat	        fmt;
-						Flags32		        flags;
-						u32			        border_color;
-						u32			        fade_color;
-						u32			        fade_amount;
-						u8					fade_delay;
-						u32			        mip_filter;
-						int			        width;
-						int			        height;
-						// detail ext
-						shared_str			detail_name;
-						float		        detail_scale;
-						ETType		        type;
-						// material
-						ETMaterial			material;
-						float				material_weight;
-						// bump	
-						float 				bump_virtual_height;
-						ETBumpMode			bump_mode;
-						shared_str			bump_name;
-						shared_str			ext_normal_map_name;
-				*/
-
-	FS.update_path(path_dir, "$convert_textures$", "");
- 	FS.update_path(path_dir_out, "$export_textures$", "");
-
-	ImGui::Text("TexturesDir: %s", path_dir);
- 	ImGui::Text("OutDir: %s", path_dir_out);
 
 	if (ImGui::Button("Remove THM has DDS from Import"))
 	{
@@ -185,28 +204,28 @@ void UIDxtConverter::Draw()
 
 		}
 	}
- 
-
+  
 	if (ImGui::Button("Check Formats"))
 	{
 		FS_FileSet fileset;
-		FS.file_list(fileset, path_dir, FS_ListFiles | FS_ClampExt, "*.thm");
+		FS.file_list(fileset, "$game_textures$", FS_ListFiles | FS_ClampExt, "*.thm");
     						  
 		int i = 0;
 		for (auto file : fileset)	
 		{
 			string_path path_file; 
-			FS.update_path(path_file, "$convert_textures$", file.name.c_str());
+			FS.update_path(path_file, "$game_textures$", file.name.c_str());
 						 
 			xr_strcat(path_file, ".thm");
  			
-			STextureParams thm;
+			 
 
  			if (FS.exist(path_file))
 			{
 				try
 				{
 					Msg("THM: %s", path_file);
+					STextureParams thm;
 
 					IReader* file_thm =  FS.r_open(path_file);
 					if (file_thm)
@@ -214,6 +233,8 @@ void UIDxtConverter::Draw()
 						thm.Load(*file_thm);
 					}
 					
+					Msg("THM: %d elapsed", file_thm->elapsed());
+
 					FS.r_close(file_thm);
 
 					Msg("THM[%d] DATA{Format=%s, file=%s}", i, GetFormat(thm.fmt), file.name.c_str());
@@ -229,108 +250,238 @@ void UIDxtConverter::Draw()
 			i++;
 		}
 	}
-
-	if (ImGui::Button("Convert DXT"))
+	 
+	if (ImGui::Button("Convert Thm to DXT5 Formats"))
 	{
 		FS_FileSet fileset;
-		FS.file_list(fileset, path_dir, FS_ListFiles | FS_ClampExt, "*.dds");
-    
+		FS.file_list(fileset, "$game_textures$", FS_ListFiles | FS_ClampExt, "*.thm");
+
+		int i = 0;
 		for (auto file : fileset)
 		{
-			 
-			string_path path_file; 
-			FS.update_path(path_file, "$convert_textures$", file.name.c_str());
-			
-			string_path path_file_out; 
-			FS.update_path(path_file_out, "$export_textures$", file.name.c_str());
-			 
-			xr_strcat(path_file, ".thm");
-			xr_strcat(path_file_out, ".thm");
-		
+			string_path path_file;
+			FS.update_path(path_file, "$game_textures$", file.name.c_str());
+ 			xr_strcat(path_file, ".thm");
 
-			//bool loaded = false;
-			/*
+			string_path path_file_o;
+			FS.update_path(path_file_o, "$export_textures$", file.name.c_str());
+			xr_strcat(path_file_o, ".thm");
+
+			STextureParams thm;
+
 			if (FS.exist(path_file))
 			{
-				ETextureThumbnail thm(path_file); 
-				thm._Format().fmt = STextureParams::ETFormat::tfDXT5;
- 				thm.Save(0, path_file_out);
- 
-				loaded = true;
-			}
-			*/
-		    
-			string_path path_filedds; 
-			FS.update_path(path_filedds, "$convert_textures$", file.name.c_str());
-			
-			string_path path_file_outdds; 
-			FS.update_path(path_file_outdds, "$export_textures$", file.name.c_str());
-
-			xr_strcat(path_filedds, ".dds");
-			xr_strcat(path_file_outdds, ".dds");
-
-			if (FS.exist(path_filedds) )
-			{	
-				
-				STextureParams fmt;
-				bool exist = false;
-				if (exist = FS.exist(path_file))
+				try
 				{
-					
-				}
-				else 
-				{
- 					fmt.fmt					= STextureParams::tfDXT5;
-					fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
-					fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
-					fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
-				}
- 
-				ETextureThumbnail thm(path_file); 
-				thm._Format().fmt = STextureParams::ETFormat::tfDXT5;
- 				thm.Save(0, path_file_out);
+					u16 version = 0;
+					u32 m_Type  = 0;
 
-				Msg("Texture: %s, format: %s", path_filedds, GetFormat(fmt.fmt) );
-			   	u32 w, h;
-				U32Vec				data;
-				int age; 
- 
- 
-				if (ImageLib.LoadTextureData( file.name.c_str(), data, w, h, &age))
-				{
-					IWriter* wrr = FS.w_open(path_file_outdds);
-					FS.w_close(wrr);
-
-					if (exist)
+					// LOAD
 					{
-						ETextureThumbnail thm(path_file); 
-						thm._Format().fmt = STextureParams::ETFormat::tfDXT5;
- 						thm.Save(0, path_file_out);
+						IReader* F = FS.r_open(path_file);
+						
+						if ( F->find_chunk(THM_CHUNK_VERSION) )
+							version = F->r_u16();
+ 						
 
-						ImageLib.Compress(path_file_outdds, (u8*) data.data(), 0, w, h, w * 4, &thm._Format(), 4);
-
+						if ( F->find_chunk(THM_CHUNK_TYPE) ) 
+							m_Type = F->r_u32();
+ 
+ 						
+						if (F)
+							thm.Load(*F);
+						FS.r_close(F);
 					}
-					else 
+ 			
+					// OUT
 					{
-						ImageLib.Compress(path_file_outdds, (u8*) data.data(), 0, w, h, w * 4,  &fmt, 4);
-					}
+						if (m_Type != ETextureThumbnail::ETTexture)
+						{
+							Msg("--- Thm is Not Texture THM!!");
+							continue;
+						}
+
+						IWriter* w = FS.w_open(path_file_o);
+						w->open_chunk(THM_CHUNK_VERSION);
+						w->w_u16(version);
+						w->close_chunk();
+
+						w->open_chunk(THM_CHUNK_TYPE);
+						w->w_u32(m_Type);
+						w->close_chunk();
+
+						thm.fmt = STextureParams::tfDXT5;
+						
+						thm.Save(*w);
+						FS.w_close(w);
+
+						Msg("Save File : %s", path_file_o);
+					} 
+				}
+				catch (...)
+				{
+					Msg("Thm %s Corupted!!!", file.name.c_str());
+				}
 
 
-				}			 
 			}
-
-
-			 
-			
+			i++;
 		}
-		 
-
-		
 	}
 
+	if (ImGui::Button("Convert DXT5 all"))
+	{
+		FS_FileSet fileset;
+		FS.file_list(fileset, "$game_textures$", FS_ListFiles | FS_ClampExt, "*.dds");
 
-	
+		auto pb = UI->ProgressStart(fileset.size(), "Progress Tree");
 
+		int ID = 0;
+		for (auto file : fileset)
+		{
+			ID++;
+
+			STextureParams fmt;
+
+			bool exist = false;
+			u16 version = 0;
+			u32 m_Type = 0;
+
+
+			// LOAD THM 
+			{
+				string_path path_filethm;
+				FS.update_path(path_filethm, "$game_textures$", file.name.c_str());
+				xr_strcat(path_filethm, ".thm");
+
+				if (exist = FS.exist(path_filethm))
+				{
+					// LOAD
+					IReader* F = FS.r_open(path_filethm);
+
+					if (F->find_chunk(THM_CHUNK_VERSION))
+						version = F->r_u16();
+
+
+					if (F->find_chunk(THM_CHUNK_TYPE))
+						m_Type = F->r_u32();
+
+
+					if (F)
+						fmt.Load(*F);
+					FS.r_close(F);
+				}
+			}
+			
+			// LOAD, SAVE : DDS
+			{
+				string128 tmp;
+				sprintf(tmp, "Texture: %s, thm Exist: %s, FMT: %s", file.name.c_str(), exist ? "true" : "false", GetFormat(fmt.fmt)); //GetFormat(fmt.fmt),
+				pb->Info(tmp);
+				pb->progress = ID;
+
+				Msg(tmp);
+
+				fmt.fmt = STextureParams::tfDXT5;
+
+				if (!exist)
+				{
+					fmt.flags.set(STextureParams::flDitherColor, FALSE);
+					fmt.flags.set(STextureParams::flGenerateMipMaps, FALSE);
+					fmt.flags.set(STextureParams::flBinaryAlpha, FALSE);
+				}
+
+				u32 w, h;
+				U32Vec				data;
+				int age;
+ 
+				string_path path_file_outdds;
+				FS.update_path(path_file_outdds, "$export_textures$", file.name.c_str());
+				xr_strcat(path_file_outdds, ".dds");
+
+				if (!FS.exist(path_file_outdds))
+				{
+					if (ImageLib.LoadTextureData(file.name.c_str(), data, w, h, &age))
+					{
+						IWriter* wrrr = FS.w_open(path_file_outdds);
+						FS.w_close(wrrr);
+
+						Msg("FileSize: %d, Path DDS: %s", data.size(), path_file_outdds);
+
+						ImageLib.Compress(path_file_outdds, (u8*)data.data(), 0, w, h, w * 4, &fmt, 4);
+					}
+				}
+			}
+			
+			/*
+			if (exist)
+			{
+				// OUT
+				{
+					if (m_Type != ETextureThumbnail::ETTexture)
+					{
+						Msg("--- Thm is Not Texture THM!!");
+						continue;
+					}
+
+					string_path path_filethm;
+					FS.update_path(path_filethm, "$export_textures$", file.name.c_str());
+					xr_strcat(path_filethm, ".thm");
+ 
+					IWriter* w = FS.w_open(path_filethm);
+					w->open_chunk(THM_CHUNK_VERSION);
+					w->w_u16(version);
+					w->close_chunk();
+
+					w->open_chunk(THM_CHUNK_TYPE);
+					w->w_u32(m_Type);
+					w->close_chunk();
+
+					fmt.Save(*w);
+					FS.w_close(w);
+
+					Msg("Save File : %s", path_filethm);
+				}
+			}
+			*/
+		}
+
+		UI->ProgressEnd(pb);
+	}
+
+	if (ImGui::Button("Check ERROR list Textures"))
+	{
+		auto tools = Scene->GetOTool(OBJCLASS_SCENEOBJECT);
+		
+		string_path p2;
+		FS.update_path(p2, _import_, "errors_textures.ltx");
+
+		CInifile* ltx = xr_new<CInifile>(p2); 
+		for (auto e : tools->GetObjects())
+		{
+			CSceneObject* obj = smart_cast<CSceneObject*>(e);
+			
+
+			if (obj)
+			{
+ 				for (auto surface : obj->m_Surfaces)
+				{
+					string_path p;
+					FS.update_path(p, "$game_textures$", surface->m_Texture.c_str());
+					xr_strcat(p, ".dds");
+
+					if (!FS.exist(p))
+					{
+						if (!ltx->line_exist("list", p))
+							ltx->w_string("list", p, "Not Exist");
+					}
+				}
+			}
+		}
+		ltx->save_as();
+
+	}
+ 
 	if (ImGui::Button("Check And Replace SOC textures"))
 	{
 		string_path p;
@@ -359,11 +510,9 @@ void UIDxtConverter::Draw()
 				namedata.first = file->r_string(i->Name.c_str(), name);
 				namedata.second = file->r_string(i->Name.c_str(), replace);
 				namedata.section_ID = replace;
-				
-
+ 
 				sections.push_back(namedata);
-				//Msg("Push[%d] {%s = %s}", ID, namedata.first.c_str(), namedata.second.c_str());
-				ID++;
+ 				ID++;
 
 				sprintf(name, "texture_%d", ID);
 				sprintf(replace, "texture_%d_replace", ID);
@@ -416,10 +565,10 @@ void UIDxtConverter::Draw()
 					{
 						updated = true;
 						surface->m_Texture = replace;
+ 						
 						Msg("Replace[%s] Surface: %s to %s on onject: %s", texture_ID.c_str(), current_tex.c_str(), replace.c_str(), obj->GetName());
 						data.replaces.push_back(surface->m_Texture);
 					}
-				
 				}
 			
 				if (updated)
@@ -442,4 +591,5 @@ void UIDxtConverter::Draw()
  	}
 
 	ImGui::End();
+
 }

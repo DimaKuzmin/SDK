@@ -8,6 +8,8 @@ class UIObjectList:public XrUI
 {
 private:
 	static UIObjectList* Form;
+	// Static Object Export Position Type
+	bool use_global_position = false;
 
 	// AIMAP
 	xr_string last_fileaimap;

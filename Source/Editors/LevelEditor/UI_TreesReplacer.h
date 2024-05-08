@@ -11,7 +11,7 @@ public:
 	static void Update();
 	bool Refresh_ObjectsRef();
 	bool ReadSceneObjects_RefUsed();
-	void ReplaceLTX();
+	void ReplaceLTX(bool back);
 	static void Show();
 	static void Close();
 

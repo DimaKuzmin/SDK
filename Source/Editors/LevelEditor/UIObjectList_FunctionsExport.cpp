@@ -196,7 +196,9 @@ void UIObjectList::RemoveAllInsideBox()
 	box.min = vec_box_min;
 	box.max = vec_box_max;
 
-	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	xr_vector<CCustomObject*> object_to_destroy;
+
+ 	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
 	{
 		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
 		if (!ot)
@@ -206,50 +208,27 @@ void UIObjectList::RemoveAllInsideBox()
 
 		for (auto obj : lst)
 		{
-			if (obj && box.contains(obj->GetPosition()))
+ 			if ( obj && box.contains(obj->GetPosition()) )
 			{
-				obj->DeleteThis();
-				Scene->RemoveObject(obj, false, true);
+				object_to_destroy.push_back(obj);
 			}
 		}
 	}
-}
 
-void UIObjectList::SaveSelectedObjects()
-{
-	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
-	ObjectList& list = ot->GetObjects();
-
-	xr_string temp_fn = "";
-	if (EFS.GetSaveName(_import_, temp_fn))
+	for (auto obj : object_to_destroy)
 	{
-		IWriter* write = FS.w_open_ex(temp_fn.c_str());
-
-		for (auto obj : list)
+		if (Scene != nullptr)
 		{
-			CSceneObject* object_scene = smart_cast<CSceneObject*>(obj);
-
-			if (obj->Selected() && object_scene)
-			{
-				write->open_chunk(EOBJ_CHUNK_OBJECT_BODY);
-				CEditableObject* edit_obj = object_scene->GetReference();
-
-
-				edit_obj->a_vPosition = obj->GetPosition();
-				edit_obj->a_vRotate = obj->GetRotation();
-
-				edit_obj->Save(*write);
-				write->close_chunk();
-			}
-
+			obj->DeleteThis();
+			Scene->RemoveObject(obj, false, true);
+			
+			LPCSTR name = obj->FName.c_str();
+			Msg("remove : %s", name);
 		}
-
-
-		FS.w_close(write);
 	}
 
-
 }
+
  
 void UIObjectList::BboxSelectedObject()
 {

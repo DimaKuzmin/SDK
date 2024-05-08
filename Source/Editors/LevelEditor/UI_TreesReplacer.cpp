@@ -138,12 +138,11 @@ bool UI_TreesReplacer::ReadSceneObjects_RefUsed()
 
 #include "SceneObject.h"
 
-void UI_TreesReplacer::ReplaceLTX()
+void UI_TreesReplacer::ReplaceLTX(bool back)
 {
 	string_path p ;
 
 	FS.update_path(p, _import_, "trees_import.ltx");
-
 
 	CInifile* file = xr_new<CInifile>(p);
 	if (file)
@@ -156,57 +155,58 @@ void UI_TreesReplacer::ReplaceLTX()
 			string128 t;
 			sprintf(t, "ref_%d", i);
  
-			work = file->line_exist("trees", t);
-			bool exist_cmp = file->line_exist("trees_replace", t);
+ 			work = file->line_exist("trees", t);
+ 			bool exist_cmp = file->line_exist("trees_replace", t);
 
 			if (work && exist_cmp)
 			{
-				   auto tool = Scene->GetOTool(OBJCLASS_SCENEOBJECT);
-				   
-				   
-				   if (tool)
-				   {
-					    LPCSTR find = file->r_string("trees", t);
-						LPCSTR replace = file->r_string("trees_replace", t);
+				auto tool = Scene->GetOTool(OBJCLASS_SCENEOBJECT);
+ 				   
+				if (tool)
+				{
+					LPCSTR find = 0;
+					LPCSTR replace = 0;
 
-						Msg("Replace: [%s]: %s to [%s]: %s", t, find, t, replace);
+					if (!back)
+					{
+						find = file->r_string("trees", t);
+						replace = file->r_string("trees_replace", t);
+					}
+					else
+					{
+						find = file->r_string("trees_replace", t);
+						replace = file->r_string("trees", t);
+					}
 
-						auto list = tool->GetObjects();
 
-						for (auto item : list)	  
+					Msg("Replace: [%s]: %s to [%s]: %s", t, find, t, replace);
+
+					auto list = tool->GetObjects();
+
+					for (auto item : list)	  
+					{
+						CSceneObject* sobj = (CSceneObject*) item;
+
+						string_path fn;
+						FS.update_path(fn, _objects_, EFS.ChangeFileExt(replace,".object").c_str());
+						if (!FS.exist(fn))
 						{
-							 //Fvector pos = item->FPosition;
-							 //Fvector scale = item->FScale;
-							 //Fvector rot   = item->FRotation;
-
-							CSceneObject* sobj = (CSceneObject*) item;
-
-							string_path fn;
-							FS.update_path(fn, _objects_, EFS.ChangeFileExt(replace,".object").c_str());
-							if (!FS.exist(fn))
-							{
-								Msg("Item Not Finded [%s]: t: %s", t, fn);
-								continue;
-							}
-							 
-
-							 if (strstr(item->RefName(), find) )
-							 {
-								 sobj->SetReference(replace);
-								 //item->DeleteThis();
-								 //Msg("Item: %s, SetRef: %s", sobj->FName.c_str(), replace);
-							 }		 
-
-							 
+							Msg("Item Not Finded [%s]: t: %s", t, fn);
+							continue;
 						}
-				   }
+
+						if (strstr(item->RefName(), find) )
+						{
+							sobj->SetReference(replace);
+						}		 
+					}
+				}
 
 			}
 
 			i++;
 		}
 	}
-
 }
 
 
@@ -379,7 +379,9 @@ void UI_TreesReplacer::Draw()
 	}
 
 	if (ImGui::Button("Replace"))
-		ReplaceLTX();
+		ReplaceLTX(false);
+	if (ImGui::Button("Replace_to_cop"))
+		ReplaceLTX(true);
 
 	ImGui::End();
 }

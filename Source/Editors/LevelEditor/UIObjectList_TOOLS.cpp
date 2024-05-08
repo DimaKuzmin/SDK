@@ -96,6 +96,7 @@ void UIObjectList::UpdateDefaultMeny()
 		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
 			CopyTempLODforObjects();
 
+		ImGui::Checkbox("use_global_pos", &use_global_position);
 		if (ImGui::Button("save object", ImVec2(-1, 0)))
 			SaveSelectedObjects();
 

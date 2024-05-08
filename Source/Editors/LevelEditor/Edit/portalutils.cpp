@@ -399,6 +399,7 @@ bool similar_vectorAVX(sVert v1[8], Fvector v2[8], float E = 0.001f)
 }
 
 //#define USE_MT_FAST
+#define USE_SLOW_WAY
 
 #ifdef USE_MT_FAST
 const int clpMX = 64, clpMY=24, clpMZ=64;
@@ -733,12 +734,15 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
         int id = 0;
 
         xrCriticalSection csForEach;
-
-#ifdef USE_MT_FAST  
+#ifndef USE_SLOW_WAY
+    #ifdef USE_MT_FAST  
+            std::for_each(S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //     
+    #else
+            std::for_each(std::execution::par, S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //  
+    #endif
+#else 
         std::for_each(S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //     
-#else
-        std::for_each(std::execution::par, S->sector_items.begin(), S->sector_items.end(), [&](CSectorItem& s_it) //  
-#endif
+#endif 
         {
             if (s_it.object->IsMUStatic()) 
                 return;

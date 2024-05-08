@@ -77,3 +77,38 @@ void UIObjectList::CopyTempLODforObjects()
 		}
 	}
 } 
+
+
+void UIObjectList::SaveSelectedObjects()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+	ObjectList& list = ot->GetObjects();
+
+	xr_string temp_fn = "";
+	if (EFS.GetSaveName(_import_, temp_fn))
+	{
+		IWriter* write = FS.w_open_ex(temp_fn.c_str());
+
+		for (auto obj : list)
+		{
+			CSceneObject* object_scene = smart_cast<CSceneObject*>(obj);
+
+			if (obj->Selected() && object_scene)
+			{
+				write->open_chunk(EOBJ_CHUNK_OBJECT_BODY);
+				CEditableObject* edit_obj = object_scene->GetReference();
+				edit_obj->use_global_pos = use_global_position;
+ 
+				edit_obj->a_vPosition = obj->GetPosition();
+				edit_obj->a_vRotate = obj->GetRotation();
+
+				edit_obj->Save(*write);
+				write->close_chunk();
+			}
+
+		}
+
+
+		FS.w_close(write);
+	}
+}
