@@ -510,16 +510,27 @@ void CSE_ALifeObject::UPDATE_Read			(NET_Packet &tNetPacket)
 };
 
 #ifndef XRGAME_EXPORTS
+BOOL SDK_FLAG = false;
 void CSE_ALifeObject::FillProps				(LPCSTR pref, PropItemVec& items)
 {
 #	ifdef XRSEFACTORY_EXPORTS
 	inherited::FillProps		(pref, 	items);
 
 	string256 tmp;
-	sprintf(tmp, "%s\\%s", s_name.c_str(), name_replace());
-
+	if (SDK_FLAG)
+	{
+		sprintf(tmp, "%s\\%s", s_name.c_str(), name_replace());
+	}
+	else
+	{
+		sprintf(tmp, "%s", s_name.c_str());
+	}
+	
 	PHelper().CreateRText		(items,	PrepareKey("Custom_Datas", tmp, "Custom data"), &m_ini_string);
-	if (m_flags.is(flUseSwitches)) {
+	PHelper().CreateBOOL(items, PrepareKey("Custom_Datas", "settings", "use_multy"), &SDK_FLAG);
+
+	if (m_flags.is(flUseSwitches))
+	{
 		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch online"),	&m_flags,			flSwitchOnline);
 		PHelper().CreateFlag32	(items,	PrepareKey(pref,*s_name,"ALife\\Can switch offline"),	&m_flags,			flSwitchOffline);
 	}                            
