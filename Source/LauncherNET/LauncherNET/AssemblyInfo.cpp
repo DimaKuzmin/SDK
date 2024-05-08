@@ -1,5 +1,5 @@
-#include "pch.h"
-
+#pragma once
+ 
 using namespace System;
 using namespace System::Reflection;
 using namespace System::Runtime::CompilerServices;

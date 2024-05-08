@@ -1,6 +1,7 @@
 #pragma once
 
-namespace LauncherNET {
+namespace LauncherNET 
+{
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -48,7 +49,7 @@ namespace LauncherNET {
 		/// <summary>
 		/// ќб€зательна€ переменна€ конструктора.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -59,12 +60,12 @@ namespace LauncherNET {
 		{
 			this->TabControl = (gcnew System::Windows::Forms::TabControl());
 			this->Status_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->listView1 = (gcnew System::Windows::Forms::ListView());
+			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
-			this->listView1 = (gcnew System::Windows::Forms::ListView());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->SuspendLayout();
@@ -95,6 +96,26 @@ namespace LauncherNET {
 			this->Status_Tab->Size = System::Drawing::Size(952, 542);
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"—осто€ние компил€ции";
+			// 
+			// listView1
+			// 
+			this->listView1->HideSelection = false;
+			this->listView1->Location = System::Drawing::Point(664, 17);
+			this->listView1->Name = L"listView1";
+			this->listView1->Size = System::Drawing::Size(273, 458);
+			this->listView1->TabIndex = 1;
+			this->listView1->UseCompatibleStateImageBehavior = false;
+			// 
+			// listBox1
+			// 
+			this->listBox1->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->listBox1->FormattingEnabled = true;
+			this->listBox1->ItemHeight = 27;
+			this->listBox1->Location = System::Drawing::Point(6, 17);
+			this->listBox1->Name = L"listBox1";
+			this->listBox1->Size = System::Drawing::Size(652, 355);
+			this->listBox1->TabIndex = 0;
 			// 
 			// Geometry_Tab
 			// 
@@ -133,26 +154,6 @@ namespace LauncherNET {
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// listBox1
-			// 
-			this->listBox1->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
-			this->listBox1->FormattingEnabled = true;
-			this->listBox1->ItemHeight = 27;
-			this->listBox1->Location = System::Drawing::Point(6, 17);
-			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(652, 355);
-			this->listBox1->TabIndex = 0;
-			// 
-			// listView1
-			// 
-			this->listView1->HideSelection = false;
-			this->listView1->Location = System::Drawing::Point(664, 17);
-			this->listView1->Name = L"listView1";
-			this->listView1->Size = System::Drawing::Size(273, 458);
-			this->listView1->TabIndex = 1;
-			this->listView1->UseCompatibleStateImageBehavior = false;
-			// 
 			// MyForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -161,11 +162,11 @@ namespace LauncherNET {
 			this->Controls->Add(this->TabControl);
 			this->Name = L"MyForm";
 			this->Text = L"MyForm";
-			this->Load += gcnew System::EventHandler(this, &MyForm::MyForm_Load);
 			this->TabControl->ResumeLayout(false);
 			this->Status_Tab->ResumeLayout(false);
 			this->ResumeLayout(false);
 
 		}
- 
+	};
+
 }

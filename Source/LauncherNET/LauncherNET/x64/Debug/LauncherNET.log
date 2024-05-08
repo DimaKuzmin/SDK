@@ -1,7 +1,0 @@
-﻿  pch.cpp
-  AssemblyInfo.cpp
-  LauncherNET.cpp
-  Создание кода...
-  .NETFramework,Version=v4.7.2.AssemblyAttributes.cpp
-  AssemblyInfo.obj : обнаружен модуль MSIL; для MSIL последовательная компоновка отключена; выполняется полная компоновка
-  LauncherNET.vcxproj -> A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\Source\x64\Debug\LauncherNET.exe
