@@ -40,10 +40,6 @@ xr_token					tfmt_token								[ ]={
 	{ "DXT1 Alpha",			STextureParams::tfADXT1						},
 	{ "DXT3",				STextureParams::tfDXT3						},
 	{ "DXT5",				STextureParams::tfDXT5						},
-    { "BC4",				STextureParams::tfBC4						},
-    { "BC5",				STextureParams::tfBC5						},
-    { "BC6",				STextureParams::tfBC6						},
-    { "BC7",				STextureParams::tfBC7						},
 	{ "16 bit (1:5:5:5)",	STextureParams::tf1555						},
 	{ "16 bit (5:6:5)",		STextureParams::tf565						},
 	{ "32 bit (8:8:8:8)",	STextureParams::tfRGBA						},
@@ -80,19 +76,16 @@ void STextureParams::Load(IReader& F)
     width		= F.r_u32();
     height		= F.r_u32();
 
-    if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE))
-    {
+    if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE)){
         type	= (ETType)F.r_u32();
     }
 
-    if (F.find_chunk(THM_CHUNK_DETAIL_EXT))
-    {
+    if (F.find_chunk(THM_CHUNK_DETAIL_EXT)){
         F.r_stringZ(detail_name);
         detail_scale = F.r_float();
     }
 
-    if (F.find_chunk(THM_CHUNK_MATERIAL))
-    {
+    if (F.find_chunk(THM_CHUNK_MATERIAL)){
     	material		= (ETMaterial)F.r_u32		();
 	    material_weight = F.r_float	();
     }
@@ -106,20 +99,11 @@ void STextureParams::Load(IReader& F)
     	F.r_stringZ			(bump_name);
     }
 
-    // Se7Kills
-   // if (F.elapsed() != 18)
-    {
-       //  Msg("Elapsed: %d", F.elapsed());
+    if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
+	    F.r_stringZ			(ext_normal_map_name);
 
-
-        if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
-           F.r_stringZ			(ext_normal_map_name);
-
-	    if (F.find_chunk(THM_CHUNK_FADE_DELAY))
-	    	fade_delay			= F.r_u8();
-    }
-
-
+	if (F.find_chunk(THM_CHUNK_FADE_DELAY))
+		fade_delay			= F.r_u8();
 }
 
 
