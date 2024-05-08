@@ -364,6 +364,7 @@ void CCustomPreferences::Save()
 
 void CCustomPreferences::AppendRecentFile(LPCSTR name)
 {
+    /*
     for (AStringIt it=scene_recent_list.begin(); it!=scene_recent_list.end(); it++){
     	if (*it==name){
         	scene_recent_list.erase	(it);
@@ -373,6 +374,7 @@ void CCustomPreferences::AppendRecentFile(LPCSTR name)
 	scene_recent_list.insert(scene_recent_list.begin(),name);
 	while (scene_recent_list.size()>=EPrefs->scene_recent_count) 
     	scene_recent_list.pop_back();
+    */
 
     ExecCommand				(COMMAND_REFRESH_UI_BAR);
 }

@@ -54,7 +54,7 @@ public:
 	ListItemsVec m_Items;
 	ListItemsVec m_SelectedItems;
 
-	string256 search_predicate;
+	string256 search_predicate = {0};
 
 	void ClearSelectedItems();
 	bool m_UseMenuEdit;

@@ -186,6 +186,7 @@ public CPhysicsShellHolderEditorBase
     CPhysicsShell*	m_physics_shell;
     Fmatrix*		m_object_xform;
 public:
+    bool            use_global_pos = false;
 
     SurfaceVec		m_Surfaces;
     SAnimParams				m_SMParam;

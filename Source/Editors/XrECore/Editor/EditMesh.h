@@ -290,7 +290,12 @@ public:
     void			Clear					();
 
 	IC void			SetName					(LPCSTR name){m_Name=name;}
-	IC shared_str	Name					(){return m_Name;}
+	IC shared_str	Name() 
+	{ 
+		if (m_Name == nullptr)
+			return "null";
+
+		return m_Name; }
 	void            GetBox					(Fbox& box){box.set(m_Box);}
 	CSurface*		GetSurfaceByFaceID		(u32 fid);
 	void			GetFaceTC				(u32 fid, const Fvector2* tc[3]);

@@ -32,9 +32,10 @@ bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
 {
     if (!FS.exist(full_name))
     { 
-    	ELog.Msg(mtError,"Can't find file: '%s'",full_name);
+    	ELog.Msg(mtError,"Can't find file: '%s'", full_name);
     	return false;
     }
+
 	if (strstr(full_name,".tga")){
     	CImage img;
         if (!img.LoadTGA	(full_name)) return false;
@@ -45,11 +46,14 @@ bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
 		for(int y=0;y<h;y++) CopyMemory			(data.data()+y*w,img.pData+(y * w),sizeof(u32)*w);
 		if (!IsValidSize(w,h))	ELog.Msg(mtError,"Texture (%s) - invalid size: [%d, %d]",full_name,w,h);
         return true;
-    }else{
+    }
+    else
+    {
         int wi, hi, c;
         stbi_uc* raw_data = stbi_load((LPSTR)full_name, &wi, &hi, &c, 4);
         if(raw_data)
         {
+            Msg("Use raw_data");
             w = wi;
             h = hi;
 		    u32 w4			= w*4;
@@ -62,6 +66,7 @@ bool Stbi_Load(LPCSTR full_name, U32Vec& data, u32& w, u32& h, u32& a)
         }
         else
         {
+            Msg("Use BearImage");
             BearImage img;
             if (img.LoadFromFile(full_name))
             {

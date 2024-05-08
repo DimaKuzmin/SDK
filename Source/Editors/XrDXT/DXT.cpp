@@ -100,9 +100,92 @@ IC u32 GetPowerOf2Plus1(u32 v)
     return cnt;
 }
 
+#include "DirectXTex/DirectXTex.h"
+#pragma comment(lib, "DirectXTex.lib")
+#pragma optimize(off, "")
+
 int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
-	/* CTimer T;
+   /*
+     
+    DirectX::ScratchImage image;
+    DirectX::ScratchImage result;
+    
+
+    DirectX::TexMetadata metadata;
+    metadata.width = w;
+    metadata.height = h;
+ 
+    DXGI_FORMAT Format;
+     
+    switch (fmt->fmt)
+    {
+    case STextureParams::tfADXT1:
+    case STextureParams::tfDXT1:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC1_UNORM;
+        break;
+
+    case STextureParams::tfDXT3:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC2_UNORM;
+        break;
+
+    case STextureParams::tfDXT5:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC3_UNORM;
+        break;
+
+    case STextureParams::tfBC4:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC4_UNORM;
+        break;
+
+    case STextureParams::tfBC5:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC5_UNORM;
+        break;
+
+    case STextureParams::tfBC6:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC6H_SF16;
+        break;
+
+    case STextureParams::tfBC7:
+        Format = DXGI_FORMAT::DXGI_FORMAT_BC7_UNORM;
+        break;
+
+    case STextureParams::tfRGB:
+        Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+        break;
+
+    case STextureParams::tfRGBA:
+        Format = DXGI_FORMAT::DXGI_FORMAT_R8G8B8A8_UNORM;
+        break;
+
+    };
+    metadata.format = Format;
+    metadata.depth = depth;
+     
+    DirectX::LoadFromDDSMemory(raw_data, w*h*4, DirectX::DDS_FLAGS_NONE, &metadata, image);
+ 
+    DirectX::Convert(*image.GetImage(0, 1, 0), DXGI_FORMAT_BC7_UNORM, DirectX::TEX_FILTER_DEFAULT, 0, result);
+
+   // DirectX::SaveToDDSFile(image.GetImage(0, 1, 0), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, result.GetPixelsSize());
+ 
+    const DirectX::Image * ptr = image.GetImage(0, 1, 0); // .pixels();
+
+    if (ptr != nullptr)
+    {
+        u32 cnt = ptr->height* ptr->width;
+        Msg("Textures[%d]", cnt);
+
+        for (auto x = 0; x < ptr->width; x++)
+        {
+            for (auto y = 0; y < ptr->height; h++)
+            {
+                Msg_IN_FILE("row[%d][%d] = %d",  x, y, ptr->pixels[(x * y) + x]);
+            }
+        }
+    }
+    */
+
+    // Bear Bundle
+    /* CTimer T;
 	T.Start();
 
 	Msg("DXT: Compressing Image: %s %uX%u", out_name, w, h);
@@ -130,22 +213,28 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, ST
 	BearResizeFilter ResizeFilter = BearResizeFilter::Default;
 	switch (fmt->mip_filter)
 	{
-	case STextureParams::kMIPFilterBox:       ResizeFilter = BearResizeFilter::Box;     break;
-	case STextureParams::kMIPFilterTriangle:    ResizeFilter = BearResizeFilter::Triangle; break;
-	case STextureParams::kMIPFilterKaiser:     ResizeFilter = BearResizeFilter::Catmullrom;   break;
+	    case STextureParams::kMIPFilterBox:       ResizeFilter = BearResizeFilter::Box;     break;
+	    case STextureParams::kMIPFilterTriangle:    ResizeFilter = BearResizeFilter::Triangle; break;
+	    case STextureParams::kMIPFilterKaiser:     ResizeFilter = BearResizeFilter::Catmullrom;   break;
 	}
  
-/*	if (w <= 1024 && h <= 1024)
+
+    if (w <= 1024 && h <= 1024)
 	{
 		Image.GenerateMipmap(ResizeFilter);
 		Image.Convert(Format);
 	}
-*
+    
 
 	Msg("DXT: Compressing Image: 2 [Closing File]. Time from start %f ms", T.GetElapsed_sec() * 1000.f);
 	return Image.SaveToDds(out_name);;
-*/
-	
+ 
+	*/
+
+    /// ORIGINAL 
+ 
+   
+     
     R_ASSERT(0 != w && 0 != h);
     bool result = false;
     nvtt::InputOptions inOpt;
@@ -180,61 +269,37 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, ST
         case STextureParams::kMIPFilterTriangle: inOpt.setMipmapFilter(nvtt::MipmapFilter_Triangle); break;
         case STextureParams::kMIPFilterKaiser:   inOpt.setMipmapFilter(nvtt::MipmapFilter_Kaiser  ); break;
     }
+
+
     nvtt::OutputOptions outOpt;
     outOpt.setFileName(out_name);
-  
+
     DDSErrorHandler handler;
     outOpt.setErrorHandler(&handler);
-    /*
-    if (fmt->flags.is(STextureParams::flGenerateMipMaps) && STextureParams::kMIPFilterAdvanced == fmt->mip_filter)
-    {
-        inOpt.setMipmapGeneration(false);
-        int numMipmaps = GetPowerOf2Plus1(__min(w, h));
-        u32 line_pitch = w * 2 * 4;
-        u8* pImagePixels = xr_alloc<u8>(line_pitch * h);
-        u32 w_offs = 0;
-        u32 dwW = w;
-        u32 dwH = h;
-        u32 dwP = pitch;
-        u32* pLastMip = xr_alloc<u32>(w * h * 4);
-        CopyMemory(pLastMip, raw_data, w * h * 4);
-        FillRect(pImagePixels, (u8*)pLastMip, w_offs, pitch, dwH, line_pitch);
-        w_offs += dwP;
-        float inv_fade = clampr(1.f - float(fmt->fade_amount) / 100.f, 0.f, 1.f);
-        float blend = fmt->flags.is_any(STextureParams::flFadeToColor | STextureParams::flFadeToAlpha) ? inv_fade : 1.f;
-        for (int i = 1; i < numMipmaps; i++)
-        {
-            u32* pNewMip = Build32MipLevel(dwW, dwH, dwP, pLastMip, fmt, i < fmt->fade_delay ? 0.f : 1.f - blend);
-            FillRect(pImagePixels, (u8*)pNewMip, w_offs, dwP, dwH, line_pitch);
-            xr_free(pLastMip);
-            pLastMip = pNewMip;
-            pNewMip = 0;
-            w_offs += dwP;
-        }
-        xr_free(pLastMip);
-        inOpt.setMipmapData(pImagePixels, w, h);
-        result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
-        xr_free(pImagePixels);
-    }
-    else
-    {
-        inOpt.setMipmapData(raw_data, w, h);
-        result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
-    }
-    */
-
+      
     inOpt.setMipmapData(raw_data, w, h);
-    result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
+
+    // Msg("PTR input DDS: %p", raw_data);
+    try 
+    {
+        result = nvtt::Compressor().process(inOpt, compOpt, outOpt);
+    }
+    catch (...)
+    {
+        Msg("Cant Convert DDS: %s", out_name);
+        result = false;
+    }
     
     if (!result)
     {
         //_unlink(out_name);
         return 0;
     }
-
+ 
     return 1;
-
 }
+
+#pragma optimize(on, "")
 
 extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 

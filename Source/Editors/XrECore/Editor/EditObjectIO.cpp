@@ -183,7 +183,7 @@ void CEditableObject::Save(IWriter& F)
         F.close_chunk	();
     }
 
-//    if (IsDynamic())
+    if (IsDynamic() || use_global_pos)
 	{
 		F.open_chunk	(EOBJ_CHUNK_ACTORTRANSFORM);
         F.w_fvector3	(a_vPosition);

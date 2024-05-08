@@ -1,0 +1,1 @@
+A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\Source\LauncherNET\LauncherNET\x64\Debug\LauncherNET.vcxproj.AssemblyReference.cache
