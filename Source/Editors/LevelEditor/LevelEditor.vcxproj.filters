@@ -106,6 +106,9 @@
     <Filter Include="UI\UI_TOOLS_SE7\Functions_Write By se7kills">
       <UniqueIdentifier>{590d0a2b-536a-4fba-8ee6-483c02481e4c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="jsoncpp">
+      <UniqueIdentifier>{03677500-62a6-4be8-b5b6-e1690c03cf64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Edit\SoundManager_LE.cpp">
@@ -541,6 +544,9 @@
     <ClCompile Include="UI\Tools\UIWayTool.cpp">
       <Filter>MAIN TOOLS\ETools\TOOLS\WAY</Filter>
     </ClCompile>
+    <ClCompile Include="jsonxx\jsonxx.cc">
+      <Filter>jsoncpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit\SoundManager_LE.h">
@@ -810,6 +816,9 @@
     </ClInclude>
     <ClInclude Include="UI\Tools\UIWayTool.h">
       <Filter>MAIN TOOLS\ETools\TOOLS\WAY</Filter>
+    </ClInclude>
+    <ClInclude Include="jsonxx\jsonxx.h">
+      <Filter>jsoncpp</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

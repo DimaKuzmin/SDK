@@ -171,6 +171,7 @@
     <ClCompile Include="Edit\UI_LevelTools.cpp" />
     <ClCompile Include="Edit\WayPoint.cpp" />
     <ClCompile Include="iniStreamImpl.cpp" />
+    <ClCompile Include="jsonxx\jsonxx.cc" />
     <ClCompile Include="LEPhysics.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -285,6 +286,7 @@
     <ClInclude Include="Edit\UI_LevelTools.h" />
     <ClInclude Include="Edit\WayPoint.h" />
     <ClInclude Include="iniStreamImpl.h" />
+    <ClInclude Include="jsonxx\jsonxx.h" />
     <ClInclude Include="LEPhysics.h" />
     <ClInclude Include="mesh_data.h" />
     <ClInclude Include="stdafx.h" />
@@ -796,7 +798,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>_EDITOR;_WINDOWS;DEBUG;_USE_NODE_POSITION_11;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>.;..\..\XrEngine\;..\..\XrRender\Public;..\..\XrRender\Private;Edit\;Engine\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
