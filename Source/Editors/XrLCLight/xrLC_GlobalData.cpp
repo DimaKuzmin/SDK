@@ -102,8 +102,8 @@ void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
 
 void		xrLC_GlobalData	::				initialize		()
 {
-	if (strstr(Core.Params,"-att"))	
-		_gl_linear	= true;
+	//if (strstr(Core.Params,"-att"))	
+	//	_gl_linear	= true;
 }
 
 base_Face* convert_nax( void* dummy )

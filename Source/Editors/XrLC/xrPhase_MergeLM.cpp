@@ -98,7 +98,7 @@ void StartThread(int TH, vecDefl Layer, CLightmap* lmap, int start, int end, int
 		csLM.Enter();
 	 
 		if (it % 2048 == 0)
-			Msg("State [%d]", it);
+			clMsg("State [%d]", it);
 
 		csLM.Leave();
 
@@ -182,7 +182,7 @@ void CBuild::xrPhase_MergeLM()
 			use_size = 8192;
 		}
 
-		Msg("Select LM_SIZE: %d", use_size);
+		clMsg("Select LM_SIZE: %d", use_size);
 		setLMSIZE(use_size);
 	}
 	 
@@ -381,7 +381,7 @@ void CBuild::xrPhase_MergeLM()
  		//	Msg("w: %d, h: %d", Layer[i]->layer.width, Layer[i]->layer.height);
 		else
 		{
-			Msg("CRITICAL мевецн мер б кюир люое");
+			clMsg("CRITICAL мевецн мер б кюир люое");
 		}
  
 

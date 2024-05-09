@@ -20,10 +20,16 @@ void	CThread::startup(void* P)
 	if (T->thMessages)
 		clMsg("* THREAD #%d: Task Completed.", T->thID);
 }
+
+
+#include "BuildArgs.h"
+
+
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void	CThreadManager::start	(CThread*	T, u32 THID)
 {
-	if (strstr(Core.Params, "-use_std"))
+	if (build_args->use_std)
 	{
 		std_threads.push_back(
 

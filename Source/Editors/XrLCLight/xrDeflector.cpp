@@ -573,8 +573,5 @@ void setLMSIZE(int size)
 
 u32 getLMSIZE()
 {
-	//if (strstr(Core.Params, "-fast_lightmaps"))
-		return global_size_map;
-
-	//return 1024;
+ 	return global_size_map;
 }

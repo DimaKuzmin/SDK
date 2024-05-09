@@ -70,6 +70,11 @@ std::string make_time	(u32 sec)
 	return std::string(buf);
 }
 
+#include "xrLC.h"
+extern Logger* LoggerCL = 0;
+
+CTimer interval;
+
 void __cdecl Status	(const char *format, ...)
 {
 	csLog.Enter			();
@@ -78,6 +83,11 @@ void __cdecl Status	(const char *format, ...)
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
 	Msg					("    | %s",status);
+
+
+	//if (LoggerCL != nullptr)
+	//	LoggerCL->updateStatus(status);
+
 	csLog.Leave			();
 }
 
@@ -88,6 +98,8 @@ void __cdecl StatusNoMSG(const char* format, ...)
 	va_start(mark, format);
 	vsprintf(status, format, mark);
 	bStatusChange = TRUE;
+
+	 
  	csLog.Leave();
 }
 
@@ -113,18 +125,14 @@ xr_vector<shared_str>* phases_timers_Get()
 
 bool phase_inited = false;
 
-#include "xrLC.h"
-extern Logger* LoggerCL = 0;
+
  
 void Phase			(const char *phase_name)
 {
 	// while (!(hwPhaseTime && hwStage))
 	//	Sleep(1);
 
-	if (LoggerCL != nullptr)
-	{
-		LoggerCL->updatePhrase(phase_name);
-	}
+
 
 
 	csLog.Enter			();
@@ -141,6 +149,11 @@ void Phase			(const char *phase_name)
 		phase_total_time = timeGetTime() - phase_start_time;
 		xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / 1000).c_str(), phase);
 		phases_timers.push_back(tbuf);
+
+		if (LoggerCL != nullptr)
+		{
+			LoggerCL->updatePhrase(tbuf);
+		}
 
 		SendMessage(hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
 		SendMessage(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
@@ -200,6 +213,7 @@ void logThread(void *dummy)
 	// Main cycle
 	u32		LogSize = 0;
 	float	PrSave	= 0;
+
 	while (TRUE)
 	{
 		SetPriorityClass	(GetCurrentProcess(),IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
@@ -222,10 +236,16 @@ void logThread(void *dummy)
 			for (; LogSize<LogFile->size(); LogSize++)
 			{
 				const char *S = *(*LogFile)[LogSize];
-				if (0==S)	S = "";
+				if (0==S)
+					S = "";
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
 			}
 			SendMessage		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
+
+			if (LoggerCL != 0)
+			{
+				LoggerCL->UpdateText();
+			}
 			//FlushLog		( );
 		}
 		csLog.Leave		();
@@ -258,12 +278,18 @@ void logThread(void *dummy)
 			SetWindowText	( hwPText, tbuf );
 		}
 
-		if (bStatusChange) {
+		if (bStatusChange) 
+		{
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
 			SetWindowText	( hwInfo,	status);
+			
+			if (LoggerCL != nullptr)
+				LoggerCL->updateStatus(status);
 		}
-		if (bWasChanges) {
+
+		if (bWasChanges)
+		{
 			UpdateWindow	( logWindow);
 			bWasChanges		= FALSE;
 		}
@@ -273,8 +299,9 @@ void logThread(void *dummy)
 		if (bClose)		
 			break;
 
-		Sleep				(200);
+		Sleep				(1000);
 	}
+ 
 
 	// Cleanup
 	DestroyWindow(logWindow);
@@ -285,13 +312,13 @@ void logThread(void *dummy)
 void clLog( LPCSTR msg )
 {
 	csLog.Enter		();
+	
 	Log				(msg);
-	csLog.Leave		();
 
 	if (LoggerCL != 0)
-	{
-		LoggerCL->updateLog(msg);
-	}
+ 		LoggerCL->updateLog(msg);
+ 	csLog.Leave();
+
 }
 
 

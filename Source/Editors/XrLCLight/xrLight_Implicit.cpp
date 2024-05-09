@@ -20,7 +20,9 @@
 
 #include "../../xrcdb/xrcdb.h"
 #include "BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
+ 
 
 
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
@@ -271,13 +273,11 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 		ForCycle(&defl, ID, TH_ID);
 		if (ID % 256 == 0)
 		{	
-			Msg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
+			clMsg("CurV: %d, Sec[%.0f]", ID, t.GetElapsed_sec());
 		}
 	}
 }
 
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-  
 void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 {
 	for (u32 U = 0; U < defl->Width(); U++)
@@ -472,7 +472,10 @@ void ImplicitLightingExec(BOOL b_net)
 		Status	("Saving base...");
 		{
 			string_path				name, out_name;
-			sscanf					(strstr(Core.Params,"-f")+2,"%s",name);
+			
+			//se7kills rewrite		//sscanf					(strstr(Core.Params,"-f")+2,"%s",name);
+			sprintf(name, "%s", build_args->level_name.c_str());
+
 			R_ASSERT				(name[0] && defl.texture);
 			b_BuildTexture& TEX		=	*defl.texture;
 			strconcat				(sizeof(out_name),out_name,name,"\\",TEX.name,".dds");
@@ -498,7 +501,9 @@ void ImplicitLightingExec(BOOL b_net)
 			//defl.lmap.Pack			(packed);
 
 			string_path				name, out_name;
-			sscanf					(strstr(GetCommandLine(),"-f")+2,"%s",name);
+			//sscanf					(strstr(GetCommandLine(),"-f")+2,"%s",name);
+			sprintf(name, "%s", build_args->level_name.c_str());
+			
 			b_BuildTexture& TEX		=	*defl.texture;
 			strconcat				(sizeof(out_name),out_name,name,"\\",TEX.name,"_lm.dds");
 			FS.update_path			(out_name,"$game_levels$",out_name);

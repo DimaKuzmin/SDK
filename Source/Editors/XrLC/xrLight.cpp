@@ -265,7 +265,7 @@ void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 
-	if (g_params().m_quality != ebqDraft )	//&& !strstr(Core.Params, "-no_light")
+	if (g_params().m_quality != ebqDraft )	 
 	{
  
 		//****************************************** Implicit
@@ -310,8 +310,7 @@ void CBuild::Light()
 
 	//****************************************** Starting MU
 	
-	//if ( !strstr(Core.Params, "-no_light_mu") )
-	{
+ 	{
 		FPU::m64r();
 		Phase("LIGHT: Starting MU...");
 		mem_Compact();

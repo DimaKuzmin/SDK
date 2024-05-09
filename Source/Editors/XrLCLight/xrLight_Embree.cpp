@@ -417,12 +417,12 @@ void FilterIntersection8(const struct RTCFilterFunctionNArguments* args)
 	}
 	*/
 
-	Msg("Ray: %d", args->N);
+	clMsg("Ray: %d", args->N);
 }
 
 void Raytrace8Ray(PackedBuffer* buffer, RayQueryContext8& data_hits)
 {
-	Msg("Raytrace 8 Rays");
+	clMsg("Raytrace 8 Rays");
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
@@ -596,22 +596,35 @@ constexpr double AngleEpsilon = 1e-4f;
  
 void errorFunction(void* userPtr, enum RTCError error, const char* str)
 {
-	Msg("error %d: %s", error, str);
+	clMsg("error %d: %s", error, str);
 }
 
 // OFF PACKED PROCESSING
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
 {
-	Msg("EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
+	clMsg("EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
 }
+
+
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+
 
 void IntelEmbereLOAD()
 {
+ 
 	std::string config;
-	bool avx = false, sse = false;
-	if (avx = strstr(Core.Params, "-use_avx"))
+	bool avx = build_args->use_avx;
+	bool sse = build_args->use_sse;
+
+
+	SpecialArgsXRLCLight::EmbreeGeom geom_type = (SpecialArgsXRLCLight::EmbreeGeom) build_args->embree_geometry_type;
+
+
+	if (avx)
 		config = "threads=8,isa=avx2";
-	else if (sse = strstr(Core.Params, "-use_sse"))
+	else if (sse)
 		config = "threads=8,isa=sse4.2";
 	else
 		config = "threads=8,isa=sse2";
@@ -619,8 +632,10 @@ void IntelEmbereLOAD()
 	device = rtcNewDevice(config.c_str());
 	rtcSetDeviceErrorFunction(device, errorFunction, NULL);
 
+	string128 phase;
+	sprintf(phase, "Intilized Intel Embree v4.1.0 - %s", avx ? "avx" : sse ? "sse" : "default");
 	
-	Status("Intilized Intel Embree v4.1.0 - %s", avx ? "avx" : sse ? "sse" : "default");
+	Phase(phase);
 	
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED", device, RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED);
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED", device, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED);
@@ -645,15 +660,29 @@ void IntelEmbereLOAD()
 
  	// CHECK THIS (Ускоряет ли)
 	
-	if ( strstr(Core.Params, "-intel_quality_low") )
+	if (geom_type == SpecialArgsXRLCLight::EmbreeGeom::eLow)
 	{
 		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_LOW);
 	}
-	else
+	else 
+	if (geom_type == SpecialArgsXRLCLight::EmbreeGeom::eMiddle)
 	{
-		// CHECK THIS (Бьет ли по производительности)
-		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_REFIT );  
-		rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST);
+		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_MEDIUM);
+	}
+	else 
+	if (geom_type == SpecialArgsXRLCLight::EmbreeGeom::eHigh)
+	{
+		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_HIGH);
+	}
+	else
+	if (geom_type == SpecialArgsXRLCLight::EmbreeGeom::eRefit)
+	{
+		rtcSetGeometryBuildQuality(IntelGeometry, RTC_BUILD_QUALITY_REFIT);
+	}
+	 
+	if (build_args->use_RobustGeom)
+	{
+  		rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST);
 	}
 	
 	
@@ -662,8 +691,8 @@ void IntelEmbereLOAD()
 	vertices = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), inlc_global_data()->RCAST_Model()->get_verts_count());
 	triangles = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), inlc_global_data()->RCAST_Model()->get_tris_count());
  	 
-	Msg("Intel Embree, Geometry 0: Vertices: %d", inlc_global_data()->RCAST_Model()->get_verts_count());
-	Msg("Intel Embree, Geometry 0: Triangles: %d", inlc_global_data()->RCAST_Model()->get_tris_count());
+	clMsg("Intel Embree, Geometry 0: Vertices: %d", inlc_global_data()->RCAST_Model()->get_verts_count());
+	clMsg("Intel Embree, Geometry 0: Triangles: %d", inlc_global_data()->RCAST_Model()->get_tris_count());
 
 
 	Fvector* vertex_CDB = inlc_global_data()->RCAST_Model()->get_verts();
@@ -705,7 +734,7 @@ void IntelEmbereLOAD()
 	RTCBounds bounds;
 	rtcGetSceneBounds(IntelScene, &bounds );
  
-	Msg("SceneBounds: [%f][%f][%f] max [%f][%f][%f] a0: %f, a1: %f", bounds.lower_x, bounds.lower_y, bounds.lower_z, bounds.upper_x, bounds.upper_y, bounds.upper_z, bounds.align0, bounds.align1);
+	clMsg("SceneBounds: [%f][%f][%f] max [%f][%f][%f] a0: %f, a1: %f", bounds.lower_x, bounds.lower_y, bounds.lower_z, bounds.upper_x, bounds.upper_y, bounds.upper_z, bounds.align0, bounds.align1);
  
 	// Устанавливать обезательно иле будет в Колбеке PrimID	= 0 
 	rtcSetGeometryIntersectFilterFunction(IntelGeometry, &FilterIntersectionOne);	

@@ -10,6 +10,8 @@
 //#pragma comment(linker,"/STACK:0x800000,0x400000")
 //#pragma comment(linker,"/HEAP:0x70000000,0x10000000")
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 #define PROTECTED_BUILD
 
@@ -53,7 +55,12 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	log_vminfo();
 	
 	// Load project
-	name[0]=0;				sscanf(strstr(cmd,"-f")+2,"%s",name);
+	name[0]=0;				
+	//sscanf(strstr(cmd,"-f")+2,"%s",name);
+
+	// Se7Kills ADD NEW Name Reading
+	xr_strcpy(name, build_args->level_name.c_str() );
+	clMsg("LevelName: %s", name);
 
 	extern  HWND logWindow;
 	string256				temp;
@@ -107,6 +114,8 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	Phase					("Converting data structures...");
 	pBuild					= xr_new<CBuild>();
 	pBuild->Load			(Params,*F);
+	 
+	FS.r_close				(F);
 
 	// LOAD BUILD PARAMS
 	g_params().m_lm_jitter_samples = args->sample;
@@ -116,16 +125,7 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	lc_global_data()->b_nosun_set(args->nosun);
 	lc_global_data()->b_norgb_set(args->norgb);
 	lc_global_data()->b_nohemi_set(args->nohemi);
-	 
-
 	
-	Msg("Pre Close File");
-	log_vminfo();
-	FS.r_close				(F);
-	
-	Msg("After Close File");
-	log_vminfo();
-
 
 	// Call for builder
 	string_path				lfn;
@@ -140,8 +140,10 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	xr_sprintf					(inf,"Time elapsed: %s",make_time(dwEndTime/1000).c_str());
 	clMsg					("Build succesful!\n%s",inf);
 
-	if (!strstr(cmd,"-silent"))
-		MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+	//if (!strstr(cmd,"-silent"))
+	//	MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+
+	Status("Построение Уровня Законечено! ");
 
 	// Close log
 	bClose					= TRUE;
@@ -156,32 +158,10 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 #include <ctime>
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
-XRLC_API void StartupWorking(LPSTR lpCmdLine, SpecialArgs* args)
+void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 {
-	Debug._initialize(false);
-	Core._initialize("xrLC");
-
-	build_args = new SpecialArgsXRLCLight();
- 
-	CopyMemory(build_args, args, sizeof(args));
-
-	string128 tmp;
-	sprintf(tmp, "PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u", args->pxpm, args->mu_samples, args->sample, args->use_threads);
-	clMsg("Arguments: %s", tmp);
-
-	sprintf(tmp, "nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d", args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
-	clMsg("Arguments2: %s", tmp);
-
-	sprintf(tmp, "no_optimize: %d, no_simplify: %d, embree: %d, avx: %d, sse: %d, use_opcode_old: %d", args->no_optimize, args->no_simplify, args->use_embree, args->use_avx, args->use_sse, args->use_opcode_old);
-	clMsg("Arguments3: %s", tmp);
-
-	sprintf(tmp, "special_flag: %s", args->special_args);
-	clMsg("Arguments4: %s", tmp);
-
-	/*build_args->invalide_faces = args->invalide_faces;
+	build_args->no_invalide_faces = args->no_invalide_faces;
 
 	build_args->pxpm = args->pxpm;
 	build_args->mu_samples = args->mu_samples;
@@ -197,17 +177,30 @@ XRLC_API void StartupWorking(LPSTR lpCmdLine, SpecialArgs* args)
 
 	build_args->no_optimize = args->no_optimize;
 	build_args->no_simplify = args->no_simplify;
-	
+
 	build_args->use_avx = args->use_avx;
 	build_args->use_embree = args->use_embree;
 	build_args->use_sse = args->use_sse;
 	build_args->use_opcode_old = args->use_opcode_old;
 
 	build_args->special_args = args->special_args;
-	*/
+	build_args->level_name = args->level_name;
 
+	build_args->embree_geometry_type = args->embree_geometry_type;
+	build_args->use_RobustGeom = args->use_RobustGeom;
+	build_args->skip_weld = args->skip_weld;
+}
+
+XRLC_API void StartupWorking(SpecialArgs* args)
+{
+	Debug._initialize(false);
+	Core._initialize("xrLC");
+ 
+	build_args = new SpecialArgsXRLCLight();
+	ReadArgs(build_args, args);
+ 
  	g_using_smooth_groups = args->nosmg;
-	Startup(lpCmdLine, args);
+	Startup("", args);
 
 
 	Core._destroy();
@@ -228,9 +221,7 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	Debug._initialize	(false);
 	Core._initialize	("xrLC");
 	
-	if(strstr(Core.Params,"-nosmg"))
-		g_using_smooth_groups = false;
-
+ 
 	Startup				(lpCmdLine);
 	Core._destroy		();
 

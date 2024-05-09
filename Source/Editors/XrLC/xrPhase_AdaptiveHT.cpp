@@ -198,7 +198,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 	Status			("Tesselating...");
 	
-	if (!strstr(Core.Params, "-no_optimize"))
+	if (!build_args->no_optimize)
 	{
 		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
 		{		// clear split flag from all faces + calculate normals
@@ -225,7 +225,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		BuildRapid					(FALSE);
 		log_vminfo();
 		
-		Msg("RcastModel LoadTime: %d", t.GetElapsed_ms());
+		clMsg("RcastModel LoadTime: %d", t.GetElapsed_ms());
  
  		// Prepare
 		FPU::m64r					();
@@ -244,11 +244,11 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 		if (build_args->use_opcode_old)
 		{
-			Msg("LogOpcode: !!! USE_OLD");
-			Msg("LogOpcode: !!! USE_OLD");
-			Msg("LogOpcode: !!! USE_OLD");
-			Msg("LogOpcode: !!! USE_OLD");
-			Msg("LogOpcode: !!! USE_OLD");
+			clMsg("LogOpcode: !!! USE_OLD");
+			clMsg("LogOpcode: !!! USE_OLD");
+			clMsg("LogOpcode: !!! USE_OLD");
+			clMsg("LogOpcode: !!! USE_OLD");
+			clMsg("LogOpcode: !!! USE_OLD");
  		 
 		}
 		 

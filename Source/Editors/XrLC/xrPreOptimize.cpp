@@ -29,6 +29,10 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 #include <xmmintrin.h>
 #include <smmintrin.h>
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+
 void CBuild::PreOptimize()
 {
 	// We use overlapping hash table to avoid boundary conflicts
@@ -67,7 +71,7 @@ void CBuild::PreOptimize()
 	Status("Processing...");
 	g_bUnregister		= false;
 
-	bool SkipWeld = strstr(Core.Params, "-skip_weld");
+	bool SkipWeld = build_args->skip_weld;
 
 	for (int it = 0; it<(int)lc_global_data()->g_vertices().size(); it++)
 	{
@@ -173,7 +177,8 @@ void CBuild::PreOptimize()
 	if (InvalideFaces())	
 	{
 		err_save		();
-		if (strstr(Core.Params, "-no_invalidefaces") == 0)
+ 		
+		if (! build_args->no_invalide_faces)
 			Debug.fatal		(DEBUG_INFO,"* FATAL: %d invalid faces. Compilation aborted",InvalideFaces());
 	}
 

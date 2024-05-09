@@ -172,7 +172,7 @@ std::mutex lock;
 
 xr_map<u32, Fbox > bb_bases;
 
-extern bool use_avx = false;
+bool use_avx = false;
 
 ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
@@ -717,7 +717,7 @@ void CBuild::xrPhase_MergeGeometry()
 
 	tGlobalMerge.Start();
 
-	use_avx = strstr(Core.Params, "-use_avx");
+	use_avx = build_args->use_avx;
 
 	bool use_fast_way = true;
 

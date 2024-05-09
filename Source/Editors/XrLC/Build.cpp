@@ -23,6 +23,10 @@ void	export_ogf		( xrMU_Reference& mu_reference );
 
 
 
+#include "../XrLCLight/BuildArgs.h"
+
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 using namespace			std;
 struct OGF_Base;
 SBuildOptions			g_build_options;
@@ -870,9 +874,8 @@ void CBuild::Run(LPCSTR P)
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 
 	bool CformOnly = false;
-
-	if (strstr(Core.Params, "-cform"))
-		CformOnly = true;
+	 
+#pragma todo("se7kills TODO CFORM BUILD PARAMS ")
 
   	//****************************************** Open Level
 	strconcat(sizeof(path), path, P, "\\");
@@ -908,7 +911,7 @@ void CBuild::Run(LPCSTR P)
 	FPU::m64r();
 	Phase("Optimizing...");
 	mem_Compact();
-	if (!strstr(Core.Params, "-no_optimize"))
+	if (!build_args->no_optimize)
 		PreOptimize();
 	CorrectTJunctions();
 	

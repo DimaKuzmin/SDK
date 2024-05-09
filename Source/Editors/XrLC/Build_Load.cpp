@@ -516,7 +516,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 									string256 msg;
 									sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s",
 										BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
-									Msg(msg);
+									clMsg(msg);
 									w->w_string(msg);
 
 									BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
@@ -565,7 +565,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	Progress(p_total+=p_cost);
 
 	// Parameter block
-	CopyMemory(&g_params(),&Params,sizeof(b_params));
+	CopyMemory(&g_params(), &Params, sizeof(b_params));
 
 
 	// sizeof(b_rc_face)
@@ -581,13 +581,13 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	u_reserved = ini.r_u16(section, "light_quality_reserved");
 	*/
 
-	Msg("sm_angle: %f", g_params().m_sm_angle);
-	Msg("jitter: %u", g_params().m_lm_jitter_samples);
-	Msg("pixel_per_meter: % f", g_params().m_lm_pixels_per_meter);
-	Msg("m_lm_rms: %u", g_params().m_lm_rms);
-	Msg("m_lm_rms_zero: %u", g_params().m_lm_rms_zero);
-	Msg("m_quality: %u", g_params().m_quality);
- 	Msg("weld distance: %f", g_params().m_weld_distance);
+	clMsg("sm_angle: %f", g_params().m_sm_angle);
+	clMsg("jitter: %u", g_params().m_lm_jitter_samples);
+	clMsg("pixel_per_meter: % f", g_params().m_lm_pixels_per_meter);
+	clMsg("m_lm_rms: %u", g_params().m_lm_rms);
+	clMsg("m_lm_rms_zero: %u", g_params().m_lm_rms_zero);
+	clMsg("m_quality: %u", g_params().m_quality);
+	clMsg("weld distance: %f", g_params().m_weld_distance);
 
 
 	FS.w_close(w);

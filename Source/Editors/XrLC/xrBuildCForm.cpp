@@ -25,38 +25,7 @@ int getCFormVID(vecVertex& V,Vertex *F)
 	return int(it-V.begin());
 }
 int bCriticalErrCnt = 0;
-/*
-
-int getTriByEdge(Vertex *V1, Vertex *V2, Face* parent, vecFace &ids)
-{
-	Face*	found	= 0;
-	int		f_count = 0;
-
-	for (vecFaceIt I=V1->m_adjacents.begin(); I!=V1->m_adjacents.end(); ++I)
-	{
-		Face* test = *I;
-		if (test == parent) continue;
-		if (test->VContains(V2)) 
-		{
-			++f_count;
-			found = test;
-		}
-	}
-	if (f_count>1) 
-	{
-		bCriticalErrCnt	++;
-		pBuild->err_multiedge.w_fvector3(V1->P);
-		pBuild->err_multiedge.w_fvector3(V2->P);
-	}
-	if (found) {
-		vecFaceIt F = std::lower_bound(ids.begin(),ids.end(),found);
-		if (found == *F) return int(F-ids.begin());
-		else return -1;
-	} else {
-		return -1;
-	}
-}
-*/
+ 
 void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 {
 	Face*	found	= 0;
@@ -81,7 +50,8 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 }
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
 
-
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void CBuild::BuildCForm	()
 {
@@ -180,7 +150,7 @@ void CBuild::BuildCForm	()
 	}
 
 	// Simplification
-	if (g_params().m_quality!=ebqDraft && !strstr(Core.Params, "-no_simplify"))
+	if (g_params().m_quality!=ebqDraft && !build_args->no_simplify)
 	{	
 		SimplifyCFORM	(CL); 
 	} 
