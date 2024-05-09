@@ -15,10 +15,10 @@
 #include "xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
-int THREADS_COUNT();
+ 
 
 CThreadManager			mu_base;
-#define		MU_THREADS	THREADS_COUNT()
+ 
 // mu-light
 bool mu_models_local_calc_lightening = false;
 xrCriticalSection		mu_models_local_calc_lightening_wait_lock;
@@ -175,6 +175,9 @@ public:
 };
 
 #include <execution>
+#include "BuildArgs.h"
+
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
  
 class CMUThread : public CThread
@@ -196,7 +199,7 @@ public:
 		Phase("LIGHT: Waiting for MU-First CALCMATERIALS threads...");
 
 		CThreadManager thread_base;
-		for (int TH = 0; TH < MU_THREADS; TH++)
+		for (int TH = 0; TH < build_args->use_threads; TH++)
 			thread_base.start(xr_new<CMULightBase>(TH), TH);
 
 		thread_base.wait();
@@ -211,7 +214,7 @@ public:
 		
 		CThreadManager			mu_secondary;
 
-		for (int TH = 0; TH < MU_THREADS; TH++)
+		for (int TH = 0; TH < build_args->use_threads; TH++)
 			mu_secondary.start(xr_new<CMULightRef>(TH), TH);
 
 		mu_secondary.wait(500);

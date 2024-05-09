@@ -249,7 +249,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					tris_pointer += CDB::TRI::Size();
 				}				
  
-				if (strstr(Core.Params, "-use_intel"))
+				if ( true )
 				{
  					CTimer t; t.Start();
 					SceneEmbree.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
@@ -344,7 +344,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					Msg("RayQast Init");
  				    
-					if (strstr(Core.Params, "-use_intel"))
+					if ( true )
 					{
 						CTimer t; t.Start();
 						SceneEmbree.InitGeometry(tris.data(), H.facecount, verts.data(), H.vertcount, &filter_embree_function);

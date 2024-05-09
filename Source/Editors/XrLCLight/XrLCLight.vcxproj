@@ -608,6 +608,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\Developm
     <ClInclude Include="base_color.h" />
     <ClInclude Include="base_face.h" />
     <ClInclude Include="base_lighting.h" />
+    <ClInclude Include="BuildArgs.h" />
     <ClInclude Include="b_build_texture.h" />
     <ClInclude Include="calculate_normals.h" />
     <ClInclude Include="DetailFormat.h" />
@@ -715,6 +716,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\Developm
     <ClCompile Include="base_color.cpp" />
     <ClCompile Include="base_face.cpp" />
     <ClCompile Include="base_lighting.cpp" />
+    <ClCompile Include="BuildArgs.cpp" />
     <ClCompile Include="b_build_texture.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="detail_net_global_data.cpp" />

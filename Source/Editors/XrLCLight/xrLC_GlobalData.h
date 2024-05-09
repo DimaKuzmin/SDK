@@ -35,7 +35,6 @@ struct	compilers_global_data
 
 class	XRLC_LIGHT_API xrLC_GlobalData
 {
-	
 		compilers_global_data			_cl_globs;
 
 		CMemoryWriter					_err_invalid;
@@ -106,6 +105,7 @@ public:
 IC		void						b_nosun_set		(bool v){	_b_nosun = v; }
 IC		void						b_norgb_set		(bool v) { _b_no_rgb = v; }
 IC		void						b_nohemi_set(bool v) { _b_no_hemi = v; };
+		
 
 		void						initialize		()		;
 		void						destroy_rcmodel	()		;

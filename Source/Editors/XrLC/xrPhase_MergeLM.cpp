@@ -80,11 +80,14 @@ IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
 
 class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0==D) return TRUE;}; if (D->bMerged) {D->bMerged=FALSE; return TRUE; } else return FALSE;  }; };
  
-int THREADS_COUNT();
-#define MAX_THREADS THREADS_COUNT()
+ 
 
 #include <thread>
 xrCriticalSection csLM;
+
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 
 int LM_AREA_USED = 0;
 
@@ -293,7 +296,7 @@ void CBuild::xrPhase_MergeLM()
 
 			if (Layer.size() > 1024)
 			{
-				std::thread* th = new std::thread[MAX_THREADS];
+				std::thread* th = new std::thread[build_args->use_threads];
 
 				int split = merge_count / 8;
 

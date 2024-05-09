@@ -112,10 +112,19 @@ xr_vector<shared_str>* phases_timers_Get()
 };
 
 bool phase_inited = false;
+
+#include "xrLC.h"
+extern Logger* LoggerCL = 0;
  
 void Phase			(const char *phase_name)
 {
-	while (!(hwPhaseTime && hwStage)) Sleep(1);
+	// while (!(hwPhaseTime && hwStage))
+	//	Sleep(1);
+
+	if (LoggerCL != nullptr)
+	{
+		LoggerCL->updatePhrase(phase_name);
+	}
 
 
 	csLog.Enter			();
@@ -196,7 +205,8 @@ void logThread(void *dummy)
 		SetPriorityClass	(GetCurrentProcess(),IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
 
 		// transfer data
-		while (!csLog.TryEnter())	{
+		while (!csLog.TryEnter())	
+		{
 			_process_messages	( );
 			Sleep				(1);
 		}
@@ -219,7 +229,9 @@ void logThread(void *dummy)
 			//FlushLog		( );
 		}
 		csLog.Leave		();
-		if (_abs(PrSave-progress)>EPS_L) {
+		
+		if (_abs(PrSave-progress)>EPS_L) 
+		{
 			bWasChanges = TRUE;
 			PrSave = progress;
 			SendMessage		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
@@ -258,7 +270,9 @@ void logThread(void *dummy)
 		csLog.Leave			();
 
 		_process_messages	();
-		if (bClose)			break;
+		if (bClose)		
+			break;
+
 		Sleep				(200);
 	}
 
@@ -266,12 +280,21 @@ void logThread(void *dummy)
 	DestroyWindow(logWindow);
 }
 
+
+
 void clLog( LPCSTR msg )
 {
 	csLog.Enter		();
 	Log				(msg);
 	csLog.Leave		();
+
+	if (LoggerCL != 0)
+	{
+		LoggerCL->updateLog(msg);
+	}
 }
+
+
 
 void __cdecl clMsg( const char *format, ...)
 {

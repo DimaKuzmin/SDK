@@ -81,6 +81,7 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 }
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
 
+
  
 void CBuild::BuildCForm	()
 {

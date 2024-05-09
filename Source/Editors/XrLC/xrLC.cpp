@@ -1,6 +1,7 @@
 // xrLC.cpp : Defines the entry point for the application.
 //
 #include "stdafx.h"
+
 #include "math.h"
 #include "build.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
@@ -25,87 +26,19 @@ u32		version		= 0;
 
 extern void logThread(void *dummy);
 extern volatile BOOL bClose;
-
-static const char* h_str = 
-	"The following keys are supported / required:\n"
-	"-? or -h			== this help\n"
-	"-modify_options	== modify build options\n"
-	"-nosun				== disable sun-lighting\n"
-	"-nosmg				== disable smoth groops\n"		    
-	
-	//NEW SDK 8.0
-	"-no_invalidefaces  == OFF invalidate faces\n"
-	"-no_optimize		== OFF optimize geometry\n"
-//Se7Kills
-	 
-//	"-fast_lightmaps	== fast lightmaps dds pos x,y calculation\n"
-//	"-fast_merge		== fast merge geometry (like single core calculation but threaded)\n" 
-//	"-single_core_merge == calculation Stage MergeGeometry single core (faster way break; cycle for if find merge volume)\n"
-//	"-fast_uv			== fast calculation Unwrap UV\n"
-
-	"\n"
-	"New Se7Kills Flags: \n"
-	"-norgb		== Отключить статику\n"		 
-	"-nohemi	== Отключить Hemi\n"		 
-
- 	//NEW THREADING AND CUSTOMIZE PARAMS
-	"-pxpm		== пиксели из SDK\n"
-	"-sample 	== колво сэмполов из SDK (1, 4, 9)\n"
-	"-mu_samples== колво сэмполов для mu моделей (1-6) \n"
-	"-th (num)	== кол-во потоков для IMPLICIT, LMAPS \n"
-	"-no_simplify == не делать Упрощение CFORM (Иногда по памяти затратно)\n "
-	
-	"\n"
-	"Новая Компиляция света IntelEmbree:\n"
-	"-use_intel	== Включить IntelEmbree \n"
-	"-use_avx	== Включить AVX \n" 
-	"-use_sse	== Включить SSE \n"
- 	"-hw_light  == Не допилено\n"
-	"-use_opcode_old == использовать не оптимизированый OPCODE\n"
-
-	"\n"
-	"Пример: start bin\\x64\\dev\\xrLC.exe -nosmg -f jupiter -no_invalidefaces -no_simplify -noise -th 16 -sample 9 -mu_samples 6 -use_intel -use_avx \n"
- 	
-	"\n"
-	"Важный параметр:\n"
-	"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n" 
-	"\n"
-	"NOTE: The last key is required for any functionality\n"
-	
-	
-	;
-
-void Help()
-{
-	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION);
-}
+  
 
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 
-void Startup(LPSTR     lpCmdLine)
+void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 {
-	
 	create_global_data();
 	char cmd[512],name[256];
 	BOOL bModifyOptions		= FALSE;
 
 	xr_strcpy(cmd,lpCmdLine);
 	strlwr(cmd);
-	if (strstr(cmd,"-?") || strstr(cmd,"-help"))			{ Help(); return; }
-	if (strstr(cmd,"-f")==0)							{ Help(); return; }
-	if (strstr(cmd,"-modify_options"))								bModifyOptions	= TRUE;
-	if (strstr(cmd,"-gi"))								g_build_options.b_radiosity		= TRUE;
-	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
-	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
-	VERIFY( lc_global_data() );
-	
-	lc_global_data()->b_nosun_set						( strstr(cmd, "-nosun") );
-	lc_global_data()->b_norgb_set						( strstr(cmd, "-norgb") );
-	lc_global_data()->b_nohemi_set						( strstr(cmd, "-nohemi") );
- 
-	Msg("RGB: %d, SUN: %d, HEMI: %d", lc_global_data()->b_norgb(), lc_global_data()->b_nosun(), lc_global_data()->b_nohemi());
-
-	
+ 	
 	// Give a LOG-thread a chance to startup
 	//_set_sbh_threshold(1920);
 	InitCommonControls		();
@@ -115,14 +48,7 @@ void Startup(LPSTR     lpCmdLine)
 	// Faster FPU 
 	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
 
-	/*
-	u32	dwMin			= 1800*(1024*1024);
-	u32	dwMax			= 1900*(1024*1024);
-	if (0==SetProcessWorkingSetSize(GetCurrentProcess(),dwMin,dwMax))
-	{
-		clMsg("*** Failed to expand working set");
-	};
-	*/
+ 
 
 	log_vminfo();
 	
@@ -181,6 +107,17 @@ void Startup(LPSTR     lpCmdLine)
 	Phase					("Converting data structures...");
 	pBuild					= xr_new<CBuild>();
 	pBuild->Load			(Params,*F);
+
+	// LOAD BUILD PARAMS
+	g_params().m_lm_jitter_samples = args->sample;
+	g_params().m_lm_pixels_per_meter = args->pxpm;
+
+	g_build_options.b_noise = args->noise;
+	lc_global_data()->b_nosun_set(args->nosun);
+	lc_global_data()->b_norgb_set(args->norgb);
+	lc_global_data()->b_nohemi_set(args->nohemi);
+	 
+
 	
 	Msg("Pre Close File");
 	log_vminfo();
@@ -219,20 +156,66 @@ void Startup(LPSTR     lpCmdLine)
 
 #include <ctime>
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
-void StartupWorking(LPSTR lpCmdLine)
+XRLC_API void StartupWorking(LPSTR lpCmdLine, SpecialArgs* args)
 {
 	Debug._initialize(false);
 	Core._initialize("xrLC");
 
-	if (strstr(Core.Params, "-nosmg"))
-		g_using_smooth_groups = false;
+	build_args = new SpecialArgsXRLCLight();
+ 
+	CopyMemory(build_args, args, sizeof(args));
 
-	Startup(lpCmdLine);
+	string128 tmp;
+	sprintf(tmp, "PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u", args->pxpm, args->mu_samples, args->sample, args->use_threads);
+	clMsg("Arguments: %s", tmp);
+
+	sprintf(tmp, "nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d", args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
+	clMsg("Arguments2: %s", tmp);
+
+	sprintf(tmp, "no_optimize: %d, no_simplify: %d, embree: %d, avx: %d, sse: %d, use_opcode_old: %d", args->no_optimize, args->no_simplify, args->use_embree, args->use_avx, args->use_sse, args->use_opcode_old);
+	clMsg("Arguments3: %s", tmp);
+
+	sprintf(tmp, "special_flag: %s", args->special_args);
+	clMsg("Arguments4: %s", tmp);
+
+	/*build_args->invalide_faces = args->invalide_faces;
+
+	build_args->pxpm = args->pxpm;
+	build_args->mu_samples = args->mu_samples;
+	build_args->sample = args->sample;
+	build_args->use_threads = args->use_threads;
+
+
+	build_args->nohemi = args->nohemi;
+	build_args->norgb = args->norgb;
+	build_args->noise = args->noise;
+	build_args->nosun = args->nosun;
+	build_args->nosmg = args->nosmg;
+
+	build_args->no_optimize = args->no_optimize;
+	build_args->no_simplify = args->no_simplify;
+	
+	build_args->use_avx = args->use_avx;
+	build_args->use_embree = args->use_embree;
+	build_args->use_sse = args->use_sse;
+	build_args->use_opcode_old = args->use_opcode_old;
+
+	build_args->special_args = args->special_args;
+	*/
+
+ 	g_using_smooth_groups = args->nosmg;
+	Startup(lpCmdLine, args);
+
+
 	Core._destroy();
 }
 
 
+/*
+ 
 int APIENTRY WinMain(HINSTANCE hInst,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -275,3 +258,5 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	 
 	return 0;
 }
+
+*/

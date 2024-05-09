@@ -17,9 +17,8 @@ class CDeflector;
 //extern XRLC_LIGHT_API CDeflector*		Deflector		;
 class execute_statistics;
 
-XRLC_LIGHT_API extern bool use_intel;
-XRLC_LIGHT_API extern bool use_opcode_old;
-XRLC_LIGHT_API extern bool use_opcode_to_lmaps;
+ 
+ 
 
 XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();

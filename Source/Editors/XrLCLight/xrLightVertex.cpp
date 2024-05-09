@@ -152,9 +152,8 @@ namespace lc_net
 void RunLightVertexNet();
 }
 
-int THREADS_COUNT();
-
-#define NUM_THREADS THREADS_COUNT()
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void LightVertex	( bool net )
 {
@@ -167,7 +166,7 @@ void LightVertex	( bool net )
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
-		for (u32 thID=0; thID<NUM_THREADS; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
+		for (u32 thID=0; thID < build_args->use_threads; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 

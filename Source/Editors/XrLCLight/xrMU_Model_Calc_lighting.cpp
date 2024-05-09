@@ -47,29 +47,8 @@ float x = 10.f;
 var _x	= var(x);
 */
 
-int MU_SAMPL()
-{
-	int mu_sample = 0;
-	if (LPCSTR sample = strstr(Core.Params, "-mu_samples"))
-	{
-		LPCSTR str = sample + 11;
-		sscanf(str, "%d", &mu_sample);
-
-		if (mu_sample > 12)
-			mu_sample = 12;
-		if (mu_sample < 1)
-			mu_sample = 1;
-
-		return mu_sample;
-	}
-
-	return 12;
-}
-
-#define MU_SAMPLES MU_SAMPL()
-
- 
-extern bool use_intel;
+#include "BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 //-----------------------------------------------------------------------
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
@@ -128,7 +107,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		exact_normalize			(vN); 
 
 		// multi-sample		 
-		const int n_samples		= (g_params().m_quality==ebqDraft)? 1 : MU_SAMPLES;
+		const int n_samples		= (g_params().m_quality==ebqDraft)? 1 : build_args->mu_samples;
 
 		for (u32 sample = 0; sample < (u32)n_samples; sample++)
 		{

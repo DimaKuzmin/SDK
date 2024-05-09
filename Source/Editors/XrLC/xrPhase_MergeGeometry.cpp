@@ -703,11 +703,11 @@ ICF void FindWhileMergeNeed(bool USE_MT, int id)
 xr_vector<int> reserved;
 xr_vector<int> reserved_big_objects;
  
-int THREADS_COUNT(); 
-#define MAX_THREADS THREADS_COUNT()
  
 #define MAX_BIG_THREADS 2
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 
 void CBuild::xrPhase_MergeGeometry()
@@ -741,8 +741,10 @@ void CBuild::xrPhase_MergeGeometry()
 		//FindSelectedMaterialCandidate();
  
 		{
-			std::thread* th = new std::thread[MAX_THREADS];
-			for (auto i = 0; i < MAX_THREADS; i++)
+			
+
+			std::thread* th = new std::thread[build_args->use_threads];
+			for (auto i = 0; i < build_args->use_threads; i++)
 			{	
 				th[i] =	std::thread([&] ()
 				{
@@ -772,7 +774,7 @@ void CBuild::xrPhase_MergeGeometry()
 			}
 
 
-			for (auto i = 0; i < MAX_THREADS; i++)
+			for (auto i = 0; i < build_args->use_threads; i++)
 				th[i].join();
 		
 		}

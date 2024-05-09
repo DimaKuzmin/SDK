@@ -17,7 +17,9 @@
 
 #include "../XrLCLight/base_face.h"
 
+#include "../XrLCLight/BuildArgs.h"
 
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 xrCriticalSection	task_CS
 #ifdef PROFILE_CRITICAL_SECTIONS
@@ -150,24 +152,6 @@ public:
 };
 
 
-int THREADS_COUNT()
-{
-	LPCSTR str = strstr(Core.Params, "-th");
-
-	if (str)
-	{
-		int count = 0;
-		LPCSTR new_str = str + 3;
-		sscanf(new_str, "%d", &count);
-		return count;
-	}
-
-	return 4;
-}
-
-#define TH_NUM THREADS_COUNT()
-
-
 #ifndef DevCPU
 	#include "..\XrLCLight\xrHardwareLight.h"
 #endif
@@ -176,8 +160,7 @@ int THREADS_COUNT()
 void IntelEmbereUNLOAD();
  
 void IntelEmbereLOAD();
-XRLC_LIGHT_API extern bool use_intel;
-
+ 
 
 #include <tbb/parallel_for_each.h>
 #include <random>
@@ -223,7 +206,7 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
  		CTimer	start_time;	
 		start_time.Start();				
 			
-		int th = TH_NUM;
+		int th = build_args->use_threads;
 		 
 		for (int L = 0; L < th; L++)
 			threads.start(xr_new<CLMThread>(L), L);
@@ -276,6 +259,8 @@ void	CBuild::LMaps					()
 }
 void XRLC_LIGHT_API ImplicitNetWait();
 
+
+
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
@@ -286,7 +271,7 @@ void CBuild::Light()
 		//****************************************** Implicit
 		{
 			FPU::m64r();
-			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]", use_intel ? "intel" : "opcode");
+			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]",  build_args->use_embree ? "intel" : "opcode");
 			Phase(tmp);
 			mem_Compact();
 			ImplicitLighting();
@@ -294,7 +279,7 @@ void CBuild::Light()
 
  
  		{
- 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", use_intel ? "intel" : "opcode");
+ 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase			(tmp);
 			LMaps();
 
@@ -340,7 +325,7 @@ void CBuild::Light()
 		//****************************************** Wait for MU
 		FPU::m64r();
 				
- 		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", use_intel ? "intel" : "opcode");
+ 		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree ? "intel" : "opcode");
 		Phase(tmp);
  		
  		wait_mu_base();
@@ -348,7 +333,7 @@ void CBuild::Light()
  	}
 
  
-	if (use_intel)
+	if (build_args->use_embree)
 		IntelEmbereUNLOAD();
 }
 

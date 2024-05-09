@@ -414,7 +414,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		F = fs.open_chunk	(EB_Textures);
 		u32 tex_count	= F->length()/sizeof(b_texture_real);
 
-		bool ParamExport = strstr(Core.Params, "-export_textures");
+		//bool ParamExport = strstr(Core.Params, "-export_textures");
 
 		for (u32 t=0; t<tex_count; t++)
 		{
@@ -433,7 +433,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			strlwr			(N);
 
 			//if (ParamExport)
-				CopyTextureToBuildPC(N);
+			//	CopyTextureToBuildPC(N);
 
 			
 			if (0==xr_strcmp(N,"level_lods"))	
@@ -547,57 +547,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') 
 				bLOD = TRUE;
 
-			/*
-			if (BT.THM.flags.test(STextureParams::flImplicitLighted) && !bLOD)
-			{	
-				if (strstr(Core.Params, "-cvrt_impl_texture_2"))
-				{
-					BT.pSurface.Scale(BT.dwWidth / 2, BT.dwHeight / 2);
-					BT.dwWidth = BT.dwWidth / 2;
-					BT.dwHeight = BT.dwHeight / 2;
-				}
-
-				if (strstr(Core.Params, "-cvrt_impl_texture_4"))
-				{
-					BT.pSurface.Scale(BT.dwWidth / 4, BT.dwHeight / 4);
-					BT.dwWidth = BT.dwWidth / 4;
-					BT.dwHeight = BT.dwHeight / 4;
-				}
-				 
-				if (strstr(Core.Params, "-cvrt_impl_texture_8"))
-				{
-					BT.pSurface.Scale(BT.dwWidth / 8, BT.dwHeight / 8);
-					BT.dwWidth = BT.dwWidth / 8;
-					BT.dwHeight = BT.dwHeight / 8;
-				}
-
-				if (strstr(Core.Params, "-cvrt_impl_texture_16"))
-				{
-					BT.pSurface.Scale(BT.dwWidth / 16, BT.dwHeight / 16);
-					BT.dwWidth = BT.dwWidth / 16;
-					BT.dwHeight = BT.dwHeight / 16;
-				}
-
-
-				if (strstr(Core.Params, "-cvrt_impl_texture_128"))
-				{
-					BT.pSurface.Scale(128, 128);
-					BT.dwWidth = 128;
-					BT.dwHeight = 128;
-				}
-			}	
-			
-
-			if (strstr(Core.Params, "-cvrt_impl_1024"))
-			{
-				if (BT.dwWidth > 1024 || BT.dwHeight > 1024)
-				{
-					BT.dwWidth = 1024;
-					BT.dwHeight = 1024;
-				}
-
-			}
-			*/
+	 
 
 			// save all the stuff we've created
 			textures().push_back	(BT);

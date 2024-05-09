@@ -31,7 +31,9 @@ struct SBuildOptions
 
 	}
 };
+
 extern SBuildOptions g_build_options;
+
 
 
 

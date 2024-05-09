@@ -887,53 +887,7 @@ void CBuild::Run(LPCSTR P)
 	H.XRLC_quality = g_params().m_quality;
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
-
-	if (strstr(Core.Params,"-test_merge"))
-	{
-		TestMergeGeom(fs);
-		return;
-	}
-
-	/*
-	if (strstr(Core.Params,"##out_rcast_model_object"))
-	{
-		Phase("Rcast CFORM model");
-		//RunCollideFormNEW();
-		 return; 
-	}
-
-
-	
-
-	
-
-	if (strstr(Core.Params, "--rq_build_cform"))
-	{
-		ExportRayCastModel(fs);
-		return;
-	}
-	*/
-    
-	if (char* str = strstr(Core.Params, "-sample"))
-	{	   
-		int value = 0;
-		sscanf(str+7, "%d", &value);
-
-		if (value != 1 && value != 4 && value != 9)
-		  	value = 1;
-	 
-		//Msg("set samples: %d", value);
-		g_params().m_lm_jitter_samples = value;
-	}
-
-	LPCSTR pixel = strstr(Core.Params, "-pxpm");
-	LPCSTR val = pixel + 5;
-	int value;
-	if (pixel && sscanf(val, "%d", &value))
-	{
- 		g_params().m_lm_pixels_per_meter = value;
-	} 
-
+ 
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
 
@@ -946,9 +900,7 @@ void CBuild::Run(LPCSTR P)
 		fs->w_chunk(2, &*L_static().sun.begin(), L_static().sun.size() * sizeof(R_Light));
 		FS.w_close(fs);
 	}
-	
-
-
+	 
 
 	//****************************************** Optimizing + checking for T-junctions
 	log_vminfo();

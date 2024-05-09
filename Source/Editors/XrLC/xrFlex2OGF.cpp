@@ -179,12 +179,9 @@ void MainThreadOGF(CBuild* build, int thID, bool use_mt_progresive)
 };
 
 #include <thread>
-  
-int THREADS_COUNT();
-#define MAX_THREADS THREADS_COUNT()
-
-
-//#define USE_MT 
+    
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void CBuild::Flex2OGF()
 {
@@ -200,18 +197,7 @@ void CBuild::Flex2OGF()
 	//for (splitIt it = g_XSplit.begin(); it != g_XSplit.end(); it++)
 	for (int i = 0; i < g_XSplit.size(); i++)
 		thread_list.push_back(i);
-
-	if (strstr(Core.Params, "-use_converter_mt"))
-	{
-		std::thread* th = new std::thread[MAX_THREADS];
-
-		for (int i = 0; i < MAX_THREADS; i++)
-			th[i] = std::thread(MainThreadOGF, this, i, true);
-
-		for (int i = 0; i < MAX_THREADS; i++)
-			th[i].join();
-	}
-	else 
+ 
 	{
 	  	MainThreadOGF(this, 0, false);
 	}

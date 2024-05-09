@@ -9,6 +9,7 @@
 #include "light_point.h"
 #include "xrface.h"
 #include "net_task.h"
+#include "BuildArgs.h"
 //const	u32	rms_discard			= 8;
 //extern	BOOL		gl_linear	;
 
@@ -348,9 +349,7 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 
 extern u64 RayID = 0;
   
-extern bool use_intel;
-extern bool use_opcode_old;
-
+ 
 bool readed = false;
 bool return_parrams = false;
 
@@ -594,16 +593,16 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
  
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
 
-
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
 { 	
 	RayID++;
 
-	if (use_intel && !use_opcode)
+	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
  	
-	if (!use_opcode_old)
+	if (!build_args->use_opcode_old)
 		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
 
 

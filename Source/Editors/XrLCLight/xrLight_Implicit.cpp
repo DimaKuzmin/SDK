@@ -19,6 +19,7 @@
 #include "net_task_callback.h"
 
 #include "../../xrcdb/xrcdb.h"
+#include "BuildArgs.h"
 
 
 
@@ -275,7 +276,7 @@ void ImplicitExecute::Execute(net_task_callback* net_callback)
 	}
 }
 
-extern bool use_opcode_to_lmaps;
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
   
 void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 {
@@ -320,7 +321,7 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
 							F,
-							use_opcode_to_lmaps);
+							!build_args->use_embree);
 						 
 						
 						

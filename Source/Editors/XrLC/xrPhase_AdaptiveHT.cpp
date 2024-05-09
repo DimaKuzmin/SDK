@@ -181,15 +181,15 @@ public:
 
 CThreadManager	precalc_base_hemi;
 
-
-int THREADS_COUNT();
-#define MAX_THREADS THREADS_COUNT()
-
 #ifndef DevCPU
 	#include "../XrLCLight/xrHardwareLight.h"
 #endif
 
+
 void SetOpacityRaycastModel();
+
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -234,29 +234,22 @@ void CBuild::xrPhase_AdaptiveHT	()
 		Light_prepare				();
  
 		// Intel Embree
-		if (strstr(Core.Params, "-use_intel"))
+		if (build_args->use_embree)
 		{
 			Status("Load Intel");
-			use_intel = true;
-			IntelEmbereLOAD();
+ 			IntelEmbereLOAD();
 
 			log_vminfo();
 		}
 
-		if (strstr(Core.Params, "-use_intel_for_mu"))
-		{
-			Status("Set Opcode For LMAPS");
-			use_opcode_to_lmaps = true;
-		}
-
-		if (strstr(Core.Params, "-use_opcode_old"))
+		if (build_args->use_opcode_old)
 		{
 			Msg("LogOpcode: !!! USE_OLD");
 			Msg("LogOpcode: !!! USE_OLD");
 			Msg("LogOpcode: !!! USE_OLD");
 			Msg("LogOpcode: !!! USE_OLD");
 			Msg("LogOpcode: !!! USE_OLD");
- 			use_opcode_old = true;
+ 		 
 		}
 		 
 #ifndef DevCPU
@@ -286,7 +279,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
 			ThreadPrecalcHemi.push_back(i);
 
-		for (int i = 0; i < THREADS_COUNT(); i++)
+		for (int i = 0; i < build_args->use_threads; i++)
 			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i), i);
  
   		precalc_base_hemi.wait();

@@ -3,6 +3,7 @@
 #include "xrThread.h"
 #include "xrLight_Implicit.h"
 #include "xrlight_implicitdeflector.h"
+#include "BuildArgs.h"
 
 
 
@@ -29,36 +30,15 @@ void	ImplicitThread ::	Execute	()
  	execute.Execute(0);
 }
 
-
-
-int THREADS_COUNT()
-{
-	LPCSTR str = strstr(Core.Params, "-th");
- 
-	if (str)
-	{
-		int count = 0;
-		LPCSTR new_str = str + 3;
-		sscanf(new_str, "%d", &count);
-
- 		return count;
-	}
-
-	return 4;
-}
-
-#define	NUM_THREADS	THREADS_COUNT()
-
-
-
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void RunThread(ImplicitDeflector& defl)
 {
 	CThreadManager			tmanager;
  
-	u32	stride = defl.Height() / NUM_THREADS;
+	u32	stride = defl.Height() / build_args->use_threads;
 	
- 	for (u32 thID = 0; thID < NUM_THREADS; thID++)
+ 	for (u32 thID = 0; thID < build_args->use_threads; thID++)
 	{
 		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
 		

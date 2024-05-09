@@ -348,6 +348,7 @@
     <ClInclude Include="EmbreeDataStorage.h">
       <Filter>Light\EmbreeLib</Filter>
     </ClInclude>
+    <ClInclude Include="BuildArgs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -619,6 +620,9 @@
     </ClCompile>
     <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
       <Filter>Light\LightsHW\Hardware_code</Filter>
+    </ClCompile>
+    <ClCompile Include="BuildArgs.cpp">
+      <Filter>kernel</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
