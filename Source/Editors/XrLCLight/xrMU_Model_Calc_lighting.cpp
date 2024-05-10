@@ -11,9 +11,8 @@
 #include "mu_model_face.h"
 #include "xrface.h"
 #include "xrLC_GlobalData.h"
-
-void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode);
-
+#include "xrDeflector.h"
+ 
 union var
 {
 	int		i;

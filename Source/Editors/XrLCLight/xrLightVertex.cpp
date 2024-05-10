@@ -6,6 +6,8 @@
 #include "light_point.h"
 
 #include "../../xrcdb/xrCDB.h"
+#include "xrDeflector.h"
+
 //-----------------------------------------------------------------------
 typedef	xr_multimap<float,vecVertex>	mapVert;
 typedef	mapVert::iterator				mapVertIt;
@@ -15,8 +17,7 @@ xrCriticalSection						g_trans_CS
 	(MUTEX_PROFILE_ID(g_trans_CS))
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode = false);
-
+ 
 void	g_trans_register_internal		(Vertex* V)
 {
 	R_ASSERT	(V);

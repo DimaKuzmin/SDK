@@ -11,6 +11,8 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 		eRefit = 3
 	};
 
+	float embree_tnear = 0.2f;
+
 	int embree_geometry_type = EmbreeGeom::eLow;
 
 	bool use_embree = 0;			//+

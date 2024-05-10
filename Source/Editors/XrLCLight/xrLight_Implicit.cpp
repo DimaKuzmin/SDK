@@ -321,7 +321,7 @@ void ImplicitExecute::ForCycle(ImplicitDeflector* defl, u32 V, int TH)
 							(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 							(inlc_global_data()->b_nosun() ? LP_dont_sun : 0),
 							F,
-							!build_args->use_embree);
+							!build_args->use_embree, TH_ID);
 						 
 						
 						

@@ -29,6 +29,7 @@ char* collection[Size] = {
     "use_std"
 };
 
+
 /*
 *   new 
     int embree_geometry_type = EmbreeGeom::eLow;    //++
@@ -89,7 +90,7 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
 }
 
 
-class  NET_Logger : Logger
+class  NET_Logger : ILogger
 {
 public:
     gcroot<LauncherNET::MyForm^>  form;
@@ -125,13 +126,19 @@ public:
         form->updateStatusItem(status);
     }
 
+
     virtual void UpdateText()
     {
         form->updateALL();
     }
+
+    virtual void UpdateTime(LPCSTR time)
+    {
+        form->UpdateTime(time);
+    }
 };
 
-extern XRLC_API Logger* LoggerCL;
+extern XRLC_API ILogger* LoggerCL;
 
 // Определение функции WinMain
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -151,7 +158,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     NET_Logger logger;
 
-    LoggerCL = (Logger*)&logger;
+    LoggerCL = (ILogger*) &logger;
 
     logger.CreateClass();
 
@@ -171,7 +178,7 @@ void StartThread(SpecialArgs* main_args)
             SetThreadDescription(threadHandle, L"MAIN THREAD xrLC");
 
             char tmp[128];
-            sprintf(tmp, "c++ Arguments1: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u", args->pxpm, args->mu_samples, args->sample, args->use_threads);
+            sprintf(tmp, "c++ Arguments1: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, EmbreeTNear: %f", args->pxpm, args->mu_samples, args->sample, args->use_threads, args->embree_tnear);
             LoggerCL->updateLog(tmp);
 
             sprintf(tmp, "c++ Arguments2: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d", args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
@@ -205,6 +212,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     auto TH_str = msclr::interop::marshal_as<std::string>(ThreadsCount->Text);
     auto PXPM_str = msclr::interop::marshal_as<std::string>(PXPM->Text);
     auto LevelName_str = msclr::interop::marshal_as < std::string >(LevelName->Text);
+    auto TNear = msclr::interop::marshal_as<std::string>(EmbreeTnear->Text);
 
     if (RadioEmbreeGLow->Checked)
          args->embree_geometry_type = SpecialArgs::eLow;
@@ -217,6 +225,8 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     
     if (RadioEmbreeG_Robust->Checked)
         args->use_RobustGeom = 1;
+
+    args->embree_tnear = atof(TNear.c_str());
 
     System::Collections::IEnumerator^ myEnum = FlagsCompiler->CheckedItems->GetEnumerator();
     while (myEnum->MoveNext())

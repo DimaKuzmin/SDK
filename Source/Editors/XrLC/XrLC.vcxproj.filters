@@ -155,9 +155,7 @@
     </ClInclude>
     <ClInclude Include="xrGameMaterials.h" />
     <ClInclude Include="..\Public\Shader_xrLC.h" />
-    <ClInclude Include="xrLC.h">
-      <Filter>Kernel</Filter>
-    </ClInclude>
+    <ClInclude Include="xrLC.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">

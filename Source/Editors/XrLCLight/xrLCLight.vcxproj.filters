@@ -624,6 +624,9 @@
     <ClCompile Include="BuildArgs.cpp">
       <Filter>kernel</Filter>
     </ClCompile>
+    <ClCompile Include="EmbreeRecursive.cpp">
+      <Filter>Light\EmbreeLib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

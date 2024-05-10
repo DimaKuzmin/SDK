@@ -32,6 +32,8 @@ extern volatile BOOL bClose;
 
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 
+CTimer	dwStartupTime;
+
 void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 {
 	create_global_data();
@@ -129,7 +131,10 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 	// Call for builder
 	string_path				lfn;
-	CTimer	dwStartupTime;	dwStartupTime.Start();
+	
+	
+	dwStartupTime.Start();
+
 	FS.update_path			(lfn,_game_levels_,name);
 	pBuild->Run				(lfn);
 	xr_delete				(pBuild);
@@ -189,6 +194,7 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->embree_geometry_type = args->embree_geometry_type;
 	build_args->use_RobustGeom = args->use_RobustGeom;
 	build_args->skip_weld = args->skip_weld;
+	build_args->embree_tnear = args->embree_tnear;
 }
 
 XRLC_API void StartupWorking(SpecialArgs* args)

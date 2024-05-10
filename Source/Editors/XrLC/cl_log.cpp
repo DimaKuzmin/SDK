@@ -71,7 +71,7 @@ std::string make_time	(u32 sec)
 }
 
 #include "xrLC.h"
-extern Logger* LoggerCL = 0;
+extern ILogger* LoggerCL = 0;
 
 CTimer interval;
 
@@ -172,6 +172,8 @@ void Phase			(const char *phase_name)
 	Msg("\n* New phase started: %s",phase_name);
 	csLog.Leave			();
 }
+
+extern CTimer	dwStartupTime;
 
 HWND logWindow=0;
 void logThread(void *dummy)
@@ -278,14 +280,23 @@ void logThread(void *dummy)
 			SetWindowText	( hwPText, tbuf );
 		}
 
+
+
+
 		if (bStatusChange) 
 		{
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
 			SetWindowText	( hwInfo,	status);
-			
-			if (LoggerCL != nullptr)
-				LoggerCL->updateStatus(status);
+		}
+
+		if (LoggerCL != nullptr)
+		{
+			extern	std::string make_time(u32 sec);
+			std::string time = make_time(dwStartupTime.GetElapsed_ms() / 1000);
+
+			LoggerCL->updateStatus(status);
+			LoggerCL->UpdateTime(time.c_str());
 		}
 
 		if (bWasChanges)

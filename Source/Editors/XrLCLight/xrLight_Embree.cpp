@@ -33,6 +33,9 @@ RTCScene IntelScene;
 RTCGeometry IntelGeometry;
 RTCDevice device;
 
+// ÂÀÆÍÛÉ ÏÀÐÀÌÅÒÐ TNEAR Äëÿ ïåðåñå÷åíèÿ ñ âîäîé
+int TNearParram = 0.2f;
+
   
 /*
 void SetRay8(RayOptimizedCPU* ray, RTCRayHit8& rayhit, int ray_id)
@@ -119,7 +122,7 @@ void SetRay1(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 	rayhit.ray.org_y = ray->pos.y;
 	rayhit.ray.org_z = ray->pos.z;
 
-	rayhit.ray.tnear = 0.0f; 
+	rayhit.ray.tnear = ray->tmin; 
 	rayhit.ray.tfar = ray->tmax;
 
 	rayhit.ray.mask = (unsigned int)(-1);
@@ -161,9 +164,10 @@ void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
 //#define MAX_HITS 1024 
  
  
-struct DataFaceGlobal
+struct DataFaceGlobalE
 {
-	base_Face* face;
+	base_Face* face = 0;
+	RTCRayHit* rayhit = 0;
 	float energy;
 	float tfar;
 };
@@ -171,19 +175,19 @@ struct DataFaceGlobal
 struct RayQueryContext
 {
 	RTCRayQueryContext context;
-
-	CDB::MODEL* model; 
-	Face* skip;
-	R_Light* Light;
 	Fvector B;
-	 	
 
+	CDB::MODEL* model = 0; 
+	Face* skip = 0;
+	R_Light* Light = 0;
+	 
 	float energy = 1.0f;
 	int Ended = 0;
  
-	//float last_far = 1000.0f;
-	unsigned int LastPrimitive = 0;
-
+ //	unsigned int LastPrimitive = 0;
+	
+	// Debuging Vector
+	xr_vector<DataFaceGlobalE> hits;
 };
 
  
@@ -193,12 +197,12 @@ struct RayQueryContext8
 
 	CDB::MODEL* model;
 	Face* skip[8];
-	R_Light* Light;
+	R_Light* Light = 0;
 	Fvector B;
 
 	int count = 0;
 	float energy = 1.0f;
-	float last_far = 1000.0f;
+	//float last_far = 1000.0f;
 };
 
 void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
@@ -235,100 +239,111 @@ void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
 }
 
 int RAY_ID = 0;
-  
+ 
+xrCriticalSection csLIGHT;
+
 void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 {
-	RayQueryContext* ctxt = (RayQueryContext*) args->context;
+	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
-	
-	if (ctxt->Ended || hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
- 		return;
- 
-	if (hit->primID == ctxt->LastPrimitive)
-	{
-		args->valid[0] = 0;
-		return;
-	}
 
-	ctxt->LastPrimitive = hit->primID;
+	if (ctxt->Ended || hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
+		return;
+
+	args->valid[0] = 0;
+
+	/* 
+	if (ctxt->hits.size() == 0)
+	{
+		DataFaceGlobalE data;
+ 
+		data.energy = ctxt->energy;
+		data.tfar = ray->tfar;
+ 		ctxt->hits.push_back(data);
+	}
+ 
+ 
+	ray->tnear = ray->tfar;
+	*/
+
 
 	// Access to texture
-	CDB::TRI* clT = &ctxt->model->get_tris()[hit->primID];	 
+	CDB::TRI* clT = &ctxt->model->get_tris()[hit->primID];
 
 	base_Face* F = (base_Face*)(clT->pointer);
- 
+
 	if (0 == F || ctxt->skip == F)
-	{
-		args->valid[0] = 0;
 		return;
-	}
 
 	const Shader_xrLC& SH = F->Shader();
-	if (!SH.flags.bLIGHT_CastShadow ) // || F->flags.bShadowSkip
-	{
-		args->valid[0] = 0;
+	if ( !SH.flags.bLIGHT_CastShadow ) // || F->flags.bShadowSkip
 		return;
-	}
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-  
-	if (F->flags.bOpaque)	 
-	{ 
+
+
+	if (F->flags.bOpaque)
+	{
 		// Opaque poly - cache it
-		R_Light& light = (* ( (R_Light*) ctxt->Light) );
- 
+		R_Light& light = (*((R_Light*)ctxt->Light));
+
 		// Opaque poly - cache it
-		light.tri[0].set	(ctxt->model->get_verts()[clT->verts[0]]);
-		light.tri[1].set	(ctxt->model->get_verts()[clT->verts[1]]);
-		light.tri[2].set	(ctxt->model->get_verts()[clT->verts[2]]);
-		
-		args->valid[0] = -1;
-		ctxt->energy = 0;
- 		ctxt->Ended = 1;
+		light.tri[0].set(ctxt->model->get_verts()[clT->verts[0]]);
+		light.tri[1].set(ctxt->model->get_verts()[clT->verts[1]]);
+		light.tri[2].set(ctxt->model->get_verts()[clT->verts[2]]);
  
+
+		{
+			args->valid[0] = -1;
+			ctxt->energy = 0;
+			ctxt->Ended = 1;
+		}
+
    		return;
 	}
- 
-	if ( T.pSurface.Empty() )
-	{	 
+	 
+
+	if (T.pSurface.Empty())
+	{
 		F->flags.bOpaque = true;
+
 		args->valid[0] = -1;
 		ctxt->energy = 0;
- 		ctxt->Ended = 1;
- 
-		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture...: %s", T.name);
+		ctxt->Ended = 1;
 
-  		return;
+		clMsg("Texture: %s surface", T.name);
+		return;
 	}
- 
+	 
+
 	// barycentric coords
 	// note: W,U,V order
- 
-	ctxt->B.set	(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
 
 	// calc UV
-	Fvector2*	cuv = F->getTC0					();
+	Fvector2* cuv = F->getTC0();
 	Fvector2	uv;
-	uv.x = cuv[0].x*ctxt->B.x + cuv[1].x*ctxt->B.y + cuv[2].x*ctxt->B.z;
-	uv.y = cuv[0].y*ctxt->B.x + cuv[1].y*ctxt->B.y + cuv[2].y*ctxt->B.z;
+	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
 
-	int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-	U %= T.dwWidth;	
-	if (U<0) U+=T.dwWidth;
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;
+	if (U < 0) U += T.dwWidth;
 	V %= T.dwHeight;
-	if (V<0) V+=T.dwHeight;
+	if (V < 0) V += T.dwHeight;
 
 	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel		= raw[V*T.dwWidth+U];
-	u32 pixel_a		= color_get_A(pixel);
-	float opac		= 1.f - _sqr(float(pixel_a)/255.f);
- 
-	ctxt->energy *= opac;  
-  
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+	ctxt->energy *= opac;
+
 	// Energy Loose
 	if (ctxt->energy <= 0.001f)
 	{
@@ -336,21 +351,61 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		ctxt->energy = 0;
 		ctxt->Ended = 1;
 	}
-	else
+
+	/* 
+	// DEBUG FUCKING WATER
+
+	DataFaceGlobalE data;
+
+	//RTCRayHit rayhit;
+	//rayhit.hit = *hit;
+	//rayhit.ray = *ray;
+	//data.rayhit = rayhit;
+	data.energy = ctxt->energy;
+	data.tfar = ray->tfar;
+	data.face = F;
+	ctxt->hits.push_back(data);
+
+	if (strstr(T.name, "water") && ctxt->energy < 0.2f)
 	{
-		args->valid[0] = 0;
+		csLIGHT.Enter();
+		int ID = RAY_ID;
+		for (const auto data : ctxt->hits)
+		{
+			if (data.face)
+			{
+				b_material& Mater = inlc_global_data()->materials()[data.face->dwMaterial];
+				b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
+
+				clMsg("Ray[%d], TFar[%f], energy[%f], Material[%s]", ID, data.tfar, data.energy, Texture.name);
+			}
+			else
+			{
+				clMsg("Initial[%d], TFar[%f], energy[%f]", ID, data.tfar, data.energy);
+			}
+
+		}
+
+		if (ctxt->skip != 0)
+		{
+			b_material& Mater = inlc_global_data()->materials()[ctxt->skip->dwMaterial];
+			b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
+
+			clMsg("Skip Material: %s, %p == %p", Texture.name, F, ctxt->skip);
+		}
+
+
+		clMsg("[INTEL] Ray[%d] TFar[%f], prim[%llu] energy[%f], TNear[%f], tex[%s]", RAY_ID, ray->tfar, hit->primID, ctxt->energy, ray->tnear, T.name);
+		csLIGHT.Leave();
 	}
+	*/
+
 }
-
-
-extern u64 RayID;
-xrCriticalSection csEmbree;
-
+ 
 void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 { 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
-
 	data_hits.context = context;
  
 	RTCIntersectArguments args;
@@ -364,13 +419,12 @@ void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 	
 	RAY_ID++;
 	rtcIntersect1(IntelScene, &rayhit, &args);    
-
-
 }
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
 {
   	float _u,_v, R;
+	
 	bool res = CDB::TestRayTri(P, N, L.tri, _u,_v, R, false);
 	if (res) 
 	if (range > 0 && range < R) 
@@ -382,12 +436,12 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	data.skip  = skip;
 	data.energy = 1.0f;
 	data.Ended = 0;
-   			
+    			
 	RayOptimizedCPU ray;
 	ray.pos = P;
 	ray.dir = N;
 	ray.tmax = range;
-	ray.tmin = 0;
+	ray.tmin = TNearParram;
 	
  	RatraceOneRay(ray, data);
 		
@@ -613,6 +667,7 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void IntelEmbereLOAD()
 {
+ 		
  
 	std::string config;
 	bool avx = build_args->use_avx;
@@ -685,6 +740,8 @@ void IntelEmbereLOAD()
   		rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST);
 	}
 	
+
+	TNearParram = build_args->embree_tnear;
 	
 
  

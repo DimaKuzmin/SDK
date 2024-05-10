@@ -17,6 +17,8 @@ struct XRLC_API  SpecialArgs
 		eHigh = 2,
 		eRefit = 3
 	};
+
+	float embree_tnear = 0.2f;
 	int embree_geometry_type = EmbreeGeom::eLow;
 
 	bool use_embree = 0;
@@ -54,7 +56,7 @@ struct XRLC_API  SpecialArgs
 
 XRLC_API void  StartupWorking(SpecialArgs* args);
 
-class XRLC_API Logger
+class XRLC_API ILogger
 {
 public:
 	virtual void  updateLog(LPCSTR str) = 0;
@@ -62,6 +64,7 @@ public:
 	virtual void  updateStatus(LPCSTR status) = 0;
 
 	virtual void  UpdateText() = 0;
+	virtual void  UpdateTime(LPCSTR time) = 0;
 };
 
-extern XRLC_API Logger* LoggerCL;
+extern XRLC_API ILogger* LoggerCL;

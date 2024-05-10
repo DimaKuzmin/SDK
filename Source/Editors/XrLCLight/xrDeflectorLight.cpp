@@ -347,7 +347,7 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
  
 // OLDER GARBAGE
 
-extern u64 RayID = 0;
+u64 RayID = 0;
   
  
 bool readed = false;
@@ -433,6 +433,14 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 	return scale;
 }
 
+
+ 
+
+xrCriticalSection csDeflector;
+
+#include "..\XrCDB\xrCDB.h"
+
+  
 // NEW CDB_RAY
 void FilterFunction(OpcodeArgs* args)
 {
@@ -442,9 +450,23 @@ void FilterFunction(OpcodeArgs* args)
 	CDB::TRI& clT										= MDL->get_tris()[args->hit_struct.prim];
 	base_Face* F										= (base_Face*)(clT.pointer);
 	
-	//if (RayID < 100)
-	//	Msg("[OPCODE] Ray[%d] TFar[%f] prim[%llu] energy[%f]", RayID, args->hit_struct.dist, args->hit_struct.prim, args->energy);
+	//POS[%.2f,%.2f,%.2f] VPUSH(args->pos), 
+	//clMsg("[OPCO] Ray[%d] TFar[%f], prim[%llu] energy[%f]", RayID, args->hit_struct.dist, args->hit_struct.prim, args->energy);
  
+	/*
+	// DEBUG!!!
+	if (args->hits.size() == 0)
+	{
+ 		DataFaceGlobal data;
+		data.energy = args->energy;
+		data.tfar = args->hit_struct.dist;
+		data.face = F;
+		args->hits.push_back(data);
+	}
+
+	// END
+	*/
+
 	if (0==F || args->skip==F)							
 		return;
  
@@ -512,6 +534,41 @@ void FilterFunction(OpcodeArgs* args)
 		args->valid = false; 
 
 
+	// DEBUG!!! !!!!
+ 
+	/*
+	DataFaceGlobal data;
+ 	data.energy = args->energy;
+	data.tfar = args->hit_struct.dist;
+	data.face = F;
+	args->hits.push_back(data);
+
+
+	if (strstr(T.name, "water") && args->energy < 0.2f)
+	{
+		csDeflector.Enter();
+		int ID = RayID;
+		for (const auto data : args->hits)
+		{
+ 			if (data.face != 0)
+			{
+				base_Face* face = (base_Face*) data.face;
+				b_material& Mater = inlc_global_data()->materials()[face->dwMaterial];
+				b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
+
+				clMsg("Ray[%d], TFar[%f], energy[%f], Material[%s]", ID, data.tfar, data.energy, Texture.name);
+			}
+			else
+			{
+				clMsg("Initial[%d], TFar[%f], energy[%f]", ID, data.tfar, data.energy);
+			}
+		}
+ 
+
+		clMsg("[INTEL] Ray[%d] TFar[%f], prim[%llu] energy[%f], tex[%s]", ID, args->hit_struct.dist, args->hit_struct.prim, args->energy, T.name);
+		csDeflector.Leave();
+	}
+	*/
 };
   
 float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
@@ -542,6 +599,7 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
 	args.skip	= (void*) skip;
    	args.MDL	= (void*) MDL;
 	args.valid  = 1;
+	args.pos = P;
 
 	ctxt.result = &args;
  
@@ -595,9 +653,22 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
-float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
+ 
+
+float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode, u16 TH_ID)
 { 	
 	RayID++;
+
+	/*
+	// TEST
+	 
+	RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
+	
+	 
+	return rayTraceCheck(DB, MDL, L, P, D, R, skip);
+
+	// END TEST
+	*/
 
 	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
@@ -605,7 +676,9 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	if (!build_args->use_opcode_old)
 		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
 
+	
 
+	
 	R_ASSERT	(DB);
  
 	// 1. Check cached polygon
@@ -868,7 +941,7 @@ void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& ligh
 }
 
 
-IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
+IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode, u16 TH_ID)
 {
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.01f);
@@ -892,7 +965,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 					if( D <=0 ) continue;
 
 					// Trace Light
-					float scale	=	D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, 1000.f, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode);  
+					float scale	=	D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, 1000.f, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode, TH_ID);  
 					C.rgb.x		+=	scale * L->diffuse.x; 
 					C.rgb.y		+=	scale * L->diffuse.y;
 					C.rgb.z		+=	scale * L->diffuse.z;
@@ -912,7 +985,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 					// Trace Light
 					float R		= _sqrt(sqD);
-					float scale = D*L->energy * rayTrace(DB,MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode); 
+					float scale = D*L->energy * rayTrace(DB,MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable, USE_RGB_OPCODE || use_opcode, TH_ID);
 					float A		;
 					
 					if (inlc_global_data()->gl_linear())
@@ -954,7 +1027,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 					L->position.mad	(Pdir.random_dir(L->direction,PI_DIV_4),.05f);
 					
 					float R			= _sqrt(sqD);
-					float scale		= powf(D, 1.f/8.f)*L->energy * rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_RGB_OPCODE || use_opcode);	  
+					float scale		= powf(D, 1.f/8.f)*L->energy * rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_RGB_OPCODE || use_opcode, TH_ID);
 					float A			= scale * (1-R/L->range);
 					L->position		= Psave;
 
@@ -981,7 +1054,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, USE_SUN_OPCODE || use_opcode);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,1000.f,skip,bUseFaceDisable, USE_SUN_OPCODE || use_opcode, TH_ID);
 				C.sun		+=	scale;
 			} 
 			else 
@@ -998,7 +1071,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable,  USE_SUN_OPCODE || use_opcode);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable,  USE_SUN_OPCODE || use_opcode, TH_ID);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.sun		+=	A;
@@ -1021,7 +1094,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				// Trace Light
 				Fvector		PMoved;
 				PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable, USE_HEMI_OPCODE || use_opcode);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir,1000.f,skip,bUseFaceDisable, USE_HEMI_OPCODE || use_opcode, TH_ID);
 				C.hemi		+=	scale;
  			}
 			else
@@ -1038,7 +1111,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_HEMI_OPCODE ||  use_opcode);
+				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, USE_HEMI_OPCODE ||  use_opcode, TH_ID);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.hemi		+=	A;
@@ -1236,6 +1309,8 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
+	RayID = 0;
+
 	// Geometrical bounds
 	Fbox bb;		bb.invalidate	();
 	CTimer t;

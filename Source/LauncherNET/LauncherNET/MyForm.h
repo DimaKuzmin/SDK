@@ -89,6 +89,9 @@ namespace LauncherNET
 	private: System::Windows::Forms::GroupBox^ groupBox1;
 	private: System::Windows::Forms::RadioButton^ RadioEmbreeGdefault;
 	private: System::Windows::Forms::Label^ InfoStatus;
+	private: System::Windows::Forms::Label^ BuildTime;
+	private: System::Windows::Forms::TextBox^ EmbreeTnear;
+	private: System::Windows::Forms::Label^ label10;
 
 
 
@@ -110,6 +113,7 @@ namespace LauncherNET
 		{
 			this->TabControl = (gcnew System::Windows::Forms::TabControl());
 			this->Status_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->BuildTime = (gcnew System::Windows::Forms::Label());
 			this->InfoStatus = (gcnew System::Windows::Forms::Label());
 			this->InfoPhases = (gcnew System::Windows::Forms::ListBox());
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
@@ -142,6 +146,8 @@ namespace LauncherNET
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->label10 = (gcnew System::Windows::Forms::Label());
+			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -167,6 +173,7 @@ namespace LauncherNET
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->BuildTime);
 			this->Status_Tab->Controls->Add(this->InfoStatus);
 			this->Status_Tab->Controls->Add(this->InfoPhases);
 			this->Status_Tab->Controls->Add(this->UpdatingListBox);
@@ -180,6 +187,21 @@ namespace LauncherNET
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"Состояние компиляции";
 			// 
+			// BuildTime
+			// 
+			this->BuildTime->BackColor = System::Drawing::Color::Black;
+			this->BuildTime->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->BuildTime->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->BuildTime->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->BuildTime->ForeColor = System::Drawing::Color::RosyBrown;
+			this->BuildTime->Location = System::Drawing::Point(718, 692);
+			this->BuildTime->Name = L"BuildTime";
+			this->BuildTime->Size = System::Drawing::Size(284, 77);
+			this->BuildTime->TabIndex = 17;
+			this->BuildTime->Text = L"I AM TIMER";
+			this->BuildTime->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
 			// InfoStatus
 			// 
 			this->InfoStatus->BackColor = System::Drawing::Color::Black;
@@ -190,9 +212,8 @@ namespace LauncherNET
 			this->InfoStatus->ForeColor = System::Drawing::Color::RosyBrown;
 			this->InfoStatus->Location = System::Drawing::Point(6, 692);
 			this->InfoStatus->Name = L"InfoStatus";
-			this->InfoStatus->Size = System::Drawing::Size(792, 85);
+			this->InfoStatus->Size = System::Drawing::Size(706, 85);
 			this->InfoStatus->TabIndex = 16;
-			this->InfoStatus->Text = L"label10";
 			// 
 			// InfoPhases
 			// 
@@ -212,7 +233,7 @@ namespace LauncherNET
 			this->UpdatingListBox->AutoSize = true;
 			this->UpdatingListBox->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->UpdatingListBox->Location = System::Drawing::Point(804, 735);
+			this->UpdatingListBox->Location = System::Drawing::Point(6, 658);
 			this->UpdatingListBox->Name = L"UpdatingListBox";
 			this->UpdatingListBox->Size = System::Drawing::Size(198, 31);
 			this->UpdatingListBox->TabIndex = 3;
@@ -235,6 +256,8 @@ namespace LauncherNET
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->EmbreeTnear);
+			this->Geometry_Tab->Controls->Add(this->label10);
 			this->Geometry_Tab->Controls->Add(this->groupBox1);
 			this->Geometry_Tab->Controls->Add(this->IntelEmbreType);
 			this->Geometry_Tab->Controls->Add(this->button1);
@@ -568,15 +591,38 @@ namespace LauncherNET
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
+			// label10
+			// 
+			this->label10->AutoSize = true;
+			this->label10->ForeColor = System::Drawing::Color::Brown;
+			this->label10->Location = System::Drawing::Point(624, 150);
+			this->label10->Name = L"label10";
+			this->label10->Size = System::Drawing::Size(143, 27);
+			this->label10->TabIndex = 21;
+			this->label10->Text = L"Embree Tnear";
+			// 
+			// EmbreeTnear
+			// 
+			this->EmbreeTnear->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->EmbreeTnear->Location = System::Drawing::Point(838, 150);
+			this->EmbreeTnear->Name = L"EmbreeTnear";
+			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
+			this->EmbreeTnear->TabIndex = 22;
+			this->EmbreeTnear->Text = L"0.2";
+			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
-			this->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->BackColor = System::Drawing::SystemColors::ActiveBorder;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
 			this->ClientSize = System::Drawing::Size(1471, 821);
 			this->Controls->Add(this->TabControl);
-			this->ForeColor = System::Drawing::Color::IndianRed;
+			this->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->ForeColor = System::Drawing::Color::Tomato;
 			this->Name = L"MyForm";
+			this->ShowIcon = false;
 			this->Text = L"Продвинутый компилятор Геометрии и Света (Intel)";
 			this->TabControl->ResumeLayout(false);
 			this->Status_Tab->ResumeLayout(false);
@@ -624,6 +670,12 @@ namespace LauncherNET
 				 listBox1->SelectedIndex = listBox1->Items->Count - 1;
 		 }
 
+
+		public:  System::Void UpdateTime(const char* str)
+		{
+			System::String^ managedString = gcnew System::String(str);
+			BuildTime->Text = managedString;
+		}
  
 };
 
