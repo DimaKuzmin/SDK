@@ -119,6 +119,8 @@ namespace LauncherNET
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
+			this->label10 = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->RadioEmbreeGdefault = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeG_Robust = (gcnew System::Windows::Forms::RadioButton());
@@ -146,8 +148,6 @@ namespace LauncherNET
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->label10 = (gcnew System::Windows::Forms::Label());
-			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -218,14 +218,14 @@ namespace LauncherNET
 			// InfoPhases
 			// 
 			this->InfoPhases->BackColor = System::Drawing::SystemColors::InfoText;
-			this->InfoPhases->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->InfoPhases->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->InfoPhases->ForeColor = System::Drawing::Color::Khaki;
 			this->InfoPhases->FormattingEnabled = true;
-			this->InfoPhases->ItemHeight = 27;
+			this->InfoPhases->ItemHeight = 23;
 			this->InfoPhases->Location = System::Drawing::Point(1008, 17);
 			this->InfoPhases->Name = L"InfoPhases";
-			this->InfoPhases->Size = System::Drawing::Size(413, 760);
+			this->InfoPhases->Size = System::Drawing::Size(413, 740);
 			this->InfoPhases->TabIndex = 15;
 			// 
 			// UpdatingListBox
@@ -282,6 +282,26 @@ namespace LauncherNET
 			this->Geometry_Tab->Size = System::Drawing::Size(1439, 769);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
+			// 
+			// EmbreeTnear
+			// 
+			this->EmbreeTnear->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->EmbreeTnear->Location = System::Drawing::Point(838, 150);
+			this->EmbreeTnear->Name = L"EmbreeTnear";
+			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
+			this->EmbreeTnear->TabIndex = 22;
+			this->EmbreeTnear->Text = L"0.2";
+			// 
+			// label10
+			// 
+			this->label10->AutoSize = true;
+			this->label10->ForeColor = System::Drawing::Color::Brown;
+			this->label10->Location = System::Drawing::Point(624, 150);
+			this->label10->Name = L"label10";
+			this->label10->Size = System::Drawing::Size(143, 27);
+			this->label10->TabIndex = 21;
+			this->label10->Text = L"Embree Tnear";
 			// 
 			// groupBox1
 			// 
@@ -590,26 +610,6 @@ namespace LauncherNET
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
-			// 
-			// label10
-			// 
-			this->label10->AutoSize = true;
-			this->label10->ForeColor = System::Drawing::Color::Brown;
-			this->label10->Location = System::Drawing::Point(624, 150);
-			this->label10->Name = L"label10";
-			this->label10->Size = System::Drawing::Size(143, 27);
-			this->label10->TabIndex = 21;
-			this->label10->Text = L"Embree Tnear";
-			// 
-			// EmbreeTnear
-			// 
-			this->EmbreeTnear->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->EmbreeTnear->Location = System::Drawing::Point(838, 150);
-			this->EmbreeTnear->Name = L"EmbreeTnear";
-			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
-			this->EmbreeTnear->TabIndex = 22;
-			this->EmbreeTnear->Text = L"0.2";
 			// 
 			// MyForm
 			// 

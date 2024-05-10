@@ -36,7 +36,7 @@ void ERayQuery(RTCRayHit rayhit, float orig_range, xr_map<u32, Fvector>& m_point
 
 };
 
-void RecursiveRay(Fvector pos, Fvector Dir)
+void RecursiveRay(Fvector pos, Fvector Dir, float Range)
 {
  	xr_map<u32, Fvector> m_points = {};
 
@@ -48,7 +48,7 @@ void RecursiveRay(Fvector pos, Fvector Dir)
 	rayhit.ray.dir_y = Dir.y;
 	rayhit.ray.dir_z = Dir.z;
 	rayhit.ray.tnear = 0.0f; // ближайшее расстояние для пересечения
-	rayhit.ray.tfar = 1000.f; // максимальное расстояние для пересечения
+	rayhit.ray.tfar = Range; // максимальное расстояние для пересечения
 
 	rayhit.ray.mask = (unsigned int)(-1);
 	rayhit.ray.flags = 0;
@@ -63,7 +63,7 @@ void RecursiveRay(Fvector pos, Fvector Dir)
 	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
-	ERayQuery(rayhit, 1000.f, m_points);
+	ERayQuery(rayhit, Range, m_points);
 
  
 	m_points.clear();

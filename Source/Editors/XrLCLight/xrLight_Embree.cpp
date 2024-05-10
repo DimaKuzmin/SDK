@@ -184,10 +184,11 @@ struct RayQueryContext
 	float energy = 1.0f;
 	int Ended = 0;
  
- //	unsigned int LastPrimitive = 0;
-	
+ 	unsigned int LastPrimitive = 0;
+	float last_far = 0.0f;
+
 	// Debuging Vector
-	xr_vector<DataFaceGlobalE> hits;
+	// xr_vector<DataFaceGlobalE> hits;
 };
 
  
@@ -202,7 +203,7 @@ struct RayQueryContext8
 
 	int count = 0;
 	float energy = 1.0f;
-	//float last_far = 1000.0f;
+	float last_far = 0.0f;
 };
 
 void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
@@ -254,6 +255,23 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 
 	args->valid[0] = 0;
 
+	/*
+	if (ctxt->LastPrimitive == hit->primID)
+	{
+		//clMsg("Hitted Unexpected Self: %u", hit->primID);
+		return;
+	}
+
+	ctxt->LastPrimitive = hit->primID;
+	*/
+
+	//if (ray->tfar < ray->tnear)
+	//	return;
+
+	// ray->tnear = ray->tfar;
+	
+	// clMsg("Tnear[%f], Tfar[%f]", ray->tnear, ray->tfar);
+
 	/* 
 	if (ctxt->hits.size() == 0)
 	{
@@ -283,7 +301,9 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
+	
+	if ( strstr(T.name, "water"))
+		return;
 
 	if (F->flags.bOpaque)
 	{
@@ -294,8 +314,9 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		light.tri[0].set(ctxt->model->get_verts()[clT->verts[0]]);
 		light.tri[1].set(ctxt->model->get_verts()[clT->verts[1]]);
 		light.tri[2].set(ctxt->model->get_verts()[clT->verts[2]]);
- 
-
+		
+		//if (ray->tfar > 0.3f)
+		//if (ctxt->last_far - ray->tfar > 0.2f)
 		{
 			args->valid[0] = -1;
 			ctxt->energy = 0;
@@ -304,6 +325,8 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 
    		return;
 	}
+
+	// ctxt->last_far = ray->tfar;
 	 
 
 	if (T.pSurface.Empty())

@@ -178,7 +178,7 @@ void StartThread(SpecialArgs* main_args)
             SetThreadDescription(threadHandle, L"MAIN THREAD xrLC");
 
             char tmp[128];
-            sprintf(tmp, "c++ Arguments1: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, EmbreeTNear: %f", args->pxpm, args->mu_samples, args->sample, args->use_threads, args->embree_tnear);
+            sprintf(tmp, "c++ Arguments1: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, EmbreeTNear: %f", args->pxpm, args->sample, args->mu_samples, args->use_threads, args->embree_tnear);
             LoggerCL->updateLog(tmp);
 
             sprintf(tmp, "c++ Arguments2: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d", args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
