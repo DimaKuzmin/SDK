@@ -172,6 +172,10 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->mu_samples = args->mu_samples;
 	build_args->sample = args->sample;
 	build_args->use_threads = args->use_threads;
+	
+	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
+	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
+	build_args->use_MU_Lighting = args->use_MU_Lighting;
 
 
 	build_args->nohemi = args->nohemi;
@@ -195,6 +199,11 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->use_RobustGeom = args->use_RobustGeom;
 	build_args->skip_weld = args->skip_weld;
 	build_args->embree_tnear = args->embree_tnear;
+
+	build_args->off_impl = args->off_impl;
+	build_args->off_lmaps = args->off_lmaps;
+	build_args->off_mulitght = args->off_mulitght;
+	build_args->use_DXT1 = args->use_DXT1;
 }
 
 XRLC_API void StartupWorking(SpecialArgs* args)

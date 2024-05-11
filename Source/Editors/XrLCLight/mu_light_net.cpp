@@ -63,19 +63,19 @@ namespace lc_net{
 
 	void RunBaseModelsNet( )
 	{
-			WaitNetBaseCompileDataPrepare( );
+		WaitNetBaseCompileDataPrepare( );
 
-			const u32 num = inlc_global_data()->mu_models().size();
-			if( num == 0 )
-					return;
-			for (u32 i=0; i<num; i++)
-			{
-				tnet_execution_base< et_mu_base_light > *el = lc_net::execution_factory.create<et_mu_base_light>();
-				el->implementation( ).construct(i);
-				get_task_manager().add_task( el );
-			}
+		const u32 num = inlc_global_data()->mu_models().size();
+		if( num == 0 )
+				return;
+		for (u32 i=0; i<num; i++)
+		{
+			tnet_execution_base< et_mu_base_light > *el = lc_net::execution_factory.create<et_mu_base_light>();
+			el->implementation( ).construct(i);
+			get_task_manager().add_task( el );
+		}
 			
-			base_models_pool = get_task_manager().run( "Net Base Models Lighting" );
+		base_models_pool = get_task_manager().run( "Net Base Models Lighting" );
 	}
 	
 	void WaitBaseModelsNet( )

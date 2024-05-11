@@ -139,7 +139,8 @@ CDeflector::~CDeflector()
 
 void CDeflector::OA_Export()
 {
-	if (UVpolys.empty()) return;
+	if (UVpolys.empty())
+		return;
 
 	// Correct normal
 	//  (semi-proportional to pixel density)
@@ -159,10 +160,58 @@ void CDeflector::OA_Export()
 		density	+= F->Shader().lm_density;
 		fcount	+= 1.f;
 	}
-	if (tN.magnitude()>EPS_S && _valid(tN))	normal.set(tN).normalize();
+
+	if (tN.magnitude() > EPS_S && _valid(tN))
+	{
+		normal.set(tN).normalize();
+	}
 	else
 	{
 		clMsg("* ERROR: Internal precision error in CDeflector::OA_Export");
+
+		
+		Face& fc = * UVpolys.front().owner;
+		int matterial = fc.dwMaterial;
+		int mm = fc.dwMaterialGame;
+
+		int surfaceID = lc_global_data()->materials()[matterial].surfidx;
+		int shaderID = lc_global_data()->materials()[matterial].shader;
+		int shaderIDGAME = lc_global_data()->materials()[mm].shader;
+
+		//Fvector pos;
+		//g_XSplit[SP]->front()->CalcCenter(pos);
+
+		auto shader = lc_global_data()->shaders().Get(shaderID);
+		auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
+
+		auto texture = lc_global_data()->textures()[surfaceID];
+		clMsg("*		Face:  mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s",  matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
+
+		/*
+		for (UVIt it = UVpolys.begin(); it != UVpolys.end(); it++)
+		{
+			Face& fc = *((*it).owner);
+			int matterial = fc.dwMaterial;
+			int mm = fc.dwMaterialGame;
+
+			int surfaceID = lc_global_data()->materials()[matterial].surfidx;
+			int shaderID = lc_global_data()->materials()[matterial].shader;
+			int shaderIDGAME = lc_global_data()->materials()[mm].shader;
+
+			//Fvector pos;
+			//g_XSplit[SP]->front()->CalcCenter(pos);
+
+			auto shader = lc_global_data()->shaders().Get(shaderID);
+			auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
+
+			auto texture = lc_global_data()->textures()[surfaceID];
+
+			//clMsg("*		Face: mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s",  matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
+			//clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
+		}
+		*/
+
+
 		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
 		{
 			Face &fc = *((*it).owner);

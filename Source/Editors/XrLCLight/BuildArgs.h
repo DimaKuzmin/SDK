@@ -10,12 +10,24 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 		eHigh = 2,
 		eRefit = 3
 	};
+ 
+	// debuging 
+	bool off_lmaps = false;
+	bool off_impl = false;
+	bool off_mulitght = false;
+	bool use_DXT1 = false;
 
+	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
 
 	int embree_geometry_type = EmbreeGeom::eLow;
 
 	bool use_embree = 0;			//+
+	 
+	bool use_IMPLICIT_Stage = 0;
+	bool use_LMAPS_Stage = 0;
+	bool use_MU_Lighting = 0;
+
 	bool use_avx = 0;				//+
 	bool use_sse = 0;				//+
 	bool use_opcode_old = 0;		//+

@@ -10,7 +10,7 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
-#define Size 14
+#define Size 17
   
 char* collection[Size] = {
     "use_embree",
@@ -26,7 +26,10 @@ char* collection[Size] = {
     "nosmg",
     "noise",
     "skip_weld",
-    "use_std"
+    "use_std",
+    "intel_impl",
+    "intel_lmaps",
+    "intel_mulight"
 };
 
 
@@ -87,6 +90,14 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->skip_weld = true;
     if (strstr(item, collection[13]))
         args->use_std = true;
+
+    if (strstr(item, collection[14]))
+        args->use_IMPLICIT_Stage = true;
+    if (strstr(item, collection[15]))
+        args->use_LMAPS_Stage = true;
+    if (strstr(item, collection[16]))
+        args->use_MU_Lighting = true;
+
 }
 
 
@@ -238,8 +249,9 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
         auto s =  msclr::interop::marshal_as<std::string>(prefix);
 
         GetItemFromCollection(args, s.c_str());
-         
-    };
+     };
+     
+    args->off_lmaps;
 
     int _Samples = atoi(Samples_str.c_str());
     int _MUSamples = atoi(MUSamples_str.c_str());
@@ -254,6 +266,10 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->mu_samples = _MUSamples;
     args->level_name = LevelName_str;
  
+    args->off_impl = off_implicit->Checked;
+    args->off_lmaps = off_lmaps->Checked;
+    args->off_mulitght = off_mulight->Checked;
+    args->use_DXT1 = useDXT1->Checked;
 
     if (!IsRunned)
     {

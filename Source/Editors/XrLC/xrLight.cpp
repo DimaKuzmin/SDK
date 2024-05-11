@@ -269,6 +269,8 @@ void CBuild::Light()
 	{
  
 		//****************************************** Implicit
+	
+		if (!build_args->off_impl)
 		{
 			FPU::m64r();
 			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]",  build_args->use_embree ? "intel" : "opcode");
@@ -277,7 +279,7 @@ void CBuild::Light()
 			ImplicitLighting();
 		}
 
- 
+		if (!build_args->off_lmaps)
  		{
  			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase			(tmp);
@@ -310,6 +312,7 @@ void CBuild::Light()
 
 	//****************************************** Starting MU
 	
+	if (!build_args->off_mulitght)
  	{
 		FPU::m64r();
 		Phase("LIGHT: Starting MU...");
@@ -324,7 +327,7 @@ void CBuild::Light()
 		//****************************************** Wait for MU
 		FPU::m64r();
 				
- 		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree ? "intel" : "opcode");
+ 		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree && build_args->use_MU_Lighting ? "intel" : "opcode");
 		Phase(tmp);
  		
  		wait_mu_base();

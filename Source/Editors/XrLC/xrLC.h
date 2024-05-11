@@ -18,6 +18,14 @@ struct XRLC_API  SpecialArgs
 		eRefit = 3
 	};
 
+	// debuging 
+	bool off_lmaps = false;
+	bool off_impl = false;
+	bool off_mulitght = false;
+	bool use_DXT1 = false;
+
+
+	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
 	int embree_geometry_type = EmbreeGeom::eLow;
 
@@ -27,6 +35,10 @@ struct XRLC_API  SpecialArgs
 	bool use_opcode_old = 0;
 	bool use_RobustGeom = 0;
 
+
+	bool use_IMPLICIT_Stage = 0;
+	bool use_LMAPS_Stage = 0;
+	bool use_MU_Lighting = 0;
 
 	int use_threads = 4;
 

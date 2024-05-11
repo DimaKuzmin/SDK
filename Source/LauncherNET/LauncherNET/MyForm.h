@@ -92,6 +92,15 @@ namespace LauncherNET
 	private: System::Windows::Forms::Label^ BuildTime;
 	private: System::Windows::Forms::TextBox^ EmbreeTnear;
 	private: System::Windows::Forms::Label^ label10;
+	private: System::Windows::Forms::GroupBox^ groupBox2;
+	private: System::Windows::Forms::CheckBox^ off_mulight;
+
+
+	private: System::Windows::Forms::CheckBox^ off_lmaps;
+
+	private: System::Windows::Forms::CheckBox^ off_implicit;
+	private: System::Windows::Forms::CheckBox^ useDXT1;
+
 
 
 
@@ -119,6 +128,10 @@ namespace LauncherNET
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
+			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
+			this->off_implicit = (gcnew System::Windows::Forms::CheckBox());
 			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
 			this->label10 = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
@@ -148,9 +161,11 @@ namespace LauncherNET
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
+			this->groupBox2->SuspendLayout();
 			this->groupBox1->SuspendLayout();
 			this->IntelEmbreType->SuspendLayout();
 			this->SuspendLayout();
@@ -256,6 +271,7 @@ namespace LauncherNET
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->groupBox2);
 			this->Geometry_Tab->Controls->Add(this->EmbreeTnear);
 			this->Geometry_Tab->Controls->Add(this->label10);
 			this->Geometry_Tab->Controls->Add(this->groupBox1);
@@ -282,6 +298,49 @@ namespace LauncherNET
 			this->Geometry_Tab->Size = System::Drawing::Size(1439, 769);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
+			// 
+			// groupBox2
+			// 
+			this->groupBox2->Controls->Add(this->useDXT1);
+			this->groupBox2->Controls->Add(this->off_mulight);
+			this->groupBox2->Controls->Add(this->off_lmaps);
+			this->groupBox2->Controls->Add(this->off_implicit);
+			this->groupBox2->Location = System::Drawing::Point(27, 28);
+			this->groupBox2->Name = L"groupBox2";
+			this->groupBox2->Size = System::Drawing::Size(361, 218);
+			this->groupBox2->TabIndex = 23;
+			this->groupBox2->TabStop = false;
+			this->groupBox2->Text = L"Debuging";
+			// 
+			// off_mulight
+			// 
+			this->off_mulight->AutoSize = true;
+			this->off_mulight->Location = System::Drawing::Point(20, 126);
+			this->off_mulight->Name = L"off_mulight";
+			this->off_mulight->Size = System::Drawing::Size(138, 31);
+			this->off_mulight->TabIndex = 2;
+			this->off_mulight->Text = L"off_mulight";
+			this->off_mulight->UseVisualStyleBackColor = true;
+			// 
+			// off_lmaps
+			// 
+			this->off_lmaps->AutoSize = true;
+			this->off_lmaps->Location = System::Drawing::Point(20, 89);
+			this->off_lmaps->Name = L"off_lmaps";
+			this->off_lmaps->Size = System::Drawing::Size(123, 31);
+			this->off_lmaps->TabIndex = 1;
+			this->off_lmaps->Text = L"off_lmaps";
+			this->off_lmaps->UseVisualStyleBackColor = true;
+			// 
+			// off_implicit
+			// 
+			this->off_implicit->AutoSize = true;
+			this->off_implicit->Location = System::Drawing::Point(20, 52);
+			this->off_implicit->Name = L"off_implicit";
+			this->off_implicit->Size = System::Drawing::Size(137, 31);
+			this->off_implicit->TabIndex = 0;
+			this->off_implicit->Text = L"off_implicit";
+			this->off_implicit->UseVisualStyleBackColor = true;
 			// 
 			// EmbreeTnear
 			// 
@@ -579,9 +638,9 @@ namespace LauncherNET
 				static_cast<System::Byte>(204)));
 			this->FlagsCompiler->ForeColor = System::Drawing::Color::DarkViolet;
 			this->FlagsCompiler->FormattingEnabled = true;
-			this->FlagsCompiler->Location = System::Drawing::Point(1218, 212);
+			this->FlagsCompiler->Location = System::Drawing::Point(1172, 148);
 			this->FlagsCompiler->Name = L"FlagsCompiler";
-			this->FlagsCompiler->Size = System::Drawing::Size(203, 484);
+			this->FlagsCompiler->Size = System::Drawing::Size(249, 548);
 			this->FlagsCompiler->TabIndex = 0;
 			// 
 			// AI_Tab
@@ -611,6 +670,16 @@ namespace LauncherNET
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
+			// useDXT1
+			// 
+			this->useDXT1->AutoSize = true;
+			this->useDXT1->Location = System::Drawing::Point(20, 163);
+			this->useDXT1->Name = L"useDXT1";
+			this->useDXT1->Size = System::Drawing::Size(219, 31);
+			this->useDXT1->TabIndex = 3;
+			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
+			this->useDXT1->UseVisualStyleBackColor = true;
+			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -629,6 +698,8 @@ namespace LauncherNET
 			this->Status_Tab->PerformLayout();
 			this->Geometry_Tab->ResumeLayout(false);
 			this->Geometry_Tab->PerformLayout();
+			this->groupBox2->ResumeLayout(false);
+			this->groupBox2->PerformLayout();
 			this->groupBox1->ResumeLayout(false);
 			this->groupBox1->PerformLayout();
 			this->IntelEmbreType->ResumeLayout(false);

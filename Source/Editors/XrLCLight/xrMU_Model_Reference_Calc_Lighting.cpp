@@ -99,6 +99,8 @@ void	o_test (int iA, int iB, int count, base_color* A, base_color* B, float& C, 
 	simple_optimize		(_A,_B,C,D);
 }
 
+#include "BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void xrMU_Reference::calc_lighting	()
 {
@@ -108,7 +110,7 @@ void xrMU_Reference::calc_lighting	()
 		inlc_global_data()->RCAST_Model(),
 		inlc_global_data()->L_static(),
 		(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun()?LP_dont_sun:0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT,
-		false
+		build_args->use_MU_Lighting
 	);
 
 	R_ASSERT					(color.size()==model->color.size());

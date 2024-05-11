@@ -112,24 +112,24 @@ void CBuild::xrPhase_UVmap()
 		{
 			LastSP = SP;
 
-			int matterial  = g_XSplit[SP]->front()->dwMaterial;
-			int mm = g_XSplit[SP]->front()->dwMaterialGame;
+			//int matterial  = g_XSplit[SP]->front()->dwMaterial;
+			//int mm = g_XSplit[SP]->front()->dwMaterialGame;
 
-			int surfaceID  = lc_global_data()->materials()[matterial].surfidx;
-			int shaderID  = lc_global_data()->materials()[matterial].shader;
-			int shaderIDGAME = lc_global_data()->materials()[mm].shader;
+			//int surfaceID  = lc_global_data()->materials()[matterial].surfidx;
+			//int shaderID  = lc_global_data()->materials()[matterial].shader;
+			//int shaderIDGAME = lc_global_data()->materials()[mm].shader;
 			
 			
-			Fvector pos;
-			g_XSplit[SP]->front()->CalcCenter(pos);
+			//Fvector pos;
+			//g_XSplit[SP]->front()->CalcCenter(pos);
  
-			auto shader = lc_global_data()->shaders().Get(shaderID);
-			auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
+			//auto shader = lc_global_data()->shaders().Get(shaderID);
+			//auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
 
-			auto texture = lc_global_data()->textures()[surfaceID];
+			//auto texture = lc_global_data()->textures()[surfaceID];
 
-			clMsg("SP[%d], mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s", SP, matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
-			clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
+			//clMsg("SP[%d], mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s", SP, matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
+			//clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
 		}
 
 		Progress			(p_total+=p_cost);
@@ -144,6 +144,7 @@ void CBuild::xrPhase_UVmap()
 		Face*		Fvl = g_XSplit[SP]->front();
 		if (Fvl->Shader().flags.bLIGHT_Vertex) 	continue;	// do-not touch (skip)
 		if (!Fvl->Shader().flags.bRendering) 	continue;	// do-not touch (skip)
+
 		if (Fvl->hasImplicitLighting())			continue;	// do-not touch (skip)
  
 		//   find first poly that doesn't has mapping and start recursion

@@ -16,6 +16,10 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "StbImage\stb_image.h"
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+
 extern u32	version;
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
@@ -206,6 +210,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 				_F->dwMaterial		= u16(B.dwMaterial);
 				_F->dwMaterialGame	= B.dwMaterialGame;
+
+				
 				
 							
 				// Vertices and adjacement info
@@ -431,10 +437,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			LPSTR N			= BT.name;
 			if ( strchr(N,'.')) *(strchr(N,'.') ) = 0;
 			strlwr			(N);
-
-			//if (ParamExport)
-			//	CopyTextureToBuildPC(N);
-
 			
 			if (0==xr_strcmp(N,"level_lods"))	
 			{
@@ -492,7 +494,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					{
 						//clMsg("Start Reading: %s, BT.hasAlpha: %s, BT.implicit: %s ", N, BT.bHasAlpha ? "true" : "false", BT.THM.flags.test(STextureParams::flImplicitLighted) ? "true" : "false");
 
-						if ( ( BT.THM.fmt == STextureParams::tfDXT1)  ||  
+						if ( ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1)  ||  
 						 BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
 
@@ -557,6 +559,19 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			//w->w_string(tmp);
 		}
 	}
+
+	/*-
+	for (int i = 0; i < materials().size(); i++)
+	{
+		auto name = textures()[materials()[i].surfidx].name; 
+		auto shader = shaders().Get(materials()[i].shader);
+		Msg("MateriaL[%d]: texture: %s, shader: %s, shflags C[%d]CS[%d]V[%d]R[%d] ", i, name, shader->Name, 
+			shader->m_Flags.test(shader->flCollision), 
+			shader->m_Flags.test(shader->flLIGHT_CastShadow), 
+			shader->m_Flags.test(shader->flLIGHT_Vertex),
+			shader->m_Flags.test(shader->flRendering));
+	}
+	*/
 
 	// post-process materials
 	Status	("Post-process materials...");

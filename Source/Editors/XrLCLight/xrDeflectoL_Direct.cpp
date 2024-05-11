@@ -15,10 +15,11 @@
 #include "EmbreeDataStorage.h"
 
 #include "xrLight_Implicit.h"
-#include "BuildArgs.h"
+
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
+#include "BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
@@ -164,7 +165,7 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 									VERIFY(inlc_global_data()->RCAST_Model());
  									   
 									int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
-									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F, !build_args->use_embree);
+									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F, !build_args->use_embree && build_args->use_LMAPS_Stage);
 									
 									Fcount += 1;
 								}
