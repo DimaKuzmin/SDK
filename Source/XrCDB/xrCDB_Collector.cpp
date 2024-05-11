@@ -355,15 +355,18 @@ namespace CDB
 		//		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
 
+		if (false)
 		{
 			DWORDList* vl;
 			vl = &(VM[ix][iy][iz]);
 			for(DWORDIt it=vl->begin();it!=vl->end(); it++)
-				if( verts[*it].similar(V) )	{
-					P = *it;
-					break;
-				}
+			if( verts[*it].similar(V) )	{
+				P = *it;
+				break;
+			}
 		}
+
+
 		if (0xffffffff==P)
 		{
 			P = verts.size();

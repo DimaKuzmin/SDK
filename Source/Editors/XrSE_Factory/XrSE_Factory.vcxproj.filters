@@ -567,6 +567,7 @@
     <ClInclude Include="..\..\xrServerEntities\alife_movement_manager_holder.h">
       <Filter>ServerStuff\ServerEntities\movement_manager_holder</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\XrEngine\xrLevel.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\xrServerEntities\pch_script.cpp">
