@@ -69,10 +69,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 
 
 }
-
-
-
-
+ 
 void	ImplicitExecute::	Execute	(int thID, volatile float& thProgress)
 {
 		ImplicitDeflector&		defl	= cl_globs.DATA();

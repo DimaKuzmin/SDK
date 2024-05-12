@@ -101,6 +101,7 @@ namespace LauncherNET
 	private: System::Windows::Forms::CheckBox^ off_implicit;
 	private: System::Windows::Forms::CheckBox^ useDXT1;
 	private: System::Windows::Forms::ProgressBar^ ProgressBar;
+	private: System::Windows::Forms::Label^ CurrStage;
 
 
 
@@ -124,6 +125,8 @@ namespace LauncherNET
 		{
 			this->TabControl = (gcnew System::Windows::Forms::TabControl());
 			this->Status_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->CurrStage = (gcnew System::Windows::Forms::Label());
+			this->ProgressBar = (gcnew System::Windows::Forms::ProgressBar());
 			this->BuildTime = (gcnew System::Windows::Forms::Label());
 			this->InfoStatus = (gcnew System::Windows::Forms::Label());
 			this->InfoPhases = (gcnew System::Windows::Forms::ListBox());
@@ -164,7 +167,6 @@ namespace LauncherNET
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->ProgressBar = (gcnew System::Windows::Forms::ProgressBar());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -191,6 +193,7 @@ namespace LauncherNET
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->CurrStage);
 			this->Status_Tab->Controls->Add(this->ProgressBar);
 			this->Status_Tab->Controls->Add(this->BuildTime);
 			this->Status_Tab->Controls->Add(this->InfoStatus);
@@ -205,6 +208,27 @@ namespace LauncherNET
 			this->Status_Tab->Size = System::Drawing::Size(1439, 769);
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"Состояние компиляции";
+			// 
+			// CurrStage
+			// 
+			this->CurrStage->BackColor = System::Drawing::Color::Black;
+			this->CurrStage->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->CurrStage->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->CurrStage->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 12, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->CurrStage->ForeColor = System::Drawing::Color::RosyBrown;
+			this->CurrStage->Location = System::Drawing::Point(1008, 17);
+			this->CurrStage->Name = L"CurrStage";
+			this->CurrStage->Size = System::Drawing::Size(413, 66);
+			this->CurrStage->TabIndex = 19;
+			this->CurrStage->Text = L"I AM TITLE";
+			// 
+			// ProgressBar
+			// 
+			this->ProgressBar->Location = System::Drawing::Point(9, 603);
+			this->ProgressBar->Name = L"ProgressBar";
+			this->ProgressBar->Size = System::Drawing::Size(993, 55);
+			this->ProgressBar->TabIndex = 18;
 			// 
 			// BuildTime
 			// 
@@ -242,9 +266,9 @@ namespace LauncherNET
 			this->InfoPhases->ForeColor = System::Drawing::Color::Khaki;
 			this->InfoPhases->FormattingEnabled = true;
 			this->InfoPhases->ItemHeight = 23;
-			this->InfoPhases->Location = System::Drawing::Point(1008, 17);
+			this->InfoPhases->Location = System::Drawing::Point(1008, 86);
 			this->InfoPhases->Name = L"InfoPhases";
-			this->InfoPhases->Size = System::Drawing::Size(413, 740);
+			this->InfoPhases->Size = System::Drawing::Size(413, 671);
 			this->InfoPhases->TabIndex = 15;
 			// 
 			// UpdatingListBox
@@ -684,13 +708,6 @@ namespace LauncherNET
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// ProgressBar
-			// 
-			this->ProgressBar->Location = System::Drawing::Point(9, 603);
-			this->ProgressBar->Name = L"ProgressBar";
-			this->ProgressBar->Size = System::Drawing::Size(993, 55);
-			this->ProgressBar->TabIndex = 18;
-			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -742,6 +759,11 @@ namespace LauncherNET
 			BuildTime->Text = str;
 		}
 
+		public: System::Void UpdateStageCurrent_form(System::String^ str)
+		{
+			CurrStage->Text = str;
+		}
+
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
@@ -779,6 +801,11 @@ namespace LauncherNET
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTime_form), managedString);
 		}
 	
+		public:System::Void UpdateStage(const char* str)
+		{
+			System::String^ managedString = gcnew System::String(str);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateStageCurrent_form), managedString);
+		}
 
 
 		public: System::Void UpdateProgress(float value)

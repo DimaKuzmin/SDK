@@ -148,9 +148,20 @@ void OGF::Optimize	()
 	try {
 		if (fast_path_data.vertices.size() && fast_path_data.faces.size())
 		{
-			try {
-				VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
-				VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
+			try 
+			{
+				if (!(fast_path_data.vertices.size() <= data.vertices.size()))
+				{
+					Msg("--- Check Fast Patch Vertes [%d] <= [%d]!!!", fast_path_data.vertices.size(), data.vertices.size());
+ 				}
+
+				if (!(fast_path_data.faces.size() == data.faces.size()))
+				{
+					Msg("--- Check Fast Patch Faces !!! [%d] <= [%d]!!!", fast_path_data.faces.size(), data.faces.size());
+				}
+
+				//VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
+				//VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
 			} catch(...) {
 				Msg	("* ERROR: optimize: x-geom : verify: failed");
 			}
@@ -264,6 +275,7 @@ xrCriticalSection			progressive_cs
 ;
 void OGF::MakeProgressive	(float metric_limit)
 {
+	
 	// test
 	// there is no-sense to simplify small models
 	// for batch size 50,100,200 - we are CPU-limited anyway even on nv30
@@ -271,7 +283,9 @@ void OGF::MakeProgressive	(float metric_limit)
 	if (data.faces.size()<c_PM_FaceLimit)		return		;	
 
 //. AlexMX added for draft build mode
-	if (g_params().m_quality==ebqDraft)		return		;
+	if (g_params().m_quality==ebqDraft)			return		;
+
+	if (g_build_options.b_noise)				return;
 
 	progressive_cs.Enter	();
 

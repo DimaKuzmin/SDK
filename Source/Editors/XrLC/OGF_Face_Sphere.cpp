@@ -42,13 +42,17 @@ void				OGF_Base::CalcBounds	()
 	// 2: calc ordinary algorithm (2nd)
 	Fsphere	S2;
 	bbox.invalidate				();
-	for (I=V.begin(); I!=V.end(); I++)	bbox.modify(*I);
+	for (I=V.begin(); I!=V.end(); I++)
+		bbox.modify(*I);
 	bbox.grow					(EPS_L);
 	bbox.getsphere				(S2.P,S2.R);
 	S2.R = -1;
-	for (I=V.begin(); I!=V.end(); I++)	{
+
+	for (I=V.begin(); I!=V.end(); I++)	
+	{
 		float d = S2.P.distance_to_sqr(*I);
-		if (d>S2.R) S2.R=d;
+		if (d>S2.R)
+			S2.R=d;
 	}
 	S2.R = _sqrt (_abs(S2.R));
 	BOOL B2						= SphereValid(V,S2);

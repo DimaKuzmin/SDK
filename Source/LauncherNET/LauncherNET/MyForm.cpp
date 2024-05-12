@@ -152,6 +152,11 @@ public:
         form->UpdateTime(time);
     }
 
+    virtual void updateCurrentPhase(LPCSTR str)
+    {
+        form->UpdateStage(str);
+    }
+
     virtual void UpdateProgressBar(float value)
     {
        // char text[128];

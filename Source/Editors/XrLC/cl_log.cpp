@@ -118,15 +118,18 @@ void Phase			(const char *phase_name)
 	SendMessage			( hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	SendMessage			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
 
-	if (LoggerCL != nullptr)
+	if (LoggerCL)
 		LoggerCL->updatePhrase(tbuf);
 
 	// Start _new phase
 	phase_start_time	= timeGetTime();
 	xr_strcpy				(phase,  phase_name);
 	SetWindowText		( hwStage,		phase_name );
-	xr_sprintf				( tbuf,"--:--:-- * %s",phase);
-	
+	//xr_sprintf				( tbuf,"--:--:-- * %s",phase);
+	xr_sprintf(tbuf, "* %s", phase);
+
+	if (LoggerCL)
+		LoggerCL->updateCurrentPhase(tbuf);
 
 
 	SendMessage			( hwPhaseTime,  LB_ADDSTRING, 0, (LPARAM) tbuf);
@@ -297,7 +300,7 @@ void __cdecl clMsg( const char *format, ...)
 
 	csLog.Enter();
 	if (LoggerCL)
-	LoggerCL->updateLog(_out_);
+		LoggerCL->updateLog(_out_);
 	csLog.Leave();
 }
 

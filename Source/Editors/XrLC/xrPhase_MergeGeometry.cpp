@@ -66,6 +66,7 @@ IC	Fvector	box_getsize_avx(Fbox box)
 IC	float	box_getvolume_avx(Fbox box)
 {
 	float final_result;
+
 #ifdef TEST_OLDER_NEW
 	final_result = box.getvolume();
 #else 
@@ -111,51 +112,12 @@ IC void box_grow_avx(Fbox& box, float value)
 	box.max.y = result[5];
 	box.max.z = result[6];
 #endif
-
-	/*
-
-
-		// Загрузка вектора s в регистр AVX
-		float vector[3] = { value, value, value};
-
-		// Создание векторов min и max и инициализация их значениями по умолчанию
-		__m256 min_vector = _mm256_loadu_ps((float*) &box.min);
-		__m256 max_vector = _mm256_loadu_ps((float*) &box.max);
-		__m256 add_vector = _mm256_loadu_ps((float*) &vector);
-
-		// Нахождение минимального и максимального значения и выполнение операций
-		min_vector = _mm256_sub_ps(min_vector, add_vector);
-		max_vector = _mm256_add_ps(max_vector, add_vector);
-
-		// Выгрузка результатов в массивы
-
-		_mm256_storeu_ps((float*)&box.min, min_vector);
-		_mm256_storeu_ps((float*)&box.max, max_vector);
-	*/
 }
 
 
 IC void box_modify_avx(Fbox& box, Fvector& p)
 {
-#ifdef TEST_OLDER_NEW
-	box.modify(p);
-#else 
-	// Загрузка вектора s в регистр AVX
-	__m256 s_vector = _mm256_loadu_ps((float*)&p);
-
-	// Нахождение минимального значения
-	__m256 min_vector = _mm256_loadu_ps((float*)&box.min);  // Инициализация min_vector максимальными значениями
-	min_vector = _mm256_min_ps(min_vector, s_vector);
-
-	// Нахождение максимального значения
-	__m256 max_vector = _mm256_loadu_ps((float*)&box.max);  // Инициализация max_vector минимальными значениями
-	max_vector = _mm256_max_ps(max_vector, s_vector);
-
-	// Выгрузка результатов в массивы
-
-	_mm256_storeu_ps((float*)&box.min, min_vector);
-	_mm256_storeu_ps((float*)&box.max, max_vector);
-#endif
+ 	box.modify(p);
 }
 
 IC BOOL	FaceEqual(Face* F1, Face* F2)
@@ -717,7 +679,7 @@ void CBuild::xrPhase_MergeGeometry()
 
 	tGlobalMerge.Start();
 
-	// use_avx = build_args->use_avx;
+	use_avx = build_args->use_avx;
 
 	bool use_fast_way = true;
 

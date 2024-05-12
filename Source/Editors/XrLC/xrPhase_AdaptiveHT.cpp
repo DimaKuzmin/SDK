@@ -168,7 +168,7 @@ virtual	void Execute()
 			cs.Enter();
 			if (ID % 100000 == 0)
 				Status("Progress: %u / %u", ID, lc_global_data()->g_vertices().size());
-			if (ID % 25600 == 0)
+			
   			{
 				float initial = 0;
 				float progress = 1 / lc_global_data()->g_vertices().size();

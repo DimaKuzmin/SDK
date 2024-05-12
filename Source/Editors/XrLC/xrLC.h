@@ -78,7 +78,7 @@ public:
 	virtual void  UpdateText() = 0;
 	virtual void  UpdateTime(LPCSTR time) = 0;
 	virtual void  UpdateProgressBar(float value) = 0;
-
+	virtual void updateCurrentPhase(LPCSTR str) = 0;
 };
 
 extern XRLC_API ILogger* LoggerCL;

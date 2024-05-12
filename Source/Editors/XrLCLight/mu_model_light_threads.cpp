@@ -53,7 +53,7 @@ public:
 				break;
 			}
 
-			//clMsg("Referense: %d / %d", ID, inlc_global_data()->mu_refs().size() );
+			clMsg("Referense: %d / %d", ID, inlc_global_data()->mu_refs().size() );
 
 			current_refthread++;
 			csMU.Leave();

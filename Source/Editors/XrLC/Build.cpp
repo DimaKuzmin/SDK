@@ -274,7 +274,8 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	{
 		u32 m;
 		Status			("MU : Models...");
-		for (m=0; m<mu_models().size(); m++)	{
+		for (m=0; m<mu_models().size(); m++)	
+		{
 			calc_ogf			(*mu_models()[m]);
 			export_geometry		(*mu_models()[m]);
 		}
