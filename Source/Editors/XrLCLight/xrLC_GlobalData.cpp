@@ -103,8 +103,7 @@ static xr_vector<CDB::TRI> tris;
 void	xrLC_GlobalData::mu_models_calc_materials()
 {
 	for (u32 m=0; m<mu_models().size(); m++)
-			mu_models()[m]->calc_materials();
-
+		mu_models()[m]->calc_materials();
 }
 
 bool			xrLC_GlobalData	::			b_r_vertices	()		

@@ -13,7 +13,7 @@ public:
 	
 	}
 	 
-	void		Execute			(   );
+	void		Execute			(int TH, volatile float& thProgress);
  
 };
 

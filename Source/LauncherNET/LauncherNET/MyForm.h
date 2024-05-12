@@ -100,6 +100,8 @@ namespace LauncherNET
 
 	private: System::Windows::Forms::CheckBox^ off_implicit;
 	private: System::Windows::Forms::CheckBox^ useDXT1;
+	private: System::Windows::Forms::ProgressBar^ ProgressBar;
+
 
 
 
@@ -129,6 +131,7 @@ namespace LauncherNET
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
 			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
 			this->off_implicit = (gcnew System::Windows::Forms::CheckBox());
@@ -161,7 +164,7 @@ namespace LauncherNET
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
+			this->ProgressBar = (gcnew System::Windows::Forms::ProgressBar());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -188,6 +191,7 @@ namespace LauncherNET
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->ProgressBar);
 			this->Status_Tab->Controls->Add(this->BuildTime);
 			this->Status_Tab->Controls->Add(this->InfoStatus);
 			this->Status_Tab->Controls->Add(this->InfoPhases);
@@ -265,7 +269,7 @@ namespace LauncherNET
 			this->listBox1->ItemHeight = 23;
 			this->listBox1->Location = System::Drawing::Point(6, 17);
 			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(996, 648);
+			this->listBox1->Size = System::Drawing::Size(996, 579);
 			this->listBox1->TabIndex = 0;
 			// 
 			// Geometry_Tab
@@ -311,6 +315,16 @@ namespace LauncherNET
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
+			// 
+			// useDXT1
+			// 
+			this->useDXT1->AutoSize = true;
+			this->useDXT1->Location = System::Drawing::Point(20, 163);
+			this->useDXT1->Name = L"useDXT1";
+			this->useDXT1->Size = System::Drawing::Size(219, 31);
+			this->useDXT1->TabIndex = 3;
+			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
+			this->useDXT1->UseVisualStyleBackColor = true;
 			// 
 			// off_mulight
 			// 
@@ -670,15 +684,12 @@ namespace LauncherNET
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// useDXT1
+			// ProgressBar
 			// 
-			this->useDXT1->AutoSize = true;
-			this->useDXT1->Location = System::Drawing::Point(20, 163);
-			this->useDXT1->Name = L"useDXT1";
-			this->useDXT1->Size = System::Drawing::Size(219, 31);
-			this->useDXT1->TabIndex = 3;
-			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
-			this->useDXT1->UseVisualStyleBackColor = true;
+			this->ProgressBar->Location = System::Drawing::Point(9, 603);
+			this->ProgressBar->Name = L"ProgressBar";
+			this->ProgressBar->Size = System::Drawing::Size(993, 55);
+			this->ProgressBar->TabIndex = 18;
 			// 
 			// MyForm
 			// 
@@ -710,20 +721,40 @@ namespace LauncherNET
 		
 		private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e);
 		
-		 
+		// Thread Safe Functions
+		public: System::Void AddItemToListBox_form(System::String^ str)
+		{
+			listBox1->Items->Add(str);
+		}
 
+		public: System::Void AddItemToPhases_form(System::String^ str)
+		{
+			InfoPhases->Items->Add(str);
+		}
+			 
+		public: System::Void UpdateTextStatus_form(System::String^ str)
+		{
+			InfoStatus->Text = str;
+		}
+
+		public: System::Void UpdateTime_form(System::String^ str)
+		{
+			BuildTime->Text = str;
+		}
+
+		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			listBox1->Items->Add(managedString);
-		}
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::AddItemToListBox_form), managedString);
+  		}
 
 		public: System::Void updatePhaseItem(const char* str)
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			InfoPhases->Items->Add(managedString);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::AddItemToPhases_form), managedString);
 		}
 		
 		
@@ -731,8 +762,7 @@ namespace LauncherNET
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			//InfoStatus->Items->Clear();
-			InfoStatus->Text = (managedString);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTextStatus_form), managedString);
 		}
 			  
 		 public: System::Void updateALL()
@@ -745,7 +775,22 @@ namespace LauncherNET
 		public:  System::Void UpdateTime(const char* str)
 		{
 			System::String^ managedString = gcnew System::String(str);
-			BuildTime->Text = managedString;
+			//BuildTime->Text = managedString;
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTime_form), managedString);
+		}
+	
+
+
+		public: System::Void UpdateProgress(float value)
+		{
+			//std::chrono::milliseconds ms;
+			int current_value = value * 100;
+			if (current_value > 100)
+				current_value = 100;
+			else if (current_value < 0)
+				current_value = 0;
+
+			ProgressBar->Value = current_value;
 		}
  
 };

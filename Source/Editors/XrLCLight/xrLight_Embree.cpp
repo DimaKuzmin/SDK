@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "../../xrcdb/xrcdb.h"
+#include "xrLight_Embree.h"
 
 //#include "xrLight_ImplicitDeflector.h"
 //#include "xrlight_implicit.h"

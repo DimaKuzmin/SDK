@@ -70,6 +70,9 @@ std::string make_time	(u32 sec)
 	return std::string(buf);
 }
 
+#include "xrLC.h"
+extern XRLC_API ILogger* LoggerCL;
+
 void __cdecl Status	(const char *format, ...)
 {
 	csLog.Enter			();
@@ -77,16 +80,20 @@ void __cdecl Status	(const char *format, ...)
 	va_start			( mark, format );
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
-	Msg					("    | %s",status);
+	//Msg					("    | %s",status);
 	csLog.Leave			();
+
+	csLog.Enter();
+	if (LoggerCL)
+		LoggerCL->updateLog(status);
+	csLog.Leave();
 }
-
-
-
+ 
 void Progress		(const float F)
 {
 	// No critical section usage
-	progress		= F;
+ 	progress		= F;
+ 	
 	/*
 	LONG* target = (LONG *)(&progress);
 	LONG  src    = *( (LONG *)(&F)  );
@@ -94,9 +101,13 @@ void Progress		(const float F)
 	*/
 }
 
+
+extern CTimer	dwStartupTime;
+
+
 void Phase			(const char *phase_name)
 {
-	while (!(hwPhaseTime && hwStage)) Sleep(1);
+//	while (!(hwPhaseTime && hwStage)) Sleep(1);
 
 	csLog.Enter			();
 	// Replace phase name with TIME:Name 
@@ -107,11 +118,17 @@ void Phase			(const char *phase_name)
 	SendMessage			( hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	SendMessage			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
 
+	if (LoggerCL != nullptr)
+		LoggerCL->updatePhrase(tbuf);
+
 	// Start _new phase
 	phase_start_time	= timeGetTime();
 	xr_strcpy				(phase,  phase_name);
 	SetWindowText		( hwStage,		phase_name );
 	xr_sprintf				( tbuf,"--:--:-- * %s",phase);
+	
+
+
 	SendMessage			( hwPhaseTime,  LB_ADDSTRING, 0, (LPARAM) tbuf);
 	SendMessage			( hwPhaseTime,	LB_SETTOPINDEX, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	Progress			(0);
@@ -122,6 +139,7 @@ void Phase			(const char *phase_name)
 }
 
 HWND logWindow=0;
+
 void logThread(void *dummy)
 {
 	SetProcessPriorityBoost	(GetCurrentProcess(),TRUE);
@@ -166,16 +184,23 @@ void logThread(void *dummy)
 		SetPriorityClass	(GetCurrentProcess(),IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
 
 		// transfer data
-		while (!csLog.TryEnter())	{
+		while (!csLog.TryEnter())
+		{
 			_process_messages	( );
 			Sleep				(1);
 		}
-		if (progress>1.f)		progress = 1.f;
-		else if (progress<0)	progress = 0;
+		if (progress>1.f)	
+			progress = 1.f;
+		else if (progress<0)
+			progress = 0;
 
 		BOOL bWasChanges = FALSE;
 		char tbuf		[256];
+	
 		csLog.Enter		();
+		if (LoggerCL == nullptr)
+			continue;
+
 		if (LogSize!=LogFile->size())
 		{
 			bWasChanges		= TRUE;
@@ -184,12 +209,16 @@ void logThread(void *dummy)
 				const char *S = *(*LogFile)[LogSize];
 				if (0==S)	S = "";
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
+			
+
 			}
 			SendMessage		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
 			//FlushLog		( );
 		}
 		csLog.Leave		();
-		if (_abs(PrSave-progress)>EPS_L) {
+		
+		if (_abs(PrSave-progress)>EPS_L)
+		{
 			bWasChanges = TRUE;
 			PrSave = progress;
 			SendMessage		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
@@ -216,19 +245,30 @@ void logThread(void *dummy)
 			SetWindowText	( hwPText, tbuf );
 		}
 
-		if (bStatusChange) {
+		if (bStatusChange)
+		{
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
 			SetWindowText	( hwInfo,	status);
+
+			LoggerCL->updateStatus(status);
 		}
-		if (bWasChanges) {
+
+ 		LoggerCL->UpdateProgressBar(progress);
+		LoggerCL->UpdateText();
+		LoggerCL->UpdateTime(make_time(dwStartupTime.GetElapsed_ms() / 1000).c_str());
+
+		if (bWasChanges)
+		{
 			UpdateWindow	( logWindow);
 			bWasChanges		= FALSE;
 		}
 		csLog.Leave			();
 
 		_process_messages	();
-		if (bClose)			break;
+		if (bClose)		
+			break;
+
 		Sleep				(200);
 	}
 
@@ -255,6 +295,10 @@ void __cdecl clMsg( const char *format, ...)
 	strconcat		(sizeof(_out_),_out_,"    |    | ", buf );
 	clLog			(_out_);
 
+	csLog.Enter();
+	if (LoggerCL)
+	LoggerCL->updateLog(_out_);
+	csLog.Leave();
 }
 
 

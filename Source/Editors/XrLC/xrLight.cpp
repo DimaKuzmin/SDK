@@ -22,6 +22,7 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 xr_vector<int>		task_pool;
 
+
 class CLMThread		: public CThread
 {
 private:
@@ -38,7 +39,8 @@ public:
 	virtual void	Execute()
 	{
 		CDeflector* D	= 0;
-
+		
+		float last_progress = 0.0f;
 		for (;;) 
 		{
 			// Get task
@@ -50,9 +52,30 @@ public:
 				return;
 			}
 
+			if (task_pool.size() % 128 == 0)
+			{
+				float initial = 0;
+				float progress = 1 / task_pool.size();
+				thProgress = progress;
+
+				/*
+				if (thID == 0 && progress > last_progress)
+				{
+					Progress(initial + progress);
+					last_progress = progress + 0.05f;
+				}
+				*/
+			}
+
+			if (task_pool.size() % 8192 == 0)
+				Status("Work Deflectors: %d", task_pool.size());
+
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
 			task_pool.pop_back	();
 			task_CS.Leave		();
+
+
+
 
 			// Perform operation
 			try {
@@ -64,9 +87,7 @@ public:
 		}
 	}
 };
-
-
-
+ 
 void	CBuild::LMapsLocal				()
 {
 		FPU::m64r		();
@@ -100,6 +121,8 @@ void	CBuild::LMaps					()
   	LMapsLocal();
 }
 
+#include "../XrLCLight/xrLight_Embree.h"
+
 
 void CBuild::Light()
 {
@@ -123,15 +146,7 @@ void CBuild::Light()
 		mem_Compact();
 
 		LightVertex();
-		//
-			//****************************************** Merge LMAPS
-		{
-			FPU::m64r();
-			Phase("LIGHT: Merging lightmaps...");
-			mem_Compact();
 
-			xrPhase_MergeLM();
-		}
 	}
 
 	if (!build_args->off_mulitght)
@@ -144,9 +159,23 @@ void CBuild::Light()
 
 		wait_mu_base();
 	}
+
+	if (!build_args->off_lmaps)
+	{ 
+		//****************************************** Merge LMAPS
+		{
+			FPU::m64r();
+			Phase("LIGHT: Merging lightmaps...");
+			mem_Compact();
+
+			xrPhase_MergeLM();
+		}
+	}
+
+	IntelEmbereUNLOAD();
 }
 
 void CBuild::LightVertex	()
 {
-	::LightVertex(!!g_build_options.b_net_light);
+	::LightVertex(false);
 }

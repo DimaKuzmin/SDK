@@ -107,8 +107,10 @@ extern u16		RegisterShader		(LPCSTR T);
 
 void CBuild::Light_prepare()
 {
-	for (vecFaceIt I=lc_global_data()->g_faces().begin();	I!=lc_global_data()->g_faces().end(); I++) (*I)->CacheOpacity();
-	for (u32 m=0; m<mu_models().size(); m++)	mu_models()[m]->calc_faceopacity();
+	for (vecFaceIt I=lc_global_data()->g_faces().begin();	I!=lc_global_data()->g_faces().end(); I++) 
+		(*I)->CacheOpacity();
+	for (u32 m=0; m<mu_models().size(); m++)
+		mu_models()[m]->calc_faceopacity();
 }
 
 
@@ -210,16 +212,11 @@ void CBuild::Run	(LPCSTR P)
 
 	//****************************************** Starting MU
 	FPU::m64r					();
-	Phase						("LIGHT: Starting MU...");
+	Phase						("LIGHT: MU Precalculation...");
 	mem_Compact					();
 	Light_prepare				();
-	if(g_build_options.b_net_light)
-	{
-		lc_global_data()->mu_models_calc_materials();
-	//	RunNetCompileDataPrepare( );
-	}
-	
 
+	 
 	//****************************************** Resolve materials
 	FPU::m64r					();
 	Phase						("Resolving materials...");
@@ -243,14 +240,9 @@ void CBuild::Run	(LPCSTR P)
 	xrPhase_Subdivide			();
 	//IsolateVertices				(TRUE);
 
-	// lc_global_data()->vertices_isolate_and_pool_reload();
-	 
+
 	//****************************************** All lighting + lmaps building and saving
-#ifdef NET_CMP
-	mu_base.wait				(500);
-	mu_secondary.wait			(500);
-#endif
- 		
+  		
 	Light						();
 	RunAfterLight				( fs );
 

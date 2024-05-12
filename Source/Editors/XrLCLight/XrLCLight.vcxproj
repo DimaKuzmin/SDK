@@ -255,6 +255,7 @@
     <ClInclude Include="xrLC_GlobalData.h" />
     <ClInclude Include="xrLC_Light.h" />
     <ClInclude Include="xrLightVertex.h" />
+    <ClInclude Include="xrLight_Embree.h" />
     <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitCalcGlobs.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />

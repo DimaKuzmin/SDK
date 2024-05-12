@@ -418,9 +418,33 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 	return scale;
 }
 
+float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
+extern int can_use_intel;
+
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
 {
-	R_ASSERT	(DB);
+	if (can_use_intel)
+		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
+	else
+	{
+		// 1. Check cached polygon
+		float _u, _v, range;
+		bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
+		if (res) {
+			if (range > 0 && range < R) return 0;
+		}
+
+		// 2. Polygon doesn't pick - real database query
+		DB->ray_query(MDL, P, D, R);
+
+		// 3. Analyze polygons and cache nearest if possible
+		if (0 == DB->r_count()) 
+			return 1;
+		else
+			return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);		 
+	}
+
+	/*	R_ASSERT(DB);
 
 	// 1. Check cached polygon
 	float _u,_v,range;
@@ -439,6 +463,7 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 		return getLastRP_Scale(DB,MDL, L,skip,bUseFaceDisable);
 	}
 	return 0;
+	*/
 }
 
 void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip)

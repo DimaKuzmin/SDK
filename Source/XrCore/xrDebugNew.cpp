@@ -186,44 +186,9 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	FlushLog			();
 
-#ifdef XRCORE_STATIC
-	MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
-#else
-#	ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		int					result = 
-			MessageBox(
-				GetTopWindow(NULL),
-				assertion_info,
-				"Fatal Error",
-				MB_CANCELTRYCONTINUE|MB_ICONERROR|MB_SYSTEMMODAL
-			);
-
-		switch (result) {
-			case IDCANCEL : {
-#		ifdef USE_BUG_TRAP
-				BT_SetUserMessage	(assertion_info);
-#		endif // USE_BUG_TRAP
-				DEBUG_INVOKE;
-				break;
-			}
-			case IDTRYAGAIN : {
-				error_after_dialog	= false;
-				break;
-			}
-			case IDCONTINUE : {
-				error_after_dialog	= false;
-				ignore_always	= true;
-				break;
-			}
-			default : NODEFAULT;
-		}
-#	else // USE_OWN_ERROR_MESSAGE_WINDOW
-#		ifdef USE_BUG_TRAP
-			BT_SetUserMessage	(assertion_info);
-#		endif // USE_BUG_TRAP
-		DEBUG_INVOKE;
-#	endif // USE_OWN_ERROR_MESSAGE_WINDOW
-#endif
+ 	//MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
+ 
+	//DEBUG_INVOKE;
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);

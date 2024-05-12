@@ -137,6 +137,8 @@ public:
 virtual	void Execute()
 	{
 		DB.ray_options	(0);
+		float last_progress = 0;
+
 		for ( ;; )	
 		{
 			int ID = ThreadIDWork.load();
@@ -164,9 +166,23 @@ virtual	void Execute()
 			V->C._set			(vC);
 
 			cs.Enter();
-			if (ID % 50000 == 0)
+			if (ID % 100000 == 0)
 				Status("Progress: %u / %u", ID, lc_global_data()->g_vertices().size());
-			cs.Leave();
+			if (ID % 25600 == 0)
+  			{
+				float initial = 0;
+				float progress = 1 / lc_global_data()->g_vertices().size();
+				thProgress = progress;
+				/*if (thID == 0 && progress > last_progress)
+				{
+					Progress(initial + progress);
+					last_progress = progress + 0.05f;
+				}
+				*/
+			}
+ 			cs.Leave();
+
+			
 		}
 
 	}
@@ -175,6 +191,8 @@ virtual	void Execute()
 CThreadManager	precalc_base_hemi;
 
 #include "../XrLCLight/BuildArgs.h"
+#include "../XrLCLight/xrLight_Embree.h"
+
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 
@@ -199,9 +217,13 @@ void CBuild::xrPhase_AdaptiveHT	()
 	{
 		mem_Compact					();
 
+		Status("Build RapidModel ...");
 		// Build model
 		FPU::m64r					();
 		BuildRapid					(FALSE);
+
+		Status("Loading Intel Embree ...");
+		IntelEmbereLOAD();
 
 		// Prepare
 		FPU::m64r					();
@@ -461,6 +483,7 @@ void CBuild::u_SmoothVertColors(int count)
 {
 	for (int iteration=0; iteration<count; ++iteration)
 	{
+		Progress( float(iteration / count) );
 		// Gather
 		xr_vector<base_color>	colors;
 		colors.resize			(lc_global_data()->g_vertices().size());

@@ -38,6 +38,7 @@ typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 
 CTimer	dwStartupTime;
 
+
 void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 {
 	create_global_data();
@@ -55,10 +56,9 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 	// Faster FPU 
 	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
-
-
-
+	 
 	log_vminfo();
+
 
 	// Load project
 	name[0] = 0;
@@ -68,16 +68,17 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	xr_strcpy(name, build_args->level_name.c_str());
 	clMsg("LevelName: %s", name);
 
-	extern  HWND logWindow;
-	string256				temp;
-	xr_sprintf(temp, "%s - Levels Compiler", name);
-	SetWindowText(logWindow, temp);
+	//extern  HWND logWindow;
+	//string256				temp;
+	//xr_sprintf(temp, "%s - Levels Compiler", name);
+	///SetWindowText(logWindow, temp);
 
 
 
 	string_path				prjName;
 	FS.update_path(prjName, "$game_levels$", strconcat(sizeof(prjName), prjName, name, "\\build.prj"));
 	string256				phaseName;
+	
 	Phase(strconcat(sizeof(phaseName), phaseName, "Reading project [", name, "]..."));
 
 	string256 inf;
@@ -86,11 +87,12 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	{
 		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", name);
 		clMsg(inf);
-		MessageBox(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
+	//	MessageBox(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
 		return;
 	}
 
 	// Version
+ 
 	F->r_chunk(EB_Version, &version);
 	clMsg("version: %d", version);
 	R_ASSERT(XRCL_CURRENT_VERSION == version);

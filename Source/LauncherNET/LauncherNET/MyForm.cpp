@@ -151,6 +151,14 @@ public:
     {
         form->UpdateTime(time);
     }
+
+    virtual void UpdateProgressBar(float value)
+    {
+       // char text[128];
+       // sprintf(text, "Progress: %f" , value);
+       // form->updateLogFormItem(text);
+       form->UpdateProgress(value);
+    }
 };
 
 extern XRLC_API ILogger* LoggerCL;

@@ -53,10 +53,15 @@ public:
 				break;
 			}
 
-			Msg("Referense: %d / %d", ID, inlc_global_data()->mu_refs().size() );
+			//clMsg("Referense: %d / %d", ID, inlc_global_data()->mu_refs().size() );
 
 			current_refthread++;
 			csMU.Leave();
+			
+			float progress = float(ID / inlc_global_data()->mu_refs().size());
+			thProgress = progress;
+			
+			// Progress(progress);
 
  			inlc_global_data()->mu_refs()[ID]->calc_lighting	();
 
@@ -92,9 +97,14 @@ public:
 			
 				break;
 			}
-			Msg("Base: %d", ID);
+			
+			
+		//	clMsg("Base: %d/%d", ID, inlc_global_data()->mu_models().size());
 			current_thread_base++;
 			csMU.Leave();
+			float progress = float(ID / inlc_global_data()->mu_models().size());
+			thProgress = progress;
+			// Progress();
 
 			inlc_global_data()->mu_models()[ID]->calc_materials();
 			inlc_global_data()->mu_models()[ID]->calc_lighting();
@@ -107,6 +117,8 @@ public:
 
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+extern int can_use_intel = 1;
 
 class CMUThread : public CThread
 {
@@ -123,16 +135,19 @@ public:
 
 		// Light models
 		u32 threads = build_args->use_threads;
-
+		can_use_intel = 0;
  
 		Phase("LIGHT: Calculating Materials MU-thread...");
 		
-		if (build_args->use_mt_calculation_materials)
+		if (!build_args->use_mt_calculation_materials)
 		{
+			int ID = 0;
  			for (auto model : inlc_global_data()->mu_models())
 			{
+				Progress(ID / inlc_global_data()->mu_models().size());
 				model->calc_materials();
 				model->calc_lighting();
+				ID++;
 			}
 		}
 		else
@@ -145,7 +160,8 @@ public:
 			mu_calcmaterials.wait(500);
 		}
 
- 
+		can_use_intel = 1;
+
 		// Light references
   	
 		Phase("LIGHT: Calculating Referense MU-thread...");

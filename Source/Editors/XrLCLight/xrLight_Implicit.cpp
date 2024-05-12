@@ -53,7 +53,7 @@ void	ImplicitThread::Execute()
 	// Priority
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	Sleep(0);
-	execute.Execute();
+	execute.Execute(thID, thProgress);
 }
  
 void RunImplicitMultithread(ImplicitDeflector& defl)
@@ -73,7 +73,7 @@ void RunImplicitMultithread(ImplicitDeflector& defl)
 
 
 
-void	ImplicitExecute::	Execute	()
+void	ImplicitExecute::	Execute	(int thID, volatile float& thProgress)
 {
 		ImplicitDeflector&		defl	= cl_globs.DATA();
 		CDB::COLLIDER			DB;
@@ -96,19 +96,38 @@ void	ImplicitExecute::	Execute	()
 
 
 		//for (u32 V=y_start; V<y_end; V++)
-		
+		float last_progress = 0;
+
 		while( true)
 		{
 
 			csImplicit.Enter();
 			int V = CurrentY;
-			if (V > MAX_HEIGHT)
+			
+			if (V % 8 == 0)
+ 			{
+ 				float initial = 0;
+				float progress = V / MAX_HEIGHT;
+				//if (thID == 0 && progress > last_progress)
+				{
+					thProgress = progress;
+					//Progress(initial + progress);
+					last_progress = progress + 0.05f;
+				}
+ 			}
+
+			if (V % 512 == 0)
+				Status("Implicit: %d \\ %d", V, MAX_HEIGHT);
+
+			if (V >= MAX_HEIGHT)
 			{
 				csImplicit.Leave();
 				break;
 			}
- 			V++;
+			CurrentY ++;
+  
 			csImplicit.Leave();
+
 			
 
 			for (u32 U=0; U<defl.Width(); U++)

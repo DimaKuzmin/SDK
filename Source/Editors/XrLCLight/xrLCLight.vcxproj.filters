@@ -205,6 +205,9 @@
       <Filter>Light\IntelEmbree</Filter>
     </ClInclude>
     <ClInclude Include="BuildArgs.h" />
+    <ClInclude Include="xrLight_Embree.h">
+      <Filter>Light\IntelEmbree</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
