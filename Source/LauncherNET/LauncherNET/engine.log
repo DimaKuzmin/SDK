@@ -1,0 +1,9 @@
+* Detected CPU:  [], F0/M0/S0, 4203.00 mhz, 37-clk 'rdtsc'
+* CPU features: RDTSC, MMX, SSE
+* CPU threads: 16
+
+Initializing File System...
+$fs_root$ = A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\
+using fs-ltx: A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\fsgame.ltx
+FS: 259 files cached 0 archives, 0Kb memory used.
+Init FileSystem 0.004368 sec
