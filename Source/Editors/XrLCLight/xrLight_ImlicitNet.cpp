@@ -19,13 +19,15 @@ namespace lc_net{
 				//tmanager.start		(xr_new<ImplicitThread> (thID,&defl,thID*stride,thID*stride+stride));
 				if( from == to )
 					return;
-				R_ASSERT( from < to );
-				ImplicitExecute	exec( from, to );
+				Msg("!!! NETWORK NOT BE USED !!!");
+				//R_ASSERT( from < to );
+				// ImplicitExecute	exec(  );
 
-				tnet_execution_base< et_implicit_light > *el = lc_net::execution_factory.create<et_implicit_light>();
-				el->implementation( ).construct(exec);
-				get_task_manager().add_task( el );
+				//tnet_execution_base< et_implicit_light > *el = lc_net::execution_factory.create<et_implicit_light>();
+				//el->implementation( ).construct(exec);
+				//get_task_manager().add_task( el );
 	}
+
 	void RunImplicitnet(ImplicitDeflector& defl,  const xr_vector<u32> &exept )
 	{
 			
@@ -33,15 +35,6 @@ namespace lc_net{
 
 			inlc_global_data()->clear_build_textures_surface(exept);
 			
-
-			//u32	num_tasks			= 1003;
-			//u32	stride				= defl.Height()/num_tasks;
-			//if( stride == 0 )
-			//{
-			//	num_tasks	= defl.Height();
-			//	stride		= 1;
-			//}
-
 			const u32	num_tasks	= defl.Height();
 			const u32	stride		= 1;
 			for (u32 thID=0; thID<num_tasks; thID++)

@@ -95,28 +95,13 @@ void	CBuild::LMapsLocal				()
 
 void	CBuild::LMaps					()
 {
-		//****************************************** Lmaps
+	//****************************************** Lmaps
 	Phase			("LIGHT: LMaps...");
-	//DeflectorsStats ();
-#ifndef NET_CMP
-	if(g_build_options.b_net_light)
-
-		//net_light ();
-		lc_net::net_lightmaps ();
-	else{
-		LMapsLocal();
-	}
-#else
-	create_net_task_manager();
-	get_net_task_manager()->create_global_data_write(pBuild->path);
-	LMapsLocal();
-	get_net_task_manager()->run();
-	destroy_net_task_manager();
-	//net_light ();
-#endif
-
+  	LMapsLocal();
 }
- void CBuild::Light()
+
+
+void CBuild::Light()
 {
 	//****************************************** Implicit
 	

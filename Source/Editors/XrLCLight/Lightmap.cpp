@@ -194,18 +194,4 @@ void CLightmap::Save( LPCSTR path )
 
 
 }
-/*
-	lm_layer					lm;
-	b_texture					lm_texture;
-*/
-void	CLightmap::read				( INetReader	&r )
-{
-	lm.read( r );
-	::read(r, lm_texture);
-	
-}
-void	CLightmap::write				( IWriter	&w )const
-{
-	lm.write( w );
-	::write( w, lm_texture );
-}
+ 

@@ -7,11 +7,11 @@
 #include "../../xrcore/xrPool.h"
 namespace lc_net{
 
+	/*
 
 
-
-		template < execution_types etype > class tnet_execution :
-		public tnet_execution_base< etype >
+	template < execution_types etype > class tnet_execution :
+	public tnet_execution_base< etype >
 	{
 	private:
 		typedef	tnet_execution<etype> self_type;
@@ -71,8 +71,9 @@ namespace lc_net{
 		};
 		virtual		bool					execute			( IAgent* agent, DWORD sessionId )	
 		{
-			net_task_callback callback( agent, sessionId );
-			return execution_impl.execute( callback  ) && !callback.break_all( );
+			return false;
+			//net_task_callback callback( agent, sessionId );
+			//return execution_impl.execute( callback  ) && !callback.break_all( );
 		};
 		virtual		LPCSTR					data_files		(string_path &buf)
 		{
@@ -163,6 +164,6 @@ namespace lc_net{
 		vec_types.resize( et_last, 0 );
 		it< et_lightmaps > i;
 	}
-
+	*/
 
 };

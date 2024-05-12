@@ -5,9 +5,9 @@
 
 #include "global_calculation_data.h"
 #include "lightthread.h"
-#include "xrLightDoNet.h"
+ 
 
-#define NUM_THREADS		3
+#define NUM_THREADS		16
 
 void	xrLight			()
 {
@@ -34,10 +34,8 @@ void xrCompileDO( bool net )
 	gl_data.xrLoad	();
 
 	Phase		("Lighting nodes...");
-	if( net )
-		lc_net::xrNetDOLight();
-	else
-		xrLight		();
+  
+	xrLight		();
 
 	gl_data.slots_data.Free();
 	

@@ -38,7 +38,9 @@ public:
 	void		Bounds			(u32 ID, Fbox2& dest);
 	void		Bounds_Summary	(Fbox2& bounds);
 
+	/*
 	void		read			( INetReader	&r );
 	void		write			( IWriter	&w ) const ;
+	*/
 };
 #endif

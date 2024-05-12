@@ -54,67 +54,7 @@ void xrLC_GlobalData	::gl_mesh_clear	()
 	_FacePool.clear();
 }
 
-
-void xrLC_GlobalData	::vertices_isolate_and_pool_reload()
-{
-
-
-	const u32 inital_verts_count = _g_vertices.size();
-		  u32 not_empty_verts = 0;
-	//for(u32 i = 0; i < inital_verts_count; ++i )
-	// if(!_g_vertices[i]->m_adjacents.empty())
-	//	++not_empty_verts;
-/////////////////////////////////////////////////////////
-	
-	string_path			path_name;
-	FS.update_path		( path_name, "$app_root$", "ccc__temp__vertices"  );
-	{
-		IWriter * file		= FS.w_open( path_name );
-		R_ASSERT( file );
-		for(u32 i = 0; i < inital_verts_count; ++i )
-		{
-			Vertex	&v = *_g_vertices[i];
-			if( v.m_adjacents.empty() )
-			{
-				::destroy_vertex( _g_vertices[i], false );
-				continue;
-			}
-//isolate_pool_clear_read	
-//isolate_pool_clear_write
-
-			v.isolate_pool_clear_write( *file );
-			::destroy_vertex( _g_vertices[i], false );
-			++not_empty_verts;
-		}
-		FS.w_close(file);
-	}
-/////////////////////////////////////////////////////////
-	_g_vertices.clear_not_free();
-	clLog( "mem usage before clear pool: %u", Memory.mem_usage() );
-
-
-	_VertexPool.clear();
-	
-/////////////////////////////////////////////////////////
-	{
-		b_vert_not_register = true;
-		_g_vertices.resize( not_empty_verts, 0 );
-
-		Memory.mem_compact();
-		clLog( "mem usage after clear pool: %u", Memory.mem_usage() );
-
-		INetReaderFile r_verts( path_name );
-		for(u32 i = 0; i < not_empty_verts; ++i )
-		{
-			Vertex* &v = _g_vertices[i];
-			v = _VertexPool.create();
-			v->isolate_pool_clear_read( r_verts );
-		}
-		b_vert_not_register = false;
-	}
-}
-
-
+ 
 void	xrLC_GlobalData::clear_mesh		()
 {
 	

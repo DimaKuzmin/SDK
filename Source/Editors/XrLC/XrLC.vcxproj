@@ -237,7 +237,6 @@
     <ClInclude Include="Image.h" />
     <ClInclude Include="MeshMenderLayerOGF.h" />
     <ClInclude Include="MeshMenderLayerOrdinaryStatic.h" />
-    <ClInclude Include="net.h" />
     <ClInclude Include="NvMender2002\NVMeshMender.h" />
     <ClInclude Include="NvMender2002\nv_algebra.h" />
     <ClInclude Include="NvMender2002\nv_math.h" />
@@ -276,7 +275,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="net.cpp" />
     <ClCompile Include="NvMender2002\NVMeshMender.cpp" />
     <ClCompile Include="NvMender2002\nv_algebra.cpp" />
     <ClCompile Include="NV_Library\NvTriStrip.cpp" />

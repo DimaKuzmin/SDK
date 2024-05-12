@@ -75,15 +75,12 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 	// Lighting itself
 	DB->ray_options	(0);
 	
-	for (u32 V=0; V<lm.height; V++)	{
-	if(_net_session && !_net_session->test_connection())
-			 return;
-		for (u32 U=0; U<lm.width; U++)	{
-#ifdef NET_CMP
-			if(V*lm.width+U!=8335)
-				continue;
-#endif
-			u32				Fcount	= 0;
+	for (u32 V=0; V<lm.height; V++)	
+	{
+ 
+		for (u32 U=0; U<lm.width; U++)
+		{
+ 			u32				Fcount	= 0;
 			base_color_c	C;
 			try {
 				for (u32 J=0; J<Jcount; J++) 
@@ -139,6 +136,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 			}
 		}
 	}
+
 	// *** Render Edges
 	float texel_size = (1.f/float(_max(lm.width,lm.height)))/8.f;
 	for (u32 t=0; t<UVpolys.size(); t++)

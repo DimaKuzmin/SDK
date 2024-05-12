@@ -147,10 +147,7 @@ public:
 		}
 	}
 };
-namespace lc_net{
-void RunLightVertexNet();
-}
-
+ 
 #include "BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
@@ -160,23 +157,20 @@ void LightVertex	( bool net )
 
 	// Start threads, wait, continue --- perform all the work
 	Status				("Calculating...");
-	if( !net )
-	{
-		CThreadManager		Threads;
-		VLT.init			();
-		CTimer	start_time;	start_time.Start();				
+	 
+	CThreadManager		Threads;
+	VLT.init			();
+	CTimer	start_time;	start_time.Start();				
 	
-		for (u32 thID=0; thID< build_args->use_threads; thID++)
-			Threads.start(xr_new<CVertexLightThread>(thID));
+	for (u32 thID=0; thID< build_args->use_threads; thID++)
+		Threads.start(xr_new<CVertexLightThread>(thID));
 
-		Threads.wait		();
-		clMsg				("%f seconds",start_time.GetElapsed_sec());
-	} else
-	{
-		lc_net::RunLightVertexNet();
-	}
+	Threads.wait		();
+	clMsg				("%f seconds",start_time.GetElapsed_sec());
+	 
 	// Process all groups
 	Status				("Transluenting...");
+
 	for (mapVertIt it=g_trans->begin(); it!=g_trans->end(); it++)
 	{
 		// Unique

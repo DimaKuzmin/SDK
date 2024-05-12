@@ -3,7 +3,8 @@
 #include "base_basis.h"
 #include "base_color.h"
 struct Shader_xrLC;
-class INetReader;
+// class INetReader;
+
 class XRLC_LIGHT_API base_Face
 {
 public: 
@@ -26,9 +27,6 @@ public:
 
 	base_Face();
 	virtual ~base_Face() = 0; 
-
-	virtual	void			read	(INetReader	&r );
-	virtual	void			write	(IWriter	&w )const;
 };		
 
 
@@ -43,7 +41,4 @@ public:
 
 	base_Vertex()			{ }
 	virtual ~base_Vertex()	= 0;
-
-	virtual	void			read	(INetReader	&r );
-	virtual	void			write	(IWriter	&w )const;
 };

@@ -75,27 +75,21 @@ public:
 
 		Vertex						*create_vertex	()		;
 		void						destroy_vertex	(Vertex* &f );
-
-		void						vertices_isolate_and_pool_reload();
-
+ 
 		vecVertex					&g_vertices		()		{	return	_g_vertices; }
 		vecFace						&g_faces		()		{	return	_g_faces; }
 		vecDefl						&g_deflectors	()		{	return	_g_deflectors; }
+		
 		bool						b_r_vertices	()		;
 		bool						vert_construct_register(){return !b_r_vertices() && !b_vert_not_register; }
+
 //		bool						b_r_faces		()		;
 		base_lighting				&L_static		()		{	return _cl_globs._L_static; }
 		CDB::MODEL*					RCAST_Model		()		{	return _cl_globs._RCAST_Model; }
 		xr_vector<xrMU_Model*>		&mu_models		()		{	return _mu_models; }
 		xr_vector<xrMU_Reference*>	&mu_refs		()		{	return _mu_refs; }
 
-		void						read_mu_models			( INetReader &r );
-		void						write_mu_models			( IWriter	&w ) const ;
-
-		void						read_mu_model_refs		( INetReader &r );
-		void						write_mu_model_refs		( IWriter	&w ) const ;
-		void						close_models_read		();
-		void						close_models_write		()const ;
+	   
 
 
 		bool						b_nosun			()		{	return _b_nosun; }
@@ -115,41 +109,19 @@ IC		void						b_nohemi_set(bool v) { _b_nohemi = v; }
 
 		void						set_faces_indexses		();
 		void						set_vertices_indexses	();
-		//void						create_write_faces	() const;
-		//void						destroy_write_faces	() const;
-		//void						create_read_faces	() ;
-		//void						destroy_read_faces	() ;
+ 
 
-//		tread_faces					*get_read_faces		()	;
-//		twrite_faces				*get_write_faces	()	;
-		
 
 
 		void						gl_mesh_clear			()		;
-private:
-//std::pair<u32,u32>					get_id				( const _face * v ) const;
-//std::pair<u32,u32>					get_id				( const _vertex * v ) const;
+ 
 public:
-		void						read_base				( INetReader &r );
-		void						write_base				( IWriter	&w ) const ;
-		void						read					( INetReader &r );
-		void						write					( IWriter	&w ) const ;
-		void						read_vertices			( INetReader	&r );
-		void						write_vertices			( IWriter	&w )const;
-		void						read_lm_data			( INetReader	&r );
-		void						write_lm_data			( IWriter	&w )const;
-
-		void						read_modes_color		( INetReader	&r );
-		void						write_modes_color		( IWriter	&w )const;
-
-		void						read					( INetReader &r, base_Face* &f);
-		void						write					( IWriter &r, const base_Face *f ) const ;
+ 
 		void						clear					();
 		void						clear_mesh				();
 		void						clear_mu_models			();	
 		void						mu_models_calc_materials();
-	//	void						cdb_read_create	() ;
-private:
+ private:
 
 
 };													
@@ -158,7 +130,6 @@ extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 extern "C" XRLC_LIGHT_API void				create_global_data();
 extern "C" XRLC_LIGHT_API void				destroy_global_data();
 extern "C" XRLC_LIGHT_API u32				InvalideFaces();
-		   XRLC_LIGHT_API void				ImplicitLighting( BOOL net );
 		   XRLC_LIGHT_API void				ImplicitLighting();
 
 extern xrLC_GlobalData* data;

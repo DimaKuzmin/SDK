@@ -38,7 +38,7 @@ namespace lc_net
 		}
 	bool	execution_implicit_light::execute			( net_task_callback &net_callback )	
 		{
-			exec.Execute(&net_callback);
+		//	exec.Execute(&net_callback);
 			return true;
 		}
 	

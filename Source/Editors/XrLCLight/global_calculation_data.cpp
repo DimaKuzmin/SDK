@@ -225,7 +225,10 @@ void global_claculation_data::xrLoad()
 	}
 }
 
+/* 
+
 void read( INetReader	&r, CDB::MODEL &m );
+
 
 void		global_claculation_data::read			( INetReader &r )
 {
@@ -272,3 +275,4 @@ void		global_claculation_data::write			( IWriter	&w ) const
 	w_pod_vector( w, g_shader_compile );
 	w_pod_vector( w, g_rc_faces );
 }
+*/

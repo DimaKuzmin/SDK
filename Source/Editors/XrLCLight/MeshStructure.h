@@ -52,10 +52,12 @@ static	Tface* read_create();
 	void 	Failure		();
 	void	OA_Unwarp(CDeflector* d, xr_vector<type_face*>& faces);
 
+/*
 virtual	void	read				( INetReader	&r );
 virtual	void	write				( IWriter	&w )const;
 virtual	void	read_vertices		( INetReader	&r );
 virtual	void	write_vertices		( IWriter	&w )const;
+*/
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	IC void				raw_set_vertex( u8 index, type_vertex* _v )
@@ -236,16 +238,10 @@ virtual			~Tvertex();
 Tvertex*		CreateCopy_NOADJ( v_vertices& vertises_storage ) const;
 static	Tvertex* read_create();
 
-virtual	void	read		( INetReader	&r );
-virtual	void	write		( IWriter	&w )const;
-
+ 
 //////////////////////////////////////////////////////////////
-		void	isolate_pool_clear_read		( INetReader	&r );
-		void	isolate_pool_clear_write	( IWriter	&w )const;
-
-		void	read_adjacents		( INetReader	&r );
-		void	write_adjacents		( IWriter	&w )const;
-///////////////////////////////////////////////////////////////
+ 
+ ///////////////////////////////////////////////////////////////
 	v_faces							m_adjacents;
 	
 

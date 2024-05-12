@@ -18,17 +18,4 @@ void clear( b_BuildTexture &texture )
 {
 	texture.pSurface.Clear();
 }
-
-void	b_BuildTexture::	read	(INetReader	&r )
-{
-	::read( r, *this );
-	THM.read( r );
-}
-
-
-
-void	b_BuildTexture::	write	(IWriter	&w )const
-{
-	::write( w, *this );
-	THM.write( w );
-}
+ 

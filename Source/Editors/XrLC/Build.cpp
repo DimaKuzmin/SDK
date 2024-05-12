@@ -49,46 +49,7 @@ void	CBuild::TempSave( u32 stage )
 	CheckBeforeSave( stage );
 
 }
-
-	//Fbox								scene_bb;
-	//xr_vector<b_shader>				shader_render;
-	//xr_vector<b_shader>				shader_compile;
- //   xr_vector<b_light_dynamic>		L_dynamic;
-	//xr_vector<b_glow>					glows;
-	//xr_vector<b_portal>				portals;
-	//xr_vector<b_lod>					lods;
-	//string_path						path;
-	//xr_vector<LPCSTR>					g_Shaders;
-void	CBuild::read( INetReader &r )
-{
-	r_pod( r, g_build_options );
-
-	r_pod( r, scene_bb );
-	r_pod_vector( r, shader_render );
-	r_pod_vector( r, shader_compile );
-	r_pod_vector( r, L_dynamic );
-	r_pod_vector( r, glows );
-	r_pod_vector( r, portals );
-	r_pod_vector( r, lods );
-	r_pod( r, path );
-	r_pod_vector( r, g_Shaders );
-	
-}
-void	CBuild::write( IWriter	&w ) const 
-{
-	w_pod( w, g_build_options );
-	
-	w_pod( w, scene_bb );
-	w_pod_vector( w, shader_render );
-	w_pod_vector( w, shader_compile );
-	w_pod_vector(  w,L_dynamic );
-	w_pod_vector( w, glows );
-	w_pod_vector( w, portals );
-	w_pod_vector( w, lods );
-	w_pod( w, path );
-	w_pod_vector( w, g_Shaders );
-
-}
+ 
 
 
 //////////////////////////////////////////////////////////////////////
@@ -255,7 +216,7 @@ void CBuild::Run	(LPCSTR P)
 	if(g_build_options.b_net_light)
 	{
 		lc_global_data()->mu_models_calc_materials();
-		RunNetCompileDataPrepare( );
+	//	RunNetCompileDataPrepare( );
 	}
 	
 
@@ -281,15 +242,15 @@ void CBuild::Run	(LPCSTR P)
 	mem_Compact					();
 	xrPhase_Subdivide			();
 	//IsolateVertices				(TRUE);
-	lc_global_data()->vertices_isolate_and_pool_reload();
+
+	// lc_global_data()->vertices_isolate_and_pool_reload();
+	 
 	//****************************************** All lighting + lmaps building and saving
 #ifdef NET_CMP
 	mu_base.wait				(500);
 	mu_secondary.wait			(500);
 #endif
-	if(g_build_options.b_net_light)
-		SetGlobalLightmapsDataInitialized();
-		
+ 		
 	Light						();
 	RunAfterLight				( fs );
 

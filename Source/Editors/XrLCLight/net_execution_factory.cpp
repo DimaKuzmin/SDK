@@ -5,7 +5,7 @@
 namespace lc_net{
 
 
-
+	/*
 
 	lc_net::factory execution_factory;
 
@@ -85,4 +85,6 @@ namespace lc_net{
 			xr_delete((*i));
 		vec_types.clear();
 	}
+
+	*/
 };

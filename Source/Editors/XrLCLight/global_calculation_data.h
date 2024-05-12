@@ -23,8 +23,8 @@ struct global_claculation_data
 	xr_vector<b_shader>				g_shader_compile;//-----==========
 	xr_vector<b_rc_face>			g_rc_faces;//---------===============
 ///////////////////////////////////////////////////////////////////////
-	void							read			( INetReader &r );
-	void							write			( IWriter	&w ) const ;
+//	void							read			( INetReader &r );
+//	void							write			( IWriter	&w ) const ;
 //////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////////////////////////////////////////
