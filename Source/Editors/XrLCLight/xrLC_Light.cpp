@@ -8,6 +8,9 @@
 
 i_lc_log *lc_log	= 0;
 
+#include "BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args = 0;
+
 void __cdecl	clLog( const char *format, ...)
 {
 	va_list		mark;

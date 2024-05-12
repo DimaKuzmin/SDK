@@ -17,6 +17,9 @@ xrCriticalSection	task_CS
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 xr_vector<int>		task_pool;
 
 class CLMThread		: public CThread
@@ -64,37 +67,29 @@ public:
 
 
 
-
-
-
-
 void	CBuild::LMapsLocal				()
 {
 		FPU::m64r		();
 		
 		mem_Compact		();
 
-		// Randomize deflectors
-#ifndef NET_CMP
-		// std::random_shuffle	(lc_global_data()->g_deflectors().begin(),lc_global_data()->g_deflectors().end());
-#endif
+// Randomize deflectors STD Нужно заменить
+// std::random_shuffle	(lc_global_data()->g_deflectors().begin(),lc_global_data()->g_deflectors().end());
 
-#ifndef NET_CMP	
-for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
-		task_pool.push_back(dit);
-#else
-		task_pool.push_back(14);
-		task_pool.push_back(16);
-#endif
-		
-
+		for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)	
+			task_pool.push_back(dit);
+  
 		// Main process (4 threads)
 		Status			("Lighting...");
 		CThreadManager	threads;
-		const	u32	thNUM	= 6;
+ 
 		CTimer	start_time;	start_time.Start();				
-		for				(int L=0; L<thNUM; L++)	threads.start(xr_new<CLMThread> (L));
+		
+		for				(int L=0; L < build_args->use_threads; L++)
+			threads.start(xr_new<CLMThread> (L));
+		
 		threads.wait	(500);
+
 		clMsg			("%f seconds",start_time.GetElapsed_sec());
 }
 
@@ -121,12 +116,11 @@ void	CBuild::LMaps					()
 #endif
 
 }
-void XRLC_LIGHT_API ImplicitNetWait();
-void CBuild::Light()
+ void CBuild::Light()
 {
 	//****************************************** Implicit
 	
-	if (! strstr(Core.Params, "-skip_impl"))
+	if (!build_args->off_impl)
 	{
 		FPU::m64r		();
 		Phase			("LIGHT: Implicit...");
@@ -134,20 +128,16 @@ void CBuild::Light()
 		ImplicitLighting();
 	}
 	
-	if (!strstr(Core.Params, "-skip_lmaps"))
+	if (!build_args->off_lmaps)
 	{
 		LMaps();
 
-
-		//****************************************** Vertex
+ 		//****************************************** Vertex
 		FPU::m64r();
 		Phase("LIGHT: Vertex...");
 		mem_Compact();
 
 		LightVertex();
-
-		ImplicitNetWait();
-
 		//
 			//****************************************** Merge LMAPS
 		{
@@ -159,14 +149,16 @@ void CBuild::Light()
 		}
 	}
 
- 	
-	StartMu();
- 	//****************************************** Wait for MU
-	FPU::m64r();
-	Phase("LIGHT: Waiting for MU-thread...");
-	mem_Compact();
+	if (!build_args->off_mulitght)
+	{
+		StartMu();
+		//****************************************** Wait for MU
+		FPU::m64r();
+		Phase("LIGHT: Waiting for MU-thread...");
+		mem_Compact();
 
-	wait_mu_base();
+		wait_mu_base();
+	}
 }
 
 void CBuild::LightVertex	()

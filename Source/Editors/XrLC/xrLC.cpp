@@ -1,13 +1,21 @@
 // xrLC.cpp : Defines the entry point for the application.
 //
 #include "stdafx.h"
+
 #include "math.h"
 #include "build.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 
+
 //#pragma comment(linker,"/STACK:0x800000,0x400000")
 //#pragma comment(linker,"/HEAP:0x70000000,0x10000000")
 
+// ARGS SYNCRONIZE DLL
+#include "xrLC.h"
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+extern XRLC_API ILogger* LoggerCL = 0;
 
 #define PROTECTED_BUILD
 
@@ -19,98 +27,81 @@
 #	undef TRIVIAL_ENCRYPTOR_DECODER
 #endif // PROTECTED_BUILD
 
-CBuild*	pBuild		= NULL;
-u32		version		= 0;
+CBuild* pBuild = NULL;
+u32		version = 0;
 
-extern void logThread(void *dummy);
+extern void logThread(void* dummy);
 extern volatile BOOL bClose;
 
-static const char* h_str = 
-	"The following keys are supported / required:\n"
-	"-? or -h	== this help\n"
-	"-o			== modify build options\n"
-	"-nosun		== disable sun-lighting\n"
-	"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
-	"\n"
-	"NOTE: The last key is required for any functionality\n";
-
-void Help()
-{
-	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION);
-}
 
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 
-void Startup(LPSTR     lpCmdLine)
-{
-	
-	create_global_data();
-	char cmd[512],name[256];
-	BOOL bModifyOptions		= FALSE;
+CTimer	dwStartupTime;
 
-	xr_strcpy(cmd,lpCmdLine);
+void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
+{
+	create_global_data();
+	char cmd[512], name[256];
+	BOOL bModifyOptions = FALSE;
+
+	xr_strcpy(cmd, lpCmdLine);
 	strlwr(cmd);
-	if (strstr(cmd,"-?") || strstr(cmd,"-h"))			{ Help(); return; }
-	if (strstr(cmd,"-f")==0)							{ Help(); return; }
-	if (strstr(cmd,"-o"))								bModifyOptions	= TRUE;
-	if (strstr(cmd,"-gi"))								g_build_options.b_radiosity		= TRUE;
-	if (strstr(cmd,"-noise"))							g_build_options.b_noise			= TRUE;
-	if (strstr(cmd,"-net"))								g_build_options.b_net_light		= TRUE;
-	VERIFY( lc_global_data() );
-	lc_global_data()->b_nosun_set						( !!strstr(cmd,"-nosun") );
-	//if (strstr(cmd,"-nosun"))							b_nosun			= TRUE;
-	
+
 	// Give a LOG-thread a chance to startup
 	//_set_sbh_threshold(1920);
-	InitCommonControls		();
-	thread_spawn			(logThread, "log-update",	1024*1024,0);
-	Sleep					(150);
-	
-	// Faster FPU 
-	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
+	InitCommonControls();
+	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
+	Sleep(150);
 
-	/*
-	u32	dwMin			= 1800*(1024*1024);
-	u32	dwMax			= 1900*(1024*1024);
-	if (0==SetProcessWorkingSetSize(GetCurrentProcess(),dwMin,dwMax))
-	{
-		clMsg("*** Failed to expand working set");
-	};
-	*/
-	
+	// Faster FPU 
+	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+
+
+
+	log_vminfo();
+
 	// Load project
-	name[0]=0;				sscanf(strstr(cmd,"-f")+2,"%s",name);
+	name[0] = 0;
+	//sscanf(strstr(cmd,"-f")+2,"%s",name);
+
+	// Se7Kills ADD NEW Name Reading
+	xr_strcpy(name, build_args->level_name.c_str());
+	clMsg("LevelName: %s", name);
 
 	extern  HWND logWindow;
 	string256				temp;
-	xr_sprintf				(temp, "%s - Levels Compiler", name);
-	SetWindowText			(logWindow, temp);
+	xr_sprintf(temp, "%s - Levels Compiler", name);
+	SetWindowText(logWindow, temp);
+
+
 
 	string_path				prjName;
-	FS.update_path			(prjName,"$game_levels$",strconcat(sizeof(prjName),prjName,name,"\\build.prj"));
+	FS.update_path(prjName, "$game_levels$", strconcat(sizeof(prjName), prjName, name, "\\build.prj"));
 	string256				phaseName;
-	Phase					(strconcat(sizeof(phaseName),phaseName,"Reading project [",name,"]..."));
+	Phase(strconcat(sizeof(phaseName), phaseName, "Reading project [", name, "]..."));
 
 	string256 inf;
-	IReader*	F			= FS.r_open(prjName);
-	if (NULL==F){
-		xr_sprintf				(inf,"Build failed!\nCan't find level: '%s'",name);
-		clMsg				(inf);
-		MessageBox			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
+	IReader* F = FS.r_open(prjName);
+	if (NULL == F)
+	{
+		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", name);
+		clMsg(inf);
+		MessageBox(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
 		return;
 	}
 
 	// Version
-	F->r_chunk			(EB_Version,&version);
-	clMsg				("version: %d",version);
-	R_ASSERT(XRCL_CURRENT_VERSION==version);
+	F->r_chunk(EB_Version, &version);
+	clMsg("version: %d", version);
+	R_ASSERT(XRCL_CURRENT_VERSION == version);
 
 	// Header
 	b_params				Params;
-	F->r_chunk			(EB_Parameters,&Params);
+	F->r_chunk(EB_Parameters, &Params);
 
 	// Show options if needed
-	if (bModifyOptions)		
+	/*
+	if (bModifyOptions)
 	{
 		Phase		("Project options...");
 		HMODULE		L = LoadLibrary		("xrLC_Options.dll");
@@ -123,32 +114,49 @@ void Startup(LPSTR     lpCmdLine)
 			ExitProcess(0);
 		}
 	}
-	
+	*/
+
 	// Conversion
-	Phase					("Converting data structures...");
-	pBuild					= xr_new<CBuild>();
-	pBuild->Load			(Params,*F);
-	FS.r_close				(F);
-	
+	Phase("Converting data structures...");
+	pBuild = xr_new<CBuild>();
+	pBuild->Load(Params, *F);
+
+	FS.r_close(F);
+
+	// LOAD BUILD PARAMS
+	g_params().m_lm_jitter_samples = args->sample;
+	g_params().m_lm_pixels_per_meter = args->pxpm;
+
+	g_build_options.b_noise = args->noise;
+	lc_global_data()->b_nosun_set(args->nosun);
+	lc_global_data()->b_norgb_set(args->norgb);
+	lc_global_data()->b_nohemi_set(args->nohemi);
+
+
 	// Call for builder
 	string_path				lfn;
-	CTimer	dwStartupTime;	dwStartupTime.Start();
-	FS.update_path			(lfn,_game_levels_,name);
-	pBuild->Run				(lfn);
-	xr_delete				(pBuild);
+
+
+	dwStartupTime.Start();
+
+	FS.update_path(lfn, _game_levels_, name);
+	pBuild->Run(lfn);
+	xr_delete(pBuild);
 
 	// Show statistic
 	extern	std::string make_time(u32 sec);
-	u32	dwEndTime			= dwStartupTime.GetElapsed_ms();
-	xr_sprintf					(inf,"Time elapsed: %s",make_time(dwEndTime/1000).c_str());
-	clMsg					("Build succesful!\n%s",inf);
+	u32	dwEndTime = dwStartupTime.GetElapsed_ms();
+	xr_sprintf(inf, "Time elapsed: %s", make_time(dwEndTime / 1000).c_str());
+	clMsg("Build succesful!\n%s", inf);
 
-	if (!strstr(cmd,"-silent"))
-		MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+	//if (!strstr(cmd,"-silent"))
+	//	MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
+
+	Status("Построение Уровня Законечено! ");
 
 	// Close log
-	bClose					= TRUE;
-	Sleep					(500);
+	bClose = TRUE;
+	Sleep(500);
 }
 
 //typedef void DUMMY_STUFF (const void*,const u32&,void*);
@@ -157,10 +165,75 @@ void Startup(LPSTR     lpCmdLine)
 
 
 
+#include <ctime>
+
+
+void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
+{
+	build_args->no_invalide_faces = args->no_invalide_faces;
+
+	build_args->pxpm = args->pxpm;
+	build_args->mu_samples = args->mu_samples;
+	build_args->sample = args->sample;
+	build_args->use_threads = args->use_threads;
+
+	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
+	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
+	build_args->use_MU_Lighting = args->use_MU_Lighting;
+
+
+	build_args->nohemi = args->nohemi;
+	build_args->norgb = args->norgb;
+	build_args->noise = args->noise;
+	build_args->nosun = args->nosun;
+	build_args->nosmg = args->nosmg;
+
+	build_args->no_optimize = args->no_optimize;
+	build_args->no_simplify = args->no_simplify;
+
+	build_args->use_avx = args->use_avx;
+	build_args->use_embree = args->use_embree;
+	build_args->use_sse = args->use_sse;
+	build_args->use_opcode_old = args->use_opcode_old;
+
+	build_args->special_args = args->special_args;
+	build_args->level_name = args->level_name;
+
+	build_args->embree_geometry_type = args->embree_geometry_type;
+	build_args->use_RobustGeom = args->use_RobustGeom;
+	build_args->skip_weld = args->skip_weld;
+	build_args->embree_tnear = args->embree_tnear;
+
+	build_args->off_impl = args->off_impl;
+	build_args->off_lmaps = args->off_lmaps;
+	build_args->off_mulitght = args->off_mulitght;
+
+	build_args->use_DXT1 = args->use_DXT1;
+	build_args->use_mt_calculation_materials = args->use_mt_calculation_materials;
+}
+
+XRLC_API void StartupWorking(SpecialArgs* args)
+{
+	Debug._initialize(false);
+	Core._initialize("xrLC");
+
+	build_args = new SpecialArgsXRLCLight();
+	ReadArgs(build_args, args);
+
+	g_using_smooth_groups = args->nosmg;
+	Startup("", args);
+
+
+	Core._destroy();
+}
+
+
+/*
+
 int APIENTRY WinMain(HINSTANCE hInst,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
+					 HINSTANCE hPrevInstance,
+					 LPSTR     lpCmdLine,
+					 int       nCmdShow)
 {
 //	g_temporary_stuff	= &trivial_encryptor::decode;
 //	g_dummy_stuff		= &trivial_encryptor::encode;
@@ -168,12 +241,34 @@ int APIENTRY WinMain(HINSTANCE hInst,
 	// Initialize debugging
 	Debug._initialize	(false);
 	Core._initialize	("xrLC");
-	
-	if(strstr(Core.Params,"-nosmg"))
-		g_using_smooth_groups = false;
+
 
 	Startup				(lpCmdLine);
 	Core._destroy		();
-	
+
+	// Get the current time
+	std::time_t currentTime = std::time(nullptr);
+
+	// Convert the time to a string representation
+	char* timeString = std::ctime(&currentTime);
+
+
+	string_path pp;
+	string128 tmp;
+	sprintf(tmp, "xrLC_compile_log_%s.log", timeString);
+
+
+	FS.update_path(pp, "$app_root$", tmp);
+
+	IWriter * log_file_time = FS.w_open(pp);
+	for (auto phase : *phases_timers_Get())
+	{
+		log_file_time->w_stringZ(phase.c_str());
+	}
+
+	FS.w_close(log_file_time);
+
 	return 0;
 }
+
+*/

@@ -26,7 +26,7 @@ xr_map<int, std::atomic<u64>> ticks_process_hits;
 
 #pragma comment(lib, "embree4.lib")
 #pragma comment(lib, "tbb.lib")
-#include "embree4/rtcore.h"
+#include <embree4/rtcore.h>
 
 
 RTCScene IntelScene;
@@ -685,9 +685,7 @@ void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty pr
 
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
-
-
+  
 void IntelEmbereLOAD()
 {
 

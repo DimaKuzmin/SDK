@@ -174,7 +174,9 @@ virtual	void Execute()
 
 CThreadManager	precalc_base_hemi;
 
-#define MAX_THREADS 16
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -220,7 +222,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 		ThreadIDWork = 0;
 
- 		for (u32 thID=0; thID < MAX_THREADS; thID++)
+ 		for (u32 thID=0; thID < build_args->use_threads; thID++)
 			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID) );
 		 
 		precalc_base_hemi.wait();

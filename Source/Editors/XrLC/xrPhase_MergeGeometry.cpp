@@ -706,9 +706,9 @@ xr_vector<int> reserved_big_objects;
 
 #define MAX_BIG_THREADS 2
 
-//#include "../XrLCLight/BuildArgs.h"
-//extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-#define MAX_THREADS 16
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+ 
 
 void CBuild::xrPhase_MergeGeometry()
 {
@@ -741,10 +741,9 @@ void CBuild::xrPhase_MergeGeometry()
 		//FindSelectedMaterialCandidate();
 
 		{
-
-
-			std::thread* th = new std::thread[MAX_THREADS];
-			for (auto i = 0; i < MAX_THREADS; i++)
+ 			int threads = build_args->use_threads;
+			std::thread* th = new std::thread[threads];
+			for (auto i = 0; i < threads; i++)
 			{
 				th[i] = std::thread([&]()
 					{
@@ -774,7 +773,7 @@ void CBuild::xrPhase_MergeGeometry()
 			}
 
 
-			for (auto i = 0; i < MAX_THREADS; i++)
+			for (auto i = 0; i < threads; i++)
 				th[i].join();
 
 		}

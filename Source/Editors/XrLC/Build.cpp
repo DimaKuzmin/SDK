@@ -423,5 +423,5 @@ xr_vector<xrMU_Reference*>&CBuild::mu_refs()
 
 void CBuild::ImplicitLighting()
 {
-	::ImplicitLighting( g_build_options.b_net_light );
+	::ImplicitLighting(   );
 }

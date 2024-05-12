@@ -84,10 +84,7 @@ class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0==D) ret
 
 #include <thread>
 xrCriticalSection csLM;
-
  
-
-#define MAX_THREADS 16
 
 int LM_AREA_USED = 0;
 
@@ -122,6 +119,9 @@ void StartThread(int TH, vecDefl Layer, CLightmap* lmap, int start, int end, int
 	}
 
 }
+
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void CBuild::xrPhase_MergeLM()
 {
@@ -296,16 +296,18 @@ void CBuild::xrPhase_MergeLM()
 
 			if (Layer.size() > 1024)
 			{
-				std::thread* th = new std::thread[MAX_THREADS];
+				int THREADS = build_args->use_threads;
 
-				int split = merge_count / MAX_THREADS;
+				std::thread* th = new std::thread[THREADS];
 
-				for (int i = 0; i < MAX_THREADS; i++)
+				int split = merge_count / THREADS;
+
+				for (int i = 0; i < THREADS; i++)
 				{
 					th[i] = std::thread(StartThread, i, Layer, lmap, i * split, split * (i + 1), &MERGED);
 				}
 
-				for (int i = 0; i < MAX_THREADS; i++)
+				for (int i = 0; i < THREADS; i++)
 				{
 					th[i].join();
 				}

@@ -50,6 +50,9 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 
 
 		bool							_b_nosun;
+		bool							_b_norgb;
+		bool							_b_nohemi;
+		
 		bool							_gl_linear;
 private:
 		bool							b_vert_not_register;
@@ -98,6 +101,9 @@ public:
 		bool						b_nosun			()		{	return _b_nosun; }
 		bool						gl_linear		()		{	return _gl_linear; }
 IC		void						b_nosun_set		(bool v){	_b_nosun = v; }
+IC		void						b_norgb_set(bool v) { _b_norgb = v; }
+IC		void						b_nohemi_set(bool v) { _b_nohemi = v; }
+
 		void						initialize		()		;
 		void						destroy_rcmodel	()		;
 
@@ -153,6 +159,7 @@ extern "C" XRLC_LIGHT_API void				create_global_data();
 extern "C" XRLC_LIGHT_API void				destroy_global_data();
 extern "C" XRLC_LIGHT_API u32				InvalideFaces();
 		   XRLC_LIGHT_API void				ImplicitLighting( BOOL net );
+		   XRLC_LIGHT_API void				ImplicitLighting();
 
 extern xrLC_GlobalData* data;
 IC xrLC_GlobalData* inlc_global_data() { return data; }

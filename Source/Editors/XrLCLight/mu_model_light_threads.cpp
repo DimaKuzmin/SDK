@@ -24,8 +24,7 @@ CThreadManager			mu_secondary;
 CThreadManager			mu_calcmaterials;
 
 
-#define		MU_THREADS	16
-xrCriticalSection csMU;
+ xrCriticalSection csMU;
 
 int current_refthread;
 
@@ -106,6 +105,8 @@ public:
 	}
 };
 
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 class CMUThread : public CThread
 {
@@ -121,12 +122,12 @@ public:
 		Sleep				(0);
 
 		// Light models
-		u32 threads = MU_THREADS;
+		u32 threads = build_args->use_threads;
 
  
 		Phase("LIGHT: Calculating Materials MU-thread...");
 		
-		if (!strstr(Core.Params, "-mt_mu"))
+		if (build_args->use_mt_calculation_materials)
 		{
  			for (auto model : inlc_global_data()->mu_models())
 			{

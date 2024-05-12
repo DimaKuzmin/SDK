@@ -150,7 +150,10 @@ public:
 namespace lc_net{
 void RunLightVertexNet();
 }
-#define NUM_THREADS			4
+
+#include "BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+ 
 void LightVertex	( bool net )
 {
 	g_trans				= xr_new<mapVert>	();
@@ -162,7 +165,10 @@ void LightVertex	( bool net )
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
-		for (u32 thID=0; thID<NUM_THREADS; thID++)	Threads.start(xr_new<CVertexLightThread>(thID));
+	
+		for (u32 thID=0; thID< build_args->use_threads; thID++)
+			Threads.start(xr_new<CVertexLightThread>(thID));
+
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} else

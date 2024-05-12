@@ -25,10 +25,6 @@ namespace lc_net
 		//get_task_manager().create_global_data_write("");
 		net_lightmaps_add_all_tasks(  );
 		get_task_manager().run("Net Lightmaps");
-		//get_task_manager().wait_all();
-
-		//ImplicitNetWait();
-		//
-
+ 
 	}
 }
