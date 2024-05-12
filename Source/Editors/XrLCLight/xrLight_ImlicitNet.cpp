@@ -31,11 +31,6 @@ namespace lc_net{
 			
 			globals().get<gl_implicit_cl_data>().init();
 
-			
-	
-			
-			//WaitNetCompileDataPrepare( );
-			WaitMuModelsLocalCalcLightening();
 			inlc_global_data()->clear_build_textures_surface(exept);
 			
 

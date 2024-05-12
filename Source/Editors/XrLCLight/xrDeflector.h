@@ -115,3 +115,6 @@ extern	tread_deflectors	*read_deflectors	;
 extern	twrite_deflectors	*write_deflectors	;
 
 
+extern XRLC_LIGHT_API u32		getLMSIZE();
+extern XRLC_LIGHT_API void		setLMSIZE(int size);
+

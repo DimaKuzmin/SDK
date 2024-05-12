@@ -76,7 +76,7 @@ void	CBuild::LMapsLocal				()
 
 		// Randomize deflectors
 #ifndef NET_CMP
-		std::random_shuffle	(lc_global_data()->g_deflectors().begin(),lc_global_data()->g_deflectors().end());
+		// std::random_shuffle	(lc_global_data()->g_deflectors().begin(),lc_global_data()->g_deflectors().end());
 #endif
 
 #ifndef NET_CMP	
@@ -125,6 +125,8 @@ void XRLC_LIGHT_API ImplicitNetWait();
 void CBuild::Light()
 {
 	//****************************************** Implicit
+	
+	if (! strstr(Core.Params, "-skip_impl"))
 	{
 		FPU::m64r		();
 		Phase			("LIGHT: Implicit...");
@@ -132,33 +134,39 @@ void CBuild::Light()
 		ImplicitLighting();
 	}
 	
-	LMaps		();
-
-
-	//****************************************** Vertex
-	FPU::m64r		();
-	Phase			("LIGHT: Vertex...");
-	mem_Compact		();
-
-	LightVertex		();
-
-//
-	
-
-	ImplicitNetWait();
-	WaitMuModelsLocalCalcLightening();
-	lc_net::get_task_manager().wait_all();
-	//	get_task_manager().wait_all();
-	lc_net::get_task_manager().release();
-//
-	//****************************************** Merge LMAPS
+	if (!strstr(Core.Params, "-skip_lmaps"))
 	{
-		FPU::m64r		();
-		Phase			("LIGHT: Merging lightmaps...");
-		mem_Compact		();
+		LMaps();
 
-		xrPhase_MergeLM	();
+
+		//****************************************** Vertex
+		FPU::m64r();
+		Phase("LIGHT: Vertex...");
+		mem_Compact();
+
+		LightVertex();
+
+		ImplicitNetWait();
+
+		//
+			//****************************************** Merge LMAPS
+		{
+			FPU::m64r();
+			Phase("LIGHT: Merging lightmaps...");
+			mem_Compact();
+
+			xrPhase_MergeLM();
+		}
 	}
+
+ 	
+	StartMu();
+ 	//****************************************** Wait for MU
+	FPU::m64r();
+	Phase("LIGHT: Waiting for MU-thread...");
+	mem_Compact();
+
+	wait_mu_base();
 }
 
 void CBuild::LightVertex	()

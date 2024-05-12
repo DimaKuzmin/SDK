@@ -217,18 +217,21 @@ void		start_unwarp_recursion()
 {
 	affected				= 1;
 }
-void Face::OA_Unwarp( CDeflector *D )
+
+void Face::OA_Unwarp(CDeflector* D, xr_vector<type_face*>& faces)
 {
-	if (pDeflector)					return;
+	if (pDeflector)			return;
 	if (!D->OA_Place(this))	return;
 	
+	faces.push_back(this);
+
 	// now iterate on all our neigbours
 	for (int i=0; i<3; ++i) 
-		for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
-		{
-			affected		+= 1;
-			(*it)->OA_Unwarp(D);
-		}
+	for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
+	{
+		affected		+= 1;
+		(*it)->OA_Unwarp(D, faces);
+	}
 }
 
 

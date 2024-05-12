@@ -16,7 +16,7 @@
 
 
 //void get_intervals( u32 max_threads, u32 num_items, u32 &threads, u32 &stride, u32 &rest );
-void SetMuModelsLocalCalcLighteningCompleted();
+// void SetMuModelsLocalCalcLighteningCompleted();
 namespace lc_net{
 	exec_pool *ref_models_pool = 0;
 	exec_pool *base_models_pool = 0;
@@ -29,7 +29,7 @@ namespace lc_net{
 			const u32	num_tasks	= inlc_global_data()->mu_refs().size();
 			if( num_tasks == 0 )
 			{
-				SetMuModelsLocalCalcLighteningCompleted();
+	//			SetMuModelsLocalCalcLighteningCompleted();
 				return;
 			}
 			for (u32 thID=0; thID<num_tasks; thID++)
@@ -49,7 +49,7 @@ namespace lc_net{
 			}
 			
 			ref_models_pool = get_task_manager().run( "Net Models Lighting" );
-			SetMuModelsLocalCalcLighteningCompleted();
+	//		SetMuModelsLocalCalcLighteningCompleted();
 
 			
 	}

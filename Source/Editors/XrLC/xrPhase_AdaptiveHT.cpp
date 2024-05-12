@@ -119,43 +119,62 @@ void GSaveAsSMF					(LPCSTR fname)
 	FS.w_close	(W);
 }
 */
+#include <atomic>
+
+std::atomic<int> ThreadIDWork;
+xrCriticalSection cs;
+
 class CPrecalcBaseHemiThread: 
 public CThread
 {
-	u32 _from, _to;
-	CDB::COLLIDER	DB;
+ 	CDB::COLLIDER	DB;
 	
 public:
-	CPrecalcBaseHemiThread(u32 ID, u32 from, u32 to ): CThread(ID), _from( from ), _to( to )
+	CPrecalcBaseHemiThread(u32 ID): CThread(ID)
 	{
-		R_ASSERT(from!=u32(-1));
-		R_ASSERT(to!=u32(-1));
-		R_ASSERT( from < to );
-		R_ASSERT(from>=0);
-		R_ASSERT(to>0);
+		 
 	}
 virtual	void Execute()
 	{
 		DB.ray_options	(0);
-		for (u32 vit =_from; vit < _to; vit++)	
+		for ( ;; )	
 		{
+			int ID = ThreadIDWork.load();
+		
+			cs.Enter();
+			if (ID >= lc_global_data()->g_vertices().size())
+			{
+				cs.Leave();
+				break;
+			}
+			cs.Leave();
+
+			ThreadIDWork.fetch_add(1);
+
+			auto vertex = lc_global_data()->g_vertices()[ID];
+
 			base_color_c		vC;
-			R_ASSERT( vit != u32(-1) );
-			vecVertex			&verts = lc_global_data()->g_vertices();
-			R_ASSERT( vit>=0 );
-			R_ASSERT( vit<verts.size() );
-			Vertex*		V		= verts[vit];
+ 			vecVertex			&verts = lc_global_data()->g_vertices();
+ 			Vertex*		V		= verts[ID];
 			
 			R_ASSERT( V );
 			V->normalFromAdj	();
 			LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb+LP_dont_sun,0);
 			vC.mul				(0.5f);
 			V->C._set			(vC);
+
+			cs.Enter();
+			if (ID % 50000 == 0)
+				Status("Progress: %u / %u", ID, lc_global_data()->g_vertices().size());
+			cs.Leave();
 		}
+
 	}
 };
 
 CThreadManager	precalc_base_hemi;
+
+#define MAX_THREADS 16
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -163,7 +182,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 	DB.ray_options	(0);
 
 	Status			("Tesselating...");
-	if (1)
+	if ( !strstr(Core.Params, "-no_optimize"))
 	{
 		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	{		// clear split flag from all faces + calculate normals
 			lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
@@ -199,15 +218,11 @@ void CBuild::xrPhase_AdaptiveHT	()
 		//	V->C._set			(vC);
 		//}
 
-		u32	stride			= u32(-1);
-		
-		u32 threads			= u32(-1);
-		u32 rest			= u32(-1);
-		get_intervals( 8, lc_global_data()->g_vertices().size(), threads, stride, rest );
-		for (u32 thID=0; thID<threads; thID++)
-			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID,thID*stride,thID*stride + stride ) );
-		if(rest > 0)
-			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (threads,threads*stride,threads*stride + rest ) );
+		ThreadIDWork = 0;
+
+ 		for (u32 thID=0; thID < MAX_THREADS; thID++)
+			precalc_base_hemi.start	( xr_new<CPrecalcBaseHemiThread> (thID) );
+		 
 		precalc_base_hemi.wait();
 		//precalc_base_hemi
 	}

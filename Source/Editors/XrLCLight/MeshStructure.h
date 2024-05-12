@@ -50,7 +50,7 @@ static	Tface* read_create();
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	void	Verify		();
 	void 	Failure		();
-	void	OA_Unwarp	(CDeflector * d);
+	void	OA_Unwarp(CDeflector* d, xr_vector<type_face*>& faces);
 
 virtual	void	read				( INetReader	&r );
 virtual	void	write				( IWriter	&w )const;

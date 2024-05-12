@@ -473,3 +473,16 @@ void	CDeflector::statistic_log			(  ) const
 }
 
 #endif
+
+
+extern XRLC_LIGHT_API int global_size_map = 1024;
+
+void setLMSIZE(int size)
+{
+	global_size_map = size;
+}
+
+u32 getLMSIZE()
+{
+	return global_size_map;
+}
