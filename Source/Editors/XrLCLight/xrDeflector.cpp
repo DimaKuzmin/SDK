@@ -9,10 +9,118 @@
 #include "xrface.h"
 #include "serialize.h"
 
+void blit(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
+{
+	R_ASSERT(ds_x >= (ss_x + px));
+	R_ASSERT(ds_y >= (ss_y + py));
+	for (u32 y = 0; y < ss_y; y++)
+	for (u32 x = 0; x < ss_x; x++)
+	{
+		u32 dx = px + x;
+		u32 dy = py + y;
+		u32 sc = src[y * ss_x + x];
+		if (color_get_A(sc) >= aREF) dest[dy * ds_x + dx] = sc;
+	}
+}
+
+void lblit(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
+{
+	u32		ds_x = dst.width;
+	u32		ds_y = dst.height;
+	u32		ss_x = src.width;
+	u32		ss_y = src.height;
+	R_ASSERT(ds_x >= (ss_x + px));
+	R_ASSERT(ds_y >= (ss_y + py));
+	for (u32 y = 0; y < ss_y; y++)
+	for (u32 x = 0; x < ss_x; x++)
+	{
+		u32 dx = px + x;
+		u32 dy = py + y;
+		base_color	sc = src.surface[y * ss_x + x];
+		u8			sm = src.marker[y * ss_x + x];
+		if (sm >= aREF) {
+			dst.surface[dy * ds_x + dx] = sc;
+			dst.marker[dy * ds_x + dx] = sm;
+		}
+	}
+}
+
+void blit(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
+{
+	//R_ASSERT(ds_x>=(ss_x+px));
+	//R_ASSERT(ds_y>=(ss_y+py));
+	try
+	{
+		for (u32 y = 0; y < ss_y; y++)
+			for (u32 x = 0; x < ss_x; x++)
+			{
+				u32 dx = px + x;
+				u32 dy = py + y;
+				base_color	sc = src.surface[y * ss_x + x];
+				u8			sm = src.marker[y * ss_x + x];
+				if (sm >= aREF)
+				{
+					dst.surface[dy * ds_x + dx] = sc;
+					dst.marker[dy * ds_x + dx] = sm;
+				}
+			}
+	}
+	catch (...)
+	{
+		clMsg("ERROR LM blit: ss_x %d, ss_y %d, src_size: %d, dst_size: %d, ", ss_x, ss_y, src.surface.size(), dst.surface.size());
+	}
+}
+
+void blit_r(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
+{
+	R_ASSERT(ds_x >= (ss_y + px));
+	if (ds_y < ss_x + py)
+	{
+		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
+	}
+
+	R_ASSERT(ds_y >= (ss_x + py));
+	for (u32 y = 0; y < ss_y; y++)
+		for (u32 x = 0; x < ss_x; x++)
+		{
+			u32 dx = px + y;
+			u32 dy = py + x;
+			u32 sc = src[y * ss_x + x];
+			if (color_get_A(sc) >= aREF) dest[dy * ds_x + dx] = sc;
+		}
+}
+
+
+void blit_r(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
+{
+	R_ASSERT(ds_x >= (ss_y + px));
+	if (ds_y < ss_x + py)
+	{
+		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
+	}
+
+	R_ASSERT(ds_y >= (ss_x + py));
+	for (u32 y = 0; y < ss_y; y++)
+		for (u32 x = 0; x < ss_x; x++)
+		{
+			u32 dx = px + y;
+			u32 dy = py + x;
+			base_color	sc = src.surface[y * ss_x + x];
+			u8			sm = src.marker[y * ss_x + x];
+			if (sm >= aREF) {
+				dst.surface[dy * ds_x + dx] = sc;
+				dst.marker[dy * ds_x + dx] = sm;
+			}
+		}
+}
+
+// ORIGINAL 
+/*
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_x+px));
 	R_ASSERT(ds_y>=(ss_y+py));
+
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -31,6 +139,7 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 	u32		ss_y	= src.height;
 	R_ASSERT(ds_x>=(ss_x+px));
 	R_ASSERT(ds_y>=(ss_y+py));
+
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -49,18 +158,19 @@ void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_
 {
 	R_ASSERT(ds_x>=(ss_x+px));
 	R_ASSERT(ds_y>=(ss_y+py));
+
 	for (u32 y=0; y<ss_y; y++)
-		for (u32 x=0; x<ss_x; x++)
-		{
-			u32 dx = px+x;
-			u32 dy = py+y;
-			base_color	sc = src.surface[y*ss_x+x];
-			u8			sm = src.marker [y*ss_x+x];
-			if (sm>=aREF) {
-				dst.surface	[dy*ds_x+dx] = sc;
-				dst.marker	[dy*ds_x+dx] = sm;
-			}
+	for (u32 x=0; x<ss_x; x++)
+	{
+		u32 dx = px+x;
+		u32 dy = py+y;
+		base_color	sc = src.surface[y*ss_x+x];
+		u8			sm = src.marker [y*ss_x+x];
+		if (sm>=aREF) {
+			dst.surface	[dy*ds_x+dx] = sc;
+			dst.marker	[dy*ds_x+dx] = sm;
 		}
+	}
 }
 
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
@@ -94,7 +204,7 @@ void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_
 				dst.marker	[dy*ds_x+dx] = sm;
 			}
 		}
-}
+}*/
 
 //-------------------------------------
 
@@ -121,7 +231,8 @@ CDeflector::~CDeflector()
 
 void CDeflector::OA_Export()
 {
-	if (UVpolys.empty()) return;
+	if (UVpolys.empty())
+		return;
 
 	// Correct normal
 	//  (semi-proportional to pixel density)
@@ -318,8 +429,9 @@ void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, H
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<=(c_LMAP_size-2*BORDER));
-		R_ASSERT		(lm.height	<=(c_LMAP_size-2*BORDER));
+		R_ASSERT		(lm.width	<= (getLMSIZE() - 2 * BORDER));
+		R_ASSERT		(lm.height	<= (getLMSIZE() - 2 * BORDER));
+
 		lm.create		(lm.width,lm.height);
 		L_Direct		(DB,LightsSelected,H);
 	} catch (...)

@@ -6,6 +6,8 @@
 #include <mmintrin.h>
 #include <emmintrin.h>
 
+static const	u32								c_LMAP_size = 1024;			// pixels
+
 static	BYTE	surface			[c_LMAP_size*c_LMAP_size];
 const	u32		alpha_ref		= 254-BORDER;
 

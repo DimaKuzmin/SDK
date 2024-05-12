@@ -141,7 +141,7 @@ void CBuild::xrPhase_MergeLM()
 	u32 size_layer = 0;
 	u32 LayerID = 0;
 
-	bool fastWay = true;  
+	bool fastWay = false;  
 
 	CTimer timer; timer.Start();
 	// Merge this layer (which left unmerged)
