@@ -15,7 +15,7 @@ u32	ImplicitDeflector::Height	()
 	
 u32&	ImplicitDeflector::Texel	(u32 x, u32 y)			
 {
-	u32* raw = static_cast<u32*>(*texture->pSurface);
+	u32* raw = texture->pSurface; //static_cast<u32*>(*texture->pSurface);
 	return raw[y*Width()+x];
 }
 

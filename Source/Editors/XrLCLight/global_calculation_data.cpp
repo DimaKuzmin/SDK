@@ -164,7 +164,7 @@ void global_claculation_data::xrLoad()
 					BT.dwWidth	= 1024;
 					BT.dwHeight	= 1024;
 					BT.bHasAlpha= TRUE;
-					BT.pSurface.Clear();
+					BT.pSurface = 0; ///.Clear();
 					BT.THM.SetHasSurface(FALSE);
 				} else {
 					string_path			th_name;
@@ -195,7 +195,8 @@ void global_claculation_data::xrLoad()
 					BT.dwWidth				= BT.THM.width;
 					BT.dwHeight				= BT.THM.height;
 					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
-					BT.pSurface.Clear();
+					BT.pSurface = 0;
+
 					BT.THM.SetHasSurface(FALSE);
 					if (!bLOD) 
 					{
@@ -203,14 +204,21 @@ void global_claculation_data::xrLoad()
 						{
 							clMsg		("- loading: %s",N);
 							string_path name;
-							R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-							R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
-							BT.pSurface.ClearMipLevels();
-							BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
-							BT.pSurface.SwapRB();
+ 
+							
+							int			w = 0, h = 0;
+							int comp = 4;
 							BT.THM.SetHasSurface(TRUE);
-							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
-								Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
+ 
+							stbi_uc* raw_image = stbi_load(N, &w, &h, &comp, 4);
+							R_ASSERT(comp == 4);
+							BT.pSurface = (u32*)raw_image;
+						
+ 							
+						if ((w != BT.dwWidth) || (h != BT.dwHeight))
+							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d",
+								BT.dwWidth, BT.dwHeight, w, h);
+							
 							BT.Vflip	();
 						} else {
 							// Free surface memory

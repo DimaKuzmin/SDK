@@ -6,12 +6,13 @@ struct  b_BuildTexture : public b_texture
 	
 	u32&	Texel	(u32 x, u32 y)
 	{
-		u32*  raw_data = static_cast<u32*>(*pSurface);
+		u32* raw_data = pSurface; //static_cast<u32*>(*pSurface);
 		return raw_data[y*dwWidth+x];
 	}
 	void	Vflip		()
 	{
-		R_ASSERT(!pSurface.Empty());
+		// R_ASSERT(!pSurface.Empty());
+		
 		for (u32 y=0; y<dwHeight/2; y++)
 		{
 			u32 y2 = dwHeight-y-1;

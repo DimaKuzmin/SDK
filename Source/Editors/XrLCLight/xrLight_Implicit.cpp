@@ -237,7 +237,7 @@ void ImplicitLightingExec()
 		{
 			b_BuildTexture& TEX		=	*defl.texture;
 			VERIFY					(!TEX.pSurface.Empty());
-			u32*			color	= static_cast<u32*>(*TEX.pSurface);
+			u32* color = TEX.pSurface; //static_cast<u32*>(*TEX.pSurface);
 			for (u32 V=0; V<defl.Height(); V++)	{
 				for (u32 U=0; U<defl.Width(); U++)	{
 					// Retreive Texel

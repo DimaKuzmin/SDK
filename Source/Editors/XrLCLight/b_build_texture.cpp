@@ -16,6 +16,7 @@ STextureParams	THM;
 
 void clear( b_BuildTexture &texture )
 {
-	texture.pSurface.Clear();
+	texture.pSurface = 0;
+//	texture.pSurface.Clear();
 }
  

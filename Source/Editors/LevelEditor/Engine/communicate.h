@@ -61,7 +61,8 @@ struct b_texture
 	u32					dwHeight;
 	BOOL				bHasAlpha;
 #ifndef _EDITOR
-	BearImage				pSurface;
+	u32* pSurface = 0;
+	//	BearImage				pSurface;
 #endif
 };
 

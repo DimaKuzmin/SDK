@@ -318,81 +318,79 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwHeight		= 1024;
 				BT.bHasAlpha	= TRUE;
 				BT.THM.SetHasSurface(FALSE);
-				BT.pSurface.Clear();
+				BT.pSurface = 0;
 
 			} else {
 				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
 				clMsg			("processing: %s",th_name);
 				IReader* THM	= FS.r_open(th_name);
-			
-				// R_ASSERT2		(THM,th_name);
+				R_ASSERT2		(THM,th_name);
 
-				if (THM)
+				// version
+				u32 version = 0;
+				R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION,&version),th_name);
+				// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
+
+				// analyze thumbnail information
+				R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM),th_name);
+				THM->r                  (&BT.THM.fmt,sizeof(STextureParams::ETFormat));
+				BT.THM.flags.assign		(THM->r_u32());
+				BT.THM.border_color		= THM->r_u32();
+				BT.THM.fade_color		= THM->r_u32();
+				BT.THM.fade_amount		= THM->r_u32();
+				BT.THM.mip_filter		= THM->r_u32();
+				BT.THM.width			= THM->r_u32();
+				BT.THM.height           = THM->r_u32();
+				BOOL			bLOD=FALSE;
+				if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = TRUE;
+
+				// load surface if it has an alpha channel or has "implicit lighting" flag
+				BT.dwWidth	= BT.THM.width;
+				BT.dwHeight	= BT.THM.height;
+				BT.bHasAlpha= BT.THM.HasAlphaChannel();
+
+				if (!bLOD) 
 				{
-					// version
-					u32 version = 0;
-					R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION, &version), th_name);
-					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
-
-					// analyze thumbnail information
-					R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM), th_name);
-					THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
-					BT.THM.flags.assign(THM->r_u32());
-					BT.THM.border_color = THM->r_u32();
-					BT.THM.fade_color = THM->r_u32();
-					BT.THM.fade_amount = THM->r_u32();
-					BT.THM.mip_filter = THM->r_u32();
-					BT.THM.width = THM->r_u32();
-					BT.THM.height = THM->r_u32();
-					BOOL			bLOD = FALSE;
-					if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
-
-					// load surface if it has an alpha channel or has "implicit lighting" flag
-					BT.dwWidth = BT.THM.width;
-					BT.dwHeight = BT.THM.height;
-					BT.bHasAlpha = BT.THM.HasAlphaChannel();
-					if (!bLOD)
+					if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
-						{
-							clMsg("- loading: %s", N);
-							string_path name;
-							R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-							R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
-							BT.pSurface.ClearMipLevels();
-							BT.THM.SetHasSurface(true);
-							BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
-							BT.pSurface.SwapRB();
+						clMsg		("- loading: %s",N);
+						string_path name;
+						//R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
+						//R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
+						BT.pSurface = 0;
+						BT.THM.SetHasSurface(true);
+						//BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
+						//BT.pSurface.SwapRB();
+						int			w = 0, h = 0;
+						int comp = 4;
+ 
+						stbi_uc* raw_image = stbi_load(N, &w, &h, &comp, 4);
+						R_ASSERT(comp == 4);
+						BT.pSurface = (u32*)raw_image;
+						BT.THM.SetHasSurface(TRUE);
 
-							/*for (bsize i = 0; i < BT.pSurface.GetSize().x * BT.pSurface.GetSize().y; i++)
-							{
-								u32 *color = ((u32*)*BT.pSurface)+i;
-								*color = color_rgba(color_get_B(*color), color_get_G(*color), color_get_R(*color), color_get_A(*color));
-							}*/
-							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
-							{
-								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
-								BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
-								BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
-							}
-							//BT.Vflip	();
+						/*
+						for (bsize i = 0; i < BT.pSurface.GetSize().x * BT.pSurface.GetSize().y; i++)
+						{
+							u32 *color = ((u32*)*BT.pSurface)+i;
+							*color = color_rgba(color_get_B(*color), color_get_G(*color), color_get_R(*color), color_get_A(*color));
 						}
-						else {
-							// Free surface memory
+						*/
+
+						if ((w != BT.dwWidth) || (h != BT.dwHeight))
+						{
+							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", 
+								BT.dwWidth, BT.dwHeight,
+								w, h);
+							BT.dwWidth	= BT.THM.width = w;
+							BT.dwHeight = BT.THM.height = h;
 						}
+						//BT.Vflip	();
+					} else {
+						// Free surface memory
 					}
 				}
-				else
-				{				
-					// HACK for merged lod textures
-					BT.dwWidth = 1024;
-					BT.dwHeight = 1024;
-					BT.bHasAlpha = TRUE;
-					BT.THM.SetHasSurface(FALSE);
-					BT.pSurface.Clear();
-				}
-				
 			}
 
 			// save all the stuff we've created
@@ -408,15 +406,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 	// Parameter block
 	CopyMemory(&g_params(),&Params,sizeof(b_params));
-
-
-	clMsg("sm_angle: %f", g_params().m_sm_angle);
-	clMsg("jitter: %u", g_params().m_lm_jitter_samples);
-	clMsg("pixel_per_meter: % f", g_params().m_lm_pixels_per_meter);
-	clMsg("m_lm_rms: %u", g_params().m_lm_rms);
-	clMsg("m_lm_rms_zero: %u", g_params().m_lm_rms_zero);
-	clMsg("m_quality: %u", g_params().m_quality);
-	clMsg("weld distance: %f", g_params().m_weld_distance);
 
 	// 
 	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
