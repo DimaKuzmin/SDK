@@ -204,13 +204,13 @@ void global_claculation_data::xrLoad()
 						{
 							clMsg		("- loading: %s",N);
 							string_path name;
- 
+							R_ASSERT(Surface_Detect(name, N));
 							
 							int			w = 0, h = 0;
 							int comp = 4;
 							BT.THM.SetHasSurface(TRUE);
  
-							stbi_uc* raw_image = stbi_load(N, &w, &h, &comp, 4);
+							stbi_uc* raw_image = stbi_load(name, &w, &h, &comp, 4);
 							R_ASSERT(comp == 4);
 							BT.pSurface = (u32*)raw_image;
 						

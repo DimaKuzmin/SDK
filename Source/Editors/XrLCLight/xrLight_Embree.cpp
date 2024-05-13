@@ -330,7 +330,7 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	// ctxt->last_far = ray->tfar;
 
 
-	if (T.pSurface.Empty())
+	if (T.pSurface == 0)
 	{
 		F->flags.bOpaque = true;
 
@@ -361,7 +361,7 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	V %= T.dwHeight;
 	if (V < 0) V += T.dwHeight;
 
-	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32* raw = T.pSurface;
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);

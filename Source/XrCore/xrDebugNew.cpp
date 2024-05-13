@@ -188,7 +188,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
  	//MessageBox			(NULL,assertion_info,"X-Ray error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
  
-	//DEBUG_INVOKE;
+	DEBUG_INVOKE;
 
 	if (get_on_dialog())
 		get_on_dialog()	(false);

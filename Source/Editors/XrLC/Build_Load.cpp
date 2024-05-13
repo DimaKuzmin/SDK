@@ -13,8 +13,9 @@
 #include "../xrLCLight/xrMU_Model.h"
 #include "../xrLCLight/xrMU_Model_Reference.h"
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "StbImage\stb_image.h"
+// #define STB_IMAGE_IMPLEMENTATION
+// #include "StbImage\stb_image.h"
+#include "DirectXTex.h"
 
 extern u32	version;
 template <class T>
@@ -354,8 +355,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				{
 					if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity)
 					{
-						clMsg		("- loading: %s",N);
+					
 						string_path name;
+						R_ASSERT( Surface_Detect(name, N) );
+
 						//R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
 						//R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
 						BT.pSurface = 0;
@@ -364,11 +367,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						//BT.pSurface.SwapRB();
 						int			w = 0, h = 0;
 						int comp = 4;
- 
-						stbi_uc* raw_image = stbi_load(N, &w, &h, &comp, 4);
+						clMsg("- loading: %s", name);
+						stbi_uc* raw_image = stbi_load(name, &w, &h, &comp, 4);
 						R_ASSERT(comp == 4);
-						BT.pSurface = (u32*)raw_image;
-						BT.THM.SetHasSurface(TRUE);
+
+						BT.pSurface = (u32* )raw_image;
+						 
+						clMsg("TextureP: %p, FileFMT: %d", BT.pSurface, BT.THM.fmt);
+						R_ASSERT2(BT.pSurface, "Can't load surface");
 
 						/*
 						for (bsize i = 0; i < BT.pSurface.GetSize().x * BT.pSurface.GetSize().y; i++)
