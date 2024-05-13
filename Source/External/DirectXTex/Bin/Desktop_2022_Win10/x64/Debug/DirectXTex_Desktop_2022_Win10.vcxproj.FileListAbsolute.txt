@@ -1,0 +1,2 @@
+A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\Source\External\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
+A:\github\SDK_ORIG\Source\External\DirectXTex\Bin\Desktop_2022_Win10\x64\Debug\DirectXTex.lib
