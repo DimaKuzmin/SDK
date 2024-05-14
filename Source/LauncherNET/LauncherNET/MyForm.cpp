@@ -18,21 +18,21 @@ using namespace System::Windows::Forms;
   
 char* collection[Size] =
 {
-    "use_avx",
-    "use_sse",
-    "no_optimize",
-    "no_invalide_faces",
-    "nosun",
-    "norgb",
-    "nohemi",
-    "no_simplify",
-    "nosmg",
-    "noise",
-    "skip_weld",
-    "use_std",
-    "intel_impl",
-    "intel_lmaps",
-    "intel_mulight"
+    "AVX INSTRUCTIONS",
+    "SSE INSTRUCTIONS",
+    "NO OPTIMIZE",
+    "SKIP INVALID",
+    "NO SUN",
+    "NO RGB",
+    "NO HEMI",
+    "NO SIMPLIFY",
+    "NO SMG",
+    "NOISE GEOM",
+    "SKIP WELD",
+    "USE STD THREADS",
+    "INTEL IMPLICIT",
+    "INTEL LMAPS",
+    "INTEL MU MODELS"
 };
 
 

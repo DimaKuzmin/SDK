@@ -162,6 +162,7 @@ private: System::Windows::Forms::Label^ label18;
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->label17 = (gcnew System::Windows::Forms::Label());
 			this->label16 = (gcnew System::Windows::Forms::Label());
 			this->xrLC_MUModelsRegresion = (gcnew System::Windows::Forms::CheckBox());
@@ -217,7 +218,6 @@ private: System::Windows::Forms::Label^ label18;
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -364,6 +364,18 @@ private: System::Windows::Forms::Label^ label18;
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
 			// 
+			// label18
+			// 
+			this->label18->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label18->ForeColor = System::Drawing::Color::Firebrick;
+			this->label18->Location = System::Drawing::Point(3, 383);
+			this->label18->Name = L"label18";
+			this->label18->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->label18->Size = System::Drawing::Size(559, 81);
+			this->label18->TabIndex = 28;
+			this->label18->Text = L"Стандартный RayTrace Тоже ускорен (Отсечены лишние hits)....";
+			// 
 			// label17
 			// 
 			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
@@ -445,9 +457,9 @@ private: System::Windows::Forms::Label^ label18;
 			this->off_mulight->AutoSize = true;
 			this->off_mulight->Location = System::Drawing::Point(20, 126);
 			this->off_mulight->Name = L"off_mulight";
-			this->off_mulight->Size = System::Drawing::Size(138, 31);
+			this->off_mulight->Size = System::Drawing::Size(216, 31);
 			this->off_mulight->TabIndex = 2;
-			this->off_mulight->Text = L"off_mulight";
+			this->off_mulight->Text = L"OFF MU LIGHTING";
 			this->off_mulight->UseVisualStyleBackColor = true;
 			// 
 			// off_lmaps
@@ -455,9 +467,9 @@ private: System::Windows::Forms::Label^ label18;
 			this->off_lmaps->AutoSize = true;
 			this->off_lmaps->Location = System::Drawing::Point(20, 89);
 			this->off_lmaps->Name = L"off_lmaps";
-			this->off_lmaps->Size = System::Drawing::Size(123, 31);
+			this->off_lmaps->Size = System::Drawing::Size(201, 31);
 			this->off_lmaps->TabIndex = 1;
-			this->off_lmaps->Text = L"off_lmaps";
+			this->off_lmaps->Text = L"OFF LIGHT MAPS";
 			this->off_lmaps->UseVisualStyleBackColor = true;
 			// 
 			// off_implicit
@@ -465,9 +477,9 @@ private: System::Windows::Forms::Label^ label18;
 			this->off_implicit->AutoSize = true;
 			this->off_implicit->Location = System::Drawing::Point(20, 52);
 			this->off_implicit->Name = L"off_implicit";
-			this->off_implicit->Size = System::Drawing::Size(137, 31);
+			this->off_implicit->Size = System::Drawing::Size(277, 31);
 			this->off_implicit->TabIndex = 0;
-			this->off_implicit->Text = L"off_implicit";
+			this->off_implicit->Text = L"OFF IMPLICIT LIGHTING";
 			this->off_implicit->UseVisualStyleBackColor = true;
 			// 
 			// EmbreeTnear
@@ -498,7 +510,7 @@ private: System::Windows::Forms::Label^ label18;
 				static_cast<System::Byte>(204)));
 			this->groupBox1->Location = System::Drawing::Point(579, 582);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(587, 107);
+			this->groupBox1->Size = System::Drawing::Size(562, 107);
 			this->groupBox1->TabIndex = 20;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Тип Рейтрейсинга";
@@ -540,9 +552,9 @@ private: System::Windows::Forms::Label^ label18;
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGLow);
 			this->IntelEmbreType->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->IntelEmbreType->Location = System::Drawing::Point(575, 440);
+			this->IntelEmbreType->Location = System::Drawing::Point(575, 430);
 			this->IntelEmbreType->Name = L"IntelEmbreType";
-			this->IntelEmbreType->Size = System::Drawing::Size(591, 146);
+			this->IntelEmbreType->Size = System::Drawing::Size(566, 146);
 			this->IntelEmbreType->TabIndex = 19;
 			this->IntelEmbreType->TabStop = false;
 			this->IntelEmbreType->Text = L"Тип Геометрии (Intel)";
@@ -766,9 +778,9 @@ private: System::Windows::Forms::Label^ label18;
 				static_cast<System::Byte>(204)));
 			this->FlagsCompiler->ForeColor = System::Drawing::Color::DarkViolet;
 			this->FlagsCompiler->FormattingEnabled = true;
-			this->FlagsCompiler->Location = System::Drawing::Point(1172, 28);
+			this->FlagsCompiler->Location = System::Drawing::Point(1147, 28);
 			this->FlagsCompiler->Name = L"FlagsCompiler";
-			this->FlagsCompiler->Size = System::Drawing::Size(249, 708);
+			this->FlagsCompiler->Size = System::Drawing::Size(274, 708);
 			this->FlagsCompiler->TabIndex = 0;
 			// 
 			// AI_Tab
@@ -958,18 +970,6 @@ private: System::Windows::Forms::Label^ label18;
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
-			// 
-			// label18
-			// 
-			this->label18->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label18->ForeColor = System::Drawing::Color::Firebrick;
-			this->label18->Location = System::Drawing::Point(3, 383);
-			this->label18->Name = L"label18";
-			this->label18->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->label18->Size = System::Drawing::Size(559, 81);
-			this->label18->TabIndex = 28;
-			this->label18->Text = L"Стандартный RayTrace Тоже ускорен (Отсечены лишние hits)....";
 			// 
 			// MyForm
 			// 

@@ -105,7 +105,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		exact_normalize(vN);
 
 		// multi-sample
-		const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : 6;
+		const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : build_args->mu_samples;
 		for (u32 sample = 0; sample < (u32)n_samples; sample++)
 		{
 			float				a = 0.2f * float(sample) / float(n_samples);
