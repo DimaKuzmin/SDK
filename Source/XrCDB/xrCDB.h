@@ -25,27 +25,17 @@ namespace Opcode {
 	class OPCODE_Model;
 	class AABBNoLeafNode;
 };
-
-struct DataFaceGlobal
-{
-	void* face = 0;
-	float energy;
-	float tfar;
-};
+ 
 
 struct OpcodeArgs
 {
-	 
-	struct Hit
+ 	struct Hit
 	{
 	   	float dist;
 		float u,v; 
 		u64 prim;
  	} hit_struct;
-	 
-
-	xr_vector<DataFaceGlobal> hits;
-	
+	 	
 	Fvector pos;
 	bool valid = 1;
 	float energy;

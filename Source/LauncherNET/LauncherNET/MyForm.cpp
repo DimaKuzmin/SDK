@@ -2,9 +2,13 @@
 #include <Windows.h>
 
 #include "../../Editors/XrLC/xrLC.h"
- 
+#include "../../Editors/XrAI/xrAI.h"
+
 #include "thread"
 #include <vcclr.h>
+
+#pragma comment(lib, "xrLC.lib")
+#pragma comment(lib, "xrAI.lib")
 
 
 using namespace System;
@@ -101,27 +105,41 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
 }
 
 
+gcroot<LauncherNET::MyForm^>  form;
+
 class  NET_Logger : ILogger
 {
 public:
-    gcroot<LauncherNET::MyForm^>  form;
-
-    void CreateClass()
+    void  updateLog(LPCSTR str)
     {
-        Application::SetCompatibleTextRenderingDefault(false);
-        Application::EnableVisualStyles();
+        form->updateLogFormItem(str);
+    };
 
-        form = gcnew LauncherNET::MyForm();
-         
-        for (auto i = 0; i < Size; i++)
-        {
-            System::String^ text = gcnew System::String(collection[i]);
-            form->FlagsCompiler->Items->Add(text);
-        }
- 
-        Application::Run(form);
+    void  updatePhrase(LPCSTR phrase)
+    {
+        form->updatePhaseItem(phrase);
+    };
+
+    virtual void  updateStatus(LPCSTR status)
+    {
+        form->updateStatusItem(status);
     }
 
+
+    virtual void UpdateText()
+    {
+        form->updateALL();
+    }
+
+    virtual void UpdateTime(LPCSTR time)
+    {
+        form->UpdateTime(time);
+    }
+};
+
+class  NET_LoggerAI : ILoggerAI
+{
+public:
     void  updateLog(LPCSTR str)
     {
         form->updateLogFormItem(str);
@@ -166,12 +184,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Устанавливаем имя потока
     SetThreadDescription(threadHandle, L"MAIN THREAD Application");
 
+     
+    Application::SetCompatibleTextRenderingDefault(false);
+    Application::EnableVisualStyles();
 
-    NET_Logger logger;
+    form = gcnew LauncherNET::MyForm();
 
-    LoggerCL = (ILogger*) &logger;
+    for (auto i = 0; i < Size; i++)
+    {
+        System::String^ text = gcnew System::String(collection[i]);
+        form->FlagsCompiler->Items->Add(text);
+    }
 
-    logger.CreateClass();
+    Application::Run(form);
+   
 
     return 0;
 }
@@ -183,6 +209,10 @@ void StartThread(SpecialArgs* main_args)
     std::thread* th = new std::thread(
         [] (SpecialArgs* args)
         {
+            NET_Logger logger;
+
+            LoggerCL = (ILogger*)&logger;
+
             HANDLE threadHandle = GetCurrentThread();
 
             // Устанавливаем имя потока
@@ -224,6 +254,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     auto PXPM_str = msclr::interop::marshal_as<std::string>(PXPM->Text);
     auto LevelName_str = msclr::interop::marshal_as < std::string >(LevelName->Text);
     auto TNear = msclr::interop::marshal_as<std::string>(EmbreeTnear->Text);
+    auto HITS_str = msclr::interop::marshal_as<std::string>(EmbreeHitsCollect->Text);
 
     if (RadioEmbreeGLow->Checked)
          args->embree_geometry_type = SpecialArgs::eLow;
@@ -257,6 +288,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     int _MUSamples = atoi(MUSamples_str.c_str());
     int _TH = atoi(TH_str.c_str());
     int _PXPM = atoi(PXPM_str.c_str());
+    int _HITS = atoi( HITS_str.c_str() );
 
     //args->sample = ;
 
@@ -264,6 +296,9 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->use_threads = _TH;
     args->sample = _Samples;
     args->mu_samples = _MUSamples;
+    args->MaxHitsPerRay = _HITS;
+
+
     args->level_name = LevelName_str;
  
     args->off_impl = off_implicit->Checked;
@@ -275,6 +310,78 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     {
         IsRunned = true;
          StartThread(args);
+    }
+    else
+    {
+        LoggerCL->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
+    }
+}
+
+void StartThread_xrAI(SpecialArgsAI* argsb)
+{
+    std::thread* th = new std::thread(
+        [](SpecialArgsAI* args)
+        {
+            NET_Logger logger;
+
+            LoggerCL = (ILogger*)&logger;
+
+            HANDLE threadHandle = GetCurrentThread();
+
+            // Устанавливаем имя потока
+            SetThreadDescription(threadHandle, L"MAIN THREAD xrAI");
+
+            StartupWorking_xrAI(args);
+            IsRunned = false;
+
+        }, argsb
+    );
+}
+
+System::Void LauncherNET::MyForm::xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e)
+{
+    SpecialArgsAI* args = new SpecialArgsAI();
+
+    args->Draft = xrAI_Draft->Checked;
+    args->PureCovers = xrAI_PureCovers->Checked;
+    args->UseSpawnCompiler = false;
+    args->VerifyAIMap = xrAI_Verify->Checked;
+
+
+    auto LEVEL = msclr::interop::marshal_as<std::string>(xrAI_LevelName->Text);
+
+    args->level_name = LEVEL;
+    
+    if (!IsRunned)
+    {
+        StartThread_xrAI(args);
+    }
+    else
+    {
+        LoggerCL->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
+    }
+}
+
+System::Void LauncherNET::MyForm::xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e)
+{
+    SpecialArgsAI* args = new SpecialArgsAI();
+
+    args->NoSeparator = xrAI_NoSepartor->Checked;
+    args->UseSpawnCompiler = true;
+ 
+
+    auto LEVEL = msclr::interop::marshal_as<std::string>(xrAI_LevelsName_Spawn->Text);
+    auto OUTSPAWN = msclr::interop::marshal_as<std::string>(xrAI_SpawnOut->Text);
+    auto START = msclr::interop::marshal_as<std::string>(xrAI_SPStartLevel->Text);
+
+    args->level_name = LEVEL;
+    args->OutSpawn_Name = OUTSPAWN;
+    args->SpawnActorStart = START;
+
+
+    if (!IsRunned)
+    {
+        StartThread_xrAI(args);
     }
     else
     {

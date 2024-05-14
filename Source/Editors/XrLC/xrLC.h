@@ -60,7 +60,7 @@ struct XRLC_API  SpecialArgs
 	float pxpm = 10;
 	int sample = 9; // 1-9
 	int mu_samples = 6; // 1-6
-	
+	int MaxHitsPerRay = 256;
 
 	char* special_args = 0;
 	std::string level_name;

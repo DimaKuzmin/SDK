@@ -44,7 +44,7 @@ static const char* h_str =
 void Help()
 {	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
 
-string_path INI_FILE;
+string_path_ai INI_FILE;
 
 extern  HWND logWindow;
 
@@ -52,10 +52,12 @@ extern LPCSTR GAME_CONFIG;
 
 extern void clear_temp_folder	();
 
+SpecialArgsAI xrAI_Args;
+
 void execute	(LPSTR cmd)
 {
-	Msg("Execute");
-
+	/// Msg("Execute");
+	/*
 	char* unpack = strstr(cmd, "-unpack");
 	char* out = strstr(cmd, "-out");
 
@@ -68,21 +70,11 @@ void execute	(LPSTR cmd)
 		game_spawn_unpacker(spawn_unpack, spawn_out);
 		return;
 	}
+	*/
    
 	// Load project
 	string4096 name;
-	name[0]=0; 
-	if (strstr(cmd,"-f"))
-		sscanf	(strstr(cmd,"-f")+2,"%s",name);
-	else
-		if (strstr(cmd,"-s"))
-			sscanf	(strstr(cmd,"-s")+2,"%s",name);
-		else
-			if (strstr(cmd,"-t"))
-				sscanf	(strstr(cmd,"-t")+2,"%s",name);
-			else
-				if (strstr(cmd,"-verify"))
-					sscanf	(strstr(cmd,"-verify")+xr_strlen("-verify"),"%s",name);
+	xr_strcpy(name, xrAI_Args.level_name.c_str());
 
 	if (xr_strlen(name))
 		xr_strcat			(name,"\\");
@@ -90,79 +82,53 @@ void execute	(LPSTR cmd)
 	string_path			prjName;
 	prjName				[0] = 0;
 	bool				can_use_name = false;
+
+ 	Msg("LevelARGS: %s", xrAI_Args.level_name.c_str());
+	Msg("OutARGS: %s", xrAI_Args.OutSpawn_Name.c_str());
+	Msg("StartARGS: %s", xrAI_Args.SpawnActorStart.c_str());
 	
 	if (xr_strlen(name) < sizeof(string_path)) 
 	{
 		can_use_name	= true;
-		FS.update_path	(prjName,"$game_levels$",name);
+		FS.update_path	(prjName,"$game_levels$", name);
 	}
 
-	FS.update_path		(INI_FILE,"$game_config$",GAME_CONFIG);
-	
-	if (strstr(cmd,"-f")) 
+	FS.update_path		(INI_FILE,"$game_config$", GAME_CONFIG);
+
+
+	if (!xrAI_Args.UseSpawnCompiler) 
 	{
 		R_ASSERT3		(can_use_name,"Too big level name",name);
-		
-		char			*output = strstr(cmd,"-out");
-		string256		temp0;
-		if (output) {
-			output		+= xr_strlen("-out");
-			sscanf		(output,"%s",temp0);
-			_TrimLeft	(temp0);
-			output		= temp0;
-		}
-		else
-			output		= (pstr)LEVEL_GRAPH_NAME;
+ 		xrCompiler		(prjName, xrAI_Args.Draft, xrAI_Args.PureCovers, LEVEL_GRAPH_NAME);
 
-		xrCompiler		(prjName,!!strstr(cmd,"-draft"),!!strstr(cmd,"-pure_covers"),output);
+		if (strstr(cmd, "-verify"))
+		{
+			R_ASSERT3(can_use_name, "Too big level name", name);
+			verify_level_graph(prjName, !strstr(cmd, "-noverbose"));
+		}
 	}
 	else
 	{
+ 		if (xr_strlen(name))
+			name[xr_strlen(name) - 1] = 0;
 
-		if (strstr(cmd,"-s")) 
-		{
-			if (xr_strlen(name))
-				name[xr_strlen(name) - 1] = 0;
-			char				*output = strstr(cmd,"-out");
-			string256			temp0, temp1;
-			if (output)
-			{
-				output			+= xr_strlen("-out");
-				sscanf			(output,"%s",temp0);
-				_TrimLeft		(temp0);
-				output			= temp0;
-			}
-			char				*start = strstr(cmd,"-start");
-			if (start) 
-			{
-				start			+= xr_strlen("-start");
-				sscanf			(start,"%s",temp1);
-				_TrimLeft		(temp1);
-				start			= temp1;
-			}
-			char				*no_separator_check = strstr(cmd,"-no_separator_check");
-			clear_temp_folder	();
-			CGameSpawnConstructor(name,output,start,!!no_separator_check);
-		}
-		else
-			if (strstr(cmd,"-verify")) {
-				R_ASSERT3			(can_use_name,"Too big level name",name);
-				verify_level_graph	(prjName,!strstr(cmd,"-noverbose"));
-			}
-	}
+		LPCSTR START_LEVEL = xrAI_Args.SpawnActorStart.c_str();
+		LPCSTR OUTSPAWN = xrAI_Args.OutSpawn_Name.c_str();
+
+		clear_temp_folder();
+		CGameSpawnConstructor(name, OUTSPAWN, START_LEVEL, xrAI_Args.NoSeparator);
+  	}
 }
+
+extern XRAI_API ILoggerAI* LoggerCL_xrAI = 0;
 
 void Startup(LPSTR     lpCmdLine)
 {
 	string4096 cmd;
-	BOOL bModifyOptions		= FALSE;
-
+ 
 	xr_strcpy(cmd,lpCmdLine);
 	strlwr(cmd);
-	if (strstr(cmd,"-?") || strstr(cmd,"-h"))			{ Help(); return; }
-	if ((strstr(cmd,"-f")==0) && (strstr(cmd,"-g")==0) && (strstr(cmd,"-m")==0) && (strstr(cmd,"-s")==0) && (strstr(cmd,"-t")==0) && (strstr(cmd,"-c")==0) && (strstr(cmd,"-verify")==0) && (strstr(cmd,"-patch")==0)&& (strstr(cmd, "-unpack") == 0)) { Help(); return; }
-	if (strstr(cmd,"-o"))								bModifyOptions = TRUE;
-
+     
 	// Give a LOG-thread a chance to startup
 	InitCommonControls	();
 	Sleep				(150);
@@ -191,6 +157,13 @@ void Startup(LPSTR     lpCmdLine)
 
 void buffer_vector_test		();
 
+XRAI_API void  StartupWorking_xrAI(SpecialArgsAI* args)
+{
+	xrAI_Args = *args;
+}
+
+
+/*
 int APIENTRY WinMain(HINSTANCE hInstance,
                      HINSTANCE hPrevInstance,
                      LPSTR     lpCmdLine,
@@ -210,3 +183,4 @@ int APIENTRY WinMain(HINSTANCE hInstance,
 
 	return					(0);
 }
+*/

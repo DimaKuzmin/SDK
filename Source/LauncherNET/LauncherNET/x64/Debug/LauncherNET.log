@@ -1,0 +1,5 @@
+﻿  AssemblyInfo.cpp
+  MyForm.cpp
+  Создание кода...
+A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\Source\LauncherNET\LauncherNET\AssemblyInfo.cpp(21,1): error C1010: непредвиденный конец файла во время поиска предкомпилированного заголовка. Возможно, вы забыли добавить директиву "#include "pch.h"" в источник.
+A:\STALKER\X-Ray_CoP_SDK\SDK\SDK\Source\LauncherNET\LauncherNET\MyForm.cpp(289,1): error C1010: непредвиденный конец файла во время поиска предкомпилированного заголовка. Возможно, вы забыли добавить директиву "#include "pch.h"" в источник.

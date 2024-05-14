@@ -100,6 +100,36 @@ namespace LauncherNET
 
 	private: System::Windows::Forms::CheckBox^ off_implicit;
 	private: System::Windows::Forms::CheckBox^ useDXT1;
+	private: System::Windows::Forms::Label^ label11;
+	private: System::Windows::Forms::TextBox^ EmbreeHitsCollect;
+	private: System::Windows::Forms::GroupBox^ groupBox4;
+	private: System::Windows::Forms::Label^ label14;
+	private: System::Windows::Forms::Label^ label13;
+	private: System::Windows::Forms::Label^ label12;
+	private: System::Windows::Forms::RichTextBox^ xrAI_LevelsName_Spawn;
+	private: System::Windows::Forms::RichTextBox^ xrAI_SpawnOut;
+	private: System::Windows::Forms::RichTextBox^ xrAI_SPStartLevel;
+
+
+
+
+
+	private: System::Windows::Forms::GroupBox^ groupBox3;
+	private: System::Windows::Forms::TextBox^ xrAI_LevelName;
+	private: System::Windows::Forms::CheckBox^ xrAI_PureCovers;
+
+
+
+private: System::Windows::Forms::CheckBox^ xrAI_Draft;
+
+	private: System::Windows::Forms::Label^ label15;
+	private: System::Windows::Forms::CheckBox^ xrAI_NoSepartor;
+private: System::Windows::Forms::Button^ xrAI_StartSpawn;
+private: System::Windows::Forms::Button^ xrAI_SpawnAIMap;
+private: System::Windows::Forms::CheckBox^ xrAI_Verify;
+
+
+
 
 
 
@@ -128,7 +158,10 @@ namespace LauncherNET
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->label11 = (gcnew System::Windows::Forms::Label());
+			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
 			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
 			this->off_implicit = (gcnew System::Windows::Forms::CheckBox());
@@ -159,15 +192,33 @@ namespace LauncherNET
 			this->ThreadsCount = (gcnew System::Windows::Forms::TextBox());
 			this->FlagsCompiler = (gcnew System::Windows::Forms::CheckedListBox());
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->groupBox4 = (gcnew System::Windows::Forms::GroupBox());
+			this->xrAI_NoSepartor = (gcnew System::Windows::Forms::CheckBox());
+			this->xrAI_StartSpawn = (gcnew System::Windows::Forms::Button());
+			this->label14 = (gcnew System::Windows::Forms::Label());
+			this->label13 = (gcnew System::Windows::Forms::Label());
+			this->label12 = (gcnew System::Windows::Forms::Label());
+			this->xrAI_LevelsName_Spawn = (gcnew System::Windows::Forms::RichTextBox());
+			this->xrAI_SpawnOut = (gcnew System::Windows::Forms::RichTextBox());
+			this->xrAI_SPStartLevel = (gcnew System::Windows::Forms::RichTextBox());
+			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
+			this->xrAI_SpawnAIMap = (gcnew System::Windows::Forms::Button());
+			this->label15 = (gcnew System::Windows::Forms::Label());
+			this->xrAI_LevelName = (gcnew System::Windows::Forms::TextBox());
+			this->xrAI_PureCovers = (gcnew System::Windows::Forms::CheckBox());
+			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
+			this->xrAI_Verify = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
 			this->groupBox2->SuspendLayout();
 			this->groupBox1->SuspendLayout();
 			this->IntelEmbreType->SuspendLayout();
+			this->AI_Tab->SuspendLayout();
+			this->groupBox4->SuspendLayout();
+			this->groupBox3->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// TabControl
@@ -271,6 +322,8 @@ namespace LauncherNET
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->label11);
+			this->Geometry_Tab->Controls->Add(this->EmbreeHitsCollect);
 			this->Geometry_Tab->Controls->Add(this->groupBox2);
 			this->Geometry_Tab->Controls->Add(this->EmbreeTnear);
 			this->Geometry_Tab->Controls->Add(this->label10);
@@ -299,6 +352,26 @@ namespace LauncherNET
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
 			// 
+			// label11
+			// 
+			this->label11->AutoSize = true;
+			this->label11->ForeColor = System::Drawing::Color::Brown;
+			this->label11->Location = System::Drawing::Point(624, 110);
+			this->label11->Name = L"label11";
+			this->label11->Size = System::Drawing::Size(207, 27);
+			this->label11->TabIndex = 25;
+			this->label11->Text = L"Embree Hits Per Ray";
+			// 
+			// EmbreeHitsCollect
+			// 
+			this->EmbreeHitsCollect->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->EmbreeHitsCollect->Location = System::Drawing::Point(838, 110);
+			this->EmbreeHitsCollect->Name = L"EmbreeHitsCollect";
+			this->EmbreeHitsCollect->Size = System::Drawing::Size(200, 34);
+			this->EmbreeHitsCollect->TabIndex = 24;
+			this->EmbreeHitsCollect->Text = L"256";
+			// 
 			// groupBox2
 			// 
 			this->groupBox2->Controls->Add(this->useDXT1);
@@ -311,6 +384,16 @@ namespace LauncherNET
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
+			// 
+			// useDXT1
+			// 
+			this->useDXT1->AutoSize = true;
+			this->useDXT1->Location = System::Drawing::Point(20, 163);
+			this->useDXT1->Name = L"useDXT1";
+			this->useDXT1->Size = System::Drawing::Size(219, 31);
+			this->useDXT1->TabIndex = 3;
+			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
+			this->useDXT1->UseVisualStyleBackColor = true;
 			// 
 			// off_mulight
 			// 
@@ -646,11 +729,162 @@ namespace LauncherNET
 			// AI_Tab
 			// 
 			this->AI_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->AI_Tab->Controls->Add(this->groupBox4);
+			this->AI_Tab->Controls->Add(this->groupBox3);
 			this->AI_Tab->Location = System::Drawing::Point(4, 36);
 			this->AI_Tab->Name = L"AI_Tab";
 			this->AI_Tab->Size = System::Drawing::Size(1439, 769);
 			this->AI_Tab->TabIndex = 2;
 			this->AI_Tab->Text = L"Настройка компиляции xrAI";
+			// 
+			// groupBox4
+			// 
+			this->groupBox4->Controls->Add(this->xrAI_NoSepartor);
+			this->groupBox4->Controls->Add(this->xrAI_StartSpawn);
+			this->groupBox4->Controls->Add(this->label14);
+			this->groupBox4->Controls->Add(this->label13);
+			this->groupBox4->Controls->Add(this->label12);
+			this->groupBox4->Controls->Add(this->xrAI_LevelsName_Spawn);
+			this->groupBox4->Controls->Add(this->xrAI_SpawnOut);
+			this->groupBox4->Controls->Add(this->xrAI_SPStartLevel);
+			this->groupBox4->Location = System::Drawing::Point(390, 33);
+			this->groupBox4->Name = L"groupBox4";
+			this->groupBox4->Size = System::Drawing::Size(589, 276);
+			this->groupBox4->TabIndex = 1;
+			this->groupBox4->TabStop = false;
+			this->groupBox4->Text = L"AI Spawn";
+			// 
+			// xrAI_NoSepartor
+			// 
+			this->xrAI_NoSepartor->AutoSize = true;
+			this->xrAI_NoSepartor->Location = System::Drawing::Point(25, 162);
+			this->xrAI_NoSepartor->Name = L"xrAI_NoSepartor";
+			this->xrAI_NoSepartor->Size = System::Drawing::Size(192, 31);
+			this->xrAI_NoSepartor->TabIndex = 8;
+			this->xrAI_NoSepartor->Text = L"NoSepartorCheck";
+			this->xrAI_NoSepartor->UseVisualStyleBackColor = true;
+			// 
+			// xrAI_StartSpawn
+			// 
+			this->xrAI_StartSpawn->Location = System::Drawing::Point(15, 210);
+			this->xrAI_StartSpawn->Name = L"xrAI_StartSpawn";
+			this->xrAI_StartSpawn->Size = System::Drawing::Size(185, 51);
+			this->xrAI_StartSpawn->TabIndex = 8;
+			this->xrAI_StartSpawn->Text = L"Запустить Спавн";
+			this->xrAI_StartSpawn->UseVisualStyleBackColor = true;
+			this->xrAI_StartSpawn->Click += gcnew System::EventHandler(this, &MyForm::xrAI_StartSpawn_Click);
+			// 
+			// label14
+			// 
+			this->label14->AutoSize = true;
+			this->label14->Location = System::Drawing::Point(20, 116);
+			this->label14->Name = L"label14";
+			this->label14->Size = System::Drawing::Size(135, 27);
+			this->label14->TabIndex = 5;
+			this->label14->Text = L"Старт Игрока";
+			// 
+			// label13
+			// 
+			this->label13->AutoSize = true;
+			this->label13->Location = System::Drawing::Point(20, 80);
+			this->label13->Name = L"label13";
+			this->label13->Size = System::Drawing::Size(72, 27);
+			this->label13->TabIndex = 4;
+			this->label13->Text = L"Выход";
+			// 
+			// label12
+			// 
+			this->label12->AutoSize = true;
+			this->label12->Location = System::Drawing::Point(20, 40);
+			this->label12->Name = L"label12";
+			this->label12->Size = System::Drawing::Size(153, 27);
+			this->label12->TabIndex = 3;
+			this->label12->Text = L"Уровни Спавна";
+			// 
+			// xrAI_LevelsName_Spawn
+			// 
+			this->xrAI_LevelsName_Spawn->Location = System::Drawing::Point(244, 33);
+			this->xrAI_LevelsName_Spawn->Name = L"xrAI_LevelsName_Spawn";
+			this->xrAI_LevelsName_Spawn->Size = System::Drawing::Size(328, 34);
+			this->xrAI_LevelsName_Spawn->TabIndex = 2;
+			this->xrAI_LevelsName_Spawn->Text = L"";
+			// 
+			// xrAI_SpawnOut
+			// 
+			this->xrAI_SpawnOut->Location = System::Drawing::Point(244, 73);
+			this->xrAI_SpawnOut->Name = L"xrAI_SpawnOut";
+			this->xrAI_SpawnOut->Size = System::Drawing::Size(328, 34);
+			this->xrAI_SpawnOut->TabIndex = 1;
+			this->xrAI_SpawnOut->Text = L"";
+			// 
+			// xrAI_SPStartLevel
+			// 
+			this->xrAI_SPStartLevel->Location = System::Drawing::Point(244, 113);
+			this->xrAI_SPStartLevel->Name = L"xrAI_SPStartLevel";
+			this->xrAI_SPStartLevel->Size = System::Drawing::Size(328, 34);
+			this->xrAI_SPStartLevel->TabIndex = 0;
+			this->xrAI_SPStartLevel->Text = L"";
+			// 
+			// groupBox3
+			// 
+			this->groupBox3->Controls->Add(this->xrAI_Verify);
+			this->groupBox3->Controls->Add(this->xrAI_SpawnAIMap);
+			this->groupBox3->Controls->Add(this->label15);
+			this->groupBox3->Controls->Add(this->xrAI_LevelName);
+			this->groupBox3->Controls->Add(this->xrAI_PureCovers);
+			this->groupBox3->Controls->Add(this->xrAI_Draft);
+			this->groupBox3->Location = System::Drawing::Point(13, 33);
+			this->groupBox3->Name = L"groupBox3";
+			this->groupBox3->Size = System::Drawing::Size(358, 276);
+			this->groupBox3->TabIndex = 0;
+			this->groupBox3->TabStop = false;
+			this->groupBox3->Text = L"AI Map";
+			// 
+			// xrAI_SpawnAIMap
+			// 
+			this->xrAI_SpawnAIMap->Location = System::Drawing::Point(13, 210);
+			this->xrAI_SpawnAIMap->Name = L"xrAI_SpawnAIMap";
+			this->xrAI_SpawnAIMap->Size = System::Drawing::Size(185, 51);
+			this->xrAI_SpawnAIMap->TabIndex = 7;
+			this->xrAI_SpawnAIMap->Text = L"Запустить";
+			this->xrAI_SpawnAIMap->UseVisualStyleBackColor = true;
+			this->xrAI_SpawnAIMap->Click += gcnew System::EventHandler(this, &MyForm::xrAI_SpawnAIMap_Click);
+			// 
+			// label15
+			// 
+			this->label15->AutoSize = true;
+			this->label15->Location = System::Drawing::Point(8, 162);
+			this->label15->Name = L"label15";
+			this->label15->Size = System::Drawing::Size(86, 27);
+			this->label15->TabIndex = 6;
+			this->label15->Text = L"Уровень";
+			// 
+			// xrAI_LevelName
+			// 
+			this->xrAI_LevelName->Location = System::Drawing::Point(100, 155);
+			this->xrAI_LevelName->Name = L"xrAI_LevelName";
+			this->xrAI_LevelName->Size = System::Drawing::Size(240, 34);
+			this->xrAI_LevelName->TabIndex = 2;
+			// 
+			// xrAI_PureCovers
+			// 
+			this->xrAI_PureCovers->AutoSize = true;
+			this->xrAI_PureCovers->Location = System::Drawing::Point(10, 67);
+			this->xrAI_PureCovers->Name = L"xrAI_PureCovers";
+			this->xrAI_PureCovers->Size = System::Drawing::Size(131, 31);
+			this->xrAI_PureCovers->TabIndex = 1;
+			this->xrAI_PureCovers->Text = L"PureCovers";
+			this->xrAI_PureCovers->UseVisualStyleBackColor = true;
+			// 
+			// xrAI_Draft
+			// 
+			this->xrAI_Draft->AutoSize = true;
+			this->xrAI_Draft->Location = System::Drawing::Point(10, 30);
+			this->xrAI_Draft->Name = L"xrAI_Draft";
+			this->xrAI_Draft->Size = System::Drawing::Size(84, 31);
+			this->xrAI_Draft->TabIndex = 0;
+			this->xrAI_Draft->Text = L"Draft";
+			this->xrAI_Draft->UseVisualStyleBackColor = true;
 			// 
 			// xrDO
 			// 
@@ -670,15 +904,15 @@ namespace LauncherNET
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// useDXT1
+			// xrAI_Verify
 			// 
-			this->useDXT1->AutoSize = true;
-			this->useDXT1->Location = System::Drawing::Point(20, 163);
-			this->useDXT1->Name = L"useDXT1";
-			this->useDXT1->Size = System::Drawing::Size(219, 31);
-			this->useDXT1->TabIndex = 3;
-			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
-			this->useDXT1->UseVisualStyleBackColor = true;
+			this->xrAI_Verify->AutoSize = true;
+			this->xrAI_Verify->Location = System::Drawing::Point(10, 104);
+			this->xrAI_Verify->Name = L"xrAI_Verify";
+			this->xrAI_Verify->Size = System::Drawing::Size(90, 31);
+			this->xrAI_Verify->TabIndex = 8;
+			this->xrAI_Verify->Text = L"Verify";
+			this->xrAI_Verify->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 
@@ -704,6 +938,11 @@ namespace LauncherNET
 			this->groupBox1->PerformLayout();
 			this->IntelEmbreType->ResumeLayout(false);
 			this->IntelEmbreType->PerformLayout();
+			this->AI_Tab->ResumeLayout(false);
+			this->groupBox4->ResumeLayout(false);
+			this->groupBox4->PerformLayout();
+			this->groupBox3->ResumeLayout(false);
+			this->groupBox3->PerformLayout();
 			this->ResumeLayout(false);
 
 		}
@@ -748,6 +987,10 @@ namespace LauncherNET
 			BuildTime->Text = managedString;
 		}
  
+ 
+		private: System::Void xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e);
+	 
+		private: System::Void xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e);
 };
 
 }

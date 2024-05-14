@@ -53,6 +53,7 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	float pxpm = 10;				//+
 	int sample = 9; // 1-9			//+
 	int mu_samples = 6; // 1-6		//+
+	int MaxHitsPerRay = 256;
 
 	char* special_args = 0;
 

@@ -186,7 +186,7 @@ struct RayQueryContext
  
  	unsigned int LastPrimitive = 0;
 	float last_far = 0.0f;
-
+	int hits = 0;
 	// Debuging Vector
 	// xr_vector<DataFaceGlobalE> hits;
 };
@@ -241,50 +241,26 @@ void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
 
 int RAY_ID = 0;
  
-xrCriticalSection csLIGHT;
+#include "../XrLCLight/BuildArgs.h"
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
-void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
+xrCriticalSection csLIGHT;
+ 
+
+FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-	if (ctxt->Ended || hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
+	if (build_args->MaxHitsPerRay < ctxt->hits || ctxt->Ended)
+		return;
+
+	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
 		return;
 
 	args->valid[0] = 0;
-
-	/*
-	if (ctxt->LastPrimitive == hit->primID)
-	{
-		//clMsg("Hitted Unexpected Self: %u", hit->primID);
-		return;
-	}
-
-	ctxt->LastPrimitive = hit->primID;
-	*/
-
-	//if (ray->tfar < ray->tnear)
-	//	return;
-
-	// ray->tnear = ray->tfar;
-	
-	// clMsg("Tnear[%f], Tfar[%f]", ray->tnear, ray->tfar);
-
-	/* 
-	if (ctxt->hits.size() == 0)
-	{
-		DataFaceGlobalE data;
- 
-		data.energy = ctxt->energy;
-		data.tfar = ray->tfar;
- 		ctxt->hits.push_back(data);
-	}
- 
- 
-	ray->tnear = ray->tfar;
-	*/
 
 
 	// Access to texture
@@ -296,14 +272,11 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		return;
 
 	const Shader_xrLC& SH = F->Shader();
-	if ( !SH.flags.bLIGHT_CastShadow ) // || F->flags.bShadowSkip
+	if ( !SH.flags.bLIGHT_CastShadow )  
 		return;
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-	
-	if ( strstr(T.name, "water"))
-		return;
 
 	if (F->flags.bOpaque)
 	{
@@ -324,10 +297,7 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		}
 
    		return;
-	}
-
-	// ctxt->last_far = ray->tfar;
-	 
+	}	 
 
 	if (T.pSurface.Empty())
 	{
@@ -341,6 +311,9 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		return;
 	}
 	 
+
+	ctxt->hits++;
+
 
 	// barycentric coords
 	// note: W,U,V order
@@ -374,58 +347,9 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 		ctxt->energy = 0;
 		ctxt->Ended = 1;
 	}
-
-	/* 
-	// DEBUG FUCKING WATER
-
-	DataFaceGlobalE data;
-
-	//RTCRayHit rayhit;
-	//rayhit.hit = *hit;
-	//rayhit.ray = *ray;
-	//data.rayhit = rayhit;
-	data.energy = ctxt->energy;
-	data.tfar = ray->tfar;
-	data.face = F;
-	ctxt->hits.push_back(data);
-
-	if (strstr(T.name, "water") && ctxt->energy < 0.2f)
-	{
-		csLIGHT.Enter();
-		int ID = RAY_ID;
-		for (const auto data : ctxt->hits)
-		{
-			if (data.face)
-			{
-				b_material& Mater = inlc_global_data()->materials()[data.face->dwMaterial];
-				b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
-
-				clMsg("Ray[%d], TFar[%f], energy[%f], Material[%s]", ID, data.tfar, data.energy, Texture.name);
-			}
-			else
-			{
-				clMsg("Initial[%d], TFar[%f], energy[%f]", ID, data.tfar, data.energy);
-			}
-
-		}
-
-		if (ctxt->skip != 0)
-		{
-			b_material& Mater = inlc_global_data()->materials()[ctxt->skip->dwMaterial];
-			b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
-
-			clMsg("Skip Material: %s, %p == %p", Texture.name, F, ctxt->skip);
-		}
-
-
-		clMsg("[INTEL] Ray[%d] TFar[%f], prim[%llu] energy[%f], TNear[%f], tex[%s]", RAY_ID, ray->tfar, hit->primID, ctxt->energy, ray->tnear, T.name);
-		csLIGHT.Leave();
-	}
-	*/
-
 }
  
-void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
+FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 { 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
@@ -683,8 +607,7 @@ void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty pr
 }
 
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 
 
 

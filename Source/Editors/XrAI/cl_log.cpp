@@ -92,9 +92,12 @@ void Progress		(const float F)
 	*/
 }
 
+#include "xrAI.h"
+extern XRAI_API ILoggerAI* LoggerCL_xrAI;
+
 void Phase			(const char *phase_name)
 {
-	while (!(hwPhaseTime && hwStage)) Sleep(1);
+	// while (!(hwPhaseTime && hwStage)) Sleep(1);
 
 	csLog.Enter			();
 	// Replace phase name with TIME:Name 
@@ -105,6 +108,8 @@ void Phase			(const char *phase_name)
 	SendMessage			( hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	SendMessage			( hwPhaseTime, LB_ADDSTRING, 0, (LPARAM) tbuf);
 
+	LoggerCL_xrAI->updatePhrase(tbuf);
+
 	// Start _new phase
 	phase_start_time	= timeGetTime();
 	xr_strcpy				(phase,  phase_name);
@@ -114,10 +119,15 @@ void Phase			(const char *phase_name)
 	SendMessage			( hwPhaseTime,	LB_SETTOPINDEX, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	Progress			(0);
 
+	// LoggerCL_xrAI->updatePhrase(tbuf);
+
 	// Release focus
 	Msg("\n* New phase started: %s",phase_name);
 	csLog.Leave			();
 }
+
+
+
 
 HWND logWindow=0;
 void logThread(void *dummy)
@@ -159,6 +169,9 @@ void logThread(void *dummy)
 	// Main cycle
 	u32		LogSize = 0;
 	float	PrSave	= 0;
+	CTimer dwStartupTime;
+	dwStartupTime.Start();
+
 	while (TRUE)
 	{
 		SetPriorityClass	(GetCurrentProcess(),IDLE_PRIORITY_CLASS);	// bHighPriority?NORMAL_PRIORITY_CLASS:IDLE_PRIORITY_CLASS
@@ -182,7 +195,10 @@ void logThread(void *dummy)
 				const char *S = *(*LogFile)[LogSize];
 				if (0==S)	S = "";
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
+
 			}
+
+
 			SendMessage		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
 			FlushLog		( );
 		}
@@ -214,6 +230,16 @@ void logThread(void *dummy)
 			SetWindowText	( hwPText, tbuf );
 		}
 
+		if (LoggerCL_xrAI)
+		{
+ 			extern	std::string make_time(u32 sec);
+			std::string time = make_time(dwStartupTime.GetElapsed_ms() / 1000);
+
+			LoggerCL_xrAI->updateStatus(status);
+			LoggerCL_xrAI->UpdateTime(time.c_str());
+			LoggerCL_xrAI->UpdateText();
+ 		}
+
 		if (bStatusChange) {
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
@@ -226,8 +252,9 @@ void logThread(void *dummy)
 		csLog.Leave			();
 
 		_process_messages	();
-		if (bClose)			break;
-		Sleep				(200);
+		if (bClose)			
+			break;
+		Sleep				(300);
 	}
 
 	// Cleanup
@@ -245,5 +272,8 @@ void __cdecl clMsg( const char *format, ...)
 	string1024		_out_;
 	strconcat		(sizeof(_out_),_out_,"    |    | ", buf );   
 	Log				(_out_);
+
+	if (LoggerCL_xrAI)
+		LoggerCL_xrAI->updateLog(status);
 	csLog.Leave		();
 }
