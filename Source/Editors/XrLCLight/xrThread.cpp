@@ -7,6 +7,11 @@ void	CThread::startup(void* P)
 
 	if (T->thMessages)	clMsg("* THREAD #%d: Started.",T->thID);
 	FPU::m64r		();
+
+	// FIXED Intel 13TH
+	DWORD_PTR affinity = 1ull << T->thID;
+	SetThreadAffinityMask(GetCurrentThread(), affinity);
+
 	T->Execute		();
 	T->thCompleted	= TRUE;
 	if (T->thMessages)	clMsg("* THREAD #%d: Task Completed.",T->thID);
