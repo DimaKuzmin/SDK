@@ -54,6 +54,8 @@ struct b_texture_real
 	u32					RESERVE;
 };
 
+#include "../DirectXTex/DirectXTex.h"
+
 struct b_texture
 {
 	string128			name;
@@ -61,6 +63,8 @@ struct b_texture
 	u32					dwHeight;
 	BOOL				bHasAlpha;
 #ifndef _EDITOR
+	u32 directXPixelsSize = 0;
+	DirectX::Image image;
 	u32* pSurface = 0;
 	//	BearImage				pSurface;
 #endif

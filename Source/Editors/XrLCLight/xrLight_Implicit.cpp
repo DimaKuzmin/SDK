@@ -266,7 +266,8 @@ void ImplicitLightingExec()
 			FS.update_path			(out_name,"$game_levels$",out_name);
 			clMsg					("Saving texture '%s'...",out_name);
 			VerifyPath				(out_name);
-			BYTE* raw_data			=	LPBYTE(*TEX.pSurface);
+
+			u8* raw_data = reinterpret_cast<u8*>(TEX.pSurface);  //LPBYTE(*TEX.pSurface);
 			u32	w					=	TEX.dwWidth;
 			u32	h					=	TEX.dwHeight;
 			u32	pitch				=	w*4;
@@ -275,6 +276,7 @@ void ImplicitLightingExec()
 			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
+		
 			DXTCompress				(out_name,raw_data,0,w,h,pitch,&fmt,4);
 		}
 
@@ -293,7 +295,9 @@ void ImplicitLightingExec()
 			FS.update_path			(out_name,"$game_levels$",out_name);
 			clMsg					("Saving texture '%s'...",out_name);
 			VerifyPath				(out_name);
+			
 			BYTE* raw_data			= LPBYTE(&*packed.begin());
+//			u8* raw_data			 = reinterpret_cast<u8*>(*packed.begin());
 			u32	w					= TEX.dwWidth;
 			u32	h					= TEX.dwHeight;
 			u32	pitch				= w*4;
@@ -302,6 +306,7 @@ void ImplicitLightingExec()
 			fmt.flags.set			(STextureParams::flDitherColor,		FALSE);
 			fmt.flags.set			(STextureParams::flGenerateMipMaps,	FALSE);
 			fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
+
 			DXTCompress				(out_name,raw_data,0,w,h,pitch,&fmt,4);
 		}
 		//defl.Deallocate				();

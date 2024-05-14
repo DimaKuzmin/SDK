@@ -362,6 +362,10 @@ void FilterIntersectionOne(const struct RTCFilterFunctionNArguments* args)
 	if (V < 0) V += T.dwHeight;
 
 	u32* raw = T.pSurface;
+
+	//Msg("Pixel: %u, BT: Witch: %d, Height: %d, MAX: %d",
+	//	V * T.dwWidth + U, T.dwWidth, T.dwHeight, T.dwHeight * T.dwWidth);
+
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);

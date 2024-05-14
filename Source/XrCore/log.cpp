@@ -75,7 +75,10 @@ void AddOne_fast(const char* split)
 {
 	logCS.Enter();
 	if (filelog_dump_data)
+	{
 		filelog_dump_data->w_string(split);
+		//filelog_dump_data->flush();
+	}
 	logCS.Leave();
 }
 
@@ -263,6 +266,9 @@ void CloseLog(void)
 	FlushLog();
 	LogFile->clear();
 	xr_delete(LogFile);
+
+	filelog->flush();
+	filelog_dump_data->flush();
 	FS.w_close(filelog);
 	FS.w_close(filelog_dump_data);
 }

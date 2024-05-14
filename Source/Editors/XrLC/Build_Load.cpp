@@ -15,7 +15,143 @@
 
 // #define STB_IMAGE_IMPLEMENTATION
 // #include "StbImage\stb_image.h"
-#include "DirectXTex.h"
+#include "../DirectXTex/DirectXTex.h"
+#pragma comment(lib, "DirectXTex.lib")
+
+
+std::string DXGI_Get(DXGI_FORMAT dxgi)
+{
+	const char* formatStrings[117] =
+	{
+	 	"DXGI_FORMAT_UNKNOWN",
+	 	"DXGI_FORMAT_R32G32B32A32_TYPELESS",
+	 	"DXGI_FORMAT_R32G32B32A32_FLOAT",
+	 	"DXGI_FORMAT_R32G32B32A32_UINT",
+	 	"DXGI_FORMAT_R32G32B32A32_SINT",
+	 	"DXGI_FORMAT_R32G32B32_TYPELESS",
+	 	"DXGI_FORMAT_R32G32B32_FLOAT",
+	 	"DXGI_FORMAT_R32G32B32_UINT",
+	 	"DXGI_FORMAT_R32G32B32_SINT",
+	 	"DXGI_FORMAT_R16G16B16A16_TYPELESS",
+	 	"DXGI_FORMAT_R16G16B16A16_FLOAT",
+	 	"DXGI_FORMAT_R16G16B16A16_UNORM",
+	 	"DXGI_FORMAT_R16G16B16A16_UINT",
+	 	"DXGI_FORMAT_R16G16B16A16_SNORM",
+	 	"DXGI_FORMAT_R16G16B16A16_SINT",
+	 	"DXGI_FORMAT_R32G32_TYPELESS",
+	 	"DXGI_FORMAT_R32G32_FLOAT",
+	 	"DXGI_FORMAT_R32G32_UINT",
+	 	"DXGI_FORMAT_R32G32_SINT",
+	 	"DXGI_FORMAT_R32G8X24_TYPELESS",
+	 	"DXGI_FORMAT_D32_FLOAT_S8X24_UINT",
+	 	"DXGI_FORMAT_R32_FLOAT_X8X24_TYPELESS",
+	 	"DXGI_FORMAT_X32_TYPELESS_G8X24_UINT",
+	 	"DXGI_FORMAT_R10G10B10A2_TYPELESS",
+	 	"DXGI_FORMAT_R10G10B10A2_UNORM",
+	 	"DXGI_FORMAT_R10G10B10A2_UINT",
+	 	"DXGI_FORMAT_R11G11B10_FLOAT",
+	 	"DXGI_FORMAT_R11G11B10_FLOAT",
+	 	"DXGI_FORMAT_R8G8B8A8_UNORM",
+	 	"DXGI_FORMAT_R8G8B8A8_UNORM_SRGB",
+	 	"DXGI_FORMAT_R8G8B8A8_UINT",
+	 	"DXGI_FORMAT_R8G8B8A8_SNORM",
+	 	"DXGI_FORMAT_R8G8B8A8_SINT",
+	 	"DXGI_FORMAT_R16G16_TYPELESS",
+	 	"DXGI_FORMAT_R16G16_FLOAT",
+	 	"DXGI_FORMAT_R16G16_UNORM",
+	 	"DXGI_FORMAT_R16G16_UINT",
+	 	"DXGI_FORMAT_R16G16_SNORM",
+	 	"DXGI_FORMAT_R16G16_SINT",
+	 	"DXGI_FORMAT_R32_TYPELESS",
+	 	"DXGI_FORMAT_D32_FLOAT",
+	 	"DXGI_FORMAT_R32_FLOAT",
+	 	"DXGI_FORMAT_R32_UINT",
+	 	"DXGI_FORMAT_R32_SINT",
+	 	"DXGI_FORMAT_R24G8_TYPELESS",
+	 	"DXGI_FORMAT_D24_UNORM_S8_UINT",
+	 	"DXGI_FORMAT_R24_UNORM_X8_TYPELESS",
+	 	"DXGI_FORMAT_X24_TYPELESS_G8_UINT",
+	 	"DXGI_FORMAT_R8G8_TYPELESS",
+	 	"DXGI_FORMAT_R8G8_UNORM",
+	 	"DXGI_FORMAT_R8G8_UINT",
+	 	"DXGI_FORMAT_R8G8_SNORM",
+	 	"DXGI_FORMAT_R8G8_SINT",
+	 	"DXGI_FORMAT_R16_TYPELESS",
+	 	"DXGI_FORMAT_R16_FLOAT",
+	 	"DXGI_FORMAT_D16_UNORM",
+	 	"DXGI_FORMAT_R16_UNORM",
+	 	"DXGI_FORMAT_R16_UINT",
+	 	"DXGI_FORMAT_R16_SNORM",
+	 	"DXGI_FORMAT_R16_SINT",
+	 	"DXGI_FORMAT_R8_TYPELESS",
+	 	"DXGI_FORMAT_R8_UNORM",
+	 	"DXGI_FORMAT_R8_UINT",
+	 	"DXGI_FORMAT_R8_SNORM",
+	 	"DXGI_FORMAT_R8_SINT",
+	 	"DXGI_FORMAT_A8_UNORM",
+	 	"DXGI_FORMAT_R1_UNORM",
+	 	"DXGI_FORMAT_R9G9B9E5_SHAREDEXP",
+	 	"DXGI_FORMAT_R8G8_B8G8_UNORM",
+	 	"DXGI_FORMAT_G8R8_G8B8_UNORM",
+	 	"DXGI_FORMAT_BC1_TYPELESS",
+	 	"DXGI_FORMAT_BC1_UNORM",
+	 	"DXGI_FORMAT_BC1_UNORM_SRGB",
+	 	"DXGI_FORMAT_BC2_TYPELESS",
+	 	"DXGI_FORMAT_BC2_UNORM",
+	 	"DXGI_FORMAT_BC2_UNORM_SRGB",
+	 	"DXGI_FORMAT_BC3_TYPELESS",
+	 	"DXGI_FORMAT_BC3_UNORM",
+	 	"DXGI_FORMAT_BC3_UNORM_SRGB",
+	 	"DXGI_FORMAT_BC4_TYPELESS",
+	 	"DXGI_FORMAT_BC4_UNORM",
+	 	"DXGI_FORMAT_BC4_SNORM",
+	 	"DXGI_FORMAT_BC5_TYPELESS",
+	 	"DXGI_FORMAT_BC5_UNORM",
+	 	"DXGI_FORMAT_BC5_SNORM",
+	 	"DXGI_FORMAT_B5G6R5_UNORM",
+	 	"DXGI_FORMAT_B5G5R5A1_UNORM",
+	 	"DXGI_FORMAT_B8G8R8A8_UNORM",
+	 	"DXGI_FORMAT_B8G8R8X8_UNORM",
+	 	"DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM",
+	 	"DXGI_FORMAT_B8G8R8A8_TYPELESS",
+	 	"DXGI_FORMAT_B8G8R8A8_UNORM_SRGB",
+	 	"DXGI_FORMAT_B8G8R8X8_TYPELESS",
+	 	"DXGI_FORMAT_B8G8R8X8_UNORM_SRGB",
+	 	"DXGI_FORMAT_BC6H_TYPELESS",
+	 	"DXGI_FORMAT_BC6H_UF16",
+	 	"DXGI_FORMAT_BC6H_SF16",
+	 	"DXGI_FORMAT_BC7_TYPELESS",
+	 	"DXGI_FORMAT_BC7_UNORM",
+	 	"DXGI_FORMAT_BC7_UNORM_SRGB",
+	 	"DXGI_FORMAT_AYUV",
+	 	"DXGI_FORMAT_Y410",
+	 	"DXGI_FORMAT_Y416",
+	 	"DXGI_FORMAT_NV12",
+	 	"DXGI_FORMAT_P010",
+	 	"DXGI_FORMAT_P016",
+	 	"DXGI_FORMAT_420_OPAQUE",
+	 	"DXGI_FORMAT_YUY2",
+	 	"DXGI_FORMAT_Y210",
+	 	"DXGI_FORMAT_Y210",
+	 	"DXGI_FORMAT_NV11",
+	 	"DXGI_FORMAT_AI44",
+	 	"DXGI_FORMAT_IA44",
+	 	"DXGI_FORMAT_P8",
+	 	"DXGI_FORMAT_A8P8",
+	 	"DXGI_FORMAT_A8P8",
+		"DXGI_FORMAT_B4G4R4A4_UNORM"
+ 
+ 
+	};
+
+	if (dxgi < 117)
+	{
+		return formatStrings[dxgi];
+	}
+	else
+		return "Undefined DXT Format";
+}
+
 
 extern u32	version;
 template <class T>
@@ -30,6 +166,91 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 		dest.insert	(dest.begin(), (T*)O->pointer(), (T*)O->pointer() + count);
 	}
 	if (O)		O->close	();
+}
+
+#include <windows.h>
+#include <string>
+
+std::wstring ConvertToWideString(const std::string& narrowString)
+{
+	int wideStrLength = MultiByteToWideChar(CP_UTF8, 0, narrowString.c_str(), -1, nullptr, 0);
+	if (wideStrLength == 0)
+	{
+		// Обработка ошибки конвертации
+		return L"not converted";
+	}
+
+	std::wstring wideString;
+	wideString.resize(wideStrLength);
+
+	if (MultiByteToWideChar(CP_UTF8, 0, narrowString.c_str(), -1, &wideString[0], wideStrLength) == 0)
+	{
+		// Обработка ошибки конвертации
+		return L"not converted";
+	}
+
+	return wideString;
+}
+
+
+std::string ConvertToString(const std::wstring& narrowString)
+{
+	int wideStrLength = WideCharToMultiByte(CP_UTF8, 0, narrowString.c_str(), -1, nullptr, 0, nullptr, nullptr);
+	if (wideStrLength == 0)
+	{
+		// Обработка ошибки конвертации
+		return "not converted";
+	}
+
+	std::string wideString;
+	wideString.resize(wideStrLength);
+
+	if (WideCharToMultiByte(CP_UTF8, 0, narrowString.c_str(), -1, &wideString[0], wideStrLength, nullptr, nullptr) == 0)
+	{
+		// Обработка ошибки конвертации
+		return "not converted";
+	}
+
+	return wideString;
+}
+
+
+int DXTCompressImageXRLC(LPCSTR out_name, u32* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
+{
+	Msg("DXT: Compressing Image: %s %uX%u", out_name, w, h);
+
+ 	DirectX::TexMetadata meta;
+	DirectX::ScratchImage sqImage;
+
+
+	size_t dataSize = w * h * sizeof(u32);
+
+	HRESULT HK = DirectX::LoadFromDDSMemory(raw_data, dataSize, DirectX::DDS_FLAGS_NONE, &meta, sqImage);
+	
+	Msg("HK: 0x%p", HK);
+
+	if (HK == 0)
+	clMsg("[ConvertDXT] Reading DDS: Images: %d Width: %u, Height: %u, \\n Metadata W: %u, H: %u Pixels: %u, Format: %d, %s, AlphaMode: %d",
+		sqImage.GetImageCount(),
+		sqImage.GetImages()->width,
+		sqImage.GetImages()->height,
+		sqImage.GetMetadata().width,
+		sqImage.GetMetadata().height,
+		sqImage.GetPixelsSize() / 4,
+		sqImage.GetMetadata().format,
+		DXGI_Get(sqImage.GetMetadata().format).c_str(),
+		sqImage.GetMetadata().GetAlphaMode());
+
+
+
+	//DirectX::SaveToDDSFile(sqImage.GetImages()[0], DirectX::DDS_FLAGS_NONE, ConvertToWideString(out_name).c_str());
+
+
+	Msg("Loaded : TRUE");
+ 
+
+	Msg("DXT: Compressing Image: 2 [Closing File]");
+	return  1;
 }
 
 
@@ -56,6 +277,16 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 
 	return false;
 }
+ 
+inline bool Surface_Export(string_path& F, LPSTR N)
+{
+	FS.update_path(F, "$game_tex_exports_export$", strconcat(sizeof(F), F, N, ".dds"));
+	IWriter* w = FS.w_open(F);
+	FS.w_close(w);
+
+	return true;
+}
+
 
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 {
@@ -358,42 +589,179 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					
 						string_path name;
 						R_ASSERT( Surface_Detect(name, N) );
-
-						//R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-						//R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
+ 
 						BT.pSurface = 0;
 						BT.THM.SetHasSurface(true);
-						//BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
-						//BT.pSurface.SwapRB();
-						int			w = 0, h = 0;
-						int comp = 4;
-						clMsg("- loading: %s", name);
-						stbi_uc* raw_image = stbi_load(name, &w, &h, &comp, 4);
-						R_ASSERT(comp == 4);
+						   
+					 
 
-						BT.pSurface = (u32* )raw_image;
 						 
-						clMsg("TextureP: %p, FileFMT: %d", BT.pSurface, BT.THM.fmt);
-						R_ASSERT2(BT.pSurface, "Can't load surface");
+						std::wstring& str = ConvertToWideString(name);	
 
-						/*
-						for (bsize i = 0; i < BT.pSurface.GetSize().x * BT.pSurface.GetSize().y; i++)
-						{
-							u32 *color = ((u32*)*BT.pSurface)+i;
-							*color = color_rgba(color_get_B(*color), color_get_G(*color), color_get_R(*color), color_get_A(*color));
-						}
-						*/
+ 
+						DirectX::TexMetadata metadata;
+						DirectX::ScratchImage sqImage;
 
-						if ((w != BT.dwWidth) || (h != BT.dwHeight))
+						DirectX::LoadFromDDSFile(str.c_str(), DirectX::DDS_FLAGS::DDS_FLAGS_NONE, &metadata, sqImage);
+						clMsg("Reading DDS: Images: %d Width: %u, Height: %u, \\n Metadata W: %u, H: %u Pixels: %u, Format: %d, %s, AlphaMode: %d",
+							sqImage.GetImageCount(),
+							sqImage.GetImages()->width,
+							sqImage.GetImages()->height,
+							sqImage.GetMetadata().width,
+							sqImage.GetMetadata().height,
+							sqImage.GetPixelsSize() / 4,
+							sqImage.GetMetadata().format,
+							DXGI_Get(sqImage.GetMetadata().format).c_str(),
+							sqImage.GetMetadata().GetAlphaMode());
+
+
+
+						DirectX::ScratchImage decodeImage;
+
+						HRESULT hk = DirectX::Decompress( sqImage.GetImages(), sqImage.GetImageCount(), sqImage.GetMetadata(), DXGI_FORMAT_R8G8B8A8_UNORM, decodeImage);
+						
+						u32* raw_data = xr_alloc<u32>(decodeImage.GetMetadata().width * decodeImage.GetMetadata().height);
+
+						//if (hk != 0 )
 						{
-							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", 
-								BT.dwWidth, BT.dwHeight,
-								w, h);
-							BT.dwWidth	= BT.THM.width = w;
-							BT.dwHeight = BT.THM.height = h;
+							switch (hk)
+							{
+							case S_OK:
+							{
+								clMsg("Decompressed DDS: Images: %d Width: %u, Height: %u, \\n Metadata W: %u, H: %u Pixels: %u, Format: %d, %s, AlphaMode: %d",
+									decodeImage.GetImageCount(),
+									decodeImage.GetImages()->width,
+									decodeImage.GetImages()->height,
+									decodeImage.GetMetadata().width,
+									decodeImage.GetMetadata().height,
+									decodeImage.GetPixelsSize() / 4,
+									decodeImage.GetMetadata().format,
+									DXGI_Get(decodeImage.GetMetadata().format).c_str(),
+									decodeImage.GetMetadata().GetAlphaMode());
+
+								clMsg("Операция завершена успешно.");
+
+								for (auto ImageID = 0; ImageID < sqImage.GetImageCount(); ImageID++)
+								{
+									Msg("Decompressed DDS: For Image[%d]: pixels: %u",
+										ImageID, sqImage.GetImages()[ImageID].pixels);
+
+								//	Msg("Decompressed DDS: Width: %llu, Height: %llu", 
+								//		sqImage.GetImages()[ImageID].width, sqImage.GetImages()[ImageID].height);
+								}
+								 
+
+								u32* pixels = reinterpret_cast<u32*>( decodeImage.GetPixels() );
+								int width = decodeImage.GetMetadata().width;
+								int height = decodeImage.GetMetadata().height;
+								
+								int RequriedPixels = width * height * 4;
+
+								if (decodeImage.GetPixelsSize() < RequriedPixels)
+									Msg(" Cant Read Pixels : Width * height (%u) < %u", RequriedPixels, decodeImage.GetPixelsSize());
+								else
+								{
+									Msg(" Чтение Файла в буфер пикселей !!!! (%u) < %u", RequriedPixels, decodeImage.GetPixelsSize());
+
+
+									for (size_t pixel = 0; pixel < width * height; ++pixel)
+									{
+										 
+										// Вычисление индекса пикселя в массиве данных
+										 
+
+										if (pixel < decodeImage.GetPixelsSize())
+										{
+											raw_data[pixel] = pixels[pixel];
+										}
+										else
+										{
+											Msg("Pixel Index Is Bad: %u", pixel);
+										}
+										
+
+ 										// Теперь у вас есть значения каналов RGB и A для текущего пикселя.
+										// Вы можете использовать эти значения для просчета освещения или других операций.
+										 
+									}
+								}
+								
+
+							}break;
+
+							case E_FAIL:
+							{
+								clMsg("Общая ошибка, операция не удалась.");
+							}break;
+
+							case E_INVALIDARG:
+							{
+								clMsg("Недопустимый аргумент.");
+							}break;
+
+							case E_OUTOFMEMORY:
+							{
+								clMsg("Недостаточно памяти для выполнения операции.");
+							}break;
+
+							case E_NOTIMPL:
+							{
+								clMsg("Метод или функция не реализованы.");
+							}break;
+
+							case E_POINTER:
+							{
+								clMsg("Недопустимый указатель.");
+
+							}break;
+
+							case E_ACCESSDENIED:
+							{
+								clMsg("Доступ запрещен.");
+							}break;
+ 
+							default:
+								clMsg("Reason: %u", hk);
+								break;
+							}
+
+ 						}
+						
+			 
+						if (S_OK == hk)
+						{
+							BT.pSurface = raw_data;
+ 
+							string_path path;
+							Surface_Export(path, N);
+
+							DXTCompressImageXRLC(path, raw_data, decodeImage.GetMetadata().width, decodeImage.GetMetadata().height, 0, &BT.THM, 4);
+  
+							BT.directXPixelsSize = sqImage.GetPixelsSize() / 4;
+
+							if ((sqImage.GetImages()->width != BT.dwWidth) || (sqImage.GetImages()->height != BT.dwHeight))
+							{
+								clMsg("! THM doesn't correspond to the texture: %dx%d -> %dx%d",
+									BT.dwWidth, BT.dwHeight,
+									sqImage.GetImages()->width,
+									sqImage.GetImages()->height
+								);
+
+								BT.dwWidth = BT.THM.width = sqImage.GetImages()->width;
+								BT.dwHeight = BT.THM.height = sqImage.GetImages()->height;
+							}
 						}
-						//BT.Vflip	();
-					} else {
+						else
+						{
+							BT.THM.SetHasSurface(FALSE);
+						}
+ 
+
+						
+ 
+					} 
+					else
+					{
 						// Free surface memory
 					}
 				}
