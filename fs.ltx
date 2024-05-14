@@ -1,9 +1,9 @@
 ;abbreviation               = recurs|notif|  root|                        add|            ext|                  description
-$sdk_root$			= false| false| $fs_root$
-$local_root$		= false| false| $sdk_root$
+$sdk_root$					= false| false| $fs_root$
+$local_root$				= false| false| $sdk_root$
 $server_data_root$          = false| false|  $fs_root$|rawdata\
 $server_backup$             = true|  false| $server_data_root$|     backup\
-$server_root$    		       = false|		true|	\
+$server_root$    		     = false|		true|	\
 $app_data_root$			    = true|		false|	$server_root$|			_appdata_\
 
 $game_data$                 = false| true|   $fs_root$| gamedata\
@@ -36,9 +36,11 @@ $smotion$                   = true|  true|  $import$|               |           
 $sbones$                    = true|  true|  $import$|               |                *.bones|               Skeleton bone data files
 $game_saves$                = false| true| $fs_root$| savedgames\
 
-$export_textures$			= false| true| $fs_root$| export_textures\
-$export_surface$			= false| true| $fs_root$| export_surfaces\
-$import_spawns$				= false| true| $fs_root$| import_spawns\
 
+$export_surface$			= false| true| $fs_root$| SDK_SE7\export_surfaces\
+$import_spawns$		= false| true| $fs_root$| SDK_SE7\import_spawns\
+
+$convert_textures$			= false| true| $fs_root$| SDK_SE7\convert_textures\
+$export_textures$			= false| true| $fs_root$| SDK_SE7\export_textures\
 
 $dump$      		    	= true|  false| $logs$|             logs\|           *.err|          Log files

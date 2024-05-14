@@ -1,12 +1,15 @@
-$sdk_root$			 = false| false| $fs_root$
-$local_root$    	 = false| true|	\
-$server_root$    	 = false| true|	\
-
-$app_data_root$		 = false| true|     $sdk_root$|   AppData\
-$server_data_root$   = false| false|	rawdata\
-$game_data$    		 = false| true|		gamedata\
-$local_game_data$    = false| true|		gamedata\
-$game_config$    	 = true|  false|	$game_data$|			configs\
-$game_scripts$    	 = true|  false|	$game_data$|			scripts\|		*.script|	Game script files
-$logs$      		 = true|  false|    $app_data_root$|      logs\|           *.err|          Log files
-$cache$     		 = true|  false|	xr_cache\
+; abbreviation     = recurs| notif| root|        add|      ext|      description
+$sdk_root$         = false|  false| $fs_root$
+$local_root$       = false|  true|  \
+$server_root$      = false|  true|  \
+$app_data_root$    = true|   false| _appdata_\
+$server_data_root$ = false|  false| rawdata\
+$game_data$        = false|  true|  gamedata\
+$local_game_data$  = false|  true|  gamedata\
+$game_config$      = true|   false| $game_data$| configs\
+$game_scripts$     = true|   false| $game_data$| scripts\| *.script| Game script files
+$logs$             = true|   false| $sdk_root$|  logs\|    *.err|    Log files
+$cache$            = true|   false| xr_cache\
+$arch_dir_addons$  = true| 	 false| addons\
+$game_levels$           = true|  false| $game_data$|     levels\
+$game_textures$         = true|  true|  $game_data$|     textures\
