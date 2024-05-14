@@ -127,6 +127,9 @@ private: System::Windows::Forms::CheckBox^ xrAI_Draft;
 private: System::Windows::Forms::Button^ xrAI_StartSpawn;
 private: System::Windows::Forms::Button^ xrAI_SpawnAIMap;
 private: System::Windows::Forms::CheckBox^ xrAI_Verify;
+private: System::Windows::Forms::Label^ label16;
+private: System::Windows::Forms::CheckBox^ xrLC_MUModelsRegresion;
+private: System::Windows::Forms::Label^ label17;
 
 
 
@@ -158,6 +161,9 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->label17 = (gcnew System::Windows::Forms::Label());
+			this->label16 = (gcnew System::Windows::Forms::Label());
+			this->xrLC_MUModelsRegresion = (gcnew System::Windows::Forms::CheckBox());
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
@@ -202,6 +208,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->xrAI_SpawnOut = (gcnew System::Windows::Forms::RichTextBox());
 			this->xrAI_SPStartLevel = (gcnew System::Windows::Forms::RichTextBox());
 			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
+			this->xrAI_Verify = (gcnew System::Windows::Forms::CheckBox());
 			this->xrAI_SpawnAIMap = (gcnew System::Windows::Forms::Button());
 			this->label15 = (gcnew System::Windows::Forms::Label());
 			this->xrAI_LevelName = (gcnew System::Windows::Forms::TextBox());
@@ -209,7 +216,6 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->xrAI_Verify = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -322,6 +328,9 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->label17);
+			this->Geometry_Tab->Controls->Add(this->label16);
+			this->Geometry_Tab->Controls->Add(this->xrLC_MUModelsRegresion);
 			this->Geometry_Tab->Controls->Add(this->label11);
 			this->Geometry_Tab->Controls->Add(this->EmbreeHitsCollect);
 			this->Geometry_Tab->Controls->Add(this->groupBox2);
@@ -352,11 +361,44 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
 			// 
+			// label17
+			// 
+			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label17->ForeColor = System::Drawing::Color::Firebrick;
+			this->label17->Location = System::Drawing::Point(3, 460);
+			this->label17->Name = L"label17";
+			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->label17->Size = System::Drawing::Size(559, 81);
+			this->label17->TabIndex = 27;
+			this->label17->Text = L"Рекомендовано выберать Intel, для LMAPS, MU Models.\r\nНа Implict стадии плохо проб"
+				L"ивает поверхности типа Воды. \r\nВ последующем починится. (Надеюсь).\r\n\r\n\r\n\r\n";
+			// 
+			// label16
+			// 
+			this->label16->ForeColor = System::Drawing::Color::Firebrick;
+			this->label16->Location = System::Drawing::Point(18, 558);
+			this->label16->Name = L"label16";
+			this->label16->RightToLeft = System::Windows::Forms::RightToLeft::Yes;
+			this->label16->Size = System::Drawing::Size(421, 81);
+			this->label16->TabIndex = 26;
+			this->label16->Text = L"Эксперементальная фича. Чинит Деревья и затемненые обьекты (Отключением)..\r\n\r\n\r\n";
+			// 
+			// xrLC_MUModelsRegresion
+			// 
+			this->xrLC_MUModelsRegresion->AutoSize = true;
+			this->xrLC_MUModelsRegresion->Location = System::Drawing::Point(38, 642);
+			this->xrLC_MUModelsRegresion->Name = L"xrLC_MUModelsRegresion";
+			this->xrLC_MUModelsRegresion->Size = System::Drawing::Size(228, 31);
+			this->xrLC_MUModelsRegresion->TabIndex = 4;
+			this->xrLC_MUModelsRegresion->Text = L"MU Models Regresion";
+			this->xrLC_MUModelsRegresion->UseVisualStyleBackColor = true;
+			// 
 			// label11
 			// 
 			this->label11->AutoSize = true;
 			this->label11->ForeColor = System::Drawing::Color::Brown;
-			this->label11->Location = System::Drawing::Point(624, 110);
+			this->label11->Location = System::Drawing::Point(602, 28);
 			this->label11->Name = L"label11";
 			this->label11->Size = System::Drawing::Size(207, 27);
 			this->label11->TabIndex = 25;
@@ -366,7 +408,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			// 
 			this->EmbreeHitsCollect->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->EmbreeHitsCollect->Location = System::Drawing::Point(838, 110);
+			this->EmbreeHitsCollect->Location = System::Drawing::Point(838, 28);
 			this->EmbreeHitsCollect->Name = L"EmbreeHitsCollect";
 			this->EmbreeHitsCollect->Size = System::Drawing::Size(200, 34);
 			this->EmbreeHitsCollect->TabIndex = 24;
@@ -380,7 +422,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->groupBox2->Controls->Add(this->off_implicit);
 			this->groupBox2->Location = System::Drawing::Point(27, 28);
 			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(361, 218);
+			this->groupBox2->Size = System::Drawing::Size(361, 240);
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
@@ -429,17 +471,17 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			// 
 			this->EmbreeTnear->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->EmbreeTnear->Location = System::Drawing::Point(838, 150);
+			this->EmbreeTnear->Location = System::Drawing::Point(838, 68);
 			this->EmbreeTnear->Name = L"EmbreeTnear";
 			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
 			this->EmbreeTnear->TabIndex = 22;
-			this->EmbreeTnear->Text = L"0.2";
+			this->EmbreeTnear->Text = L"0.001";
 			// 
 			// label10
 			// 
 			this->label10->AutoSize = true;
 			this->label10->ForeColor = System::Drawing::Color::Brown;
-			this->label10->Location = System::Drawing::Point(624, 150);
+			this->label10->Location = System::Drawing::Point(624, 68);
 			this->label10->Name = L"label10";
 			this->label10->Size = System::Drawing::Size(143, 27);
 			this->label10->TabIndex = 21;
@@ -721,9 +763,9 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 				static_cast<System::Byte>(204)));
 			this->FlagsCompiler->ForeColor = System::Drawing::Color::DarkViolet;
 			this->FlagsCompiler->FormattingEnabled = true;
-			this->FlagsCompiler->Location = System::Drawing::Point(1172, 148);
+			this->FlagsCompiler->Location = System::Drawing::Point(1172, 28);
 			this->FlagsCompiler->Name = L"FlagsCompiler";
-			this->FlagsCompiler->Size = System::Drawing::Size(249, 548);
+			this->FlagsCompiler->Size = System::Drawing::Size(249, 708);
 			this->FlagsCompiler->TabIndex = 0;
 			// 
 			// AI_Tab
@@ -840,6 +882,16 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->groupBox3->TabStop = false;
 			this->groupBox3->Text = L"AI Map";
 			// 
+			// xrAI_Verify
+			// 
+			this->xrAI_Verify->AutoSize = true;
+			this->xrAI_Verify->Location = System::Drawing::Point(10, 104);
+			this->xrAI_Verify->Name = L"xrAI_Verify";
+			this->xrAI_Verify->Size = System::Drawing::Size(90, 31);
+			this->xrAI_Verify->TabIndex = 8;
+			this->xrAI_Verify->Text = L"Verify";
+			this->xrAI_Verify->UseVisualStyleBackColor = true;
+			// 
 			// xrAI_SpawnAIMap
 			// 
 			this->xrAI_SpawnAIMap->Location = System::Drawing::Point(13, 210);
@@ -903,16 +955,6 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
-			// 
-			// xrAI_Verify
-			// 
-			this->xrAI_Verify->AutoSize = true;
-			this->xrAI_Verify->Location = System::Drawing::Point(10, 104);
-			this->xrAI_Verify->Name = L"xrAI_Verify";
-			this->xrAI_Verify->Size = System::Drawing::Size(90, 31);
-			this->xrAI_Verify->TabIndex = 8;
-			this->xrAI_Verify->Text = L"Verify";
-			this->xrAI_Verify->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 
@@ -1013,6 +1055,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 		private: System::Void xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e);
 	 
 		private: System::Void xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e);
+ 
 };
 
 }

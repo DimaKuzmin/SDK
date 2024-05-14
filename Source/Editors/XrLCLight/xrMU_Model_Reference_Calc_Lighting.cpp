@@ -120,6 +120,10 @@ void xrMU_Reference::calc_lighting	()
 
 	// A*C + D = B
 	// build data
+
+	// FIX MU MODELS 
+	// Чинит темные Тени на деревьях
+	if (build_args->MU_ModelsRegression)
 	{
 		FPU::m64r			();
 		xr_vector<double>	A;	A.resize(color.size());

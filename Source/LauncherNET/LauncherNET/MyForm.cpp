@@ -14,13 +14,12 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
-#define Size 17
+#define Size 15
   
-char* collection[Size] = {
-    "use_embree",
+char* collection[Size] =
+{
     "use_avx",
     "use_sse",
-    "use_opcode_old",
     "no_optimize",
     "no_invalide_faces",
     "nosun",
@@ -67,40 +66,38 @@ char* collection[Size] = {
 void GetItemFromCollection(SpecialArgs* args, const char* item)
 {
     if (strstr(item, collection[0]))
-         args->use_embree = true;
-    if (strstr(item, collection[1]))
         args->use_avx = true;
-    if (strstr(item, collection[2]))
+    if (strstr(item, collection[1]))
         args->use_sse = true;
-    if (strstr(item, collection[3]))
-        args->use_opcode_old = true;
-    if (strstr(item, collection[4]))
+    if (strstr(item, collection[2]))
         args->no_optimize = true;
-    if (strstr(item, collection[5]))
+    if (strstr(item, collection[3]))
         args->no_invalide_faces = true;
-    if (strstr(item, collection[6]))
+    if (strstr(item, collection[4]))
         args->nosun = true;
-    if (strstr(item, collection[7]))
+    if (strstr(item, collection[5]))
         args->norgb = true;
-    if (strstr(item, collection[8]))
+    if (strstr(item, collection[6]))
         args->nohemi = true;
-    if (strstr(item, collection[9]))
+    if (strstr(item, collection[7]))
         args->no_simplify = true;
-    if (strstr(item, collection[10]))
+    if (strstr(item, collection[8]))
         args->nosmg = true;
-    if (strstr(item, collection[11]))
+    if (strstr(item, collection[9]))
         args->noise = true;
-    if (strstr(item, collection[12]))
+    if (strstr(item, collection[10]))
         args->skip_weld = true;
-    if (strstr(item, collection[13]))
+    if (strstr(item, collection[11]))
         args->use_std = true;
 
-    if (strstr(item, collection[14]))
+    if (strstr(item, collection[12]))
         args->use_IMPLICIT_Stage = true;
-    if (strstr(item, collection[15]))
+    if (strstr(item, collection[13]))
         args->use_LMAPS_Stage = true;
-    if (strstr(item, collection[16]))
+    if (strstr(item, collection[14]))
         args->use_MU_Lighting = true;
+
+   
 
 }
 #include <vcclr.h> // Include for gcroot
@@ -320,6 +317,8 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
         GetItemFromCollection(args, s.c_str());
      };
+
+    args->use_embree = args->use_IMPLICIT_Stage || args->use_LMAPS_Stage || args->use_MU_Lighting;
      
     args->off_lmaps;
 
@@ -344,6 +343,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_lmaps = off_lmaps->Checked;
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
+    args->MU_ModelsRegression = xrLC_MUModelsRegresion->Checked;
 
     if (!IsRunned)
     {

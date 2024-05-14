@@ -55,6 +55,8 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	int mu_samples = 6; // 1-6		//+
 	int MaxHitsPerRay = 256;
 
+	bool MU_ModelsRegression = true;
+
 	char* special_args = 0;
 
 
