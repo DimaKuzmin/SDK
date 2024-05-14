@@ -6,158 +6,7 @@
 #include <thread>
 
 extern void Detach		(vecFace* S);
-
-#include <immintrin.h>
-#include <xmmintrin.h>
-
-//#define TEST_OLDER
-#define TEST_OLDER_NEW
-
-ICF Fbox box_modify_avx	(Fbox& p, Fbox& current) 
-{		
-	Fbox newb;
-
-	__m256 min_avx = _mm256_loadu_ps((float*) &p.min);
-	__m256 max_avx = _mm256_loadu_ps((float*) &p.max);
-
-	__m256 cur_min = _mm256_loadu_ps((float*) &current.min);
-	__m256 cur_max = _mm256_loadu_ps((float*) &current.max);
-
-	min_avx = _mm256_min_ps(min_avx, cur_min);
-	max_avx = _mm256_max_ps(max_avx, cur_max);
-
-	_mm256_storeu_ps((float*) &newb.min, min_avx);
-	_mm256_storeu_ps((float*) &newb.max, max_avx);
-
-	return newb;
-}
-
-IC	Fbox	box_merge_avx		(Fbox b1, Fbox b2)		
-{ 
-#ifdef TEST_OLDER
-	Fbox newb; 
-	newb.merge(b1,b2);
-	return newb;
-#else 
-	Fbox newb;
-	newb.invalidate(); 
-	newb = box_modify_avx(b1, b2); 
- 	return newb;	
-#endif 
-}
-
-IC	Fvector	box_getsize_avx		(Fbox box)		
-{ 
-	 Fvector vector;
-#ifndef TEST_OLDER
- 	__m256 min_avx = _mm256_loadu_ps((float*) &box.min);
-	__m256 max_avx = _mm256_loadu_ps((float*) &box.max);
-
-	__m256 result = _mm256_sub_ps(max_avx, min_avx);
-	 _mm256_storeu_ps((float*) &vector, result);
-#else 
-	 box.getsize(vector);
-#endif
- 	return vector;	
-}
-
-// NEW ----------------------------------------------------------
-
-IC	float	box_getvolume_avx		(Fbox box)		
-{ 
-	float final_result;
-#ifdef TEST_OLDER_NEW
-	final_result = box.getvolume();
-#else 
- 	Fvector& sz = box_getsize_avx(box);
-      
-	__m256 x = _mm256_set1_ps(sz.x);
-    __m256 y = _mm256_set1_ps(sz.y);
-    __m256 z = _mm256_set1_ps(sz.z);
-
-    __m256 result = _mm256_mul_ps(_mm256_mul_ps(x, y), z);
-
-    // Здесь можно провести дополнительные операции с результатом, если это необходимо
-
-    // Преобразование результата в скалярное значение
-    _mm256_storeu_ps(&final_result, result);
-#endif
-
- 	return final_result;	
-}
-
-
-IC void box_grow_avx(Fbox& box, float value)
-{
-#ifdef TEST_OLDER_NEW
-	box.grow(value);
-#else 
-	float vector[8] = { -value, -value, -value, 0, value, value, value, 0};
-	float box_vec[8] = { box.min.x, box.min.y, box.min.z, 0, box.max.x, box.max.y, box.max.z, 0};
-	
-	__m256 box_vector = _mm256_loadu_ps((float*) &box_vec);
- 	__m256 add_vector = _mm256_loadu_ps((float*) &vector);
-
-	__m256 recalc = _mm256_add_ps(box_vector, add_vector);
-
-	float result[8];  
-    _mm256_storeu_ps((float*)&result, recalc);
-
-	box.min.x = result[0];
-	box.min.y = result[1];
-	box.min.z = result[2];
-
-	box.max.x = result[4];
-	box.max.y = result[5];
-	box.max.z = result[6];
-#endif
-
-	/*
-	
-
-		// Загрузка вектора s в регистр AVX
-		float vector[3] = { value, value, value};
-
-		// Создание векторов min и max и инициализация их значениями по умолчанию
-		__m256 min_vector = _mm256_loadu_ps((float*) &box.min);
-		__m256 max_vector = _mm256_loadu_ps((float*) &box.max);
-		__m256 add_vector = _mm256_loadu_ps((float*) &vector);
-
-		// Нахождение минимального и максимального значения и выполнение операций
-		min_vector = _mm256_sub_ps(min_vector, add_vector);
-		max_vector = _mm256_add_ps(max_vector, add_vector);
-
-		// Выгрузка результатов в массивы
- 
-		_mm256_storeu_ps((float*)&box.min, min_vector);
-		_mm256_storeu_ps((float*)&box.max, max_vector);
-	*/
-}
-
-
-IC void box_modify_avx(Fbox& box, Fvector& p)
-{
-#ifdef TEST_OLDER_NEW
-	box.modify(p);
-#else 
-	// Загрузка вектора s в регистр AVX
-	__m256 s_vector = _mm256_loadu_ps((float*) &p);
-
-	// Нахождение минимального значения
-	__m256 min_vector = _mm256_loadu_ps((float*) &box.min);  // Инициализация min_vector максимальными значениями
-	min_vector = _mm256_min_ps(min_vector, s_vector);
-
-	// Нахождение максимального значения
-	__m256 max_vector = _mm256_loadu_ps((float*) &box.max);  // Инициализация max_vector минимальными значениями
-	max_vector = _mm256_max_ps(max_vector, s_vector);
-
-	// Выгрузка результатов в массивы
- 
-	_mm256_storeu_ps((float*)&box.min, min_vector);
-	_mm256_storeu_ps((float*)&box.max, max_vector);
-#endif
-}
-
+  
 IC BOOL	FaceEqual		(Face* F1, Face* F2)
 {
 	if (F1->v[0]->P.distance_to(F2->v[0]->P) > 64 ) return FALSE;
@@ -204,26 +53,14 @@ BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base, u32 id)
 	if (subdiv.size()>=u32(3*c_SS_HighVertLimit/4))	return FALSE;
 	  
 	Fvector sz_base;
-	
-	if (use_avx)
-	{
-		// 2. Bounding box
-		bb_base.invalidate	();
-		CreateBox(subdiv, bb_base, id);
-	
-		box_grow_avx(bb_base, EPS_S);	
-		sz_base = box_getsize_avx(bb_base);		
- 	}
-	else 
-	{
-		// 2. Bounding box
-		bb_base.invalidate	();
-		CreateBox(subdiv, bb_base, id);
-	
-		bb_base.grow		(EPS_S);	// Enshure non-zero volume
-		bb_base.getsize(sz_base);
-	}
 
+ 	// 2. Bounding box
+	bb_base.invalidate	();
+	CreateBox(subdiv, bb_base, id);
+	
+	bb_base.grow		(EPS_S);	// Enshure non-zero volume
+	bb_base.getsize(sz_base);
+ 
 
 	
 	if (sz_base.x<c_SS_maxsize)		return TRUE;
@@ -241,11 +78,7 @@ IC void	MakeCube		(Fbox& BB_dest, const Fbox& BB_src)
 	if (D.z>max)	max = D.z;
 
 	BB_dest.set			(C,C);
-	
-	if (use_avx)
-		box_grow_avx(BB_dest, max);
-	else 
-		BB_dest.grow		(max); 
+	BB_dest.grow		(max); 
 }
 
 IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, const Fvector & orig2, int iAxis)
@@ -266,61 +99,34 @@ IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u3
 	// Polygons
 	if ((f1+f2) > u32(4*c_SS_HighVertLimit/3))		return FALSE;	// Don't exceed limits (4/3 max POLY)	
 
-
-	if (use_avx)
-	{
-		// Size
-		Fbox	merge  = box_merge_avx(bb_base, bb);
- 		Fvector sz	   = box_getsize_avx(merge);	
- 		Fvector orig1 = box_getsize_avx(bb_base_orig);	
- 		Fvector orig2 = box_getsize_avx(bb);	
-  
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
-
-		// Volume
-		Fbox		bb0,bb1;
-		MakeCube	(bb0,bb_base);
-		float	v1	= box_getvolume_avx(bb0);  
-		MakeCube	(bb1,bb);	
-		float	v2	= box_getvolume_avx(bb1);  
-
-		volume		= box_getvolume_avx(merge); 
  
- 		if (volume > 8 * ( v1 + v2))  
-			return FALSE;	// Don't merge too distant groups (8 vol)
-	}
-	else 
-	{
-				// Size
-		Fbox	merge;
-		merge.merge		(bb_base,bb);
+	// Size
+	Fbox	merge;
+	merge.merge		(bb_base,bb);
 
-		Fvector sz, orig1, orig2;
-		merge.getsize	(sz);		
-		bb_base_orig.getsize(orig1);
-		bb.getsize		(orig2);
+	Fvector sz, orig1, orig2;
+	merge.getsize	(sz);		
+	bb_base_orig.getsize(orig1);
+	bb.getsize		(orig2);
  
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
-		if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 0))	return FALSE;	// Don't exceed limits (4/3 GEOM)
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 1))	return FALSE;
+	if (!ValidateMergeLinearSize(sz, orig1, orig2, 2))	return FALSE;
 
-		// Volume
-		Fbox		bb0,bb1;
-		MakeCube	(bb0,bb_base);
-		float	v1	= bb0.getvolume	();  
-		MakeCube	(bb1,bb);	
-		float	v2	= bb1.getvolume	();
+	// Volume
+	Fbox		bb0,bb1;
+	MakeCube	(bb0,bb_base);
+	float	v1	= bb0.getvolume	();  
+	MakeCube	(bb1,bb);	
+	float	v2	= bb1.getvolume	();
 
-		volume		= merge.getvolume	(); 
+	volume		= merge.getvolume	(); 
 
 		
 	
- 		if (volume > 8 * ( v1 + v2)) // 2 * 2 * 2		
-			return FALSE;	// Don't merge too distant groups (8 vol)
-	}
-
+ 	if (volume > 8 * ( v1 + v2)) // 2 * 2 * 2		
+		return FALSE;	// Don't merge too distant groups (8 vol)
+ 
 
 	// OK
 	return TRUE;

@@ -158,9 +158,7 @@ public:
 
 
 void IntelEmbereUNLOAD();
- 
-void IntelEmbereLOAD();
- 
+
 
 #include <tbb/parallel_for_each.h>
 #include <random>

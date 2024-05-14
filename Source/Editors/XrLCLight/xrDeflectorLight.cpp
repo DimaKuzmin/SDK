@@ -450,23 +450,6 @@ void FilterFunction(OpcodeArgs* args)
 	CDB::TRI& clT										= MDL->get_tris()[args->hit_struct.prim];
 	base_Face* F										= (base_Face*)(clT.pointer);
 	
-	//POS[%.2f,%.2f,%.2f] VPUSH(args->pos), 
-	//clMsg("[OPCO] Ray[%d] TFar[%f], prim[%llu] energy[%f]", RayID, args->hit_struct.dist, args->hit_struct.prim, args->energy);
- 
-	/*
-	// DEBUG!!!
-	if (args->hits.size() == 0)
-	{
- 		DataFaceGlobal data;
-		data.energy = args->energy;
-		data.tfar = args->hit_struct.dist;
-		data.face = F;
-		args->hits.push_back(data);
-	}
-
-	// END
-	*/
-
 	if (0==F || args->skip==F)							
 		return;
  
@@ -502,8 +485,6 @@ void FilterFunction(OpcodeArgs* args)
 		return;
 	}
 
-	//args->hits.push_back(args->hit_struct);
- 
 	// barycentric coords
 	// note: W,U,V order
 	Fvector B;
@@ -532,43 +513,6 @@ void FilterFunction(OpcodeArgs* args)
 	// Energy Dead
 	if (args->energy < 0.001f)
 		args->valid = false; 
-
-
-	// DEBUG!!! !!!!
- 
-	/*
-	DataFaceGlobal data;
- 	data.energy = args->energy;
-	data.tfar = args->hit_struct.dist;
-	data.face = F;
-	args->hits.push_back(data);
-
-
-	if (strstr(T.name, "water") && args->energy < 0.2f)
-	{
-		csDeflector.Enter();
-		int ID = RayID;
-		for (const auto data : args->hits)
-		{
- 			if (data.face != 0)
-			{
-				base_Face* face = (base_Face*) data.face;
-				b_material& Mater = inlc_global_data()->materials()[face->dwMaterial];
-				b_texture& Texture = inlc_global_data()->textures()[Mater.surfidx];
-
-				clMsg("Ray[%d], TFar[%f], energy[%f], Material[%s]", ID, data.tfar, data.energy, Texture.name);
-			}
-			else
-			{
-				clMsg("Initial[%d], TFar[%f], energy[%f]", ID, data.tfar, data.energy);
-			}
-		}
- 
-
-		clMsg("[INTEL] Ray[%d] TFar[%f], prim[%llu] energy[%f], tex[%s]", ID, args->hit_struct.dist, args->hit_struct.prim, args->energy, T.name);
-		csDeflector.Leave();
-	}
-	*/
 };
   
 float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
@@ -606,47 +550,6 @@ float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P,
 	DB->rayTrace1(&ctxt);  	 
 
 	return ctxt.result->energy;
-
-	/*
-	if (ctxt.result->energy == 0)
-		return 0;
-	
-	float result = 1.0f;
- 
-	Fvector B;
-	for (auto& hit : args.hits)
-	{
-		CDB::TRI& clT										= MDL->get_tris()[hit.prim];
-		base_Face* F										= (base_Face*)(clT.pointer);
- 		
-		b_material& M	= inlc_global_data()->materials()			[F->dwMaterial];
-		b_texture&	T	= inlc_global_data()->textures()			[M.surfidx];
-		
-		B.set(1.0f - hit.u - hit.v, hit.u, hit.v);
-
-		// calc UV
-		Fvector2*	cuv = F->getTC0					();
-		Fvector2	uv;
-		uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-		uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-		int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-		int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-		U %= T.dwWidth;	
-		if (U<0) U+=T.dwWidth;
-		V %= T.dwHeight;
-		if (V<0) V+=T.dwHeight;
-
-		u32* raw = static_cast<u32*>(*T.pSurface);
-		u32 pixel		= raw[V*T.dwWidth+U];
-		u32 pixel_a		= color_get_A(pixel);
-		float opac		= 1.f - _sqr(float(pixel_a)/255.f);
-		result *= opac;
- 	}
-	
-
-	return result;
-	*/
 }
  
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);

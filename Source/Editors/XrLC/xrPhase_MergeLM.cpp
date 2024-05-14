@@ -97,7 +97,7 @@ void StartThread(int TH, vecDefl Layer, CLightmap* lmap, int start, int end, int
 	{
 		csLM.Enter();
 	 
-		if (it % 2048 == 0)
+		if (it % 4096 == 0)
 			clMsg("State [%d]", it);
 
 		csLM.Leave();

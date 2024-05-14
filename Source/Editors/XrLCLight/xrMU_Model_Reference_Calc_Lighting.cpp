@@ -109,7 +109,10 @@ void xrMU_Reference::calc_lighting	()
 		xform, 
 		inlc_global_data()->RCAST_Model(),
 		inlc_global_data()->L_static(),
-		(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun()?LP_dont_sun:0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT,
+		(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+		(inlc_global_data()->b_nosun()?LP_dont_sun:0) | 
+		(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
+		LP_DEFAULT,
 		build_args->use_MU_Lighting
 	);
 
@@ -123,8 +126,11 @@ void xrMU_Reference::calc_lighting	()
 		xr_vector<double>	B;	B.resize(color.size());
 		float*				_s=(float*)&c_scale;
 		float*				_b=(float*)&c_bias;
-		for (u32 i=0; i<5; i++) {
-			for (u32 it=0; it<color.size(); it++) {
+
+		for (u32 i=0; i<5; i++)
+		{
+			for (u32 it=0; it<color.size(); it++)
+			{
 				base_color_c		__A;	model->color	[it]._get(__A);
 				base_color_c		__B;	color			[it]._get(__B);
 				A[it]		= 	(__A.hemi);
@@ -134,6 +140,6 @@ void xrMU_Reference::calc_lighting	()
 		}
 
 		for (u32 index=0; index<5; index++)
-			o_test	(4,index,color.size(),&model->color.front(),&color.front(),_s[index],_b[index]);
+			o_test	(4,index, color.size(),&model->color.front(),&color.front(),_s[index],_b[index]);
 	}
 }

@@ -114,10 +114,13 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 			P.mad(vP, N, a);
 			LightPoint(&DB, MDL, vC, P, N, lights, flags, 0, use_opcode, 0);
 		}
+
 		vC.scale(n_samples);
 		vC._tmp_ = v_trans;
+		
 		if (flags & LP_dont_hemi);
-		else					vC.hemi += v_amb;
+		else				
+			vC.hemi += v_amb;
 		V->C._set(vC);
 
 		// Search

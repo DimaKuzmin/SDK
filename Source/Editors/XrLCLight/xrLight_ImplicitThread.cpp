@@ -30,6 +30,7 @@ void	ImplicitThread ::	Execute	()
  	execute.Execute(0);
 }
 
+
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void RunThread(ImplicitDeflector& defl)

@@ -67,7 +67,7 @@ void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_
 	}
 	catch(...)
 	{
-		Msg_IN_FILE("ERROR LM blit: ss_x %d, ss_y %d, src_size: %d, dst_size: %d, ", ss_x, ss_y, src.surface.size(), dst.surface.size());
+		clMsg("ERROR LM blit: ss_x %d, ss_y %d, src_size: %d, dst_size: %d, ", ss_x, ss_y, src.surface.size(), dst.surface.size());
 	}
 }
 
