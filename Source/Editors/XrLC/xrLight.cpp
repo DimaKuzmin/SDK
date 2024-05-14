@@ -271,7 +271,7 @@ void CBuild::Light()
 		if (!build_args->off_impl)
 		{
 			FPU::m64r();
-			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]",  build_args->use_embree ? "intel" : "opcode");
+			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]",  build_args->use_IMPLICIT_Stage ? "intel" : "opcode");
 			Phase(tmp);
 			mem_Compact();
 			ImplicitLighting();
@@ -279,7 +279,7 @@ void CBuild::Light()
 
 		if (!build_args->off_lmaps)
  		{
- 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
+ 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_LMAPS_Stage ? "intel" : "opcode");
 			Phase			(tmp);
 			LMaps();
 

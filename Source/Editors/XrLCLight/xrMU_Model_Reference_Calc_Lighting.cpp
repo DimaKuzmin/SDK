@@ -113,7 +113,7 @@ void xrMU_Reference::calc_lighting	()
 		(inlc_global_data()->b_nosun()?LP_dont_sun:0) | 
 		(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 		LP_DEFAULT,
-		build_args->use_MU_Lighting
+		!build_args->use_MU_Lighting
 	);
 
 	R_ASSERT					(color.size()==model->color.size());

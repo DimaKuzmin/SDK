@@ -827,7 +827,7 @@ void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& ligh
 }
 
 
-IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode, u16 TH_ID)
+IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
 {
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.01f);
@@ -1195,12 +1195,9 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
-	RayID = 0;
-
 	// Geometrical bounds
 	Fbox bb;		bb.invalidate	();
-	CTimer t;
-	t.Start();
+  
 	try
 	{
 		for (u32 fid=0; fid<UVpolys.size(); fid++)
@@ -1216,28 +1213,13 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 		clMsg("* ERROR: CDeflector::Light - sphere calc");
 	}
 	
-	u64 sphere_tick = t.GetElapsed_ticks();
-	t.Start();
-
+  
 	// Convert lights to local form
 	LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
-	 
-	u64 Select_tick = t.GetElapsed_ticks();
-	t.Start();
-
+ 
 	// Calculate and fill borders
 	L_Calculate			(th, DB,LightsSelected, H);
-
-	u64 L_Calculate_tick = t.GetElapsed_ticks();
- 	
-	t.Start();
-
-	if(_net_session && !_net_session->test_connection())
-			 return;
-   
-	u64 NETSESSION_tick = t.GetElapsed_ticks();
-	//Msg("_net_session: %llu", t.GetElapsed_ticks());
-
+ 
 #ifndef DevCPU 
 	if (xrHardwareLight::Get().IsEnabled())
  
@@ -1252,17 +1234,9 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 	}
 #else 
 	
-	t.Start();
-
 	for (u32 ref = 254; ref > 0; ref--)
 		if (!ApplyBorders(layer, ref))
 			break;
-
-	u64 ApplyBorders_ticks = t.GetElapsed_ticks();
-	//Msg("ApplyBorders: %llu", t.GetElapsed_ticks());
-
-
-	t.Start();
 	// Compression
 
 	try
@@ -1288,10 +1262,6 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 		clMsg("* ERROR: CDeflector::Light - Compression");
 	}
 
-	u64 Compression = t.GetElapsed_ticks();
-	//Msg("Compression: %llu", t.GetElapsed_ticks());
-
-	t.Start();
 	// Expand with borders
 	try
 	{
@@ -1362,14 +1332,6 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 	{
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
 	}
-
-	u64 BorderExpansion = t.GetElapsed_ticks();
-	//Msg("BorderExpansion: %llu", t.GetElapsed_ticks());
-
-	//string256 tmp;
-	//sprintf(tmp, "Sphere[%u], Select[%u], LCAlculate[%u], NETSESSION[%u], ApplyBorders[%u],  Compression[%u], Borders[%u]", sphere_tick, Select_tick, L_Calculate_tick, ApplyBorders_ticks, Compression, BorderExpansion);
-
-	//Msg(tmp);
 #endif
 	
 }
