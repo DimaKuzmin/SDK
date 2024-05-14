@@ -102,7 +102,7 @@ extern	Lights				g_lights;
 extern	SAIParams			g_params;
 extern	CDB::MODEL			Level;
 extern	CDB::COLLIDER		XRC;
-extern	CDB::Embree::SceneEmbree SceneEmbree;
+extern	SceneEmbree			 SceneEmbreeInterface;
 
 extern	Fbox				LevelBB;
 //extern	Vectors				Emitters;

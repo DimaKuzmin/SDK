@@ -44,7 +44,7 @@ void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty pr
 	Msg("EmbreeDevProp: %s : %llu", msg, rtcGetDeviceProperty(device, prop));
 }
  
-void CDB::Embree::SceneEmbree::InitGeometry(CDB::TRI* tris_buff, u32 tris_cnt, Fvector* verts_buff, u32 verts_cnt, RTCFilterFunctionN filter_fuction)
+void SceneEmbree::InitGeometry(CDB::TRI* tris_buff, u32 tris_cnt, Fvector* verts_buff, u32 verts_cnt, RTCFilterFunctionN filter_fuction)
 {
 	std::string config;
 	bool avx = false, sse = false;
@@ -105,7 +105,7 @@ void CDB::Embree::SceneEmbree::InitGeometry(CDB::TRI* tris_buff, u32 tris_cnt, F
 	InitedDevice = true;
 }
 
-void CDB::Embree::SceneEmbree::ReleaseScene()
+void SceneEmbree::ReleaseScene()
 {
 	rtcReleaseGeometry(IntelGeometry);
 	rtcReleaseScene(IntelScene);
@@ -115,7 +115,7 @@ void CDB::Embree::SceneEmbree::ReleaseScene()
 }
  
 
-void CDB::Embree::SceneEmbree::RayTrace(RTCRayHit* rayhit, RayQuaryStructure* context, RTCFilterFunctionN filter_fuction, bool bCull)
+void SceneEmbree::RayTrace(RTCRayHit* rayhit, RayQuaryStructure* context, RTCFilterFunctionN filter_fuction, bool bCull)
 {
 	if (!InitedDevice)
 	{

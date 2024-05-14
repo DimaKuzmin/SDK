@@ -6,7 +6,7 @@
 
 CDB::MODEL			Level;
 CDB::COLLIDER		XRC;
-CDB::Embree::SceneEmbree SceneEmbree;
+SceneEmbree SceneEmbreeInterface;
 
 
 

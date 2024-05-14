@@ -68,7 +68,7 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 void filter_embree_function(const struct RTCFilterFunctionNArguments* args) 
 {
  
-	CDB::Embree::RayQuaryStructure* ctxt = (CDB::Embree::RayQuaryStructure*) args->context;
+	RayQuaryStructure* ctxt = (RayQuaryStructure*) args->context;
  
 	RTCHit* hit = (RTCHit*) args->hit;
 	RTCRay* ray = (RTCRay*) args->ray;
@@ -158,7 +158,7 @@ float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
 
 	// 1. Check cached polygon
 
-	if (!SceneEmbree.InitedDevice)
+	if (!SceneEmbreeInterface.InitedDevice)
 	{
 		 
 		float _u,_v,range;
@@ -195,10 +195,10 @@ float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
 		rayhit.ray.dir_y = D.y;
 		rayhit.ray.dir_z = D.z;
 
-		CDB::Embree::RayQuaryStructure data;
+		RayQuaryStructure data;
 		data.energy = 1;
 
-		SceneEmbree.RayTrace(&rayhit, &data, &filter_embree_function, false);
+		SceneEmbreeInterface.RayTrace(&rayhit, &data, &filter_embree_function, false);
 
 		if (data.count == 0)
 			return 1;
@@ -252,7 +252,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				if ( true )
 				{
  					CTimer t; t.Start();
-					SceneEmbree.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
+					SceneEmbreeInterface.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
 					Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
 				}
 				else
@@ -347,7 +347,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					if ( true )
 					{
 						CTimer t; t.Start();
-						SceneEmbree.InitGeometry(tris.data(), H.facecount, verts.data(), H.vertcount, &filter_embree_function);
+						SceneEmbreeInterface.InitGeometry(tris.data(), H.facecount, verts.data(), H.vertcount, &filter_embree_function);
 						Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
 					}
 					else
