@@ -497,8 +497,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						if ( ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1)  ||  
 						 BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
-
-							if (BT.THM.fmt == STextureParams::tfDXT1)
+ 							if (BT.THM.fmt == STextureParams::tfDXT1)
 								clMsg("- loading: DXT no ALPHA: %s", N);
 							else 
 								clMsg("- loading: %s", N);
@@ -584,17 +583,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 
 	// sizeof(b_rc_face)
-
-	/* 
-	m_sm_angle = ini.r_float(section, "smooth_angle");
-	m_weld_distance = ini.r_float(section, "weld_distance");
-	m_lm_pixels_per_meter = ini.r_float(section, "light_pixel_per_meter");
-	m_lm_jitter_samples = ini.r_u32(section, "light_jitter_samples");
-	m_lm_rms_zero = ini.r_u32(section, "light_rms_zero");
-	m_lm_rms = ini.r_u32(section, "light_rms");
-	m_quality = ini.r_u16(section, "light_quality");
-	u_reserved = ini.r_u16(section, "light_quality_reserved");
-	*/
 
 	clMsg("sm_angle: %f", g_params().m_sm_angle);
 	clMsg("jitter: %u", g_params().m_lm_jitter_samples);
