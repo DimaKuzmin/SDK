@@ -130,6 +130,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::CheckBox^ xrLC_MUModelsRegresion;
 private: System::Windows::Forms::Label^ label17;
+private: System::Windows::Forms::Label^ label18;
 
 
 
@@ -216,6 +217,7 @@ private: System::Windows::Forms::Label^ label17;
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -328,6 +330,7 @@ private: System::Windows::Forms::Label^ label17;
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->label18);
 			this->Geometry_Tab->Controls->Add(this->label17);
 			this->Geometry_Tab->Controls->Add(this->label16);
 			this->Geometry_Tab->Controls->Add(this->xrLC_MUModelsRegresion);
@@ -366,7 +369,7 @@ private: System::Windows::Forms::Label^ label17;
 			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label17->ForeColor = System::Drawing::Color::Firebrick;
-			this->label17->Location = System::Drawing::Point(3, 460);
+			this->label17->Location = System::Drawing::Point(3, 464);
 			this->label17->Name = L"label17";
 			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
 			this->label17->Size = System::Drawing::Size(559, 81);
@@ -955,6 +958,18 @@ private: System::Windows::Forms::Label^ label17;
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
+			// 
+			// label18
+			// 
+			this->label18->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label18->ForeColor = System::Drawing::Color::Firebrick;
+			this->label18->Location = System::Drawing::Point(3, 383);
+			this->label18->Name = L"label18";
+			this->label18->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->label18->Size = System::Drawing::Size(559, 81);
+			this->label18->TabIndex = 28;
+			this->label18->Text = L"Стандартный RayTrace Тоже ускорен (Отсечены лишние hits)....";
 			// 
 			// MyForm
 			// 
