@@ -1,0 +1,1 @@
+start Bin\x64\Compilers_x64_v11\LauncherNET.exe

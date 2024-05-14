@@ -1,1 +1,0 @@
-start Bin\Win32\Development\xrai.exe -verify test
