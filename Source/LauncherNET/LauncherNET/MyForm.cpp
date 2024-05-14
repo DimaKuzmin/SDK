@@ -103,7 +103,7 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->use_MU_Lighting = true;
 
 }
-
+#include <vcclr.h> // Include for gcroot
 
 gcroot<LauncherNET::MyForm^>  form;
 
@@ -112,28 +112,45 @@ class  NET_Logger : ILogger
 public:
     void  updateLog(LPCSTR str)
     {
-        form->updateLogFormItem(str);
+        if (form.operator->() != nullptr)
+            form->updateLogFormItem(str);
+        else
+            DebugBreak();
     };
 
     void  updatePhrase(LPCSTR phrase)
     {
-        form->updatePhaseItem(phrase);
+        if (form.operator->() != nullptr)
+            form->updatePhaseItem(phrase);
+        else
+            DebugBreak();
     };
 
     virtual void  updateStatus(LPCSTR status)
     {
-        form->updateStatusItem(status);
-    }
+        if (form.operator->() != nullptr)
+            form->updateStatusItem(status);
+        else
+            DebugBreak();
+     }
 
 
     virtual void UpdateText()
     {
-        form->updateALL();
+        if (form.operator->() != nullptr)
+            form->updateALL();
+        else
+            DebugBreak();
+        
     }
 
     virtual void UpdateTime(LPCSTR time)
     {
-        form->UpdateTime(time);
+        if (form.operator->() != nullptr)
+            form->UpdateTime(time);
+        else
+            DebugBreak();
+       
     }
 };
 
@@ -142,32 +159,51 @@ class  NET_LoggerAI : ILoggerAI
 public:
     void  updateLog(LPCSTR str)
     {
-        form->updateLogFormItem(str);
+        if (form.operator->() != nullptr)
+            form->updateLogFormItem(str);
+        else
+            DebugBreak();
     };
 
     void  updatePhrase(LPCSTR phrase)
     {
-        form->updatePhaseItem(phrase);
+        if (form.operator->() != nullptr)
+            form->updatePhaseItem(phrase);
+        else
+            DebugBreak();
     };
 
     virtual void  updateStatus(LPCSTR status)
     {
-        form->updateStatusItem(status);
+        if (form.operator->() != nullptr)
+            form->updateStatusItem(status);
+        else
+            DebugBreak();
     }
 
 
     virtual void UpdateText()
     {
-        form->updateALL();
+        if (form.operator->() != nullptr)
+            form->updateALL();
+        else
+            DebugBreak();
+
     }
 
     virtual void UpdateTime(LPCSTR time)
     {
-        form->UpdateTime(time);
+        if (form.operator->() != nullptr)
+            form->UpdateTime(time);
+        else
+            DebugBreak();
+
     }
 };
 
 extern XRLC_API ILogger* LoggerCL;
+extern XRAI_API ILoggerAI* LoggerCL_xrAI;
+
 
 // Определение функции WinMain
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -184,7 +220,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     // Устанавливаем имя потока
     SetThreadDescription(threadHandle, L"MAIN THREAD Application");
 
-     
+    NET_LoggerAI lAI;
+    LoggerCL_xrAI = (ILoggerAI*)&lAI;
+
+    NET_Logger lLC;
+    LoggerCL = (ILogger*)&lLC;
+
+
     Application::SetCompatibleTextRenderingDefault(false);
     Application::EnableVisualStyles();
 
@@ -196,6 +238,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         form->FlagsCompiler->Items->Add(text);
     }
 
+   
     Application::Run(form);
    
 
@@ -206,13 +249,10 @@ bool IsRunned = false;
 
 void StartThread(SpecialArgs* main_args)
 {
+
     std::thread* th = new std::thread(
         [] (SpecialArgs* args)
         {
-            NET_Logger logger;
-
-            LoggerCL = (ILogger*)&logger;
-
             HANDLE threadHandle = GetCurrentThread();
 
             // Устанавливаем имя потока
@@ -241,8 +281,7 @@ void StartThread(SpecialArgs* main_args)
 }
 
 #include <msclr\marshal_cppstd.h>
-
-
+ 
 
 System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System::EventArgs^ e)
 {
@@ -309,7 +348,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     if (!IsRunned)
     {
         IsRunned = true;
-         StartThread(args);
+        StartThread(args);
     }
     else
     {
@@ -322,14 +361,26 @@ void StartThread_xrAI(SpecialArgsAI* argsb)
     std::thread* th = new std::thread(
         [](SpecialArgsAI* args)
         {
-            NET_Logger logger;
-
-            LoggerCL = (ILogger*)&logger;
-
             HANDLE threadHandle = GetCurrentThread();
 
             // Устанавливаем имя потока
             SetThreadDescription(threadHandle, L"MAIN THREAD xrAI");
+
+            char tmp[128];
+            sprintf(tmp, "c++ Arguments: Draft: %d, NoSepartor: %d, UseSpawnCompiler: %d, VerifyAI: %d",
+                args->Draft, args->NoSeparator, args->PureCovers, args->UseSpawnCompiler, args->VerifyAIMap);
+            LoggerCL_xrAI->updateLog(tmp);
+
+            sprintf(tmp, "c++ Arguments: LevelName: %s",
+                args->level_name.c_str());
+            LoggerCL_xrAI->updateLog(tmp);
+            sprintf(tmp, "c++ Arguments: LevelOut: %s",
+                args->OutSpawn_Name.c_str());
+            LoggerCL_xrAI->updateLog(tmp);
+            sprintf(tmp, "c++ Arguments: LevelStart: %s",
+                args->SpawnActorStart.c_str());
+            LoggerCL_xrAI->updateLog(tmp);
+
 
             StartupWorking_xrAI(args);
             IsRunned = false;
@@ -337,6 +388,7 @@ void StartThread_xrAI(SpecialArgsAI* argsb)
         }, argsb
     );
 }
+
 
 System::Void LauncherNET::MyForm::xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e)
 {
@@ -358,7 +410,7 @@ System::Void LauncherNET::MyForm::xrAI_SpawnAIMap_Click(System::Object^ sender, 
     }
     else
     {
-        LoggerCL->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
+        LoggerCL_xrAI->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
     }
 }
 
@@ -385,6 +437,6 @@ System::Void LauncherNET::MyForm::xrAI_StartSpawn_Click(System::Object^ sender, 
     }
     else
     {
-        LoggerCL->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
+        LoggerCL_xrAI->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
     }
 }

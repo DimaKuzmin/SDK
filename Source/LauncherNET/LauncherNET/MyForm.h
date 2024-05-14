@@ -947,47 +947,69 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 
 		}
 		
-		private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e);
-		
-		 
 
+		 public: System::Void AddItemToListBox_form(System::String^ str)
+		 {
+			 listBox1->Items->Add(str);
+		 }
+
+		public: System::Void AddItemToPhases_form(System::String^ str)
+		{
+			InfoPhases->Items->Add(str);
+		}
+
+		public: System::Void UpdateTextStatus_form(System::String^ str)
+		{
+			InfoStatus->Text = str;
+		}
+
+		public: System::Void UpdateTime_form(System::String^ str)
+		{
+			BuildTime->Text = str;
+		}
+ 
+		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			listBox1->Items->Add(managedString);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::AddItemToListBox_form), managedString);
 		}
 
 		public: System::Void updatePhaseItem(const char* str)
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			InfoPhases->Items->Add(managedString);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::AddItemToPhases_form), managedString);
 		}
-		
-		
+
+
 		public: System::Void updateStatusItem(const char* str)
 		{
 			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
 			System::String^ managedString = gcnew System::String(str);
-			//InfoStatus->Items->Clear();
-			InfoStatus->Text = (managedString);
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTextStatus_form), managedString);
 		}
 			  
 		 public: System::Void updateALL()
 		 {
-			 if (UpdatingListBox->Checked)
-				 listBox1->SelectedIndex = listBox1->Items->Count - 1;
+			// if (UpdatingListBox->Checked)
+			//	 listBox1->SelectedIndex = listBox1->Items->Count - 1;
 		 }
 
 
 		public:  System::Void UpdateTime(const char* str)
 		{
 			System::String^ managedString = gcnew System::String(str);
-			BuildTime->Text = managedString;
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTime_form), managedString);
+			//BuildTime->Text = managedString;
 		}
  
  
+		// Buttons
+
+		private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e);
+
 		private: System::Void xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e);
 	 
 		private: System::Void xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e);

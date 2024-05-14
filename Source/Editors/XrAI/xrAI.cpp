@@ -133,7 +133,9 @@ void Startup(LPSTR     lpCmdLine)
 	InitCommonControls	();
 	Sleep				(150);
 	thread_spawn		(logThread,	"log-update", 1024*1024,0);
-	while				(!logWindow)	Sleep		(150);
+	
+	//while				(!logWindow)
+	//	Sleep		(150);
 	
 	u32					dwStartupTime	= timeGetTime();
 	execute				(cmd);
@@ -160,6 +162,15 @@ void buffer_vector_test		();
 XRAI_API void  StartupWorking_xrAI(SpecialArgsAI* args)
 {
 	xrAI_Args = *args;
+	Debug._initialize(false);
+	Core._initialize("xrai", 0);
+	XrSE_Factory::initialize();
+
+	Startup("");
+
+
+	XrSE_Factory::destroy();
+	Core._destroy();
 }
 
 
