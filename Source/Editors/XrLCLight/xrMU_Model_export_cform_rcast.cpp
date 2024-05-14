@@ -17,8 +17,6 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 
 	v_faces			adjacent;	adjacent.reserve(6*2*3);
 
-	bool SkipNoShadow = strstr(Core.Params, "-skip_noshadow");
-
 	for (v_faces_it it = m_faces.begin(); it!=m_faces.end(); it++)
 	{
 		_face*	F				= (*it);
@@ -26,20 +24,6 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 		if (!SH.flags.bLIGHT_CastShadow)	
 			continue;
 
- 		 
- 
-  		/*b_material& M = (*materials_globaldata)[F->dwMaterial];
-		
-		if (!SkipNoShadow)
-		if (strstr(shaders_globaldata->Get(M.shader_xrlc)->Name, "_noshadow") || strstr(shaders_globaldata->Get(M.shader)->Name, "_noshadow") )
-		{
-			// Msg("skipped: xrlc: %s, %s", shaders_globaldata->Get(M.shader_xrlc)->Name, shaders_globaldata->Get(M.shader)->Name);
-			F->flags.bShadowSkip = true;
-			continue;
- 		}
-		*/
- 
-		 
 		// Collect
 		adjacent.clear	();
 		for (int vit=0; vit<3; vit++)

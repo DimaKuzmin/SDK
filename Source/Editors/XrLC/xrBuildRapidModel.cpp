@@ -87,8 +87,6 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
  
 //	Status("Converting faces... (ONE CORE)");
-
-	bool SkipNoShadow = strstr(Core.Params, "-skip_noshadow");
 	
 	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
 	{
@@ -101,20 +99,16 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 		b_material& M = lc_global_data()->materials()[F->dwMaterial];
 
-		if (!SkipNoShadow)
-		if (strstr(lc_global_data()->shaders().Get(M.shader_xrlc)->Name, "_noshadow") || strstr(lc_global_data()->shaders().Get(M.shader)->Name, "_noshadow") )
+		/*
+ 		if (strstr(lc_global_data()->shaders().Get(M.shader_xrlc)->Name, "_noshadow") || strstr(lc_global_data()->shaders().Get(M.shader)->Name, "_noshadow") )
 		{
 			// Msg("skipped: xrlc: %s, %s", lc_global_data()->shaders().Get(M.shader_xrlc)->Name, lc_global_data()->shaders().Get(M.shader)->Name);
 
 			F->flags.bShadowSkip = true;
 			continue;
 		}
-		 
-		//b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		//Msg_IN_FILE("Shader xrLC : %s", lc_global_data()->shaders().Get(M.shader_xrlc)->Name);
-		//Msg_IN_FILE("Shader game : %s", lc_global_data()->shaders().Get(M.shader)->Name);
-		//Msg_IN_FILE("Shader Face : %s", F->Shader().Name);
-
+		*/
+ 
 		Progress	(float(it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
 				
 		// Collect
