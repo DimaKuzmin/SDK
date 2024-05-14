@@ -108,7 +108,7 @@ void ThreadWork(UILods * logs)
 
 void UILods::Draw()
 {
-	if (!ImGui::Begin("Trees Replacer", &bOpen))	// ImGuiWindowFlags_NoResize
+	if (!ImGui::Begin("UI LODS GENERATOR", &bOpen))	// ImGuiWindowFlags_NoResize
 	{
 		ImGui::PopStyleVar(1);
 		ImGui::End();
