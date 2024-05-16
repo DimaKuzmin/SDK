@@ -397,9 +397,6 @@
     <ClCompile Include="guid_generator.cpp">
       <Filter>ALife\guid_generator</Filter>
     </ClCompile>
-    <ClCompile Include="game_spawn_unpacker.cpp">
-      <Filter>ALife\Spawn\game_spawn_constructor</Filter>
-    </ClCompile>
     <ClCompile Include="..\LevelEditor\iniStreamImpl.cpp">
       <Filter>INI</Filter>
     </ClCompile>
@@ -926,9 +923,6 @@
     </ClInclude>
     <ClInclude Include="guid_generator.h">
       <Filter>ALife\guid_generator</Filter>
-    </ClInclude>
-    <ClInclude Include="game_spawn_unpacker.h">
-      <Filter>ALife\Spawn\game_spawn_constructor</Filter>
     </ClInclude>
     <ClInclude Include="..\LevelEditor\iniStreamImpl.h">
       <Filter>INI</Filter>

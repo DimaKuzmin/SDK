@@ -8,7 +8,6 @@
 
 #include "xr_graph_merge.h"
 #include "game_spawn_constructor.h"
-#include "game_spawn_unpacker.h"
 
 #include "xrCrossTable.h"
 //#include "path_test.h"
@@ -55,23 +54,7 @@ extern void clear_temp_folder	();
 SpecialArgsAI xrAI_Args;
 
 void execute	(LPSTR cmd)
-{
-	/// Msg("Execute");
-	/*
-	char* unpack = strstr(cmd, "-unpack");
-	char* out = strstr(cmd, "-out");
-
-	if (unpack && out)
-	{
-		string256 spawn_unpack, spawn_out;
-		sscanf(unpack + 7, "%s", spawn_unpack);
-		sscanf(out + 4, "%s", spawn_out);
-
-		game_spawn_unpacker(spawn_unpack, spawn_out);
-		return;
-	}
-	*/
-   
+{   
 	// Load project
 	string4096 name;
 	xr_strcpy(name, xrAI_Args.level_name.c_str());
