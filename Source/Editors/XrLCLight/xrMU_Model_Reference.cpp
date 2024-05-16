@@ -9,11 +9,7 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
 #include "xrface.h"
-#include "serialize.h"
-
-extern tread_models			*read_models		;
-extern twrite_models		*write_models		;
-
+ 
 void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
 {
 	b_mu_reference		R;
@@ -94,48 +90,5 @@ void xrMU_Reference::export_cform_rcast(CDB::CollectorPacked& CL)
 {
 	model->export_cform_rcast(CL,xform);
 }
-  
-void		xrMU_Reference::			read				( INetReader	&r )
-{
-	
-	R_ASSERT( read_models );
-	read_models->read( r, model );
-	r_pod( r, xform );
-	r_pod( r, flags );
-	sector = r.r_u16();
-	r_pod_vector( r, color );
-	r_pod( r, c_scale );
-	r_pod( r, c_bias );
 
-}
-void		xrMU_Reference::		write				( IWriter	&w ) const 
-{
-
-	R_ASSERT( write_models );
-	write_models->write( w, model );
-	w_pod( w, xform );
-	w_pod( w, flags );
-	w.w_u16( sector );
-	w_pod_vector( w, color );
-	w_pod( w, c_scale );
-	w_pod( w, c_bias );
-
-}
-
-void xrMU_Reference::receive_result( INetReader	&r )
-{
-	r_pod_vector( r, color );
-	r_pod( r, c_scale );
-	r_pod( r, c_bias );
-	//R_ASSERT( model );
-	//model->read_color( r );
-}
-void xrMU_Reference::send_result( IWriter	&w ) const 
-{
-	w_pod_vector( w, color );
-	w_pod( w, c_scale );
-	w_pod( w, c_bias );
-	//R_ASSERT( model );
-	//model->write_color( w );
-}
 

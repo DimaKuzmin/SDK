@@ -113,23 +113,23 @@ xrCriticalSection csMU;
 
 int ID = 0;
 
-void xrMU_Reference::calc_lighting	()
+void xrMU_Reference::calc_lighting()
 {
 	ID++;
 
-	model->calc_lighting		(
-		color, 
-		xform, 
+	model->calc_lighting(
+		color,
+		xform,
 		inlc_global_data()->RCAST_Model(),
 		inlc_global_data()->L_static(),
-	//	(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
-	//	(inlc_global_data()->b_nosun()? LP_dont_sun : 0) | 
-	//	(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
+		//	(inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) |
+		//	(inlc_global_data()->b_nosun()? LP_dont_sun : 0) | 
+		//	(inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) |
 		0 | LP_DEFAULT,
 		!build_args->use_MU_Lighting
 	);
 
-	R_ASSERT					(color.size()==model->color.size());
+	R_ASSERT(color.size() == model->color.size());
 
 	// A*C + D = B
 	// build data
@@ -140,7 +140,7 @@ void xrMU_Reference::calc_lighting	()
 	bool tree = strstr(model->m_name.c_str(), "tree");
 
 
-	
+
 	if (build_args->MU_ModelsRegression)
 	{
 		/*
@@ -183,16 +183,16 @@ void xrMU_Reference::calc_lighting	()
 				base_color_c		__B;	color			[it]._get(__B);
 				A[it]		= 	(__A.hemi);
 				//B[it]		=	(__B.hemi);
-				B[it]		=	((float*)&__B)[i];	
+				B[it]		=	((float*)&__B)[i];
 			}
 
 			vfComputeLinearRegression(A,B,_s[i],_b[i]);
 		}
 
-	
-		
+
+
 		if (tree)
- 		for (u32 it = 0; it < color.size(); it++)
+		for (u32 it = 0; it < color.size(); it++)
 		{
 			base_color_c C;
 			color[it]._get(C);
@@ -228,7 +228,7 @@ void xrMU_Reference::calc_lighting	()
 
 			colors_pre[it] = data;
 
- 		}
+		}
 
 		for (u32 index = 0; index < 5; index++)
 		{
@@ -253,7 +253,7 @@ void xrMU_Reference::calc_lighting	()
 			sprintf(tmp_msg, "		REGRESSION B: %f, %f, %f, %f, %f \\n", predata._b[0], predata._b[1], predata._b[2], predata._b[3], predata._b[4]);
 			w->w_string(tmp_msg);
 
- 
+
 			sprintf(tmp_msg, "[%d] Hemi: %f cmp %f, \\n", it, C.hemi, r.hemi);
 			w->w_string(tmp_msg);
 			sprintf(tmp_msg, "		REGRESSION A: %f, %f, %f, %f, %f \\n", _s[0], _s[1], _s[2], _s[3], _s[4]);
@@ -280,9 +280,9 @@ void xrMU_Reference::calc_lighting	()
 		{
 			for (u32 it = 0; it < color.size(); it++)
 			{
-				base_color_c		__A;	
+				base_color_c		__A;
 				model->color[it]._get(__A);
-				base_color_c		__B;	
+				base_color_c		__B;
 				color[it]._get(__B);
 				A[it] = (__A.hemi);
 				//B[it]		=	(__B.hemi);
@@ -297,6 +297,7 @@ void xrMU_Reference::calc_lighting	()
 			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
 		}
 
+		 
 		for (u32 it = 0; it < color.size(); it++)
 		{
 			base_color_c C, R;
@@ -309,8 +310,8 @@ void xrMU_Reference::calc_lighting	()
 				color[it]._set(C);
 			}
 		}
-
-		if (_s[3] < 0 || _s[4] < 0)
+		 
+		if (_s[3] < 0 || _s[4] < 0 || _b[3] < 0 || _b[4] < 0)
 		{
 			csMU.Enter();
 			clMsg("MU: Name: %s", model->m_name.c_str());

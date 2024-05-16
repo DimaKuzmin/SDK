@@ -88,14 +88,6 @@ public:
 		xr_vector<xrMU_Model*>		&mu_models		()		{	return _mu_models; }
 		xr_vector<xrMU_Reference*>	&mu_refs		()		{	return _mu_refs; }
 
-		void						read_mu_models			( INetReader &r );
-		void						write_mu_models			( IWriter	&w ) const ;
-
-		void						read_mu_model_refs		( INetReader &r );
-		void						write_mu_model_refs		( IWriter	&w ) const ;
-		void						close_models_read		();
-		void						close_models_write		()const ;
-
 
 		bool						b_nosun()	 {	return _b_nosun; }
 		bool						b_norgb()	 { return _b_no_rgb;  }
@@ -113,47 +105,17 @@ IC		void						b_nohemi_set(bool v) { _b_no_hemi = v; };
 		void						create_rcmodel	(CDB::CollectorPacked& CL);
 
 		void						clear_build_textures_surface();
-		
-		void						clear_build_textures_surface( const xr_vector<u32> &exept );
+ 		void						clear_build_textures_surface( const xr_vector<u32> &exept );
 
 		void						set_faces_indexses		();
 		void						set_vertices_indexses	();
-		//void						create_write_faces	() const;
-		//void						destroy_write_faces	() const;
-		//void						create_read_faces	() ;
-		//void						destroy_read_faces	() ;
-
-//		tread_faces					*get_read_faces		()	;
-//		twrite_faces				*get_write_faces	()	;
-		
-
-
+ 
 		void						gl_mesh_clear			()		;
-private:
-//std::pair<u32,u32>					get_id				( const _face * v ) const;
-//std::pair<u32,u32>					get_id				( const _vertex * v ) const;
-public:
-		void						read_base				( INetReader &r );
-		void						write_base				( IWriter	&w ) const ;
-		void						read					( INetReader &r );
-		void						write					( IWriter	&w ) const ;
-		void						read_vertices			( INetReader	&r );
-		void						write_vertices			( IWriter	&w )const;
-		void						read_lm_data			( INetReader	&r );
-		void						write_lm_data			( IWriter	&w )const;
-
-		void						read_modes_color		( INetReader	&r );
-		void						write_modes_color		( IWriter	&w )const;
-
-		void						read					( INetReader &r, base_Face* &f);
-		void						write					( IWriter &r, const base_Face *f ) const ;
+  
 		void						clear					();
 		void						clear_mesh				();
 		void						clear_mu_models			();	
 		void						mu_models_calc_materials();
-	//	void						cdb_read_create	() ;
-private:
-
 
 };													
 
