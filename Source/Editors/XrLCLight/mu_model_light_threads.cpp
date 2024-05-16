@@ -9,8 +9,6 @@
 #include "xrlc_globaldata.h"
 
 #include "mu_model_light.h"
-#include "mu_light_net.h"
- 
 
 #include "xrThread.h"
 #include "../../xrcore/xrSyncronize.h"

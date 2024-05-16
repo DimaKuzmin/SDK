@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "global_slots_data.h"
-#include "serialize.h"
 
 void	global_slots_data::	Load			( )
 {
@@ -40,32 +39,6 @@ void	global_slots_data::Free			()
 	if ( dtFS )	
 		xr_delete( dtFS );
 	recalculation_data.close();
-}
-	
-//DetailHeader					dtH;
-//DetailSlot						*dtS;
-//CVirtualFileRW					*dtFS;
-//recalculation					recalculation_data;
-
-void global_slots_data::write( IWriter	&w ) const
-{
-	
-	w_pod( w, dtH );
-	const u32 buffer_size = sizeof( DetailSlot ) * dtH.slots_count();
-	w.w( dtS, buffer_size );
-	recalculation_data.write( w );
-}
-
-void global_slots_data::read( INetReader &r  )
-{
-	
-	r_pod( r, dtH );
-	R_ASSERT( !dtS );
-	const u32 buffer_size = sizeof( DetailSlot ) * dtH.slots_count();
-	dtS = ( DetailSlot* )xr_malloc( buffer_size );
-	R_ASSERT(dtS);
-	r.r( dtS, buffer_size );
-	recalculation_data.read( r );
 }
 
 void	global_slots_data::FreeOnAgent		()

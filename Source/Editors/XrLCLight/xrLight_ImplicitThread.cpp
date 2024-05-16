@@ -12,7 +12,7 @@ class ImplicitThread : public CThread
 public:
 
 	ImplicitExecute		execute;
-	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA, u32 _y_start, u32 _y_end) : CThread (ID), execute( _y_start, _y_end, ID )
+	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA, u32 _y_start, u32 _y_end) : CThread (ID), execute( ID )
 	{	
 		if (ID == 0)
 			execute.clear();
@@ -26,8 +26,7 @@ void	ImplicitThread ::	Execute	()
 	// Priority
 	SetThreadPriority		(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
 	Sleep					(0);
-
- 	execute.Execute(0);
+  	execute.Execute();
 }
 
 

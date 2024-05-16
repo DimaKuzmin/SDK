@@ -15,36 +15,56 @@
 #include "xrdeflector.h"
 #include "xrLC_GlobalData.h"
 #include "xrface.h"
-#include "xrlight_implicitcalcglobs.h"
-#include "net_task_callback.h"
-
+ 
 #include "../../xrcdb/xrcdb.h"
 #include "BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
- 
 
 
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 xrCriticalSection crImplicit;
  
-ImplicitCalcGlobs cl_globs;
+#include "xrFaceDefs.h"
+#include "hash2d.h"
+
+typedef hash2D <Face*, 384, 384>		IHASH;
+class ImplicitCalcGlobs
+{
+	IHASH* ImplicitHash;
+	ImplicitDeflector* defl;
+public:
+	ImplicitCalcGlobs() : defl(0) // , ImplicitHash(0)
+	{
+
+	}
+	 
+	IC	IHASH& Hash()
+	{
+		R_ASSERT(ImplicitHash);
+		return *ImplicitHash;
+	}
+	
+	void Allocate()
+	{
+		ImplicitHash = xr_new<IHASH>();
+	}
+	void Deallocate()
+	{
+		xr_delete(ImplicitHash);
+	}
+
+	IC void Initialize(ImplicitDeflector& def) { defl = &def; };
+
+	IC	ImplicitDeflector& DATA()
+	{
+		R_ASSERT(defl);
+		return *defl;
+	}
+} cl_globs;
 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
- 
-void		ImplicitExecute::read			( INetReader	&r )
-{
-	y_start = r.r_u32();	
-	y_end	= r.r_u32();
-}
-void		ImplicitExecute::write			( IWriter	&w ) const 
-{
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	w.w_u32( y_start );
-	w.w_u32( y_end );
-}
+  
  
 #ifndef DevCPU 
   
@@ -191,32 +211,6 @@ void RunCudaThread()
  
 /** NETWORK PROCESS **/
 
-void	ImplicitExecute::	receive_result			( INetReader	&r )
-{
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	ImplicitDeflector&		defl	= cl_globs.DATA();
-	for (u32 V=y_start; V<y_end; V++)
-	for (u32 U=0; U<defl.Width(); U++)
-	{
-				
-		r_pod<base_color>( r, defl.Lumel( U, V ) );
-		r_pod<u8>		 ( r, defl.Marker( U, V ) );
-
-	}
-}
-void	ImplicitExecute::	send_result				( IWriter	&w ) const 
-{
-	R_ASSERT( y_start != (u32(-1)) );
-	R_ASSERT( y_end != (u32(-1)) );
-	ImplicitDeflector&		defl	= cl_globs.DATA();
-	for (u32 V=y_start; V<y_end; V++)
-	for (u32 U=0; U<defl.Width(); U++)
-	{
-		w_pod<base_color>( w, defl.Lumel( U, V ) );
-		w_pod<u8>		 ( w, defl.Marker( U, V ) );
-	}
-}
 
 u32 curHeight = 0;
 void ImplicitExecute::clear()
@@ -229,11 +223,8 @@ void ImplicitExecute::clear()
  
 xrCriticalSection csOpacity;
  
-void ImplicitExecute::Execute(net_task_callback* net_callback)
-{
-	net_cb = net_callback;
-
- 
+void ImplicitExecute::Execute()
+{ 
 	ImplicitDeflector& defl = cl_globs.DATA();
 
 	// Setup variables
@@ -434,10 +425,8 @@ void ImplicitLightingExec(BOOL b_net)
 		// Setup cache
 		Progress					(0);
 		cl_globs.Initialize( defl );
-		if(b_net)
-			lc_net::RunImplicitnet( defl, not_clear );
-		else
-			RunImplicitMultithread(defl);
+ 		
+		RunImplicitMultithread(defl);
 						  
 		defl.faces.clear_and_free();
 
@@ -521,9 +510,9 @@ void ImplicitLightingExec(BOOL b_net)
 		}
 		//defl.Deallocate				();
 	}
-	not_clear.clear();
+ 	
 	cl_globs.Deallocate();
 	calculator.clear	();
-	if(b_net)
-		inlc_global_data()->clear_build_textures_surface();
+
+	 
 }

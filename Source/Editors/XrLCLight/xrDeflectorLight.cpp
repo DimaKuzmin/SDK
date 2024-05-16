@@ -8,7 +8,7 @@
 #include "xrImage_Resampler.h"
 #include "light_point.h"
 #include "xrface.h"
-#include "net_task.h"
+ 
 #include "BuildArgs.h"
 //const	u32	rms_discard			= 8;
 //extern	BOOL		gl_linear	;
@@ -1252,8 +1252,6 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 				// Reacalculate lightmap at lower resolution
 				layer.create(w, h);
 				L_Calculate(th, DB, LightsSelected, H, true);
-				if (_net_session && !_net_session->test_connection())
-					return;
 			}
 
 	}
@@ -1377,8 +1375,6 @@ void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelect
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);
 			L_Calculate(th, DB, LightsSelected, H, true);
-			if (_net_session && !_net_session->test_connection())
-				return;
 		}
 		
 	}

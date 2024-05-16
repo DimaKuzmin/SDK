@@ -6,8 +6,7 @@
 #include "xrlc_globaldata.h"
 #include "light_point.h"
 #include "xrface.h"
-#include "net_task.h"
-
+ 
 #ifndef DevCPU
 #include "xrHardwareLight.h"
 #endif
@@ -114,8 +113,7 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 	
 	for (u32 V=0; V<lm.height; V++)
 	{
-		if(_net_session && !_net_session->test_connection())
-			 return;
+ 
 		for (u32 U=0; U<lm.width; U++)	
 		{
 #ifdef NET_CMP

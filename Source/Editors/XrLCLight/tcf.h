@@ -1,5 +1,5 @@
 #pragma once
-class INetReader;
+ 
 struct XRLC_LIGHT_API _TCF 
 {
 	Fvector2			uv	[3];
@@ -10,12 +10,5 @@ struct XRLC_LIGHT_API _TCF
 	IC bool	isInside	(Fvector &B)					{	return	isInside	(B.x,B.y,B.z); }
 	IC bool	isInside	(Fvector2 &P, Fvector &B)		{	barycentric(P,B);	return isInside(B);	}
 	
-	void	read		( INetReader	&r );
-	void	readReader	( IReader	&r );
-	void	write		( IWriter	&w ) const ;
-
-	void Serialize(IWriter* write) { write->w(&uv, sizeof(Fvector2));};
-	void Deserialize(IReader* read) { read->r(&uv, sizeof(Fvector2));};
-
-	bool	similar		(  const _TCF &_tc, float eps = EPS ) const;
+ 	bool	similar		(  const _TCF &_tc, float eps = EPS ) const;
 };

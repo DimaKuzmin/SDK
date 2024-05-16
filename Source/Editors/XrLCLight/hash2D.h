@@ -1,5 +1,4 @@
 #pragma once
-#include "serialize.h"
 template <class T, u32 s_X, u32 s_Y>
 class hash2D 
 {
@@ -55,39 +54,4 @@ public:
 		int _y	= iFloor(float(s_Y)*(y-bounds.min.y)/size.y); clamp(_y,0,int(s_Y-1));
 		return table[_y][_x];
 	};
-
-// vector_serialize< t_read<Face> >	
-// vector_serialize< t_write<Face> >	
-	template<typename TP>	
-	struct get_type
-	{
-		typedef	TP	type	;
-	};
-	
-	template<typename TP>	
-	struct get_type<TP*>
-	{
-		typedef	TP	type	;
-	};
-
-	typedef	 typename get_type<T>::type		type;
-
-	void	read				( INetReader	&r,  vector_serialize< t_read<type, get_id_self_index<type> > > &rd	 )
-	{
-		r_pod( r, bounds );
-			
-		r.r_fvector2( size );
-		for (u32 y=0; y<s_Y; y++)
-			for (u32 x=0; x<s_Y; x++)
-				rd.read_ref( r,  table[y][x] );
-	}
-	void	write				( IWriter	&w, vector_serialize< t_write<type, get_id_self_index<type> > > &wt  ) const 
-	{
-		w_pod( w, bounds );
-
-		w.w_fvector2( size );
-		for (u32 y=0; y<s_Y; y++)
-			for (u32 x=0; x<s_Y; x++)
-			 wt.write_ref( w,	table[y][x]	);
-	}
 };

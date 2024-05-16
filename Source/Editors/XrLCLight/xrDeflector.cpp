@@ -7,7 +7,7 @@
 
 #include "math.h"
 #include "xrface.h"
-#include "serialize.h"
+ 
 
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
@@ -124,7 +124,7 @@ IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
 	return T.isInside(P,B);
 }
 
-CDeflector::CDeflector(): _net_session(0)
+CDeflector::CDeflector() 
 {
 	//Deflector		= this;
 	normal.set		(0,1,0);
@@ -402,123 +402,7 @@ u16	CDeflector:: GetBaseMaterial		()
 {
 	return UVpolys.front().owner->dwMaterial;	
 }
-
-	/*
-	xr_vector<UVtri>			UVpolys;
-	Fvector						normal;
-	lm_layer					layer;
-	Fsphere						Sphere;
-	
-	BOOL						bMerged;
-	*/
-
-void	CDeflector::receive_result		( INetReader	&r )
-{
-	read( r );
-	layer.read( r );
-#ifdef	COLLECT_EXECUTION_STATS
-	time_stat.read( r );
-#endif
-}
-void	CDeflector::send_result			( IWriter	&w ) const
-{
-	write( w );
-	layer.write( w );
-#ifdef	COLLECT_EXECUTION_STATS
-	time_stat.write( w );
-#endif
-}
-
-void CDeflector::Serialize(IWriter* w)
-{
-	// UV Tri
-	w->w_u32(UVpolys.size());
-  	for (auto uv : UVpolys)
-	{
-		uv.Serialize(w);
-		//uv.owner->pDeflector = this;
-	}
-
-	// Deflector Data
-	w->w(&Sphere, sizeof(Sphere)) ; 
-	w->w_fvector3( normal );
- 	w->w_u32 ( layer.width );
-	w->w_u32 ( layer.height );
-	w->w_u8( (u8) bMerged );
-
-	// Layer
-	layer.Serilize(w);
-}
-
-void CDeflector::Deserialize(IReader* read)
-{
-	// UV Tri
-	u32 size = read->r_u32();
-	UVpolys.resize(size);
-
-  	for (int i = 0; i < size; i++)
-	{
-		UVpolys[i].Deserialize(read);
-		UVpolys[i].owner->pDeflector = this;
-	}
-
-	// Deflector Data
-	read->r(&Sphere, sizeof(Sphere)) ; 
-	read->r_fvector3( normal );
- 	layer.width		= read->r_u32 ();
-	layer.height	= read->r_u32 ();
-	bMerged = read->r_u8();
-
-	// Layer
-	layer.Deserilize(read);
-}
-
-void	CDeflector::read				( INetReader	&r )
-{
-	u32 sz_polys = r.r_u32();
-	UVpolys.resize( sz_polys );
-
-	for(u32 i = 0; i < sz_polys; ++i )
-	{
-		UVpolys[i].read( r );
-		VERIFY( UVpolys[i].owner );
-		//VERIFY( !UVpolys[i].owner->pDeflector );
-		UVpolys[i].owner->pDeflector = this;
-	}
-
-	r.r_fvector3( normal );
-
-	//layer.read( r );
-	layer.width =	r.r_u32 ();
-	layer.height =	r.r_u32 ();
-
-	r_sphere( r, Sphere );
-
-	 bMerged = (BOOL) r.r_u8( );
-}
-
-
-void	CDeflector::write				( IWriter	&w ) const
-{
-	
-	u32 sz_polys = UVpolys.size();
-	w.w_u32( sz_polys );
-	for(u32 i = 0; i < sz_polys; ++i )
-		UVpolys[i].write( w );
-
-	w.w_fvector3( normal );
-
-	//layer.write( w );
-	w.w_u32 ( layer.width );
-	w.w_u32 ( layer.height );
-	
-	w_sphere( w, Sphere );
-
-	w.w_u8( (u8) bMerged );
-}
-
-
-
+ 
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 {
 	if( bMerged != D.bMerged )
@@ -572,12 +456,6 @@ bool CDeflector::similar_pos(const CDeflector& D, float eps) const
 	//return Sphere.P.magnitude() < D.Sphere.P.magnitude();
 }
 
-
-CDeflector*		CDeflector::read_create					()
-{
-	return xr_new<CDeflector>();
-}
-
 void DumpDeflctor( u32 id )
 {
 	VERIFY( inlc_global_data()->g_deflectors().size()>id );
@@ -601,16 +479,6 @@ void DeflectorsStats ()
 	for( u32 i = 0; i <size ; i++ )
 			DumpDeflctor( i ); 
 }
-
-#ifdef	COLLECT_EXECUTION_STATS
-
-void	CDeflector::statistic_log			(  ) const
-{
-	time_stat.log();
-	DumpDeflctor( *this );
-}
-
-#endif
 
 extern XRLC_LIGHT_API int global_size_map = 1024;
 

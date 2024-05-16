@@ -148,22 +148,18 @@ public:
 		}
 	}
 };
-namespace lc_net
-{
-void RunLightVertexNet();
-}
+ 
 
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
-void LightVertex	( bool net )
+void LightVertex	()
 {
 	g_trans				= xr_new<mapVert>	();
 
 	// Start threads, wait, continue --- perform all the work
 	Status				("Calculating...");
-	if( !net )
-	{
+ 	{
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
@@ -171,10 +167,7 @@ void LightVertex	( bool net )
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 
-	else
-	{
-		lc_net::RunLightVertexNet();
-	}
+	 
 	// Process all groups
 	Status				("Transluenting...");
 	for (mapVertIt it=g_trans->begin(); it!=g_trans->end(); it++)

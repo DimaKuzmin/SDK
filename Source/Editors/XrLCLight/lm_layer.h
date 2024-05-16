@@ -38,33 +38,7 @@ private:
 //	LMODE					mode;	
 public:	  
 	xr_vector<LightpointRequest> SurfaceLightRequests;
- 	
-	void Serilize(IWriter* w)
-	{
-		w->w_u32(surface.size());
-		w->w(&*surface.data(), surface.size() * sizeof(base_color));
-
-		w->w_u32(marker.size());
-		w->w(&*marker.data(), marker.size() * sizeof(u8));
-
-		w->w_u32(width);
-		w->w_u32(height);
-	}
-
-	void Deserilize(IReader* read)
-	{
-		u32 size = read->r_u32();
-		read->r(&*surface.data(), size * sizeof(base_color));
-
-		u32 sizem = read->r_u32();
-		read->r(&*marker.data(), sizem * sizeof(u8));
-
-		width  = read->r_u32();
-		height = read->r_u32();
-	}
-
-//	xr_vector <LightpointSampleRecvest> SurfaceLightRequestsSamples;
-
+ 
 	void					create			(u32 w, u32 h)
 	{
 		width				= w;
@@ -74,8 +48,6 @@ public:
 		surface.resize	(size);
 		marker.clear();		
 		marker.assign	(size,0);
-
-//		SurfaceLightRequestsSamples.resize(size);
 	}
 
 	u32 SizeArea()
@@ -94,11 +66,7 @@ public:
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
 	void					Pack			(xr_vector<u32>& dest)const;
 	void					Pack_hemi		(xr_vector<u32>& dest)const;
-	void					read			( INetReader	&r );
-	void					write			( IWriter	&w ) const ;
+ 
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
 							lm_layer()				{ width=height=0; }
-
-
-
 };

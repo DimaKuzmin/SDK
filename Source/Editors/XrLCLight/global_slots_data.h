@@ -19,10 +19,7 @@ public:
 	void				Free			();
 	
 	void				FreeOnAgent		();
-
-	void				read			( INetReader &r );
-	void				write			( IWriter	&w ) const ;
-
+ 
 	IC const DetailHeader &header( )const { return dtH; }
 
 	IC u32 size_x() const

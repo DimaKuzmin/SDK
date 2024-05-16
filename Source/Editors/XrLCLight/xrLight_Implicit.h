@@ -16,29 +16,22 @@ class ImplicitDeflector;
 class ImplicitExecute
 {
 	// Data for this thread
-	u32					y_start,y_end;
-
 	int TH_ID;
-/// <summary>
-/// 
-/// </summary>
+
 public:
-
-
-
-	ImplicitExecute( u32 _y_start, u32 _y_end , int ID) : y_start(_y_start), y_end( _y_end ), TH_ID(ID)
+ 
+	ImplicitExecute(int ID) : TH_ID(ID)
 	{
 	}
 
-	ImplicitExecute(): y_start( u32(-1) ),y_end( u32(-1) )
+	ImplicitExecute() 
 	{
 
 	}
 
 protected:
 	CDB::COLLIDER DB;
-	net_task_callback* net_cb;
-	
+ 	
 	u32 Jcount;
 	Fvector2* Jitter;
 	Fvector2 dim;
@@ -47,15 +40,9 @@ protected:
 public:
 
 
-	void		Execute			( net_task_callback *net_callback );
+	void		Execute			();
 
  	void		ForCycle		(ImplicitDeflector* defl, u32 V, int TH);
-
-	void		read			( INetReader	&r );
-	void		write			( IWriter	&w ) const ;
-
-	void		receive_result			( INetReader	&r );
-	void		send_result				( IWriter	&w ) const ;
 	void		clear();
 };
 

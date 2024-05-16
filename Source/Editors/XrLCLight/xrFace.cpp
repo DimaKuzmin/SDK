@@ -4,7 +4,7 @@
 //#include "build.h"
 #include "xrdeflector.h"
 #include "xrLC_globaldata.h"
-#include "serialize.h"
+ 
 #include "lightmap.h"
 
 volatile u32					dwInvalidFaces;
@@ -44,15 +44,7 @@ void			base_Face::CacheOpacity	()
 	}
 }
 static bool do_not_add_to_vector_in_global_data = false;
-Face*	Face::read_create( )
-{
-	do_not_add_to_vector_in_global_data = true;
-	Face* f =  inlc_global_data()->create_face();
-	do_not_add_to_vector_in_global_data = false;
-	
-	return f;
-}
-
+ 
 bool			g_bUnregister = true;
 
 void destroy_vertex( Vertex* &v, bool unregister )
@@ -108,12 +100,7 @@ IC Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 	V->C		= C;
 	return		V;
 }
-
-Vertex*	Vertex::read_create( )
-{
-
-	return inlc_global_data()->create_vertex();;
-}
+ 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
  
 
@@ -245,116 +232,4 @@ BOOL	DataFace::hasImplicitLighting()
 	b_BuildTexture&	T	= inlc_global_data()->textures()		[M.surfidx];
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
-
-void	DataFace::	read	(INetReader	&r )
-{
-	base_Face::read( r );	
-
-	r.r_fvector3( N );			
-	r_vector ( r, tc ) ;			
-	pDeflector =0 ;
-	VERIFY( read_lightmaps );
-	read_lightmaps->read( r, lmap_layer );
-	sm_group = r.r_u32();
-
-}
-void	DataFace::	write	(IWriter	&w )const
-{
-	base_Face::write( w );
-	w.w_fvector3( N );			
-	w_vector ( w, tc ) ;			
-	VERIFY( write_lightmaps );
-	write_lightmaps->write( w, lmap_layer );
-	w.w_u32( sm_group );
-}
-	
-void	DataVertex::	read	(INetReader	&r )
-{
-	base_Vertex::read( r );
-}
-
-void	DataVertex::	write	(IWriter	&w )const
-{
-	base_Vertex::write( w );
-}
-
-void Face::	read_vertices		( INetReader	&r )
-{
-	VERIFY( ::read_vertices );
-	::read_vertices->read( r, v[0] );
-	::read_vertices->read( r, v[1] );
-	::read_vertices->read( r, v[2] );
-}
-void Face::write_vertices		( IWriter	&w )const
-{
-	VERIFY( ::write_vertices );
-	::write_vertices->write( w, v[0] );
-	::write_vertices->write( w, v[1] );
-	::write_vertices->write( w, v[2] );
-}
-
-void	Face::	read	( INetReader	&r )
-{
-	DataFace::read( r );
-}
-
-void	Face::	write	( IWriter	&w )const
-{
-	DataFace::write( w );
-}
-
-
-
-
-void	Vertex::read		( INetReader	&r )
-{
-	//	v_faces							m_adjacents; !
-	DataVertex::read( r );
-}
-void	Vertex::write		( IWriter	&w )const
-{
-	//	v_faces							m_adjacents; !
-	DataVertex::write( w );
-}
-
-//////////////////////////////////////////////////////////////
-void	Vertex::isolate_pool_clear_read		( INetReader	&r )
-{
-	DataVertex::read( r );
-	r_pod_vector( r, m_adjacents );
-	for(u32 i= 0; i< m_adjacents.size();++i )
-	{
-		Face &f = *m_adjacents[i];
-		int v_i = -1;
-		r_pod( r, v_i );
-		R_ASSERT( v_i>=0 );
-		R_ASSERT( v_i<3 );
-		R_ASSERT( f.vertex( v_i ) == 0 );
-		f.raw_set_vertex( v_i, this );
-	}
-}
-void	Vertex::isolate_pool_clear_write	( IWriter	&w )const
-{
-	DataVertex::write( w );
-	w_pod_vector( w, m_adjacents );
-	for(u32 i= 0; i< m_adjacents.size();++i )
-	{
-		Face &f = *m_adjacents[i];
-		int v_i = f.VIndex( this );
-		R_ASSERT( v_i>=0 );
-		R_ASSERT( v_i<3 );
-		w_pod( w, v_i );
-		f.raw_set_vertex( v_i, 0 );
-	}
-}
-
-void	Vertex::read_adjacents		( INetReader	&r )
-{
-	//VERIFY()
-}
-void	Vertex::write_adjacents		( IWriter	&w )const
-{
-
-}
-
-///////////////////////////////////////////////////////////////
+  

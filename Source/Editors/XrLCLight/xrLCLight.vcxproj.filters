@@ -11,24 +11,6 @@
     <Filter Include="Light\xrLC_GlobalData">
       <UniqueIdentifier>{a08c88cb-5b93-4c8b-9dd8-3efe02c8c663}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Light\Net">
-      <UniqueIdentifier>{5f0a0fe5-e715-4497-8eb2-fc8c14997585}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Net\new">
-      <UniqueIdentifier>{d6b2e8cf-8d6b-4fd6-89f4-ee2998e5c809}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Net\new\net_user_gl_data">
-      <UniqueIdentifier>{76ecf827-9771-4b07-8e11-591c86d71d84}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Net\new\net_user_execution">
-      <UniqueIdentifier>{eb6c62ec-4c6a-4256-83c0-6b97245965fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Net\new\task_manager">
-      <UniqueIdentifier>{b74a4391-ffe6-4aef-b967-beb94c33f886}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\Net\depr">
-      <UniqueIdentifier>{0060dbfb-b5ff-425b-bcc4-a03ba36523a2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Light\models">
       <UniqueIdentifier>{cecaa783-fd77-4f88-9280-28b2b776f40e}</UniqueIdentifier>
     </Filter>
@@ -43,9 +25,6 @@
     </Filter>
     <Filter Include="Light\Mesh">
       <UniqueIdentifier>{57382d9f-d2c2-4818-80f4-887314c41e4c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Light\serialize">
-      <UniqueIdentifier>{b69283d5-1401-4d53-b72e-ecc265998dd0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Light\Lightmaps">
       <UniqueIdentifier>{e35b6445-afc6-42dc-8f07-a7906ca126ee}</UniqueIdentifier>
@@ -104,102 +83,6 @@
     <ClInclude Include="xrLC_GlobalData.h">
       <Filter>Light\xrLC_GlobalData</Filter>
     </ClInclude>
-    <ClInclude Include="file_compress.h">
-      <Filter>Light\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="light_execute.h">
-      <Filter>Light\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="net_stream.h">
-      <Filter>Light\Net</Filter>
-    </ClInclude>
-    <ClInclude Include="lightstab_interface.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="net_cl_data_prepare.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_factory.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_globals.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="net_global_data_cleanup.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="net_task_callback.h">
-      <Filter>Light\Net\new</Filter>
-    </ClInclude>
-    <ClInclude Include="detail_net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="gl_base_cl_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="implicit_net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="lc_net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="lm_net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="net_all_globals.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="ref_model_net_global_data.h">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClInclude>
-    <ClInclude Include="lcnet_execution_tasks_add.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_all_executions.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_detail_light.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_implicit_light.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_lightmaps.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_mu_base.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_mu_ref.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="net_execution_vertex_light.h">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClInclude>
-    <ClInclude Include="lcnet_task_manager.h">
-      <Filter>Light\Net\new\task_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="net_exec_pool.h">
-      <Filter>Light\Net\new\task_manager</Filter>
-    </ClInclude>
-    <ClInclude Include="net_light.h">
-      <Filter>Light\Net\depr</Filter>
-    </ClInclude>
-    <ClInclude Include="net_light_task.h">
-      <Filter>Light\Net\depr</Filter>
-    </ClInclude>
-    <ClInclude Include="net_task.h">
-      <Filter>Light\Net\depr</Filter>
-    </ClInclude>
-    <ClInclude Include="net_task_manager.h">
-      <Filter>Light\Net\depr</Filter>
-    </ClInclude>
     <ClInclude Include="fitter.h">
       <Filter>Light\models</Filter>
     </ClInclude>
@@ -215,9 +98,6 @@
     <ClInclude Include="xrMU_Model_Reference.h">
       <Filter>Light\models</Filter>
     </ClInclude>
-    <ClInclude Include="mu_light_net.h">
-      <Filter>Light\models\mu_light</Filter>
-    </ClInclude>
     <ClInclude Include="mu_model_light.h">
       <Filter>Light\models\mu_light</Filter>
     </ClInclude>
@@ -227,17 +107,11 @@
     <ClInclude Include="xrLight_Implicit.h">
       <Filter>Light\LightImplicit</Filter>
     </ClInclude>
-    <ClInclude Include="xrLight_ImplicitCalcGlobs.h">
-      <Filter>Light\LightImplicit</Filter>
-    </ClInclude>
     <ClInclude Include="xrLight_ImplicitDeflector.h">
       <Filter>Light\LightImplicit</Filter>
     </ClInclude>
     <ClInclude Include="xrLight_ImplicitRun.h">
       <Filter>Light\LightImplicit</Filter>
-    </ClInclude>
-    <ClInclude Include="execute_statistics.h">
-      <Filter>Light\xrDeflector</Filter>
     </ClInclude>
     <ClInclude Include="uv_tri.h">
       <Filter>Light\xrDeflector</Filter>
@@ -274,9 +148,6 @@
     </ClInclude>
     <ClInclude Include="xrFaceDefs.h">
       <Filter>Light\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="serialize.h">
-      <Filter>Light\serialize</Filter>
     </ClInclude>
     <ClInclude Include="Lightmap.h">
       <Filter>Light\Lightmaps</Filter>
@@ -323,9 +194,6 @@
     <ClInclude Include="recalculation.h">
       <Filter>do_light</Filter>
     </ClInclude>
-    <ClInclude Include="xrLightDoNet.h">
-      <Filter>do_light</Filter>
-    </ClInclude>
     <ClInclude Include="..\Shader_xrLC.h" />
     <ClInclude Include="R_light.h">
       <Filter>Light\LightsHW\base_lighting</Filter>
@@ -366,99 +234,6 @@
     <ClCompile Include="xrLC_GlobalData.cpp">
       <Filter>Light\xrLC_GlobalData</Filter>
     </ClCompile>
-    <ClCompile Include="file_compress.cpp">
-      <Filter>Light\Net</Filter>
-    </ClCompile>
-    <ClCompile Include="light_execute.cpp">
-      <Filter>Light\Net</Filter>
-    </ClCompile>
-    <ClCompile Include="net_stream.cpp">
-      <Filter>Light\Net</Filter>
-    </ClCompile>
-    <ClCompile Include="net_cl_data_prepare.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_factory.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_factory_register.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_globals.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="net_global_data_cleanup.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="net_task_callback.cpp">
-      <Filter>Light\Net\new</Filter>
-    </ClCompile>
-    <ClCompile Include="detail_net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="gl_base_cl_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="implicit_net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="lc_net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="lm_net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="ref_model_net_global_data.cpp">
-      <Filter>Light\Net\new\net_user_gl_data</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_detail_light.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_implicit_light.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_lightmaps.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_mu_base.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_mu_ref.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_execution_vertex_light.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="net_lightmaps_add_task.cpp">
-      <Filter>Light\Net\new\net_user_execution</Filter>
-    </ClCompile>
-    <ClCompile Include="lcnet_task_manager.cpp">
-      <Filter>Light\Net\new\task_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="lcnet_task_menager_run_task.cpp">
-      <Filter>Light\Net\new\task_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="net_exec_pool.cpp">
-      <Filter>Light\Net\new\task_manager</Filter>
-    </ClCompile>
-    <ClCompile Include="net_light.cpp">
-      <Filter>Light\Net\depr</Filter>
-    </ClCompile>
-    <ClCompile Include="net_light_task.cpp">
-      <Filter>Light\Net\depr</Filter>
-    </ClCompile>
-    <ClCompile Include="net_task.cpp">
-      <Filter>Light\Net\depr</Filter>
-    </ClCompile>
-    <ClCompile Include="net_task_manager.cpp">
-      <Filter>Light\Net\depr</Filter>
-    </ClCompile>
     <ClCompile Include="fitter.cpp">
       <Filter>Light\models</Filter>
     </ClCompile>
@@ -486,9 +261,6 @@
     <ClCompile Include="xrMU_Model_Reference.cpp">
       <Filter>Light\models</Filter>
     </ClCompile>
-    <ClCompile Include="mu_light_net.cpp">
-      <Filter>Light\models\mu_light</Filter>
-    </ClCompile>
     <ClCompile Include="mu_model_light.cpp">
       <Filter>Light\models\mu_light</Filter>
     </ClCompile>
@@ -501,13 +273,7 @@
     <ClCompile Include="xrMU_Model_Reference_Calc_Lighting.cpp">
       <Filter>Light\models\mu_light</Filter>
     </ClCompile>
-    <ClCompile Include="xrLight_ImlicitNet.cpp">
-      <Filter>Light\LightImplicit</Filter>
-    </ClCompile>
     <ClCompile Include="xrLight_Implicit.cpp">
-      <Filter>Light\LightImplicit</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLight_ImplicitCalcGlobs.cpp">
       <Filter>Light\LightImplicit</Filter>
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitDeflector.cpp">
@@ -515,9 +281,6 @@
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitThread.cpp">
       <Filter>Light\LightImplicit</Filter>
-    </ClCompile>
-    <ClCompile Include="execute_statistics.cpp">
-      <Filter>Light\xrDeflector</Filter>
     </ClCompile>
     <ClCompile Include="uv_tri.cpp">
       <Filter>Light\xrDeflector</Filter>
@@ -542,9 +305,6 @@
     </ClCompile>
     <ClCompile Include="xrFace.cpp">
       <Filter>Light\Mesh</Filter>
-    </ClCompile>
-    <ClCompile Include="serialize.cpp">
-      <Filter>Light\serialize</Filter>
     </ClCompile>
     <ClCompile Include="Lightmap.cpp">
       <Filter>Light\Lightmaps</Filter>
@@ -573,9 +333,6 @@
     <ClCompile Include="xrLightVertex.cpp">
       <Filter>Light\LightVertex</Filter>
     </ClCompile>
-    <ClCompile Include="xrLightVertexNet.cpp">
-      <Filter>Light\LightVertex</Filter>
-    </ClCompile>
     <ClCompile Include="compiler.cpp">
       <Filter>do_light</Filter>
     </ClCompile>
@@ -592,9 +349,6 @@
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="recalculation.cpp">
-      <Filter>do_light</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLightDoNet.cpp">
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xrEngine\xrLoadSurface.cpp">
