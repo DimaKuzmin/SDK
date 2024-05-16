@@ -525,6 +525,7 @@
       <PreprocessorDefinitions>DEVELOPER_VERSION;NDEBUG;BEARCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>BearCore.hpp</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..;.;$(External)zlib\include;$(External)lzo\include;$(External)tinyxml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

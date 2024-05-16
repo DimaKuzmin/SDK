@@ -596,6 +596,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;$(External)Public\Nvtt;$(External)Public\Nvtt\nvcore;$(External)Public\Nvtt\nvimage;$(External)Public\Nvtt\nvmath;$(External)Public\Nvtt\nvthread;$(External)Public\Nvtt\nvtt;$(External)Public\Nvtt\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

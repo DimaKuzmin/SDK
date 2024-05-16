@@ -459,6 +459,7 @@
       <PreprocessorDefinitions>DEVELOPER_VERSION;BEARGRAPHICS_EXPORTS;_WINDOWS;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>BearGraphics.hpp</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..;.;..\..\..\BearCore;$(External)Public\Nvtt;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
