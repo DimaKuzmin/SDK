@@ -143,6 +143,32 @@ void xrMU_Reference::calc_lighting()
 
 	if (build_args->MU_ModelsRegression)
 	{
+		xr_vector<double>	A;	A.resize(color.size());
+		xr_vector<double>	B;	B.resize(color.size());
+		float* _s = (float*)&c_scale;
+		float* _b = (float*)&c_bias;
+
+		for (u32 i = 0; i < 5; i++)
+		{
+			for (u32 it = 0; it < color.size(); it++)
+			{
+				base_color_c		__A;
+				model->color[it]._get(__A);
+				base_color_c		__B;
+				color[it]._get(__B);
+				A[it] = (__A.hemi);
+				//B[it]		=	(__B.hemi);
+				B[it] = ((float*)&__B)[i];
+			}
+
+			vfComputeLinearRegression(A, B, _s[i], _b[i]);
+		}
+
+		for (u32 index = 0; index < 5; index++)
+		{
+			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
+		}
+
 		/*
 		csMU.Enter();
 
@@ -297,7 +323,7 @@ void xrMU_Reference::calc_lighting()
 			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
 		}
 
-		 
+		 // Поправка Хеми Света
 		for (u32 it = 0; it < color.size(); it++)
 		{
 			base_color_c C, R;
@@ -306,7 +332,7 @@ void xrMU_Reference::calc_lighting()
 
 			if (R.hemi > C.hemi && C.hemi < 0.15f)
 			{
-				C.hemi = R.hemi - 0.05f;
+ 				C.hemi = R.hemi - 0.05f;
 				color[it]._set(C);
 			}
 		}
