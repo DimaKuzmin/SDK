@@ -38,30 +38,45 @@ public:
 	{
 
 	}
-	 
+
 	IC	IHASH& Hash()
 	{
 		R_ASSERT(ImplicitHash);
 		return *ImplicitHash;
 	}
-	
+
 	void Allocate()
 	{
 		ImplicitHash = xr_new<IHASH>();
 	}
+
 	void Deallocate()
 	{
 		xr_delete(ImplicitHash);
 	}
 
-	IC void Initialize(ImplicitDeflector& def) { defl = &def; };
+	IC void Initialize(ImplicitDeflector& def) {
+		defl = &def; 
+		Fbox2 bounds;
+		defl->Bounds_Summary(bounds);
+		Hash().initialize(bounds, defl->faces.size());
+		for (u32 fid = 0; fid < defl->faces.size(); fid++)
+		{
+			Face* F = defl->faces[fid];
+			F->AddChannel(F->tc[0].uv[0], F->tc[0].uv[1], F->tc[0].uv[2]); // make compatible format with LMAPs
+			defl->Bounds(fid, bounds);
+			ImplicitHash->add(bounds, F);
+		}
+	};
 
 	IC	ImplicitDeflector& DATA()
 	{
 		R_ASSERT(defl);
 		return *defl;
 	}
-} cl_globs;
+};
+
+ImplicitCalcGlobs cl_globs;
 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
   
