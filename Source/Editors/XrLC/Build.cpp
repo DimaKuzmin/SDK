@@ -13,8 +13,7 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
 #include "../xrLCLight/mu_model_light.h"
-#include "../xrLCLight/net_cl_data_prepare.h"
-#include "../xrLCLight/serialize.h"
+ 
 //#include "../xrLCLight/lcnet_task_manager.h"
 void	calc_ogf		( xrMU_Model &	mu_model );
 void	export_geometry	( xrMU_Model &	mu_model );
@@ -59,48 +58,6 @@ void	CBuild::TempSave( u32 stage )
 	CheckBeforeSave( stage );
 
 }
-
-	//Fbox								scene_bb;
-	//xr_vector<b_shader>				shader_render;
-	//xr_vector<b_shader>				shader_compile;
- //   xr_vector<b_light_dynamic>		L_dynamic;
-	//xr_vector<b_glow>					glows;
-	//xr_vector<b_portal>				portals;
-	//xr_vector<b_lod>					lods;
-	//string_path						path;
-	//xr_vector<LPCSTR>					g_Shaders;
-void	CBuild::read( INetReader &r )
-{
-	r_pod( r, g_build_options );
-
-	r_pod( r, scene_bb );
-	r_pod_vector( r, shader_render );
-	r_pod_vector( r, shader_compile );
-	r_pod_vector( r, L_dynamic );
-	r_pod_vector( r, glows );
-	r_pod_vector( r, portals );
-	r_pod_vector( r, lods );
-	r_pod( r, path );
-	r_pod_vector( r, g_Shaders );
-	
-}
-
-void	CBuild::write( IWriter	&w ) const 
-{
-	w_pod( w, g_build_options );
-	
-	w_pod( w, scene_bb );
-	w_pod_vector( w, shader_render );
-	w_pod_vector( w, shader_compile );
-	w_pod_vector(  w,L_dynamic );
-	w_pod_vector( w, glows );
-	w_pod_vector( w, portals );
-	w_pod_vector( w, lods );
-	w_pod( w, path );
-	w_pod_vector( w, g_Shaders );
-
-}
-
 
 //////////////////////////////////////////////////////////////////////
 
@@ -391,7 +348,7 @@ void CBuild::ExportRayCastModel(IWriter* writer)
 }
 
 #include "../XrLCLight/xrDeflector.h"
-
+/*
 void CBuild::ExportDeflectors()
 {
 	Phase("Export Data For Lighting");
@@ -436,7 +393,7 @@ void CBuild::ExportDeflectors()
 	FS.w_close(write_x);
 	FS.w_close(write); 
 }
-
+*/
 
 IC bool				FaceEqual(Face& F1, Face& F2);
 #include "../XrLCLight/xrMU_Model_Reference.h"
@@ -1038,13 +995,7 @@ void CBuild::Run(LPCSTR P)
 	// Se7Kills Opacity BUFFERS
 
 	//****************************************** All lighting + lmaps building and saving
-#ifdef NET_CMP
-	mu_base.wait				(500);
- #endif
-
-	if(g_build_options.b_net_light)
-		SetGlobalLightmapsDataInitialized();
-		
+ 		
 	Light						();
 	RunAfterLight				( fs );
 

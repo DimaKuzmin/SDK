@@ -52,9 +52,6 @@
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Model">
       <UniqueIdentifier>{012a8f47-9b2d-4d7f-8a66-1e2280614004}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\net">
-      <UniqueIdentifier>{b85a98b8-2561-448b-b65a-490577f760fc}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h">
@@ -149,9 +146,6 @@
     </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader</Filter>
-    </ClInclude>
-    <ClInclude Include="net.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\net</Filter>
     </ClInclude>
     <ClInclude Include="xrGameMaterials.h" />
     <ClInclude Include="..\Public\Shader_xrLC.h" />
@@ -328,9 +322,6 @@
     </ClCompile>
     <ClCompile Include="xrMU_Model_export_OGF.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="net.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\net</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
   </ItemGroup>

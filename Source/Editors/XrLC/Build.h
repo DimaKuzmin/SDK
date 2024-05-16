@@ -74,7 +74,7 @@ public:
 	void	TestMergeGeom(IWriter* writer);
 	void	ExportRayCastModel(IWriter* writer);
 
-	void	ExportDeflectors();
+	// void	ExportDeflectors();
 
 	// void RunCollideFormNEW();
 
@@ -124,8 +124,7 @@ public:
 	bool	IsOGFContainersEmpty	();
 	void	CheckBeforeSave			( u32 stage );
 	void	TempSave				( u32 stage );
-	void	read					( INetReader &r );
-	void	write					( IWriter	&w ) const ;
+ 
 
 	CBuild	();
 	~CBuild	();

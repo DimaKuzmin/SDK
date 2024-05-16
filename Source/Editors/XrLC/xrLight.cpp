@@ -7,13 +7,11 @@
 #include "../xrLCLight/xrLightVertex.h"
 
 #include "../../xrcore/xrSyncronize.h"
-#include "net.h"
+ 
 //#include "../xrLCLight/net_task_manager.h"
-#include "../xrLCLight/lcnet_task_manager.h"
-#include "../xrLCLight/mu_model_light.h"
+ #include "../xrLCLight/mu_model_light.h"
 
-#include "../XrLCLight/net_cl_data_prepare.h"
-
+ 
 
 #include "../XrLCLight/base_face.h"
 
@@ -234,31 +232,10 @@ for(u32 dit = 0; dit<lc_global_data()->g_deflectors().size(); dit++)
 
 void	CBuild::LMaps					()
 {
-		//****************************************** Lmaps
-
-	//DeflectorsStats ();
-#ifndef NET_CMP
-	if(g_build_options.b_net_light)
-
-		//net_light ();
-		lc_net::net_lightmaps ();
-	else{
-		LMapsLocal();
-	}
-#else
-	create_net_task_manager();
-	get_net_task_manager()->create_global_data_write(pBuild->path);
+	//****************************************** Lmaps
 	LMapsLocal();
-	get_net_task_manager()->run();
-	destroy_net_task_manager();
-	//net_light ();
-#endif
-
 }
-void XRLC_LIGHT_API ImplicitNetWait();
-
-
-
+ 
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
@@ -304,12 +281,7 @@ void CBuild::Light()
 			mem_Compact();
 
  			LightVertex();
-
-
-			ImplicitNetWait();
-			lc_net::get_task_manager().wait_all();
-			lc_net::get_task_manager().release();
-
+ 
 			//****************************************** Merge LMAPS
 			{
 				FPU::m64r();
@@ -333,5 +305,5 @@ void CBuild::Light()
 
 void CBuild::LightVertex	()
 {
-	::LightVertex(!!g_build_options.b_net_light);
+	::LightVertex();
 }
