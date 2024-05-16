@@ -50,6 +50,10 @@ var _x	= var(x);
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 //-----------------------------------------------------------------------
+
+int REF = false;
+ 
+
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
 { 
 	// trans-map
@@ -79,6 +83,9 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	if	(bDisableFaces)
 		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
 	*/
+	bool tree = false;
+	if (strstr(m_name.c_str(), "trees"))
+		tree = true;
 
 	// Perform lighting
 	for (I = 0; I < m_vertices.size(); I++)
@@ -97,7 +104,10 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		v_amb /= float(V->m_adjacents.size());
 		v_trans /= float(V->m_adjacents.size());
 		float v_inv = 1.f - v_amb;
-
+		
+		//if (tree)
+		//v_amb = 0.6f;
+	
 		base_color_c			vC;
 		Fvector					vP, vN;
 		xform.transform_tiny(vP, V->P);
@@ -131,7 +141,8 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		// Decrement to the start and inc to end
 		while (it != g_trans.begin() && ((it->first + eps2) > key)) it--;
 		while (it2 != g_trans.end() && ((it2->first - eps2) < key)) it2++;
-		if (it2 != g_trans.end())	it2++;
+		if (it2 != g_trans.end())	
+			it2++;
 
 		// Search
 		BOOL	found = FALSE;
@@ -179,6 +190,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		}
 
 		// Calculate final vertex color
+		
 		for (u32 v = 0; v<int(VL.size()); v++)
 		{
 			base_color_c		vC;
@@ -196,6 +208,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		}
 	}
 
+	 
 	// Transfer colors to destination
 	dest.resize(m_vertices.size());
 	for (I = 0; I < m_vertices.size(); I++)
@@ -204,8 +217,9 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		base_color	ptColor = m_vertices[I]->C;
 		dest[I] = ptColor;
 	}
-}
 
+
+}
 void xrMU_Model::calc_lighting()
 {
 	// BB
@@ -221,7 +235,10 @@ void xrMU_Model::calc_lighting()
 	CDB::MODEL* M = xr_new<CDB::MODEL>();
 	M->build(CL.getV(), (u32)CL.getVS(), CL.getT(), (u32)CL.getTS());
 
+	REF = true;
 	calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun, true);
+
+	REF = false;
 
 	xr_delete(M);
 

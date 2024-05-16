@@ -241,12 +241,12 @@ void CBuild::xrPhase_MergeLM()
 			for (int it = 0; it < Layer.size(); it++)
 			{
 				lm_layer& L = Layer[it]->layer;
-				if (max_y < L.height + 2)
-					max_y = L.height + 2;
+				if (max_y < L.height + 5)
+					max_y = L.height + 5;
 
 				if (x + L.width + 2 > getLMSIZE() - 16 - L.width)
 				{
-					x = 0;  y += max_y; max_y = 0;
+					x = 0;  y += max_y + 5; max_y = 0;
 				}
 
 				{
