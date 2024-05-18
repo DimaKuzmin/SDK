@@ -32,7 +32,7 @@ static Fvector		GetPixel_7x7		(CDB::RESULT& rpinf)
 
 	// Access to texture
 	CDB::TRI& clT										= lc_global_data()->RCAST_Model()->get_tris()[rpinf.id];
-	base_Face* F										= (base_Face*)(clT.pointer);
+	base_Face* F										= (base_Face*) convert_nax(clT.dummy);
 	if (0==F)											return R;
 	const Shader_xrLC&	SH								= F->Shader();
 	if (!SH.flags.bLIGHT_CastShadow)					return R;

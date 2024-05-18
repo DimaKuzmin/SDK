@@ -8,11 +8,358 @@
 #include "xrImage_Resampler.h"
 #include "light_point.h"
 #include "xrface.h"
- 
-#include "BuildArgs.h"
-//const	u32	rms_discard			= 8;
-//extern	BOOL		gl_linear	;
 
+
+// SE7kills NEW Opcode Contex Hits
+xrCriticalSection csDeflector;
+
+
+#include "EmbreeDataStorage.h"
+#include "BuildArgs.h"
+
+#include "..\XrCDB\xrCDB.h"
+#ifndef DevCPU 
+#include "xrHardwareLight.h"
+#endif
+// Packed 
+
+void RayTraceEmbree8Preocess(PackedBuffer* buffer, ELightType type_lightpoint, ELights type_LIGHTs);
+
+void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& lights, u32 flags)
+{
+	Fvector		Ldir;
+
+	/*
+	if (0 == (buffer->flags[0] & LP_dont_rgb))
+	{
+		R_Light* L = &*lights.rgb.begin(), * E = &*lights.rgb.end();
+		for (; L != E; L++)
+		{
+			buffer->light = L;
+
+			switch (L->type)
+			{
+				case LT_DIRECT:
+				{
+					int valid[8];
+					bool any = false;
+
+					for (auto i = 0; i < 8; i++)
+					{
+						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
+
+						// Cos
+						Ldir.invert(L->direction);
+						float D = Ldir.dotproduct(buffer->direction[i]);
+
+						valid[i] = false;
+						buffer->Dist2Light[i] = D;
+
+						if (D <= 0)
+							continue;
+
+						valid[i] = true;
+						any = true;
+					}
+
+					if (any)
+					{
+						// Trace Light
+						RayTraceEmbree8Preocess(buffer, valid, L->type);
+					}
+				}
+				break;
+				case LT_POINT:
+				{
+					int valid[8];
+					bool any = false;
+
+					for (auto i = 0; i < 8; i++)
+					{
+						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
+
+						// Distance
+						float sqD = buffer->position[i].distance_to_sqr(L->position);
+						valid[i] = false;
+						if (sqD > L->range2)
+							continue;
+
+						// Dir
+						Ldir.sub(L->position, buffer->position[i]);
+						Ldir.normalize_safe();
+						float D = Ldir.dotproduct(buffer->direction[i]);
+						if (D <= 0)
+							continue;
+
+						valid[i] = true;
+						any = true;
+						buffer->Dist2Light[i] = D;
+
+					}
+
+					if (any)
+					{
+						// Trace Light
+						RayTraceEmbree8Preocess(buffer, valid, L->type);
+					}
+
+				}
+				break;
+				case LT_SECONDARY:
+				{
+					int valid[8];
+					bool any = false;
+
+					for (auto i = 0; i < 8; i++)
+					{
+						// Distance
+						valid[i] = false;
+
+						float sqD = buffer->position[i].distance_to_sqr(L->position);
+						if (sqD > L->range2) continue;
+
+						// Dir
+						Ldir.sub(L->position, buffer->position[i]);
+						Ldir.normalize_safe();
+						float	D = Ldir.dotproduct(buffer->direction[i]);
+						if (D <= 0) continue;
+
+						D *= -Ldir.dotproduct(L->direction);
+						if (D <= 0) continue;
+
+						valid[i] = false;
+						buffer->Dist2Light[i] = D;
+						any = true;
+					}
+
+					if (any)
+					{
+						RayTraceEmbree8Preocess(buffer, valid, L->type);
+					}
+				}
+				break;
+			}
+		}
+	}
+	*/
+ 
+	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
+
+	for (; L != E; L++)
+	{
+		PackedBuffer buffer;
+		buffer.MDL = buffer_to_work->MDL;
+		buffer.light = L;
+		buffer.flags = flags;
+
+
+
+		if (L->type == LT_DIRECT)
+		{
+			bool any = false;
+
+			for (int i = 0; i < 8; i++)
+			{
+				// Cos
+				Ldir.invert(L->direction);
+				float D = Ldir.dotproduct(buffer_to_work->direction[i]);
+				buffer.valid[i] = -1;
+
+				if (D <= 0)
+					continue;
+
+				any = true;
+				buffer.valid[i] = 0;
+
+				// Trace Light
+				Fvector	PMoved, PNew;
+				PNew.set(buffer_to_work->position[i]); PNew.add(0.01f);
+				PMoved.mad(PNew, Ldir, 0.001f);
+
+				buffer.pos[i].set(PMoved);
+				buffer.dir[i].set(Ldir);
+				buffer.tmax[i] = 1000.f;
+				buffer.skip[i] = buffer_to_work->skip[i];
+			}
+
+			if (any)
+			{
+				RayTraceEmbree8Preocess(&buffer, ELightType::LT_Direct, ELights::Hemi);
+
+				for (auto i = 0; i < 8; i++)
+				{
+					buffer_to_work->color[i].add(buffer.Color[i]);
+				}
+			}
+
+		}
+		else
+		{
+			bool any = false;
+
+			for (int i = 0; i < 8; i++)
+			{
+				buffer.valid[i] = -1;
+				// Distance
+				float sqD = buffer_to_work->position[i].distance_to_sqr(L->position);
+				if (sqD > L->range2) continue;
+
+				// Dir
+				Ldir.sub(L->position, buffer_to_work->position[i]);
+				Ldir.normalize_safe();
+				float D = Ldir.dotproduct(buffer_to_work->direction[i]);
+				if (D <= 0) continue;
+
+
+				any = true;
+				buffer.valid[i] = 0;
+
+				// Trace Light
+				float R = _sqrt(sqD);
+
+				Fvector	PNew;
+				PNew.set(buffer_to_work->position[i]); PNew.add(0.01f);
+
+				buffer.pos[i].set(PNew);
+				buffer.dir[i].set(Ldir);
+				buffer.tmax[i] = R;
+				buffer.skip[i] = buffer_to_work->skip[i];
+
+			}
+
+			if (any)
+			{
+				RayTraceEmbree8Preocess(&buffer, ELightType::LT_Point, ELights::Hemi);
+
+				for (auto i = 0; i < 8; i++)
+				{
+					buffer_to_work->color[i].add(buffer.Color[i]);
+				}
+			}
+
+		}
+
+	}
+
+}
+
+// NEW CDB_RAY
+void FilterFunction(OpcodeArgs* args)
+{
+	CDB::MODEL* MDL = (CDB::MODEL*)args->MDL;
+
+	// Access to texture
+	CDB::TRI& clT = MDL->get_tris()[args->hit_struct.prim];
+	base_Face* F = (base_Face*)convert_nax(clT.dummy);
+
+	if (0 == F || args->skip == F)
+		return;
+
+	const Shader_xrLC& SH = F->Shader();
+	if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip) //
+		return;
+
+	if (F->flags.bOpaque)
+	{
+		R_Light& light = (*((R_Light*)args->Light));
+
+		// Opaque poly - cache it
+		light.tri[0].set(MDL->get_verts()[clT.verts[0]]);
+		light.tri[1].set(MDL->get_verts()[clT.verts[1]]);
+		light.tri[2].set(MDL->get_verts()[clT.verts[2]]);
+
+		args->valid = false;
+		args->energy = 0;
+		return;
+	}
+
+	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (T.pSurface.Empty())
+	{
+		F->flags.bOpaque = true;
+
+		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
+
+		args->valid = false;
+		args->energy = 0;
+		return;
+	}
+
+	// barycentric coords
+	// note: W,U,V order
+	Fvector B;
+	B.set(1.0f - args->hit_struct.u - args->hit_struct.v, args->hit_struct.u, args->hit_struct.v);
+
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
+	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;
+	if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;
+	if (V < 0) V += T.dwHeight;
+
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+	args->energy *= opac;
+
+	// Energy Dead
+	if (args->energy < 0.001f)
+		args->valid = false;
+};
+
+float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
+{
+	R_ASSERT(DB);
+
+	// 1. Check cached polygon	 
+	float _u, _v, range;
+	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
+	if (res)
+		if (range > 0 && range < R)
+		{
+			return 0;
+		}
+
+	// 2. Polygon doesn't pick - real database query
+
+	OpcodeContext ctxt;
+	ctxt.filter = &FilterFunction;
+	ctxt.r_dir = D;
+	ctxt.r_start = P;
+	ctxt.r_range = R;
+
+
+	OpcodeArgs args;
+	args.energy = 1.0f;
+	args.Light = (void*)&L;
+	args.skip = (void*)skip;
+	args.MDL = (void*)MDL;
+	args.valid = 1;
+	args.pos = P;
+
+	ctxt.result = &args;
+
+	DB->rayTrace1(&ctxt);
+
+	return ctxt.result->energy;
+}
+
+float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
+
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+
+// ORIGINAL 
 void Jitter_Select(Fvector2* &Jitter, u32& Jcount)
 {
 	static Fvector2 Jitter1[1] = {
@@ -84,66 +431,6 @@ void GET			(const lm_layer &lm, int x, int y, u32 ref, u32 &count,  base_color_c
 	count				++;
 }
  
-/*
-struct	Get8_res
-{
-	Get8_res():count(0), res_surface_color(0), res_marker(0), ref( u32(-1) ) {}
-	base_color_c	dst;
-	u32				count;
-	base_color		*res_surface_color;
-	u8				*res_marker;
-	u32				ref;
-	void aplly( int x, int y, u32 _ref, bool &bNeedContinue, lm_layer &result )
-	{
-		if (count) {
-			dst.scale			(count);
-			result.surface		[y*result.width+x]._set(dst);
-			result.marker		[y*result.width+x]=u8(_ref);
-			bNeedContinue		= TRUE;
-		}
-	}
-	void apply_delay(int x, int y, u32 _ref, bool &bNeedContinue, lm_layer &result )
-	{
-		if (count) {
-			dst.scale			(count);
-			res_surface_color = &(result.surface		[y*result.width+x]);//._set(dst);
-			res_marker		  = &(result.marker		[y*result.width+x]);//=u8(ref);
-			ref				  = _ref;
-			bNeedContinue		= TRUE;
-		}
-	}
-	~Get8_res()
-	{
-		if( res_surface_color )
-		{
-			R_ASSERT( res_marker );
-			R_ASSERT( ref != u32(-1) );
-			res_surface_color->_set(dst);
-			*res_marker		 =u8(ref);
-		}
-	}
-};
-
-void Get8(const lm_layer &lm, int x, int y, u32 ref, u32 &count,  base_color_c& dst )
-{
-		GET(lm,x-1,y-1,ref,count,dst);
-		GET(lm,x  ,y-1,ref,count,dst);
-		GET(lm,x+1,y-1,ref,count,dst);
-
-		GET(lm,x-1,y  ,ref,count,dst);
-		GET(lm,x+1,y  ,ref,count,dst);
-
-		GET(lm,x-1,y+1,ref,count,dst);
-		GET(lm,x  ,y+1,ref,count,dst);
-		GET(lm,x+1,y+1,ref,count,dst);
-}
-
-void Get8(lm_layer &lm, int x, int y, u32 ref, Get8_res &res )
-{
-	Get8( lm, x, y, ref, res.count, res.dst );
-}
-*/
- 
 struct lm_line
 {
  buffer_vector<base_color>	&surface;
@@ -179,6 +466,7 @@ struct lm_line
 		//}
 	}
 } ;
+
 void GET		( const lm_line& l, int x, u32 width, u32 ref,  u32 &count,  base_color_c& dst  )
 {
 	if (x<0) return;
@@ -195,9 +483,7 @@ void GET		( const lm_line& l, int x, u32 width, u32 ref,  u32 &count,  base_colo
 	dst.add				(C);
 	count				++;
 }
-
-
-
+ 
 BOOL NEW_ApplyBorders	(lm_layer &lm, u32 ref) 
 {
 	bool			bNeedContinue = false;
@@ -281,9 +567,7 @@ BOOL NEW_ApplyBorders	(lm_layer &lm, u32 ref)
 	}
 	return bNeedContinue;
 }
-
-
-
+ 
 BOOL OLD_ApplyBorders	(lm_layer &lm, u32 ref) 
 {
 	BOOL			bNeedContinue = FALSE;
@@ -345,16 +629,8 @@ BOOL ApplyBorders( lm_layer &lm, u32 ref )
 	return NEW_ApplyBorders( lm, ref );
 }
  
-// OLDER GARBAGE
-
-u64 RayID = 0;
-  
+// OLDER GARBAGE 
  
-bool readed = false;
-bool return_parrams = false;
-
- 
-
 float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip, BOOL bUseFaceDisable)
 {
 
@@ -370,7 +646,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
  
 			// Access to texture
 			CDB::TRI& clT										= MDL->get_tris()[rpinf.id];
-			base_Face* F										= (base_Face*)(clT.pointer);
+			base_Face* F										= (base_Face*) convert_nax(clT.dummy);
 			if (0==F)											continue;
 			if (skip==F)										continue;
 
@@ -433,136 +709,9 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 	return scale;
 }
 
-
- 
-
-xrCriticalSection csDeflector;
-
-#include "..\XrCDB\xrCDB.h"
-
-  
-// NEW CDB_RAY
-void FilterFunction(OpcodeArgs* args)
-{
-	CDB::MODEL* MDL = (CDB::MODEL* ) args->MDL;
-
-	// Access to texture
-	CDB::TRI& clT										= MDL->get_tris()[args->hit_struct.prim];
-	base_Face* F										= (base_Face*)(clT.pointer);
-	
-	if (0==F || args->skip==F)							
-		return;
- 
-	const Shader_xrLC&	SH							= F->Shader();
-	if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip) //
-		return;
- 
-	if (F->flags.bOpaque)	
-	{
-		R_Light& light = (* ( (R_Light*) args->Light) );
- 
-		// Opaque poly - cache it
-		light.tri[0].set	(MDL->get_verts()[clT.verts[0]]);
-		light.tri[1].set	(MDL->get_verts()[clT.verts[1]]);
-		light.tri[2].set	(MDL->get_verts()[clT.verts[2]]);
-		
-		args->valid = false;
-		args->energy = 0;
- 		return;
-	}
-
-	b_material& M	= inlc_global_data()->materials()			[F->dwMaterial];
-	b_texture&	T	= inlc_global_data()->textures()			[M.surfidx];
- 
-	if (T.pSurface.Empty())	
-	{
-		F->flags.bOpaque	= true;
-
-		clMsg			("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
-		
-		args->valid = false;
-		args->energy = 0;
-		return;
-	}
-
-	// barycentric coords
-	// note: W,U,V order
-	Fvector B;
-	B.set	(1.0f - args->hit_struct.u - args->hit_struct.v, args->hit_struct.u, args->hit_struct.v);
-
-	// calc UV
-	Fvector2*	cuv = F->getTC0					();
-	Fvector2	uv;
-	uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-	uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-	int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-	U %= T.dwWidth;	
-	if (U<0) U+=T.dwWidth;
-	V %= T.dwHeight;
-	if (V<0) V+=T.dwHeight;
-
-	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel		= raw[V*T.dwWidth+U];
-	u32 pixel_a		= color_get_A(pixel);
-	float opac		= 1.f - _sqr(float(pixel_a)/255.f);
- 
-	args->energy *= opac;
-
-	// Energy Dead
-	if (args->energy < 0.001f)
-		args->valid = false; 
-};
-  
-float rayTraceCheck	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
-{ 
-	R_ASSERT	(DB);
- 
-	// 1. Check cached polygon	 
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
-	if (res) 
-	if (range > 0 && range < R) 
-	{
- 		return 0;
-	}
- 
-  	// 2. Polygon doesn't pick - real database query
-     
-	OpcodeContext ctxt;
-	ctxt.filter = &FilterFunction;
-	ctxt.r_dir = D;
-	ctxt.r_start = P;
-	ctxt.r_range = R;
-	
-
-	OpcodeArgs args;
-	args.energy = 1.0f;
- 	args.Light	= (void*) &L;
-	args.skip	= (void*) skip;
-   	args.MDL	= (void*) MDL;
-	args.valid  = 1;
-	args.pos = P;
-
-	ctxt.result = &args;
- 
-	DB->rayTrace1(&ctxt);  	 
-
-	return ctxt.result->energy;
-}
- 
-float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
-
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
- 
- 
-
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
 { 	
-	RayID++;
-
-	if (build_args->use_embree && !use_opcode)
+ 	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
  	
 	if (!build_args->use_opcode_old)
@@ -602,229 +751,6 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
  
 }
  
-#include "EmbreeDataStorage.h"
-
-void RayTraceEmbree8Preocess(PackedBuffer* buffer, ELightType type_lightpoint, ELights type_LIGHTs);
- 
-void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& lights, u32 flags)
-{
-	Fvector		Ldir;
- 
-	/*
-	if (0 == (buffer->flags[0] & LP_dont_rgb))
-	{
-		R_Light* L = &*lights.rgb.begin(), * E = &*lights.rgb.end();
-		for (; L != E; L++)
-		{
-			buffer->light = L;
-
-			switch (L->type)
-			{
-				case LT_DIRECT:
-				{
-					int valid[8];
-					bool any = false;
-					
-					for (auto i = 0; i < 8; i++)
-					{
-						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
-
-						// Cos
-						Ldir.invert(L->direction);
-						float D = Ldir.dotproduct(buffer->direction[i]);
-						
-						valid[i] = false;
-						buffer->Dist2Light[i] = D;
-
-						if (D <= 0) 
-							continue;
-						
-						valid[i] = true;
-						any = true;
-					}
-
-					if (any)
-					{
- 						// Trace Light
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
-				}
-				break;
-				case LT_POINT:
-				{
-					int valid[8];
-					bool any = false;
-					 
-					for (auto i = 0; i < 8; i++)
-					{
-						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
-
-						// Distance
-						float sqD = buffer->position[i].distance_to_sqr(L->position);
-						valid[i] = false;
-						if (sqD > L->range2)
-							continue;
-						
-						// Dir
-						Ldir.sub(L->position, buffer->position[i]);
-						Ldir.normalize_safe();
-						float D = Ldir.dotproduct(buffer->direction[i]);
-						if (D <= 0)
-							continue;
-						
-						valid[i] = true;
-						any = true;
-						buffer->Dist2Light[i] = D;
-
-					}
-
-					if (any)
-					{
-						// Trace Light
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
- 
-				}
-				break;
-				case LT_SECONDARY:
-				{
-					int valid[8];
-					bool any = false;
-
-					for (auto i = 0; i < 8; i++)
-					{
-						// Distance
-						valid[i] = false;
- 
-						float sqD = buffer->position[i].distance_to_sqr(L->position);
-						if (sqD > L->range2) continue;
-
-						// Dir
-						Ldir.sub(L->position, buffer->position[i]);
-						Ldir.normalize_safe();
-						float	D = Ldir.dotproduct(buffer->direction[i]);
-						if (D <= 0) continue;
-
-						D *= -Ldir.dotproduct(L->direction);
-						if (D <= 0) continue;
-						
-						valid[i] = false;
-						buffer->Dist2Light[i] = D;
-						any = true;
-					}
-
-					if (any)
-					{
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
-				}
-				break;
-			}
-		}
-	}
-	*/
- 
-
-	 
-	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
-	
-	for (; L != E; L++)
-	{
-		PackedBuffer buffer;
- 		buffer.MDL = buffer_to_work->MDL;
-		buffer.light = L;
-		buffer.flags = flags;
-		
-		
-		
- 		if (L->type == LT_DIRECT)
-		{
- 			bool any = false;
-
-			for (int i = 0; i < 8; i++)
-			{
- 				// Cos
-				Ldir.invert(L->direction);
-				float D = Ldir.dotproduct(buffer_to_work->direction[i]);
-				buffer.valid[i] = -1;
-
-				if (D <= 0) 
-					continue;
-
-				any = true;
-				buffer.valid[i] = 0;
-				
-				// Trace Light
-				Fvector	PMoved, PNew;
-				PNew.set(buffer_to_work->position[i]); PNew.add(0.01f);
-				PMoved.mad(PNew, Ldir, 0.001f);
-				
-				buffer.pos[i].set(PMoved);
-				buffer.dir[i].set(Ldir);
-				buffer.tmax[i] = 1000.f;
-				buffer.skip[i] = buffer_to_work->skip[i];
-			}
-
-			if (any)
-			{
-				RayTraceEmbree8Preocess(&buffer, ELightType::LT_Direct, ELights::Hemi);
-
-				for (auto i = 0; i < 8; i++)
-				{
-					buffer_to_work->color[i].add(buffer.Color[i]);
-				}
-			}
-			
-		}
-		else
-		{
- 			bool any = false;
-
-			for (int i = 0; i < 8; i++)
-			{
-				buffer.valid[i] = -1;
-				// Distance
-				float sqD = buffer_to_work->position[i].distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub(L->position, buffer_to_work->position[i]);
-				Ldir.normalize_safe();
-				float D = Ldir.dotproduct(buffer_to_work->direction[i]);
-				if (D <= 0) continue;
-
-
-				any = true;
-				buffer.valid[i] = 0;
-
-				// Trace Light
-				float R = _sqrt(sqD);
-				
-				Fvector	PNew;
-				PNew.set(buffer_to_work->position[i]); PNew.add(0.01f);
-   
-				buffer.pos[i].set(PNew);
-				buffer.dir[i].set(Ldir);
-				buffer.tmax[i] = R;
-				buffer.skip[i] = buffer_to_work->skip[i];
-
-			}
-
-			if (any)
-			{
-				RayTraceEmbree8Preocess(&buffer, ELightType::LT_Point, ELights::Hemi);
-
-				for (auto i = 0; i < 8; i++)
-				{
-					buffer_to_work->color[i].add(buffer.Color[i]);
-				}
-			}
- 
-		}
-
-	}
-	 
-}
 
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
@@ -1189,9 +1115,7 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 }
 
 
-#ifndef DevCPU 
-	#include "xrHardwareLight.h"
-#endif
+
 
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {

@@ -245,8 +245,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				u8* tris_pointer = (u8*)(verts + H.vertcount);
 				for (u32 i = 0; i < H.facecount; i++)
 				{
-					memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
-					tris_pointer += CDB::TRI::Size();
+					memcpy(&tris[i], tris_pointer, sizeof(CDB::TRI));
+					tris_pointer += sizeof(CDB::TRI);
 				}				
  
 				if ( true )
@@ -307,7 +307,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					{		
 						Msg("Read IB");
  						for (u32 i = 0; i < H.facecount; i++)
-							fs_tri->r(&tris[i], CDB::TRI::Size());
+							fs_tri->r(&tris[i], sizeof(CDB::TRI) );
  						Msg("End IB Size: %d", tris.size());
 					}
 
@@ -337,7 +337,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					Msg("IB: %llu, VS: %llu, RQ: %llu",
 						
-						tris.size() * sizeof(CDB::TRI::Size()) / 1024 / 1024, 
+						tris.size() * sizeof(CDB::TRI) / 1024 / 1024, 
 						verts.size() * sizeof(Fvector) / 1024 / 1024, 
 						g_rc_faces.size() * sizeof(b_rc_face) / 1024 / 1024 
 					);

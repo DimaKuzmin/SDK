@@ -82,14 +82,22 @@ void		xrLC_GlobalData	::				initialize		()
 {
 }
 
-base_Face* convert_nax( void* dummy )
+xr_vector<base_Face*> FacesStorage;
+
+XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 {
-	return (base_Face*)(dummy);
+	if (FacesStorage.size() < dummy) 
+	{
+		DebugBreak();
+	}
+
+	return FacesStorage[dummy];
 }
 
-void* convert_nax( base_Face* F )
+XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 {
-	return (void*)F;
+	FacesStorage.push_back(F);
+	return FacesStorage.size() - 1;
 }
   
 // MU CALC MATERIALS

@@ -82,12 +82,10 @@ namespace CDB
 				u32		sector:16;			// 
 			};
 
-			void* pointer;
-		};
+ 		};
 
 	public:
-		IC static size_t Size() { return 16; }
-		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
+ 		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
 	};
 
 	struct TRI_Edge
@@ -253,8 +251,7 @@ namespace CDB
 		COLLIDER		();
 		~COLLIDER		();
 
-		//ICF void		InitFilterFunction(OpcodeFilterFunction* funct);
-		ICF void		rayTrace1(OpcodeContext* context);
+ 		ICF void		rayTrace1(OpcodeContext* context);
 
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
 		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);  
@@ -331,8 +328,7 @@ namespace CDB
 
 		void				add_face	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector, u32 flags );
 		void				add_face_D	( const Fvector& v0, const Fvector& v1, const Fvector& v2, u32 dummy , u32 flags );
-		void				add_face_D(const Fvector& v0, const Fvector& v1, const Fvector& v2, void* pointer, u32 flags);
-
+ 
 		xr_vector<Fvector>& getV_Vec()			{ return verts;				}
 		Fvector*			getV()				{ return &*verts.begin();	}
 		size_t				getVS()				{ return verts.size();		}

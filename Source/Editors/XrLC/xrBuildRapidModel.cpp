@@ -144,7 +144,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		if (!bAlready) 
 		{
 			F->flags.bProcessed	= true;
-			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, F, F->sm_group);
+			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, convert_nax(F), F->sm_group);
 		}
  
 	}
@@ -196,7 +196,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		rc_faces.resize			(CL.getTS());
 
 		size_t rqface = (rc_faces.size() * sizeof(b_rc_face) );
-		size_t tri =  (CL.getTS() * CDB::TRI::Size());
+		size_t tri =  (CL.getTS() * sizeof(CDB::TRI) );
 		size_t VS = (CL.getVS()*sizeof(Fvector)); 
 
 		size_t size_Rqface	=		rqface / 1024 / 1024;
@@ -209,7 +209,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		for (u32 k=0; k<CL.getTS(); k++)
 		{
 			CDB::TRI& T			= CL.getT( k );
-			base_Face* F		= (base_Face*)(T.pointer);
+			base_Face* F		= (base_Face*) convert_nax(T.dummy);
 			b_rc_face& cf		= rc_faces[k];
 			cf.dwMaterial		= F->dwMaterial;
 			cf.dwMaterialGame	= F->dwMaterialGame;
@@ -249,7 +249,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 
 			MFS_TRI->open_chunk(1);
 			for (size_t i = 0; i < CL.getTS(); i++)
-	 			MFS_TRI->w(&CL.getT()[i], CDB::TRI::Size());
+	 			MFS_TRI->w(&CL.getT()[i], sizeof(CDB::TRI) );
 			MFS_TRI->close_chunk		();
  
 			FS.w_close(MFS_TRI);
@@ -289,7 +289,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 			MFS->w					(CL.getV(),(u32)CL.getVS()*sizeof(Fvector));
 
 			for (size_t i = 0; i < CL.getTS(); i++)
-	 			MFS->w(&CL.getT()[i], CDB::TRI::Size());
+	 			MFS->w(&CL.getT()[i], sizeof(CDB::TRI) );
 
 			MFS->close_chunk		();
 

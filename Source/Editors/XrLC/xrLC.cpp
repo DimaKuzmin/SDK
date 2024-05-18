@@ -49,6 +49,29 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	thread_spawn			(logThread, "log-update",	1024*1024,0);
 	Sleep					(150);
 	
+
+	char tmp[256];
+	sprintf(tmp, "c++ Arguments1: SCENE SETTINGS: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
+		args->pxpm, args->sample, args->mu_samples, args->use_threads, args->skip_weld);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++ Arguments2: LIGHT SETTINGS: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d",
+		args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++ Arguments3: xrLC SETTINGS:  Level: %s,  no_optimize: %d, no_simplify: %d, ",
+		args->level_name.c_str(), args->no_optimize, args->no_simplify);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++ Arguments4: EMBREE SETTINGS: EmbreeRobustGeom: %d, EmbreeTnear: %f, EmbreeType: %d, embree: %d, avx: %d, sse: %d, use_opcode_old: %d",
+		args->use_RobustGeom, args->embree_tnear, args->embree_geometry_type, args->use_embree, args->use_avx, args->use_sse, args->use_opcode_old);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++ Arguments5: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, useDXT1: %d",
+		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1);
+	clMsg(tmp);
+
+
 	// Faster FPU 
 	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
 
@@ -168,44 +191,60 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 {
 	build_args->no_invalide_faces = args->no_invalide_faces;
 
+	build_args->level_name = args->level_name;
+
+
+	// Scene Settings
 	build_args->pxpm = args->pxpm;
 	build_args->mu_samples = args->mu_samples;
 	build_args->sample = args->sample;
 	build_args->use_threads = args->use_threads;
-	
-	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
-	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
-	build_args->use_MU_Lighting = args->use_MU_Lighting;
+	build_args->skip_weld = args->skip_weld;
 
 
+	// Lighting Params
 	build_args->nohemi = args->nohemi;
 	build_args->norgb = args->norgb;
 	build_args->noise = args->noise;
 	build_args->nosun = args->nosun;
 	build_args->nosmg = args->nosmg;
 
+
+	// XrLC Optimize
 	build_args->no_optimize = args->no_optimize;
 	build_args->no_simplify = args->no_simplify;
+  
+	// Embree Flags
+	build_args->embree_geometry_type = args->embree_geometry_type;
+	build_args->embree_tnear = args->embree_tnear;
+	build_args->use_RobustGeom = args->use_RobustGeom;
+	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
 
 	build_args->use_avx = args->use_avx;
 	build_args->use_embree = args->use_embree;
 	build_args->use_sse = args->use_sse;
 	build_args->use_opcode_old = args->use_opcode_old;
 
-	build_args->special_args = args->special_args;
-	build_args->level_name = args->level_name;
 
-	build_args->embree_geometry_type = args->embree_geometry_type;
-	build_args->use_RobustGeom = args->use_RobustGeom;
-	build_args->skip_weld = args->skip_weld;
-	build_args->embree_tnear = args->embree_tnear;
+	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
+	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
+	build_args->use_MU_Lighting = args->use_MU_Lighting;
 
+
+
+
+	// Debug OFF Flags
 	build_args->off_impl = args->off_impl;
 	build_args->off_lmaps = args->off_lmaps;
 	build_args->off_mulitght = args->off_mulitght;
 	build_args->use_DXT1 = args->use_DXT1;
-	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
+
+	// Mu Models Regression
 	build_args->MU_ModelsRegression = args->MU_ModelsRegression;
+
+
+	// Custom Flags (Not Supported)
+	build_args->special_args = args->special_args;
 }
 
 XRLC_API void StartupWorking(SpecialArgs* args)

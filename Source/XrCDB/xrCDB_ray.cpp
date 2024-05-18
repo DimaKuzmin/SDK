@@ -245,14 +245,16 @@ public:
 
 
 	OpcodeContext* context_opcode = 0;
-	
+	bool			continue_work = true;
+
+
 	Fvector* verts;
 
 	ray_t			ray;
 	float			rRange;
 	float			rRange2;
 
-	bool			continue_work = true;
+
 
  	
 	__m128 ray_pos;
@@ -264,8 +266,7 @@ public:
 		dest = CL;
 		tris = model->get_tris();
 		verts = model->get_verts();
-		//tris_edges = model->get_tris_edges();
-
+ 
 		MDL = model;
 
 		ray.pos.set(C);

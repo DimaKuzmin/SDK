@@ -125,6 +125,9 @@ extern "C" XRLC_LIGHT_API void				destroy_global_data();
 extern "C" XRLC_LIGHT_API u32				InvalideFaces();
 		   XRLC_LIGHT_API void				ImplicitLighting( BOOL net );
 
+		   XRLC_LIGHT_API base_Face* convert_nax(u32 dummy);
+		   XRLC_LIGHT_API u32 convert_nax(base_Face* face);
+
 extern xrLC_GlobalData* data;
 IC xrLC_GlobalData* inlc_global_data() { return data; }
 static LPCSTR gl_data_net_file_name = "tmp_global_data";

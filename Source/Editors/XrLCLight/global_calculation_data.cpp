@@ -67,8 +67,8 @@ void global_claculation_data::xrLoad()
 			u8* tris_pointer = (u8*)(verts + H.vertcount);
 			for (u32 i = 0; i < H.facecount; i++)
 			{
-				memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
-				tris_pointer += CDB::TRI::Size();
+				memcpy(&tris[i], tris_pointer, sizeof(CDB::TRI) );
+				tris_pointer += sizeof(CDB::TRI);
 			}
 
 		}

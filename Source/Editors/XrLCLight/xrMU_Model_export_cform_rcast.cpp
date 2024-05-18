@@ -10,6 +10,8 @@
 //extern xr_vector<b_material>* materials_globaldata = 0;
 //extern Shader_xrLC_LIB* shaders_globaldata = 0;
 
+extern u32 convert_nax(base_Face* face);
+
 void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 {
 	for		(u32 fit=0; fit<m_faces.size(); fit++)
@@ -57,7 +59,8 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 			xform.transform_tiny	(P[0],F->v[0]->P);
 			xform.transform_tiny	(P[1],F->v[1]->P);
 			xform.transform_tiny	(P[2],F->v[2]->P);
-			CL.add_face_D			(P[0],P[1],P[2], F, F->sm_group );//
+
+			CL.add_face_D			(P[0],P[1],P[2], convert_nax(F), F->sm_group );//
 		}
 	}
 }
