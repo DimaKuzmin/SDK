@@ -195,18 +195,21 @@ public:
 		task_id = 0;
 	 
 		Phase("LIGHT: Waiting for MU-First CALCMATERIALS threads...");
-		/*
+	 
 		CThreadManager thread_base;
 		for (int TH = 0; TH < build_args->use_threads; TH++)
 			thread_base.start(xr_new<CMULightBase>(TH), TH);
 
 		thread_base.wait();
-		 */
+		 
+		/*
 		for (const auto model : inlc_global_data()->mu_models())
 		{
 			model->calc_materials();
 			model->calc_lighting();
 		}
+		*/
+
 
 		SetMuModelsLocalCalcLighteningCompleted();
 

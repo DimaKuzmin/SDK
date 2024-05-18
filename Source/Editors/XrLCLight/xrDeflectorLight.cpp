@@ -728,10 +728,6 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	if (range > 0 && range < R) 
 		return 0;
   
-	Fvector pos = P;
-	Fvector dir = D;
-	float Range = R;
-
   	// 2. Polygon doesn't pick - real database query
 	//Msg("Orig Pos{%f,%f,%f}, dir{%f,%f,%f}, range[%f]", VPUSH(pos), VPUSH(dir), Range);
 	DB->ray_query(MDL, P, D, R);

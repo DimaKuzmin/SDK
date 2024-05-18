@@ -35,14 +35,14 @@ struct PackedBufferTOProcess
 
 struct PackedBuffer
 {
-	CDB::MODEL* MDL;
+	CDB::MODEL* MDL = 0;
 	
 	base_color_c Color[8];
 	Fvector pos[8];
 	Fvector dir[8];
 
 	u32 flags;
-	Face* skip[8];
+	Face* skip[8] = { 0 };
 	R_Light* light;
 
 	float tmax[8];

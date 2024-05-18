@@ -253,10 +253,7 @@ public:
 	ray_t			ray;
 	float			rRange;
 	float			rRange2;
-
-
-
- 	
+ 
 	__m128 ray_pos;
 	__m128 fwd_dir;
 	__m128 inv_dir;
@@ -590,8 +587,6 @@ ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 	RC._init(this, MDL, context->r_start, context->r_dir, context->r_range);
  	RC._stab(N);
 }
-
- 
  
 
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)

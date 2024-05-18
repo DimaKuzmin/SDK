@@ -10,6 +10,7 @@
 #include "fitter.h"
 #include <functional>
 
+/*
 IC REAL dfEvaluation(REAL &A, REAL &C, REAL &D)
 {
 	return					(A*C + D);
@@ -51,6 +52,8 @@ xr_vector<REAL> &dafGradient(xr_vector<xr_vector<REAL> >	&daEvalResults, xr_vect
 
 	return					(daResult);
 }
+
+
 
 void vfOptimizeParameters(xr_vector<xr_vector<REAL> > &A, xr_vector<xr_vector<REAL> > &B, xr_vector<REAL> &C, xr_vector<REAL> &D, REAL dEpsilon, REAL dAlpha, REAL dBeta, REAL dNormaFactor, u32 dwMaxIterationCount)
 {
@@ -98,3 +101,4 @@ void vfOptimizeParameters(xr_vector<xr_vector<REAL> > &A, xr_vector<xr_vector<RE
 	dFunctional				= dfComputeEvalResults(daEvalResults,A,B,C,D);
 	//clMsg					("***MU-fitter***: %6d : %17.8f (%17.8f)",i,dFunctional,dFunctional/dwTestCount);
 }
+*/
