@@ -207,6 +207,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
         form->FlagsCompiler->Items->Add(text);
     }
 
+    form->xrLC_JitterSamples->MaxDropDownItems = 3;
+    form->xrLC_JitterSamples->SelectedIndex = 0;
+
    
     Application::Run(form);
    
@@ -226,7 +229,7 @@ void StartThread(SpecialArgs* main_args)
 
             // Устанавливаем имя потока
             SetThreadDescription(threadHandle, L"MAIN THREAD xrLC");
-
+            /*
             char tmp[128];
             sprintf(tmp, "c++ Arguments1: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, EmbreeTNear: %f", args->pxpm, args->sample, args->mu_samples, args->use_threads, args->embree_tnear);
             LoggerCL->updateLog(tmp);
@@ -239,7 +242,7 @@ void StartThread(SpecialArgs* main_args)
 
             sprintf(tmp, "c++ Arguments4: special_flag: %s, LevelName: %s", args->special_args, args->level_name.c_str());
             LoggerCL->updateLog(tmp);
-
+            */
             StartupWorking(args);
             IsRunned = false;
 
@@ -256,7 +259,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 {
     SpecialArgs* args = new SpecialArgs();
 
-    auto Samples_str = msclr::interop::marshal_as<std::string>(Samples->Text);
+    auto Samples_str = msclr::interop::marshal_as<std::string>(xrLC_JitterSamples->GetItemText(xrLC_JitterSamples->SelectedItem));
     auto MUSamples_str = msclr::interop::marshal_as<std::string>(MUSamples->Text);
     auto TH_str = msclr::interop::marshal_as<std::string>(ThreadsCount->Text);
     auto PXPM_str = msclr::interop::marshal_as<std::string>(PXPM->Text);

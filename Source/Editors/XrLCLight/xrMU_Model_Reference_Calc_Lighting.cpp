@@ -138,10 +138,9 @@ void xrMU_Reference::calc_lighting()
 	// Чинит темные Тени на деревьях
 
 	bool tree = strstr(model->m_name.c_str(), "tree");
-
-
-
-	if (build_args->MU_ModelsRegression)
+ 
+	/*
+ 	if (build_args->MU_ModelsRegression)
 	{
 		xr_vector<double>	A;	A.resize(color.size());
 		xr_vector<double>	B;	B.resize(color.size());
@@ -168,134 +167,11 @@ void xrMU_Reference::calc_lighting()
 		{
 			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
 		}
-
-		/*
-		csMU.Enter();
-
-		string_path file;
-		string128 tmp32;
-		sprintf(tmp32, "MUMODELS\\%s\\%d.txt", model->m_name.c_str(), ID);
-		FS.update_path(file, "$fs_root$", tmp32);
-
-		IWriter* w = FS.w_open(file);
-
-		FPU::m64r			();
-
-		struct PreRegresion
-		{
-			int ID;
-			float hemi, hemi_r;
-			float sun_original;
-			float sun_calculated;
-
-			float _s[5];
-			float _b[5];
-		};
-
-		xr_vector<PreRegresion> colors_pre;
-		colors_pre.resize(color.size());
-
-
-		xr_vector<double>	A;	A.resize(color.size());
-		xr_vector<double>	B;	B.resize(color.size());
-		float* _s = (float*)&c_scale;
-		float* _b = (float*)&c_bias;
-
-		for (u32 i=0; i<5; i++)
-		{
-			for (u32 it=0; it<color.size(); it++)
-			{
-				base_color_c		__A;	model->color	[it]._get(__A);
-				base_color_c		__B;	color			[it]._get(__B);
-				A[it]		= 	(__A.hemi);
-				//B[it]		=	(__B.hemi);
-				B[it]		=	((float*)&__B)[i];
-			}
-
-			vfComputeLinearRegression(A,B,_s[i],_b[i]);
-		}
-
-
-
-		if (tree)
-		for (u32 it = 0; it < color.size(); it++)
-		{
-			base_color_c C;
-			color[it]._get(C);
-			base_color_c r;
-			model->color[it]._get(r);
-
-			//string128 tmp_msg;
-			//sprintf(tmp_msg, "[%d] PRE OTEST Hemi: %f cmp %f, \\n", it, C.hemi, r.hemi);
-			//w->w_string(tmp_msg);
-			//sprintf(tmp_msg, "		REGRESSION A: %f, %f, %f, %f, %f \\n", _s[0], _s[1], _s[2], _s[3], _s[4]);
-			//w->w_string(tmp_msg);
-			//sprintf(tmp_msg, "		REGRESSION B: %f, %f, %f, %f, %f \\n", _b[0], _b[1], _b[2], _b[3], _b[4]);
-			//w->w_string(tmp_msg);
-
-			PreRegresion data;
-			data._s[0] = _s[0];
-			data._s[1] = _s[1];
-			data._s[2] = _s[2];
-			data._s[3] = _s[3];
-			data._s[4] = _s[4];
-
-			data._b[0] = _b[0];
-			data._b[1] = _b[1];
-			data._b[2] = _b[2];
-			data._b[3] = _b[3];
-			data._b[4] = _b[4];
-
-			data.hemi = C.hemi;
-			data.hemi_r = r.hemi;
-			data.sun_calculated = C.sun;
-			data.sun_original = r.sun;
-
-
-			colors_pre[it] = data;
-
-		}
-
-		for (u32 index = 0; index < 5; index++)
-		{
-			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
-		}
-
-		if (tree)
-		for (u32 it = 0; it < color.size(); it++)
-		{
-			base_color_c C;
-			color[it]._get(C);
-			base_color_c r;
-			model->color[it]._get(r);
-
-			auto predata = colors_pre[it];
-
-			string128 tmp_msg;
-			sprintf(tmp_msg, "[%d] PRE Hemi: %f cmp %f, Sun: %f, Orig: %f\\n", it, predata.hemi, predata.hemi_r, predata.sun_original, predata.sun_calculated);
-			w->w_string(tmp_msg);
-			sprintf(tmp_msg, "		REGRESSION A: %f, %f, %f, %f, %f \\n", predata._s[0], predata._s[1], predata._s[2], predata._s[3], predata._s[4]);
-			w->w_string(tmp_msg);
-			sprintf(tmp_msg, "		REGRESSION B: %f, %f, %f, %f, %f \\n", predata._b[0], predata._b[1], predata._b[2], predata._b[3], predata._b[4]);
-			w->w_string(tmp_msg);
-
-
-			sprintf(tmp_msg, "[%d] Hemi: %f cmp %f, \\n", it, C.hemi, r.hemi);
-			w->w_string(tmp_msg);
-			sprintf(tmp_msg, "		REGRESSION A: %f, %f, %f, %f, %f \\n", _s[0], _s[1], _s[2], _s[3], _s[4]);
-			w->w_string(tmp_msg);
-			sprintf(tmp_msg, "		REGRESSION B: %f, %f, %f, %f, %f \\n", _b[0], _b[1], _b[2], _b[3], _b[4]);
-			w->w_string(tmp_msg);
-		}
-
-
-		FS.w_close(w);
-
-
-		csMU.Leave();
-		*/
+   
 	}
-	else
+	*/
+
+
 	{
 		xr_vector<double>	A;	A.resize(color.size());
 		xr_vector<double>	B;	B.resize(color.size());
@@ -311,8 +187,7 @@ void xrMU_Reference::calc_lighting()
 				base_color_c		__B;
 				color[it]._get(__B);
 				A[it] = (__A.hemi);
-				//B[it]		=	(__B.hemi);
-				B[it] = ((float*)&__B)[i];
+ 				B[it] = ((float*)&__B)[i];
 			}
 
 			vfComputeLinearRegression(A, B, _s[i], _b[i]);
@@ -324,30 +199,59 @@ void xrMU_Reference::calc_lighting()
 		}
 
 		 // Поправка Хеми Света
+		float global_hemi = 0;
+		float model_hemi = 0;
+		float global_sun = 0;
+		float model_sun = 0;
+
 		for (u32 it = 0; it < color.size(); it++)
 		{
 			base_color_c C, R;
 			model->color[it]._get(R);
 			color[it]._get(C);
+			global_hemi += C.hemi;
+			model_hemi += R.hemi;
+			global_sun += C.sun;
+			model_hemi += R.sun;
 
 			if (R.hemi > C.hemi && C.hemi < 0.15f)
 			{
- 				C.hemi = R.hemi - 0.05f;
-				color[it]._set(C);
+ 				// C.hemi = R.hemi - 0.05f;
+				// color[it]._set(C);
+				// C.rgb.set(255, 0, 0);
+				// color[it]._set(C);
 			}
+
 		}
 		 
-		if (_s[3] < 0 || _s[4] < 0 || _b[3] < 0 || _b[4] < 0)
+		global_hemi = global_hemi / color.size();
+		model_hemi = model_hemi / color.size();
+ 
+		global_sun = global_sun / color.size();
+		model_sun = model_sun / color.size();
+
+		 
+		// if (_s[3] < 0 || _s[4] < 0 || _b[3] < 0 || _b[4] < 0)
 		{
 			csMU.Enter();
+
+			clMsg("MU: Global Hemi: %f, Model : %f", global_hemi, model_hemi);
+			clMsg("MU: Global Sun: %f, Model : %f", global_sun, model_sun);
+
 			clMsg("MU: Name: %s", model->m_name.c_str());
-			clMsg("MU: ColorScale: %f, %f, %f, %f, %f", _s[0], _s[1], _s[2], _s[3], _s[4]);
+			clMsg("MU: ColorScale: %f, %f, %f, %f, %f", _s[0], _s[1], _s[2], _s[3], _s[4] );
 			clMsg("MU: ColorBias: %f, %f, %f, %f, %f", _s[0], _b[1], _b[2], _b[3], _b[4]);
 			clMsg("MU: Pos: %f, %f, %f", VPUSH(this->xform.c));
 			csMU.Leave();
+
+			//if (_s[3] < 0)
+			//	_s[3] = 0;
+			//if (_s[4] < 0)
+			//	_s[4] = 0;
 		}
-	
+ 	
 	}
+
 
 
 }

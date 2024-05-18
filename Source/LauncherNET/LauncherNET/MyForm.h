@@ -61,7 +61,7 @@ namespace LauncherNET
 
 	private: System::Windows::Forms::TextBox^ MUSamples;
 
-	private: System::Windows::Forms::TextBox^ Samples;
+
 	private: System::Windows::Forms::TextBox^ PXPM;
 	private: System::Windows::Forms::Label^ label4;
 	private: System::Windows::Forms::Label^ label5;
@@ -131,6 +131,9 @@ private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::CheckBox^ xrLC_MUModelsRegresion;
 private: System::Windows::Forms::Label^ label17;
 private: System::Windows::Forms::Label^ label18;
+public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
+
+
 
 
 
@@ -162,6 +165,7 @@ private: System::Windows::Forms::Label^ label18;
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->xrLC_JitterSamples = (gcnew System::Windows::Forms::ComboBox());
 			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->label17 = (gcnew System::Windows::Forms::Label());
 			this->label16 = (gcnew System::Windows::Forms::Label());
@@ -193,7 +197,6 @@ private: System::Windows::Forms::Label^ label18;
 			this->PXPM = (gcnew System::Windows::Forms::TextBox());
 			this->label4 = (gcnew System::Windows::Forms::Label());
 			this->MUSamples = (gcnew System::Windows::Forms::TextBox());
-			this->Samples = (gcnew System::Windows::Forms::TextBox());
 			this->label3 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->label1 = (gcnew System::Windows::Forms::Label());
@@ -330,6 +333,7 @@ private: System::Windows::Forms::Label^ label18;
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->xrLC_JitterSamples);
 			this->Geometry_Tab->Controls->Add(this->label18);
 			this->Geometry_Tab->Controls->Add(this->label17);
 			this->Geometry_Tab->Controls->Add(this->label16);
@@ -351,7 +355,6 @@ private: System::Windows::Forms::Label^ label18;
 			this->Geometry_Tab->Controls->Add(this->PXPM);
 			this->Geometry_Tab->Controls->Add(this->label4);
 			this->Geometry_Tab->Controls->Add(this->MUSamples);
-			this->Geometry_Tab->Controls->Add(this->Samples);
 			this->Geometry_Tab->Controls->Add(this->label3);
 			this->Geometry_Tab->Controls->Add(this->label2);
 			this->Geometry_Tab->Controls->Add(this->label1);
@@ -363,6 +366,17 @@ private: System::Windows::Forms::Label^ label18;
 			this->Geometry_Tab->Size = System::Drawing::Size(1439, 769);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
+			// 
+			// xrLC_JitterSamples
+			// 
+			this->xrLC_JitterSamples->DropDownStyle = System::Windows::Forms::ComboBoxStyle::DropDownList;
+			this->xrLC_JitterSamples->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F));
+			this->xrLC_JitterSamples->FormattingEnabled = true;
+			this->xrLC_JitterSamples->Items->AddRange(gcnew cli::array< System::Object^  >(3) { L"1", L"4", L"9" });
+			this->xrLC_JitterSamples->Location = System::Drawing::Point(838, 296);
+			this->xrLC_JitterSamples->Name = L"xrLC_JitterSamples";
+			this->xrLC_JitterSamples->Size = System::Drawing::Size(202, 32);
+			this->xrLC_JitterSamples->TabIndex = 29;
 			// 
 			// label18
 			// 
@@ -718,16 +732,6 @@ private: System::Windows::Forms::Label^ label18;
 			this->MUSamples->TabIndex = 9;
 			this->MUSamples->Text = L"6";
 			// 
-			// Samples
-			// 
-			this->Samples->Font = (gcnew System::Drawing::Font(L"Microsoft Sans Serif", 14.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->Samples->Location = System::Drawing::Point(838, 298);
-			this->Samples->Name = L"Samples";
-			this->Samples->Size = System::Drawing::Size(203, 29);
-			this->Samples->TabIndex = 8;
-			this->Samples->Text = L"9";
-			// 
 			// label3
 			// 
 			this->label3->AutoSize = true;
@@ -1070,6 +1074,7 @@ private: System::Windows::Forms::Label^ label18;
 		private: System::Void xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e);
 	 
 		private: System::Void xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e);
+ 
  
 };
 

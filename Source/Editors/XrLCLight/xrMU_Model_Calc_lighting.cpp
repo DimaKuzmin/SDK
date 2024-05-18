@@ -32,27 +32,13 @@ union var
 	var(int _i)	: i(_i)			{ }
 	var(bool _b) : b(_b)		{ }
 };
-
-/*
-var		test;
-
-test	= 0.f;
-int	k	= test;
-
-test	= true;
-float f = test;
-
-float x = 10.f;
-var _x	= var(x);
-*/
-
+ 
 #include "BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 //-----------------------------------------------------------------------
 
-int REF = false;
- 
+int REF = false; 
 
 void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
 { 
@@ -83,10 +69,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 	if	(bDisableFaces)
 		for (I=0; I<m_faces.size(); I++)	m_faces[I]->flags.bDisableShadowCast	= true;
 	*/
-	bool tree = false;
-	if (strstr(m_name.c_str(), "trees"))
-		tree = true;
-
+ 
 	// Perform lighting
 	for (I = 0; I < m_vertices.size(); I++)
 	{
@@ -105,9 +88,7 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		v_trans /= float(V->m_adjacents.size());
 		float v_inv = 1.f - v_amb;
 		
-		//if (tree)
-		//v_amb = 0.6f;
-	
+ 
 		base_color_c			vC;
 		Fvector					vP, vN;
 		xform.transform_tiny(vP, V->P);
@@ -217,9 +198,8 @@ void xrMU_Model::calc_lighting	(xr_vector<base_color>& dest, const Fmatrix& xfor
 		base_color	ptColor = m_vertices[I]->C;
 		dest[I] = ptColor;
 	}
-
-
 }
+
 void xrMU_Model::calc_lighting()
 {
 	// BB
@@ -237,10 +217,8 @@ void xrMU_Model::calc_lighting()
 
 	REF = true;
 	calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun, true);
-
-	REF = false;
+ 	REF = false;
 
 	xr_delete(M);
-
-	clMsg("model '%s' - REF_lighted.", *m_name);
+ 	clMsg("model '%s' - REF_lighted.", *m_name);
 }
