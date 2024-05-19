@@ -153,7 +153,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\xrQSlim\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;DEBUG_MEMORY_NAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -213,7 +213,7 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>..\xrQSlim\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;DEBUG_MEMORY_NAME;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -261,7 +261,6 @@
     <ClInclude Include="Build.h" />
     <ClInclude Include="b_globals.h" />
     <ClInclude Include="cform_build.h" />
-    <ClInclude Include="cl_collector.h" />
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="cl_log.h" />
     <ClInclude Include="communicate.h" />
@@ -291,7 +290,6 @@
     <ClInclude Include="std_classes.h" />
     <ClInclude Include="tga.h" />
     <ClInclude Include="vbm.h" />
-    <ClInclude Include="xrCDB.h" />
     <ClInclude Include="xrDeflector.h" />
     <ClInclude Include="xrDXTC.h" />
     <ClInclude Include="xrFace.h" />
@@ -313,7 +311,6 @@
   <ItemGroup>
     <ClCompile Include="Build.cpp" />
     <ClCompile Include="Build_Load.cpp" />
-    <ClCompile Include="cl_collector.cpp" />
     <ClCompile Include="cl_log.cpp" />
     <ClCompile Include="fitter.cpp" />
     <ClCompile Include="fmesh.cpp" />

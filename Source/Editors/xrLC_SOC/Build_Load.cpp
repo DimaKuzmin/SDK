@@ -18,8 +18,19 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	if (O)		O->close	();
 }
 
-extern u32*		Surface_Load	(char* name, u32& w, u32& h);
-extern void		Surface_Init	();
+inline bool Surface_Detect(string_path& F, LPSTR N)
+{
+	FS.update_path(F, "$game_textures$", strconcat(sizeof(F), F, N, ".dds"));
+	FILE* file = fopen(F, "rb");
+	if (file)
+	{
+		fclose(file);
+		return true;
+	}
+
+	return false;
+}
+  
 
 struct R_Control
 {
@@ -254,8 +265,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// process textures
 	Status			("Processing textures...");
 	{
-		Surface_Init		();
-		F = fs.open_chunk	(EB_Textures);
+ 		F = fs.open_chunk	(EB_Textures);
 		u32 tex_count	= F->length()/sizeof(b_texture);
 		bool is_thm_missing = false;
 		bool is_tga_missing = false;
@@ -278,7 +288,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.dwWidth	= 1024;
 				BT.dwHeight	= 1024;
 				BT.bHasAlpha= TRUE;
-				BT.pSurface	= 0;
+				BT.pSurface.Clear(); // = 0;
 			} else {
 				string_path			th_name;
 #ifdef PRIQUEL
@@ -319,22 +329,24 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				BT.bHasAlpha= BT.THM.HasAlphaChannel();
 				if (!bLOD) 
 				{
-					if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || b_radiosity)
+					string_path name;
+
+					if (Surface_Detect(name, N) && BT.pSurface.LoadFromFile(name))
 					{
-						clMsg		("- loading: %s",N);
-						u32			w=0, h=0;
-						BT.pSurface = Surface_Load(N,w,h);
-						// R_ASSERT2	(BT.pSurface,"Can't load surface");
-						if (!BT.pSurface) {
-							clMsg("cannot find tga texture: %s", N);
-							is_tga_missing = true;
-							continue;
+						BT.pSurface.ClearMipLevels();
+					//	BT.THM.SetHasSurface(true);
+						BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
+						BT.pSurface.SwapRB();
+
+						if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
+						{
+  							BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
+							BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
 						}
-						if ((w != BT.dwWidth) || (h != BT.dwHeight))
-							Msg		("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, w, h);
-						BT.Vflip	();
-					} else {
-						// Free surface memory
+					}
+					else
+					{
+						clMsg("- can't load %s", N);
 					}
 				}
 			}

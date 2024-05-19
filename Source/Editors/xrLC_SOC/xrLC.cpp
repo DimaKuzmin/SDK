@@ -4,21 +4,20 @@
 #include "math.h"
 #include "build.h"
 
-// #pragma comment(lib,"dxt.lib")
-
-//
-
-// #pragma comment(lib,"comctl32.lib")
-//
 // #pragma comment(lib,"IMAGEHLP.LIB")
-// #pragma comment(lib,"winmm.LIB")
  
-#pragma comment(lib,"FreeMagic.lib")
-#pragma comment(lib,"xrCore.lib")
-#pragma comment(lib,"xrCDB.lib")
-#pragma comment (lib,"xrQSlim.lib")
-#pragma comment(lib,"d3dx9.lib")
-#pragma comment(lib,"xrETools.lib")
+#pragma comment(lib, "FreeMagic.lib")
+#pragma comment(lib, "xrCore.lib")
+#pragma comment(lib, "xrCDB.lib")
+
+#pragma comment(lib,"xrQSlim.lib")
+#pragma comment(lib, "d3dx9.lib")
+#pragma comment(lib, "xrETools.lib")
+#pragma comment(lib, "winmm.lib")
+#pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "xrDXT.lib")
+#pragma comment(lib, "BearGraphics.lib")
+
 
 CBuild*	pBuild		= NULL;
 

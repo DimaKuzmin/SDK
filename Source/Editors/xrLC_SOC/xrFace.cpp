@@ -56,9 +56,13 @@ void			base_Face::CacheOpacity	()
 
 	b_material& M		= pBuild->materials		[dwMaterial];
 	b_texture&	T		= pBuild->textures		[M.surfidx];
-	if (T.bHasAlpha)	flags.bOpaque = false;
-	else				flags.bOpaque = true;
-	if (!flags.bOpaque && (0==T.pSurface))		{
+	
+	if (T.bHasAlpha)	
+		flags.bOpaque = false;
+	else	
+		flags.bOpaque = true;
+
+	if ( !flags.bOpaque && (T.pSurface.Empty()) )		{
 		flags.bOpaque	= true;
 		clMsg			("Strange face detected... Has alpha without texture...");
 	}

@@ -92,6 +92,8 @@ void Progress		(const float F)
 	*/
 }
 
+#include <timeapi.h>
+
 void Phase			(const char *phase_name)
 {
 	while (!(hwPhaseTime && hwStage)) Sleep(1);

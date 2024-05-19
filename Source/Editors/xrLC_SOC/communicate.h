@@ -2,6 +2,7 @@
 #define _XR_COMM_
 
 #include "xrLevel.h"
+#include "../../BearBundle/BearGraphics/BearGraphics.hpp"
 
 #pragma pack(push,4)
 
@@ -41,13 +42,25 @@ struct b_shader
 	string128			name;
 };
 
+struct b_texture_real
+{
+	string128			name;
+	u32					dwWidth;
+	u32					dwHeight;
+	BOOL				bHasAlpha;
+	u32					RESERVE;
+};
+
+// #include "../BearBundle/BearGraphics/BearResource/BearImage.h"
 struct b_texture
 {
 	string128			name;
 	u32					dwWidth;
 	u32					dwHeight;
 	BOOL				bHasAlpha;
-	u32*				pSurface;
+#ifndef _EDITOR
+	BearImage				pSurface;
+#endif
 };
 
 struct b_light_control						// controller or "layer", 30fps

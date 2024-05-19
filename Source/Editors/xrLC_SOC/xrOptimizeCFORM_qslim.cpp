@@ -3,6 +3,7 @@
 #include "../XrQSlim/MxStdModel.h"
 #include "../XrQSlim/MxQSlim.h"
 
+
 #define MAX_DECIMATE_ERROR 0.0005f
 #define COMPACTNESS_RATIO  0.001f
 
@@ -132,7 +133,7 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 			CL.add_face		(*((Fvector*)&mdl->vertex(F[0])),
 							*((Fvector*)&mdl->vertex(F[1])),
 							*((Fvector*)&mdl->vertex(F[2])),
-							FP.material, FP.sector);
+							FP.material, FP.sector, 0);
 		}
 	}
 

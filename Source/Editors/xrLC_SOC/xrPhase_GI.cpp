@@ -32,7 +32,8 @@ Fvector		GetPixel_7x7		(CDB::RESULT& rpinf)
 
 	b_material& M	= pBuild->materials			[F->dwMaterial];
 	b_texture&	T	= pBuild->textures			[M.surfidx];
-	if (0==T.pSurface)									return R;
+	if (T.pSurface.Empty())				
+		return R;
 
 	// barycentric coords
 	// note: W,U,V order
@@ -52,7 +53,8 @@ Fvector		GetPixel_7x7		(CDB::RESULT& rpinf)
 			int V = iFloor(uv.y*float(T.dwHeight)+ .5f) + _y;
 			U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
 			V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-			u32 pixel		= T.pSurface[V*T.dwWidth+U];
+			
+			u32 pixel		= ((u32*)*T.pSurface) [V*T.dwWidth+U];
 			P.set(float(color_get_R(pixel)),float(color_get_G(pixel)),float(color_get_B(pixel)));
 			R.mad(P,1.f/255.f);
 		}

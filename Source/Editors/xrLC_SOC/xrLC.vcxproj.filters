@@ -63,13 +63,7 @@
     <ClInclude Include="cl_log.h">
       <Filter>Kernel\Log</Filter>
     </ClInclude>
-    <ClInclude Include="cl_collector.h">
-      <Filter>CDB</Filter>
-    </ClInclude>
     <ClInclude Include="cl_intersect.h">
-      <Filter>CDB</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCDB.h">
       <Filter>CDB</Filter>
     </ClInclude>
     <ClInclude Include="b_globals.h">
@@ -212,9 +206,6 @@
     </ClCompile>
     <ClCompile Include="cl_log.cpp">
       <Filter>Kernel\Log</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_collector.cpp">
-      <Filter>CDB</Filter>
     </ClCompile>
     <ClCompile Include="NV_Library\NvTriStrip.cpp">
       <Filter>External\NV_Strips</Filter>

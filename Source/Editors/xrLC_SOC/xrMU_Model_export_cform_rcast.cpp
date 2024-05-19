@@ -1,5 +1,10 @@
 #include "stdafx.h"
 
+
+extern u32 convert_nax(base_Face* face);
+extern base_Face* convert_nax(u32 id);
+
+
 void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 {
 	for		(u32 fit=0; fit<m_faces.size(); fit++)	m_faces[fit]->flags.bProcessed = false;
@@ -45,7 +50,8 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 			xform.transform_tiny	(P[0],F->v[0]->P);
 			xform.transform_tiny	(P[1],F->v[1]->P);
 			xform.transform_tiny	(P[2],F->v[2]->P);
-			CL.add_face_D			(P[0],P[1],P[2],*((u32*)&F) );
+
+ 			CL.add_face_D			(P[0],P[1],P[2], convert_nax(F), 0);
 		}
 	}
 }

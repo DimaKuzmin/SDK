@@ -23,11 +23,12 @@ struct b_BuildTexture : public b_texture
 	
 	u32&	Texel	(u32 x, u32 y)
 	{
-		return pSurface[y*dwWidth+x];
+		return ((u32*)*pSurface) [y*dwWidth+x];
 	}
+
 	void	Vflip		()
 	{
-		R_ASSERT(pSurface);
+		R_ASSERT( ((u32*)*pSurface) );
 		for (u32 y=0; y<dwHeight/2; y++)
 		{
 			u32 y2 = dwHeight-y-1;

@@ -31,7 +31,7 @@ public:
 	u32			Width	()						{ return texture->dwWidth; }
 	u32			Height	()						{ return texture->dwHeight; }
 	
-	u32&		Texel	(u32 x, u32 y)			{ return texture->pSurface[y*Width()+x]; }
+	u32&		Texel	(u32 x, u32 y)			{ return ((u32*) *texture->pSurface) [y*Width()+x]; }
 	base_color& Lumel	(u32 x, u32 y)			{ return lmap.surface[y*Width()+x];	}
 	u8&			Marker	(u32 x, u32 y)			{ return lmap.marker [y*Width()+x];	}
 	
@@ -224,7 +224,7 @@ void CBuild::ImplicitLighting()
 		{
 			b_BuildTexture& TEX		=	*defl.texture;
 			VERIFY					(TEX.pSurface);
-			u32*			color	= TEX.pSurface;
+			u32*			color	= ((u32*)*TEX.pSurface);
 			for (u32 V=0; V<defl.Height(); V++)	{
 				for (u32 U=0; U<defl.Width(); U++)	{
 					// Retreive Texel
@@ -246,7 +246,7 @@ void CBuild::ImplicitLighting()
 			FS.update_path			(out_name,_game_levels_,out_name);
 			clMsg					("Saving texture '%s'...",out_name);
 			VerifyPath				(out_name);
-			BYTE* raw_data			=	LPBYTE(TEX.pSurface);
+			BYTE* raw_data			=	LPBYTE(*TEX.pSurface);
 			u32	w					=	TEX.dwWidth;
 			u32	h					=	TEX.dwHeight;
 			u32	pitch				=	w*4;

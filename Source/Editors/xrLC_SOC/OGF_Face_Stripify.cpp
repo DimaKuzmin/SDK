@@ -85,6 +85,8 @@ void OGF::Stripify		()
 		DumpFaces	();
 		*/
 	{
+		  
+
 		// alternative stripification - faces
 		{
 			DWORD*		remap	= xr_alloc<DWORD>		(x_faces.size());

@@ -3,7 +3,25 @@
 #include "build.h"
 #include "communicate.h"
 
+
+xr_vector<base_Face*> builded;
+
+u32 convert_nax(base_Face* face)
+{
+	builded.push_back(face);
+	return builded.size() - 1;
+}
+
+base_Face* convert_nax(u32 id)
+{
+	if (builded.size() < id)
+		R_ASSERT(0, "convert_nax!!!");
+
+	return builded[id];
+}
+
 CDB::MODEL*	RCAST_Model	= 0;
+ 
 
 IC bool				FaceEqual(Face& F1, Face& F2)
 {
@@ -81,8 +99,9 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		if (!bAlready) 
 		{
 			F->flags.bProcessed	= true;
-			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, *((u32*)&F) );
-		}
+			
+			CL.add_face_D		( F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), 0); 
+ 		}
 	}
 
 	/*
@@ -129,7 +148,7 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		// Prepare faces
 		for (u32 k=0; k<CL.getTS(); k++){
 			CDB::TRI* T			= CL.getT()+k;
-			base_Face* F		= (base_Face*)(*((void**)&T->dummy));
+			base_Face* F		= (base_Face*) convert_nax(T->dummy);
 			b_rc_face& cf		= rc_faces[k];
 			cf.dwMaterial		= F->dwMaterial;
 			cf.dwMaterialGame	= F->dwMaterialGame;

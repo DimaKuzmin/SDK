@@ -2,7 +2,7 @@
 #include "cl_collector.h"
 #include "build.h"
 #include "..\XrCore\FS.h"
-
+ 
 int GetVertexIndex(Vertex *F)
 {
 	vecVertexIt it = std::lower_bound(g_vertices.begin(),g_vertices.end(),F);
@@ -121,10 +121,7 @@ void CBuild::BuildCForm	()
 		TestEdge	(T->v[1],T->v[2],T);
 		TestEdge	(T->v[2],T->v[0],T);
 
-		CL.add_face	(
-			T->v[0]->P, T->v[1]->P, T->v[2]->P,
-			T->dwMaterialGame, materials[T->dwMaterial].sector
-			);
+		CL.add_face	( T->v[0]->P, T->v[1]->P, T->v[2]->P, T->dwMaterialGame, materials[T->dwMaterial].sector, 0 );
 		Progress(p_total+=p_cost);		// progress
 	}
 	if (bCriticalErrCnt) {
