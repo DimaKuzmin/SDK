@@ -239,10 +239,6 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->off_mulitght = args->off_mulitght;
 	build_args->use_DXT1 = args->use_DXT1;
 
-	// Mu Models Regression
-	build_args->MU_ModelsRegression = args->MU_ModelsRegression;
-
-
 	// Custom Flags (Not Supported)
 	build_args->special_args = args->special_args;
 }

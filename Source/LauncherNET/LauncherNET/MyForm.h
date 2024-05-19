@@ -127,8 +127,8 @@ private: System::Windows::Forms::CheckBox^ xrAI_Draft;
 private: System::Windows::Forms::Button^ xrAI_StartSpawn;
 private: System::Windows::Forms::Button^ xrAI_SpawnAIMap;
 private: System::Windows::Forms::CheckBox^ xrAI_Verify;
-private: System::Windows::Forms::Label^ label16;
-private: System::Windows::Forms::CheckBox^ xrLC_MUModelsRegresion;
+
+
 private: System::Windows::Forms::Label^ label17;
 private: System::Windows::Forms::Label^ label18;
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
@@ -168,8 +168,6 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->xrLC_JitterSamples = (gcnew System::Windows::Forms::ComboBox());
 			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->label17 = (gcnew System::Windows::Forms::Label());
-			this->label16 = (gcnew System::Windows::Forms::Label());
-			this->xrLC_MUModelsRegresion = (gcnew System::Windows::Forms::CheckBox());
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
@@ -336,8 +334,6 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->Geometry_Tab->Controls->Add(this->xrLC_JitterSamples);
 			this->Geometry_Tab->Controls->Add(this->label18);
 			this->Geometry_Tab->Controls->Add(this->label17);
-			this->Geometry_Tab->Controls->Add(this->label16);
-			this->Geometry_Tab->Controls->Add(this->xrLC_MUModelsRegresion);
 			this->Geometry_Tab->Controls->Add(this->label11);
 			this->Geometry_Tab->Controls->Add(this->EmbreeHitsCollect);
 			this->Geometry_Tab->Controls->Add(this->groupBox2);
@@ -383,7 +379,7 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->label18->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label18->ForeColor = System::Drawing::Color::Firebrick;
-			this->label18->Location = System::Drawing::Point(3, 383);
+			this->label18->Location = System::Drawing::Point(6, 296);
 			this->label18->Name = L"label18";
 			this->label18->RightToLeft = System::Windows::Forms::RightToLeft::No;
 			this->label18->Size = System::Drawing::Size(559, 81);
@@ -395,33 +391,13 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label17->ForeColor = System::Drawing::Color::Firebrick;
-			this->label17->Location = System::Drawing::Point(3, 464);
+			this->label17->Location = System::Drawing::Point(10, 369);
 			this->label17->Name = L"label17";
 			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
 			this->label17->Size = System::Drawing::Size(559, 81);
 			this->label17->TabIndex = 27;
 			this->label17->Text = L"Рекомендовано выберать Intel, для LMAPS, MU Models.\r\nНа Implict стадии плохо проб"
 				L"ивает поверхности типа Воды. \r\nВ последующем починится. (Надеюсь).\r\n\r\n\r\n\r\n";
-			// 
-			// label16
-			// 
-			this->label16->ForeColor = System::Drawing::Color::Firebrick;
-			this->label16->Location = System::Drawing::Point(18, 558);
-			this->label16->Name = L"label16";
-			this->label16->RightToLeft = System::Windows::Forms::RightToLeft::Yes;
-			this->label16->Size = System::Drawing::Size(421, 81);
-			this->label16->TabIndex = 26;
-			this->label16->Text = L"Эксперементальная фича. Чинит Деревья и затемненые обьекты (Отключением)..\r\n\r\n\r\n";
-			// 
-			// xrLC_MUModelsRegresion
-			// 
-			this->xrLC_MUModelsRegresion->AutoSize = true;
-			this->xrLC_MUModelsRegresion->Location = System::Drawing::Point(38, 642);
-			this->xrLC_MUModelsRegresion->Name = L"xrLC_MUModelsRegresion";
-			this->xrLC_MUModelsRegresion->Size = System::Drawing::Size(228, 31);
-			this->xrLC_MUModelsRegresion->TabIndex = 4;
-			this->xrLC_MUModelsRegresion->Text = L"MU Models Regresion";
-			this->xrLC_MUModelsRegresion->UseVisualStyleBackColor = true;
 			// 
 			// label11
 			// 

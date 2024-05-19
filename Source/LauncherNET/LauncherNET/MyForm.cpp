@@ -318,8 +318,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_lmaps = off_lmaps->Checked;
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
-    args->MU_ModelsRegression = xrLC_MUModelsRegresion->Checked;
-
+ 
     if (!IsRunned)
     {
         IsRunned = true;
