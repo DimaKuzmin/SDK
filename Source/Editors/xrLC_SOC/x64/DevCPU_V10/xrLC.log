@@ -1,0 +1,6 @@
+﻿cl : командная строка  warning D9035: использование параметра "Zc:forScope-" нежелательно, он будет удален в следующих выпусках
+cl : командная строка  warning D9002: пропуск неизвестного параметра "/arch:SSE"
+  StdAfx.cpp
+A:\github\SDK_se7\Source\Editors\xrLC_SOC\stdafx.h(11,10): error C1083: Не удается открыть файл включение: ../xrCore/xrCore.h: No such file or directory,
+  (компиляция исходного файла "StdAfx.cpp")
+  

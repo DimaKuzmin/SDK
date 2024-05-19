@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="DevCPU_V10|x64">
+      <Configuration>DevCPU_V10</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DevCPU_V11|x64">
+      <Configuration>DevCPU_V11</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <ProjectGuid>{A4ABD75E-825B-4D09-B3B2-2709682E40C8}</ProjectGuid>
+    <ProjectName>XrLC_SOC</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>MultiByte</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\Default.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\Default.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC71.props" />
+    <Import Project="..\..\Default.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>17.0.34714.143</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Release/xrLC.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Gs  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\xrQSlim\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Release/xrLC.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Gs  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\xrQSlim\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TypeLibraryName>.\Release/xrLC.tlb</TypeLibraryName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/Gs  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>..\xrQSlim\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_USE_MATH_DEFINES;WIN32;_WINDOWS;_SECURE_SCL=0;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <ExceptionHandling>
+      </ExceptionHandling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(ProjectName).pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <BrowseInformation>
+      </BrowseInformation>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+    </ResourceCompile>
+    <Link>
+      <ShowProgress>NotSet</ShowProgress>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(ProjectName).pdb</ProgramDatabaseFile>
+      <GenerateMapFile>false</GenerateMapFile>
+      <MapFileName>
+      </MapFileName>
+      <SubSystem>Windows</SubSystem>
+      <LargeAddressAware>true</LargeAddressAware>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <ImportLibrary>x:\libraries\$(ProjectName).lib</ImportLibrary>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="ArbitraryList.h" />
+    <ClInclude Include="Build.h" />
+    <ClInclude Include="b_globals.h" />
+    <ClInclude Include="cform_build.h" />
+    <ClInclude Include="cl_collector.h" />
+    <ClInclude Include="cl_intersect.h" />
+    <ClInclude Include="cl_log.h" />
+    <ClInclude Include="communicate.h" />
+    <ClInclude Include="defines.h" />
+    <ClInclude Include="ELight_def.h" />
+    <ClInclude Include="ETextureParams.h" />
+    <ClInclude Include="fitter.h" />
+    <ClInclude Include="FreeImage.h" />
+    <ClInclude Include="hash2D.h" />
+    <ClInclude Include="Image.h" />
+    <ClInclude Include="Lightmap.h" />
+    <ClInclude Include="NVMeshMender.h" />
+    <ClInclude Include="nv_algebra.h" />
+    <ClInclude Include="NV_Library\NvTriStrip.h" />
+    <ClInclude Include="NV_Library\NvTriStripObjects.h" />
+    <ClInclude Include="NV_Library\VertexCache.h" />
+    <ClInclude Include="nv_math.h" />
+    <ClInclude Include="nv_mathdecl.h" />
+    <ClInclude Include="OGF_Face.h" />
+    <ClInclude Include="progmesh.h" />
+    <ClInclude Include="PropSlimTools.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="R_light.h" />
+    <ClInclude Include="Sector.h" />
+    <ClInclude Include="Shader_xrLC.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="std_classes.h" />
+    <ClInclude Include="tga.h" />
+    <ClInclude Include="vbm.h" />
+    <ClInclude Include="xrCDB.h" />
+    <ClInclude Include="xrDeflector.h" />
+    <ClInclude Include="xrDXTC.h" />
+    <ClInclude Include="xrFace.h" />
+    <ClInclude Include="xrGameMaterials.h" />
+    <ClInclude Include="xrHemisphere.h" />
+    <ClInclude Include="xrImage_Filter.h" />
+    <ClInclude Include="xrImage_Resampler.h" />
+    <ClInclude Include="xrIsect.h" />
+    <ClInclude Include="xrLevel.h" />
+    <ClInclude Include="xrMU_Model.h" />
+    <ClInclude Include="xrOcclusion.h" />
+    <ClInclude Include="xrPhase_MergeLM_Rect.h" />
+    <ClInclude Include="xrSpherical.h" />
+    <ClInclude Include="xrThread.h" />
+    <ClInclude Include="xrUVpoint.h" />
+    <ClInclude Include="_d3d_extensions.h" />
+    <ClInclude Include="_rect.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Build.cpp" />
+    <ClCompile Include="Build_Load.cpp" />
+    <ClCompile Include="cl_collector.cpp" />
+    <ClCompile Include="cl_log.cpp" />
+    <ClCompile Include="fitter.cpp" />
+    <ClCompile Include="fmesh.cpp" />
+    <ClCompile Include="Image.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Lightmap.cpp" />
+    <ClCompile Include="NVMeshMender.cpp" />
+    <ClCompile Include="nv_algebra.cpp" />
+    <ClCompile Include="NV_Library\NvTriStrip.cpp" />
+    <ClCompile Include="NV_Library\NvTriStripObjects.cpp" />
+    <ClCompile Include="NV_Library\VertexCache.cpp" />
+    <ClCompile Include="OGF_Face.cpp" />
+    <ClCompile Include="OGF_Face_Save.cpp" />
+    <ClCompile Include="OGF_Face_Sphere.cpp" />
+    <ClCompile Include="OGF_Face_Stripify.cpp" />
+    <ClCompile Include="Sector.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="tga.cpp" />
+    <ClCompile Include="xrBuildCForm.cpp" />
+    <ClCompile Include="xrBuildRapidModel.cpp" />
+    <ClCompile Include="xrCalcNormals.cpp" />
+    <ClCompile Include="xrDeflectoL_Direct.cpp" />
+    <ClCompile Include="xrDeflector.cpp" />
+    <ClCompile Include="xrDeflectorLight.cpp" />
+    <ClCompile Include="xrFace.cpp" />
+    <ClCompile Include="xrFlex2OGF.cpp" />
+    <ClCompile Include="xrImage_Filter.cpp" />
+    <ClCompile Include="xrImage_Resampler.cpp" />
+    <ClCompile Include="xrLC.cpp" />
+    <ClCompile Include="xrLight.cpp" />
+    <ClCompile Include="xrLight_Implicit.cpp" />
+    <ClCompile Include="xrMU_Model.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_lighting.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_materials.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_normals.cpp" />
+    <ClCompile Include="xrMU_Model_Calc_ogf.cpp" />
+    <ClCompile Include="xrMU_Model_export_cform_game.cpp" />
+    <ClCompile Include="xrMU_Model_export_cform_game_s.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="xrMU_Model_export_cform_rcast.cpp" />
+    <ClCompile Include="xrMU_Model_export_geometry.cpp" />
+    <ClCompile Include="xrMU_Model_export_OGF.cpp" />
+    <ClCompile Include="xrMU_Model_Load.cpp" />
+    <ClCompile Include="xrOptimizeCFORM.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="xrOptimizeCFORM_qslim.cpp" />
+    <ClCompile Include="xrPhase_AdaptiveHT.cpp" />
+    <ClCompile Include="xrPhase_AdaptiveHT_qslim.cpp" />
+    <ClCompile Include="xrPhase_GI.cpp" />
+    <ClCompile Include="xrPhase_MergeGeometry.cpp" />
+    <ClCompile Include="xrPhase_MergeLM.cpp" />
+    <ClCompile Include="xrPhase_MergeLM_Surface.cpp" />
+    <ClCompile Include="xrPhase_ResolveMaterials.cpp" />
+    <ClCompile Include="xrPhase_Subdivide.cpp" />
+    <ClCompile Include="xrPhase_TangentBasis.cpp" />
+    <ClCompile Include="xrPhase_UVmap.cpp" />
+    <ClCompile Include="xrPreOptimize.cpp" />
+    <ClCompile Include="xrSaveLights.cpp" />
+    <ClCompile Include="xrSaveOGF.cpp" />
+    <ClCompile Include="xrSectors.cpp" />
+    <ClCompile Include="xrThread.cpp" />
+    <ClCompile Include="xrT_Junction.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
