@@ -133,149 +133,29 @@ void xrMU_Reference::calc_lighting()
 
 	// A*C + D = B
 	// build data
+ 
+	xr_vector<double>	A;	A.resize(color.size());
+	xr_vector<double>	B;	B.resize(color.size());
+	float* _s = (float*)&c_scale;
+	float* _b = (float*)&c_bias;
 
-	// FIX MU MODELS 
-	// Чинит темные Тени на деревьях
-
-	bool tree = strstr(model->m_name.c_str(), "tree");
-  
- 	if (build_args->MU_ModelsRegression)
+	for (u32 i = 0; i < 5; i++)
 	{
-		xr_vector<double>	A;	A.resize(color.size());
-		xr_vector<double>	B;	B.resize(color.size());
-		float* _s = (float*)&c_scale;
-		float* _b = (float*)&c_bias;
-
-		for (u32 i = 0; i < 5; i++)
-		{
-			for (u32 it = 0; it < color.size(); it++)
-			{
-				base_color_c		__A;
-				model->color[it]._get(__A);
-				base_color_c		__B;
-				color[it]._get(__B);
-				A[it] = (__A.hemi);
- 				B[it] = ((float*)&__B)[i];
-			}
-
-			vfComputeLinearRegression(A, B, _s[i], _b[i]);
-		}
-
-		for (u32 index = 0; index < 5; index++)
-		{
-			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
-		}
-	}
-	else
-	{
-		xr_vector<double>	A;	A.resize(color.size());
-		xr_vector<double>	B;	B.resize(color.size());
-		float* _s = (float*)&c_scale;
-		float* _b = (float*)&c_bias;
-
-		 // Поправка Хеми Света
-		float global_hemi = 0;
-		float model_hemi = 0;
-		float global_sun = 0;
-		float model_sun = 0;
-
-		/**/
 		for (u32 it = 0; it < color.size(); it++)
 		{
-			base_color_c C, R;
-			model->color[it]._get(R);
-			color[it]._get(C);
-			global_hemi += C.hemi;
-			model_hemi += R.hemi;
-			global_sun += C.sun;
-			model_hemi += R.sun;
-
-			if (R.hemi > C.hemi && C.hemi < 0.15f)
-			{
- 				C.hemi = R.hemi - 0.05f;
-  				color[it]._set(C);
-			}
-
-		}
-		 
-		global_hemi = global_hemi / color.size();
-		model_hemi = model_hemi / color.size();
- 
-		global_sun = global_sun / color.size();
-		model_sun = model_sun / color.size();
-
-
-
-		for (u32 i = 0; i < 5; i++)
-		{
-			for (u32 it = 0; it < color.size(); it++)
-			{
-				base_color_c		__A;
-				model->color[it]._get(__A);
-				base_color_c		__B;
-				color[it]._get(__B);
-				A[it] = (__A.hemi);
-				B[it] = ((float*)&__B)[i];
-			}
-
-			vfComputeLinearRegression(A, B, _s[i], _b[i]);
+			base_color_c		__A;
+			model->color[it]._get(__A);
+			base_color_c		__B;
+			color[it]._get(__B);
+			A[it] = (__A.hemi);
+ 			B[it] = ((float*)&__B)[i];
 		}
 
-		for (u32 index = 0; index < 5; index++)
-		{
-			o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
-		}
-
-	 
-		csMU.Enter();
-
-		clMsg("MU: Global Hemi: %f, Model : %f", global_hemi, model_hemi);
-		clMsg("MU: Global Sun: %f, Model : %f", global_sun, model_sun);
-
-		csMU.Leave();
-	
-		for (u32 it = 0; it < color.size(); it++)
-		{
-			base_color_c C, R;
-			model->color[it]._get(R);
-			color[it]._get(C);
-			global_hemi += C.hemi;
-			model_hemi += R.hemi;
-			global_sun += C.sun;
-			model_hemi += R.sun;
-		}
-
-		global_hemi = global_hemi / color.size();
-		model_hemi = model_hemi / color.size();
-
-		global_sun = global_sun / color.size();
-		model_sun = model_sun / color.size();
-		 
-		csMU.Enter();
-
-		if (_s[3] < 0 || _s[4] < 0 || _b[3] < 0 || _b[4] < 0)
-		{
- 
-			clMsg("MU: RE Global Hemi: %f, Model : %f", global_hemi, model_hemi);
-			clMsg("MU: RE Global Sun: %f, Model : %f", global_sun, model_sun);
-
-			clMsg("MU: Name: %s", model->m_name.c_str());
-			clMsg("MU: ColorScale: %f, %f, %f, %f, %f", _s[0], _s[1], _s[2], _s[3], _s[4] );
-			clMsg("MU: ColorBias: %f, %f, %f, %f, %f", _s[0], _b[1], _b[2], _b[3], _b[4]);
-			clMsg("MU: Pos: %f, %f, %f", VPUSH(this->xform.c));
-
-			//if (_s[3] < 0)
-			//	_s[3] = 0;
-			//if (_s[4] < 0)
-			//	_s[4] = 0;
-		}
-
-		csMU.Leave();
-		
-		 
- 	
+		vfComputeLinearRegression(A, B, _s[i], _b[i]);
 	}
 
-
-
+	for (u32 index = 0; index < 5; index++)
+	{
+		o_test(4, index, color.size(), &model->color.front(), &color.front(), _s[index], _b[index]);
+	}
 }
