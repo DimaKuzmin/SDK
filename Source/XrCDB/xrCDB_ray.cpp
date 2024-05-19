@@ -180,58 +180,73 @@ ICF BOOL isect_sse(const aabb_t& box, const __m128 pos, const __m128 inv_dir, fl
 	//storess	(lmax, &rs.t_far);
 
 	return  ret;
-}
+} 
 
-ICF BOOL isect_sse_old(const aabb_t& box, const ray_t ray, float& dist) 
+
+
+static const __m128 PS_Zero = _mm_set1_ps(0.0f);
+static const __m128 PS_ONE = _mm_set1_ps(1.0f);
+static const __m128 PS_EPS = _mm_set1_ps(EPS);
+static const __m128 PS_mEPS = _mm_set1_ps(-EPS);
+
+#define fmsub _mm_sub_ps
+
+
+ICF float dot_product_sse(const __m128& a, const __m128& b)
 {
-	// you may already have those values hanging around somewhere
-	const __m128
-		plus_inf_old = loadps(ps_cst_plus_inf),
-		minus_inf_old = loadps(ps_cst_minus_inf);
-
-	// use whatever's apropriate to load.
-	const __m128
-		box_min = loadps(&box.min),
-		box_max = loadps(&box.max),
-		pos = loadps(&ray.pos),
-		inv_dir = loadps(&ray.inv_dir);
-
-	// use a div if inverted directions aren't available
-	const __m128 l1 = mulps(subps(box_min, pos), inv_dir);
-	const __m128 l2 = mulps(subps(box_max, pos), inv_dir);
-
-	// the order we use for those min/max is vital to filter out
-	// NaNs that happens when an inv_dir is +/- inf and
-	// (box_min - pos) is 0. inf * 0 = NaN
-	const __m128 filtered_l1a = minps(l1, plus_inf_old);
-	const __m128 filtered_l2a = minps(l2, plus_inf_old);
-
-	const __m128 filtered_l1b = maxps(l1, minus_inf_old);
-	const __m128 filtered_l2b = maxps(l2, minus_inf_old);
-
-	// now that we're back on our feet, test those slabs.
-	__m128 lmax = maxps(filtered_l1a, filtered_l2a);
-	__m128 lmin = minps(filtered_l1b, filtered_l2b);
-
-	// unfold back. try to hide the latency of the shufps & co.
-	const __m128 lmax0 = rotatelps(lmax);
-	const __m128 lmin0 = rotatelps(lmin);
-	lmax = minss(lmax, lmax0);
-	lmin = maxss(lmin, lmin0);
-
-	const __m128 lmax1 = muxhps(lmax, lmax);
-	const __m128 lmin1 = muxhps(lmin, lmin);
-	lmax = minss(lmax, lmax1);
-	lmin = maxss(lmin, lmin1);
-
-	const BOOL ret = _mm_comige_ss(lmax, _mm_setzero_ps()) & _mm_comige_ss(lmax, lmin);
-
-	storess(lmin, &dist);
-	//storess	(lmax, &rs.t_far);
-
-	return  ret;
+	return _mm_dp_ps(a, b, 0x7F).m128_f32[0]; //_mm_cvtss_f32
 }
+
+ICF __m128& CrossProduct_sse(const __m128& a, const __m128& b)
+{
+	// Вычисляем кросс-продукт
+	return  _mm_sub_ps(
+		_mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 1, 0, 2))),
+		_mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 0, 2, 1)))
+	);
+}
+
+ICF bool _tri_precalculated(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& u, float& v, float& range)
+{
+ 	tri_m128* tri = &MDL->get_edges()[prim];
+
+	__m128& m128_edge0 = tri->e0;
+	__m128& m128_edge1 = tri->e1;
+	__m128& m128_edge2 = tri->e2;
+
+
+	const __m128& pvec = CrossProduct_sse(fwd_dir, m128_edge2);
+	float det = dot_product_sse(m128_edge1, pvec);
+
+	const __m128& condition0 = _mm_and_ps(_mm_cmpgt_ps(_mm_set1_ps(det), PS_mEPS), _mm_cmplt_ps(_mm_set1_ps(det), PS_EPS));
+	if (_mm_movemask_ps(condition0) != 0)
+		//if (det > -EPS && det < EPS) 
+		return false;
+
+	float inv_det = 1.0f / det;
+	__m128& tvec = fmsub(ray_pos, m128_edge0);						// calculate distance from vert0 to ray origin
+	u = dot_product_sse(tvec, pvec) * inv_det;			// calculate U parameter and test bounds
+
+	const __m128& condition1 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(u), PS_Zero), _mm_cmpgt_ps(_mm_set1_ps(u), PS_ONE));
+	if (_mm_movemask_ps(condition1) != 0)
+		//if (u < 0.0f || u > 1.0f)
+		return false;
+
+	const __m128& qvec = CrossProduct_sse(tvec, m128_edge1);				// prepare to test V parameter
+	v = dot_product_sse(fwd_dir, qvec) * inv_det;	// calculate V parameter and test bounds
+
+	const __m128& condition2 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(v), PS_Zero), _mm_cmpgt_ps(_mm_add_ps(_mm_set1_ps(u), _mm_set1_ps(v)), PS_ONE));
+	if (_mm_movemask_ps(condition2) != 0)
+		//if (v < 0.0f || u + v > 1.0f)
+		return false;
+
+	range = dot_product_sse(m128_edge2, qvec) * inv_det;		// calculate t, ray intersects triangle
  
+	return true;
+}
+
+
+
 
 
 template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
@@ -239,14 +254,13 @@ class _MM_ALIGN16	ray_collider
 {
 public:
 	COLLIDER* dest;
-	TRI* tris;
-	//TRI_Edge* tris_edges;
+	TRI* tris;	
 	MODEL* MDL;
 
 
 	OpcodeContext* context_opcode = 0;
 	bool			continue_work = true;
-
+	bool			precalculated = false;
 
 	Fvector* verts;
 
@@ -286,6 +300,11 @@ public:
 			if (_abs(D.z) > flt_eps) {}
 			else ray.inv_dir.z = 0;
 		}
+
+		if (context_opcode)
+		{
+			precalculated = context_opcode->use_prec_tri;
+		}
 	}
 
 	// fpu
@@ -313,34 +332,11 @@ public:
 		_mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
 		_mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
 
-		//return isect_sse_old(box, ray, dist);
-		return 		isect_sse(box, ray_pos, inv_dir, dist);
+ 		return 		isect_sse(box, ray_pos, inv_dir, dist);
 	}
-	
-
-	#define fmsub _mm128_fmsub_ps
-	#define fmadd _mm256_fmadd_ps
-  
- 	#define mul _mm_mul_ps
-	#define fmsub _mm_sub_ps
-	#define fmadd _mm_add_ps
-
-	ICF float dot_product_sse(__m128& a, __m128& b) 
-	{
- 		return _mm_cvtss_f32(_mm_dp_ps(a,b, 0x7F));
-	} 
-
-	ICF __m128 CrossProduct_sse(__m128& v1, __m128& v2)
-	{    
-		// Вычисляем кросс-продукт
-		return  _mm_sub_ps(
-			_mm_mul_ps(_mm_shuffle_ps(v1, v1, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(v2, v2, _MM_SHUFFLE(3, 1, 0, 2))),
-			_mm_mul_ps(_mm_shuffle_ps(v1, v1, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(v2, v2, _MM_SHUFFLE(3, 0, 2, 1)))
-		);  
-	}
-
-		
-	IC bool			_tri		(u32* p, float& u, float& v, float& range)
+	 
+ 
+	IC bool			_tri_original		(u32* p, float& u, float& v, float& range)
 	{
 		Fvector edge1, edge2, tvec, pvec, qvec;
 		float	det,inv_det;
@@ -351,6 +347,7 @@ public:
 		Fvector&			p2	= verts[ p[2] ];
 		edge1.sub			(p1, p0);
 		edge2.sub			(p2, p0);
+
 		// begin calculating determinant - also used to calculate U parameter
 		// if determinant is near zero, ray lies in plane of triangle
 		pvec.crossproduct	(ray.fwd_dir, edge2);
@@ -384,88 +381,25 @@ public:
 		}
 		return true;
 	}
+  
+	// SKIP CALC TRI EDGE
 
-	/*
-	ICF bool			_tri(TRI_Edge& tri, float& u, float& v, float& range)
-	{			
-		if (!bCull)
-		{  
- 			__m128 tvec, pvec, qvec;
-			float	det, inv_det;
-		
-			// begin calculating determinant - also used to calculate U parameter
-			// if determinant is near zero, ray lies in plane of triangle
-			pvec = CrossProduct_sse(fwd_dir,  tri.edge2_128);
-			det  = dot_product_sse(tri.edge1_128, pvec);
- 
-			__m128 condition0 = _mm_and_ps(_mm_cmpgt_ps(_mm_set1_ps(det), _mm_set1_ps(-EPS)), _mm_cmplt_ps(_mm_set1_ps(det), _mm_set1_ps(EPS)));
-			if (_mm_movemask_ps(condition0) != 0)
-				return false;
- 			//if (det > -EPS && det < EPS) return false;
-
-			inv_det = 1.0f / det;
-			tvec = fmsub(ray_pos, tri.v0_128);						// calculate distance from vert0 to ray origin
-			u = dot_product_sse(tvec, pvec) * inv_det;			// calculate U parameter and test bounds
-
-			__m128 condition1 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(u), _mm_set1_ps(0.0f)), _mm_cmpgt_ps(_mm_set1_ps(u), _mm_set1_ps(1.0f)));
-			if (_mm_movemask_ps(condition1) != 0)
-				return false;
-			//if (u < 0.0f || u > 1.0f)    return false;
-			
-			qvec = CrossProduct_sse(tvec, tri.edge1_128);				// prepare to test V parameter
-			v = dot_product_sse(fwd_dir, qvec) * inv_det;	// calculate V parameter and test bounds
-
-			__m128 condition2 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(v), _mm_set1_ps(0.0f)), _mm_cmpgt_ps(_mm_add_ps(_mm_set1_ps(u), _mm_set1_ps(v) ), _mm_set1_ps(1.0f)));
-			if (_mm_movemask_ps(condition2) != 0)
-				return false;
-
-			//if (v < 0.0f || u + v > 1.0f) return false;
-			range = dot_product_sse(tri.edge2_128, qvec) * inv_det;		// calculate t, ray intersects triangle
-		}
-		else 
-		{
-			Fvector tvec, pvec, qvec;
-			float	det, inv_det;
- 
-			// begin calculating determinant - also used to calculate U parameter
-			// if determinant is near zero, ray lies in plane of triangle
-			pvec.crossproduct(ray.fwd_dir, tri.edge2);
-			det = tri.edge1.dotproduct(pvec);
-
-			if (det < EPS)  
-				return false;
-			
-			tvec.sub(ray.pos, tri.v0);						// calculate distance from vert0 to ray origin
-			u = tvec.dotproduct(pvec);					// calculate U parameter and test bounds
-			
-			if (u < 0.f || u > det)
-				return false;
-			
-			qvec.crossproduct(tvec, tri.edge1);				// prepare to test V parameter
-			v = ray.fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
-			
-			if (v < 0.f || u + v > det)
-				return false;
-			
-			range = tri.edge2.dotproduct(qvec);				// calculate t, scale parameters, ray intersects triangle
-			inv_det = 1.0f / det;
-			range *= inv_det;
-			u *= inv_det;
-			v *= inv_det;
-		}
-	    
-		return true;
-	}
-	*/
 	 
-	void			_prim(DWORD prim)
+	void _prim(DWORD prim)
 	{
  		float	u, v, r;
-		//if (!_tri(tris_edges[prim], u, v, r))	return;
-		if (!_tri(tris[prim].verts, u, v, r)) return;
 
-		if (r <= 0 || r > rRange)					return;
-
+		if (precalculated)
+		{
+			if (!_tri_precalculated(MDL, fwd_dir, ray_pos, prim, u, v, r))	return;
+ 			if (r <= 0 || r > rRange)					return;
+		}
+		else
+		{
+			if (!_tri_original(tris[prim].verts, u, v, r))	return;
+ 			if (r <= 0 || r > rRange)					return;
+		}
+		 
 		if (bNearest)
 		{
 			if (dest->r_count())

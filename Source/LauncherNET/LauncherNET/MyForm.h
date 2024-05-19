@@ -132,6 +132,8 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 private: System::Windows::Forms::Label^ label17;
 private: System::Windows::Forms::Label^ label18;
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
+private: System::Windows::Forms::CheckBox^ use_PrecalcTris;
+public:
 
 
 
@@ -219,6 +221,7 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->use_PrecalcTris = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -421,6 +424,7 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			// 
 			// groupBox2
 			// 
+			this->groupBox2->Controls->Add(this->use_PrecalcTris);
 			this->groupBox2->Controls->Add(this->useDXT1);
 			this->groupBox2->Controls->Add(this->off_mulight);
 			this->groupBox2->Controls->Add(this->off_lmaps);
@@ -950,6 +954,16 @@ public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
+			// 
+			// use_PrecalcTris
+			// 
+			this->use_PrecalcTris->AutoSize = true;
+			this->use_PrecalcTris->Location = System::Drawing::Point(20, 200);
+			this->use_PrecalcTris->Name = L"use_PrecalcTris";
+			this->use_PrecalcTris->Size = System::Drawing::Size(179, 31);
+			this->use_PrecalcTris->TabIndex = 4;
+			this->use_PrecalcTris->Text = L"ON Precalc Tris";
+			this->use_PrecalcTris->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 

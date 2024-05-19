@@ -47,9 +47,8 @@ MODEL::MODEL	()
 	tris_count	= 0;
 	verts		= 0;
 	verts_count	= 0;
-	tris_edges  = 0;
-	tris_edges_count = 0;
-
+	//tris_edges  = 0;
+ 
 	status		= S_INIT;
 }
 MODEL::~MODEL()
@@ -61,7 +60,7 @@ MODEL::~MODEL()
 	CDELETE		(tree);
 	CFREE		(tris);		tris_count = 0;
 	CFREE		(verts);	verts_count= 0;
-	CFREE		(tris_edges); tris_edges_count = 0;
+	//CFREE		(tris_edges); tris_edges_count = 0;
 }
 
 struct	BTHREAD_params
@@ -123,7 +122,29 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 	tris_count	= Tcnt;
 	tris		= CALLOC(TRI,tris_count);
 	CopyMemory	(tris,T,tris_count*sizeof(TRI));
-	
+  
+	tres_edges = CALLOC(tri_m128, tris_count);
+
+	for (auto i = 0; i < Tcnt; i++)
+	{
+		Fvector& p0 = verts[T[i].verts[0]];
+		Fvector& p1 = verts[T[i].verts[1]];
+		Fvector& p2 = verts[T[i].verts[2]];
+
+		Fvector edge1, edge2;
+		edge1.sub(p1, p0);
+		edge2.sub(p2, p0);
+
+		tres_edges[i].fv_e0 = p0;
+		tres_edges[i].fv_e1 = edge1;
+		tres_edges[i].fv_e2 = edge2;
+
+ 
+		tres_edges[i].e1 = _mm_load_ps((float*)&edge1);
+		tres_edges[i].e2 = _mm_load_ps((float*)&edge2);
+		tres_edges[i].e0 = _mm_load_ps((float*)&p0);
+	}
+
 	/*
 	tris_edges_count = Tcnt;
 	tris_edges = CALLOC(TRI_Edge, tris_count);
@@ -145,9 +166,9 @@ void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callba
 		tris_edges[i].edge1_128 = _mm_load_ps((float*) &edge1);
 		tris_edges[i].edge2_128 = _mm_load_ps((float*) &edge2);
 		tris_edges[i].v0_128	= _mm_load_ps((float*) &p0);
-
-	}
+ 	}
 	*/
+ 
  
 	// callback
 	if (bc)		bc	(verts,Vcnt,tris,Tcnt,bcp);
@@ -216,9 +237,9 @@ size_t MODEL::memory	()
 	if (S_BUILD==status)	{ Msg	("! xrCDB: model still isn't ready"); return 0; }
 	size_t V					= verts_count*sizeof(Fvector);
 	size_t T					= tris_count *sizeof(TRI);	
-	size_t TEdge				= tris_edges_count * sizeof(TRI_Edge);
+	//size_t TEdge				= tris_edges_count * sizeof(TRI_Edge);
 	size_t TreeOpcode			= sizeof(*tree) + tree->GetUsedBytes();
-	return sizeof(*this)+ V + T + TreeOpcode + TEdge;
+	return sizeof(*this) + V + T + TreeOpcode; // + TEdge;
 }
 
 // This is the constructor of a class that has been exported.

@@ -16,6 +16,8 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	bool off_impl = false;
 	bool off_mulitght = false;
 	bool use_DXT1 = false;
+	bool precalc_triangles = false;
+
 
 	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
@@ -32,7 +34,6 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	bool use_sse = 0;				//+
 	bool use_opcode_old = 0;		//+
 	bool use_RobustGeom = 0;		//+
-
 
 	int use_threads = 4;			//+
 

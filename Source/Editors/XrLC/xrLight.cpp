@@ -242,20 +242,7 @@ void CBuild::Light()
 
 	if (g_params().m_quality != ebqDraft )	 
 	{
-		if (!build_args->off_mulitght)
-		{
-			FPU::m64r();
-			Phase("LIGHT: Starting MU...");
-			mem_Compact();
-			Light_prepare();
-			//****************************************** Wait for MU
-			FPU::m64r();
-
-			string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree && build_args->use_MU_Lighting ? "intel" : "opcode");
-			Phase(tmp);
-
-			wait_mu_base();
-		}
+	
 
  
 		//****************************************** Implicit
@@ -296,7 +283,20 @@ void CBuild::Light()
  	}
 
 	//****************************************** Starting MU
-	
+	if (!build_args->off_mulitght)
+	{
+		FPU::m64r();
+		Phase("LIGHT: Starting MU...");
+		mem_Compact();
+		Light_prepare();
+		//****************************************** Wait for MU
+		FPU::m64r();
+
+		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree && build_args->use_MU_Lighting ? "intel" : "opcode");
+		Phase(tmp);
+
+		wait_mu_base();
+	}
 
  
 	if (build_args->use_embree)

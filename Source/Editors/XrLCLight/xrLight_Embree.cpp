@@ -268,12 +268,23 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 
 	base_Face* F = (base_Face*) convert_nax(clT->dummy);
 
-	if (0 == F || ctxt->skip == F)
+	if (0 == F)
 		return;
+
+//	if (ctxt->skip != nullptr)
+	if (ctxt->skip == F ) // && ray->tfar < 2.0f || ctxt->skip->dwMaterial == F->dwMaterial
+   		return;
+
+ 
 
 	const Shader_xrLC& SH = F->Shader();
 	if ( !SH.flags.bLIGHT_CastShadow )  
 		return;
+
+//	if (ray->tfar < 6.0f && !SH.flags.bRendering)
+//	{
+
+//	}
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
@@ -314,7 +325,27 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 
 	ctxt->hits++;
 
+	// barycentric coords
+	// note: W,U,V order
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
 
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+
+/*
 	// barycentric coords
 	// note: W,U,V order
 
@@ -337,7 +368,7 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
+*/
 	ctxt->energy *= opac;
 
 	// Energy Loose
@@ -389,6 +420,8 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	ray.dir = N;
 	ray.tmax = range;
 	ray.tmin = TNearParram;
+
+	float tmin = 1e-4;
 	
  	RatraceOneRay(ray, data);
 		
@@ -648,13 +681,6 @@ void IntelEmbereLOAD()
 
 
 	// Создание сцены и добавление геометрии
-	 
-	struct VertexEmbree { float x, y, z; };
-	VertexEmbree* vertices;
-	struct TriEmbree { uint32_t point1, point2, point3; };
-	TriEmbree* triangles;
-	// Добавление вершин
-
 	// Scene
 	IntelScene = rtcNewScene(device); 
 	IntelGeometry = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
@@ -690,30 +716,38 @@ void IntelEmbereLOAD()
 	TNearParram = build_args->embree_tnear;
 	
 
+
+	struct VertexEmbree { float x, y, z; };
+	VertexEmbree* vertices;
+	
+	struct TriEmbree { uint32_t point1, point2, point3; };
+	TriEmbree* triangles;
+	
  
+	// Добавление вершин
 	vertices = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), inlc_global_data()->RCAST_Model()->get_verts_count());
-	triangles = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), inlc_global_data()->RCAST_Model()->get_tris_count());
+	triangles = (TriEmbree*) rtcSetNewGeometryBuffer(IntelGeometry, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), inlc_global_data()->RCAST_Model()->get_tris_count());
  	 
 	clMsg("Intel Embree, Geometry 0: Vertices: %d", inlc_global_data()->RCAST_Model()->get_verts_count());
 	clMsg("Intel Embree, Geometry 0: Triangles: %d", inlc_global_data()->RCAST_Model()->get_tris_count());
 
 
-	Fvector* vertex_CDB = inlc_global_data()->RCAST_Model()->get_verts();
-	CDB::TRI* tri = inlc_global_data()->RCAST_Model()->get_tris();
+	Fvector* CDB_verts = inlc_global_data()->RCAST_Model()->get_verts();
+	CDB::TRI* CDB_tris = inlc_global_data()->RCAST_Model()->get_tris();
  
 	for (int i = 0; i < inlc_global_data()->RCAST_Model()->get_tris_count(); i++)
 	{
- 		triangles[i].point1 = tri[i].verts[0];  
-		triangles[i].point2 = tri[i].verts[1];
-		triangles[i].point3 = tri[i].verts[2];
+ 		VertexEmbree& vert_1 = vertices[CDB_tris[i].verts[0]];
+		VertexEmbree& vert_2 = vertices[CDB_tris[i].verts[1]];
+		VertexEmbree& vert_3 = vertices[CDB_tris[i].verts[2]];
 
-		VertexEmbree& vert_1 = vertices[tri[i].verts[0]];
-		VertexEmbree& vert_2 = vertices[tri[i].verts[1]];
-		VertexEmbree& vert_3 = vertices[tri[i].verts[2]];
+		Fvector& v1 = CDB_verts[CDB_tris[i].verts[0]];
+		Fvector& v2 = CDB_verts[CDB_tris[i].verts[1]];
+		Fvector& v3 = CDB_verts[CDB_tris[i].verts[2]];
 
-		Fvector& v1 = vertex_CDB[tri[i].verts[0]];
-		Fvector& v2 = vertex_CDB[tri[i].verts[1]];
-		Fvector& v3 = vertex_CDB[tri[i].verts[2]];
+		triangles[i].point1 = CDB_tris[i].verts[0];
+		triangles[i].point2 = CDB_tris[i].verts[1];
+		triangles[i].point3 = CDB_tris[i].verts[2];
 
 		vert_1.x = v1.x;
 		vert_1.y = v1.y;

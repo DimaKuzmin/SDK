@@ -318,7 +318,8 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_lmaps = off_lmaps->Checked;
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
- 
+    args->precalc_triangles = use_PrecalcTris->Checked;
+
     if (!IsRunned)
     {
         IsRunned = true;
@@ -394,7 +395,7 @@ System::Void LauncherNET::MyForm::xrAI_StartSpawn_Click(System::Object^ sender, 
 
     args->NoSeparator = xrAI_NoSepartor->Checked;
     args->UseSpawnCompiler = true;
- 
+    
 
     auto LEVEL = msclr::interop::marshal_as<std::string>(xrAI_LevelsName_Spawn->Text);
     auto OUTSPAWN = msclr::interop::marshal_as<std::string>(xrAI_SpawnOut->Text);

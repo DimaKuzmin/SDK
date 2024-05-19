@@ -317,6 +317,8 @@ void FilterFunction(OpcodeArgs* args)
 		args->valid = false;
 };
 
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 {
 	R_ASSERT(DB);
@@ -348,6 +350,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	args.pos = P;
 
 	ctxt.result = &args;
+	ctxt.use_prec_tri = build_args->precalc_triangles;
 
 	DB->rayTrace1(&ctxt);
 
@@ -356,7 +359,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip);
 
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 
 
 // ORIGINAL 
@@ -714,10 +717,9 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
  	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
  	
-	if (!build_args->use_opcode_old)
-		return rayTraceCheck(DB, MDL, L, P, D, R, skip);
+ 	return rayTraceCheck(DB, MDL, L, P, D, R, skip);
 
-	 
+	/*
 	R_ASSERT	(DB);
  
 	// 1. Check cached polygon
@@ -737,17 +739,13 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 		return 1;
 	else
 	{
-		//Msg("Embree Pos{%f,%f,%f}, dir{%f,%f,%f}, range[%f]", VPUSH(pos), VPUSH(dir), Range);
-		
-
-		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
+ 		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
 	}
 
 	return 0;
+	*/
  
 }
- 
-
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
 {

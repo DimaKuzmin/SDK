@@ -23,7 +23,7 @@ struct XRLC_API  SpecialArgs
 	bool off_impl = false;
 	bool off_mulitght = false;
 	bool use_DXT1 = false;
-
+	bool precalc_triangles = false;
 
 	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;

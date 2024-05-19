@@ -56,6 +56,8 @@ struct OpcodeContext
  	Fvector r_start;
 	Fvector r_dir;
 	float r_range;
+
+	bool use_prec_tri = false;
 };
 
 
@@ -88,17 +90,8 @@ namespace CDB
  		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
 	};
 
-	struct TRI_Edge
-	{
-		Fvector edge1;
-		Fvector edge2;
-		Fvector v0;
 
-		__m128 edge1_128;
-		__m128 edge2_128;
-		__m128 v0_128;
-	};
-
+	
 
 	class XRCDB_API TRI_Build
 	{
@@ -139,6 +132,18 @@ namespace CDB
 	// Build callback
 	typedef		void 	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
 
+	struct tri_m128
+	{
+		Fvector fv_e0;
+		Fvector fv_e1;
+		Fvector fv_e2;
+
+		__m128 e0;
+		__m128 e1;
+		__m128 e2;
+	};
+
+
 	// Model definition
 	class		XRCDB_API		MODEL
 	{
@@ -164,9 +169,8 @@ namespace CDB
 		int						tris_count;
 		Fvector*				verts;
 		int						verts_count;
-
-		TRI_Edge*				tris_edges;
-		int						tris_edges_count;
+ 
+		tri_m128*				tres_edges;
 
 	public:
 		MODEL();
@@ -178,9 +182,9 @@ namespace CDB
 		IC const TRI*			get_tris		()	const 	{ return tris;		}
 		IC TRI*					get_tris		()			{ return tris;		}
 		IC int					get_tris_count	()	const	{ return tris_count;}
-		
-		IC TRI_Edge*			get_tris_edges()  	{ return tris_edges; }	
-
+			
+		IC tri_m128*			get_edges() { return tres_edges; };
+ 
 		IC void					syncronize		()	const
 		{
 			if (S_READY!=status)
