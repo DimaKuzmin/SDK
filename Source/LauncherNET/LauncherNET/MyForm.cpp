@@ -14,7 +14,7 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
-#define Size 15
+#define Size 17
   
 char* collection[Size] =
 {
@@ -32,7 +32,9 @@ char* collection[Size] =
     "USE STD THREADS",
     "INTEL IMPLICIT",
     "INTEL LMAPS",
-    "INTEL MU MODELS"
+    "INTEL MU MODELS",
+    "CFORM Packing",
+    "MU FIRST"
 };
   
 void GetItemFromCollection(SpecialArgs* args, const char* item)
@@ -68,8 +70,11 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->use_LMAPS_Stage = true;
     if (strstr(item, collection[14]))
         args->use_MU_Lighting = true;
+    if (strstr(item, collection[15]))
+        args->use_cdbPacking = true;
 
-   
+    if (strstr(item, collection[16]))
+        args->run_mu_first = true;
 
 }
 #include <vcclr.h> // Include for gcroot
@@ -319,7 +324,6 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
     args->precalc_triangles = use_PrecalcTris->Checked;
-
     if (!IsRunned)
     {
         IsRunned = true;

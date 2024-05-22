@@ -1018,6 +1018,13 @@ public:
 		{
 			BuildTime->Text = str;
 		}
+		
+		public: System::Void SafeCall_updateALL()
+		{
+			if (UpdatingListBox->Checked)
+				 listBox1->SelectedIndex = listBox1->Items->Count - 1;
+		}
+
  
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
@@ -1046,6 +1053,8 @@ public:
 		 {
 			// if (UpdatingListBox->Checked)
 			//	 listBox1->SelectedIndex = listBox1->Items->Count - 1;
+
+			 gcnew Action(this, &MyForm::SafeCall_updateALL);
 		 }
 
 
