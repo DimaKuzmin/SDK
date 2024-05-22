@@ -10,12 +10,7 @@ private:
 	static UIObjectList* Form;
 	// Static Object Export Position Type
 	bool use_global_position = false;
-
-	// AIMAP
-	xr_string last_fileaimap;
-	bool ai_ignore_stractures = false;
-	xr_map<int, Fvector3> merge_offsets;
-
+	 
 	// MOVE OFFSETS
 	Fvector3 vec_offset = Fvector().set(0, 0, 0);
 	Fvector3 vec_box_min = Fvector().set(0, 0, 0);
@@ -24,8 +19,7 @@ private:
 	// BOX Выборка Обьектов
 	bool use_outside_box = false;
 	xr_map<CCustomObject*, Fvector> objects_to_move;
-
- 
+	 
 
 private:
 	// SPAWNES
@@ -41,20 +35,9 @@ private:
 	xr_vector<CCustomObject*> customdata_objects;
 
 public:
-	// RENAME CFG
-	// PREFIXES
-	string_path prefix_cfg_section;
-	string_path prefix_cfg_prefix;
-	string_path prefix_cfg_map;
-
 	bool use_genarate_cfgs = false;
-
-	string_path rename_prefix_name;
-
-
 	bool MultiplySelect = false;
-
-
+ 
 	// DISTANCE IN OBJECT LIST ITEMS
 
 	int DistanceObjects = 0;
@@ -99,61 +82,16 @@ public:
 
 public:
 // NEW se7kills
-
-	void HideCombatCovers();
- 
-	void ExportSelectObjects();
-	void ExportInsideBox();
-	void RemoveAllInsideBox();
-	
-	void SetListToMove();
-
-	void ExportAllObjects();
-	void ExportAIMap(Fbox* box, LPCSTR name);
-
-	void ImportObjects(Fvector offset = Fvector(), bool use_path = false, xr_string path = {0});
-
-	void ImportMultiply();
-	void LoadFromMultiply();
-	
- 	void SaveSelectedObjects();
-	void SetTerrainOffsetForAI();
-	void CopyTempLODforObjects();
- 
-	bool ExportDir(xr_string& dir);
-
-	bool LoadAiMAP();
- 
+//	Misc Functions 
 	void UndoLoad();
 	void SelectLoaded();
-	void CheckCustomData();
-	void UpdateCustomData();
-
-	void GenSpawnCFG(xr_string section, xr_string map, xr_string prefix);
-
 	void MoveObjectsToOffset();
-	void CheckDuplicateNames();
-
-	void RenameALLObjectsToObject();
-
-	void BboxSelectedObject();
-	void POS_ObjectsToLTX();
-
-	void SelectAIMAPFile();
-
-	void ModifyAIMAPFiles(Fvector pos);
-	void MergeAIMAP(u32 file);
-
-	void MergeAI_FromINI(CInifile* file);
-
-	void RenameSelectedObjects();
-	void SetCustomData(bool autoNumarate, LPCSTR logic_sec, LPCSTR path_name);
-
-	void CreateLogicConfigs();
-
-	void ClearGraphs();
+	void RemoveAllInsideBox();
+	void SetListToMove();
 
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
+
+// IMGUI
 
 	void UpdateDefaultMeny();
 	void UpdateUIObjectList();
@@ -162,16 +100,74 @@ public:
 	bool CheckNameForType(CCustomObject* object);
 	bool CheckForError(CCustomObject* object);
 
-	void FindALL_Duplicate();
-	void LoadErrorsGraphs();
 
 	void FindObjectSector(u16 id);
+
+	// Spawn
+private:
+ 	string_path prefix_cfg_section;
+	string_path prefix_cfg_prefix;
+	string_path prefix_cfg_map;
+public:
+
+	void SetCustomData(bool autoNumarate, LPCSTR logic_sec, LPCSTR path_name);
+	void CreateLogicConfigs();
+	void GenSpawnCFG(xr_string section, xr_string map, xr_string prefix);
+	void ClearGraphs();
+	void UpdateCustomData();
+	void CheckCustomData();
+	void ClearCustomData();
+	void HideCombatCovers();
+	void LoadErrorsGraphs();
+	void ReplaceItemToPHYSIC_STATIC();
+ 
+	// Static
+	void BboxSelectedObject();
+	void POS_ObjectsToLTX();
+	void CopyTempLODforObjects();
+	void SaveSelectedObjects();
+
+	// Export Functions , Import
+	bool ExportDir(xr_string& dir);
+	void ExportAllObjects();
+	void ExportSelectObjects();
+	void ExportInsideBox();
+
+	void ImportObjects(Fvector offset = Fvector(), bool use_path = false, xr_string path = { 0 });
+	void ImportMultiply();
+	void LoadFromMultiply();
+
+	// AI MAP
+private:
+	xr_string last_fileaimap;
+	bool ai_ignore_stractures = false;
+	xr_map<int, Fvector3> merge_offsets;
+
+public:
+	void ExportAIMap(Fbox* box, LPCSTR name);
+	bool LoadAiMAP();
+	void SelectAIMAPFile();
+ 	void ModifyAIMAPFiles(Fvector pos);
+	void MergeAIMAP(u32 file);
+	void MergeAI_FromINI(CInifile* file);
+	void SetTerrainOffsetForAI();
+
+
+	// Rename 
+private:
+	string_path rename_prefix_name;
+	// RENAME CFG
+
+public:
+	void FindALL_Duplicate();
+	void CheckDuplicateNames();
+	void RenameALLObjectsToObject();
+	void RenameSelectedObjects();
 
 private:
 	xr_vector<CCustomObject*> objects_selected;
 	int merge_ai_map_size = 0;
 
-	void ClearCustomData();
 
  
 };

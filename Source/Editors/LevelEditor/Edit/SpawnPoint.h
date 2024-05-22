@@ -140,7 +140,7 @@ public:
 	void 	OnFillChooseItems		(ChooseValue*);
     void 	OnFillRespawnItemProfile(ChooseValue*);
     bool 			OnAppendObject			(CCustomObject* object);
-protected:
+public:
     virtual void 	SetPosition		(const Fvector& pos);
     virtual void 	SetRotation		(const Fvector& rot);
     virtual void 	SetScale		(const Fvector& scale);

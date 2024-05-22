@@ -244,7 +244,7 @@ void CLog::Msg(TMsgDlgType mt, LPCSTR _Format, ...)
 	va_list l;
 	va_start( l, _Format );
 	vsprintf( buf, _Format, l );
-
+	 
 #ifdef _EDITOR
     UILogForm::AddMessage(mt,xr_string(buf));
 #endif

@@ -727,14 +727,16 @@ void CSpawnPoint::SetPosition(const Fvector& pos)
     if(m_physics_shell)
     	return;
 	inherited::SetPosition	(pos);
-    if (m_AttachedObject) m_AttachedObject->SetPosition( pos);
+    if (m_AttachedObject) 
+        m_AttachedObject->SetPosition( pos);
 }
 void CSpawnPoint::SetRotation(const Fvector& rot)
 {
 	if(m_physics_shell)
     	return;
 	inherited::SetRotation	(rot);
-    if (m_AttachedObject) m_AttachedObject->SetRotation( rot);
+    if (m_AttachedObject) 
+        m_AttachedObject->SetRotation( rot);
 }
 void CSpawnPoint::SetScale(const Fvector& scale)
 {

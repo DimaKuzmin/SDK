@@ -195,7 +195,7 @@
     <ClCompile Include="UIObjectList_FunctionsImport.cpp" />
     <ClCompile Include="UIObjectList_FunctionsSpawn.cpp" />
     <ClCompile Include="UIObjectLIST_FunctionsStatic.cpp" />
-    <ClCompile Include="UIObjectList_Renamer.cpp" />
+    <ClCompile Include="UIObjectList_FunctionsRenamer.cpp" />
     <ClCompile Include="UIObjectList_TOOLS.cpp" />
     <ClCompile Include="UIObjectList_FunctionsExport.cpp" />
     <ClCompile Include="UI\Tools\UIAIMapTool.cpp" />

@@ -106,8 +106,13 @@ bool CSector::AddMesh	(CSceneObject* O, CEditableMesh* M)
     {
     	sector_items.push_back(CSectorItem(O, M));
 		m_Flags.set(flNeedUpdateVolume,TRUE);
+
+        Msg("Add Mesh To Sector Item: %s : %s, Sector:  %s", O->GetName(), O->RefName(), this->GetName());
+        
         return true;
     }
+
+//    Msg("Cant Add Mesh To Sector: Item: %s : %s, Sector:  %s", O->GetName(), O->RefName(), this->GetName());
     return false;
 }                  
 
@@ -452,6 +457,7 @@ void CSector::LoadSectorDef( IReader* F )
         return;
     }
 
+    Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
     sector_items.push_back(sitem);
 }
 
@@ -469,9 +475,9 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
 	// sector item
 	o_name = ini.r_string(sect_name, buff);
     if(!o_name)
-            ELog.Msg		(mtError,"Sector Item contains not nnamed object - can't load");
+         ELog.Msg		(mtError,"Sector Item contains not nnamed object - can't load");
     
-	sitem.object=(CSceneObject*)Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
+	sitem.object= (CSceneObject*) Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
     if (sitem.object==NULL)
     {
         ELog.Msg		(mtError,"Sector Item contains object '%s' - can't load.\nObject not found.",o_name);
@@ -497,6 +503,8 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
         m_bHasLoadError = true;
         return;
     }
+
+    Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
 
     sector_items.push_back(sitem);
 }
@@ -525,7 +533,8 @@ bool CSector::LoadLTX(CInifile& ini, LPCSTR sect_name)
     if(version>=0x0012)
     	m_map_idx 				= ini.r_u8(sect_name, "change_map_to_idx");
         
-    if (sector_items.empty()) return false;
+    if (sector_items.empty())
+        return false;
 
     m_Flags.set(flNeedUpdateVolume,TRUE);
     return true;
@@ -547,11 +556,11 @@ void CSector::SaveLTX(CInifile& ini, LPCSTR sect_name)
  
     for(SItemIt it=sector_items.begin(); it!=sector_items.end(); ++it)
     {
-            sprintf			(buff,"item_object_name_%.4d",count);
-            ini.w_string	(sect_name, buff, it->object->GetName());
-            sprintf			(buff,"item_mesh_name_%.4d",count);
-            ini.w_string	(sect_name, buff, it->mesh->Name().c_str());
-            ++count;
+        sprintf			(buff,"item_object_name_%.4d",count);
+        ini.w_string	(sect_name, buff, it->object->GetName());
+        sprintf			(buff,"item_mesh_name_%.4d",count);
+        ini.w_string	(sect_name, buff, it->mesh->Name().c_str());
+        ++count;
     }
    
    	ini.w_u8(sect_name, "change_map_to_idx", m_map_idx);
@@ -581,7 +590,8 @@ bool CSector::LoadStream(IReader& F)
     IReader* OBJ 	= F.open_chunk(SECTOR_CHUNK_ITEMS);
     if(OBJ){
         IReader* O   	= OBJ->open_chunk(0);
-        for (int count=1; O; count++) {
+        for (int count=1; O; count++) 
+        {
             LoadSectorDef(O);
             O->close	();
             O 			= OBJ->open_chunk(count);

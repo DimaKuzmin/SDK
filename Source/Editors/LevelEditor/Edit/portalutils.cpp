@@ -190,11 +190,13 @@ bool CPortalUtils::Validate(bool bMsg)
         // verify sectors
         ObjectList& s_lst=Scene->ListObj(OBJCLASS_SECTOR);
         for(ObjectIt _F=s_lst.begin(); _F!=s_lst.end(); _F++)
-        	if (!((CSector*)(*_F))->Validate(bMsg)) bResult = false;
+        if (!((CSector*)(*_F))->Validate(bMsg)) 
+            bResult = false;
     }
     else
     {
-		if (bMsg) ELog.DlgMsg(mtInformation,"Validation failed! Can't compute bbox.");
+		if (bMsg) 
+            ELog.DlgMsg(mtInformation,"Validation failed! Can't compute bbox.");
     }
     return bResult;
 }
@@ -308,8 +310,6 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
  
             _O->SetSectors(p_it->s[0], p_it->s[1]);
             _O->Update();    
-
-
 
             if (_O->Valid()) 
             {
@@ -667,9 +667,9 @@ public:
     {
     	Tools->ClearDebugDraw();
           
-        std::thread* th = new std::thread[8];
+        //std::thread* th = new std::thread[8];
 
-        int split = portals.size() / 8;
+        //int split = portals.size() / 8;
 
         MT_PORTAL_EXPORT(0, portals, verts, edges, 0, portals.size());
         
@@ -686,7 +686,8 @@ public:
 
 
 
-int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
+int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors)
+{
     // calculate portals
     Fbox bb;
     Scene->GetBox(bb,OBJCLASS_SCENEOBJECT);
@@ -707,29 +708,6 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors){
     {
         CSector* S=(CSector*)(*s_it);
    
-        // ii = 0;
-        /*
-        for (SItemIt s_it=S->sector_items.begin();s_it!=S->sector_items.end(); s_it++)
-        {
-            if (s_it->object->IsMUStatic()) 
-                continue;
-            pb->Update(i);
-
-            s_it->GetTransform(T);
-            Fvector* m_verts=s_it->mesh->m_Vertices;
-            for (u32 f_id=0; f_id<s_it->mesh->GetFCount(); f_id++)
-            {
-                Fvector v0, v1, v2;
-                const st_Face& P			= s_it->mesh->GetFaces()[f_id];
-                T.transform_tiny	(v0,m_verts[P.pv[0].pindex]);
-                T.transform_tiny	(v1,m_verts[P.pv[1].pindex]);
-                T.transform_tiny	(v2,m_verts[P.pv[2].pindex]);
-                CL->add_face		(v0,v1,v2, S);
-            }
-        }
-        */
-
-
         tfun.Start();
         int id = 0;
 

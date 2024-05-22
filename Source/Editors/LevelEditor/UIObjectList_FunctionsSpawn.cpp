@@ -6,7 +6,67 @@
 
 bool create_cfg_file = true;
 bool select_file = false;
- 
+
+void UIObjectList::ReplaceItemToPHYSIC_STATIC()
+{
+	ESceneCustomOTool* Spawn_Tool = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
+
+	xr_vector<CSpawnPoint*> remove;
+	struct Replace
+	{
+		shared_str name;
+		shared_str name_visual;
+		Fvector Position;
+		Fvector Rotation;
+	};
+
+	xr_vector<Replace> respawn;
+
+	for (auto obj : Spawn_Tool->GetObjects())
+	{
+		CSpawnPoint* point = smart_cast<CSpawnPoint*>(obj);
+		if (point->Selected())
+		{
+			remove.push_back(point);
+
+			Replace data;
+			data.name = point->FName.c_str();
+			data.name_visual = point->m_SpawnData.m_Visual->source->visual_name.c_str();
+			data.Position = point->GetPosition();
+			data.Rotation = point->GetRotation();
+			respawn.push_back(data);
+		}
+	}
+
+	for (auto item : remove)
+	{
+		Scene->RemoveObject(item, false, true);
+	}
+
+	for (auto data : respawn)
+	{
+		CSpawnPoint* Item = (CSpawnPoint*) Spawn_Tool->CreateObject("physic_object", data.name.c_str());
+		if (Item)
+		{
+			const Fvector& pos = data.Position;
+			const Fvector& dir = data.Rotation;
+			Item->SetPosition(pos);
+			Item->SetRotation(dir);
+			Item->m_SpawnData.m_Visual->source->visual_name._set(data.name_visual);
+ 			Item->m_SpawnData.m_Visual->OnChangeVisual();
+
+			Msg("Spawn Item : %s", data.name.c_str());
+
+ 		}
+		else
+		{
+			Msg("Cant Spawn Item : %s", data.name.c_str());
+		}
+		Scene->AppendObject(Item);
+	}
+
+}
+
 void UIObjectList::HideCombatCovers()
 {
 	ESceneCustomOTool* Spawn_Objects = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));

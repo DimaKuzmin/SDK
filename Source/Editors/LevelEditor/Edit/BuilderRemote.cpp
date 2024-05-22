@@ -1164,7 +1164,10 @@ BOOL SceneBuilder::BuildGlow(CGlow* e)
 //------------------------------------------------------------------------------
 // Portal build functions
 //------------------------------------------------------------------------------
-void SceneBuilder::BuildPortal(b_portal* b, CPortal* e){
+void SceneBuilder::BuildPortal(b_portal* b, CPortal* e)
+{
+    Msg("Export Portal: %s for sector Back: %d, sector Front: %d", e->FName.c_str(), e->m_SectorBack->m_sector_num, e->m_SectorFront->m_sector_num);
+
 	b->sector_front	= (u16)e->m_SectorFront->m_sector_num;
 	b->sector_back	= (u16)e->m_SectorBack->m_sector_num;
     b->vertices.resize(e->m_SimplifyVertices.size());

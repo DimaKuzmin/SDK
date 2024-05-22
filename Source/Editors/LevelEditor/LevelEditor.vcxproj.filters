@@ -538,7 +538,7 @@
     <ClCompile Include="UIObjectLIST_FunctionsStatic.cpp">
       <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
     </ClCompile>
-    <ClCompile Include="UIObjectList_Renamer.cpp">
+    <ClCompile Include="UIObjectList_FunctionsRenamer.cpp">
       <Filter>UI\UI_TOOLS_SE7\Functions_Write By se7kills</Filter>
     </ClCompile>
     <ClCompile Include="UI\Tools\UIWayTool.cpp">

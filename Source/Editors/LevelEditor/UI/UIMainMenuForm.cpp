@@ -74,6 +74,11 @@ void UIMainMenuForm::Draw()
             {
                 ExecCommand(COMMAND_BUILD);
             }
+
+            if (ImGui::MenuItem("Build + Portals", ""))
+            {
+                ExecCommand(COMMAND_BUILD_FULL);
+            }
             ImGui::Separator();
             if (ImGui::MenuItem("Make Spawn", ""))
             {

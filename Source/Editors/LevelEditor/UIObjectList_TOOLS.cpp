@@ -111,12 +111,15 @@ void UIObjectList::UpdateDefaultMeny()
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
 		ImGui::Text("SPAWN: ");
+		if (ImGui::Button("replace_to_phobject", ImVec2(-1, 0)))
+			ReplaceItemToPHYSIC_STATIC();
+
 		
 		ImGui::Checkbox("GenConfigs", &use_genarate_cfgs);
 		ImGui::Checkbox("IgnoreVisual", &IgnoreVisual);
 		ImGui::Checkbox("IgnoreNotVisual", &IgnoreNotVisual);
 		ImGui::Checkbox("IgnoreCombatCover", &IgnoreCombatCovers);
- 
+
 		if (ImGui::Checkbox("Show Only CustomData Objects", &current_only_customdata))
 			UpdateCustomData();
 
@@ -399,8 +402,7 @@ void UIObjectList::FindALL_Duplicate()
 
 void UIObjectList::LoadErrorsGraphs()
 {
-
-	Errored_objects.clear();
+ 	Errored_objects.clear();
 	xr_string file_path;
 
 	if (EFS.GetOpenName(EDevice.m_hWnd, _import_, file_path))
@@ -420,9 +422,7 @@ void UIObjectList::LoadErrorsGraphs()
 		
 
 	}
-
 }
-
  
 bool UIObjectList::CheckNameForType(CCustomObject* obj)
 {

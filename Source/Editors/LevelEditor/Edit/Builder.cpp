@@ -49,6 +49,15 @@ SceneBuilder::~SceneBuilder()
 #define CHECK_BREAK     	if (UI->NeedAbort()) break;
 #define VERIFY_COMPILE(x,c1,c2) CHECK_BREAK \
 							if (!x){error_text.sprintf("ERROR: %s %s", c1,c2); break;}
+BOOL SceneBuilder::CompileFull(bool b_selected_only)
+{
+
+    int portals = PortalUtils.CalculateAllPortals();
+    Msg("Calculated_portals", portals);    
+    Compile(b_selected_only);
+
+    return 0;
+}
 //------------------------------------------------------------------------------
 BOOL SceneBuilder::Compile(bool b_selected_only)
 {
@@ -72,7 +81,7 @@ BOOL SceneBuilder::Compile(bool b_selected_only)
 	        // check debug
             bool bTestPortal = Scene->ObjCount(OBJCLASS_SECTOR)||Scene->ObjCount(OBJCLASS_PORTAL);
 	        // validate scene
-            //VERIFY_COMPILE(Scene->Validate(false,bTestPortal,true,true,true,true),"Validation failed.","Invalid scene.");
+            VERIFY_COMPILE(Scene->Validate(false,bTestPortal,true,true,true,true),"Validation failed.","Invalid scene.");
 			
             
             // fill simple hemi

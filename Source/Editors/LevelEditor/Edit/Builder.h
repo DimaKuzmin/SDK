@@ -149,6 +149,7 @@ public:
 			SceneBuilder            ();
 	virtual ~SceneBuilder           ();
 
+    BOOL    CompileFull             (bool b_selected_only);
 	BOOL	Compile            		(bool b_selected_only);
 
     BOOL    MakeSpawn               ();
