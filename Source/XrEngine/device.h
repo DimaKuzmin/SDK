@@ -23,10 +23,6 @@
 #include "FactoryPtr.h"
 #include "RenderDeviceRender.h"
 
-#ifdef INGAME_EDITOR
-#	include "../XrWeatherEditor/Public/interfaces.hpp"
-#endif // #ifdef INGAME_EDITOR
-
 class engine_impl;
 
 #pragma pack(push,4)

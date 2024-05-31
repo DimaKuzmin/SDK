@@ -9,10 +9,6 @@
 #include "../xrCore/xrCore.h"
 #include "../../xrAPI/xrAPI.h"
 
-#ifdef DEBUG
-#define INGAME_EDITOR
-#endif
-
 #ifdef _DEBUG
 #	define D3D_DEBUG_INFO
 #endif

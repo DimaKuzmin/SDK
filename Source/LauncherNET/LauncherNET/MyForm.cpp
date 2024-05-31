@@ -311,8 +311,8 @@ void StartThread_xrAI(SpecialArgsAI* argsb)
             SetThreadDescription(threadHandle, L"MAIN THREAD xrAI");
 
             char tmp[128];
-            sprintf(tmp, "c++ Arguments: Draft: %d, NoSepartor: %d, UseSpawnCompiler: %d, VerifyAI: %d",
-                args->Draft, args->NoSeparator, args->PureCovers, args->UseSpawnCompiler, args->VerifyAIMap);
+            sprintf(tmp, "c++ Arguments: Draft: %d, NoSepartor: %d, UseSpawnCompiler: %d, VerifyAI: %d, Pure Covers: :%d",
+                args->Draft, args->NoSeparator, args->UseSpawnCompiler, args->VerifyAIMap, args->PureCovers);
             LoggerCL_xrAI->updateLog(tmp);
 
             sprintf(tmp, "c++ Arguments: LevelName: %s",

@@ -162,7 +162,7 @@
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
-    <OutDir>A:\STALKER\X-Ray_CoP_SDK\editors\Bin\x64\Compilers_x64_v11</OutDir>
+    <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)</OutDir>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">
