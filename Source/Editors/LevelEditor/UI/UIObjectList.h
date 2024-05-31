@@ -120,6 +120,7 @@ public:
 	void HideCombatCovers();
 	void LoadErrorsGraphs();
 	void ReplaceItemToPHYSIC_STATIC();
+	void UpdateReplaceNames();
  
 	// Static
 	void BboxSelectedObject();

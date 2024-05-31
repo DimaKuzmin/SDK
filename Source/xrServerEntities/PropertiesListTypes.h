@@ -217,11 +217,13 @@ public:
     {
     	bool bChanged	= false;
         m_Flags.set		(flMixed,FALSE);
-    	for (PropValueIt it=values.begin(); values.end() != it; ++it){
+    	for (PropValueIt it=values.begin(); values.end() != it; ++it)
+        {
         	T1* CV		= smart_cast<T1*>(*it); VERIFY(CV);
         	if (CV->ApplyValue(val)){
             	bChanged = true;
-                if (!CV->OnChangeEvent.empty()) CV->OnChangeEvent(*it);
+                if (!CV->OnChangeEvent.empty())
+                    CV->OnChangeEvent(*it);
             }
             if (!CV->Equal(values.front()))
             {

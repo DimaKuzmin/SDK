@@ -145,14 +145,14 @@ CTextValue* 	CPropHelper::CreateCName	(PropItemVec& items, shared_str key, LPSTR
 //---------------------------------------------------------------------------
     
 FloatValue* 	CPropHelper::CreateAngle 	(PropItemVec& items, shared_str key, float* val, float mn, float mx, float inc, int decim)
-{   FloatValue* V					= (FloatValue*)	AppendValue		(items,key,xr_new<FloatValue>(val,mn,mx,inc,decim),PROP_NUMERIC);
+{   FloatValue* V					= (FloatValue*)	AppendValue		(items,key, new FloatValue(val,mn,mx,inc,decim),PROP_NUMERIC);
     V->OnAfterEditEvent.bind		(this,&CPropHelper::floatRDOnAfterEdit);
     V->OnBeforeEditEvent.bind		(this,&CPropHelper::floatRDOnBeforeEdit); 
     V->Owner()->OnDrawTextEvent.bind(this,&CPropHelper::floatRDOnDraw);
     return V;						
 }
 VectorValue* 	CPropHelper::CreateAngle3	(PropItemVec& items, shared_str key, Fvector* val, float mn, float mx, float inc, int decim)
-{   VectorValue* V					= (VectorValue*)	AppendValue		(items,key,xr_new<VectorValue>(val,mn,mx,inc,decim),PROP_VECTOR);
+{   VectorValue* V					= (VectorValue*)	AppendValue		(items,key, new VectorValue (val,mn,mx,inc,decim),PROP_VECTOR);
     V->OnAfterEditEvent.bind		(this,&CPropHelper::FvectorRDOnAfterEdit);
     V->OnBeforeEditEvent.bind		(this,&CPropHelper::FvectorRDOnBeforeEdit);
     V->Owner()->OnDrawTextEvent.bind(this,&CPropHelper::FvectorRDOnDraw);

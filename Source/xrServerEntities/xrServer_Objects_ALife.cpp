@@ -1507,7 +1507,9 @@ void CSE_ALifeObjectHangingLamp::FillProps	(LPCSTR pref, PropItemVec& values)
 	PHelper().CreateChoose		(values, PrepareKey(pref,*s_name,"Light\\Main\\Bone"),			&light_main_bone,	smSkeletonBones,0,(void*)visual()->get_visual());
 	if (flags.is(flTypeSpot))
 	{
-		PHelper().CreateAngle	(values, PrepareKey(pref,*s_name,"Light\\Main\\Cone Angle"),	&spot_cone_angle,	deg2rad(1.f), deg2rad(120.f));
+		// CreateAngle
+		 
+		PHelper().CreateFloat	(values, PrepareKey(pref,*s_name,"Light\\Main\\Cone Angle"),	&spot_cone_angle, deg2rad(1.f), deg2rad(120.f)); //  
 //		PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Light\\Main\\Volumetric"),	&flags,			flVolumetric);
 		P=PHelper().CreateFlag16	(values, PrepareKey(pref,*s_name,"Flags\\Volumetric"),	&flags,			flVolumetric);
 		P->OnChangeEvent.bind	(this,&CSE_ALifeObjectHangingLamp::OnChangeFlag);

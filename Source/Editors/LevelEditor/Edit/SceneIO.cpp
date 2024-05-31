@@ -267,6 +267,7 @@ BOOL EScene::LoadLevelPart(ESceneToolBase* M, LPCSTR map_name)
 	if(M->can_use_inifile())
 	    return LoadLevelPartLTX(M, map_name);
         
+    Msg("start Loading: %s", map_name);
 	if (FS.exist(map_name))
     {
 		// check locking

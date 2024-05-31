@@ -67,6 +67,27 @@ void UIObjectList::ReplaceItemToPHYSIC_STATIC()
 
 }
 
+void UIObjectList::UpdateReplaceNames()
+{
+	ESceneCustomOTool* Spawn_Objects = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));
+
+	for (auto obj : Spawn_Objects->GetObjects())
+	{
+		CSpawnPoint* spawn = smart_cast<CSpawnPoint*>(obj);
+		if (spawn)
+		{
+			if (spawn->m_SpawnData.m_Data)
+			{
+				spawn->m_SpawnData.m_Data->set_name_replace(spawn->GetName());
+			}
+			else
+			{
+				Msg("spawn->m_SpawnData.m_Data == nullptr: %s", spawn->GetName());
+			}
+		}
+	}
+}
+
 void UIObjectList::HideCombatCovers()
 {
 	ESceneCustomOTool* Spawn_Objects = dynamic_cast<ESceneCustomOTool*>(Scene->GetOTool(OBJCLASS_SPAWNPOINT));

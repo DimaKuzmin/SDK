@@ -114,6 +114,8 @@ void UIObjectList::UpdateDefaultMeny()
 		if (ImGui::Button("replace_to_phobject", ImVec2(-1, 0)))
 			ReplaceItemToPHYSIC_STATIC();
 
+		if (ImGui::Button("Update_ReplaceNames"))
+			UpdateReplaceNames();
 		
 		ImGui::Checkbox("GenConfigs", &use_genarate_cfgs);
 		ImGui::Checkbox("IgnoreVisual", &IgnoreVisual);

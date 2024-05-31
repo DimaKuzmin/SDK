@@ -32,21 +32,27 @@ inline bool DrawNumeric(PropItem* item, bool& change, bool read_only)
 	}
 	return true;
 }
+
+
 template<>
 inline bool DrawNumeric<float>(PropItem* item, bool& change, bool read_only)
 {
 	change = false;
 	NumericValue<float>* V = dynamic_cast<NumericValue<float>*>(item->GetFrontValue());
-	if (!V)					return false;
+	if (!V)		
+		return false;
+
 	float temp = *V->value;
 	item->BeforeEdit<NumericValue<float>, float>(temp);
 	change = ImGui::InputFloat("##value", &temp, 0.01, 0.1, V->dec, read_only ? ImGuiInputTextFlags_ReadOnly : 0);
+	
 	if (change)
 	{
-		if (!isinf(V->lim_mn) &&V->lim_mn > temp)
+		if (!isinf(V->lim_mn) && V->lim_mn > temp)
 			temp = V->lim_mn;
 		if (!isinf(V->lim_mx) && V->lim_mx < temp)
 			temp = V->lim_mx;
+
 		if ( item->AfterEdit< NumericValue<float>, float>(temp) && !read_only)
 		{
 			change = item->ApplyValue< NumericValue<float>, float>(temp);
@@ -144,13 +150,15 @@ void UIPropertiesForm::DrawItem(const char* name, PropItem* node)
 		bool change = false;
 		if (!DrawNumeric<u32>(node, change, m_Flags.test(plReadOnly)))
 		if (!DrawNumeric<float>(node, change, m_Flags.test(plReadOnly)))
-			if (!DrawNumeric<u8>(node, change, m_Flags.test(plReadOnly)))
-				if (!DrawNumeric<s8>(node, change, m_Flags.test(plReadOnly)))
-					if (!DrawNumeric<s16>(node, change, m_Flags.test(plReadOnly)))
-						if (!DrawNumeric<u16>(node, change, m_Flags.test(plReadOnly)))
-							if (!DrawNumeric<s32>(node, change, m_Flags.test(plReadOnly)))
-									R_ASSERT(false);
-		if (change)Modified();
+		if (!DrawNumeric<u8>(node, change, m_Flags.test(plReadOnly)))
+		if (!DrawNumeric<s8>(node, change, m_Flags.test(plReadOnly)))
+		if (!DrawNumeric<s16>(node, change, m_Flags.test(plReadOnly)))
+		if (!DrawNumeric<u16>(node, change, m_Flags.test(plReadOnly)))
+		if (!DrawNumeric<s32>(node, change, m_Flags.test(plReadOnly)))
+			R_ASSERT(false);
+
+		if (change)
+			Modified();
 	}
 	break;
 	case PROP_SHORTCUT:
