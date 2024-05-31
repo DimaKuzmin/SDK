@@ -105,7 +105,10 @@ public:
 	void	xrPhase_Subdivide		();
 	void	ImplicitLighting		();
 	void	Light_prepare			();
+	
+	void	RunMuModels();
 	void	Light					();
+
 	void	LMapsLocal				();
 	void	LMaps					();
 	//void	Light_R2				();

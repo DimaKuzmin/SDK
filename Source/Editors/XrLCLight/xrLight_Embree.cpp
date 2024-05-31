@@ -259,8 +259,10 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 
 	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->geomID == RTC_INVALID_GEOMETRY_ID)
 		return;
+ 	args->valid[0] = 0;
 
-	args->valid[0] = 0;
+	//if (hit->u < 0 || hit->u + hit->v > 1)
+	//	Msg("Hit: U: %f, V: %f", hit->u, hit->v);
 
 
 	// Access to texture
@@ -271,20 +273,12 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 	if (0 == F)
 		return;
 
-//	if (ctxt->skip != nullptr)
-	if (ctxt->skip == F ) // && ray->tfar < 2.0f || ctxt->skip->dwMaterial == F->dwMaterial
+ 	if (ctxt->skip == F ) 
    		return;
-
- 
 
 	const Shader_xrLC& SH = F->Shader();
 	if ( !SH.flags.bLIGHT_CastShadow )  
 		return;
-
-//	if (ray->tfar < 6.0f && !SH.flags.bRendering)
-//	{
-
-//	}
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
@@ -343,32 +337,6 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 	u32 pixel = raw[V * T.dwWidth + U];
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-
-/*
-	// barycentric coords
-	// note: W,U,V order
-
-	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-	// calc UV
-	Fvector2* cuv = F->getTC0();
-	Fvector2	uv;
-	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
-	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
-
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;
-	if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;
-	if (V < 0) V += T.dwHeight;
-
-	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel = raw[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-*/
 	ctxt->energy *= opac;
 
 	// Energy Loose
@@ -392,6 +360,8 @@ FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 	args.context = &data_hits.context;	 
 	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER /*| RTC_RAY_QUERY_FLAG_COHERENT*/);
 	
+	args.feature_mask = RTC_FEATURE_FLAG_TRIANGLE;
+
 	RTCRayHit rayhit;
 	SetRay1(&ray, rayhit);
 	
@@ -657,11 +627,11 @@ void IntelEmbereLOAD()
 
 
 	if (avx)
-		config = "threads=8,isa=avx2";
+		config = "threads=16,isa=avx2";
 	else if (sse)
-		config = "threads=8,isa=sse4.2";
+		config = "threads=16,isa=sse4.2";
 	else
-		config = "threads=8,isa=sse2";
+		config = "threads=16,isa=sse2";
 
 	device = rtcNewDevice(config.c_str());
 	rtcSetDeviceErrorFunction(device, errorFunction, NULL);

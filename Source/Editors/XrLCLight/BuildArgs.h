@@ -57,7 +57,8 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	int MaxHitsPerRay = 256;
  
 	char* special_args = 0;
-
+	bool use_cdbPacking = false;
+	bool run_mu_first = false;
 
 	std::string level_name;
 };

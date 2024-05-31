@@ -112,6 +112,10 @@ void CBuild::BuildCForm	()
 
 	// Collect faces
 	CDB::CollectorPacked CL	(BB,cfVertices->size(),cfFaces->size());
+ 	CL.UsePacking = build_args->use_cdbPacking;
+
+	int ID = 0;
+	int next_ID = 0;
 	for (vecFaceIt F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{
 		Face*	T = *F;
@@ -124,6 +128,12 @@ void CBuild::BuildCForm	()
 			T->v[0]->P, T->v[1]->P, T->v[2]->P,
 			T->dwMaterialGame, materials()[T->dwMaterial].sector, T->sm_group
 			);
+
+		if (ID % 100000 == 0)
+			clMsg("Progress: %d/%d", ID, cfFaces->size());
+
+		ID++;
+
 		Progress(p_total+=p_cost);		// progress
 	}
 
@@ -145,8 +155,8 @@ void CBuild::BuildCForm	()
 		Progress(float(ref / float(mu_refs().size())));
 		mu_refs()[ref]->export_cform_game(CL);
 
-		//if (ref % 100 == 0)
-		//	clMsg("Model %d", ref);
+		if (ref % 50 == 0)
+			clMsg("Model %d/%d", ref, mu_refs().size());
 	}
 
 	// Simplification

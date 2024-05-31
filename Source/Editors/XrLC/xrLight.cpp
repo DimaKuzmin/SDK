@@ -46,6 +46,12 @@ public:
  
 		CDeflector* D	= 0;
  
+		#include <xmmintrin.h>
+		#include <pmmintrin.h>
+	 
+		_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+		_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
 		for (;;) 
 		{
 			// Get task
@@ -236,16 +242,35 @@ void	CBuild::LMaps					()
 	LMapsLocal();
 }
  
+void CBuild::RunMuModels()
+{
+
+	//****************************************** Starting MU
+	if (!build_args->off_mulitght)
+	{
+		FPU::m64r();
+		Phase("LIGHT: Starting MU...");
+		mem_Compact();
+		Light_prepare();
+		//****************************************** Wait for MU
+		FPU::m64r();
+
+		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree && build_args->use_MU_Lighting ? "intel" : "opcode");
+		Phase(tmp);
+
+		wait_mu_base();
+	}
+}
+
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 
 	if (g_params().m_quality != ebqDraft )	 
 	{
-	
-
- 
-		//****************************************** Implicit
+		if (build_args->run_mu_first)
+ 			RunMuModels();
+ 		//****************************************** Implicit
 	
 		if (!build_args->off_impl)
 		{
@@ -280,23 +305,11 @@ void CBuild::Light()
 
 		}
 
+		if (!build_args->run_mu_first)
+			RunMuModels();
+
  	}
 
-	//****************************************** Starting MU
-	if (!build_args->off_mulitght)
-	{
-		FPU::m64r();
-		Phase("LIGHT: Starting MU...");
-		mem_Compact();
-		Light_prepare();
-		//****************************************** Wait for MU
-		FPU::m64r();
-
-		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree && build_args->use_MU_Lighting ? "intel" : "opcode");
-		Phase(tmp);
-
-		wait_mu_base();
-	}
 
  
 	if (build_args->use_embree)

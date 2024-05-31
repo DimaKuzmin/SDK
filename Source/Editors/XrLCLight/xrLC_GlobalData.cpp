@@ -94,10 +94,16 @@ XRLC_LIGHT_API base_Face* convert_nax(u32 dummy)
 	return FacesStorage[dummy];
 }
 
+ 
 XRLC_LIGHT_API u32 convert_nax(base_Face* F)
 {
-	FacesStorage.push_back(F);
-	return FacesStorage.size() - 1;
+ 	FacesStorage.push_back(F);
+ 	return FacesStorage.size() - 1;
+}
+
+XRLC_LIGHT_API void ClearNax()
+{
+	FacesStorage.clear();
 }
   
 // MU CALC MATERIALS

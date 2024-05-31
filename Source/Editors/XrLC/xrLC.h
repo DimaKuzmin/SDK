@@ -61,6 +61,8 @@ struct XRLC_API  SpecialArgs
 	int sample = 9; // 1-9
 	int mu_samples = 6; // 1-6
 	int MaxHitsPerRay = 256;
+	bool use_cdbPacking = false;
+	bool run_mu_first = false;
  
 	char* special_args = 0;
 	std::string level_name;

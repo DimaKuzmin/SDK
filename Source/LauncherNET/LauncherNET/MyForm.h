@@ -133,18 +133,8 @@ private: System::Windows::Forms::Label^ label17;
 private: System::Windows::Forms::Label^ label18;
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 private: System::Windows::Forms::CheckBox^ use_PrecalcTris;
+
 public:
-
-
-
-
-
-
-
-
-
-
-
 
 	private:
 		/// <summary>
@@ -173,6 +163,7 @@ public:
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->use_PrecalcTris = (gcnew System::Windows::Forms::CheckBox());
 			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
 			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
@@ -221,7 +212,6 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->use_PrecalcTris = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -435,6 +425,16 @@ public:
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
+			// 
+			// use_PrecalcTris
+			// 
+			this->use_PrecalcTris->AutoSize = true;
+			this->use_PrecalcTris->Location = System::Drawing::Point(20, 200);
+			this->use_PrecalcTris->Name = L"use_PrecalcTris";
+			this->use_PrecalcTris->Size = System::Drawing::Size(179, 31);
+			this->use_PrecalcTris->TabIndex = 4;
+			this->use_PrecalcTris->Text = L"ON Precalc Tris";
+			this->use_PrecalcTris->UseVisualStyleBackColor = true;
 			// 
 			// useDXT1
 			// 
@@ -955,16 +955,6 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// use_PrecalcTris
-			// 
-			this->use_PrecalcTris->AutoSize = true;
-			this->use_PrecalcTris->Location = System::Drawing::Point(20, 200);
-			this->use_PrecalcTris->Name = L"use_PrecalcTris";
-			this->use_PrecalcTris->Size = System::Drawing::Size(179, 31);
-			this->use_PrecalcTris->TabIndex = 4;
-			this->use_PrecalcTris->Text = L"ON Precalc Tris";
-			this->use_PrecalcTris->UseVisualStyleBackColor = true;
-			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -1019,13 +1009,6 @@ public:
 			BuildTime->Text = str;
 		}
 		
-		public: System::Void SafeCall_updateALL()
-		{
-			if (UpdatingListBox->Checked)
-				 listBox1->SelectedIndex = listBox1->Items->Count - 1;
-		}
-
- 
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
@@ -1048,14 +1031,7 @@ public:
 			System::String^ managedString = gcnew System::String(str);
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTextStatus_form), managedString);
 		}
-			  
-		 public: System::Void updateALL()
-		 {
-			// if (UpdatingListBox->Checked)
-			//	 listBox1->SelectedIndex = listBox1->Items->Count - 1;
-
-			 gcnew Action(this, &MyForm::SafeCall_updateALL);
-		 }
+ 
 
 
 		public:  System::Void UpdateTime(const char* str)
@@ -1075,6 +1051,14 @@ public:
 		private: System::Void xrAI_StartSpawn_Click(System::Object^ sender, System::EventArgs^ e);
  
  
+		public: System::Void UpdateList() // System::EventArgs
+		{
+			// Handle the size change event here
+ 			if (UpdatingListBox->Checked)
+			{
+				listBox1->SelectedIndex = listBox1->Items->Count - 1;
+			};
+		}
 };
 
 }

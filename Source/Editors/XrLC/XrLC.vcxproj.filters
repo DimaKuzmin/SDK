@@ -248,9 +248,6 @@
     <ClCompile Include="xrPhase_MergeLM.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
-    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
     <ClCompile Include="xrPhase_ResolveMaterials.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>

@@ -86,45 +86,28 @@ class  NET_Logger : ILogger
 public:
     void  updateLog(LPCSTR str)
     {
-        if (form.operator->() != nullptr)
-            form->updateLogFormItem(str);
-        else
-            DebugBreak();
+        form->updateLogFormItem(str);
     };
 
     void  updatePhrase(LPCSTR phrase)
     {
-        if (form.operator->() != nullptr)
-            form->updatePhaseItem(phrase);
-        else
-            DebugBreak();
+        form->updatePhaseItem(phrase);
     };
 
     virtual void  updateStatus(LPCSTR status)
     {
-        if (form.operator->() != nullptr)
-            form->updateStatusItem(status);
-        else
-            DebugBreak();
+        form->updateStatusItem(status);
      }
 
 
     virtual void UpdateText()
     {
-        if (form.operator->() != nullptr)
-            form->updateALL();
-        else
-            DebugBreak();
-        
+        form->UpdateList();
     }
 
     virtual void UpdateTime(LPCSTR time)
     {
-        if (form.operator->() != nullptr)
-            form->UpdateTime(time);
-        else
-            DebugBreak();
-       
+        form->UpdateTime(time);       
     }
 };
 
@@ -133,45 +116,28 @@ class  NET_LoggerAI : ILoggerAI
 public:
     void  updateLog(LPCSTR str)
     {
-        if (form.operator->() != nullptr)
-            form->updateLogFormItem(str);
-        else
-            DebugBreak();
+        form->updateLogFormItem(str);
     };
 
     void  updatePhrase(LPCSTR phrase)
     {
-        if (form.operator->() != nullptr)
-            form->updatePhaseItem(phrase);
-        else
-            DebugBreak();
+        form->updatePhaseItem(phrase);
     };
 
     virtual void  updateStatus(LPCSTR status)
     {
-        if (form.operator->() != nullptr)
-            form->updateStatusItem(status);
-        else
-            DebugBreak();
+        form->updateStatusItem(status);
     }
 
 
     virtual void UpdateText()
     {
-        if (form.operator->() != nullptr)
-            form->updateALL();
-        else
-            DebugBreak();
-
+        form->UpdateList();
     }
 
     virtual void UpdateTime(LPCSTR time)
     {
-        if (form.operator->() != nullptr)
-            form->UpdateTime(time);
-        else
-            DebugBreak();
-
+        form->UpdateTime(time);
     }
 };
 
@@ -214,7 +180,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     form->xrLC_JitterSamples->MaxDropDownItems = 3;
     form->xrLC_JitterSamples->SelectedIndex = 0;
-
    
     Application::Run(form);
    

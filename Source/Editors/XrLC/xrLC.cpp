@@ -71,6 +71,12 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1);
 	clMsg(tmp);
 
+	
+	sprintf(tmp, "c++ Arguments6: OPCODE AVX_TRI: %d, CFORM Packing: %d",
+		args->precalc_triangles, args->use_cdbPacking);
+	clMsg(tmp);
+
+
 
 	// Faster FPU 
 	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
@@ -239,7 +245,9 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->off_mulitght = args->off_mulitght;
 	build_args->use_DXT1 = args->use_DXT1;
 	build_args->precalc_triangles = args->precalc_triangles;
+	build_args->use_cdbPacking = args->use_cdbPacking;
 
+	build_args->run_mu_first = args->run_mu_first;
 
 	// Custom Flags (Not Supported)
 	build_args->special_args = args->special_args;

@@ -69,7 +69,17 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 }
 
 #include "../../xrcdb/xrcdb.h"
-  
+
+#include <execution>
+
+#include "../XrLCLight/BuildArgs.h" 
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+#include "tbb/tbb.h"
+#include <atomic>
+
+xrCriticalSection csRapidModel;
+
 void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 {
 	float	p_total			= 0;
@@ -81,74 +91,67 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	for				(u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
 		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
 
-	xr_vector<Face*>			adjacent_vec;
-	adjacent_vec.reserve		(6*2*3);
-
-	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
- 
+  	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
+	CL.UsePacking = build_args->use_cdbPacking;
 //	Status("Converting faces... (ONE CORE)");
-	
-	for (vecFaceIt it=lc_global_data()->g_faces().begin(); it!=lc_global_data()->g_faces().end(); ++it)
-	{
-		Face*	F				= (*it);
-		const Shader_xrLC&	SH		= F->Shader();
-		
-		if (!SH.flags.bLIGHT_CastShadow)		
-			continue;
-		
 
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-
-		/*
- 		if (strstr(lc_global_data()->shaders().Get(M.shader_xrlc)->Name, "_noshadow") || strstr(lc_global_data()->shaders().Get(M.shader)->Name, "_noshadow") )
-		{
-			// Msg("skipped: xrlc: %s, %s", lc_global_data()->shaders().Get(M.shader_xrlc)->Name, lc_global_data()->shaders().Get(M.shader)->Name);
-
-			F->flags.bShadowSkip = true;
-			continue;
-		}
-		*/
- 
-		Progress	(float(it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
-				
-		// Collect
-		adjacent_vec.clear	();
-		for (int vit=0; vit<3; ++vit)
-		{
-			Vertex* V = F->v[vit];
-			for (u32 adj=0; adj<V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-
-		std::sort		(adjacent_vec.begin(),adjacent_vec.end());
-		adjacent_vec.erase	(std::unique(adjacent_vec.begin(),adjacent_vec.end()),adjacent_vec.end());
-
-		// Unique
-		BOOL			bAlready	= FALSE;
-
-		for (u32 ait=0; ait<adjacent_vec.size(); ++ait)
-		{
-			Face*	Test					= adjacent_vec[ait];
-			if (Test==F)					continue;
-			if (!Test->flags.bProcessed)	continue;
-			if (FaceEqual(*F,*Test))
-			{
-				bAlready					= TRUE;
-				break;
-			}
-		}
-
-		//
-		if (!bAlready) 
-		{
-			F->flags.bProcessed	= true;
-			CL.add_face_D		( F->v[0]->P,F->v[1]->P,F->v[2]->P, convert_nax(F), F->sm_group);
-		}
- 
-	}
+	CTimer t; t.Start();
+	  
+	ClearNax();
 	 
+ 	xr_vector<Face*>			adjacent_vec;
+	adjacent_vec.reserve(6 * 2 * 3);
+
+ 	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+	{
+ 			//			Face* F = lc_global_data()->g_faces()[Thread_WorkID];
+			const Shader_xrLC& SH = F->Shader();
+
+			if (!SH.flags.bLIGHT_CastShadow)
+				return;
+
+			b_material& M = lc_global_data()->materials()[F->dwMaterial];
+
+			// Collect
+			adjacent_vec.clear();
+			for (int vit = 0; vit < 3; ++vit)
+			{
+				Vertex* V = F->v[vit];
+				for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
+				{
+					adjacent_vec.push_back(V->m_adjacents[adj]);
+				}
+			}
+
+			std::sort(adjacent_vec.begin(), adjacent_vec.end());
+			adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+
+			// Unique
+			BOOL			bAlready = FALSE;
+
+			for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+			{
+				Face* Test = adjacent_vec[ait];
+				if (Test == F)
+					continue;
+				if (!Test->flags.bProcessed)
+					continue;
+				if (FaceEqual(*F, *Test))
+				{
+					bAlready = TRUE;
+					break;
+				}
+			}
+
+			//
+			if (!bAlready)
+			{
+				F->flags.bProcessed = true;
+				CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, convert_nax(F), F->sm_group, 0); //ThreadID
+			}
+
+	});
+ 	 
 	// Export references
 	if (bSaveForOtherCompilers)		
 		Phase	("Building rcast-CFORM-mu model...");
@@ -156,15 +159,21 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	Status					("Models...");
 
 	//for (u32 ref = 0; ref < mu_refs().size(); ref++)
-	
-	int id = 0;
-	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref ) 
+	u32 ID = 0;
+ 	
+	//for (u32 ref = 0; ref < mu_refs().size(); ref++)
+	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref) // std::execution::par, 
 	{
-		id++;
-		Progress(float(id / float(mu_refs().size())));
+		Progress(float(ID / float(mu_refs().size())));
 		ref->export_cform_rcast(CL);
-	}
-	);
+		
+		csRapidModel.Enter();
+		if (ID % 1000 == 0)
+			clMsg("Model %d/%d", ID, mu_refs().size());
+		ID++;
+		csRapidModel.Leave();
+	});
+	 
 
 
 	// "Building tree..
