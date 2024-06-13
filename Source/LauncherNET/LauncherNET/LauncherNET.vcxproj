@@ -162,8 +162,8 @@
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
-    <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)</OutDir>
-    <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">
     <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)\</OutDir>
