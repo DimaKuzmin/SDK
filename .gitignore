@@ -1,9 +1,9 @@
 Source/.vs/
 _appdata_/
 _appdata_cs_/
-/Bin/
+Bin/
 Intermediate/
-/Lib/
+Lib/
 import/
 rawdata/
 logs/
