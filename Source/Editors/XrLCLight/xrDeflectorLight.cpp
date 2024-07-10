@@ -250,7 +250,7 @@ void FilterFunction(OpcodeArgs* args)
 
 	// Access to texture
 	CDB::TRI& clT = MDL->get_tris()[args->hit_struct.prim];
-	base_Face* F = (base_Face*)convert_nax(clT.dummy);
+	base_Face* F = (base_Face*) clT.pointer;
 
 	if (0 == F || args->skip == F)
 		return;
@@ -649,7 +649,7 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
  
 			// Access to texture
 			CDB::TRI& clT										= MDL->get_tris()[rpinf.id];
-			base_Face* F										= (base_Face*) convert_nax(clT.dummy);
+			base_Face* F										= (base_Face*) clT.pointer;
 			if (0==F)											continue;
 			if (skip==F)										continue;
 

@@ -319,7 +319,8 @@ public:
 		dest = CL;
 		tris = model->get_tris();
 		verts = model->get_verts();
- 
+		//tris_edges = model->get_tris_edges();
+
 		MDL = model;
 
 		ray.pos.set(C);

@@ -197,49 +197,38 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 {
 	build_args->no_invalide_faces = args->no_invalide_faces;
 
-	build_args->level_name = args->level_name;
-
-
-	// Scene Settings
 	build_args->pxpm = args->pxpm;
 	build_args->mu_samples = args->mu_samples;
 	build_args->sample = args->sample;
 	build_args->use_threads = args->use_threads;
-	build_args->skip_weld = args->skip_weld;
+	
+	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
+	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
+	build_args->use_MU_Lighting = args->use_MU_Lighting;
 
 
-	// Lighting Params
 	build_args->nohemi = args->nohemi;
 	build_args->norgb = args->norgb;
 	build_args->noise = args->noise;
 	build_args->nosun = args->nosun;
 	build_args->nosmg = args->nosmg;
 
-
-	// XrLC Optimize
 	build_args->no_optimize = args->no_optimize;
 	build_args->no_simplify = args->no_simplify;
-  
-	// Embree Flags
-	build_args->embree_geometry_type = args->embree_geometry_type;
-	build_args->embree_tnear = args->embree_tnear;
-	build_args->use_RobustGeom = args->use_RobustGeom;
-	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
 
 	build_args->use_avx = args->use_avx;
 	build_args->use_embree = args->use_embree;
 	build_args->use_sse = args->use_sse;
 	build_args->use_opcode_old = args->use_opcode_old;
 
+	build_args->special_args = args->special_args;
+	build_args->level_name = args->level_name;
 
-	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
-	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
-	build_args->use_MU_Lighting = args->use_MU_Lighting;
+	build_args->embree_geometry_type = args->embree_geometry_type;
+	build_args->use_RobustGeom = args->use_RobustGeom;
+	build_args->skip_weld = args->skip_weld;
+	build_args->embree_tnear = args->embree_tnear;
 
-
-
-
-	// Debug OFF Flags
 	build_args->off_impl = args->off_impl;
 	build_args->off_lmaps = args->off_lmaps;
 	build_args->off_mulitght = args->off_mulitght;
@@ -250,8 +239,8 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->run_mu_first = args->run_mu_first;
 
 	// Custom Flags (Not Supported)
-	build_args->special_args = args->special_args;
-}
+	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
+ }
 
 XRLC_API void StartupWorking(SpecialArgs* args)
 {

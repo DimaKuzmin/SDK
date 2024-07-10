@@ -268,7 +268,7 @@ FORCEINLINE void FilterIntersectionOne(const struct RTCFilterFunctionNArguments*
 	// Access to texture
 	CDB::TRI* clT = &ctxt->model->get_tris()[hit->primID];
 
-	base_Face* F = (base_Face*) convert_nax(clT->dummy);
+	base_Face* F = (base_Face*)(clT->pointer);
 
 	if (0 == F)
 		return;

@@ -309,22 +309,21 @@ namespace CDB
 		int		_size	= (clpMX+1)*(clpMY+1)*(clpMZ+1);
 		int		_average= (apx_vertices/_size)/2;
 
-		for (int TH=0; TH < MAX_THREADS; TH++)
 		for (int ix=0; ix<clpMX+1; ix++)
 		for (int iy=0; iy<clpMY+1; iy++)
 		for (int iz=0; iz<clpMZ+1; iz++)
-			VM[TH][ix][iy][iz].reserve	(_average);
+			VM[ix][iy][iz].reserve	(_average);
 	}
 
 	void	CollectorPacked::add_face(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u16 material, u16 sector, u32 _flags, u32 TH									// misc
+		u16 material, u16 sector, u32 _flags									// misc
 		)
 	{
 		TRI T;
-		T.verts	[0] = VPack(v0, TH);
-		T.verts	[1] = VPack(v1, TH);
-		T.verts	[2] = VPack(v2, TH);
+		T.verts	[0] = VPack(v0);
+		T.verts	[1] = VPack(v1);
+		T.verts	[2] = VPack(v2);
 		T.material		= material;
 		T.sector		= sector;
 		flags.push_back(_flags);
@@ -334,21 +333,35 @@ namespace CDB
 
 	void	CollectorPacked::add_face_D(
 		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
-		u32 dummy, u32 _flags, u32 TH										// misc
+		u32 dummy, u32 _flags									// misc
 		)
 	{
 		TRI T;
-		T.verts	[0] = VPack(v0, TH);
-		T.verts	[1] = VPack(v1, TH);
-		T.verts	[2] = VPack(v2, TH);
+		T.verts	[0] = VPack(v0);
+		T.verts	[1] = VPack(v1);
+		T.verts	[2] = VPack(v2);
 		T.dummy		= dummy;
 		faces.push_back(T);
 		flags.push_back(_flags);
 	}
 
-	xrCriticalSection xrCDB;
 
-	u32		CollectorPacked::VPack(const Fvector& V, int TH)
+	void	CollectorPacked::add_face_D(
+		const Fvector& v0, const Fvector& v1, const Fvector& v2,	// vertices
+		void* pointer, u32 _flags										// misc
+	)
+	{
+		TRI T;
+		T.verts[0] = VPack(v0);
+		T.verts[1] = VPack(v1);
+		T.verts[2] = VPack(v2);
+		T.pointer = pointer;
+		faces.push_back(T);
+		flags.push_back(_flags);
+	}
+
+
+	u32		CollectorPacked::VPack(const Fvector& V)
 	{
 		u32 P = 0xffffffff;
 
@@ -362,10 +375,8 @@ namespace CDB
 		 
  		if (UsePacking)
 		{
-			xrCDB.Enter();
-			DWORDList* vl = &(VM[TH][ix][iy][iz]);;
-			xrCDB.Leave();			
-			
+ 			DWORDList* vl = &(VM[ix][iy][iz]);;
+ 			
 			if (true)
 			for (DWORDIt it = vl->begin(); it != vl->end(); it++)
 			{
@@ -384,10 +395,9 @@ namespace CDB
 		if (0xffffffff==P)
 		{
 			P = verts.size();
-			xrCDB.Enter();
 			verts.push_back(V);
 
-			VM[TH][ix][iy][iz].push_back(P);
+			VM[ix][iy][iz].push_back(P);
 
 			u32 ixE,iyE,izE;
 			ixE = iFloor(float(V.x+VMeps.x-VMmin.x)/VMscale.x*clpMX);
@@ -399,15 +409,13 @@ namespace CDB
 			clamp(iyE,(u32)0,clpMY);	
 			clamp(izE,(u32)0,clpMZ);
 
-			if (ixE!=ix)							VM[TH][ixE][iy][iz].push_back	(P);
-			if (iyE!=iy)							VM[TH][ix][iyE][iz].push_back	(P);
-			if (izE!=iz)							VM[TH][ix][iy][izE].push_back	(P);
-			if ((ixE!=ix)&&(iyE!=iy))				VM[TH][ixE][iyE][iz].push_back	(P);
-			if ((ixE!=ix)&&(izE!=iz))				VM[TH][ixE][iy][izE].push_back	(P);
-			if ((iyE!=iy)&&(izE!=iz))				VM[TH][ix][iyE][izE].push_back	(P);
-			if ((ixE!=ix)&&(iyE!=iy)&&(izE!=iz))	VM[TH][ixE][iyE][izE].push_back	(P);
-
-			xrCDB.Leave();
+			if (ixE!=ix)							VM[ixE][iy][iz].push_back	(P);
+			if (iyE!=iy)							VM[ix][iyE][iz].push_back	(P);
+			if (izE!=iz)							VM[ix][iy][izE].push_back	(P);
+			if ((ixE!=ix)&&(iyE!=iy))				VM[ixE][iyE][iz].push_back	(P);
+			if ((ixE!=ix)&&(izE!=iz))				VM[ixE][iy][izE].push_back	(P);
+			if ((iyE!=iy)&&(izE!=iz))				VM[ix][iyE][izE].push_back	(P);
+			if ((ixE!=ix)&&(iyE!=iy)&&(izE!=iz))	VM[ixE][iyE][izE].push_back	(P);
 		}
 		return P;
 	}
@@ -418,10 +426,9 @@ namespace CDB
 		faces.clear_and_free	();
 		flags.clear_and_free	();
 		
-		for (u32 TH = 0; TH < MAX_THREADS; TH++)
 		for (u32 _x=0; _x<=clpMX; _x++)
 		for (u32 _y=0; _y<=clpMY; _y++)
 		for (u32 _z=0; _z<=clpMZ; _z++)
-			VM[TH][_x][_y][_z].clear_and_free	();
+			VM[_x][_y][_z].clear_and_free	();
 	}
 };

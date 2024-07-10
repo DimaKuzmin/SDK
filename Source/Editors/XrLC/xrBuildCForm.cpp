@@ -187,7 +187,7 @@ void CBuild::BuildCForm	()
 	MFS->w			(CL.getV(),(u32)CL.getVS()*sizeof(Fvector));
 	for (size_t i = 0; i < CL.getTS(); i++)
 	{
-		MFS->w(&CL.getT()[i], sizeof(CDB::TRI));
+		MFS->w(&CL.getT()[i], CDB::TRI::Size());
 	}
 	
 
