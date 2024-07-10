@@ -92,6 +92,8 @@ void UIObjectList::UpdateDefaultMeny()
 	{
 		ImGui::Text("SCENE: ");
 		
+		if (ImGui::Button("Export RawdataObjects", ImVec2(-1, 0)))
+			ExportUsedObjects();
 
 		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
 			CopyTempLODforObjects();

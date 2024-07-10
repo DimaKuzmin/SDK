@@ -112,3 +112,33 @@ void UIObjectList::SaveSelectedObjects()
 		FS.w_close(write);
 	}
 }
+
+void UIObjectList::ExportUsedObjects()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+	ObjectList& list = ot->GetObjects();
+
+	xr_map<shared_str, int> reference;
+	for (auto obj : list)
+	{
+		reference[obj->RefName()]++;
+ 	}
+
+	for (auto obj : reference)
+	{
+		string_path path;
+		FS.update_path(path, _objects_, obj.first.c_str());
+		xr_strcat(path, ".object");
+
+		string_path path_E;
+		string256 tmp;
+		sprintf(tmp,"objects\\%s.object", obj.first.c_str());
+		FS.update_path(path_E, _import_, tmp);
+
+		if (FS.exist(path))
+		{
+			FS.file_copy(path, path_E);
+			Msg("Ref Copy: %s to %s", path, path_E);
+		}
+	}
+}

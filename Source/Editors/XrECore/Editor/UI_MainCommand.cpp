@@ -410,6 +410,7 @@ CCommandVar CommandExportSceneTextures(CCommandVar p1, CCommandVar p2)
 
 CCommandVar 	CommandChangeSnap(CCommandVar p1, CCommandVar p2)
 {
+    Msg("Not Implemented: CommandChangeSnap");
     not_implemented();
   //  ((TExtBtn*)(u32)p1)->Down = !((TExtBtn*)(u32)p1)->Down;
     return				TRUE;
@@ -525,6 +526,7 @@ CCommandVar 	CommandMuteSound(CCommandVar p1, CCommandVar p2)
 }
 CCommandVar CommandMoveCameraTo(CCommandVar p1, CCommandVar p2)
 {
+    Msg("Not Implemented: CommandMoveCameraTo");
     not_implemented();
     Fvector pos					= EDevice.m_Camera.GetPosition();
     /*if (NumericVectorRun		("Move to",&pos,3))
@@ -598,6 +600,7 @@ CCommandVar 	CommandExecuteCommandList(CCommandVar _p1, CCommandVar _p2)
 
 bool  OnCloseCommandListEditor()
 {
+    Msg("Not Implemented: OnCloseCommandListEditor");
     not_implemented();
 	//frmEditCommandList	= 0;
     return 		true;
@@ -605,6 +608,7 @@ bool  OnCloseCommandListEditor()
 
 CCommandVar 	CommandEditCommandList(CCommandVar _p1, CCommandVar _p2)
 {
+    Msg("Not Implemented: CommandEditCommandList");
     not_implemented();
   /*  if (NULL==frmEditCommandList){
     //	frmEditCommandList	= TfrmText::CreateForm(sCommandListText,"Execute command list",0,0,"Run",OnRunExecuteListClick,OnCloseCommandListEditor);

@@ -33,12 +33,12 @@ public:
     virtual void		Clear					(bool bSpecific=false){inherited::Clear(bSpecific);m_Flags.zero();}
     // IO
     virtual bool   		IsNeedSave				(){return true;}
-    virtual bool   		LoadStream            		(IReader&);
+    virtual bool   		LoadStream            	(IReader&);
     virtual bool   		LoadLTX            		(CInifile&);
-    virtual void   		SaveStream            		(IWriter&);
+    virtual void   		SaveStream            	(IWriter&);
 	virtual void   		SaveLTX            		(CInifile&, int id);
 
-    virtual bool        can_use_inifile() { return false; };
+    virtual bool        can_use_inifile()       { return true; };
 
 
     virtual bool		LoadSelection      		(IReader&);

@@ -127,6 +127,7 @@ public:
 	void POS_ObjectsToLTX();
 	void CopyTempLODforObjects();
 	void SaveSelectedObjects();
+	void ExportUsedObjects();
 
 	// Export Functions , Import
 	bool ExportDir(xr_string& dir);

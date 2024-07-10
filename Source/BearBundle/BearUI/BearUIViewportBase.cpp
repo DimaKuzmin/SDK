@@ -287,7 +287,8 @@ void BearUIViewportBase::LoadShader(BearFactoryPointer<BearRHI::BearRHIShader>& 
     BEAR_ASSERT(File.Open(Name));
     File.ToString(Text, BearEncoding::ANSI);
 
-    BEAR_ASSERT(Shader->LoadAsText(*Text, TEXT("main"), Defines, Error, &GIncluderDefault));
+  //  Shader->LoadAsText(*Text, TEXT("main"), Defines, Error, &GIncluderDefault); //);
+    
     BearString new_file;
     new_file.append(Name).append(TEXT(".bin"));
     BEAR_ASSERT(File.Open(*new_file, File.M_Write));

@@ -264,6 +264,40 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
 
 BOOL EScene::LoadLevelPart(ESceneToolBase* M, LPCSTR map_name)
 {
+    /*
+    * TO CONVERT
+    if (strstr(map_name, "sector.part"))
+     {
+        // check locking
+        M->m_EditFlags.set(ESceneToolBase::flReadonly, FALSE);
+
+        IReader* R = FS.r_open(map_name);
+        VERIFY(R);
+        // check level part GUID
+        R_ASSERT(R->find_chunk(CHUNK_TOOLS_GUID));
+        xrGUID			guid;
+        R->r(&guid, sizeof(guid));
+
+        // read data
+        IReader* chunk = R->open_chunk(CHUNK_TOOLS_DATA + M->FClassID);
+        if (chunk != NULL)
+        {
+            M->LoadStream(*chunk);
+            chunk->close();
+        }
+        else
+        {
+            ELog.DlgMsg(mtError, "Skipping corrupted version of level part: '%s\\%s.part'", EFS.ExtractFileName(map_name).c_str(), M->ClassName());
+            FS.r_close(R);
+            return 			FALSE;
+        }
+        //success
+        FS.r_close(R);
+        return 				TRUE;
+    }
+    */
+
+
 	if(M->can_use_inifile())
 	    return LoadLevelPartLTX(M, map_name);
         
@@ -279,15 +313,7 @@ BOOL EScene::LoadLevelPart(ESceneToolBase* M, LPCSTR map_name)
         R_ASSERT		(R->find_chunk	(CHUNK_TOOLS_GUID));
         xrGUID			guid;
         R->r			(&guid,sizeof(guid));
-
-        /*
-        if (guid!=m_GUID)
-        {
-            ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
-        	FS.r_close		(R);
-            return 			FALSE;
-        }
-        */
+ 
         // read data
         IReader* chunk 	= R->open_chunk	(CHUNK_TOOLS_DATA+M->FClassID);
         if(chunk!=NULL)

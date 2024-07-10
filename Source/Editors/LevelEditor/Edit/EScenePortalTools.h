@@ -33,7 +33,7 @@ public:
     virtual void   		SaveStream            		(IWriter&);
 	virtual void   		SaveLTX            		(CInifile&, int id);
 
-    virtual bool        can_use_inifile() { return false; };
+    virtual bool        can_use_inifile()       { return TRUE; };
 
 
     virtual bool		LoadSelection      		(IReader&);

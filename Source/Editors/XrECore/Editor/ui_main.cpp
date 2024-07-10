@@ -254,6 +254,7 @@ bool TUI::ShowHint(const AStringVec& SS)
     	m_bHintShowing = false;
         m_LastHint = "";
     }*/
+    Msg("Not Implemented: SHOWHINT");
     not_implemented();
     return m_bHintShowing;
 }

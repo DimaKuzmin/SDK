@@ -168,10 +168,12 @@ inline u32 TColor(u32 r)
 inline void not_implemented()
 {
 	if (IsDebuggerPresent())
-		DebugBreak();
+	{
+		//	DebugBreak();
+	}
 	else
 	{
-		R_ASSERT(0);
+	//	R_ASSERT(0);
 	}
 }
 #endif

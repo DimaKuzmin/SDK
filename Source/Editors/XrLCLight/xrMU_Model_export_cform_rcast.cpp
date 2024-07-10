@@ -61,7 +61,7 @@ void xrMU_Model::export_cform_rcast	(CDB::CollectorPacked& CL, Fmatrix& xform)
 			xform.transform_tiny	(P[2],F->v[2]->P);
 
 			u32 dummy = convert_nax(F);
-			Msg_IN_FILE("Dummy ID: %u", dummy);
+			/// Msg_IN_FILE("Dummy ID: %u", dummy);
 			CL.add_face_D			(P[0],P[1],P[2], dummy, F->sm_group, 0 );//
 		}
 	}

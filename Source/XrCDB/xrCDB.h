@@ -68,8 +68,6 @@ namespace CDB
 	class  TRI						//*** 16 bytes total (was 32 :)
 	{
 	public:
-		// void* triangle_pointer = 0;
-
 		TRI() {}
 		u32				verts	[3];		// 3*4 = 12b
 		union	
@@ -86,6 +84,8 @@ namespace CDB
 				u32		suppress_wm:1;		// 
 				u32		sector:16;			// 
 			};
+
+			void* pointer;
 
  		};
 
