@@ -204,7 +204,9 @@ void logThread(void *dummy)
 			FlushLog		( );
 		}
 		csLog.Leave		();
-		if (_abs(PrSave-progress)>EPS_L) {
+		
+		if (_abs(PrSave-progress)>EPS_L)
+		{
 			bWasChanges = TRUE;
 			PrSave = progress;
 			SendMessage		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
@@ -227,6 +229,7 @@ void logThread(void *dummy)
 			}
 
 			// percentage text
+			LoggerCL_xrAI->UpdateProgress(progress * 100);
 			xr_sprintf(tbuf,sizeof(tbuf),"%3.2f%%",progress*100.f);
 			SetWindowText	( hwPText, tbuf );
 		}

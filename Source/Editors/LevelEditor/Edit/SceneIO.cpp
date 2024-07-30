@@ -218,6 +218,8 @@ void st_LevelOptions::Read(IReader& F)
 //------------------------------------------------------------------------------------------------
 // Scene
 //------------------------------------------------------------------------------------------------
+#include <exception>
+
 BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
 {
 	string_path map_name;
@@ -227,17 +229,23 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
     	return LoadLevelPart(M, map_name);
 
     int fnidx=0;
+    
+    Msg("Loading Part Level: %s", map_name);
+    
     while(FS.exist(map_name))
     {
-        IReader* R		= FS.r_open	(map_name);
+        IReader*  R = FS.r_open(map_name);       
         VERIFY			(R);
         char 			ch;
         R->r			(&ch,sizeof(ch));
         bool b_is_inifile = (ch=='[');
         FS.r_close		(R);
 
-        if(!b_is_inifile)
-            return LoadLevelPart(M, map_name);
+        if (!b_is_inifile)
+            return false;
+
+        //if(!b_is_inifile)
+        //    return LoadLevelPart(M, map_name);
 
         M->m_EditFlags.set(ESceneToolBase::flReadonly,FALSE);
 
@@ -246,12 +254,6 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
         // check level part GUID
         xrGUID				guid;
         guid.LoadLTX		(ini, "guid", "guid");
-
-        if (guid!=m_GUID)
-        {
-           // ELog.DlgMsg		(mtError,"Skipping invalid version of level part: '%s\\%s.part'",EFS.ExtractFileName(map_name).c_str(),M->ClassName());
-           // return 			FALSE;
-        }
         // read data
         M->LoadLTX			(ini);
 

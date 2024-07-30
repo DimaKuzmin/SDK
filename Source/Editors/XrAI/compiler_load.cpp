@@ -136,14 +136,25 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 	U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
 	V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
 
-	u32 pixel		=((u32*)*T.pSurface)[V*T.dwWidth+U];
-	u32 pixel_a		= color_get_A(pixel);
-	float opac		= 1.f - float(pixel_a)/255.f;
+	if (*T.pSurface != nullptr)
+	{
+ 		u32 pixel = ((u32*)*T.pSurface)[V * T.dwWidth + U];
 
-	if (ctxt == nullptr)
-		Msg("CTXT == nullptr");
+		if ((&pixel) == nullptr)
+			clMsg("Pixel is nullptr: V: %d, U: %d", V, U);
 
-	ctxt->energy	*= opac;
+		u32 pixel_a = color_get_A(pixel);
+		float opac = 1.f - float(pixel_a) / 255.f;
+
+		if (ctxt == nullptr)
+			clMsg("CTXT == nullptr");
+
+		ctxt->energy *= opac;
+	}
+	else
+	{
+		clMsg("Texture Is Error: %s", T.name);
+	}
 }
 
 #include "cl_intersect.h"
@@ -151,6 +162,11 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 typedef Fvector	RayCache[3];
 
 float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C);
+
+
+
+SceneEmbree			 SceneEmbreeInterface;
+
 
 float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
 {

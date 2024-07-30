@@ -140,7 +140,7 @@ public:
 class ECORE_API ESoundThumbnail: public ECustomThumbnail{
 	friend class CSoundManager;
 	typedef ECustomThumbnail inherited;
-private:
+public:
 	float			m_fQuality;
     float			m_fMinDist;
     float			m_fMaxDist;
@@ -159,6 +159,8 @@ public:
     virtual bool	Valid			(){return true;}
 	virtual void	FillProp		(PropItemVec& values);
 	virtual void	FillInfo		(PropItemVec& values);
+ 
+
     float			MinDist			(){return m_fMinDist;}
     float			MaxDist			(){return m_fMaxDist;};
     float			BaseVolume		(){return m_fBaseVolume;};

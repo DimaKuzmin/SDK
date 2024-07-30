@@ -178,6 +178,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 		get_on_dialog()	(true);
 
 	FlushLog			();
+	
  
 	if (get_on_dialog())
 		get_on_dialog()	(false);
@@ -255,7 +256,8 @@ void out_of_memory_handler	()
 {
 	if ( g_full_memory_stats_callback )
 		g_full_memory_stats_callback	( );
-	else {
+	else 
+	{
 		Memory.mem_compact	();
 #if 1
 		u32					crt_heap		= mem_usage_impl((HANDLE)_get_heap_handle(),0,0);
@@ -268,8 +270,10 @@ void out_of_memory_handler	()
 		Msg					("* [x-ray]: crt heap[%d K], process heap[%d K]",crt_heap/1024,process_heap/1024);
 		Msg					("* [x-ray]: economy: strings[%d K], smem[%d K]",eco_strings/1024,eco_smem);
 	}
-
+ 
 	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request:unkown K");
+
+	DEBUG_INVOKE;
 }
 
 extern LPCSTR log_name();

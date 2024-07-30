@@ -50,6 +50,8 @@ private:
 	void   	OnControlClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void   	OnControl2Click(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void   	OnSyncCurrentClick(ButtonValue* sender, bool& bModif, bool& bSafe);
+	void   	OnSyncAndImportCurrentClick(ButtonValue* sender, bool& bModif, bool& bSafe);
+
 	void   	OnAttClick(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void    PlaySound(LPCSTR name, u32& size, u32& time);
 	void	OnAttenuationDraw(CanvasValue* sender);

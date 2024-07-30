@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>A:\STALKER\X-Ray_CoP_SDK\editors\Bin\x64\Compilers_x64_v11</OutDir>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <OutDir>A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>

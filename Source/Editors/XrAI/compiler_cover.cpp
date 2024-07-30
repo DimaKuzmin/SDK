@@ -465,6 +465,7 @@ void compute_non_covers		()
 
 	COVERS					nearest;
 
+	Status("Non Covers First Stage");
 	{
 		g_covers->all			(nearest);
 		delete_data				(nearest);
@@ -478,7 +479,10 @@ void compute_non_covers		()
 		Nodes::iterator			B = g_nodes.begin(), I = B;
 		Nodes::iterator			E = g_nodes.end();
 		COVER_NODES::iterator	J = g_cover_nodes.begin();
-		for ( ; I != E; ++I, ++J) {
+
+		int ID = 0;
+		for ( ; I != E; ++I, ++J, ++ID) 
+		{
 			if (!*J)
 				continue;
 
@@ -487,6 +491,8 @@ void compute_non_covers		()
 				if (((*I).low_cover[0] + (*I).low_cover[1] + (*I).low_cover[2] + (*I).low_cover[3]) >= 4*.999f)
 					continue;
 			}
+
+			Progress(ID / g_nodes.size());
 
 			g_covers->insert	(xr_new<CCoverPoint>((*I).Pos, u32(I - B)));
 		}
@@ -503,6 +509,7 @@ void compute_non_covers		()
 	COVER_NODES::iterator	J = g_cover_nodes.begin();
 
 
+	Status("Non Covers FOR Stage");
 	int maxsize = g_nodes.size();
 	int startID = 0;
 	for ( ; I != E; ++I, ++J, startID++)
@@ -588,16 +595,12 @@ void compute_non_covers		()
 	}
 }
 
+#include "xrAI.h"
+extern SpecialArgsAI xrAI_Args;
+
 int GetMAXTH()
 {
-	if (char* str = strstr(Core.Params, "-th"))
-	{
-		int value = 1;
-		sscanf(str+3, "%d", &value);
-		return value;
-	}
-
-	return 1;
+	return xrAI_Args.Threads;
 }
 
 #define NUM_THREADS	GetMAXTH()

@@ -198,6 +198,9 @@ bool CPortalUtils::Validate(bool bMsg)
 		if (bMsg) 
             ELog.DlgMsg(mtInformation,"Validation failed! Can't compute bbox.");
     }
+
+    Msg("Validation PortalUtils Is Verified !!!");
+
     return bResult;
 }
 //--------------------------------------------------------------------------------------------------

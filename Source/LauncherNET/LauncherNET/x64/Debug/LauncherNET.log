@@ -1,5 +1,5 @@
 ﻿  AssemblyInfo.cpp
-A:\github\SDK_se7\Source\LauncherNET\LauncherNET\AssemblyInfo.cpp(21,1): error C1010: непредвиденный конец файла во время поиска предкомпилированного заголовка. Возможно, вы забыли добавить директиву "#include "pch.h"" в источник.
   MyForm.cpp
-A:\github\SDK_se7\Source\LauncherNET\LauncherNET\MyForm.cpp(1,10): error C1083: Не удается открыть файл предкомпилированный заголовок: x64\Debug\LauncherNET.pch: No such file or directory,
   Создание кода...
+A:\github\SDK_se7\Source\LauncherNET\LauncherNET\AssemblyInfo.cpp(21,1): error C1010: непредвиденный конец файла во время поиска предкомпилированного заголовка. Возможно, вы забыли добавить директиву "#include "pch.h"" в источник.
+A:\github\SDK_se7\Source\LauncherNET\LauncherNET\MyForm.cpp(1,10): error C1083: Не удается открыть файл предкомпилированный заголовок: x64\Debug\LauncherNET.pch: No such file or directory,

@@ -6,8 +6,7 @@
 
 CDB::MODEL			Level;
 CDB::COLLIDER		XRC;
-SceneEmbree SceneEmbreeInterface;
-
+ 
 
 
 Nodes				g_nodes;

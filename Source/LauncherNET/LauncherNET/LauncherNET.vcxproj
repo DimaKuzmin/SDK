@@ -162,16 +162,19 @@
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
-    <OutDir>A:\STALKER\X-Ray_CoP_SDK\editors\Bin\x64\Compilers_x64_v11</OutDir>
+    <OutDir>A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">
-    <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>A:\STALKER\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">
     <OutDir>$(SolutionDir)..\Bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>A:\STALKER\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

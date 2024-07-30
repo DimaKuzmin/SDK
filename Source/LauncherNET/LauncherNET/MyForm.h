@@ -133,6 +133,9 @@ private: System::Windows::Forms::Label^ label17;
 private: System::Windows::Forms::Label^ label18;
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 private: System::Windows::Forms::CheckBox^ use_PrecalcTris;
+private: System::Windows::Forms::Label^ label16;
+private: System::Windows::Forms::TextBox^ ThreadsAI;
+private: System::Windows::Forms::ProgressBar^ CurrentProgress;
 
 public:
 
@@ -204,6 +207,8 @@ public:
 			this->xrAI_SpawnOut = (gcnew System::Windows::Forms::RichTextBox());
 			this->xrAI_SPStartLevel = (gcnew System::Windows::Forms::RichTextBox());
 			this->groupBox3 = (gcnew System::Windows::Forms::GroupBox());
+			this->label16 = (gcnew System::Windows::Forms::Label());
+			this->ThreadsAI = (gcnew System::Windows::Forms::TextBox());
 			this->xrAI_Verify = (gcnew System::Windows::Forms::CheckBox());
 			this->xrAI_SpawnAIMap = (gcnew System::Windows::Forms::Button());
 			this->label15 = (gcnew System::Windows::Forms::Label());
@@ -212,6 +217,7 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->CurrentProgress = (gcnew System::Windows::Forms::ProgressBar());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -241,6 +247,7 @@ public:
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->CurrentProgress);
 			this->Status_Tab->Controls->Add(this->BuildTime);
 			this->Status_Tab->Controls->Add(this->InfoStatus);
 			this->Status_Tab->Controls->Add(this->InfoPhases);
@@ -318,7 +325,7 @@ public:
 			this->listBox1->ItemHeight = 23;
 			this->listBox1->Location = System::Drawing::Point(6, 17);
 			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(996, 648);
+			this->listBox1->Size = System::Drawing::Size(996, 579);
 			this->listBox1->TabIndex = 0;
 			// 
 			// Geometry_Tab
@@ -790,7 +797,7 @@ public:
 			this->groupBox4->Controls->Add(this->xrAI_SPStartLevel);
 			this->groupBox4->Location = System::Drawing::Point(390, 33);
 			this->groupBox4->Name = L"groupBox4";
-			this->groupBox4->Size = System::Drawing::Size(589, 276);
+			this->groupBox4->Size = System::Drawing::Size(589, 327);
 			this->groupBox4->TabIndex = 1;
 			this->groupBox4->TabStop = false;
 			this->groupBox4->Text = L"AI Spawn";
@@ -807,7 +814,7 @@ public:
 			// 
 			// xrAI_StartSpawn
 			// 
-			this->xrAI_StartSpawn->Location = System::Drawing::Point(15, 210);
+			this->xrAI_StartSpawn->Location = System::Drawing::Point(16, 257);
 			this->xrAI_StartSpawn->Name = L"xrAI_StartSpawn";
 			this->xrAI_StartSpawn->Size = System::Drawing::Size(185, 51);
 			this->xrAI_StartSpawn->TabIndex = 8;
@@ -868,6 +875,8 @@ public:
 			// 
 			// groupBox3
 			// 
+			this->groupBox3->Controls->Add(this->label16);
+			this->groupBox3->Controls->Add(this->ThreadsAI);
 			this->groupBox3->Controls->Add(this->xrAI_Verify);
 			this->groupBox3->Controls->Add(this->xrAI_SpawnAIMap);
 			this->groupBox3->Controls->Add(this->label15);
@@ -876,10 +885,26 @@ public:
 			this->groupBox3->Controls->Add(this->xrAI_Draft);
 			this->groupBox3->Location = System::Drawing::Point(13, 33);
 			this->groupBox3->Name = L"groupBox3";
-			this->groupBox3->Size = System::Drawing::Size(358, 276);
+			this->groupBox3->Size = System::Drawing::Size(358, 327);
 			this->groupBox3->TabIndex = 0;
 			this->groupBox3->TabStop = false;
 			this->groupBox3->Text = L"AI Map";
+			// 
+			// label16
+			// 
+			this->label16->AutoSize = true;
+			this->label16->Location = System::Drawing::Point(8, 162);
+			this->label16->Name = L"label16";
+			this->label16->Size = System::Drawing::Size(81, 27);
+			this->label16->TabIndex = 10;
+			this->label16->Text = L"Потоки";
+			// 
+			// ThreadsAI
+			// 
+			this->ThreadsAI->Location = System::Drawing::Point(100, 159);
+			this->ThreadsAI->Name = L"ThreadsAI";
+			this->ThreadsAI->Size = System::Drawing::Size(240, 34);
+			this->ThreadsAI->TabIndex = 9;
 			// 
 			// xrAI_Verify
 			// 
@@ -893,7 +918,7 @@ public:
 			// 
 			// xrAI_SpawnAIMap
 			// 
-			this->xrAI_SpawnAIMap->Location = System::Drawing::Point(13, 210);
+			this->xrAI_SpawnAIMap->Location = System::Drawing::Point(6, 257);
 			this->xrAI_SpawnAIMap->Name = L"xrAI_SpawnAIMap";
 			this->xrAI_SpawnAIMap->Size = System::Drawing::Size(185, 51);
 			this->xrAI_SpawnAIMap->TabIndex = 7;
@@ -904,7 +929,7 @@ public:
 			// label15
 			// 
 			this->label15->AutoSize = true;
-			this->label15->Location = System::Drawing::Point(8, 162);
+			this->label15->Location = System::Drawing::Point(8, 212);
 			this->label15->Name = L"label15";
 			this->label15->Size = System::Drawing::Size(86, 27);
 			this->label15->TabIndex = 6;
@@ -912,7 +937,7 @@ public:
 			// 
 			// xrAI_LevelName
 			// 
-			this->xrAI_LevelName->Location = System::Drawing::Point(100, 155);
+			this->xrAI_LevelName->Location = System::Drawing::Point(100, 209);
 			this->xrAI_LevelName->Name = L"xrAI_LevelName";
 			this->xrAI_LevelName->Size = System::Drawing::Size(240, 34);
 			this->xrAI_LevelName->TabIndex = 2;
@@ -954,6 +979,17 @@ public:
 			this->TODO->Size = System::Drawing::Size(1439, 769);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
+			// 
+			// CurrentProgress
+			// 
+			this->CurrentProgress->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->CurrentProgress->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->CurrentProgress->Location = System::Drawing::Point(7, 603);
+			this->CurrentProgress->Name = L"CurrentProgress";
+			this->CurrentProgress->Size = System::Drawing::Size(995, 49);
+			this->CurrentProgress->TabIndex = 18;
 			// 
 			// MyForm
 			// 
@@ -1008,7 +1044,12 @@ public:
 		{
 			BuildTime->Text = str;
 		}
-		
+			  
+		public: System::Void UpdateProgressBar_form(System::Double value)
+		{
+			CurrentProgress->Value = value;
+		}
+
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
@@ -1032,6 +1073,12 @@ public:
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTextStatus_form), managedString);
 		}
  
+		public: System::Void updateProgressBar(float value)
+		{
+			// Вызываем метод updateLog из .NET кода с использованием P/Invoke
+			System::Double^ managedString = gcnew System::Double(value);
+			this->Invoke(gcnew Action<System::Double>(this, &MyForm::UpdateProgressBar_form), managedString);
+		}
 
 
 		public:  System::Void UpdateTime(const char* str)

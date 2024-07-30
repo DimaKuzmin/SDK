@@ -27,6 +27,8 @@ void UIItemListForm::Draw()
 		m_edit_node = nullptr;
 	}
 
+
+	
 //	search_predicate = { 0 };
 
 }
@@ -148,19 +150,26 @@ void UIItemListForm::AssignItems(ListItemsVec& items, const char* name_selection
 	{
 		item->Parent = this;
 		Node*N=	AppendObject(&m_GeneralNode, item->Key());
-		VERIFY(N);
-		N->Object = item;
+		if (N != nullptr)
+		{
+			N->Object = item;
+		}
 	}
+
 	if (name_selection)
 	{
 		Node*N =  SelectObject(&m_GeneralNode, name_selection);
 		ClearSelectedItems();
+		
 		if (m_Flags.test(fMultiSelect))
 		{
 			N->Object->selected = true;
 		}
-		if (N)m_SelectedItems.push_back(N->Object);
+		
+		if (N)
+			m_SelectedItems.push_back(N->Object);
 	}
+
 	if (save_selected)
 	{
 		for (shared_str& name : selection_items)

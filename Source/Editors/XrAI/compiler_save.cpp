@@ -193,9 +193,7 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 		if (NC.p.y() > MAX_Y)
 		{
 			Fvector Psrc = N.Pos;
-			//int iFloorPosY = iFloor(65535.f * (Psrc.y - H.aabb.min.y) / (H.size_y) + EPS_L);
-			MAX_Y = NC.p.y(); //iFloorPosY;
-
+			MAX_Y = NC.p.y();
 		}
 	  
 		if (NC.p.xz() > MAX_PX)
@@ -206,9 +204,6 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 			int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
 
 			Fvector Psrc = N.Pos;
-
-			//int pxz = iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
-
 			int iFloorPosX =  ( (Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f );
 			int iFloorPosZ = iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
 			MAX_X = iFloorPosX;
@@ -216,47 +211,6 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 			ROW_SIZE = row_length;
 		}
-	
-		/*
-		// Unpack For Check Validate
-		int m_row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
-				
-		float x, z;
-		x = NC.p.xz() / m_row_length;
-		z = NC.p.xz() % m_row_length;
-		x = float(x) * H.size + H.aabb.min.x;
-		z = float(z) * H.size + H.aabb.min.z;
-		
-		float py = float(  (NC.p.y()  / 65535.f) * H.size_y + H.aabb.min.y);
-
-
-#ifdef _USE_NODE_POSITION_11
-		int max_px = 0xffffffff;
-#else 
-		int max_px = 0x00ffffff;
-#endif
-
-		if (NC.p.xz() > max_px)
-		{
-			string64 tmp;
-			sprintf(tmp, "Check: Node XZ: [%d], POS[%f][%f][%f] = value: %d, UX: %f, UY: %f, UZ: %f", i, VPUSH(N.Pos), NC.p.xz(), x, py, z);
-			w->w_string(tmp);
-		}
-
-
-		if (NC.p.xz() > max_px)	  
-		{
-			count++;
-			if (NC.p.xz() > MAX_PX)
-			{
-				MAX_PX = NC.p.xz();
-				clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
-			}
-		}
-
-		//if (i % 1024 == 0)
-		//	clMsg("NEW ROW[%d] Real x[%f], y[%f], z[%f] unpacked x[%f], y[%f], z[%f], compressed [%d] ", m_row_length, N.Pos.x, N.Pos.y, N.Pos.z, x, py, z, NC.p.xz());
-		*/
 	}
 
 	FS.w_close(w);
@@ -271,6 +225,8 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 	clMsg(" MAXPXZ[%u], MAX_X[%u], MAX_Z[%u], MAX_Y[%u] ROW[%u]",
 		MAX_PX, MAX_X, MAX_Z, MAX_Y, ROW_SIZE
 		);
+
+	clMsg("--- [SE7KILLS] VersionOf AiMAP: %d", XRAI_CURRENT_VERSION);
  
 	xr_vector<u32>	sorted;
 	xr_vector<u32>	renumbering;

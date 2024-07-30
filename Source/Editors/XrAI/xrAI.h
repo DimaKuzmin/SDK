@@ -21,7 +21,7 @@ struct XRAI_API  SpecialArgsAI
 
 	// SELECT COMPILER
 	bool UseSpawnCompiler;
-
+	int Threads = 0;
 
 	// AI MAP
 	bool Draft;
@@ -41,6 +41,7 @@ public:
 	virtual void  updateLog(LPCSTR str) = 0;
 	virtual void  updatePhrase(LPCSTR phrase) = 0;
 	virtual void  updateStatus(LPCSTR status) = 0;
+	virtual void  UpdateProgress(float value) = 0;
 
 	virtual void  UpdateText() = 0;
 	virtual void  UpdateTime(LPCSTR time) = 0;

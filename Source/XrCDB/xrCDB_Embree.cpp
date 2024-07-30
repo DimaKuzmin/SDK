@@ -107,11 +107,11 @@ void SceneEmbree::InitGeometry(CDB::TRI* tris_buff, u32 tris_cnt, Fvector* verts
 
 void SceneEmbree::ReleaseScene()
 {
+	InitedDevice = false;
+
 	rtcReleaseGeometry(IntelGeometry);
 	rtcReleaseScene(IntelScene);
 	rtcReleaseDevice(device);
-
-	InitedDevice = false;
 }
  
 

@@ -130,6 +130,15 @@ public:
         form->updateStatusItem(status);
     }
 
+    virtual void UpdateProgress(float value)
+    {
+        form->updateProgressBar(value);
+        
+        char string[128];
+        sprintf(string, "Progress: %f", value);
+        updateLog(string);
+    }
+
 
     virtual void UpdateText()
     {
@@ -312,17 +321,21 @@ void StartThread_xrAI(SpecialArgsAI* argsb)
             SetThreadDescription(threadHandle, L"MAIN THREAD xrAI");
 
             char tmp[128];
-            sprintf(tmp, "c++ Arguments: Draft: %d, NoSepartor: %d, UseSpawnCompiler: %d, VerifyAI: %d, Pure Covers: :%d",
+
+            sprintf(tmp, "c++: Threads: %d", args->Threads);
+            LoggerCL_xrAI->updateLog(tmp);
+
+            sprintf(tmp, "c++: Draft: %d, NoSepartor: %d, UseSpawnCompiler: %d, VerifyAI: %d, Pure Covers: :%d",
                 args->Draft, args->NoSeparator, args->UseSpawnCompiler, args->VerifyAIMap, args->PureCovers);
             LoggerCL_xrAI->updateLog(tmp);
 
-            sprintf(tmp, "c++ Arguments: LevelName: %s",
+            sprintf(tmp, "c++: LevelName: %s",
                 args->level_name.c_str());
             LoggerCL_xrAI->updateLog(tmp);
-            sprintf(tmp, "c++ Arguments: LevelOut: %s",
+            sprintf(tmp, "c++: LevelOut: %s",
                 args->OutSpawn_Name.c_str());
             LoggerCL_xrAI->updateLog(tmp);
-            sprintf(tmp, "c++ Arguments: LevelStart: %s",
+            sprintf(tmp, "c++: LevelStart: %s",
                 args->SpawnActorStart.c_str());
             LoggerCL_xrAI->updateLog(tmp);
 
@@ -344,11 +357,13 @@ System::Void LauncherNET::MyForm::xrAI_SpawnAIMap_Click(System::Object^ sender, 
     args->UseSpawnCompiler = false;
     args->VerifyAIMap = xrAI_Verify->Checked;
 
-
+    auto TH = msclr::interop::marshal_as<std::string>(ThreadsAI->Text);
     auto LEVEL = msclr::interop::marshal_as<std::string>(xrAI_LevelName->Text);
 
     args->level_name = LEVEL;
-    
+    args->Threads = atoi(TH.c_str());
+
+
     if (!IsRunned)
     {
         StartThread_xrAI(args);

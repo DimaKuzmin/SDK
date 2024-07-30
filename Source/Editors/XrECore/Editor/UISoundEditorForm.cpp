@@ -28,9 +28,40 @@ UISoundEditorForm::~UISoundEditorForm()
     xr_delete(m_ItemProps); xr_delete(m_ItemList);
 }
 
+ESoundThumbnail* thm_selected;
+
+struct LastTHM
+{
+    float m_fBaseVolume, m_fMinDist, m_fMaxDist, m_fMaxAIDist, m_fQuality;
+    u32 m_uGameType = 0;
+
+    void load_from_thm(ESoundThumbnail* thm)
+    {
+        m_fBaseVolume = thm->m_fBaseVolume;
+        m_fMinDist = thm->m_fMinDist;
+        m_fMaxDist = thm->m_fMaxDist;
+        m_fMaxAIDist = thm->m_fMaxAIDist;
+        m_fQuality = thm->m_fQuality;
+
+        m_uGameType = thm->m_uGameType;
+    }
+
+    void read_to_thm(ESoundThumbnail* thm)
+    {
+        thm->m_fBaseVolume = m_fBaseVolume;
+        thm->m_fMinDist = m_fMinDist;
+        thm->m_fMaxDist = m_fMaxDist;
+        thm->m_fMaxAIDist = m_fMaxAIDist;
+        thm->m_fQuality = m_fQuality;
+
+        thm->m_uGameType = m_uGameType;
+    }
+};
+LastTHM current_thm_exported;
+
 void UISoundEditorForm::Draw()
 {
-    ImGui::BeginChild("Left", ImVec2(200, 400), true);
+    ImGui::BeginChild("Left", ImVec2(350, 400), true);
     m_ItemList->Draw();
     ImGui::EndChild();
     ImGui::SameLine();
@@ -38,6 +69,18 @@ void UISoundEditorForm::Draw()
     m_ItemProps->Draw();
     ImGui::EndChild();
     ImGui::Separator();
+
+
+    if (ImGui::Button("Export Data THM") && thm_selected)
+    {
+        current_thm_exported.load_from_thm(thm_selected);;
+    }
+
+    if (ImGui::Button("Import Data To THM") && thm_selected)
+    {
+        current_thm_exported.read_to_thm(thm_selected);
+    }
+
     if (ImGui::Button("Close"))
     {
         bOpen = false;
@@ -59,7 +102,8 @@ void UISoundEditorForm::Update()
     {
         if (!Form->IsClosed())
         {
-            if (ImGui::BeginPopupModal("SoundEditor", nullptr, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize, true))
+            // ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoResize;
+            if (ImGui::BeginPopupModal("SoundEditor", nullptr, 0, true))
             {
                 Form->Draw();
                 ImGui::EndPopup();
@@ -169,6 +213,30 @@ void UISoundEditorForm::OnSyncCurrentClick(ButtonValue* V, bool& bModif, bool& b
     Msg("Done.");
 }
 
+void UISoundEditorForm::OnSyncAndImportCurrentClick(ButtonValue* sender, bool& bModif, bool& bSafe)
+{
+    THMIt it = m_THM_Current.begin();
+    THMIt it_e = m_THM_Current.end();
+
+    for (; it != it_e; ++it)
+    {
+        ESoundThumbnail* pTHM = *it;
+
+        current_thm_exported.read_to_thm(pTHM);
+
+        string_path             src_name, game_name;
+        FS.update_path(src_name, _sounds_, pTHM->SrcName());
+        strconcat(sizeof(src_name), src_name, src_name, ".wav");
+
+        FS.update_path(game_name, _game_sounds_, pTHM->SrcName());
+        strconcat(sizeof(game_name), game_name, game_name, ".ogg");
+
+        Msg("synchronizing [%s]", game_name);
+        SndLib->MakeGameSound(pTHM, src_name, game_name);
+    }
+    Msg("Done.");
+}
+
 void UISoundEditorForm::OnAttClick(ButtonValue* V, bool& bModif, bool& bSafe)
 {
     bModif = true;
@@ -201,6 +269,7 @@ void UISoundEditorForm::InitItemList()
     m_ItemList->AssignItems(items/*, false, true*/);
 }
 
+
 void UISoundEditorForm::OnItemsFocused(ListItem* item)
 {
     PropItemVec props;
@@ -218,9 +287,10 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
             if (!thm) m_THM_Used.push_back(thm = xr_new<ESoundThumbnail>(prop->Key()));
             m_THM_Current.push_back(thm);
             thm->FillProp(props);
+            thm_selected = thm;
         }
     }
-
+ 
     ButtonValue* B = 0;
     if (m_THM_Current.size() == 1)
     {
@@ -244,6 +314,7 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
             B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnControlClick);
         }
     }
+
     if (!m_Flags.is(flReadOnly))
     {
         B = PHelper().CreateButton(props, "Auto Play", bAutoPlay ? "on" : "off", ButtonValue::flFirstOnly);
@@ -254,6 +325,9 @@ void UISoundEditorForm::OnItemsFocused(ListItem* item)
     {
         B = PHelper().CreateButton(props, "MANAGE", "SyncCurrent", ButtonValue::flFirstOnly);
         B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnSyncCurrentClick);
+
+        B = PHelper().CreateButton(props, "MANAGE2", "SyncAndImport", ButtonValue::flFirstOnly);
+        B->OnBtnClickEvent.bind(this, &UISoundEditorForm::OnSyncAndImportCurrentClick);
     }
 
     m_ItemProps->AssignItems(props);

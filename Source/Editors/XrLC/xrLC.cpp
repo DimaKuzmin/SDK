@@ -51,28 +51,28 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	
 
 	char tmp[256];
-	sprintf(tmp, "c++ Arguments1: SCENE SETTINGS: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
+	sprintf(tmp, "c++: SCENE SET: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
 		args->pxpm, args->sample, args->mu_samples, args->use_threads, args->skip_weld);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++ Arguments2: LIGHT SETTINGS: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d",
+	sprintf(tmp, "c++: LIGHT SET: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d",
 		args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++ Arguments3: xrLC SETTINGS:  Level: %s,  no_optimize: %d, no_simplify: %d, ",
+	sprintf(tmp, "c++: xrLC SET:  Level: %s,  no_optimize: %d, no_simplify: %d, ",
 		args->level_name.c_str(), args->no_optimize, args->no_simplify);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++ Arguments4: EMBREE SETTINGS: EmbreeRobustGeom: %d, EmbreeTnear: %f, EmbreeType: %d, embree: %d, avx: %d, sse: %d, use_opcode_old: %d",
-		args->use_RobustGeom, args->embree_tnear, args->embree_geometry_type, args->use_embree, args->use_avx, args->use_sse, args->use_opcode_old);
+	sprintf(tmp, "c++: EMBREE SET: Robust %d, Tnear: %f, Type: %d, USEembree: %d, avx: %d, sse: %d",
+		args->use_RobustGeom, args->embree_tnear, args->embree_geometry_type, args->use_embree, args->use_avx, args->use_sse);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++ Arguments5: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, useDXT1: %d",
+	sprintf(tmp, "c++: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, useDXT1: %d",
 		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1);
 	clMsg(tmp);
 
 	
-	sprintf(tmp, "c++ Arguments6: OPCODE AVX_TRI: %d, CFORM Packing: %d",
+	sprintf(tmp, "c++: OPCODE AVX_TRI: %d, CFORM Packing: %d",
 		args->precalc_triangles, args->use_cdbPacking);
 	clMsg(tmp);
 

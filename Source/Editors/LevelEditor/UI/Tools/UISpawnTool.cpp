@@ -152,7 +152,7 @@ void UISpawnTool::RefreshList()
             {
                 ListItem* I = LHelper().CreateItem(items, caption.c_str(), 0, ListItem::flDrawThumbnail, (LPVOID) * (*it)->Name);
                 //m_caption_to_sect[caption] = sect;
-              //  Msg("CreateItem [%s]", caption.c_str());
+                Msg("[SpawnDebug]CreateItem [%s]", caption.c_str());
             }
         }
     }
