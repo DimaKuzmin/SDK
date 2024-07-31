@@ -183,171 +183,16 @@ ICF BOOL isect_sse(const aabb_t& box, const __m128 pos, const __m128 inv_dir, fl
 } 
 
 
-
-static const __m128 PS_Zero = _mm_set1_ps(0.0f);
-static const __m128 PS_ONE = _mm_set1_ps(1.0f);
-static const __m128 PS_EPS = _mm_set1_ps(EPS);
-static const __m128 PS_mEPS = _mm_set1_ps(-EPS);
-
-#define fmsub _mm_sub_ps
-
-
-ICF float dot_product_sse(const __m128& a, const __m128& b)
-{
-	return _mm_dp_ps(a, b, 0x7F).m128_f32[0]; //_mm_cvtss_f32
-}
-
-ICF __m128& CrossProduct_sse(const __m128& a, const __m128& b)
-{
-	// Вычисляем кросс-продукт
-	return  _mm_sub_ps(
-		_mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 1, 0, 2))),
-		_mm_mul_ps(_mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 1, 0, 2)), _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 0, 2, 1)))
-	);
-}
-
-ICF bool _tri_m128_SSE(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& u, float& v, float& range)
-{
- 	tri_m128* tri = &MDL->get_edges()[prim];
-
-	__m128& m128_edge0 = tri->e0;
-	__m128& m128_edge1 = tri->e1;
-	__m128& m128_edge2 = tri->e2;
-
-	const __m128& pvec = CrossProduct_sse(fwd_dir, m128_edge2);
-	float det = dot_product_sse(m128_edge1, pvec);
-
-	const __m128& condition0 = _mm_and_ps(_mm_cmpgt_ps(_mm_set1_ps(det), PS_mEPS), _mm_cmplt_ps(_mm_set1_ps(det), PS_EPS));
-	if (_mm_movemask_ps(condition0) != 0)
-		//if (det > -EPS && det < EPS) 
-		return false;
-
-	float inv_det = 1.0f / det;
-	__m128& tvec = fmsub(ray_pos, m128_edge0);						// calculate distance from vert0 to ray origin
-	u = dot_product_sse(tvec, pvec) * inv_det;			// calculate U parameter and test bounds
-
-	const __m128& condition1 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(u), PS_Zero), _mm_cmpgt_ps(_mm_set1_ps(u), PS_ONE));
-	if (_mm_movemask_ps(condition1) != 0)
-		//if (u < 0.0f || u > 1.0f)
-		return false;
-
-	const __m128& qvec = CrossProduct_sse(tvec, m128_edge1);				// prepare to test V parameter
-	v = dot_product_sse(fwd_dir, qvec) * inv_det;	// calculate V parameter and test bounds
-
-	const __m128& condition2 = _mm_or_ps(_mm_cmplt_ps(_mm_set1_ps(v), PS_Zero), _mm_cmpgt_ps(_mm_add_ps(_mm_set1_ps(u), _mm_set1_ps(v)), PS_ONE));
-	if (_mm_movemask_ps(condition2) != 0)
-		//if (v < 0.0f || u + v > 1.0f)
-		return false;
-
-	range = dot_product_sse(m128_edge2, qvec) * inv_det;		// calculate t, ray intersects triangle
  
-	return true;
-}
-
-ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
-{
-	Fvector edge1, edge2, tvec, pvec, qvec;
-	float	det, inv_det;
-
-	// find vectors for two edges sharing vert0
-	Fvector& p0 = verts[p[0]];
-	Fvector& p1 = verts[p[1]];
-	Fvector& p2 = verts[p[2]];
-	edge1.sub(p1, p0);
-	edge2.sub(p2, p0);
-
-	// begin calculating determinant - also used to calculate U parameter
-	// if determinant is near zero, ray lies in plane of triangle
-	pvec.crossproduct(ray.fwd_dir, edge2);
-	det = edge1.dotproduct(pvec);
-	if (bCull)
-	{
-		if (det < EPS)  return false;
-		tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
-		u = tvec.dotproduct(pvec);					// calculate U parameter and test bounds
-		if (u < 0.f || u > det) return false;
-		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-		v = ray.fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
-		if (v < 0.f || u + v > det) return false;
-		range = edge2.dotproduct(qvec);				// calculate t, scale parameters, ray intersects triangle
-		inv_det = 1.0f / det;
-		range *= inv_det;
-		u *= inv_det;
-		v *= inv_det;
-	}
-	else
-	{
-		if (det > -EPS && det < EPS) return false;
-		inv_det = 1.0f / det;
-		tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
-		u = tvec.dotproduct(pvec) * inv_det;			// calculate U parameter and test bounds
-		if (u < 0.0f || u > 1.0f)    return false;
-		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-		v = ray.fwd_dir.dotproduct(qvec) * inv_det;	// calculate V parameter and test bounds
-		if (v < 0.0f || u + v > 1.0f) return false;
-		range = edge2.dotproduct(qvec) * inv_det;		// calculate t, ray intersects triangle
-	}
-	return true;
-}
-
-ICF bool TriRange(Fvector* verts, ray_t& ray, u32* p, float& range)
-{
-	Fvector edge1, edge2, tvec, pvec, qvec;
-	float	det, inv_det;
- 	
-	// find vectors for two edges sharing vert0
-	Fvector& p0 = verts[p[0]];
-	Fvector& p1 = verts[p[1]];
-	Fvector& p2 = verts[p[2]];
-	edge1.sub(p1, p0);
-	edge2.sub(p2, p0);
-	
-	pvec.crossproduct(ray.fwd_dir, edge2);
-	det = edge1.dotproduct(pvec);
-
-	if (det < EPS)
-		return false;
-	
-	inv_det = 1.0f / det;
-	tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
-  	qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
- 	range = edge2.dotproduct(qvec) * inv_det;   // calculate t, scale parameters, ray intersects triangle
-
-	return true;
-}
-
-ICF bool TriRange_m128(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& range)
-{
-	tri_m128* tri = &MDL->get_edges()[prim];
-
-	__m128& m128_edge0 = tri->e0;
-	__m128& m128_edge1 = tri->e1;
-	__m128& m128_edge2 = tri->e2;
-
-	const __m128& pvec = CrossProduct_sse(fwd_dir, m128_edge2);
-	float det = dot_product_sse(m128_edge1, pvec);
-
-	const __m128& condition0 = _mm_and_ps(_mm_cmpgt_ps(_mm_set1_ps(det), PS_mEPS), _mm_cmplt_ps(_mm_set1_ps(det), PS_EPS));
-	if (_mm_movemask_ps(condition0) != 0)
- 		return false;
-
- 	float inv_det = 1.0f / det;
-	__m128& tvec = fmsub(ray_pos, m128_edge0);						// calculate distance from vert0 to ray origin
-	const __m128& qvec = CrossProduct_sse(tvec, m128_edge1);				// prepare to test V parameter
-	range = dot_product_sse(m128_edge2, qvec) * inv_det;
-
-	return true;		// calculate t, ray intersects triangle
-}
 
 template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
 class _MM_ALIGN16	ray_collider
 {
 public:
 	COLLIDER* dest;
-	TRI* tris;	
 	MODEL* MDL;
-
-
+	TRI* tris;
+ 
 	OpcodeContext*	ctxt = 0;
 	bool			continue_work = true;
 	bool			m128_SSE = false;
@@ -364,6 +209,9 @@ public:
  
 	bool UseOccluder = false;
 	bool UseIntersectionFilter = false;
+
+	// SKIP CALC TRI EDGE
+//	TrianglePrecalculate TraangleCalculator;
 
 	ICF void			_init(COLLIDER* CL, CDB::MODEL* model,  const Fvector& C, const Fvector& D, float R)
 	{
@@ -431,28 +279,88 @@ public:
 
  		return 		isect_sse(box, ray_pos, inv_dir, dist);
 	}
-	 
-	// SKIP CALC TRI EDGE
 
+	Fvector edge1, edge2, pvec, tvec, qvec;
+	float det, inv_det;
+ 
+	ICF bool _TriRange(Fvector* verts, ray_t& ray, u32* p, float& range)
+	{
+		// find vectors for two edges sharing vert0
+		Fvector& p0 = verts[p[0]];
+		Fvector& p1 = verts[p[1]];
+		Fvector& p2 = verts[p[2]];
+		edge1.sub(p1, p0);
+		edge2.sub(p2, p0);
+
+		pvec.crossproduct(ray.fwd_dir, edge2);
+		det = edge1.dotproduct(pvec);
+
+		if (det < EPS)
+			return false;
+
+		inv_det = 1.0f / det;
+		tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+		range = edge2.dotproduct(qvec) * inv_det;   // calculate t, scale parameters, ray intersects triangle
+
+		return true;
+	}
+ 
+	// FLOATING POINT
+	ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
+	{
+		// find vectors for two edges sharing vert0
+		Fvector& p0 = verts[p[0]];
+		Fvector& p1 = verts[p[1]];
+		Fvector& p2 = verts[p[2]];
+		edge1.sub(p1, p0);
+		edge2.sub(p2, p0);
+
+		// begin calculating determinant - also used to calculate U parameter
+		// if determinant is near zero, ray lies in plane of triangle
+		pvec.crossproduct(ray.fwd_dir, edge2);
+		det = edge1.dotproduct(pvec);
+		if (bCull)
+		{
+			if (det < EPS)  return false;
+			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			u = tvec.dotproduct(pvec);					// calculate U parameter and test bounds
+			if (u < 0.f || u > det) return false;
+			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+			v = ray.fwd_dir.dotproduct(qvec);			// calculate V parameter and test bounds
+			if (v < 0.f || u + v > det) return false;
+			range = edge2.dotproduct(qvec);				// calculate t, scale parameters, ray intersects triangle
+			inv_det = 1.0f / det;
+			range *= inv_det;
+			u *= inv_det;
+			v *= inv_det;
+		}
+		else
+		{
+			if (det > -EPS && det < EPS) return false;
+			inv_det = 1.0f / det;
+			tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+			u = tvec.dotproduct(pvec) * inv_det;			// calculate U parameter and test bounds
+			if (u < 0.0f || u > 1.0f)    return false;
+			qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+			v = ray.fwd_dir.dotproduct(qvec) * inv_det;	// calculate V parameter and test bounds
+			if (v < 0.0f || u + v > 1.0f) return false;
+			range = edge2.dotproduct(qvec) * inv_det;		// calculate t, ray intersects triangle
+		}
+		return true;
+	}
 	 
 	void _prim(DWORD prim)
 	{
  		float	u, v, r;
-
+		 
 		if (UseOccluder)
 		{
-			 
-			if (m128_SSE)
-			{
-				if (!TriRange_m128(MDL, fwd_dir, ray_pos, prim, r))
-					return;
-			}
-			else
-			{
-				if (!TriRange_m128(MDL, fwd_dir, ray_pos, prim, r))
-					return;
-			}
-
+			ctxt->result->IntersectContinue = true;
+ 			 
+			if (!_TriRange(verts, ray, tris[prim].verts, r))
+				return;
+ 
 			if (r <= 0 || r > rRange)
 				return;
 
@@ -464,23 +372,13 @@ public:
 			if (!ctxt->result->IntersectContinue)
  				return;
  		}
-
-		if (m128_SSE)
-		{
-			if (!_tri_m128_SSE(MDL, fwd_dir, ray_pos, prim, u, v, r))
-				return;
- 			if (r <= 0 || r > rRange)			
-				return;
-		}
-		else
-		{
-			if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))
-				return;
- 			
-			if (r <= 0 || r > rRange)				
-				return;
-		}
 		 
+  		if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))
+			return;
+ 		 
+		if (r <= 0 || r > rRange)
+			return;
+
 		if (bNearest)
 		{
 			if (dest->r_count())

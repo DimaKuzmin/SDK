@@ -81,19 +81,16 @@ void FilterIntersection(OpcodeArgs* context)
 	// Access to texture
 	CDB::TRI& clT = MDL->get_tris()[context->hit_struct.prim];
 	base_Face* F = (base_Face*) clT.pointer;
-
-	if (0 == F || context->skip == F)
-		return;
-
-	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
+  
 	if (!context->OccludeHas)
 	{
+		if (0 == F || context->skip == F)
+			return;
+
 		const Shader_xrLC& SH = F->Shader();
 		if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
-  			return;
- 
+			return;
+
 		if (F->flags.bOpaque)
 		{
 			R_Light& light = (*((R_Light*)context->Light));
@@ -107,20 +104,22 @@ void FilterIntersection(OpcodeArgs* context)
 			context->energy = 0;
 			return;
 		}
-
-		if (T.pSurface.Empty())
-		{
-			F->flags.bOpaque = true;
-			clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
-			context->valid = false;
-			context->IntersectContinue = false;
-			context->energy = 0;
-			return;
-		}
 	}
-	
- 
-  
+
+	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (!context->OccludeHas)
+  	if (T.pSurface.Empty())
+	{
+		F->flags.bOpaque = true;
+		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
+		context->valid = false;
+		context->IntersectContinue = false;
+		context->energy = 0;
+		return;
+	}
+ 	  
 	// barycentric coords
 	// note: W,U,V order
 	Fvector B;
@@ -188,7 +187,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 
 
 	// Occlusion test
- 	ctxt.filterOccluded = &FilterOcclusion;
+ //	ctxt.filterOccluded = &FilterOcclusion;
 	ctxt.filterIntersect = &FilterIntersection;
 
 	// Start RayTracing
