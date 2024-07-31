@@ -3,127 +3,13 @@
 #include "EmbreeDataStorage.h"
 #include "base_lighting.h"
 
+/* 
 void RayTraceEmbree8Preocess(PackedBuffer* buffer, ELightType type_lightpoint, ELights type_LIGHTs);
 
 void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& lights, u32 flags)
 {
 	Fvector		Ldir;
-
-	/*
-	if (0 == (buffer->flags[0] & LP_dont_rgb))
-	{
-		R_Light* L = &*lights.rgb.begin(), * E = &*lights.rgb.end();
-		for (; L != E; L++)
-		{
-			buffer->light = L;
-
-			switch (L->type)
-			{
-				case LT_DIRECT:
-				{
-					int valid[8];
-					bool any = false;
-
-					for (auto i = 0; i < 8; i++)
-					{
-						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
-
-						// Cos
-						Ldir.invert(L->direction);
-						float D = Ldir.dotproduct(buffer->direction[i]);
-
-						valid[i] = false;
-						buffer->Dist2Light[i] = D;
-
-						if (D <= 0)
-							continue;
-
-						valid[i] = true;
-						any = true;
-					}
-
-					if (any)
-					{
-						// Trace Light
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
-				}
-				break;
-				case LT_POINT:
-				{
-					int valid[8];
-					bool any = false;
-
-					for (auto i = 0; i < 8; i++)
-					{
-						Pnew.mad(buffer->position[i], buffer->direction[i], 0.01f);
-
-						// Distance
-						float sqD = buffer->position[i].distance_to_sqr(L->position);
-						valid[i] = false;
-						if (sqD > L->range2)
-							continue;
-
-						// Dir
-						Ldir.sub(L->position, buffer->position[i]);
-						Ldir.normalize_safe();
-						float D = Ldir.dotproduct(buffer->direction[i]);
-						if (D <= 0)
-							continue;
-
-						valid[i] = true;
-						any = true;
-						buffer->Dist2Light[i] = D;
-
-					}
-
-					if (any)
-					{
-						// Trace Light
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
-
-				}
-				break;
-				case LT_SECONDARY:
-				{
-					int valid[8];
-					bool any = false;
-
-					for (auto i = 0; i < 8; i++)
-					{
-						// Distance
-						valid[i] = false;
-
-						float sqD = buffer->position[i].distance_to_sqr(L->position);
-						if (sqD > L->range2) continue;
-
-						// Dir
-						Ldir.sub(L->position, buffer->position[i]);
-						Ldir.normalize_safe();
-						float	D = Ldir.dotproduct(buffer->direction[i]);
-						if (D <= 0) continue;
-
-						D *= -Ldir.dotproduct(L->direction);
-						if (D <= 0) continue;
-
-						valid[i] = false;
-						buffer->Dist2Light[i] = D;
-						any = true;
-					}
-
-					if (any)
-					{
-						RayTraceEmbree8Preocess(buffer, valid, L->type);
-					}
-				}
-				break;
-			}
-		}
-	}
-	*/
-
-	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
+ 	R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
 
 	for (; L != E; L++)
 	{
@@ -222,3 +108,4 @@ void LightPointPacked(PackedBufferTOProcess* buffer_to_work, base_lighting& ligh
 	}
 
 }
+*/

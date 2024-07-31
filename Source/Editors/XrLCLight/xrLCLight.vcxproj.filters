@@ -384,6 +384,9 @@
     <ClCompile Include="xrLight_EmbreePacked.cpp">
       <Filter>Light\EmbreeLib</Filter>
     </ClCompile>
+    <ClCompile Include="xrLight_Embree_v3.cpp">
+      <Filter>Light\EmbreeLib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

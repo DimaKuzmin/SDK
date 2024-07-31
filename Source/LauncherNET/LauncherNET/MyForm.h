@@ -520,7 +520,7 @@ public:
 			this->EmbreeTnear->Name = L"EmbreeTnear";
 			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
 			this->EmbreeTnear->TabIndex = 22;
-			this->EmbreeTnear->Text = L"3.0";
+			this->EmbreeTnear->Text = L"0.001";
 			// 
 			// label10
 			// 
