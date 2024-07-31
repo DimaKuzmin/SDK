@@ -162,6 +162,7 @@ void SetRay1Invert(RayOptimizedCPU* ray, RTCRay& rayhit)
  
 void SetRay1Invert(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 {
+ 
 	rayhit.ray.dir_x = -ray->dir.x;
 	rayhit.ray.dir_y = -ray->dir.y;
 	rayhit.ray.dir_z = -ray->dir.z;
@@ -190,8 +191,6 @@ void SetRay1Invert(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
-
-
 
 // Сделать потом переключалку
  
@@ -241,6 +240,8 @@ void FilterOcclusion(const struct RTCFilterFunctionNArguments* args)
 	ray->org_z = ray->org_z + (ray->dir_z * ray->tfar);
 
 	ray->tnear = TNearParram;
+	ray->tfar = ctxt->Tfar - ray->tfar;
+	ctxt->Tfar = ray->tfar;
 
 	// Перемещаем начало луча немного дальше пересечения
  
@@ -266,13 +267,13 @@ void FilterOcclusion(const struct RTCFilterFunctionNArguments* args)
 		// При нахождении любого хита сразу все попали в непрозрачный Face.
 		// ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
-		args->valid[0] = -1;
+	//	args->valid[0] = -1;
 		ctxt->Transparent = false;
 	}
 	else
 	{
 		ctxt->Transparent = true;
-		args->valid[0] = -1;
+	//	args->valid[0] = -1;
 	}
 }
  
@@ -294,6 +295,8 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	ray->org_z = ray->org_z + (ray->dir_z * ray->tfar);
 
 	ray->tnear = TNearParram;
+	ray->tfar = ctxt->Tfar - ray->tfar;
+	ctxt->Tfar = ray->tfar;
  
 	// Перемещаем начало луча немного дальше пересечения
  	base_Face* F = (base_Face*)(TriTransparent_Dummys[hit->primID]); 	
@@ -401,22 +404,20 @@ FORCEINLINE void OcludedOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
  	rtcInitIntersectContext(&data_hits.context);
  
 	RTCRay rayhit;
-	//SetRay1(&ray, rayhit);
-	SetRay1Invert(&ray, rayhit);
+	SetRay1(&ray, rayhit);
+	// SetRay1Invert(&ray, rayhit);
 
 
 	data_hits.StartPos = ray.pos;
 	rtcOccluded1(IntelScene, &data_hits.context, &rayhit);
-
-	// clMsg("Start: {%f, %f, %f}, End: {%f, %f, %f}", VPUSH(ray.pos), rayhit.org_x, rayhit.org_y, rayhit.org_z);
 }
 
 FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 {
  	rtcInitIntersectContext(&data_hits.context); 
 	RTCRayHit rayhit;
-	// SetRay1(&ray, rayhit);
-	SetRay1Invert(&ray, rayhit);
+	SetRay1(&ray, rayhit);
+	// SetRay1Invert(&ray, rayhit);
 	
 	data_hits.StartPos = ray.pos;
 	rtcIntersect1(IntelScene, &data_hits.context, &rayhit);
@@ -424,15 +425,6 @@ FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
 {
-	/*
-	float _u,_v, R;
-
-	bool res = CDB::TestRayTri(P, N, L.tri, _u,_v, R, false);
-	if (res)
-	if (range > 0 && range < R)
-		return 0;
-	*/
-
 	RayQueryContext data;
 	data.Light = &L;
 	// data.model = MDL;
@@ -451,11 +443,8 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 
 	// Opacue Process
  	OcludedOneRay(ray, data);
-//	if (data.Transparent)
-//		RatraceOneRay(ray, data);
- 	
-
-
+	if (data.Transparent)
+		RatraceOneRay(ray, data);
 
 	return data.energy;
 }
