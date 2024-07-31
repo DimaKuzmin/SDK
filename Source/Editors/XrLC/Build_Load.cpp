@@ -496,9 +496,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 
 						if ( ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1) || BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
-							if (BT.THM.fmt == STextureParams::tfDXT1)
- 								clMsg("- loading: DXT no ALPHA: %s", N);
- 							else 
+						//	if (BT.THM.fmt == STextureParams::tfDXT1)
+ 						//		clMsg("- loading: DXT no ALPHA: %s", N);
+ 						//	else 
 								clMsg("- loading: %s", N);
 							
 							
@@ -527,19 +527,19 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							}
 							else
 							{
-								clMsg("- can't load %s", N);
-								string128 tmp;
-								sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
-								w->w_string(tmp);
+						//		clMsg("- can't load %s", N);
+						//		string128 tmp;
+						//		sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
+						//		w->w_string(tmp);
 							}
  						}
 						else
 						{
 							string128 tmp;
-							sprintf(tmp, "Texture Ignoring: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
+							sprintf(tmp, "Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
 							w->w_string(tmp);
 
-							clMsg("- not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
+					//		clMsg("- not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
 						}
 					
 					}

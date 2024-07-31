@@ -27,7 +27,7 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 
 RTCScene IntelScene;
-// RTCScene IntelSceneTransparent;
+RTCScene IntelSceneTransparent;
 
 RTCGeometry IntelGeometryNormal;
 RTCGeometry IntelGeometryTransparent;
@@ -81,9 +81,6 @@ size_t SizeVertexTransparent = 0;
 
 xr_vector<void*> TriNormal_Dummys;
 xr_vector<void*> TriTransparent_Dummys;
-
-
-
 
 RTCDevice device;
 
@@ -183,6 +180,26 @@ void SetRay1(RayOptimizedCPU* ray, RTCRay& rayhit)
 	rayhit.flags = 0;
 }
 
+void SetRay1Invert(RayOptimizedCPU* ray, RTCRay& rayhit)
+{
+	rayhit.dir_x = -ray->dir.x;
+	rayhit.dir_y = -ray->dir.y;
+	rayhit.dir_z = -ray->dir.z;
+	
+	Fvector pos = ray->pos.mad(ray->dir, ray->tmax);
+
+	rayhit.org_x = pos.x;
+	rayhit.org_y = pos.y;
+	rayhit.org_z = pos.z;
+
+	rayhit.tnear = ray->tmin;
+	rayhit.tfar = ray->tmax;
+
+	rayhit.mask = (unsigned int)(-1);
+	rayhit.flags = 0;
+}
+
+
 void SetRay1(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 {
 	rayhit.ray.dir_x = ray->dir.x;
@@ -209,13 +226,26 @@ void SetRay1(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
+}
 
- }
-
-void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
+void SetRay1Invert(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 {
-	rayhit.ray.tnear = rayhit.ray.tfar + 0.01f;
-	rayhit.ray.tfar = range == 0 ? 1000.0f : range;
+	rayhit.ray.dir_x = -ray->dir.x;
+	rayhit.ray.dir_y = -ray->dir.y;
+	rayhit.ray.dir_z = -ray->dir.z;
+
+	Fvector pos = ray->pos.mad(ray->dir, ray->tmax);
+
+	rayhit.ray.org_x = pos.x;
+	rayhit.ray.org_y = pos.y;
+	rayhit.ray.org_z = pos.z;
+
+
+	rayhit.ray.tnear = ray->tmin;
+	rayhit.ray.tfar = ray->tmax;
+
+	rayhit.ray.mask = (unsigned int)(-1);
+	rayhit.ray.flags = 0;
 
 	rayhit.hit.Ng_x = 0;
 	rayhit.hit.Ng_y = 0;
@@ -228,6 +258,7 @@ void SetRay1Hit(RTCRayHit& rayhit, float range = 0)
 	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
 	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
 }
+ 
 
 // Сделать потом переключалку
 
@@ -254,7 +285,7 @@ struct RayQueryContext
 	 
 	float energy = 1.0f;
  	int hits = 0;
-	bool Opacity = false;
+	bool Transparent = false;
 };
 
  
@@ -267,6 +298,7 @@ struct RayQueryContext8
 	R_Light* Light = 0;
 	Fvector B;
 
+	int IDX_HIT = 0;
 	int count = 0;
 	float energy = 1.0f;
  };
@@ -308,35 +340,47 @@ void SetRayHit8(RTCRayHit8& rayhit8, PackedBuffer* buffer)
 xrCriticalSection csLIGHT;
  
 #define USE_OCCLUSION
-
+ 
+// valid [0] = -1 (ПРИНЯТЬ ХИТ)
+// valid [0] = 0 (ИГНОРИРОВАТЬ)
 
 #ifdef USE_OCCLUSION
 void FilterOcclusion(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
  	RTCRay* ray = (RTCRay*)args->ray;
-
-	// При нахождении любого хита сразу все попали в непрозрачный Face.
-	ray->tfar = -std::numeric_limits<float>::infinity();
-	ctxt->energy = 0;
-	args->valid[0] = 0;
-}
-#else 
-void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
-{
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-	RTCRay* ray = (RTCRay*)args->ray;
- 
-	if (hit->geomID != 0)
-		return;
+	ctxt->hits++;
 
-	// Продолжать собирать 
-	ray->tfar = -std::numeric_limits<float>::infinity();
-	ctxt->energy = 0;
-	args->valid[0] = 1;
+	// Перемещаем начало луча немного дальше пересечения
+	base_Face* F = 0;
+
+	if (hit->geomID == 1)
+	{
+		F = (base_Face*)(TriTransparent_Dummys[hit->primID]);
+	}
+	else
+	{
+		F = (base_Face*)(TriNormal_Dummys[hit->primID]);
+	}
+
+	// Access to texture
+	if (F->flags.bOpaque)
+	{
+		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = -1;
+		ctxt->Transparent = false;
+ 	}
+	else
+	{
+		ray->tfar = -std::numeric_limits<float>::infinity();
+ 		args->valid[0] = -1;
+		ctxt->Transparent = true;
+	} 
 }
-#endif
+
 
 
 void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
@@ -345,18 +389,86 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-//	if (hit->geomID != 1)
-//		return;
-	 
-	// Access to texture
+
+	// Перемещаем начало луча немного дальше пересечения
 	base_Face* F = (base_Face*)(TriTransparent_Dummys[hit->primID]);
+	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	args->valid[0] = 0;
+
+	if (F->flags.bOpaque)
+	{
+		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = -1;
+		ctxt->Transparent = false;
+		return;
+	}
+
+ 	if (T.pSurface.Empty())
+		return;
+
+	// barycentric coords
+	// note: W,U,V order
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+	// Дополнение Контекста
+	ctxt->energy *= opac;
+ 	
+	// Energy Loose
+	if (ctxt->energy < 0.1f)
+	{
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		args->valid[0] = -1;
+	}
+
+
+	/*
+	// Access to texture
+	base_Face* F = 0;
+
+	if (hit->geomID == 1)
+	{
+		F = (base_Face*)(TriTransparent_Dummys[hit->primID]);
+	}
+	else
+	{
+		F = (base_Face*)(TriNormal_Dummys[hit->primID]);
+	}
+
+	// Access to texture
+	if (F->flags.bOpaque)
+	{
+		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = 1;
+		return;
+	}
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
- 
+
 	if (T.pSurface.Empty())
 	{
-		Msg("HITS Starge detected: geom: %d, primID: %lu, intsPrim: %lu, sizeArrRay: %lu", hit->geomID, hit->primID, hit->instPrimID, TriTransparent_Dummys.size());
+		// Msg("HITS Starge detected: geom: %d, primID: %lu, intsPrim: %lu, sizeArrRay: %lu", hit->geomID, hit->primID, hit->instPrimID, TriTransparent_Dummys.size());
 		return;
 	}
 
@@ -384,15 +496,81 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	ctxt->hits++;
 
 	// Energy Loose
-	if (ctxt->energy <= 0.001f)
+	// if (ctxt->energy <= 0.001f)
 	{
 		ray->tfar = -std::numeric_limits<float>::infinity();
 		args->valid[0] = 1;
-		ctxt->energy = 0;
+		//ctxt->energy = 0;
 	}
- 
+	*/
 }
-	 
+
+#else 
+void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
+{
+	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	RTCHit* hit = (RTCHit*)args->hit;
+	RTCRay* ray = (RTCRay*)args->ray;
+ 
+	base_Face* F = 0;
+	
+	args->valid[0] = 0;
+
+	if (hit->geomID == 1)
+	{
+		F = (base_Face*)(TriTransparent_Dummys[hit->primID]);
+	}
+	else
+	{
+		F = (base_Face*)(TriNormal_Dummys[hit->primID]);
+	}
+
+	// Access to texture
+	if (F->flags.bOpaque)
+	{
+		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = 1;
+		return;
+	}
+
+	// Перемещаем начало луча немного дальше пересечения
+ 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (T.pSurface.Empty())
+		return;
+
+	// barycentric coords
+	// note: W,U,V order
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+	// Дополнение Контекста
+	ctxt->energy *= opac;
+
+	// Energy Loose
+	//ray->tfar = -std::numeric_limits<float>::infinity();
+	//args->valid[0] = 1;
+
+}
+#endif
+
 FORCEINLINE void OcludedOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 {
 	RTCRayQueryContext context;
@@ -401,14 +579,13 @@ FORCEINLINE void OcludedOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
-	// args.filter = &FilterOcludedOne;
-	args.context = &data_hits.context;
-	args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER ); /*| RTC_RAY_QUERY_FLAG_COHERENT*/
-
+ 	args.context = &data_hits.context;
+ 
 	RTCRay rayhit;
 	SetRay1(&ray, rayhit);
+	//SetRay1Invert(&ray, rayhit);
 
- 	rtcOccluded1(IntelScene, &rayhit, &args);
+ 	rtcOccluded1(IntelScene, &rayhit, &args);	
 }
  
 FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
@@ -423,8 +600,9 @@ FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
  
 	RTCRayHit rayhit;
 	SetRay1(&ray, rayhit);
+	//SetRay1Invert(&ray, rayhit);
 
-    rtcIntersect1(IntelScene, &rayhit, &args);    
+    rtcIntersect1(IntelScene, &rayhit, &args);
 }
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
@@ -443,6 +621,7 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	// data.model = MDL;
 	data.skip  = skip;
 	data.energy = 1.0f;
+	data.Transparent = false;
      			
 	RayOptimizedCPU ray;
 	ray.pos = P;
@@ -451,7 +630,8 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	ray.tmin = TNearParram;
 	
 	OcludedOneRay(ray, data);
- 	if (data.energy != 0)	// Процесс для Transparents
+	
+	if (data.Transparent)
 		RatraceOneRay(ray, data);
 		
 	return data.energy;
@@ -706,8 +886,7 @@ void InitializeGeometryAttach_CDB(RTCScene& scene)
 
 	verticesNormal = (VertexEmbree*)	rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), v_cnt);
 	trianglesNormal = (TriEmbree*)		rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), t_cnt);
-
-
+ 
  	SizeTriangleNormal = t_cnt;
 	SizeVertexNormal = v_cnt;
 
@@ -745,6 +924,7 @@ void InitializeGeometryAttach(bool Transparent, RTCScene& scene)
 		rtcSetGeometryBuildQuality(IntelGeometryNormal, RTCBuildQuality(geom_type));
 #ifdef USE_OCCLUSION
 		rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterOcclusion);
+		rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytraceTransparent);
 #else 
 		rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
 #endif
@@ -753,7 +933,12 @@ void InitializeGeometryAttach(bool Transparent, RTCScene& scene)
 	{
 		IntelGeometryTransparent = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 		rtcSetGeometryBuildQuality(IntelGeometryTransparent, RTCBuildQuality(geom_type));
+#ifdef USE_OCCLUSION
+		rtcSetGeometryOccludedFilterFunction(IntelGeometryTransparent, &FilterOcclusion);
 		rtcSetGeometryIntersectFilterFunction(IntelGeometryTransparent, &FilterRaytraceTransparent);
+#else 
+		rtcSetGeometryIntersectFilterFunction(IntelGeometryTransparent, &FilterRaytrace);
+#endif
 	}
 
 	// Буферы
@@ -870,13 +1055,13 @@ void IntelEmbereLOAD()
 	// Создание сцены и добавление геометрии
 	// Scene
 	IntelScene = rtcNewScene(device); 
-//	IntelSceneTransparent = rtcNewScene(device);
+	//IntelSceneTransparent = rtcNewScene(device);
 
-	InitializeGeometryAttach(false, IntelScene); // Обычный буфер
+ 	InitializeGeometryAttach(false, IntelScene); // Обычный буфер
 	InitializeGeometryAttach(true, IntelScene);	 // Прозрачный буфер
 
 	rtcCommitScene(IntelScene);
-//	rtcCommitScene(IntelSceneTransparent);
+	//rtcCommitScene(IntelSceneTransparent);
 
 	/*
 	RTCBounds bounds;

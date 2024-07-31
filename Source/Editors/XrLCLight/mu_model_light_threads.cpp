@@ -123,6 +123,8 @@ public:
 	}
 };
 
+
+
 class CMULightRef : public CThread
 {
 public:
