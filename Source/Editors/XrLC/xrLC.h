@@ -76,6 +76,7 @@ public:
 	virtual void  updateLog(LPCSTR str) = 0;
 	virtual void  updatePhrase(LPCSTR phrase) = 0;
 	virtual void  updateStatus(LPCSTR status) = 0;
+	virtual void  UpdateProgressBar(float value) = 0;
 
 	virtual void  UpdateText() = 0;
 	virtual void  UpdateTime(LPCSTR time) = 0;

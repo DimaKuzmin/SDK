@@ -31,9 +31,12 @@ void CBuild::xrPhase_Subdivide()
 	Status	("Subdividing in space...");
 	vecFace s1, s2;
 	Fbox	b1, b2;
+	
+	size_t ErrorsSplitting = 0;
+
 	for (int X=0; X<int(g_XSplit.size()); X++)
 	{
-		StatusNoMSG("Progress: %d / %d", X, g_XSplit.size());
+	//	StatusNoMSG("Progress: %d / %d", X, g_XSplit.size());
 		if (g_XSplit[X]->empty()) 
 		{
 			xr_delete		(g_XSplit[X]);
@@ -114,7 +117,8 @@ resplit:
 		if ((int(s1.size())<c_SS_LowVertLimit) || (int(s2.size())<c_SS_LowVertLimit))
 		{
 			// splitting failed
-			clMsg	("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d",X,g_XSplit[X]->size(),s1.size(),s2.size());
+			ErrorsSplitting++;
+			//	clMsg	("! ERROR: model #%d - split fail, faces: %d, s1/s2:%d/%d",X,g_XSplit[X]->size(),s1.size(),s2.size());
 			if (iteration_per_edge<10)	{
 				if		(g_XSplit[X]->size() > c_SS_LowVertLimit*4)		
 				{
@@ -182,6 +186,8 @@ resplit:
 		s1.clear	();
 		s2.clear	();
 	}
+
+	clMsg	("! ERROR: models spliting: %d", ErrorsSplitting);
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits	();
 }

@@ -15,6 +15,27 @@
 using namespace System;
 using namespace System::Windows::Forms;
 
+void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
+{
+    MEMORY_BASIC_INFORMATION memory_info;
+    memory_info.BaseAddress = 0;
+    *_free = *reserved = *committed = 0;
+    while (VirtualQuery(memory_info.BaseAddress, &memory_info, sizeof(memory_info))) {
+        switch (memory_info.State) {
+        case MEM_FREE:
+            *_free += memory_info.RegionSize;
+            break;
+        case MEM_RESERVE:
+            *reserved += memory_info.RegionSize;
+            break;
+        case MEM_COMMIT:
+            *committed += memory_info.RegionSize;
+            break;
+        }
+        memory_info.BaseAddress = (char*)memory_info.BaseAddress + memory_info.RegionSize;
+    }
+}
+
 #define Size 17
   
 char* collection[Size] =
@@ -106,15 +127,28 @@ public:
         form->UpdateList();
     }
 
+    virtual void  UpdateProgressBar(float value)
+    {
+        form->updateProgressBar(value);
+    }
+
     virtual void UpdateTime(LPCSTR time)
     {
-        form->UpdateTime(time);       
+        form->UpdateTime(time);      
+        size_t reserved, free, used;
+        vminfo_memory(&free, &reserved, &used);
+
+        char text[128];
+        sprintf(text, "used: %llu k\n reserved: %llu k", long int(used / 1024), long int (reserved / 1024) );
+        form->UpdateMemory(text);
     }
 };
 
+  
 class  NET_LoggerAI : ILoggerAI
 {
 public:
+ 
     void  updateLog(LPCSTR str)
     {
         form->updateLogFormItem(str);
@@ -134,9 +168,9 @@ public:
     {
         form->updateProgressBar(value);
         
-        char string[128];
-        sprintf(string, "Progress: %f", value);
-        updateLog(string);
+      //  char string[128];
+      //  sprintf(string, "Progress: %f", value);
+      //  updateLog(string);
     }
 
 
@@ -148,6 +182,12 @@ public:
     virtual void UpdateTime(LPCSTR time)
     {
         form->UpdateTime(time);
+       
+        size_t reserved, free, used;
+        vminfo_memory(&reserved, &free, &used);
+        char text[128];
+        sprintf(text, "used memory: %llu k", long int(used / 1024));
+        form->UpdateMemory(text);
     }
 };
 
@@ -166,7 +206,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 //    thread_name("MAIN THREAD Aplication");
     HANDLE threadHandle = GetCurrentThread();
-   
+
+    
     // Устанавливаем имя потока
     SetThreadDescription(threadHandle, L"MAIN THREAD Application");
 

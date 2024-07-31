@@ -19,7 +19,8 @@ void ERayQuery(RTCRayHit rayhit, float orig_range, xr_map<u32, Fvector>& m_point
 	if (rayhit.ray.tfar < rayhit.ray.tnear || rayhit.ray.tfar >= orig_range)
 		return;
 
-	Fvector intersectionPoint; intersectionPoint.set(rayhit.ray.org_x, rayhit.ray.org_y, rayhit.ray.org_z);
+	Fvector intersectionPoint;
+	intersectionPoint.set(rayhit.ray.org_x, rayhit.ray.org_y, rayhit.ray.org_z);
 	intersectionPoint.mad({ rayhit.ray.dir_x, rayhit.ray.dir_y, rayhit.ray.dir_z }, rayhit.ray.tfar);
 
 	m_points.insert(mk_pair(u32(rayhit.hit.primID), intersectionPoint));

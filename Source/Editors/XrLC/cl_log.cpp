@@ -276,6 +276,7 @@ void logThread(void *dummy)
 			}
 
 			// percentage text
+			LoggerCL->UpdateProgressBar(progress * 100);
 			xr_sprintf(tbuf,"%3.2f%%",progress*100.f);
 			SetWindowText	( hwPText, tbuf );
 		}

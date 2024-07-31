@@ -136,6 +136,8 @@ private: System::Windows::Forms::CheckBox^ use_PrecalcTris;
 private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::TextBox^ ThreadsAI;
 private: System::Windows::Forms::ProgressBar^ CurrentProgress;
+private: System::Windows::Forms::Label^ MemoryInfo;
+
 
 public:
 
@@ -154,6 +156,8 @@ public:
 		{
 			this->TabControl = (gcnew System::Windows::Forms::TabControl());
 			this->Status_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->MemoryInfo = (gcnew System::Windows::Forms::Label());
+			this->CurrentProgress = (gcnew System::Windows::Forms::ProgressBar());
 			this->BuildTime = (gcnew System::Windows::Forms::Label());
 			this->InfoStatus = (gcnew System::Windows::Forms::Label());
 			this->InfoPhases = (gcnew System::Windows::Forms::ListBox());
@@ -217,7 +221,6 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->CurrentProgress = (gcnew System::Windows::Forms::ProgressBar());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -247,6 +250,7 @@ public:
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->MemoryInfo);
 			this->Status_Tab->Controls->Add(this->CurrentProgress);
 			this->Status_Tab->Controls->Add(this->BuildTime);
 			this->Status_Tab->Controls->Add(this->InfoStatus);
@@ -261,6 +265,31 @@ public:
 			this->Status_Tab->Size = System::Drawing::Size(1439, 769);
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"Состояние компиляции";
+			// 
+			// MemoryInfo
+			// 
+			this->MemoryInfo->BackColor = System::Drawing::Color::Black;
+			this->MemoryInfo->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->MemoryInfo->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->MemoryInfo->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic))));
+			this->MemoryInfo->ForeColor = System::Drawing::Color::RosyBrown;
+			this->MemoryInfo->Location = System::Drawing::Point(718, 599);
+			this->MemoryInfo->Name = L"MemoryInfo";
+			this->MemoryInfo->Size = System::Drawing::Size(284, 53);
+			this->MemoryInfo->TabIndex = 19;
+			this->MemoryInfo->Text = L"Memory";
+			this->MemoryInfo->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			// 
+			// CurrentProgress
+			// 
+			this->CurrentProgress->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->CurrentProgress->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->CurrentProgress->Location = System::Drawing::Point(7, 603);
+			this->CurrentProgress->Name = L"CurrentProgress";
+			this->CurrentProgress->Size = System::Drawing::Size(705, 49);
+			this->CurrentProgress->TabIndex = 18;
 			// 
 			// BuildTime
 			// 
@@ -491,7 +520,7 @@ public:
 			this->EmbreeTnear->Name = L"EmbreeTnear";
 			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
 			this->EmbreeTnear->TabIndex = 22;
-			this->EmbreeTnear->Text = L"0.001";
+			this->EmbreeTnear->Text = L"3.0";
 			// 
 			// label10
 			// 
@@ -980,17 +1009,6 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// CurrentProgress
-			// 
-			this->CurrentProgress->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
-				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->CurrentProgress->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)),
-				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->CurrentProgress->Location = System::Drawing::Point(7, 603);
-			this->CurrentProgress->Name = L"CurrentProgress";
-			this->CurrentProgress->Size = System::Drawing::Size(995, 49);
-			this->CurrentProgress->TabIndex = 18;
-			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -1050,6 +1068,11 @@ public:
 			CurrentProgress->Value = value;
 		}
 
+		public: System::Void UpdateMemoryInfo(System::String^ str)
+		{
+			MemoryInfo->Text = str;
+		}
+
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
@@ -1106,6 +1129,16 @@ public:
 				listBox1->SelectedIndex = listBox1->Items->Count - 1;
 			};
 		}
+		
+		public: System::Void UpdateMemory(const char* text) // System::EventArgs
+		{
+			// Handle the size change event here
+
+			System::String^ managedString = gcnew System::String(text); 			
+			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateMemoryInfo), managedString);
+  		}
+
+
 };
 
 }
