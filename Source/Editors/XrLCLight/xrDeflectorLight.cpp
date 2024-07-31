@@ -22,57 +22,6 @@ xrCriticalSection csDeflector;
 #include "xrHardwareLight.h"
 #endif
 
-
-void FilterOcclusion(OpcodeArgs* args)
-{
-	CDB::MODEL* MDL = (CDB::MODEL*)args->MDL;
-
-	// Access to texture
-	CDB::TRI& clT = MDL->get_tris()[args->hit_struct.prim];
-	base_Face* F = (base_Face*)clT.pointer;
-
-	if (0 == F || args->skip == F)
-	{
-		args->IntersectContinue = false;
-		return;
-	}
-
-	const Shader_xrLC& SH = F->Shader();
-	if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
-	{
-		args->IntersectContinue = false;
-		return;
-	}
-
-	if (F->flags.bOpaque)
-	{
-		R_Light& light = (*((R_Light*)args->Light));
-
-		// Opaque poly - cache it
-		light.tri[0].set(MDL->get_verts()[clT.verts[0]]);
-		light.tri[1].set(MDL->get_verts()[clT.verts[1]]);
-		light.tri[2].set(MDL->get_verts()[clT.verts[2]]);
-
-		args->valid = false;
-		args->IntersectContinue = false;
-		args->energy = 0;
-		return;
-	}
-
-	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-	if (T.pSurface.Empty())
-	{
-		F->flags.bOpaque = true;
-		clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
-		args->valid = false;
-		args->IntersectContinue = false;
-		args->energy = 0;
-		return;
-	}
-}
-
 // NEW CDB_RAY
 void FilterIntersection(OpcodeArgs* context)
 {
@@ -82,34 +31,30 @@ void FilterIntersection(OpcodeArgs* context)
 	CDB::TRI& clT = MDL->get_tris()[context->hit_struct.prim];
 	base_Face* F = (base_Face*) clT.pointer;
   
-	if (!context->OccludeHas)
+	if (0 == F || context->skip == F)
+		return;
+
+	const Shader_xrLC& SH = F->Shader();
+	if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
+		return;
+
+	if (F->flags.bOpaque)
 	{
-		if (0 == F || context->skip == F)
-			return;
+		R_Light& light = (*((R_Light*)context->Light));
 
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
-			return;
+		// Opaque poly - cache it
+		light.tri[0].set(MDL->get_verts()[clT.verts[0]]);
+		light.tri[1].set(MDL->get_verts()[clT.verts[1]]);
+		light.tri[2].set(MDL->get_verts()[clT.verts[2]]);
 
-		if (F->flags.bOpaque)
-		{
-			R_Light& light = (*((R_Light*)context->Light));
-
-			// Opaque poly - cache it
-			light.tri[0].set(MDL->get_verts()[clT.verts[0]]);
-			light.tri[1].set(MDL->get_verts()[clT.verts[1]]);
-			light.tri[2].set(MDL->get_verts()[clT.verts[2]]);
-
-			context->valid = false;
-			context->energy = 0;
-			return;
-		}
+		context->valid = false;
+		context->energy = 0;
+		return;
 	}
 
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
-	if (!context->OccludeHas)
   	if (T.pSurface.Empty())
 	{
 		F->flags.bOpaque = true;
@@ -185,10 +130,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 
 	ctxt.result = &args;
 
-
-	// Occlusion test
- //	ctxt.filterOccluded = &FilterOcclusion;
-	ctxt.filterIntersect = &FilterIntersection;
+   	ctxt.filterIntersect = &FilterIntersection;
 
 	// Start RayTracing
 	ctxt.triangle_m128_SSE = build_args->triangle_m128_SSE;

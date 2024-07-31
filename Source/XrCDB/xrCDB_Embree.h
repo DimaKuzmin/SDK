@@ -1,12 +1,12 @@
 #pragma once
 
-#include "embree4/rtcore.h"
+#include "embree3/rtcore.h"
 #include "xrCDB.h"
  
  
 struct XRCDB_API RayQuaryStructure
 {
-	RTCRayQueryContext context;
+	RTCIntersectContext context;
 	void* SceneEmbree = 0;
 
 	RTCRayHit hits[1024];

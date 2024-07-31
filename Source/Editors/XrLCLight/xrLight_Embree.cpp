@@ -21,10 +21,11 @@
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
-#pragma comment(lib, "embree4.lib")
-#pragma comment(lib, "tbb.lib")
+//#pragma comment(lib, "embree4.lib")
+//#pragma comment(lib, "tbb.lib")
 #include "embree4/rtcore.h"
  
+
 
 RTCScene IntelScene;
 RTCScene IntelSceneTransparent;

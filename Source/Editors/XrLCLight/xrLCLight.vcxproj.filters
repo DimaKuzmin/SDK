@@ -188,9 +188,6 @@
     <ClInclude Include="global_slots_data.h">
       <Filter>do_light</Filter>
     </ClInclude>
-    <ClInclude Include="LightThread.h">
-      <Filter>do_light</Filter>
-    </ClInclude>
     <ClInclude Include="recalculation.h">
       <Filter>do_light</Filter>
     </ClInclude>
@@ -217,6 +214,9 @@
       <Filter>Light\EmbreeLib</Filter>
     </ClInclude>
     <ClInclude Include="BuildArgs.h" />
+    <ClInclude Include="LightThread.h">
+      <Filter>do_light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
