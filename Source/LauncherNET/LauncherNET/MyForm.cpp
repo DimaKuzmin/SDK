@@ -339,7 +339,8 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_lmaps = off_lmaps->Checked;
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
-    args->precalc_triangles = use_PrecalcTris->Checked;
+    args->triangle_m128_SSE = use_PrecalcTris->Checked;
+
     if (!IsRunned)
     {
         IsRunned = true;

@@ -467,9 +467,9 @@ public:
 			this->use_PrecalcTris->AutoSize = true;
 			this->use_PrecalcTris->Location = System::Drawing::Point(20, 200);
 			this->use_PrecalcTris->Name = L"use_PrecalcTris";
-			this->use_PrecalcTris->Size = System::Drawing::Size(179, 31);
+			this->use_PrecalcTris->Size = System::Drawing::Size(314, 31);
 			this->use_PrecalcTris->TabIndex = 4;
-			this->use_PrecalcTris->Text = L"ON Precalc Tris";
+			this->use_PrecalcTris->Text = L"m128(SSE) TriangleCalculation";
 			this->use_PrecalcTris->UseVisualStyleBackColor = true;
 			// 
 			// useDXT1

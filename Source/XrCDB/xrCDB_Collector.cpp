@@ -370,8 +370,7 @@ namespace CDB
 		iy = iFloor(float(V.y-VMmin.y)/VMscale.y*clpMY);
 		iz = iFloor(float(V.z-VMmin.z)/VMscale.z*clpMZ);
 
-		//		R_ASSERT(ix<=clpMX && iy<=clpMY && iz<=clpMZ);
-		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
+ 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
 		 
  		if (UsePacking)
 		{
@@ -389,7 +388,6 @@ namespace CDB
 					break;
 				}
 			}
-			 
 		}
 
 		if (0xffffffff==P)

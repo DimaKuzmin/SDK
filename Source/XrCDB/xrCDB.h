@@ -39,6 +39,8 @@ struct OpcodeArgs
 	Fvector pos;
 	bool valid = 1;
 	bool IntersectContinue = 1;
+	bool OccludeHas = false;
+
 	float energy;
 
 	//int count = 0;
@@ -61,7 +63,7 @@ struct OpcodeContext
 	Fvector r_dir;
 	float r_range;
 
-	bool use_prec_tri = false;
+	bool triangle_m128_SSE = false;
 };
 
 

@@ -74,24 +74,57 @@ void FilterOcclusion(OpcodeArgs* args)
 }
 
 // NEW CDB_RAY
-void FilterIntersection(OpcodeArgs* args)
+void FilterIntersection(OpcodeArgs* context)
 {
-	CDB::MODEL* MDL = (CDB::MODEL*)args->MDL;
+	CDB::MODEL* MDL = (CDB::MODEL*)context->MDL;
 
 	// Access to texture
-	CDB::TRI& clT = MDL->get_tris()[args->hit_struct.prim];
+	CDB::TRI& clT = MDL->get_tris()[context->hit_struct.prim];
 	base_Face* F = (base_Face*) clT.pointer;
 
-	if (0 == F || args->skip == F)
+	if (0 == F || context->skip == F)
 		return;
-  
+
 	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (!context->OccludeHas)
+	{
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow || F->flags.bShadowSkip)
+  			return;
+ 
+		if (F->flags.bOpaque)
+		{
+			R_Light& light = (*((R_Light*)context->Light));
+
+			// Opaque poly - cache it
+			light.tri[0].set(MDL->get_verts()[clT.verts[0]]);
+			light.tri[1].set(MDL->get_verts()[clT.verts[1]]);
+			light.tri[2].set(MDL->get_verts()[clT.verts[2]]);
+
+			context->valid = false;
+			context->energy = 0;
+			return;
+		}
+
+		if (T.pSurface.Empty())
+		{
+			F->flags.bOpaque = true;
+			clMsg("* ERROR: RAY-TRACE: Strange face detected... Has alpha without texture... %s", T.name);
+			context->valid = false;
+			context->IntersectContinue = false;
+			context->energy = 0;
+			return;
+		}
+	}
+	
+ 
   
 	// barycentric coords
 	// note: W,U,V order
 	Fvector B;
-	B.set(1.0f - args->hit_struct.u - args->hit_struct.v, args->hit_struct.u, args->hit_struct.v);
+	B.set(1.0f - context->hit_struct.u - context->hit_struct.v, context->hit_struct.u, context->hit_struct.v);
 
 	// calc UV
 	Fvector2* cuv = F->getTC0();
@@ -111,11 +144,11 @@ void FilterIntersection(OpcodeArgs* args)
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
-	args->energy *= opac;
+	context->energy *= opac;
 
 	// Energy Dead
-	if (args->energy < 0.001f)
-		args->valid = false;
+	if (context->energy < 0.001f)
+		context->valid = false;
 };
 
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
@@ -148,18 +181,18 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	args.MDL = (void*)MDL;
 	args.valid = true;
 	args.pos = P;
-	args.IntersectContinue = true;
+	
+	// args.IntersectContinue = true;
 
 	ctxt.result = &args;
 
 
 	// Occlusion test
-	ctxt.filterIntersect = &FilterIntersection;
-	ctxt.filterOccluded = &FilterOcclusion;
+ 	ctxt.filterOccluded = &FilterOcclusion;
 	ctxt.filterIntersect = &FilterIntersection;
 
 	// Start RayTracing
-	ctxt.use_prec_tri = build_args->precalc_triangles;
+	ctxt.triangle_m128_SSE = build_args->triangle_m128_SSE;
 	DB->rayTrace1(&ctxt);
 	return ctxt.result->energy;
 }

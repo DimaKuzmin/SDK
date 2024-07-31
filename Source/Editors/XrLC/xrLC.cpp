@@ -73,7 +73,7 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 	
 	sprintf(tmp, "c++: OPCODE AVX_TRI: %d, CFORM Packing: %d",
-		args->precalc_triangles, args->use_cdbPacking);
+		args->triangle_m128_SSE, args->use_cdbPacking);
 	clMsg(tmp);
 
 
@@ -233,7 +233,9 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->off_lmaps = args->off_lmaps;
 	build_args->off_mulitght = args->off_mulitght;
 	build_args->use_DXT1 = args->use_DXT1;
-	build_args->precalc_triangles = args->precalc_triangles;
+
+	// xrCDB Special Features
+	build_args->triangle_m128_SSE = args->triangle_m128_SSE;
 	build_args->use_cdbPacking = args->use_cdbPacking;
 
 	build_args->run_mu_first = args->run_mu_first;

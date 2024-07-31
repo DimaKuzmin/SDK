@@ -16,7 +16,7 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	bool off_impl = false;
 	bool off_mulitght = false;
 	bool use_DXT1 = false;
-	bool precalc_triangles = false;
+	bool triangle_m128_SSE = false;
 
 
 	// XRLC ADVANCED SETTINGS

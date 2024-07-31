@@ -206,7 +206,7 @@ ICF __m128& CrossProduct_sse(const __m128& a, const __m128& b)
 	);
 }
 
-ICF bool _tri_precalculated(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& u, float& v, float& range)
+ICF bool _tri_m128_SSE(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& u, float& v, float& range)
 {
  	tri_m128* tri = &MDL->get_edges()[prim];
 
@@ -290,6 +290,55 @@ ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u,
 	return true;
 }
 
+ICF bool TriRange(Fvector* verts, ray_t& ray, u32* p, float& range)
+{
+	Fvector edge1, edge2, tvec, pvec, qvec;
+	float	det, inv_det;
+ 	
+	// find vectors for two edges sharing vert0
+	Fvector& p0 = verts[p[0]];
+	Fvector& p1 = verts[p[1]];
+	Fvector& p2 = verts[p[2]];
+	edge1.sub(p1, p0);
+	edge2.sub(p2, p0);
+	
+	pvec.crossproduct(ray.fwd_dir, edge2);
+	det = edge1.dotproduct(pvec);
+
+	if (det < EPS)
+		return false;
+	
+	inv_det = 1.0f / det;
+	tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
+  	qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
+ 	range = edge2.dotproduct(qvec) * inv_det;   // calculate t, scale parameters, ray intersects triangle
+
+	return true;
+}
+
+ICF bool TriRange_m128(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u32 prim, float& range)
+{
+	tri_m128* tri = &MDL->get_edges()[prim];
+
+	__m128& m128_edge0 = tri->e0;
+	__m128& m128_edge1 = tri->e1;
+	__m128& m128_edge2 = tri->e2;
+
+	const __m128& pvec = CrossProduct_sse(fwd_dir, m128_edge2);
+	float det = dot_product_sse(m128_edge1, pvec);
+
+	const __m128& condition0 = _mm_and_ps(_mm_cmpgt_ps(_mm_set1_ps(det), PS_mEPS), _mm_cmplt_ps(_mm_set1_ps(det), PS_EPS));
+	if (_mm_movemask_ps(condition0) != 0)
+ 		return false;
+
+ 	float inv_det = 1.0f / det;
+	__m128& tvec = fmsub(ray_pos, m128_edge0);						// calculate distance from vert0 to ray origin
+	const __m128& qvec = CrossProduct_sse(tvec, m128_edge1);				// prepare to test V parameter
+	range = dot_product_sse(m128_edge2, qvec) * inv_det;
+
+	return true;		// calculate t, ray intersects triangle
+}
+
 template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
 class _MM_ALIGN16	ray_collider
 {
@@ -299,9 +348,9 @@ public:
 	MODEL* MDL;
 
 
-	OpcodeContext* ctxt = 0;
+	OpcodeContext*	ctxt = 0;
 	bool			continue_work = true;
-	bool			precalculated = false;
+	bool			m128_SSE = false;
 
 	Fvector* verts;
 
@@ -313,6 +362,9 @@ public:
 	__m128 fwd_dir;
 	__m128 inv_dir;
  
+	bool UseOccluder = false;
+	bool UseIntersectionFilter = false;
+
 	ICF void			_init(COLLIDER* CL, CDB::MODEL* model,  const Fvector& C, const Fvector& D, float R)
 	{
 		dest = CL;
@@ -345,7 +397,10 @@ public:
 
 		if (ctxt)
 		{
-			precalculated = ctxt->use_prec_tri;
+			m128_SSE = ctxt->triangle_m128_SSE;
+			UseOccluder = ctxt->filterOccluded != nullptr;
+			ctxt->result->OccludeHas = UseOccluder;
+			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
 		}
 	}
 
@@ -384,8 +439,23 @@ public:
 	{
  		float	u, v, r;
 
-		if (ctxt && ctxt->filterOccluded)
+		if (UseOccluder)
 		{
+			 
+			if (m128_SSE)
+			{
+				if (!TriRange_m128(MDL, fwd_dir, ray_pos, prim, r))
+					return;
+			}
+			else
+			{
+				if (!TriRange_m128(MDL, fwd_dir, ray_pos, prim, r))
+					return;
+			}
+
+			if (r <= 0 || r > rRange)
+				return;
+
 			// OpcodeArgs  data;
   			ctxt->result->hit_struct.prim = prim;
 			ctxt->filterOccluded(ctxt->result);
@@ -395,9 +465,9 @@ public:
  				return;
  		}
 
-		if (precalculated)
+		if (m128_SSE)
 		{
-			if (!_tri_precalculated(MDL, fwd_dir, ray_pos, prim, u, v, r))
+			if (!_tri_m128_SSE(MDL, fwd_dir, ray_pos, prim, u, v, r))
 				return;
  			if (r <= 0 || r > rRange)			
 				return;
@@ -447,12 +517,12 @@ public:
 		}
 		else 
 		{
-			if (ctxt && ctxt->filterIntersect)
+			if (UseIntersectionFilter)
 			{	
  				// OpcodeArgs  data;
 				ctxt->result->hit_struct.u = u;
 				ctxt->result->hit_struct.v = v;
-				// ctxt->result->hit_struct.prim = prim;
+				ctxt->result->hit_struct.prim = prim;
 				ctxt->result->hit_struct.dist = r;
 		
 				ctxt->filterIntersect(ctxt->result);
