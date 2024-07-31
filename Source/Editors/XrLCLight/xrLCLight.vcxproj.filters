@@ -381,6 +381,9 @@
     <ClCompile Include="EmbreeRecursive.cpp">
       <Filter>Light\EmbreeLib</Filter>
     </ClCompile>
+    <ClCompile Include="xrLight_EmbreePacked.cpp">
+      <Filter>Light\EmbreeLib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

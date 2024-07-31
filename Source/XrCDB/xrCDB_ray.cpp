@@ -244,8 +244,7 @@ ICF bool _tri_precalculated(CDB::MODEL* MDL, __m128& fwd_dir, __m128& ray_pos, u
 	return true;
 }
 
-
-ICF bool			_tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
+ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
 {
 	Fvector edge1, edge2, tvec, pvec, qvec;
 	float	det, inv_det;
@@ -300,7 +299,7 @@ public:
 	MODEL* MDL;
 
 
-	OpcodeContext* context_opcode = 0;
+	OpcodeContext* ctxt = 0;
 	bool			continue_work = true;
 	bool			precalculated = false;
 
@@ -344,9 +343,9 @@ public:
 			else ray.inv_dir.z = 0;
 		}
 
-		if (context_opcode)
+		if (ctxt)
 		{
-			precalculated = context_opcode->use_prec_tri;
+			precalculated = ctxt->use_prec_tri;
 		}
 	}
 
@@ -385,15 +384,31 @@ public:
 	{
  		float	u, v, r;
 
+		if (ctxt && ctxt->filterOccluded)
+		{
+			// OpcodeArgs  data;
+  			ctxt->result->hit_struct.prim = prim;
+			ctxt->filterOccluded(ctxt->result);
+ 			continue_work = ctxt->result->valid;
+			
+			if (!ctxt->result->IntersectContinue)
+ 				return;
+ 		}
+
 		if (precalculated)
 		{
-			if (!_tri_precalculated(MDL, fwd_dir, ray_pos, prim, u, v, r))	return;
- 			if (r <= 0 || r > rRange)					return;
+			if (!_tri_precalculated(MDL, fwd_dir, ray_pos, prim, u, v, r))
+				return;
+ 			if (r <= 0 || r > rRange)			
+				return;
 		}
 		else
 		{
-			if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))	return;
- 			if (r <= 0 || r > rRange)					return;
+			if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))
+				return;
+ 			
+			if (r <= 0 || r > rRange)				
+				return;
 		}
 		 
 		if (bNearest)
@@ -432,19 +447,17 @@ public:
 		}
 		else 
 		{
-			if (context_opcode != nullptr)
+			if (ctxt && ctxt->filterIntersect)
 			{	
  				// OpcodeArgs  data;
-				context_opcode->result->hit_struct.u = u;
-				context_opcode->result->hit_struct.v = v;
-				context_opcode->result->hit_struct.prim = prim;
-				context_opcode->result->hit_struct.dist = r;
+				ctxt->result->hit_struct.u = u;
+				ctxt->result->hit_struct.v = v;
+				// ctxt->result->hit_struct.prim = prim;
+				ctxt->result->hit_struct.dist = r;
 		
-				context_opcode->filter(context_opcode->result);
-
-				continue_work = context_opcode->result->valid;
-				
-				return;
+				ctxt->filterIntersect(ctxt->result);
+ 				continue_work = ctxt->result->valid;
+ 				return;
 			}
 
  			RESULT& R = dest->r_add();
@@ -513,7 +526,7 @@ ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
 	r_clear();
 	 
 	ray_collider<true, false, false, false>	RC;
-	RC.context_opcode = context;
+	RC.ctxt = context;
 	RC._init(this, MDL, context->r_start, context->r_dir, context->r_range);
  	RC._stab(N);
 }

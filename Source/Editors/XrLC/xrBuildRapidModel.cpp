@@ -149,8 +149,8 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 	});
  	 
 	// Export references
-	if (bSaveForOtherCompilers)		
-		Phase	("Building rcast-CFORM-mu model...");
+	//if (bSaveForOtherCompilers)		
+	//	Phase	("Building rcast-CFORM-mu model...");
 
 	Status					("Models...");
 

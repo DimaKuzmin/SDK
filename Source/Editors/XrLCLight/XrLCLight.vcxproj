@@ -747,6 +747,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\Developm
     <ClCompile Include="xrLC_GlobalData.cpp" />
     <ClCompile Include="xrLC_Light.cpp" />
     <ClCompile Include="xrLightVertex.cpp" />
+    <ClCompile Include="xrLight_EmbreePacked.cpp" />
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
     <ClCompile Include="xrLight_Embree.cpp" />

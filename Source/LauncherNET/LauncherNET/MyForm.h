@@ -244,7 +244,7 @@ public:
 			this->TabControl->Location = System::Drawing::Point(12, 12);
 			this->TabControl->Name = L"TabControl";
 			this->TabControl->SelectedIndex = 0;
-			this->TabControl->Size = System::Drawing::Size(1447, 809);
+			this->TabControl->Size = System::Drawing::Size(1438, 822);
 			this->TabControl->TabIndex = 3;
 			// 
 			// Status_Tab
@@ -262,7 +262,7 @@ public:
 			this->Status_Tab->Location = System::Drawing::Point(4, 36);
 			this->Status_Tab->Name = L"Status_Tab";
 			this->Status_Tab->Padding = System::Windows::Forms::Padding(3);
-			this->Status_Tab->Size = System::Drawing::Size(1439, 769);
+			this->Status_Tab->Size = System::Drawing::Size(1430, 782);
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"Состояние компиляции";
 			// 
@@ -322,14 +322,14 @@ public:
 			// InfoPhases
 			// 
 			this->InfoPhases->BackColor = System::Drawing::SystemColors::InfoText;
-			this->InfoPhases->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 12, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+			this->InfoPhases->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 11.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->InfoPhases->ForeColor = System::Drawing::Color::Khaki;
 			this->InfoPhases->FormattingEnabled = true;
-			this->InfoPhases->ItemHeight = 23;
+			this->InfoPhases->ItemHeight = 21;
 			this->InfoPhases->Location = System::Drawing::Point(1008, 17);
 			this->InfoPhases->Name = L"InfoPhases";
-			this->InfoPhases->Size = System::Drawing::Size(413, 740);
+			this->InfoPhases->Size = System::Drawing::Size(413, 718);
 			this->InfoPhases->TabIndex = 15;
 			// 
 			// UpdatingListBox
@@ -388,7 +388,7 @@ public:
 			this->Geometry_Tab->Location = System::Drawing::Point(4, 36);
 			this->Geometry_Tab->Name = L"Geometry_Tab";
 			this->Geometry_Tab->Padding = System::Windows::Forms::Padding(3);
-			this->Geometry_Tab->Size = System::Drawing::Size(1439, 769);
+			this->Geometry_Tab->Size = System::Drawing::Size(1430, 782);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
 			// 
@@ -810,7 +810,7 @@ public:
 			this->AI_Tab->Controls->Add(this->groupBox3);
 			this->AI_Tab->Location = System::Drawing::Point(4, 36);
 			this->AI_Tab->Name = L"AI_Tab";
-			this->AI_Tab->Size = System::Drawing::Size(1439, 769);
+			this->AI_Tab->Size = System::Drawing::Size(1430, 782);
 			this->AI_Tab->TabIndex = 2;
 			this->AI_Tab->Text = L"Настройка компиляции xrAI";
 			// 
@@ -996,7 +996,7 @@ public:
 			this->xrDO->BackColor = System::Drawing::Color::DimGray;
 			this->xrDO->Location = System::Drawing::Point(4, 36);
 			this->xrDO->Name = L"xrDO";
-			this->xrDO->Size = System::Drawing::Size(1439, 769);
+			this->xrDO->Size = System::Drawing::Size(1430, 782);
 			this->xrDO->TabIndex = 3;
 			this->xrDO->Text = L"Настройка Компиляции xrDO";
 			// 
@@ -1005,7 +1005,7 @@ public:
 			this->TODO->BackColor = System::Drawing::Color::DimGray;
 			this->TODO->Location = System::Drawing::Point(4, 36);
 			this->TODO->Name = L"TODO";
-			this->TODO->Size = System::Drawing::Size(1439, 769);
+			this->TODO->Size = System::Drawing::Size(1430, 782);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
@@ -1014,7 +1014,7 @@ public:
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
 			this->BackColor = System::Drawing::SystemColors::ActiveBorder;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
-			this->ClientSize = System::Drawing::Size(1471, 821);
+			this->ClientSize = System::Drawing::Size(1459, 835);
 			this->Controls->Add(this->TabControl);
 			this->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
@@ -1139,6 +1139,7 @@ public:
   		}
 
 
+ 
 };
 
 }

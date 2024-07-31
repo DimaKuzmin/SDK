@@ -58,8 +58,9 @@ void CBuild::BuildCForm	()
 	
 
 	// Collecting data
-	Phase		("CFORM: creating...");
- 
+	//Phase		("CFORM: creating...");
+	Phase("CFORM: collision model...");
+
 	vecFace*	cfFaces		= xr_new<vecFace>	();
 	vecVertex*	cfVertices	= xr_new<vecVertex>	();
 	
@@ -105,7 +106,7 @@ void CBuild::BuildCForm	()
 		BB.modify((*it)->P );
 
 	// CForm
-	Phase	("CFORM: collision model...");
+	
 	Status	("Items to process: %d", cfFaces->size());
 	p_total = 0;
 	p_cost  = 1.f/(cfFaces->size());
@@ -199,10 +200,6 @@ void CBuild::BuildCForm	()
 	}
 
 	FS.w_close		(MFS);
-
-
-	
-	Phase("CFORM: OPCODE TREE");
  
 	CDB::MODEL* RQ				= xr_new<CDB::MODEL> ();
 	RQ->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());

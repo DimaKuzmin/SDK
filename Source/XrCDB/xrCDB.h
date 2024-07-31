@@ -38,6 +38,7 @@ struct OpcodeArgs
 	 	
 	Fvector pos;
 	bool valid = 1;
+	bool IntersectContinue = 1;
 	float energy;
 
 	//int count = 0;
@@ -46,11 +47,14 @@ struct OpcodeArgs
 	void * Light;
 };
 
-typedef void (*OpcodeFilterFunction)(OpcodeArgs* args);
+typedef void (*OpcodeIntersectFilterFunction)(OpcodeArgs* args);
+typedef void (*OpcodeOccludedFilterFunction)(OpcodeArgs* args);
 
 struct OpcodeContext
 {
-	OpcodeFilterFunction filter;
+	OpcodeIntersectFilterFunction filterIntersect = 0;
+	OpcodeOccludedFilterFunction filterOccluded = 0;
+
 	OpcodeArgs* result;
 
  	Fvector r_start;
@@ -251,15 +255,11 @@ namespace CDB
 		xr_vector<RESULT>	rd;
 
 		
-	public:
-		//OpcodeFilterFunction* filter_function;
-
-		
+	public:		
 		COLLIDER		();
 		~COLLIDER		();
 
-		//ICF void		InitFilterFunction(OpcodeFilterFunction* funct);
-		ICF void		rayTrace1(OpcodeContext* context);
+ 		ICF void		rayTrace1(OpcodeContext* context);
 
 		ICF void		ray_options		(u32 f)	{	ray_mode = f;		}
 		void			ray_query		(const MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f);  
