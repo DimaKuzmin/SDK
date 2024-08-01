@@ -533,10 +533,10 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\Developm
       </Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>xcopy /Y $(SolutionDir)..\SDK\bin\embree3.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree3.dll
-xcopy /Y $(SolutionDir)..\SDK\bin\embree4.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree4.dll
-xcopy /Y $(SolutionDir)..\SDK\bin\lua51.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\lua51.dll
-xcopy /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\tbb12.dll</Command>
+      <Command>xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\embree3.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree3.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\embree4.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree4.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\lua51.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\lua51.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\tbb12.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">
@@ -750,11 +750,13 @@ xcopy /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\e
     <ClCompile Include="xrLC_Light.cpp" />
     <ClCompile Include="xrLightVertex.cpp" />
     <ClCompile Include="xrLight_EmbreePacked.cpp" />
-    <ClCompile Include="xrLight_Embree_v3.cpp" />
+    <ClCompile Include="xrLight_Embree_v3.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
     <ClCompile Include="xrLight_Embree.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitThread.cpp" />
     <ClCompile Include="xrMU_Model.cpp" />

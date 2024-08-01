@@ -87,9 +87,9 @@ TriEmbree* trianglesTransparent = 0;
 u32 SizeTriangleTransparent = 0;
 size_t SizeVertexTransparent = 0;
 
-xr_vector<void*> TriNormal_Dummys;
 xr_vector<void*> TriTransparent_Dummys;
-
+xr_vector<void*> TriNormal_Dummys;
+ 
 RTCDevice device;
 
 // ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
@@ -212,169 +212,83 @@ struct RayQueryContext
 	Fvector B;
 	Fvector StartPos;
 
-	// CDB::MODEL* model = 0; 
-	Face* skip = 0;
+ 	Face* skip = 0;
 	R_Light* Light = 0;
 
 	float energy = 1.0f;
 	int hits = 0;
 	bool Transparent = false;
 
-// 	float TNear = 0.6f;
-	float Tfar = 0;
+ 	float Tfar = 0;
 	int LastPremitive = 0;
-
-	Hit currect_hit;
-	//xr_vector<Hit> hit_buffer;
 };
-
  
-// #define USE_OCCLUSION
-
 // valid [0] = -1 (ПРИНЯТЬ ХИТ)
 // valid [0] = 0 (ИГНОРИРОВАТЬ)
 
-#ifdef USE_OCCLUSION
-void FilterOcclusion(const struct RTCFilterFunctionNArguments* args)
+void FilterOcclude(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
-	RTCRay* ray = (RTCRay*)args->ray;
 	RTCHit* hit = (RTCHit*)args->hit;
+	RTCRay* ray = (RTCRay*)args->ray;
+	if (hit->primID == RTC_INVALID_GEOMETRY_ID)
+		return;
 
 	args->valid[0] = 0;
 
-	// ПРОВЕРКА TFAR ОЧЕНЬ ВАЖНА и TNear Буфер собирает не по порядку все обьекты (еще подумать может придется гонять его)
-	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->primID == ctxt->LastPremitive)
-		return;
-
-	if (ray->tfar > ctxt->Tfar || ray->tfar < ray->tnear)
-		return;
-	// Перемещаем начало луча немного дальше пересечения
+	void* data = hit->geomID == 1 ? TriTransparent_Dummys[hit->primID] : TriNormal_Dummys[hit->primID];
  
-	base_Face* F = 0;
- 	if (hit->geomID == 1)
+	base_Face* F = (base_Face*)(data);
+
+	if (!F->flags.bOpaque)
 	{
-		F = (base_Face*)(TriTransparent_Dummys[hit->primID]);
+		// Перемещаем начало луча немного дальше пересечения
+		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+		if (T.pSurface.Empty())
+			return;
+
+		// barycentric coords
+		// note: W,U,V order
+		ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+		// calc UV
+		Fvector2* cuv = F->getTC0();
+		Fvector2	uv;
+		uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+		uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
+
+		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+		U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+		V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+		u32* raw = static_cast<u32*>(*T.pSurface);
+		u32 pixel = raw[V * T.dwWidth + U];
+		u32 pixel_a = color_get_A(pixel);
+		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+		// Дополнение Контекста
+		ctxt->energy *= opac;
 	}
-	else
-	{
-		F = (base_Face*)(TriNormal_Dummys[hit->primID]);
-	}
- 	 
-	if (F == nullptr || F == ctxt->skip)
-  		return;
-	/*
+
 	// Access to texture
-	if (F->flags.bOpaque )
+	if (F->flags.bOpaque)
 	{
 		// При нахождении любого хита сразу все попали в непрозрачный Face.
-		// ray->tfar = -std::numeric_limits<float>::infinity();
-		//ctxt->energy = 0;
-		//args->valid[0] = -1;
-		ctxt->Transparent = false;
-	}
-	else
-	{
-		//Msg("TRANSPARRENT");
-		ctxt->Transparent = true;
-		//ctxt->LastPremitive = 0;
-		//args->valid[0] = -1;
- 	}
-	*/
-
-//	Hit hitPrem;
-//	hitPrem.Prim = hit->primID;
-//	hitPrem.tMax = ray->tfar;
-//	hitPrem.tNear = ray->tnear;
-	
-	ctxt->currect_hit.tMax  = ray->tfar;
-	ctxt->currect_hit.tNear = ray->tnear;
-	ctxt->currect_hit.Prim  = hit->primID;
-	ctxt->currect_hit.GeomID = hit->geomID;
-	
-	// ctxt->hit_buffer.push_back(hitPrem);
-
-	Fvector intersectionPoint;
-	Fvector OrigCOORD; 
-	OrigCOORD.set(ray->org_x, ray->org_y, ray->org_z);
-	intersectionPoint.set(ray->org_x, ray->org_y, ray->org_z);
-	intersectionPoint.mad({ ray->dir_x, ray->dir_y, ray->dir_z }, ray->tfar);
-	float RecivedTfar = ray->tfar;
-
-	ray->org_x = intersectionPoint.x;
-	ray->org_y = intersectionPoint.y;
-	ray->org_z = intersectionPoint.z;
-	// Не нужно поидее задано
-	//	ray->tnear = EPS_L; // устанавливаем небольшое смещение относительно найденного пересечения
-
-	ctxt->Tfar -= ray->tfar;
-	ray->tfar = ctxt->Tfar; // максимальное расстояние для пересечения
-
-	hit->geomID = RTC_INVALID_GEOMETRY_ID;
-	hit->instID[0] = RTC_INVALID_GEOMETRY_ID;
-	hit->primID = RTC_INVALID_GEOMETRY_ID;
-
-	ctxt->hits++;
-	ctxt->LastPremitive = hit->primID;
-
-	R_ASSERT(1, "EMBREE POINTER");
-
-	Msg("CTXT[%d] newray: {%f, %f, %f} Recived: {%f, %f, %f} orig: {%f, %f, %f}, TMAX: %f, %f TNEAR: %f, Prim: %llu", ctxt->hits, VPUSH(intersectionPoint), VPUSH(OrigCOORD), VPUSH(ctxt->StartPos), ray->tfar, RecivedTfar, ray->tnear, hit->primID);
-}
- 
-void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
-{
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
-	RTCHit* hit = (RTCHit*)args->hit;
-	RTCRay* ray = (RTCRay*)args->ray;
-	args->valid[0] = 0;
-
-	if (ray->tfar > ctxt->Tfar || ray->tfar < ray->tnear)
-		return;
-
-	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->primID == ctxt->LastPremitive)
-		return;
-
-	ctxt->hits++;
-	ctxt->LastPremitive = hit->primID;
-	ctxt->Tfar = ray->tfar;
-  
- 	// Перемещаем начало луча немного дальше пересечения
- 	base_Face* F = (base_Face*)(TriTransparent_Dummys[hit->primID]); 	
-	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-  
-	// barycentric coords
-	// note: W,U,V order
-	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-	// calc UV
-	Fvector2* cuv = F->getTC0();
-	Fvector2	uv;
-	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
-	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
-
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
-	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel = raw[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-	// Дополнение Контекста
-	ctxt->energy *= opac;
-
-	// Energy Loose
-	if (ctxt->energy < 0.1f)
-	{
 		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
 		args->valid[0] = -1;
 	}
-}
 
-#else 
+	if (ctxt->energy < 0.115f)			// Быстрый выход чтобы не гоняло
+	{
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = -1;
+	}
+
+}
+ 
 void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
@@ -383,6 +297,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	if (hit->primID == RTC_INVALID_GEOMETRY_ID)
 		return;
  
+/*
 //	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->primID == ctxt->LastPremitive)
 //		return;
 
@@ -392,9 +307,14 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 //	ctxt->LastPremitive = hit->primID;
 //	ctxt->Tfar -= ray->tfar;
 //	ray->tfar = ctxt->Tfar; // максимальное расстояние для пересечения
+*/
 
 	args->valid[0] = 0;
-	base_Face* F = (base_Face*)(TriNormal_Dummys[hit->primID]);
+
+	void* data = hit->geomID == 1 ? TriTransparent_Dummys[hit->primID] : TriNormal_Dummys[hit->primID];
+
+
+	base_Face* F = (base_Face*)(data);
   
 	if (!F->flags.bOpaque)
 	{
@@ -443,7 +363,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 		args->valid[0] = -1;
 	}
 }
-#endif
+ 
 
 FORCEINLINE void OcludedOneRay(RayOptimizedCPU& ray, RayQueryContext& ctxt)
 {
@@ -451,48 +371,18 @@ FORCEINLINE void OcludedOneRay(RayOptimizedCPU& ray, RayQueryContext& ctxt)
  
 	RTCRay rayhit;
 	SetRay1(&ray, rayhit);
-	// SetRay1Invert(&ray, rayhit);
-
-
+ 
 	ctxt.StartPos = ray.pos;
 	rtcOccluded1(IntelScene, &ctxt.context, &rayhit);
-
-	u32 prim  = ctxt.currect_hit.Prim;
-	u32 geom = ctxt.currect_hit.GeomID;
-
-	if (prim == RTC_INVALID_GEOMETRY_ID || geom == RTC_INVALID_GEOMETRY_ID)
-		return;
-
-	// Msg("geom: %d, prim: %d", prim, geom);
-	base_Face* F = 0;
-
-	if (geom == 1)
-	{
-		F = (base_Face*)(TriTransparent_Dummys[prim]);
-	}
-	else
-	{
-		F = (base_Face*)(TriNormal_Dummys[prim]);
-	}
-
-	if (F->flags.bOpaque)
-	{
-		ctxt.Transparent = false;
-		ctxt.energy = 0;
-	}
-	else
-	{
-		ctxt.Transparent = true;
-	}
 }
 
 FORCEINLINE void RatraceOneRay(RayOptimizedCPU& ray, RayQueryContext& data_hits)
 {
  	rtcInitIntersectContext(&data_hits.context); 
 	RTCRayHit rayhit;
-	//SetRay1(&ray, rayhit);
-	 SetRay1Invert(&ray, rayhit);
+ 	SetRay1(&ray, rayhit);
 	
+	//Invert	
 	data_hits.StartPos = ray.pos;
 	rtcIntersect1(IntelScene, &data_hits.context, &rayhit);
 }
@@ -516,10 +406,10 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	data.Tfar = range;
 
 	// Opacue Process
-// 	OcludedOneRay(ray, data);
-//	if (data.Transparent)
-		RatraceOneRay(ray, data);
-
+ 	OcludedOneRay(ray, data);
+	//if (data.hits > 0)
+	//	RatraceOneRay(ray, data);
+	
 	return data.energy;
 }
   
@@ -569,6 +459,8 @@ void InitializeGeometryAttach_CDB(RTCScene& scene)
 
 	IntelGeometryNormal = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
 	rtcSetGeometryBuildQuality(IntelGeometryNormal, RTCBuildQuality(geom_type));
+
+ 	rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterOcclude);
 	rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
 
 	int v_cnt = inlc_global_data()->RCAST_Model()->get_verts_count();
@@ -595,142 +487,62 @@ void InitializeGeometryAttach_CDB(RTCScene& scene)
 	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Normal) By ID: %d", rtcAttachGeometry(scene, IntelGeometryNormal));
 }
 
-
-void InitializeGeometryAttach(bool Transparent, RTCScene& scene)
+void InitializeGeometryAttach_Transparent(RTCScene& scene)
 {
 	SpecialArgsXRLCLight::EmbreeGeom geom_type = (SpecialArgsXRLCLight::EmbreeGeom)build_args->embree_geometry_type;
 
 	Fvector* CDB_verts = inlc_global_data()->RCAST_Model()->get_verts();
 	CDB::TRI* CDB_tris = inlc_global_data()->RCAST_Model()->get_tris();
 
+	IntelGeometryTransparent = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
+	rtcSetGeometryBuildQuality(IntelGeometryTransparent, RTCBuildQuality(geom_type));
 
-	// Добавление вершин
-	// 1я стадия подсчет того что можно для Embree Occluded
+//	rtcSetGeometryOccludedFilterFunction(IntelGeometryTransparent, &FilterOcclude);
+//	rtcSetGeometryIntersectFilterFunction(IntelGeometryTransparent, &FilterRaytrace);
 
-	// Устанавливать обезательно иле будет в Колбеке PrimID	= 0 
-	if (!Transparent)
-	{
-		IntelGeometryNormal = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
-		rtcSetGeometryBuildQuality(IntelGeometryNormal, RTCBuildQuality(geom_type));
-#ifdef USE_OCCLUSION
-		rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterOcclusion);
-// 		rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytraceTransparent);
-#else 
-		rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
-#endif
-	}
-	else
-	{
-		IntelGeometryTransparent = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
-		rtcSetGeometryBuildQuality(IntelGeometryTransparent, RTCBuildQuality(geom_type));
-#ifdef USE_OCCLUSION
-//		rtcSetGeometryOccludedFilterFunction(IntelGeometryTransparent, &FilterOcclusion);
-		rtcSetGeometryIntersectFilterFunction(IntelGeometryTransparent, &FilterRaytraceTransparent);
-#else 
-		rtcSetGeometryIntersectFilterFunction(IntelGeometryTransparent, &FilterRaytrace);
-#endif
-	}
+	int v_cnt = inlc_global_data()->RCAST_Model()->get_verts_count();
+	int t_cnt = inlc_global_data()->RCAST_Model()->get_tris_count();
 
-	// Буферы
+	verticesTransparent  = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryTransparent, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), v_cnt);
+	trianglesTransparent = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryTransparent, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), t_cnt);
 
-	xr_vector<CDB::TRI*> TempBuffer;
-	TempBuffer.clear();
+	SizeTriangleTransparent = t_cnt;
+	SizeVertexTransparent = v_cnt;
 
-	size_t Ignored_ByMissingTextures = 0;
+	size_t VertexIndexer = 0;
+	// FIX
+	TriTransparent_Dummys.clear();
+	TriTransparent_Dummys.reserve(inlc_global_data()->RCAST_Model()->get_tris_count());
+
+ 
+	xr_vector<CDB::TRI*> buffer;
 	for (int i = 0; i < inlc_global_data()->RCAST_Model()->get_tris_count(); i++)
 	{
 		base_Face* F = (base_Face*)(CDB_tris[i].pointer);
-
-		// Отсеиваем нахрен не нужное
+ 		if (F == nullptr)
+			continue;
 		if (!F->Shader().flags.bLIGHT_CastShadow)
 			continue;
-
+		if (F->flags.bOpaque)
+			continue;
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		b_texture& T = inlc_global_data()->textures()[M.surfidx];
 		if (T.pSurface.Empty())
-		{
-			Ignored_ByMissingTextures++;
-			F->flags.bOpaque = true;
-		}
-
-		if (Transparent && F->flags.bOpaque)
 			continue;
+		buffer.push_back(&CDB_tris[i]);
+ 	}
 
-		if (!Transparent && !F->flags.bOpaque)
-			continue;
-
-		TempBuffer.push_back(&CDB_tris[i]);
-	}
- 
-	/*
-	//string256 tmp;
-	//sprintf(tmp, "[Intel Embree] Создаем Буфер под Треугольники c прозрачностью = (%d)", Transparent);
-	//string256 tmp2;
-	//sprintf(tmp2, "[Intel Embree] Геометрия: Треугольников: %lu, Вертексов: %lu, Проигнорировано изза DXT1: %d", TempBuffer.size(), TempBuffer.size() * 3, Ignored_ByMissingTextures);
-	//clMsg(xr_string(tmp).c_str());
-	//clMsg(xr_string(tmp2).c_str());
-	*/
-
-	// 2я Стадия Добавление 
-	if (!Transparent)
+	for (auto i =0;i < buffer.size();i++)
 	{
-		verticesNormal = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), size_t(TempBuffer.size() * (3)));
-		trianglesNormal = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), TempBuffer.size());
-
-		SizeTriangleNormal = TempBuffer.size();
-		SizeVertexNormal = TempBuffer.size() * 3;
-	}
-	else
-	{
-		verticesTransparent = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryTransparent, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), size_t(TempBuffer.size() * (3)));
-		trianglesTransparent = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryTransparent, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), TempBuffer.size());
-
-		SizeTriangleTransparent = TempBuffer.size();
-		SizeVertexTransparent = TempBuffer.size() * 3;
+		CDB::TRI* tri = (buffer[i]);
+ 		trianglesTransparent[i].SetVertexes(CDB_verts, verticesTransparent, VertexIndexer);
+		TriTransparent_Dummys[i] = (tri->pointer);
 	}
 
-	// DUMMY BUFFER
-	if (Transparent)
-	{
-		TriTransparent_Dummys.clear();
-		TriTransparent_Dummys.reserve(TempBuffer.size());
-	}
-	else
-	{
-		TriNormal_Dummys.clear();
-		TriNormal_Dummys.reserve(TempBuffer.size());
-	}
-
-	size_t VertexIndexer = 0;
-	for (int i = 0; i < TempBuffer.size(); i++)
-	{
-		if (Transparent)
-		{
-			trianglesTransparent[i].SetVertexes(CDB_verts, verticesTransparent, VertexIndexer);
-			TriTransparent_Dummys[i] = (TempBuffer[i]->pointer);
-		}
-		else
-		{
-			trianglesNormal[i].SetVertexes(CDB_verts, verticesNormal, VertexIndexer);
-			TriNormal_Dummys[i] = (TempBuffer[i]->pointer);
-		}
-	}
-
-	if (!Transparent)
-	{
-		rtcCommitGeometry(IntelGeometryNormal);
-		clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Normal) By ID: %d", rtcAttachGeometry(scene, IntelGeometryNormal));
-	}
-	else
-	{
-		rtcCommitGeometry(IntelGeometryTransparent);
-		clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Transparent) By ID: %d", rtcAttachGeometry(scene, IntelGeometryTransparent));
-	}
-
-
-	clMsg(xr_string("[Intel Embree] Создание Буфера закончено. ").c_str());
+	rtcCommitGeometry(IntelGeometryTransparent);
+	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Transparent) By ID: %d", rtcAttachGeometry(scene, IntelGeometryTransparent));
 }
-
+ 
 void IntelEmbereLOAD()
 {
 	bool avx = build_args->use_avx;
@@ -742,26 +554,19 @@ void IntelEmbereLOAD()
 	rtcSetDeviceErrorFunction(device, errorFunction, NULL);
 	IntelEmbreeSettings(avx, sse);
 
-	// Создание сцены и добавление геометрии
-	// Scene
-	
-
 	IntelScene = rtcNewScene(device);
-	IntelSceneTransparent = rtcNewScene(device);
-
+	
+	// Одной хватает 
 	InitializeGeometryAttach_CDB(IntelScene);
-	//InitializeGeometryAttach(false, IntelScene); // Обычный буфер
-	//InitializeGeometryAttach(true, IntelScene);	 // Прозрачный буфер
-
+	// InitializeGeometryAttach_Transparent(IntelScene);
+ 
 	rtcCommitScene(IntelScene);
-	//rtcCommitScene(IntelSceneTransparent);
 }
 
 void IntelEmbereUNLOAD()
 {
 	rtcReleaseGeometry(IntelGeometryNormal);
-	rtcReleaseGeometry(IntelGeometryTransparent);
-
+ 
 	rtcReleaseScene(IntelScene);
 	rtcReleaseDevice(device);
 }

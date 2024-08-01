@@ -137,6 +137,8 @@ private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::TextBox^ ThreadsAI;
 private: System::Windows::Forms::ProgressBar^ CurrentProgress;
 private: System::Windows::Forms::Label^ MemoryInfo;
+private: System::Windows::Forms::CheckBox^ RaytraceFast;
+
 
 
 public:
@@ -221,6 +223,7 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
+			this->RaytraceFast = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -576,6 +579,7 @@ public:
 			// 
 			// IntelEmbreType
 			// 
+			this->IntelEmbreType->Controls->Add(this->RaytraceFast);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGUltra);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGHigh);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGMedium);
@@ -1008,6 +1012,16 @@ public:
 			this->TODO->Size = System::Drawing::Size(1430, 782);
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
+			// 
+			// RaytraceFast
+			// 
+			this->RaytraceFast->AutoSize = true;
+			this->RaytraceFast->Location = System::Drawing::Point(202, 33);
+			this->RaytraceFast->Name = L"RaytraceFast";
+			this->RaytraceFast->Size = System::Drawing::Size(322, 31);
+			this->RaytraceFast->TabIndex = 5;
+			this->RaytraceFast->Text = L"Использовать быстрой raytrace";
+			this->RaytraceFast->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 

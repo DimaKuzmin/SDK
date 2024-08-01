@@ -340,6 +340,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
     args->triangle_m128_SSE = use_PrecalcTris->Checked;
+    args->use_MethodIntersection = RaytraceFast->Checked;
 
     if (!IsRunned)
     {

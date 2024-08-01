@@ -21,6 +21,7 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 
 	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
+	bool use_MethodIntersection = 1;
 
 	int embree_geometry_type = EmbreeGeom::eLow;
 

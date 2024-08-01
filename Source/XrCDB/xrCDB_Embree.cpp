@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "xrCDB_Embree.h"
 
-#pragma comment(lib, "embree3.lib")
+#pragma comment(lib, "embree4.lib")
 #pragma comment(lib, "tbb12.lib")
 
 void errorFunction(void* userPtr, enum RTCError error, const char* str)
@@ -123,11 +123,11 @@ void SceneEmbree::RayTrace(RTCRayHit* rayhit, RayQuaryStructure* context, RTCFil
 	if (!InitedDevice)
 	{
 		Msg("--- Try Ray Trace But Not Initialized Embree!!!");
-
-		return;
+ 		return;
 	}
- 
- 	rtcInitIntersectContext(&context->context);
+	RTCIntersectArguments args;
+ 	rtcInitIntersectArguments(&args);
+	args.context = &context->context;
 
 	//context->context = ctxt;
 	context->SceneEmbree = this;
@@ -139,7 +139,7 @@ void SceneEmbree::RayTrace(RTCRayHit* rayhit, RayQuaryStructure* context, RTCFil
 	//args.filter = filter_fuction;
  	//args.flags = (RTCRayQueryFlags)(RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER | RTC_RAY_QUERY_FLAG_COHERENT );
 
-	rtcIntersect1(IntelScene, &context->context, rayhit);
+	rtcIntersect1(IntelScene, rayhit, &args);
  
 }
  

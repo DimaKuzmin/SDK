@@ -34,7 +34,7 @@ struct XRLC_API  SpecialArgs
 	bool use_sse = 0;
 	bool use_opcode_old = 0;
 	bool use_RobustGeom = 0;
-
+	bool use_MethodIntersection = 0;
 
 	bool use_IMPLICIT_Stage = 0;
 	bool use_LMAPS_Stage = 0;
