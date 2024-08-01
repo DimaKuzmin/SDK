@@ -1,4 +1,4 @@
-#include "stdafx.h"
+п»ї#include "stdafx.h"
 #include "../../xrcdb/xrcdb.h"
 
 //#include "xrLight_ImplicitDeflector.h"
@@ -75,7 +75,7 @@ xr_vector<void*> TriNormal_Dummys;
  
 RTCDevice device;
 
-// ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
+// Р’РђР–РќР«Р™ РџРђР РђРњР•РўР  TNEAR Р”Р»СЏ РїРµСЂРµСЃРµС‡РµРЅРёСЏ СЃ РІРѕРґРѕР№
 int TNearParram = 0.2f;
 
 void SetRay1(RayOptimizedCPU* ray, RTCRay& rayhit)
@@ -124,7 +124,7 @@ void SetRay1(RayOptimizedCPU* ray, RTCRayHit& rayhit)
 }
  
 
-// Сделать потом переключалку
+// РЎРґРµР»Р°С‚СЊ РїРѕС‚РѕРј РїРµСЂРµРєР»СЋС‡Р°Р»РєСѓ
   
 struct RayQueryContext
 {
@@ -138,18 +138,6 @@ struct RayQueryContext
 	u32 LastPremitive = 0;
 	float Tfar = 1000;
 };
-
-
-/*  TODO
-* 
-
-
-
-//
-//	ctxt->Tfar -= ray->tfar;
-//	ray->tfar = ctxt->Tfar; // максимальное расстояние для пересечения
-*/
-
    
 void FilterRaytraceOcc(const struct RTCFilterFunctionNArguments* args)
 {
@@ -157,10 +145,12 @@ void FilterRaytraceOcc(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
+	// РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ РЅРµ РїРѕРїР°Р»Рё С‚СѓРґР° Р¶Рµ 
 	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->primID == ctxt->LastPremitive)
 		return;
 	ctxt->LastPremitive = hit->primID;
 
+	// РР·Р±С‹С‚РѕС‡РЅР°СЏ РїСЂРѕРІРµСЂРєР°
 	//if (ray->tfar > ctxt->Tfar || ray->tfar < ray->tnear)
 	//	return;
 	//ctxt->Tfar = ray->tfar;
@@ -171,7 +161,7 @@ void FilterRaytraceOcc(const struct RTCFilterFunctionNArguments* args)
 
 	if (!F->flags.bOpaque)
 	{
-		// Перемещаем начало луча немного дальше пересечения
+		// РџРµСЂРµРјРµС‰Р°РµРј РЅР°С‡Р°Р»Рѕ Р»СѓС‡Р° РЅРµРјРЅРѕРіРѕ РґР°Р»СЊС€Рµ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
@@ -197,7 +187,7 @@ void FilterRaytraceOcc(const struct RTCFilterFunctionNArguments* args)
 		u32 pixel_a = color_get_A(pixel);
 		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
-		// Дополнение Контекста
+		// Р”РѕРїРѕР»РЅРµРЅРёРµ РљРѕРЅС‚РµРєСЃС‚Р°
 		ctxt->energy *= opac;
 
 		if (ctxt->energy < 0.1f)
@@ -212,7 +202,7 @@ void FilterRaytraceOcc(const struct RTCFilterFunctionNArguments* args)
 	// Access to texture
 	if (F->flags.bOpaque)
 	{
-		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		// РџСЂРё РЅР°С…РѕР¶РґРµРЅРёРё Р»СЋР±РѕРіРѕ С…РёС‚Р° СЃСЂР°Р·Сѓ РІСЃРµ РїРѕРїР°Р»Рё РІ РЅРµРїСЂРѕР·СЂР°С‡РЅС‹Р№ Face.
 		ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
 		args->valid[0] = 1;
@@ -226,11 +216,12 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
  
-
+	// РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ РЅРµ РїРѕРїР°Р»Рё С‚СѓРґР° Р¶Рµ 
 	if (hit->primID == RTC_INVALID_GEOMETRY_ID || hit->primID == ctxt->LastPremitive)
 		return;
 	ctxt->LastPremitive = hit->primID;
 
+	// РР·Р±С‹С‚РѕС‡РЅР°СЏ РїСЂРѕРІРµСЂРєР°
 	//if (ray->tfar > ctxt->Tfar || ray->tfar < ray->tnear)
 	//	return;
 	//ctxt->Tfar = ray->tfar;
@@ -241,7 +232,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 
 	if (!F->flags.bOpaque)
 	{
-		// Перемещаем начало луча немного дальше пересечения
+		// РџРµСЂРµРјРµС‰Р°РµРј РЅР°С‡Р°Р»Рѕ Р»СѓС‡Р° РЅРµРјРЅРѕРіРѕ РґР°Р»СЊС€Рµ РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 		b_texture& T = inlc_global_data()->textures()[M.surfidx];
 
@@ -267,7 +258,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 		u32 pixel_a = color_get_A(pixel);
 		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
-		// Дополнение Контекста
+		// Р”РѕРїРѕР»РЅРµРЅРёРµ РљРѕРЅС‚РµРєСЃС‚Р°
 		ctxt->energy *= opac;
 
 		if (ctxt->energy < 0.1f)
@@ -282,7 +273,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	// Access to texture
 	if (F->flags.bOpaque)
 	{
-		// При нахождении любого хита сразу все попали в непрозрачный Face.
+		// РџСЂРё РЅР°С…РѕР¶РґРµРЅРёРё Р»СЋР±РѕРіРѕ С…РёС‚Р° СЃСЂР°Р·Сѓ РІСЃРµ РїРѕРїР°Р»Рё РІ РЅРµРїСЂРѕР·СЂР°С‡РЅС‹Р№ Face.
 		ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
 		args->valid[0] = 1;
@@ -371,7 +362,7 @@ void IntelEmbreeSettings(bool avx, bool sse)
 
 	TNearParram = build_args->embree_tnear;
 
-	// CHECK THIS (Ускоряет ли)
+	// CHECK THIS (РЈСЃРєРѕСЂСЏРµС‚ Р»Рё)
  	if (build_args->use_RobustGeom)
  		rtcSetSceneFlags(IntelScene, RTC_SCENE_FLAG_COMPACT | RTC_SCENE_FLAG_ROBUST);
   
@@ -434,7 +425,7 @@ void IntelEmbereLOAD()
 	rtcSetDeviceErrorFunction(device, errorFunction, NULL);
 	IntelEmbreeSettings(avx, sse);
 
-	// Создание сцены и добавление геометрии
+	// РЎРѕР·РґР°РЅРёРµ СЃС†РµРЅС‹ Рё РґРѕР±Р°РІР»РµРЅРёРµ РіРµРѕРјРµС‚СЂРёРё
 	// Scene
 	IntelScene = rtcNewScene(device); 
  
