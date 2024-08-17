@@ -13,6 +13,18 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_V11|ARM64">
+      <Configuration>DevAVX_V11</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_V11|Win32">
+      <Configuration>DevAVX_V11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_V11|x64">
+      <Configuration>DevAVX_V11</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Profile|ARM64">
       <Configuration>Profile</Configuration>
       <Platform>ARM64</Platform>

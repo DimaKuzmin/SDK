@@ -21,6 +21,14 @@
       <Configuration>DevAVX_v10</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_V11|Win32">
+      <Configuration>DevAVX_V11</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_V11|x64">
+      <Configuration>DevAVX_V11</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="DevCPU_v10|Win32">
       <Configuration>DevCPU_v10</Configuration>
       <Platform>Win32</Platform>
@@ -108,6 +116,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AVX|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -163,6 +178,13 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AVX|x64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -209,6 +231,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Default.props" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Default.props" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='AVX|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Default.props" />
@@ -238,6 +264,10 @@
     <Import Project="..\..\Default.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="..\..\Default.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Default.props" />
   </ImportGroup>
@@ -272,6 +302,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AVX|Win32'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -293,6 +326,9 @@
     <OutDir>$(SolutionDir)..\Bin\$(Platform)\Development\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">
@@ -391,6 +427,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;DEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>false</OmitFramePointers>
+      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|Win32'">
     <ClCompile>
       <PrecompiledHeader>
       </PrecompiledHeader>
@@ -598,6 +657,39 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\lua51.dll       A:\SDKGAMEDATA\X-Ray_Co
 xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\tbb12.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;DEBUG;_WINDOWS;DevCPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
+      <Optimization>MaxSpeed</Optimization>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\embree3.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree3.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\embree4.dll A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\embree4.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\lua51.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\lua51.dll
+xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\tbb12.dll</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -708,6 +800,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClInclude Include="DeviceBuffer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -720,6 +813,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClInclude Include="xrHardwareLight.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -760,6 +854,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClInclude Include="xrRayDefinition.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -786,6 +881,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrHardwareLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -804,6 +900,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Development|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='AVX|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|Win32'">Create</PrecompiledHeader>
@@ -812,6 +909,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Development|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -826,6 +924,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrHardwareLight_LMAP.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -833,6 +932,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -840,6 +940,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrHardwareTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='AVX|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
@@ -852,6 +953,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrLight_EmbreePacked.cpp" />
     <ClCompile Include="xrLight_Embree_v3.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -859,6 +961,7 @@ xcopy  /E /I /Y $(SolutionDir)..\SDK\bin\tbb12.dll       A:\SDKGAMEDATA\X-Ray_Co
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
     <ClCompile Include="xrLight_Embree.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitThread.cpp" />
     <ClCompile Include="xrMU_Model.cpp" />
