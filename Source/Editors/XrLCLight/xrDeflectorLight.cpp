@@ -133,8 +133,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
    	ctxt.filterIntersect = &FilterIntersection;
 
 	// Start RayTracing
-	ctxt.triangle_m128_SSE = build_args->triangle_m128_SSE;
-	DB->rayTrace1(&ctxt);
+ 	DB->rayTrace1(&ctxt);
 	return ctxt.result->energy;
 }
 
@@ -495,37 +494,13 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
 { 	
+	if (build_args->off_raytrace)
+		return 1.0f;
+
  	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(MDL, L, P, D, R, skip);
  	
- 	return rayTraceCheck(DB, MDL, L, P, D, R, skip);
-
-	/*
-	R_ASSERT	(DB);
- 
-	// 1. Check cached polygon
-	 
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
-	if (res) 
-	if (range > 0 && range < R) 
-		return 0;
-  
-  	// 2. Polygon doesn't pick - real database query
-	//Msg("Orig Pos{%f,%f,%f}, dir{%f,%f,%f}, range[%f]", VPUSH(pos), VPUSH(dir), Range);
-	DB->ray_query(MDL, P, D, R);
-
-	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) 
-		return 1;
-	else
-	{
- 		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
-	}
-
-	return 0;
-	*/
- 
+ 	return rayTraceCheck(DB, MDL, L, P, D, R, skip); 
 }
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
@@ -888,10 +863,7 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 	}
 	return FALSE;
 }
-
-
-
-
+ 
 void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
 	// Geometrical bounds
@@ -914,153 +886,16 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 	
   
 	// Convert lights to local form
-	LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
+	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
  
 	// Calculate and fill borders
 	L_Calculate			(th, DB,LightsSelected, H);
- 
-#ifndef DevCPU 
-	if (xrHardwareLight::Get().IsEnabled())
- 
-	{
-#ifdef OLD_METHOD_GPU_COMPUTE
-		LightEnd(th, DB, LightsSelected, H);
-#endif
-	}
-	else 
-	{
-		LightEnd(th, DB, LightsSelected, H);
-	}
-#else 
-	
+ 	
 	for (u32 ref = 254; ref > 0; ref--)
-		if (!ApplyBorders(layer, ref))
-			break;
-	// Compression
-
-	try
-	{
-		u32	w, h;
-		if (compress_Zero(layer, rms_zero))
-		{
-			return;		// already with borders
-		}
-		else
-			if (compress_RMS(layer, rms_shrink, w, h))
-			{
-				// Reacalculate lightmap at lower resolution
-				layer.create(w, h);
-				L_Calculate(th, DB, LightsSelected, H, true);
-			}
-
-	}
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::Light - Compression");
-	}
-
-	// Expand with borders
-	try
-	{
-		if (layer.width == 1)
-		{
-			// Horizontal ZERO - vertical line
-			lm_layer		T;
-			T.create(2 * BORDER, layer.height + 2 * BORDER);
-
-			// Transfer
-			for (u32 y = 0; y < T.height; y++)
-			{
-				int			py = int(y) - BORDER;
-				clamp(py, 0, int(layer.height - 1));
-				base_color	C = layer.surface[py];
-				T.surface[y * 2 + 0] = C;
-				T.marker[y * 2 + 0] = 255;
-				T.surface[y * 2 + 1] = C;
-				T.marker[y * 2 + 1] = 255;
-			}
-
-			// Exchange
-			T.width = 0;
-			T.height = layer.height;
-			layer = T;
-		}
-		else if (layer.height == 1)
-		{
-			// Vertical ZERO - horizontal line
-			lm_layer		T;
-			T.create(layer.width + 2 * BORDER, 2 * BORDER);
-
-			// Transfer
-			for (u32 x = 0; x < T.width; x++)
-			{
-				int			px = int(x) - BORDER;
-				clamp(px, 0, int(layer.width - 1));
-				base_color	C = layer.surface[px];
-				T.surface[0 * T.width + x] = C;
-				T.marker[0 * T.width + x] = 255;
-				T.surface[1 * T.width + x] = C;
-				T.marker[1 * T.width + x] = 255;
-			}
-
-			// Exchange
-			T.width = layer.width;
-			T.height = 0;
-			layer = T;
-		}
-		else
-		{
-			// Generic blit
-			lm_layer		lm_old = layer;
-			lm_layer		lm_new;
-			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
-			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
-			layer = lm_new;
-			ApplyBorders(layer, 254);
-			ApplyBorders(layer, 253);
-			ApplyBorders(layer, 252);
-			ApplyBorders(layer, 251);
-			for (u32 ref = 250; ref > 0; ref--) if (!ApplyBorders(layer, ref)) break;
-			layer.width = lm_old.width;
-			layer.height = lm_old.height;
-		}
-	}
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
-	}
-#endif
-	
-}
-
-void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
-{
- 
-#ifndef DevCPU
-#ifndef OLD_METHOD_GPU_COMPUTE  
-	if (xrHardwareLight::Get().IsEnabled())	
-	{	
-		LightsSelected->select(inlc_global_data()->L_static(),Sphere.P,Sphere.R);
-	
-		// UV & HASH
- 		Fbox2			bounds;
-		Bounds_Summary	(bounds);
-		H.initialize	(bounds,(u32)UVpolys.size());
-
-		for (u32 fid=0; fid<UVpolys.size(); fid++)
-		{
-			UVtri* T	= &(UVpolys[fid]);
-			Bounds		(fid,bounds);
-			H.add		(bounds,T);
-		}
-	}
-#endif
-#endif
- 	for (u32 ref = 254; ref > 0; ref--)
 	if (!ApplyBorders(layer, ref))
 		break;
-
 	// Compression
+  
 	try
 	{
 		u32	w, h;
@@ -1075,13 +910,12 @@ void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelect
 			layer.create(w, h);
 			L_Calculate(th, DB, LightsSelected, H, true);
 		}
-		
 	}
 	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - Compression");
 	}
-	
+
 	// Expand with borders
 	try
 	{
@@ -1131,7 +965,7 @@ void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelect
 			T.height = 0;
 			layer = T;
 		}
-		else 
+		else
 		{
 			// Generic blit
 			lm_layer		lm_old = layer;
@@ -1151,5 +985,6 @@ void CDeflector::LightEnd(int th, CDB::COLLIDER* DB, base_lighting* LightsSelect
 	catch (...)
 	{
 		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
-	}
+	}	
+ 
 }

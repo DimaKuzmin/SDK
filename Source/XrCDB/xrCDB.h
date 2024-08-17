@@ -63,8 +63,7 @@ struct OpcodeContext
 	Fvector r_dir;
 	float r_range;
 
-	bool triangle_m128_SSE = false;
-};
+ };
 
 
 #pragma pack(push,4)

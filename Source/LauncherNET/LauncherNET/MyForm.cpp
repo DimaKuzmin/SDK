@@ -36,10 +36,11 @@ void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
     }
 }
 
-#define Size 17
+#define Size 16
   
 char* collection[Size] =
 {
+    "INTEL EMBREE",
     "AVX INSTRUCTIONS",
     "SSE INSTRUCTIONS",
     "NO OPTIMIZE",
@@ -52,52 +53,50 @@ char* collection[Size] =
     "NOISE GEOM",
     "SKIP WELD",
     "USE STD THREADS",
-    "INTEL IMPLICIT",
-    "INTEL LMAPS",
-    "INTEL MU MODELS",
+   // "INTEL IMPLICIT",
+   // "INTEL LMAPS",
+   // "INTEL MU MODELS",
+   
     "CFORM Packing",
-    "MU FIRST"
+    "MU FIRST",
+    "TBB THREADS"
 };
   
 void GetItemFromCollection(SpecialArgs* args, const char* item)
 {
     if (strstr(item, collection[0]))
-        args->use_avx = true;
+        args->use_embree = true;
     if (strstr(item, collection[1]))
-        args->use_sse = true;
+        args->use_avx = true;
     if (strstr(item, collection[2]))
-        args->no_optimize = true;
+        args->use_sse = true;
     if (strstr(item, collection[3]))
-        args->no_invalide_faces = true;
+        args->no_optimize = true;
     if (strstr(item, collection[4]))
-        args->nosun = true;
+        args->no_invalide_faces = true;
     if (strstr(item, collection[5]))
-        args->norgb = true;
+        args->nosun = true;
     if (strstr(item, collection[6]))
-        args->nohemi = true;
+        args->norgb = true;
     if (strstr(item, collection[7]))
-        args->no_simplify = true;
+        args->nohemi = true;
     if (strstr(item, collection[8]))
-        args->nosmg = true;
+        args->no_simplify = true;
     if (strstr(item, collection[9]))
-        args->noise = true;
+        args->nosmg = true;
     if (strstr(item, collection[10]))
-        args->skip_weld = true;
+        args->noise = true;
     if (strstr(item, collection[11]))
-        args->use_std = true;
-
+        args->skip_weld = true;
     if (strstr(item, collection[12]))
-        args->use_IMPLICIT_Stage = true;
+        args->use_std = true;
+    
     if (strstr(item, collection[13]))
-        args->use_LMAPS_Stage = true;
-    if (strstr(item, collection[14]))
-        args->use_MU_Lighting = true;
-    if (strstr(item, collection[15]))
         args->use_cdbPacking = true;
-
-    if (strstr(item, collection[16]))
+    if (strstr(item, collection[14]))
         args->run_mu_first = true;
-
+    if (strstr(item, collection[15]))
+        args->use_tbb = true;
 }
 #include <vcclr.h> // Include for gcroot
 
@@ -313,8 +312,6 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
         GetItemFromCollection(args, s.c_str());
      };
-
-    args->use_embree = args->use_IMPLICIT_Stage || args->use_LMAPS_Stage || args->use_MU_Lighting;
      
     args->off_lmaps;
 
@@ -335,13 +332,14 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
     args->level_name = LevelName_str;
  
+    args->off_raytrace = off_raytracing->Checked;
     args->off_impl = off_implicit->Checked;
     args->off_lmaps = off_lmaps->Checked;
     args->off_mulitght = off_mulight->Checked;
     args->use_DXT1 = useDXT1->Checked;
-    args->triangle_m128_SSE = use_PrecalcTris->Checked;
+    args->use_fast_lmapsbuilder = FastLmapsBuilder->Checked;
     args->use_MethodIntersection = RaytraceFast->Checked;
-
+ 
     if (!IsRunned)
     {
         IsRunned = true;

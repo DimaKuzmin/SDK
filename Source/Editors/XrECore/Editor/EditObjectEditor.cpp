@@ -397,12 +397,15 @@ bool CEditableObject::CheckShaderCompatible()
     {
     	IBlender* 		B = EDevice.Resources->_FindBlender(*(*s_it)->m_ShaderName);
         Shader_xrLC* 	C = EDevice.ShaderXRLC.Get(*(*s_it)->m_ShaderXRLCName);
-        if (!B||!C){
-        	ELog.Msg	(mtError,"Object '%s': invalid or missing shader [E:'%s', C:'%s']",GetName(),(*s_it)->_ShaderName(),(*s_it)->_ShaderXRLCName());
+        if (!B||!C)
+        {
+        	ELog.Msg	(mtError,"Object '%s': invalid or missing shader [xrSheders:'%s', xrShedersXRLC: '%s', Surface: %s]", GetName(), (*s_it)->_ShaderName(), (*s_it)->_ShaderXRLCName(), (*s_it)->m_Name.c_str() );
             bRes 		= false;
-        }else{
+        }
+        else
+        {
             if (!BE(B->canBeLMAPped(),!C->flags.bLIGHT_Vertex)){
-                ELog.Msg	(mtError,"Object '%s': engine shader '%s' non compatible with compiler shader '%s'",GetName(),(*s_it)->_ShaderName(),(*s_it)->_ShaderXRLCName());
+                ELog.Msg	(mtError,"Object '%s': engine shader '%s' non compatible with compiler shader '%s', Surface: %s", GetName(),(*s_it)->_ShaderName(),(*s_it)->_ShaderXRLCName(), (*s_it)->m_Name.c_str());
                 bRes 		= false;
             }
         }

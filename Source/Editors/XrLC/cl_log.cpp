@@ -108,12 +108,12 @@ void __cdecl StatusNoMSG(const char* format, ...)
 void Progress		(const float F)
 {
 	// No critical section usage
-	progress		= F;
-	/*
+	//progress		= F;
+ 
 	LONG* target = (LONG *)(&progress);
 	LONG  src    = *( (LONG *)(&F)  );
 	InterlockedExchange(target, src);
-	*/
+	
 }
 
 xr_vector<shared_str> phases_timers;

@@ -12,7 +12,7 @@ class ImplicitThread : public CThread
 public:
 
 	ImplicitExecute		execute;
-	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA, u32 _y_start, u32 _y_end) : CThread (ID), execute( ID )
+	ImplicitThread		(u32 ID, ImplicitDeflector* _DATA) : CThread (ID), execute( ID )
 	{	
 		if (ID == 0)
 			execute.clear();
@@ -35,13 +35,17 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 void RunThread(ImplicitDeflector& defl)
 {
 	CThreadManager			tmanager;
- 
-	u32	stride = defl.Height() / build_args->use_threads;
-	
+
+	if (build_args->use_tbb)
+	{
+		ImplicitThread* th = xr_new<ImplicitThread>(0, &defl);
+		tmanager.start(th, 0);
+
+	}
+	else 
  	for (u32 thID = 0; thID < build_args->use_threads; thID++)
 	{
-		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl, thID * stride, thID * stride + stride);
-		
+		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl);
 		tmanager.start(th, thID);
 	}
 

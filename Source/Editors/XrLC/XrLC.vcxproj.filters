@@ -52,6 +52,9 @@
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Model">
       <UniqueIdentifier>{012a8f47-9b2d-4d7f-8a66-1e2280614004}</UniqueIdentifier>
     </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\CUDA">
+      <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h">
@@ -149,7 +152,9 @@
     </ClInclude>
     <ClInclude Include="xrGameMaterials.h" />
     <ClInclude Include="..\Public\Shader_xrLC.h" />
-    <ClInclude Include="xrLC.h" />
+    <ClInclude Include="xrLC.h">
+      <Filter>Kernel</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -321,10 +326,18 @@
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
+    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
       <Filter>Kernel\Res</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xrPhase_MergeLM_Cuda.cu">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+    </None>
   </ItemGroup>
 </Project>

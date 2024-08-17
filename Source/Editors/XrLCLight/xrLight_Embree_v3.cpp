@@ -313,7 +313,6 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 
 	void* data = hit->geomID == 1 ? TriTransparent_Dummys[hit->primID] : TriNormal_Dummys[hit->primID];
 
-
 	base_Face* F = (base_Face*)(data);
   
 	if (!F->flags.bOpaque)

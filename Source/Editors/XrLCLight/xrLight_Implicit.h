@@ -42,8 +42,7 @@ public:
 
 	void		Execute			();
 
- 	void		ForCycle		(ImplicitDeflector* defl, u32 V, int TH);
-	void		clear();
+ 	void		clear();
 };
 
 

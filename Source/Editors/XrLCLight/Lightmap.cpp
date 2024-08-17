@@ -53,10 +53,12 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOO
 		u32 real_H	= (L.height	+ 2*BORDER);
 		u32 real_W	= (L.width	+ 2*BORDER);
 		blit	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
-	} else {
+	} 
+	else
+	{
 		u32 real_H	= (L.height	+ 2*BORDER);
 		u32 real_W	= (L.width	+ 2*BORDER);
-		blit_r	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
+		blit_r	(lm, getLMSIZE(), getLMSIZE(), L, real_W,real_H,b_u,b_v,254-BORDER);
 	}
 }
 

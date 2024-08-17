@@ -13,6 +13,14 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_v10|Win32">
+      <Configuration>DevAVX_v10</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="DevAVX_v10|x64">
+      <Configuration>DevAVX_v10</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="DevCPU_V10|Win32">
       <Configuration>DevCPU_V10</Configuration>
       <Platform>Win32</Platform>

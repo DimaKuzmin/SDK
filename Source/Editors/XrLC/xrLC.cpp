@@ -67,13 +67,12 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 		args->use_RobustGeom, args->embree_tnear, args->embree_geometry_type, args->use_embree, args->use_avx, args->use_sse);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, useDXT1: %d",
-		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1);
+	sprintf(tmp, "c++: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, DXT1: %d, FASTLMAPS %d",
+		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1, args->use_fast_lmapsbuilder);
 	clMsg(tmp);
 
 	
-	sprintf(tmp, "c++: OPCODE AVX_TRI: %d, CFORM Packing: %d",
-		args->triangle_m128_SSE, args->use_cdbPacking);
+	sprintf(tmp, "c++: OPCODE CFORM Packing: %d", args->use_cdbPacking);
 	clMsg(tmp);
 
 
@@ -201,11 +200,8 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->mu_samples = args->mu_samples;
 	build_args->sample = args->sample;
 	build_args->use_threads = args->use_threads;
-	
-	build_args->use_IMPLICIT_Stage = args->use_IMPLICIT_Stage;
-	build_args->use_LMAPS_Stage = args->use_LMAPS_Stage;
-	build_args->use_MU_Lighting = args->use_MU_Lighting;
-
+ 	build_args->use_tbb = args->use_tbb;
+ 
 
 	build_args->nohemi = args->nohemi;
 	build_args->norgb = args->norgb;
@@ -232,11 +228,13 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->off_impl = args->off_impl;
 	build_args->off_lmaps = args->off_lmaps;
 	build_args->off_mulitght = args->off_mulitght;
+	build_args->off_raytrace = args->off_raytrace;
+
 	build_args->use_DXT1 = args->use_DXT1;
+	build_args->use_fast_lmapsbuilder = args->use_fast_lmapsbuilder;
 
 	// xrCDB Special Features
-	build_args->triangle_m128_SSE = args->triangle_m128_SSE;
-	build_args->use_cdbPacking = args->use_cdbPacking;
+ 	build_args->use_cdbPacking = args->use_cdbPacking;
 
 	build_args->run_mu_first = args->run_mu_first;
 

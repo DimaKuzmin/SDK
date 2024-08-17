@@ -23,7 +23,8 @@ struct XRLC_API  SpecialArgs
 	bool off_impl = false;
 	bool off_mulitght = false;
 	bool use_DXT1 = false;
-	bool triangle_m128_SSE = false;
+	bool use_fast_lmapsbuilder = false;
+	bool off_raytrace = false;
 
 	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
@@ -35,10 +36,7 @@ struct XRLC_API  SpecialArgs
 	bool use_opcode_old = 0;
 	bool use_RobustGeom = 0;
 	bool use_MethodIntersection = 0;
-
-	bool use_IMPLICIT_Stage = 0;
-	bool use_LMAPS_Stage = 0;
-	bool use_MU_Lighting = 0;
+	bool use_tbb = 0;
 
 	int use_threads = 4;
 

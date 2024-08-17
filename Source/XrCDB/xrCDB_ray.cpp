@@ -245,8 +245,7 @@ public:
 
 		if (ctxt)
 		{
-			m128_SSE = ctxt->triangle_m128_SSE;
-			UseOccluder = ctxt->filterOccluded != nullptr;
+ 			UseOccluder = ctxt->filterOccluded != nullptr;
 			ctxt->result->OccludeHas = UseOccluder;
 			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
 		}

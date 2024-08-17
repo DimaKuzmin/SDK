@@ -129,15 +129,18 @@ private: System::Windows::Forms::Button^ xrAI_SpawnAIMap;
 private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 
 
-private: System::Windows::Forms::Label^ label17;
+
 private: System::Windows::Forms::Label^ label18;
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
-private: System::Windows::Forms::CheckBox^ use_PrecalcTris;
+
 private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::TextBox^ ThreadsAI;
 private: System::Windows::Forms::ProgressBar^ CurrentProgress;
 private: System::Windows::Forms::Label^ MemoryInfo;
 private: System::Windows::Forms::CheckBox^ RaytraceFast;
+private: System::Windows::Forms::CheckBox^ FastLmapsBuilder;
+private: System::Windows::Forms::CheckBox^ off_raytracing;
+
 
 
 
@@ -168,11 +171,9 @@ public:
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->xrLC_JitterSamples = (gcnew System::Windows::Forms::ComboBox());
 			this->label18 = (gcnew System::Windows::Forms::Label());
-			this->label17 = (gcnew System::Windows::Forms::Label());
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->use_PrecalcTris = (gcnew System::Windows::Forms::CheckBox());
 			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
 			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
@@ -183,6 +184,8 @@ public:
 			this->RadioEmbreeGdefault = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeG_Robust = (gcnew System::Windows::Forms::RadioButton());
 			this->IntelEmbreType = (gcnew System::Windows::Forms::GroupBox());
+			this->FastLmapsBuilder = (gcnew System::Windows::Forms::CheckBox());
+			this->RaytraceFast = (gcnew System::Windows::Forms::CheckBox());
 			this->RadioEmbreeGUltra = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGHigh = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGMedium = (gcnew System::Windows::Forms::RadioButton());
@@ -223,7 +226,7 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->RaytraceFast = (gcnew System::Windows::Forms::CheckBox());
+			this->off_raytracing = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -365,7 +368,6 @@ public:
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
 			this->Geometry_Tab->Controls->Add(this->xrLC_JitterSamples);
 			this->Geometry_Tab->Controls->Add(this->label18);
-			this->Geometry_Tab->Controls->Add(this->label17);
 			this->Geometry_Tab->Controls->Add(this->label11);
 			this->Geometry_Tab->Controls->Add(this->EmbreeHitsCollect);
 			this->Geometry_Tab->Controls->Add(this->groupBox2);
@@ -418,19 +420,6 @@ public:
 			this->label18->TabIndex = 28;
 			this->label18->Text = L"Стандартный RayTrace Тоже ускорен (Отсечены лишние hits)....";
 			// 
-			// label17
-			// 
-			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label17->ForeColor = System::Drawing::Color::Firebrick;
-			this->label17->Location = System::Drawing::Point(10, 369);
-			this->label17->Name = L"label17";
-			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->label17->Size = System::Drawing::Size(559, 81);
-			this->label17->TabIndex = 27;
-			this->label17->Text = L"Рекомендовано выберать Intel, для LMAPS, MU Models.\r\nНа Implict стадии плохо проб"
-				L"ивает поверхности типа Воды. \r\nВ последующем починится. (Надеюсь).\r\n\r\n\r\n\r\n";
-			// 
 			// label11
 			// 
 			this->label11->AutoSize = true;
@@ -453,7 +442,7 @@ public:
 			// 
 			// groupBox2
 			// 
-			this->groupBox2->Controls->Add(this->use_PrecalcTris);
+			this->groupBox2->Controls->Add(this->off_raytracing);
 			this->groupBox2->Controls->Add(this->useDXT1);
 			this->groupBox2->Controls->Add(this->off_mulight);
 			this->groupBox2->Controls->Add(this->off_lmaps);
@@ -465,20 +454,10 @@ public:
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
 			// 
-			// use_PrecalcTris
-			// 
-			this->use_PrecalcTris->AutoSize = true;
-			this->use_PrecalcTris->Location = System::Drawing::Point(20, 200);
-			this->use_PrecalcTris->Name = L"use_PrecalcTris";
-			this->use_PrecalcTris->Size = System::Drawing::Size(314, 31);
-			this->use_PrecalcTris->TabIndex = 4;
-			this->use_PrecalcTris->Text = L"m128(SSE) TriangleCalculation";
-			this->use_PrecalcTris->UseVisualStyleBackColor = true;
-			// 
 			// useDXT1
 			// 
 			this->useDXT1->AutoSize = true;
-			this->useDXT1->Location = System::Drawing::Point(20, 163);
+			this->useDXT1->Location = System::Drawing::Point(21, 189);
 			this->useDXT1->Name = L"useDXT1";
 			this->useDXT1->Size = System::Drawing::Size(219, 31);
 			this->useDXT1->TabIndex = 3;
@@ -488,7 +467,7 @@ public:
 			// off_mulight
 			// 
 			this->off_mulight->AutoSize = true;
-			this->off_mulight->Location = System::Drawing::Point(20, 126);
+			this->off_mulight->Location = System::Drawing::Point(21, 152);
 			this->off_mulight->Name = L"off_mulight";
 			this->off_mulight->Size = System::Drawing::Size(216, 31);
 			this->off_mulight->TabIndex = 2;
@@ -498,7 +477,7 @@ public:
 			// off_lmaps
 			// 
 			this->off_lmaps->AutoSize = true;
-			this->off_lmaps->Location = System::Drawing::Point(20, 89);
+			this->off_lmaps->Location = System::Drawing::Point(21, 115);
 			this->off_lmaps->Name = L"off_lmaps";
 			this->off_lmaps->Size = System::Drawing::Size(201, 31);
 			this->off_lmaps->TabIndex = 1;
@@ -508,7 +487,7 @@ public:
 			// off_implicit
 			// 
 			this->off_implicit->AutoSize = true;
-			this->off_implicit->Location = System::Drawing::Point(20, 52);
+			this->off_implicit->Location = System::Drawing::Point(21, 78);
 			this->off_implicit->Name = L"off_implicit";
 			this->off_implicit->Size = System::Drawing::Size(277, 31);
 			this->off_implicit->TabIndex = 0;
@@ -579,6 +558,7 @@ public:
 			// 
 			// IntelEmbreType
 			// 
+			this->IntelEmbreType->Controls->Add(this->FastLmapsBuilder);
 			this->IntelEmbreType->Controls->Add(this->RaytraceFast);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGUltra);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGHigh);
@@ -592,6 +572,26 @@ public:
 			this->IntelEmbreType->TabIndex = 19;
 			this->IntelEmbreType->TabStop = false;
 			this->IntelEmbreType->Text = L"Тип Геометрии (Intel)";
+			// 
+			// FastLmapsBuilder
+			// 
+			this->FastLmapsBuilder->AutoSize = true;
+			this->FastLmapsBuilder->Location = System::Drawing::Point(202, 70);
+			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
+			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
+			this->FastLmapsBuilder->TabIndex = 4;
+			this->FastLmapsBuilder->Text = L"Быстрый BuildLmap (Не ориг)";
+			this->FastLmapsBuilder->UseVisualStyleBackColor = true;
+			// 
+			// RaytraceFast
+			// 
+			this->RaytraceFast->AutoSize = true;
+			this->RaytraceFast->Location = System::Drawing::Point(202, 33);
+			this->RaytraceFast->Name = L"RaytraceFast";
+			this->RaytraceFast->Size = System::Drawing::Size(322, 31);
+			this->RaytraceFast->TabIndex = 5;
+			this->RaytraceFast->Text = L"Использовать быстрой raytrace";
+			this->RaytraceFast->UseVisualStyleBackColor = true;
 			// 
 			// RadioEmbreeGUltra
 			// 
@@ -1013,15 +1013,15 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// RaytraceFast
+			// off_raytracing
 			// 
-			this->RaytraceFast->AutoSize = true;
-			this->RaytraceFast->Location = System::Drawing::Point(202, 33);
-			this->RaytraceFast->Name = L"RaytraceFast";
-			this->RaytraceFast->Size = System::Drawing::Size(322, 31);
-			this->RaytraceFast->TabIndex = 5;
-			this->RaytraceFast->Text = L"Использовать быстрой raytrace";
-			this->RaytraceFast->UseVisualStyleBackColor = true;
+			this->off_raytracing->AutoSize = true;
+			this->off_raytracing->Location = System::Drawing::Point(21, 43);
+			this->off_raytracing->Name = L"off_raytracing";
+			this->off_raytracing->Size = System::Drawing::Size(221, 31);
+			this->off_raytracing->TabIndex = 4;
+			this->off_raytracing->Text = L"OFF (raytrace calls)";
+			this->off_raytracing->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 
