@@ -239,7 +239,7 @@ void CreateLog			(BOOL nl)
 		filelog->w_string(s.c_str());
 	}
 	
-	if (FS.path_exist("$logs$"))
+	/*if (FS.path_exist("$logs$"))
 	{
 		string_path path;
 		string128 name = {0};
@@ -254,6 +254,7 @@ void CreateLog			(BOOL nl)
 		std::thread* th = new std::thread(ThreadLog);
 		th->detach();
 	}
+	*/
 
 }
 

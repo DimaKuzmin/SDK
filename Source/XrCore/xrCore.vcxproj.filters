@@ -262,6 +262,9 @@
     <ClCompile Include="ELocatorAPI.cpp">
       <Filter>FS\LocatorAPI</Filter>
     </ClCompile>
+    <ClCompile Include="Win_Callstack.cpp">
+      <Filter>Debug core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">

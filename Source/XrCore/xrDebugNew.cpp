@@ -16,6 +16,9 @@
 
 extern bool shared_str_initialized;
 
+
+void  callstack_mdmp(_EXCEPTION_POINTERS* pExceptionInfo);
+
 #ifdef __BORLANDC__
     #	include "d3d9.h"
     #	include "d3dx9.h"
@@ -171,7 +174,9 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	string4096			assertion_info;
 
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
-	 
+	
+	callstack_mdmp(0);
+
 	if (handler)
 		handler			();
 
@@ -273,6 +278,8 @@ void out_of_memory_handler	()
 	}
  
 	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request:unkown K");
+
+	callstack_mdmp(0);
 
 	DEBUG_INVOKE;
 }
@@ -579,44 +586,20 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 	if (shared_str_initialized)
 		FlushLog			();
 
-#ifndef USE_OWN_ERROR_MESSAGE_WINDOW
-#	ifdef USE_OWN_MINI_DUMP
-		save_mini_dump		(pExceptionInfo);
-#	endif // USE_OWN_MINI_DUMP
-#else // USE_OWN_ERROR_MESSAGE_WINDOW
-	if (!error_after_dialog) {
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()	(true);
-
-		MessageBox			(NULL,"Fatal error occured\n\nPress OK to abort program execution","Fatal error",MB_OK|MB_ICONERROR|MB_SYSTEMMODAL);
-		exit(-1);
-	}
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
-#if 1
-	//ReportFault				( pExceptionInfo, 0 );
-#endif
-
-
+ 	save_mini_dump		(pExceptionInfo);
+  
+	// DUMP CALLSTACK
+	callstack_mdmp		(pExceptionInfo);
+ 
 	MessageBox(NULL, "Fatal error occured\n\nPress OK to abort program execution", "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
 	exit(-1);
 
 	if (!previous_filter) 
-	{
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-		if (Debug.get_on_dialog())
-			Debug.get_on_dialog()	(false);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
-
+	{ 
 		return				(EXCEPTION_CONTINUE_SEARCH) ;
 	}
 
 	previous_filter			(pExceptionInfo);
-
-#ifdef USE_OWN_ERROR_MESSAGE_WINDOW
-	if (Debug.get_on_dialog())
-		Debug.get_on_dialog()		(false);
-#endif // USE_OWN_ERROR_MESSAGE_WINDOW
 
 	return					(EXCEPTION_CONTINUE_SEARCH) ;
 }
@@ -685,8 +668,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		);
 		
 		exit					(-1);
-	//	FATAL					("Unexpected application termination");
-	}
+ 	}
 #endif // USE_BUG_TRAP
 
 	static void handler_base				(LPCSTR reason_string)
@@ -762,20 +744,15 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 			function_,
 			ignore_always
 		);
+
+		callstack_mdmp(0);
 	}
 
 	static void pure_call_handler			()
 	{
 		handler_base					("pure virtual function call");
 	}
-
-#ifdef XRAY_USE_EXCEPTIONS
-	static void unexpected_handler			()
-	{
-		handler_base					("unexpected program termination");
-	}
-#endif // XRAY_USE_EXCEPTIONS
-
+ 
 	static void abort_handler				(int signal)
 	{
 		handler_base					("application is aborting");
@@ -788,33 +765,9 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	static void illegal_instruction_handler	(int signal)
 	{
-		Msg("ERROR Signal: %d", signal);
-		
-		/*
-		constexpr int MAX_STACK_SIZE = 64;
-		void* stackTrace[MAX_STACK_SIZE];
-		int stackSize = backtrace(stackTrace, MAX_STACK_SIZE);
-		char** symbols = backtrace_symbols(stackTrace, stackSize);
-		if (symbols == nullptr) {
-			std::cerr << "Ошибка при получении стека вызовов." << std::endl;
-			return;
-		}
-
-		std::cerr << "Стек вызовов:" << std::endl;
-		for (int i = 0; i < stackSize; ++i) {
-			std::cerr << symbols[i] << std::endl;
-		}
-
-		free(symbols);
-		*/
-
+		// Msg("ERROR Signal: %d", signal);
 		handler_base					("illegal instruction");
 	}
-
-//	static void storage_access_handler		(int signal)
-//	{
-//		handler_base					("illegal storage access");
-//	}
 
 	static void termination_handler			(int signal)
 	{
@@ -823,12 +776,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 	void debug_on_thread_spawn			()
 	{
-#ifdef USE_BUG_TRAP
-		BT_SetTerminate					();
-#else // USE_BUG_TRAP
-		//std::set_terminate				(_terminate);
-#endif // USE_BUG_TRAP
-
 		_set_abort_behavior				(0,_WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 		signal							(SIGABRT,		abort_handler);
 		signal							(SIGABRT_COMPAT,abort_handler);
@@ -842,13 +789,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 
 		_set_new_mode					(1);
 		std::set_new_handler(out_of_memory_handler);
-//		std::set_new_handler			(&std_out_of_memory_handler);
-
 		_set_purecall_handler			(&pure_call_handler);
-
-#if 0// should be if we use exceptions
-		std::set_unexpected				(_terminate);
-#endif
 	}
 
     void	xrDebug::_initialize		(const bool &dedicated)
@@ -858,23 +799,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		*g_bug_report_file				= 0;
 
 		debug_on_thread_spawn			();
-
-#ifdef USE_BUG_TRAP
-		SetupExceptionHandler			( is_dedicated );
-#endif // USE_BUG_TRAP
+ 
 		previous_filter					= ::SetUnhandledExceptionFilter(UnhandledFilter);	// exception handler to all "unhandled" exceptions
-
-#if 0
-		struct foo {static void	recurs	(const u32 &count)
-		{
-			if (!count)
-				return;
-
-			_alloca			(4096);
-			recurs			(count - 1);
-		}};
-		foo::recurs			(u32(-1));
-		std::terminate		();
-#endif // 0
 	}
 #endif
