@@ -1,0 +1,4 @@
+﻿  StdAfx.cpp
+A:\VIsualStudio\VC\Tools\MSVC\14.39.33519\include\hash_map(21,1): error C1189: #error:  <hash_map> is deprecated and will be REMOVED. Please use <unordered_map>. You can define _SILENCE_STDEXT_HASH_DEPRECATION_WARNINGS to suppress this error.
+  (компиляция исходного файла "StdAfx.cpp")
+  
