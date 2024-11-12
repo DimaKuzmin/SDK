@@ -17,6 +17,10 @@ public:
 	void			InitDefault			();
     void			Load				(IReader& F);
     void			Save				(IWriter& F);
+
+    void            LoadLtx(CInifile* file, LPCSTR sec);
+    void            SaveLTX(CInifile* file, LPCSTR sec);
+
 	float			Length_sec			(){return float(iFrameCount)/fFPS;}
 	u32				Length_ms			(){return iFloor(Length_sec()*1000.f);}
     u32				InterpolateRGB		(int frame);
@@ -53,6 +57,10 @@ public:
     void			OnDestroy			();
     void			Load				();
     void			Save				();
+    
+    void            SaveLTX();
+    void            LoadLTX();
+
     void			Reload				();
     void			Unload				();
     CLAItem*		AppendItem			(LPCSTR name, CLAItem* src);
