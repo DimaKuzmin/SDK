@@ -62,6 +62,10 @@ void CSector::BuildHierrarhy()
 
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
+		string128 tmp;
+		sprintf(tmp, "SizeLimit: %d", SizeLimit);
+		StatusNoMSG(tmp);
+
 		int iSize = g_tree.size();
 
 		for (int I = 0; I < iSize; I++)

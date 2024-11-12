@@ -568,7 +568,7 @@ void CBuild::xrPhase_MergeGeometry()
 		 
  
 							auto id = reserved.back();
-							clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
+							// clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
 							Progress( float ( 1 / reserved.size()) );
 							reserved.pop_back();
 							lock.unlock();
@@ -605,7 +605,7 @@ void CBuild::xrPhase_MergeGeometry()
 					}
  
 					auto id = reserved_big_objects.back();
-					clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
+					// clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
 					Progress( float ( 1 / reserved_big_objects.size()) );
 					reserved_big_objects.pop_back();
 					lock.unlock();
