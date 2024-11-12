@@ -67,6 +67,8 @@ xr_token					tbmode_token							[ ]={
 void STextureParams::Load(IReader& F)
 {
     R_ASSERT(F.find_chunk(THM_CHUNK_TEXTUREPARAM));
+
+
     F.r					(&fmt,sizeof(ETFormat));
     flags.assign(F.r_u32());
     border_color= F.r_u32();
@@ -75,7 +77,7 @@ void STextureParams::Load(IReader& F)
     mip_filter	= F.r_u32();
     width		= F.r_u32();
     height		= F.r_u32();
-
+ 
     if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE)){
         type	= (ETType)F.r_u32();
     }
@@ -98,12 +100,19 @@ void STextureParams::Load(IReader& F)
         }
     	F.r_stringZ			(bump_name);
     }
-
+ 
     if (F.find_chunk(THM_CHUNK_EXT_NORMALMAP))
-	    F.r_stringZ			(ext_normal_map_name);
+    {
+        F.r_stringZ(ext_normal_map_name);
+    }
 
-	if (F.find_chunk(THM_CHUNK_FADE_DELAY))
-		fade_delay			= F.r_u8();
+         
+    if (F.find_chunk(THM_CHUNK_FADE_DELAY))
+    {
+        fade_delay = F.r_u8();
+    }
+        
+ 
 }
 
 

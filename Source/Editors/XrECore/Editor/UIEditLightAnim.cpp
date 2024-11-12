@@ -57,9 +57,13 @@ void UIEditLightAnim::Draw()
 {
     if(ImGui::BeginChild("Left", ImVec2(230, 0)))
     {
-        
+        if (ImGui::Button("SaveLTX", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.SaveLTX(); } ImGui::SameLine();
         if (ImGui::Button("Save", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Save(); } ImGui::SameLine();
+       
+        if (ImGui::Button("ReloadLTX", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.LoadLTX(); OnItemFocused(nullptr); InitializeItems(); } ImGui::SameLine();
         if (ImGui::Button("Reload", ImVec2(0, ImGui::GetFrameHeight()))) { m_Modife = false; LALib.Reload(); OnItemFocused(nullptr); InitializeItems(); } ImGui::SameLine();
+
+
         ImGui::Checkbox("Render Alpha", &m_RenderAlpha);
         if (ImGui::BeginChild("Left", ImVec2(0, 0), true))
         {
@@ -298,7 +302,19 @@ void UIEditLightAnim::InitializeItems()
 {
     ListItemsVec items;
     for (LAItemIt it = LALib.Items.begin(); it != LALib.Items.end(); it++)
-        LHelper().CreateItem(items, *(*it)->cName, 0, 0, 0);
+    {
+        /// Msg("ItemKey: %s", (*it)->cName.c_str());
+
+        if (*(*it)->cName == nullptr)
+        {
+            LHelper().CreateItem(items, "null", 0, 0, 0);
+        }
+        else
+        {
+            LHelper().CreateItem(items, *(*it)->cName, 0, 0, 0);
+        }
+        
+    }
     m_Items->AssignItems(items);
 }
 

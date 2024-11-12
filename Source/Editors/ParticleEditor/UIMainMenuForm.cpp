@@ -31,6 +31,10 @@ void UIMainMenuForm::Draw()
             {
                 ExecCommand(COMMAND_LOAD_XR);
             }
+            if (ImGui::MenuItem("Load .xr (SOC)"))
+            {
+                ExecCommand(COMMAND_LOAD_XR_SOC);
+            }
             ImGui::Separator();
             if (ImGui::MenuItem("Validate"))
             {

@@ -111,7 +111,12 @@ BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 {
     CSurface* surf			= R->e_mesh->GetSurfaceByFaceID(R->tag); VERIFY(surf);
     Shader_xrLC* c_sh		= EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
-    if (!c_sh->flags.bRendering) return FALSE;
+    if (!c_sh->flags.bRendering)
+        return FALSE;
+
+    if (!surf->m_ImageData || surf->m_ImageData->w == 0 && surf->m_ImageData->h == 0)
+        return FALSE;
+
     const Fvector2*			cuv[3];
     R->e_mesh->GetFaceTC	(R->tag,cuv);
 
@@ -125,10 +130,16 @@ BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
     uv.x = cuv[0]->x*B.x + cuv[1]->x*B.y + cuv[2]->x*B.z;
     uv.y = cuv[0]->y*B.x + cuv[1]->y*B.y + cuv[2]->y*B.z;
 
+//    Msg("Surface: W: %u, H: %u", surf->m_ImageData->w, surf->m_ImageData->h);
+
     int U = iFloor(uv.x*float(surf->m_ImageData->w) + .5f);
-    int V = iFloor(uv.y*float(surf->m_ImageData->h)+ .5f);
-    U %= surf->m_ImageData->w;	if (U<0) U+=surf->m_ImageData->w;
-    V %= surf->m_ImageData->h;	if (V<0) V+=surf->m_ImageData->h;
+    int V = iFloor(uv.y*float(surf->m_ImageData->h) + .5f);
+    U %= surf->m_ImageData->w;
+    if (U<0)
+        U+=surf->m_ImageData->w;
+    V %= surf->m_ImageData->h;	
+    if (V<0)
+        V+=surf->m_ImageData->h;
 
 /*    
 //	float filter_core[3][3]={{0.0125,0.0125,0.0125},{0.0125,0.9,0.0125},{0.0125,0.0125,0.0125}};
@@ -153,6 +164,7 @@ BOOL GetPointColor(SPickQuery::SResult* R, u32& alpha, u32& color)
 //	if (0!=cnt)	C.div(cnt);
     color	= color_rgba(C.x,C.y,C.z,C.w);
 */
+
 	color = surf->m_ImageData->layers.back()[V*surf->m_ImageData->w+U];
     alpha = color_get_A(color);
     return TRUE;

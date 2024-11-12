@@ -125,14 +125,11 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 			success = true;
 		}
 	}
-
-
-	//Msg("ID: %u, size: %u, type: %u, eof(%u), size: %u", ID, dwSize, dwType, eof(), impl().elapsed());
-
+	 
 	if ( !success )
 	{
 		rewind();
-		while (!eof()) 
+		while (!eof_chunk())
 		{
 			dwType = r_u32();
 			dwSize = r_u32();

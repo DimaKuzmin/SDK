@@ -171,6 +171,8 @@ public:
 	CCommandVar			CommandSave				(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandSaveXR			(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandLoadXR			(CCommandVar p1, CCommandVar p2);
+    CCommandVar         CommandLoadXR_SOC       (CCommandVar p1, CCommandVar p2);
+
 	CCommandVar			CommandSaveBackup		(CCommandVar p1, CCommandVar p2);
 	CCommandVar			CommandReload			(CCommandVar p1, CCommandVar p2);
     CCommandVar			CommandValidate			(CCommandVar p1, CCommandVar p2);

@@ -203,21 +203,24 @@ bool CPSLibrary::Load(const char* nm)
     // second generation
     IReader* OBJ;
     OBJ			 			= F->open_chunk(PS_CHUNK_SECONDGEN);
-    if (OBJ){
+    if (OBJ)
+    {
         IReader* O   		= OBJ->open_chunk(0);
         for (int count=1; O; count++) {
             PS::CPEDef*	def	= xr_new<PS::CPEDef>();
             if (def->Load(*O)) m_PEDs.push_back(def);
             else{ bRes = false; xr_delete(def); }
             O->close();
-            if (!bRes)	break;
+            if (!bRes)
+                break;
             O 			= OBJ->open_chunk(count);
         }
         OBJ->close();
     }
     // second generation
     OBJ 					= F->open_chunk(PS_CHUNK_THIRDGEN);
-    if (OBJ){
+    if (OBJ)
+    {
         IReader* O   		= OBJ->open_chunk(0);
         for (int count=1; O; count++) {
             PS::CPGDef*	def	= xr_new<PS::CPGDef>();

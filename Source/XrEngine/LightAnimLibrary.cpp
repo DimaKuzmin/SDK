@@ -58,6 +58,64 @@ void CLAItem::Save(IWriter& F)
 	F.close_chunk	();
 }
 
+void CLAItem::LoadLtx(CInifile* file, LPCSTR sec)
+{
+    // ITEM COMMON
+    file->r_string(sec, "name", cName);
+    file->r_float(sec, "FPS", fFPS);
+    file->r_u32(sec, "frame_count", (u32&)iFrameCount);
+
+    // ITEM KEYS
+
+    int ID = 0;
+    auto name_sec_keys = std::string(std::string(sec) + "_" + "keys");
+  
+    bool exist = true;
+    while (exist)
+    {
+        auto name_line = std::string(std::string(sec) + "_" + "key_" + std::to_string(ID));
+
+        if (file->line_exist(name_sec_keys.c_str(), name_line.c_str()))
+        {
+           
+            LPCSTR value_s = file->r_string(name_sec_keys.c_str(), name_line.c_str());
+            if (value_s)
+            {
+                u32 key, value;
+                sscanf(value_s, "%u, %u", &key, &value);
+                Keys[key] = value;
+            }
+            ID++;
+        }
+        else
+        {
+            exist = false;
+        }
+    }
+}
+
+void CLAItem::SaveLTX(CInifile* file, LPCSTR sec)
+{   
+    // ITEM COMMON
+    file->w_string(sec, "name", cName.c_str());
+    file->w_float(sec, "FPS", fFPS);
+    file->w_u32(sec, "frame_count", iFrameCount);
+
+    // ITEM KEYS
+
+    int ID = 0;
+    auto name_sec_keys = std::string(std::string(sec) + "_" + "keys");
+    for (KeyPairIt it = Keys.begin(); it != Keys.end(); it++)
+    {
+        auto name_line = std::string(std::string(sec) + "_" + "key_" + std::to_string(ID));
+
+        string128 value;
+        sprintf(value, "%u, %u", it->first, it->second);
+        file->w_string(name_sec_keys.c_str(), name_line.c_str(), value);
+        ID++;
+    }
+}
+
 void CLAItem::InsertKey(int frame, u32 color)
 {
 	R_ASSERT(frame<=iFrameCount);
@@ -234,9 +292,11 @@ void ELightAnimLibrary::Save()
     F.open_chunk	(CHUNK_VERSION);
     F.w_u16			(LANIM_VERSION);
 	F.close_chunk	();
+  
     F.open_chunk	(CHUNK_ITEM_LIST);
     int count = 0;
-	for (LAItemIt it=Items.begin(); it!=Items.end(); it++){
+	for (LAItemIt it=Items.begin(); it!=Items.end(); it++)
+    {
         F.open_chunk(count++);
 		(*it)->Save		(F);
         F.close_chunk();
@@ -248,6 +308,53 @@ void ELightAnimLibrary::Save()
 
     if (!F.save_to(fn))
         Log			("!Can't save color animations:",fn);
+}
+
+void ELightAnimLibrary::SaveLTX()
+{
+    //CHUNK_ITEM_LIST
+    int ID = 0;
+    for (LAItemIt it = Items.begin(); it != Items.end(); it++)
+    {
+        auto name = std::string("light_anims\\" + std::string ((*it)->cName.c_str()) + std::string(".ltx") );
+        Msg("Save LTX: %s", name.c_str());
+        string_path pathtmp;
+        FS.update_path(pathtmp, _server_data_root_, name.c_str());
+        CInifile* file = xr_new<CInifile>(pathtmp, false, false);
+
+        // auto sec = std::string("light_anim_" + std::to_string(ID));
+        (*it)->SaveLTX(file, "light_anim");
+        ID++;
+
+        file->save_as();
+    }
+}
+
+void ELightAnimLibrary::LoadLTX()
+{
+    Unload();
+
+    string_path pathtmp;
+    FS.update_path(pathtmp, _server_data_root_, "light_anims\\");
+
+    //FS_List list;
+    FS_FileSet files;
+    FS.file_list(files, pathtmp, FS_ListFiles | FS_ClampExt, "*.ltx");
+
+    for (auto file : files)
+    {
+        auto name = std::string(pathtmp) + std::string(file.name.c_str()) + ".ltx";
+        CInifile* ini = xr_new<CInifile>(name.c_str(), true);
+        //Msg("File IN Folder: %s", name.c_str());
+
+        if (ini->section_exist("light_anim"))
+        {
+            Msg("[LANIMS] Create Item: %s", file.name.c_str());
+            CLAItem* I = xr_new<CLAItem>();
+            I->LoadLtx(ini, "light_anim");
+            Items.push_back(I);
+        }
+    }
 }
 
 void ELightAnimLibrary::Reload()
