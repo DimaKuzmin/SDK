@@ -18,6 +18,7 @@ class ECORE_API CPSLibrary : public particles_systems::library_interface {
 	PS::PEDVec			m_PEDs;
     PS::PGDVec			m_PGDs;
 
+
 #ifdef _EDITOR    
     xr_string			m_CurrentParticles;
 public:
@@ -25,6 +26,9 @@ public:
 #endif
 
 public:
+
+    bool SOC_Mode = false;
+
     bool 				Load			(LPCSTR nm);
     bool				Save			(LPCSTR nm);
     

@@ -187,6 +187,8 @@ BOOL CPEDef::Load(IReader& F)
 	R_ASSERT		(F.find_chunk(PED_CHUNK_NAME));
 	F.r_stringZ		(m_Name);
 
+	Msg("Loading Particle: %s", m_Name.c_str());
+
 	R_ASSERT		(F.find_chunk(PED_CHUNK_EFFECTDATA));
 	m_MaxParticles	= F.r_u32();
 
@@ -242,11 +244,13 @@ BOOL CPEDef::Load(IReader& F)
     if (pCreateEAction&&F.find_chunk(PED_CHUNK_EDATA))
 	{
         m_EActionList.resize(F.r_u32());
-        for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it)
+		
+		for (EPAVecIt it=m_EActionList.begin(); it!=m_EActionList.end(); ++it)
 		{
             PAPI::PActionEnum type		= (PAPI::PActionEnum)F.r_u32();
             (*it)						= pCreateEAction(type);
             (*it)->Load					(F);
+			(*it)->AppendNew();
         }
 		Compile							(m_EActionList);
     } 
