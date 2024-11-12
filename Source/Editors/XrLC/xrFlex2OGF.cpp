@@ -129,22 +129,24 @@ void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF
 	{
 		clMsg("* ERROR: Flex2OGF, 1st part, model# %d", MODEL_ID);
 	}
-	  
+	
+	StatusNoMSG("ModelID: %d", MODEL_ID);
+
 	try
 	{
 		
- 		clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+ 	//	clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->Optimize();
  		
-		clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+	//	clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->CalcBounds();
  	
 		csOGF.Enter();
  	
-		clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+	//	clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
 
-		clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+	//	clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->Stripify();
 
 		 csOGF.Leave();
@@ -198,6 +200,8 @@ void CBuild::Flex2OGF()
 	g_tree.clear	();
 	g_tree.reserve	(4096);
 	Status("Converting to OGF size [%d]", g_XSplit.size());
+
+
 
 	//for (splitIt it = g_XSplit.begin(); it != g_XSplit.end(); it++)
 	for (int i = 0; i < g_XSplit.size(); i++)
