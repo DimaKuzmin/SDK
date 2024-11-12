@@ -36,7 +36,7 @@ void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
     }
 }
 
-#define Size 16
+#define Size 14
   
 char* collection[Size] =
 {
@@ -53,13 +53,9 @@ char* collection[Size] =
     "NOISE GEOM",
     "SKIP WELD",
     "USE STD THREADS",
-   // "INTEL IMPLICIT",
-   // "INTEL LMAPS",
-   // "INTEL MU MODELS",
-   
-    "CFORM Packing",
     "MU FIRST",
-    "TBB THREADS"
+   // "CFORM Packing",
+   // "TBB THREADS"
 };
   
 void GetItemFromCollection(SpecialArgs* args, const char* item)
@@ -90,13 +86,13 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->skip_weld = true;
     if (strstr(item, collection[12]))
         args->use_std = true;
-    
     if (strstr(item, collection[13]))
-        args->use_cdbPacking = true;
-    if (strstr(item, collection[14]))
         args->run_mu_first = true;
-    if (strstr(item, collection[15]))
-        args->use_tbb = true;
+    //if (strstr(item, collection[14]))
+    //    args->use_cdbPacking = true;
+
+    //if (strstr(item, collection[15]))
+    //    args->use_tbb = true;
 }
 #include <vcclr.h> // Include for gcroot
 
@@ -321,6 +317,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     int _PXPM = atoi(PXPM_str.c_str());
     int _HITS = atoi( HITS_str.c_str() );
 
+
     //args->sample = ;
 
     args->pxpm = _PXPM;
@@ -332,14 +329,14 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
     args->level_name = LevelName_str;
  
-    args->off_raytrace = off_raytracing->Checked;
-    args->off_impl = off_implicit->Checked;
-    args->off_lmaps = off_lmaps->Checked;
-    args->off_mulitght = off_mulight->Checked;
+    args->off_raytrace = 0; //off_raytracing->Checked
+    args->off_impl = 0;     //off_implicit->Checked
+    args->off_lmaps = 0;    //off_lmaps->Checked
+    args->off_mulitght = 0; //off_mulight->Checked
+    args->use_MethodIntersection = use_raytrace_occluded->Checked; //RaytraceFast->Checked 
     args->use_DXT1 = useDXT1->Checked;
     args->use_fast_lmapsbuilder = FastLmapsBuilder->Checked;
-    args->use_MethodIntersection = RaytraceFast->Checked;
- 
+
     if (!IsRunned)
     {
         IsRunned = true;

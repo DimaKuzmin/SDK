@@ -93,12 +93,12 @@ namespace LauncherNET
 	private: System::Windows::Forms::TextBox^ EmbreeTnear;
 	private: System::Windows::Forms::Label^ label10;
 	private: System::Windows::Forms::GroupBox^ groupBox2;
-	private: System::Windows::Forms::CheckBox^ off_mulight;
 
 
-	private: System::Windows::Forms::CheckBox^ off_lmaps;
 
-	private: System::Windows::Forms::CheckBox^ off_implicit;
+
+
+
 	private: System::Windows::Forms::CheckBox^ useDXT1;
 	private: System::Windows::Forms::Label^ label11;
 	private: System::Windows::Forms::TextBox^ EmbreeHitsCollect;
@@ -137,9 +137,10 @@ private: System::Windows::Forms::Label^ label16;
 private: System::Windows::Forms::TextBox^ ThreadsAI;
 private: System::Windows::Forms::ProgressBar^ CurrentProgress;
 private: System::Windows::Forms::Label^ MemoryInfo;
-private: System::Windows::Forms::CheckBox^ RaytraceFast;
+
 private: System::Windows::Forms::CheckBox^ FastLmapsBuilder;
-private: System::Windows::Forms::CheckBox^ off_raytracing;
+private: System::Windows::Forms::CheckBox^ use_raytrace_occluded;
+
 
 
 
@@ -175,9 +176,6 @@ public:
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
-			this->off_mulight = (gcnew System::Windows::Forms::CheckBox());
-			this->off_lmaps = (gcnew System::Windows::Forms::CheckBox());
-			this->off_implicit = (gcnew System::Windows::Forms::CheckBox());
 			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
 			this->label10 = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
@@ -185,7 +183,6 @@ public:
 			this->RadioEmbreeG_Robust = (gcnew System::Windows::Forms::RadioButton());
 			this->IntelEmbreType = (gcnew System::Windows::Forms::GroupBox());
 			this->FastLmapsBuilder = (gcnew System::Windows::Forms::CheckBox());
-			this->RaytraceFast = (gcnew System::Windows::Forms::CheckBox());
 			this->RadioEmbreeGUltra = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGHigh = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGMedium = (gcnew System::Windows::Forms::RadioButton());
@@ -226,7 +223,7 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->off_raytracing = (gcnew System::Windows::Forms::CheckBox());
+			this->use_raytrace_occluded = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -442,11 +439,8 @@ public:
 			// 
 			// groupBox2
 			// 
-			this->groupBox2->Controls->Add(this->off_raytracing);
+			this->groupBox2->Controls->Add(this->use_raytrace_occluded);
 			this->groupBox2->Controls->Add(this->useDXT1);
-			this->groupBox2->Controls->Add(this->off_mulight);
-			this->groupBox2->Controls->Add(this->off_lmaps);
-			this->groupBox2->Controls->Add(this->off_implicit);
 			this->groupBox2->Location = System::Drawing::Point(27, 28);
 			this->groupBox2->Name = L"groupBox2";
 			this->groupBox2->Size = System::Drawing::Size(361, 240);
@@ -457,42 +451,12 @@ public:
 			// useDXT1
 			// 
 			this->useDXT1->AutoSize = true;
-			this->useDXT1->Location = System::Drawing::Point(21, 189);
+			this->useDXT1->Location = System::Drawing::Point(17, 39);
 			this->useDXT1->Name = L"useDXT1";
 			this->useDXT1->Size = System::Drawing::Size(219, 31);
 			this->useDXT1->TabIndex = 3;
 			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
 			this->useDXT1->UseVisualStyleBackColor = true;
-			// 
-			// off_mulight
-			// 
-			this->off_mulight->AutoSize = true;
-			this->off_mulight->Location = System::Drawing::Point(21, 152);
-			this->off_mulight->Name = L"off_mulight";
-			this->off_mulight->Size = System::Drawing::Size(216, 31);
-			this->off_mulight->TabIndex = 2;
-			this->off_mulight->Text = L"OFF MU LIGHTING";
-			this->off_mulight->UseVisualStyleBackColor = true;
-			// 
-			// off_lmaps
-			// 
-			this->off_lmaps->AutoSize = true;
-			this->off_lmaps->Location = System::Drawing::Point(21, 115);
-			this->off_lmaps->Name = L"off_lmaps";
-			this->off_lmaps->Size = System::Drawing::Size(201, 31);
-			this->off_lmaps->TabIndex = 1;
-			this->off_lmaps->Text = L"OFF LIGHT MAPS";
-			this->off_lmaps->UseVisualStyleBackColor = true;
-			// 
-			// off_implicit
-			// 
-			this->off_implicit->AutoSize = true;
-			this->off_implicit->Location = System::Drawing::Point(21, 78);
-			this->off_implicit->Name = L"off_implicit";
-			this->off_implicit->Size = System::Drawing::Size(277, 31);
-			this->off_implicit->TabIndex = 0;
-			this->off_implicit->Text = L"OFF IMPLICIT LIGHTING";
-			this->off_implicit->UseVisualStyleBackColor = true;
 			// 
 			// EmbreeTnear
 			// 
@@ -559,7 +523,6 @@ public:
 			// IntelEmbreType
 			// 
 			this->IntelEmbreType->Controls->Add(this->FastLmapsBuilder);
-			this->IntelEmbreType->Controls->Add(this->RaytraceFast);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGUltra);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGHigh);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGMedium);
@@ -576,22 +539,12 @@ public:
 			// FastLmapsBuilder
 			// 
 			this->FastLmapsBuilder->AutoSize = true;
-			this->FastLmapsBuilder->Location = System::Drawing::Point(202, 70);
+			this->FastLmapsBuilder->Location = System::Drawing::Point(206, 33);
 			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
 			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
 			this->FastLmapsBuilder->TabIndex = 4;
 			this->FastLmapsBuilder->Text = L"Быстрый BuildLmap (Не ориг)";
 			this->FastLmapsBuilder->UseVisualStyleBackColor = true;
-			// 
-			// RaytraceFast
-			// 
-			this->RaytraceFast->AutoSize = true;
-			this->RaytraceFast->Location = System::Drawing::Point(202, 33);
-			this->RaytraceFast->Name = L"RaytraceFast";
-			this->RaytraceFast->Size = System::Drawing::Size(322, 31);
-			this->RaytraceFast->TabIndex = 5;
-			this->RaytraceFast->Text = L"Использовать быстрой raytrace";
-			this->RaytraceFast->UseVisualStyleBackColor = true;
 			// 
 			// RadioEmbreeGUltra
 			// 
@@ -1013,15 +966,15 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// off_raytracing
+			// use_raytrace_occluded
 			// 
-			this->off_raytracing->AutoSize = true;
-			this->off_raytracing->Location = System::Drawing::Point(21, 43);
-			this->off_raytracing->Name = L"off_raytracing";
-			this->off_raytracing->Size = System::Drawing::Size(221, 31);
-			this->off_raytracing->TabIndex = 4;
-			this->off_raytracing->Text = L"OFF (raytrace calls)";
-			this->off_raytracing->UseVisualStyleBackColor = true;
+			this->use_raytrace_occluded->AutoSize = true;
+			this->use_raytrace_occluded->Location = System::Drawing::Point(17, 76);
+			this->use_raytrace_occluded->Name = L"use_raytrace_occluded";
+			this->use_raytrace_occluded->Size = System::Drawing::Size(142, 31);
+			this->use_raytrace_occluded->TabIndex = 4;
+			this->use_raytrace_occluded->Text = L"rtcOccluded";
+			this->use_raytrace_occluded->UseVisualStyleBackColor = true;
 			// 
 			// MyForm
 			// 
