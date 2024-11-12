@@ -242,6 +242,27 @@ void UIObjectList::UpdateUIObjectList()
 			if (ImGui::Button("Select Loaded", ImVec2(-1, 0)))
 				SelectLoaded();
 
+
+			ImGui::Separator();
+			ImGui::Text("Select BBox For Movement: ");
+			float vec_min[3] = { vec_box_min.x, vec_box_min.y, vec_box_min.z };
+			float vec_max[3] = { vec_box_max.x, vec_box_max.y, vec_box_max.z };
+
+			if (ImGui::InputFloat3("box_min", vec_min, 0.001f))
+				vec_box_min = { vec_min[0], vec_min[1], vec_min[2] };
+
+			if (ImGui::InputFloat3("box_max", vec_max, 0.001f))
+				vec_box_max = { vec_max[0], vec_max[1], vec_max[2] };
+
+			if (ImGui::Button("bbox object", ImVec2(-1, 0)))
+				BboxSelectedObject();
+ 
+			if (ImGui::Button("Set ListMove From InBox", ImVec2(-1, 0)))
+				SetListToMove();
+
+			if (ImGui::Button("Add Selected To ListMove", ImVec2(-1, 0)))
+				AddSelectedToMove();
+
 			ImGui::Separator();
 
 		}	  
@@ -274,11 +295,6 @@ void UIObjectList::UpdateUIObjectList()
 			
 			if (ImGui::Button("Remove Objects InBox", ImVec2(-1, 0)))
 				RemoveAllInsideBox();
-
-			if (ImGui::Button("Set ListMove From InBox", ImVec2(-1, 0)))
-				SetListToMove();
-
-
 			ImGui::Separator();
 		}	 
 	}

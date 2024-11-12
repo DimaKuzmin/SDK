@@ -88,6 +88,7 @@ public:
 	void MoveObjectsToOffset();
 	void RemoveAllInsideBox();
 	void SetListToMove();
+	void AddSelectedToMove();
 
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
 

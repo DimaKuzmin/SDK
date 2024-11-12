@@ -111,12 +111,32 @@ void UIObjectList::SetListToMove()
 		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
 		if (!ot)
 			continue;
-
+		 
 		ObjectList& lst = ot->GetObjects();
 
 		for (auto obj : lst)
 		{
 			if (obj && box.contains(obj->GetPosition()))
+			{
+				objects_to_move[obj] = obj->GetPosition();
+			}
+		}
+	}
+}
+
+void UIObjectList::AddSelectedToMove()
+{
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+
+		ObjectList& lst = ot->GetObjects();
+
+		for (auto obj : lst)
+		{
+			if (obj->Selected())
 			{
 				objects_to_move[obj] = obj->GetPosition();
 			}
@@ -239,8 +259,7 @@ void UIObjectList::BboxSelectedObject()
 	Fbox box_all;
 	for (auto item : list)
 	{
-		
-		if (!item->Selected())
+ 		if (!item->Selected())
 			continue;
 
 		if (CSceneObject* scene = smart_cast<CSceneObject*>(item))
