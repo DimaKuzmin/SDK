@@ -162,6 +162,7 @@ public:
 	IC const implementation_type&impl() const	{return *(implementation_type*)this;}
 
 	IC BOOL			eof			()	const		{return impl().elapsed()<=0;	};
+	IC BOOL			eof_chunk	()	const { return impl().elapsed() <= 8; };
 	
 	IC void			r			(void *p,int cnt) {impl().r(p,cnt);}
 

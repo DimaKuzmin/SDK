@@ -145,6 +145,56 @@ public:
 	BOOL		r_line			( LPCSTR S, int L,	LPCSTR* N, LPCSTR* V )const;
 	BOOL		r_line			( const shared_str& S, int L,	LPCSTR* N, LPCSTR* V )const;
 
+	// LPCSTR
+	void			r_clsid(LPCSTR& S, LPCSTR L, CLASS_ID& clsid) const { clsid = r_clsid(S, L); }
+	void 			r_string(LPCSTR& S, LPCSTR L, shared_str& str)const { str = r_string(S, L); }
+	void			r_bool(LPCSTR& S, LPCSTR L, bool& value)const { value = r_bool(S, L); }
+
+	void	 		r_u8(LPCSTR& S, LPCSTR L, u8& value)const { value = r_u8(S, L); }
+	void	 		r_u16(LPCSTR& S, LPCSTR L, u16& value)const { value = r_u16(S, L); }
+	void	 		r_u32(LPCSTR& S, LPCSTR L, u32& value)const { value = r_u32(S, L); }
+
+	void	 		r_s8(LPCSTR& S, LPCSTR L, s8& value)const { value = r_s8(S, L); }
+	void	 		r_s16(LPCSTR& S, LPCSTR L, s16& value)const { value = r_s16(S, L); }
+	void	 		r_s32(LPCSTR& S, LPCSTR L, s32& value)const { value = r_s32(S, L); }
+
+	void			r_float(LPCSTR& S, LPCSTR L, float& value)const { value = r_float(S, L); }
+	void			r_fcolor(LPCSTR& S, LPCSTR L, Fcolor& value)const { value = r_fcolor(S, L); }
+	void			r_color(LPCSTR& S, LPCSTR L, u32& value)const { value = r_color(S, L); }
+
+	void			r_ivector2(LPCSTR& S, LPCSTR L, Ivector2& value)const { value = r_ivector2(S, L); }
+	void			r_ivector3(LPCSTR& S, LPCSTR L, Ivector3& value)const { value = r_ivector3(S, L); }
+	void			r_ivector4(LPCSTR& S, LPCSTR L, Ivector4& value)const { value = r_ivector4(S, L); }
+
+	void			r_fvector2(LPCSTR& S, LPCSTR L, Fvector2& value)const { value = r_fvector2(S, L); }
+	void			r_fvector3(LPCSTR& S, LPCSTR L, Fvector3& value)const { value = r_fvector3(S, L); }
+	void			r_fvector4(LPCSTR& S, LPCSTR L, Fvector4& value)const { value = r_fvector4(S, L); }
+
+	// SHARED_STR
+	void			r_clsid(const shared_str& S, LPCSTR L, CLASS_ID& clsid) const { clsid = r_clsid(*S, L); }
+	void 			r_string(const shared_str& S, LPCSTR L, shared_str& str)const { str = r_string(*S, L); }
+	void			r_bool(const shared_str& S, LPCSTR L, bool& value)const { value = r_bool(*S, L); }
+
+	void	 		r_u8(const shared_str& S, LPCSTR L, u8& value)const { value = r_u8(*S, L); }
+	void	 		r_u16(const shared_str& S, LPCSTR L, u16& value)const { value = r_u16(*S, L); }
+	void	 		r_u32(const shared_str& S, LPCSTR L, u32& value)const { value = r_u32(*S, L); }
+
+	void	 		r_s8(const shared_str& S, LPCSTR L, s8& value)const { value = r_s8(*S, L); }
+	void	 		r_s16(const shared_str& S, LPCSTR L, s16& value)const { value = r_s16(*S, L); }
+	void	 		r_s32(const shared_str& S, LPCSTR L, s32& value)const { value = r_s32(*S, L); }
+
+	void			r_float(const shared_str& S, LPCSTR L, float& value)const { value = r_float(*S, L); }
+	void			r_fcolor(const shared_str& S, LPCSTR L, Fcolor& value)const { value = r_fcolor(*S, L); }
+	void			r_color(const shared_str& S, LPCSTR L, u32& value)const { value = r_color(*S, L); }
+
+	void			r_ivector2(const shared_str& S, LPCSTR L, Ivector2& value)const { value = r_ivector2(*S, L); }
+	void			r_ivector3(const shared_str& S, LPCSTR L, Ivector3& value)const { value = r_ivector3(*S, L); }
+	void			r_ivector4(const shared_str& S, LPCSTR L, Ivector4& value)const { value = r_ivector4(*S, L); }
+
+	void			r_fvector2(const shared_str& S, LPCSTR L, Fvector2& value)const { value = r_fvector2(*S, L); }
+	void			r_fvector3(const shared_str& S, LPCSTR L, Fvector3& value)const { value = r_fvector3(*S, L); }
+	void			r_fvector4(const shared_str& S, LPCSTR L, Fvector4& value)const { value = r_fvector4(*S, L); }
+
 	void		w_section_include(LPCSTR S, LPCSTR include_sec);
     void		w_string		( LPCSTR S, LPCSTR L, LPCSTR			V, LPCSTR comment=0 );
 	void		w_u8			( LPCSTR S, LPCSTR L, u8				V, LPCSTR comment=0 );
