@@ -47,6 +47,7 @@ xr_token2					actions_token		[ ]={
 EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
 {
 	EParticleAction* pa	= 0;
+	// Msg("ParticleEffect Type: %d", type);
     switch(type){
     case PAPI::PAAvoidID:			pa = xr_new<EPAAvoid>			();	break;
     case PAPI::PABounceID:    		pa = xr_new<EPABounce>			();	break;
@@ -71,7 +72,19 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
     case PAPI::PASinkVelocityID:    pa = xr_new<EPASinkVelocity>   	();	break;
     case PAPI::PASourceID:    		pa = xr_new<EPASource>			();	break;
     case PAPI::PASpeedLimitID:    	pa = xr_new<EPASpeedLimit>		();	break;
-    case PAPI::PATargetColorID:    	pa = xr_new<EPATargetColor>		();	break;
+   
+
+	case PAPI::PATargetColorID: { 
+		if (!Render->PSLibrary.SOC_Mode)
+		{
+			pa = xr_new<EPATargetColor>();
+		}
+		else
+		{
+			pa= xr_new<EPATargetColorSOC>();
+		}
+		break; }
+
     case PAPI::PATargetSizeID:    	pa = xr_new<EPATargetSize>		();	break;
     case PAPI::PATargetRotateID:    pa = xr_new<EPATargetRotate> 	();	break;
     case PAPI::PATargetRotateDID:   pa = xr_new<EPATargetRotate> 	();	break;
@@ -79,7 +92,7 @@ EParticleAction* pCreateEActionImpl(PAPI::PActionEnum type)
     case PAPI::PATargetVelocityDID: pa = xr_new<EPATargetVelocity>	();	break;
     case PAPI::PAVortexID:    		pa = xr_new<EPAVortex>			();	break;
     case PAPI::PATurbulenceID: 		pa = xr_new<EPATurbulence>		();	break;
-    default: NODEFAULT;
+	default: { NODEFAULT; Msg("Unexpected: Type: %d", type); }
     }
     pa->type						= type;
 	return pa;
@@ -625,9 +638,10 @@ void pTargetColor(IWriter& F, const Fvector& color, float alpha, float scale, fl
 	S.color = pVector(color.x, color.y, color.z);
 	S.alpha = alpha;
 	S.scale = scale;
+	// COP (SOC NIT)
 	S.timeFrom = time_from;
 	S.timeTo = time_to;
-	
+	// 
     F.w_u32			(S.type);
 	S.Save			(F);
 }
@@ -1065,19 +1079,43 @@ void	EPASpeedLimit::Compile	 	(IWriter& F)
     pSpeedLimit(F,_float("Min Speed").val, _float("Max Speed").val);
 }
 
-EPATargetColor::EPATargetColor		():EParticleAction(PAPI::PATargetColorID)
+EPATargetColor::EPATargetColor() :EParticleAction(PAPI::PATargetColorID)
+{
+	actionType = "TargetColor";
+	actionName = actionType;
+	appendVector("Color", PVector::vColor, 1.f, 1.f, 1.f, 0.f, 1.f);
+	appendFloat("Alpha", 1.f, 0.0f, 1.0f);
+	appendFloat("Scale", 1.f, 0.01f, P_MAXFLOAT);
+	appendFloat("TimeFrom", 0.0f, 0.0f, 1.0f);
+	appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);
+}
+void	EPATargetColor::Compile(IWriter& F)
+{
+	pTargetColor(F, _vector("Color").val, _float("Alpha").val, _float("Scale").val, _float("TimeFrom").val, _float("TimeTo").val);
+}
+
+EPATargetColorSOC::EPATargetColorSOC		():EParticleAction(PAPI::PATargetColorID)
 {
 	actionType						= "TargetColor";
 	actionName						= actionType;
     appendVector					("Color",			PVector::vColor, 1.f,1.f,1.f, 0.f,1.f);
     appendFloat						("Alpha",			1.f, 0.0f,1.0f);
     appendFloat						("Scale",			1.f, 0.01f, P_MAXFLOAT);     
-    appendFloat						("TimeFrom",		0.0f, 0.0f, 1.0f);     
-    appendFloat						("TimeTo",			1.0f, 0.0f, 1.0f);     
+//    appendFloat						("TimeFrom",		0.0f, 0.0f, 1.0f);     
+//    appendFloat						("TimeTo",			1.0f, 0.0f, 1.0f);     
 }
-void	EPATargetColor::Compile	  	(IWriter& F)
-{
+
+
+
+void	EPATargetColorSOC::Compile	  	(IWriter& F)
+{   
     pTargetColor(F,_vector("Color").val, _float("Alpha").val, _float("Scale").val, _float("TimeFrom").val, _float("TimeTo").val);
+}
+
+void EPATargetColorSOC::AppendNew()
+{
+	appendFloat("TimeFrom", 0.0f, 0.0f, 1.0f);
+	appendFloat("TimeTo", 1.0f, 0.0f, 1.0f);
 }
 
 EPATargetSize::EPATargetSize		():EParticleAction(PAPI::PATargetSizeID)

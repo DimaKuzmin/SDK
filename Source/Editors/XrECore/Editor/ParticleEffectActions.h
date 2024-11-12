@@ -144,6 +144,8 @@ public:
 	PBool*			_bool_safe	(LPCSTR name){PBoolMapIt 	it=bools.find(name); 	return (it!=bools.end())?&it->second:0;}
 public:    
     virtual void	Compile		(IWriter& F)=0;
+    virtual void    AppendNew() {};
+
     virtual void 	FillProp	(PropItemVec& items, LPCSTR pref, u32 clr);
 
     virtual void 	Load		(IReader& F);
@@ -299,6 +301,13 @@ struct EPATargetColor : public EParticleAction
 {
 					EPATargetColor();
     virtual void	Compile		(IWriter& F);
+};
+
+struct EPATargetColorSOC : public EParticleAction
+{
+    EPATargetColorSOC();
+    virtual void	Compile(IWriter& F);
+    virtual void    AppendNew();
 };
 
 struct EPATargetSize : public EParticleAction

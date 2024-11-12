@@ -44,9 +44,25 @@ CCommandVar CParticleTool::CommandLoadXR(CCommandVar p1, CCommandVar p2)
 	xr_string temp_fn;
     if (EFS.GetOpenName				(EDevice.m_hWnd, "$game_data$", temp_fn, false, NULL, 0))
 	{
+        ::Render->PSLibrary.SOC_Mode = false;
         ::Render->PSLibrary.OnDestroy	();
         ::Render->PSLibrary.Load		(temp_fn.c_str());
 		ResetCurrent();
+        ExecCommand(COMMAND_UPDATE_PROPERTIES);
+        ExecCommand(COMMAND_UPDATE_CAPTION);
+    }
+    return TRUE;
+}
+
+CCommandVar CParticleTool::CommandLoadXR_SOC(CCommandVar p1, CCommandVar p2)
+{
+    xr_string temp_fn;
+    if (EFS.GetOpenName(EDevice.m_hWnd, "$game_data$", temp_fn, false, NULL, 0))
+    {
+        ::Render->PSLibrary.SOC_Mode = true;
+        ::Render->PSLibrary.OnDestroy();
+        ::Render->PSLibrary.Load(temp_fn.c_str());
+        ResetCurrent();
         ExecCommand(COMMAND_UPDATE_PROPERTIES);
         ExecCommand(COMMAND_UPDATE_CAPTION);
     }
@@ -156,6 +172,8 @@ void CParticleMain::RegisterCommands()
 	REGISTER_CMD_S	(COMMAND_JUMP_TO_ITEM,     CommandJumpToItem);
 	REGISTER_CMD_C	(COMMAND_SAVE_XR,     		PTools, CParticleTool::CommandSaveXR);
 	REGISTER_CMD_C	(COMMAND_LOAD_XR,     		PTools, CParticleTool::CommandLoadXR);
+    REGISTER_CMD_C  (COMMAND_LOAD_XR_SOC,       PTools, CParticleTool::CommandLoadXR_SOC);
+
 	REGISTER_CMD_C	(COMMAND_COMPACT_PARTICLES,	PTools, CParticleTool::Compact);
 	REGISTER_CMD_CE	(COMMAND_CREATE_GROUP_FROM_SELECTED,"Particles\\CreateGroupFromEffect",	PTools, CParticleTool::CreateGroupFromSelected, true);
 }
