@@ -21,10 +21,12 @@ extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data
 //#include "../xrLCLight/xrface.h"
 #include "../xrLCLight/b_build_texture.h"
 #include "../xrLCLight/xrfacedefs.h"
+#include "../../xrcdb/xrcdb.h"
 
 class xrLC_GlobalData;
 class xrMU_Model;
 class xrMU_Reference;
+ 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 //////////////////////////////////////////////////////////////////////////
 // tesselator callbacks
@@ -97,6 +99,10 @@ public:
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
 	void	BuildRapid				(BOOL bSave);
+	void	BuildIntelModel			(bool bSave);
+
+	void	SaveForOthers			(CDB::CollectorPacked& CL);
+
 	void	xrPhase_Radiosity		();
 		
 	void	IsolateVertices			(BOOL bProgress);

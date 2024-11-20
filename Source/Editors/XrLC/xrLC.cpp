@@ -190,6 +190,7 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 
 #include <ctime>
+#include "../XrLCLight/xrDeflector.h"
 
 
 void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
@@ -242,10 +243,37 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
  }
 
+ 
 XRLC_API void StartupWorking(SpecialArgs* args)
 {
 	Debug._initialize(false);
 	Core._initialize("xrLC");
+
+	switch (args->LightmapSize_enum)
+	{
+		case SpecialArgs::eLightmap1024:
+		{
+			setLMSIZE(1024);
+		}break;
+		case SpecialArgs::eLightmap2048:
+		{
+			setLMSIZE(2048);
+		}break;
+
+		case SpecialArgs::eLightmap4096:
+		{
+			setLMSIZE(4096);
+		}break;
+
+		case SpecialArgs::eLightmap8192:
+		{
+			setLMSIZE(8192);  
+		}break;
+
+	};
+
+	
+
  
 	build_args = new SpecialArgsXRLCLight();
 	ReadArgs(build_args, args);

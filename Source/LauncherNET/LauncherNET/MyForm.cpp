@@ -291,6 +291,15 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
         args->embree_geometry_type = SpecialArgs::eHigh;
     else if (RadioEmbreeGUltra->Checked)
         args->embree_geometry_type = SpecialArgs::eRefit;
+
+    if (lightmap_1024->Checked)
+        args->LightmapSize_enum = SpecialArgs::eLightmap1024;
+    else if (lightmap_2048->Checked)
+        args->LightmapSize_enum = SpecialArgs::eLightmap2048;
+    else if (lightmap_4096->Checked)
+        args->LightmapSize_enum = SpecialArgs::eLightmap4096;
+    else if (lightmap_8192->Checked)
+         args->LightmapSize_enum = SpecialArgs::eLightmap8192;
     
     if (RadioEmbreeG_Robust->Checked)
         args->use_RobustGeom = 1;
@@ -303,11 +312,9 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
         String^ item = safe_cast<String^>(myEnum->Current);
         // Ваш код для обработки каждого элемента item
         String^ prefix = "Chacked: " + item;
-
         auto s =  msclr::interop::marshal_as<std::string>(prefix);
-
-        GetItemFromCollection(args, s.c_str());
-     };
+         GetItemFromCollection(args, s.c_str());
+    };
      
     args->off_lmaps;
 

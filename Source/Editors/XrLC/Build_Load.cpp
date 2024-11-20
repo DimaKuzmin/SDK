@@ -419,12 +419,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	{
 		F = fs.open_chunk	(EB_Textures);
 		u32 tex_count	= F->length()/sizeof(b_texture_real);
-
-		//bool ParamExport = strstr(Core.Params, "-export_textures");
-
+ 
 		for (u32 t=0; t<tex_count; t++)
 		{
-		
 			Progress		(float(t)/float(tex_count));
 
 			b_texture_real		TEX;
@@ -492,17 +489,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						//clMsg("Start Reading: %s, BT.hasAlpha: %s, BT.implicit: %s ", N, BT.bHasAlpha ? "true" : "false", BT.THM.flags.test(STextureParams::flImplicitLighted) ? "true" : "false");
-
 						if ( ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1) || BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
-						//	if (BT.THM.fmt == STextureParams::tfDXT1)
- 						//		clMsg("- loading: DXT no ALPHA: %s", N);
- 						//	else 
-								clMsg("- loading: %s", N);
-							
-							
-
+							clMsg("- loading: %s", N);
 							string_path name;
 							
 							if  ( Surface_Detect(name, N) && BT.pSurface.LoadFromFile(name) )
@@ -527,43 +516,29 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							}
 							else
 							{
-						//		clMsg("- can't load %s", N);
-						//		string128 tmp;
-						//		sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
-						//		w->w_string(tmp);
+								clMsg("- can't load %s", N);
+								string128 tmp;
+								sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
+								w->w_string(tmp);
 							}
  						}
 						else
 						{
-							string128 tmp;
-							sprintf(tmp, "Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
-							w->w_string(tmp);
-
-					//		clMsg("- not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
+							// string128 tmp;
+							// sprintf(tmp, "Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
+							// w->w_string(tmp);
+ 							clMsg("(Disabled Loading DXT1) - not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
 						}
-					
 					}
- 
-
-
 				}
-				
-
-				
 			}
 
 			BOOL			bLOD = FALSE;
 			if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') 
 				bLOD = TRUE;
 
-	 
-
 			// save all the stuff we've created
 			textures().push_back	(BT);
-
-			///string128 tmp;
-			//sprintf(tmp, "Loading Texture: %s", BT.name);
-			//w->w_string(tmp);
 		}
 	}
 

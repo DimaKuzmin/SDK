@@ -11,8 +11,12 @@
 extern int CurrentArea = 0;
 
 std::vector<BYTE>	surface_static;
+std::vector<bool>	occuped_Y;
 
 std::atomic<BYTE*>	surface = surface_static.data();
+ 
+std::mutex lock_mutex;
+
 
 const	u32		alpha_ref = 254 - BORDER;
 
@@ -22,7 +26,9 @@ void _InitSurface()
 	surface_static.reserve(getLMSIZE() * getLMSIZE());
   	FillMemory(surface_static.data(), getLMSIZE() * getLMSIZE(), 0);
 	surface.store(surface_static.data());
-
+ 
+  	occuped_Y = std::vector<bool>(getLMSIZE(), false);
+ 
 	CurrentArea = 0;
 }
  
@@ -50,6 +56,7 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 			if (*S >= alpha_ref)
 			{
 				*P = 255;
+				CurrentArea++;
 			}
 		}
 	}
@@ -58,20 +65,22 @@ void _rect_register(L_rect& R, lm_layer* D, BOOL bRotate)
 		// Rotated :(
 		for (u32 y = 0; y < s_x; y++)
 		{
-			BYTE* P = atomicBuffer + (y + R.a.y) * getLMSIZE() + R.a.x;	// destination scan-line
+			int INDEX = (y + R.a.y) * getLMSIZE() + R.a.x;
+			BYTE* P = atomicBuffer + INDEX;	// destination scan-line
 			
 			// Считываем и записывем S и проверяем по 253 для альфы
 			for (u32 x = 0; x < s_y; x++, P++)
 			if (lm[x * s_x + y] >= alpha_ref)
 			{
 				*P = 255;
+				CurrentArea++;
 			}
 		}
 	}
  
 	surface.store(atomicBuffer);
 
-	CurrentArea += s_x * s_y;
+	// CurrentArea += s_x * s_y;
 }
 
 
@@ -179,7 +188,8 @@ bool Place_Perpixel(L_rect& R, lm_layer* D, BOOL bRotate)
 }
 
  
-// Check for intersection
+// Check for intersection 
+// Проверка для очень быстрой растоновки (Моего ворианта)
 BOOL _rect_place_fast(L_rect& rect, lm_layer* D, int _X, int _Y)
 {
 	L_rect R;
@@ -206,68 +216,84 @@ BOOL _rect_place_fast(L_rect& rect, lm_layer* D, int _X, int _Y)
 	return FALSE;
 }
 
+CTimer timer;
+u32 PrevX = 0;
+
+int MAX_Y = 0;
+
+
+
+// Оригенал с доработкой
 BOOL _rect_place(L_rect& r, lm_layer* D)
 {
+	if (timer.GetElapsed_ticks() == 0)
+		timer.Start();
+
 	BYTE* temp_surf;
 
  	// Normal
 	{
 		int x_max = getLMSIZE() - r.b.x;
 		int y_max = getLMSIZE() - r.b.y;
+
+		int part_lmap = getLMSIZE() / 16;
+
 		L_rect R;
 		for (int _Y = 0; _Y < y_max; _Y++)
 		{
-			temp_surf = surface.load() + _Y * getLMSIZE();
- 			
+			temp_surf = surface + _Y * getLMSIZE();
+
+			if (occuped_Y[_Y])
+			{
+				_Y++;
+				continue;
+			}
+
+			u32 occuped_parts = 0;
+
 			// remainder part
 			for (int _X = 0; _X < x_max;)
 			{
-				 
-				/*
-				if (_X < x_max - 32)
+				// AVX
+ 				// __m256i block = _mm256_loadu_si256((__m256i*) & temp_surf[_X]);
+				// 
+				// // Сравниваем каждый байт с нулем
+				// __m256i zeros = _mm256_setzero_si256();
+				// __m256i cmp = _mm256_cmpeq_epi8(block, zeros);
+				// 
+				// // Получаем маску ненулевых байтов
+				// int mask = _mm256_movemask_epi8(cmp);
+				// 
+				// // Если есть хотя бы один ненулевой байт
+				// if (mask != 0xFFFFFFFF)
+				// {
+				// 	_X += 32;
+				// 	occuped_parts++;
+				// 	continue;
+				// }
+				// _X++;
+  
+				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
+
+				// Сравниваем каждый байт с нулем
+				__m128i zeros = _mm_setzero_si128();
+				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
+
+				// Получаем маску ненулевых байтов
+				int mask = _mm_movemask_epi8(cmp);
+
+				// Если есть хотя бы один ненулевой байт
+				if (mask != 0xFFFF)
 				{
-					// ACCEL
-					__m256i mm_reg = _mm256_load_si256((__m256i*)(temp_surf + _X));
-					__m256i m256_cmp = _mm256_cmpeq_epi8(mm_reg, _mm256_setzero_si256());
-					__m256i work = _mm256_sad_epu8(m256_cmp, _mm256_setzero_si256());
-				 
-					uint64_t result_lo = _mm256_extract_epi64(work, 0);
-					uint64_t result_hi = _mm256_extract_epi64(work, 1);
-
-					// Сложение результатов для получения общего количества ненулевых байтов
-					uint64_t total = result_lo + result_hi;
-
-					if (!total)
-					{
-						_X += 32;
-						continue;
-					}
-				}
-				*/
-				 
-				/*
-				if (_X < x_max - 8)
-				{
-					// ACCEL
-					__m128i mm_reg = _mm_set1_epi64x(*(__int64*)(temp_surf + _X));
-					__m128i m256_cmp = _mm_cmpeq_epi8(mm_reg, _mm_setzero_si128());
-					__m128i m256_work = _mm_sad_epu8(m256_cmp, _mm_setzero_si128());
-
-					if (!_mm_cvtsi128_si32(m256_work))
-					{
-						_X += 8;
-						continue;
-					}
-				}
-				*/
-
-				if (temp_surf[_X])
-				{
-					_X++;
+					_X += 16;
+					occuped_parts++;
 					continue;
 				}
 
 				_X++;
+	
+
+				// Msg("Start Process From X: %d", _X);
 
 				R.init(_X, _Y, _X + r.b.x, _Y + r.b.y);
 				if (Place_Perpixel(R, D, FALSE))
@@ -277,7 +303,18 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
  					return TRUE;
 				}
 			}
+		
+		
+			if (occuped_parts == part_lmap)	// Все занято заменяем
+			{
+				lock_mutex.lock();
+				occuped_Y[_Y] = true;
+				lock_mutex.unlock();
+			}
+			 
 		}
+
+		
 	}
 
 	 
@@ -288,55 +325,55 @@ BOOL _rect_place(L_rect& r, lm_layer* D)
 		int y_max = getLMSIZE() - r.b.x;
 		for (int _Y = 0; _Y < y_max; _Y++) 
 		{
-			temp_surf = surface.load() + _Y * getLMSIZE();
+			temp_surf = surface + _Y * getLMSIZE();
+
+			if (occuped_Y[_Y])
+			{
+				_Y++;
+				continue;
+			}
+
  			// remainder part
 			for (int _X = 0; _X < x_max; )
 			{
-				/*
-				if (_X < x_max - 32)
+				// AVX
+				// __m256i block = _mm256_loadu_si256((__m256i*) & temp_surf[_X]);
+				// 
+				// // Сравниваем каждый байт с нулем
+				// __m256i zeros = _mm256_setzero_si256();
+				// __m256i cmp = _mm256_cmpeq_epi8(block, zeros);
+				// 
+				// // Получаем маску ненулевых байтов
+				// int mask = _mm256_movemask_epi8(cmp);
+				// 
+				// // Если есть хотя бы один ненулевой байт
+				// if (mask != 0xFFFFFFFF)
+				// {
+				// 	_X += 32;
+				// 	continue;
+				// }
+				// 
+				// _X++;
+				 
+
+				__m128i block = _mm_loadu_si128((__m128i*) & temp_surf[_X]);
+
+				// Сравниваем каждый байт с нулем
+				__m128i zeros = _mm_setzero_si128();
+				__m128i cmp = _mm_cmpeq_epi8(block, zeros);
+
+				// Получаем маску ненулевых байтов
+				int mask = _mm_movemask_epi8(cmp);
+
+				// Если есть хотя бы один ненулевой байт
+				if (mask != 0xFFFF)
 				{
-					// ACCEL
-					__m256i mm_reg = _mm256_load_si256((__m256i*)(temp_surf + _X));
-					__m256i m256_cmp = _mm256_cmpeq_epi8(mm_reg, _mm256_setzero_si256());
-					__m256i work = _mm256_sad_epu8(m256_cmp, _mm256_setzero_si256());
-
-					uint64_t result_lo = _mm256_extract_epi64(work, 0);
-					uint64_t result_hi = _mm256_extract_epi64(work, 1);
-
-					// Сложение результатов для получения общего количества ненулевых байтов
-					uint64_t total = result_lo + result_hi;
-
-					if (!total)
-					{
-						_X += 32;
-						continue;
-					}
-				}
-				*/
- 
-				/*
-				if (_X < x_max - 8)
-				{
-					// ACCEL
-					__m128i mm_reg = _mm_set1_epi64x(*(__int64*)(temp_surf + _X));
-					__m128i m256_cmp = _mm_cmpeq_epi8(mm_reg, _mm_setzero_si128());
-					__m128i m256_work = _mm_sad_epu8(m256_cmp, _mm_setzero_si128());
- 
-					if (!_mm_cvtsi128_si32(m256_work))
-					{
-						_X += 8;
-						continue;
-					}
-				}
-				*/
-
-				if (temp_surf[_X])
-				{
-					_X++;
-					continue;
+					_X += 16;
+ 					continue;
 				}
 
 				_X++;
+
 
 				R.init(_X, _Y, _X + r.b.y, _Y + r.b.x);
 				if (Place_Perpixel(R, D, TRUE)) 

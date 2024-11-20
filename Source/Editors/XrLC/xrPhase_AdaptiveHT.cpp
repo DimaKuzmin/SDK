@@ -190,6 +190,7 @@ void SetOpacityRaycastModel();
 
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+extern void log_vminfo_new(LPCSTR stage);
 
 void CBuild::xrPhase_AdaptiveHT	()
 {
@@ -215,43 +216,19 @@ void CBuild::xrPhase_AdaptiveHT	()
 	Status			("Precalculating...");
 	{
 		mem_Compact					();
-
-
-		Status("Load RcastModel");
- 		CTimer t;
-		t.Start();
-		// Build model
-		FPU::m64r					();
-		BuildRapid					(FALSE);
-		log_vminfo();
-		
-		clMsg("RcastModel LoadTime: %d", t.GetElapsed_ms());
- 
- 		// Prepare
-		FPU::m64r					();
-		Status						("Precalculating : base hemisphere ...");
-		mem_Compact					();
-		Light_prepare				();
- 
-		// Intel Embree
+ 		// Intel Embree
 		if (build_args->use_embree)
 		{
-			Status("Load Intel");
- 			IntelEmbereLOAD();
-
-			log_vminfo();
-		}
-
-		if (build_args->use_opcode_old)
+ 			BuildIntelModel(FALSE);
+			log_vminfo_new("Builded Intel Model");
+ 		}
+		else
 		{
-			clMsg("LogOpcode: !!! USE_OLD");
-			clMsg("LogOpcode: !!! USE_OLD");
-			clMsg("LogOpcode: !!! USE_OLD");
-			clMsg("LogOpcode: !!! USE_OLD");
-			clMsg("LogOpcode: !!! USE_OLD");
- 		 
+			// Build model
+ 			BuildRapid(FALSE);
+			log_vminfo_new("Builded Rapid Model");
 		}
-		 
+
 #ifndef DevCPU
 		xrHardwareLight& hw_light = xrHardwareLight::Get();
 
@@ -272,6 +249,11 @@ void CBuild::xrPhase_AdaptiveHT	()
 			hw_light.SetEnabled(false);
 		}
 #endif
+ 
+		// Prepare LIGHT FOR LIGHTING
+ 		Status("Precalculating : base hemisphere ...");
+		mem_Compact();
+		Light_prepare();
 
 		Status("Start AdaptiveHT");	
  
@@ -284,32 +266,12 @@ void CBuild::xrPhase_AdaptiveHT	()
  
   		precalc_base_hemi.wait();
 	}
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Adaptive tesselation...");
-	{
-		for (u32 fit=0; fit<g_faces.size(); fit++)	{					// clear split flag from all faces + calculate normals
-			g_faces[fit]->flags.bSplitted	= false;
-			g_faces[fit]->flags.bLocked		= true;
-		}
-		u_Tesselate		(callback_edge_error,0,callback_vertex_hemi);	// tesselate
-	}
-	*/
-
+ 
 	//////////////////////////////////////////////////////////////////////////
 	Status				("Gathering lighting information...");
 	u_SmoothVertColors	(5);
-
-	//////////////////////////////////////////////////////////////////////////
-	/*
-	Status				("Exporting to SMF...");
-	{
-		string_path			fn;
-		GSaveAsSMF			(strconcat(fn,pBuild->path,"hemi_source.smf"));
-	}
-	*/
 }
+
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
 {
 	xr_vector<Face*>			&adjacent_vec = reult;

@@ -12,7 +12,7 @@
 class  base_lighting;
 class CDeflector;
    
-XRLC_LIGHT_API void IntelEmbereLOAD();
+XRLC_LIGHT_API void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb);
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
  
 class XRLC_LIGHT_API CDeflector 

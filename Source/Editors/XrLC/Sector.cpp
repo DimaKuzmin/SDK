@@ -62,11 +62,10 @@ void CSector::BuildHierrarhy()
 
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
-		string128 tmp;
-		sprintf(tmp, "SizeLimit: %d", SizeLimit);
-		StatusNoMSG(tmp);
-
 		int iSize = g_tree.size();
+		string128 tmp;
+		sprintf(tmp, "SizeLimit: %.1f | Size: %d", SizeLimit, iSize);
+		StatusNoMSG(tmp);
 
 		for (int I = 0; I < iSize; I++)
 		{
@@ -92,7 +91,8 @@ void CSector::BuildHierrarhy()
 					float V;
 					if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
 					{
-						if (V < best_volume) {
+						if (V < best_volume)
+						{
 							best_volume = V;
 							best_id = J;
 						}
@@ -100,7 +100,8 @@ void CSector::BuildHierrarhy()
 				}
 
 				// Analyze
-				if (best_id < 0)		break;
+				if (best_id < 0)	
+					break;
 				pNode->AddChield(best_id);
 			}
 
@@ -109,14 +110,18 @@ void CSector::BuildHierrarhy()
 				g_tree.push_back(pNode);
 				bAnyNode = TRUE;
 			}
-			else {
+			else
+			{
 				g_tree[I]->bConnected = false;
 				xr_delete(pNode);
 			}
 		}
 
-		if (iSize != (int)g_tree.size()) iLevel++;
+		if (iSize != (int)g_tree.size())
+			iLevel++;
 	}
+
+
 	TreeRoot = 0;
 	if (bAnyNode) TreeRoot = g_tree.back();
 	else {

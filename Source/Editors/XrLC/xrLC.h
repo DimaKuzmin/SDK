@@ -18,6 +18,14 @@ struct XRLC_API  SpecialArgs
 		eRefit = 3
 	};
 
+	enum LightmapSize
+	{
+		eLightmap1024 = 0,  
+		eLightmap2048 = 1,
+		eLightmap4096 = 2,
+		eLightmap8192 = 3
+	};
+
 	// debuging 
 	bool off_lmaps = false;
 	bool off_impl = false;
@@ -29,6 +37,7 @@ struct XRLC_API  SpecialArgs
 	// XRLC ADVANCED SETTINGS
 	float embree_tnear = 0.2f;
 	int embree_geometry_type = EmbreeGeom::eLow;
+	LightmapSize LightmapSize_enum = LightmapSize::eLightmap1024;
 
 	bool use_embree = 0;
 	bool use_avx = 0;

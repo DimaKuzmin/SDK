@@ -140,6 +140,12 @@ private: System::Windows::Forms::Label^ MemoryInfo;
 
 private: System::Windows::Forms::CheckBox^ FastLmapsBuilder;
 private: System::Windows::Forms::CheckBox^ use_raytrace_occluded;
+private: System::Windows::Forms::GroupBox^ groupBox5;
+private: System::Windows::Forms::RadioButton^ lightmap_8192;
+private: System::Windows::Forms::RadioButton^ lightmap_4096;
+private: System::Windows::Forms::RadioButton^ lightmap_2048;
+private: System::Windows::Forms::RadioButton^ lightmap_1024;
+private: System::Windows::Forms::Label^ label17;
 
 
 
@@ -170,11 +176,17 @@ public:
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->groupBox5 = (gcnew System::Windows::Forms::GroupBox());
+			this->lightmap_8192 = (gcnew System::Windows::Forms::RadioButton());
+			this->lightmap_4096 = (gcnew System::Windows::Forms::RadioButton());
+			this->lightmap_2048 = (gcnew System::Windows::Forms::RadioButton());
+			this->lightmap_1024 = (gcnew System::Windows::Forms::RadioButton());
 			this->xrLC_JitterSamples = (gcnew System::Windows::Forms::ComboBox());
 			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->use_raytrace_occluded = (gcnew System::Windows::Forms::CheckBox());
 			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
 			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
 			this->label10 = (gcnew System::Windows::Forms::Label());
@@ -223,10 +235,11 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->use_raytrace_occluded = (gcnew System::Windows::Forms::CheckBox());
+			this->label17 = (gcnew System::Windows::Forms::Label());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
+			this->groupBox5->SuspendLayout();
 			this->groupBox2->SuspendLayout();
 			this->groupBox1->SuspendLayout();
 			this->IntelEmbreType->SuspendLayout();
@@ -363,6 +376,7 @@ public:
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->groupBox5);
 			this->Geometry_Tab->Controls->Add(this->xrLC_JitterSamples);
 			this->Geometry_Tab->Controls->Add(this->label18);
 			this->Geometry_Tab->Controls->Add(this->label11);
@@ -393,6 +407,68 @@ public:
 			this->Geometry_Tab->Size = System::Drawing::Size(1430, 782);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
+			// 
+			// groupBox5
+			// 
+			this->groupBox5->Controls->Add(this->label17);
+			this->groupBox5->Controls->Add(this->FastLmapsBuilder);
+			this->groupBox5->Controls->Add(this->lightmap_8192);
+			this->groupBox5->Controls->Add(this->lightmap_4096);
+			this->groupBox5->Controls->Add(this->lightmap_2048);
+			this->groupBox5->Controls->Add(this->lightmap_1024);
+			this->groupBox5->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->groupBox5->Location = System::Drawing::Point(6, 430);
+			this->groupBox5->Name = L"groupBox5";
+			this->groupBox5->Size = System::Drawing::Size(532, 146);
+			this->groupBox5->TabIndex = 20;
+			this->groupBox5->TabStop = false;
+			this->groupBox5->Text = L"Lightmap Size";
+			// 
+			// lightmap_8192
+			// 
+			this->lightmap_8192->AutoSize = true;
+			this->lightmap_8192->Checked = true;
+			this->lightmap_8192->Location = System::Drawing::Point(15, 93);
+			this->lightmap_8192->Name = L"lightmap_8192";
+			this->lightmap_8192->Size = System::Drawing::Size(131, 31);
+			this->lightmap_8192->TabIndex = 3;
+			this->lightmap_8192->TabStop = true;
+			this->lightmap_8192->Text = L"8192x8192";
+			this->lightmap_8192->UseVisualStyleBackColor = true;
+			// 
+			// lightmap_4096
+			// 
+			this->lightmap_4096->AutoSize = true;
+			this->lightmap_4096->Location = System::Drawing::Point(14, 70);
+			this->lightmap_4096->Name = L"lightmap_4096";
+			this->lightmap_4096->Size = System::Drawing::Size(137, 31);
+			this->lightmap_4096->TabIndex = 2;
+			this->lightmap_4096->TabStop = true;
+			this->lightmap_4096->Text = L"4096x4096";
+			this->lightmap_4096->UseVisualStyleBackColor = true;
+			// 
+			// lightmap_2048
+			// 
+			this->lightmap_2048->AutoSize = true;
+			this->lightmap_2048->Location = System::Drawing::Point(14, 47);
+			this->lightmap_2048->Name = L"lightmap_2048";
+			this->lightmap_2048->Size = System::Drawing::Size(137, 31);
+			this->lightmap_2048->TabIndex = 1;
+			this->lightmap_2048->TabStop = true;
+			this->lightmap_2048->Text = L"2048x2048";
+			this->lightmap_2048->UseVisualStyleBackColor = true;
+			// 
+			// lightmap_1024
+			// 
+			this->lightmap_1024->AutoSize = true;
+			this->lightmap_1024->Location = System::Drawing::Point(15, 22);
+			this->lightmap_1024->Name = L"lightmap_1024";
+			this->lightmap_1024->Size = System::Drawing::Size(131, 31);
+			this->lightmap_1024->TabIndex = 0;
+			this->lightmap_1024->TabStop = true;
+			this->lightmap_1024->Text = L"1024x1024";
+			this->lightmap_1024->UseVisualStyleBackColor = true;
 			// 
 			// xrLC_JitterSamples
 			// 
@@ -447,6 +523,16 @@ public:
 			this->groupBox2->TabIndex = 23;
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Debuging";
+			// 
+			// use_raytrace_occluded
+			// 
+			this->use_raytrace_occluded->AutoSize = true;
+			this->use_raytrace_occluded->Location = System::Drawing::Point(17, 76);
+			this->use_raytrace_occluded->Name = L"use_raytrace_occluded";
+			this->use_raytrace_occluded->Size = System::Drawing::Size(142, 31);
+			this->use_raytrace_occluded->TabIndex = 4;
+			this->use_raytrace_occluded->Text = L"rtcOccluded";
+			this->use_raytrace_occluded->UseVisualStyleBackColor = true;
 			// 
 			// useDXT1
 			// 
@@ -522,7 +608,6 @@ public:
 			// 
 			// IntelEmbreType
 			// 
-			this->IntelEmbreType->Controls->Add(this->FastLmapsBuilder);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGUltra);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGHigh);
 			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGMedium);
@@ -539,7 +624,7 @@ public:
 			// FastLmapsBuilder
 			// 
 			this->FastLmapsBuilder->AutoSize = true;
-			this->FastLmapsBuilder->Location = System::Drawing::Point(206, 33);
+			this->FastLmapsBuilder->Location = System::Drawing::Point(212, 23);
 			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
 			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
 			this->FastLmapsBuilder->TabIndex = 4;
@@ -966,15 +1051,18 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// use_raytrace_occluded
+			// label17
 			// 
-			this->use_raytrace_occluded->AutoSize = true;
-			this->use_raytrace_occluded->Location = System::Drawing::Point(17, 76);
-			this->use_raytrace_occluded->Name = L"use_raytrace_occluded";
-			this->use_raytrace_occluded->Size = System::Drawing::Size(142, 31);
-			this->use_raytrace_occluded->TabIndex = 4;
-			this->use_raytrace_occluded->Text = L"rtcOccluded";
-			this->use_raytrace_occluded->UseVisualStyleBackColor = true;
+			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label17->ForeColor = System::Drawing::Color::Firebrick;
+			this->label17->Location = System::Drawing::Point(157, 57);
+			this->label17->Name = L"label17";
+			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->label17->Size = System::Drawing::Size(369, 81);
+			this->label17->TabIndex = 30;
+			this->label17->Text = L"Включает быстрое расположение (но не компактное в Lightmap) текстуре (Смещает поз"
+				L"ицию X на размер мапы и Y если X > SizeLmap превышает размер)\r\n";
 			// 
 			// MyForm
 			// 
@@ -994,6 +1082,8 @@ public:
 			this->Status_Tab->PerformLayout();
 			this->Geometry_Tab->ResumeLayout(false);
 			this->Geometry_Tab->PerformLayout();
+			this->groupBox5->ResumeLayout(false);
+			this->groupBox5->PerformLayout();
 			this->groupBox2->ResumeLayout(false);
 			this->groupBox2->PerformLayout();
 			this->groupBox1->ResumeLayout(false);
@@ -1040,6 +1130,12 @@ public:
 			MemoryInfo->Text = str;
 		}
 
+		public: System::Void UpdatePositionMenu()
+		{
+			if (UpdatingListBox->Checked)
+				listBox1->SelectedIndex = listBox1->Items->Count - 1;
+		}
+
 		// Call From Other Threads Safe
 		public: System::Void updateLogFormItem(const char* str)
 		{
@@ -1077,6 +1173,7 @@ public:
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTime_form), managedString);
 			//BuildTime->Text = managedString;
 		}
+
  
  
 		// Buttons
@@ -1090,11 +1187,8 @@ public:
  
 		public: System::Void UpdateList() // System::EventArgs
 		{
-			// Handle the size change event here
- 			if (UpdatingListBox->Checked)
-			{
-				listBox1->SelectedIndex = listBox1->Items->Count - 1;
-			};
+			// Handle the size change event here		
+			this->Invoke(gcnew Action(this, &MyForm::UpdatePositionMenu) );
 		}
 		
 		public: System::Void UpdateMemory(const char* text) // System::EventArgs

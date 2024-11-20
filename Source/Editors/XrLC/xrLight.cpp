@@ -177,6 +177,8 @@ void	CBuild::LMaps					()
 	LMapsLocal();
 }
  
+extern void log_vminfo_new(LPCSTR msg);
+
 void CBuild::RunMuModels()
 {
 
@@ -201,48 +203,56 @@ void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 
-	if (g_params().m_quality != ebqDraft )	 
+	if (g_params().m_quality != ebqDraft)
 	{
 		if (build_args->run_mu_first)
- 			RunMuModels();
- 		//****************************************** Implicit
-	
+		{
+			RunMuModels();
+			log_vminfo_new("MU-MODELS Memory");
+		}
+		//****************************************** Implicit
+
 		if (!build_args->off_impl)
 		{
 			FPU::m64r();
-			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]",  build_args->use_embree ? "intel" : "opcode");
+			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase(tmp);
 			mem_Compact();
 			ImplicitLighting();
+			log_vminfo_new("Implicit Memory");
 		}
 
 		if (!build_args->off_lmaps)
- 		{
- 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
-			Phase			(tmp);
+		{
+			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
+			Phase(tmp);
 			LMaps();
+			log_vminfo_new("LMAPS Memory");
+
 
 			//****************************************** Vertex
 			FPU::m64r();
 			Phase("LIGHT: Vertex...");
 			mem_Compact();
+			LightVertex();
+			log_vminfo_new("Vertex Light Memory");
 
- 			LightVertex();
- 
 			//****************************************** Merge LMAPS
 			{
 				FPU::m64r();
 				Phase("LIGHT: Merging lightmaps...");
 				mem_Compact();
-
 				xrPhase_MergeLM();
+				log_vminfo_new("Merge LIGHTMAPS Memory");
 			}
 
 		}
 
 		if (!build_args->run_mu_first)
+		{
 			RunMuModels();
-
+			log_vminfo_new("MU-MODELS Memory");
+		}
  	}
 
 

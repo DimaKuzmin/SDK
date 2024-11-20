@@ -242,6 +242,7 @@ void logThread(void *dummy)
 					S = "";
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
 			}
+
 			SendMessage		( hwLog, LB_SETTOPINDEX, LogSize-1, 0);
 
 			if (LoggerCL != 0)
@@ -259,7 +260,8 @@ void logThread(void *dummy)
 			SendMessage		( hwProgress, PBM_SETPOS, u32(progress*1000.f), 0);
 
 			// timing
-			if (progress>0.005f) {
+			if (progress>0.005f)
+			{
 				u32 dwCurrentTime = timeGetTime();
 				u32 dwTimeDiff	= dwCurrentTime-phase_start_time;
 				u32 secElapsed	= dwTimeDiff/1000;
@@ -270,26 +272,20 @@ void logThread(void *dummy)
 					make_time(secElapsed).c_str(),
 					make_time(secRemain).c_str()
 					);
-				SetWindowText	( hwTime, tbuf );
-			} else {
-				SetWindowText	( hwTime, "" );
-			}
+ 			}
 
 			// percentage text
-			LoggerCL->UpdateProgressBar(progress * 100);
 			
-			// xr_sprintf(tbuf,"%3.2f%",progress*100.f);
-			SetWindowText	( hwPText, tbuf );
+			float value = progress * 100;
+			clamp(value, 1.0f, 100.0f);
+			LoggerCL->UpdateProgressBar(value);
 		}
-
-
-
 
 		if (bStatusChange) 
 		{
 			bWasChanges		= TRUE;
 			bStatusChange	= FALSE;
-			SetWindowText	( hwInfo,	status);
+			// SetWindowText	( hwInfo,	status);
 		}
 
 		if (LoggerCL != nullptr)

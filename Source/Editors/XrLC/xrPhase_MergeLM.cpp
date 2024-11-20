@@ -14,7 +14,7 @@ class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) r
 extern BOOL _rect_place(L_rect& r, lm_layer* D);
 extern void _InitSurface();
 
-#define c_LMAP_size 4096
+ 
 
 
 #include "../XrLCLight/BuildArgs.h"
@@ -87,7 +87,7 @@ IC bool	sort_defl_complex(CDeflector* D1, CDeflector* D2)
 	}
 }
 
-extern int CurrentArea;
+
 // ÍÎÂÀß ÂÅÐÑÈß
 
 void SelectionLmapSize(vecDefl& Layer)
@@ -184,9 +184,11 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 #include "tbb/parallel_for.h"
 #include <atomic>
  
+extern int CurrentArea;
+
 void MergeOriginal(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
-	u32 maxarea = c_LMAP_size * c_LMAP_size * 2;	// Max up to 8 lm selected
+	u32 maxarea = getLMSIZE() * getLMSIZE() * 2;	// Max up to 8 lm selected
 	u32 curarea = 0;
 	u32 merge_count = 0;
 	for (u32 it = 0; it < (int)Layer.size(); it++)
@@ -215,7 +217,7 @@ void MergeOriginal(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 			//if (0 == (ID % 128))
 			//	Status("Process [%d/%d]... Merged[%d]", ID, merge_count, Merged);
 
-			StatusNoMSG("Process [%d/%d]... Merged[%d] Proccessed[%d]", ID, merge_count, Merged, Processed.load());
+			StatusNoMSG("Process [%d/%d]... Merged[%d] Proccessed[%d], MergedArea[%d]", ID, merge_count, Merged, Processed.load(), CurrentArea);
 
 			lm_layer& L = Layer[ID]->layer;
 			L_rect		rT, rS;
@@ -277,6 +279,9 @@ void MergeOriginal(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	*/
 }
 
+
+
+
 void CBuild::xrPhase_MergeLM()
 {
 	vecDefl			Layer;
@@ -289,8 +294,8 @@ void CBuild::xrPhase_MergeLM()
 		if (D->bMerged)		continue;
 		Layer.push_back(D);
 	}
-
-	setLMSIZE(c_LMAP_size);
+ 
+//	setLMSIZE(c_LMAP_size);
  
 	// Merge this layer (which left unmerged)
 	while (Layer.size())
