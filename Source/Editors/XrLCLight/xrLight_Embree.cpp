@@ -169,7 +169,7 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-	if (hit->primID == RTC_INVALID_GEOMETRY_ID || ctxt->LastPremitive == hit->primID)
+	if (hit->primID == RTC_INVALID_GEOMETRY_ID  || ctxt->LastPremitive == hit->primID )
 		return;
   	ctxt->LastPremitive = hit->primID;
 
@@ -192,49 +192,46 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 		args->valid[0] = -1;	// Стоп для поиска дальнейшого 
 		return;
 	}
-	 
-	if (!F->flags.bOpaque)
+	
+	args->valid[0] = 0;
+
+	// Перемещаем начало луча немного дальше пересечения
+	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+	b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+	if (T.pSurface.Empty())
+  		return;
+ 
+	// barycentric coords
+	// note: W,U,V order
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
+
+	//// calc UV
+	Fvector2* cuv = F->getTC0();
+	Fvector2	uv;
+	uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
+
+	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
+	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
+	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+
+	u32* raw = static_cast<u32*>(*T.pSurface);
+	u32 pixel = raw[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+
+	// Дополнение Контекста
+	ctxt->energy *= opac;
+
+	if (ctxt->energy < 0.1f)
 	{
-		args->valid[0] = 0;
-
-		// Перемещаем начало луча немного дальше пересечения
-		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-		b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-		if (T.pSurface.Empty())
-			return;
-
-		// barycentric coords
-		// note: W,U,V order
-		ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-		//// calc UV
-		Fvector2* cuv = F->getTC0();
-		Fvector2	uv;
-		uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
-		uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z;
-
-		int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-		int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-		U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-		V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
-
-		u32* raw = static_cast<u32*>(*T.pSurface);
-		u32 pixel = raw[V * T.dwWidth + U];
-		u32 pixel_a = color_get_A(pixel);
-		float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-		// Дополнение Контекста
-		ctxt->energy *= opac;
-
-		if (ctxt->energy < 0.1f)
-		{
-			ray->tfar = -std::numeric_limits<float>::infinity();
-			ctxt->energy = 0;
-			args->valid[0] = -1;	// Стоп для поиска дальнейшого 
-			return;
-		}
-	}
+		ray->tfar = -std::numeric_limits<float>::infinity();
+		ctxt->energy = 0;
+		args->valid[0] = -1;	// Стоп для поиска дальнейшого 
+ 	}
+	 
 }
 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
@@ -245,11 +242,14 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	data_hits.energy = 1.0f;
       			
 	RayOptimizedCPU ray;
-	ray.pos = P;
+ 	ray.pos = P;
 	ray.dir = N;
-	ray.tmax = range;
+ 	ray.tmax = range;
 	ray.tmin = TNearParram;
   
+//	_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
+//	_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
+
 	// Start Raytrce buffer
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
@@ -262,28 +262,23 @@ float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N,
 	RTCRay ray_occluded;
 	SetRay1(&ray, ray_occluded);
 	rtcOccluded1(IntelScene, &ray_occluded, &args);
-
-	
-	// if (ray_occluded.tfar < 0)						// В Embree Если оклудер находит пересечение ставит (-infinity) 
+ 	
+	// В Embree Если оклудер находит пересечение ставит (-infinity) 
+	// if (ray_occluded.tfar < 0)				
 	// {
 		// clMsg("ray_far: %.3f", ray_occluded.tfar);
-
-		//RTCIntersectArguments args_intersect;
+ 		//RTCIntersectArguments args_intersect;
 		//rtcInitIntersectArguments(&args_intersect);
 		//args_intersect.context = &data_hits.context;
 		//	int flags = RTC_RAY_QUERY_FLAG_INVOKE_ARGUMENT_FILTER | RTC_RAY_QUERY_FLAG_INCOHERENT;
 		//	args_intersect.flags = (RTCRayQueryFlags) flags;
-
-		//RTCRayHit rayhit;
+ 		//RTCRayHit rayhit;
 		//SetRay1(&ray, rayhit);
 		// rtcIntersect1(IntelScene, &rayhit, &args_intersect);
 	// }
-
-	return data_hits.energy;
+	 
+	return data_hits.energy; 
 }
- 
-constexpr double ShadowEpsilon = 1e-3f;
-constexpr double AngleEpsilon = 1e-4f;
  
 void errorFunction(void* userPtr, enum RTCError error, const char* str)
 {
@@ -325,40 +320,6 @@ void InitializeGeometryAttach_CDB(RTCScene& scene, CDB::CollectorPacked& packed_
 {
 	SpecialArgsXRLCLight::EmbreeGeom geom_type = (SpecialArgsXRLCLight::EmbreeGeom)build_args->embree_geometry_type;
 
-/*	Fvector* CDB_verts = inlc_global_data()->RCAST_Model()->get_verts();
-	CDB::TRI* CDB_tris = inlc_global_data()->RCAST_Model()->get_tris();
-
-	IntelGeometryNormal = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(IntelGeometryNormal, RTCBuildQuality(geom_type));
-	
-	rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterRaytrace);
-///	rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
-
-
-	int v_cnt = inlc_global_data()->RCAST_Model()->get_verts_count();
-	int t_cnt = inlc_global_data()->RCAST_Model()->get_tris_count();
-
-	verticesNormal = (VertexEmbree*)	rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), v_cnt);
-	trianglesNormal = (TriEmbree*)		rtcSetNewGeometryBuffer(IntelGeometryNormal, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), t_cnt);
- 
- 	SizeTriangleNormal = t_cnt;
-	SizeVertexNormal = v_cnt;
-
-	size_t VertexIndexer = 0;
-	// FIX
-	TriNormal_Dummys.clear();
-	TriNormal_Dummys.reserve(inlc_global_data()->RCAST_Model()->get_tris_count());
-	CDB::TRI* tri = inlc_global_data()->RCAST_Model()->get_tris();
-	for (int i = 0; i < inlc_global_data()->RCAST_Model()->get_tris_count(); i++)
-	{
-		trianglesNormal[i].SetVertexes(CDB_verts, verticesNormal, VertexIndexer);
-		TriNormal_Dummys[i] = (tri[i].pointer);
-	}
-   
-	rtcCommitGeometry(IntelGeometryNormal);
-	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Normal) By ID: %d", rtcAttachGeometry(scene, IntelGeometryNormal));
-*/
-
 	Fvector* CDB_verts = packed_cb.getV();
 	CDB::TRI* CDB_tris = packed_cb.getT();
 
@@ -366,7 +327,7 @@ void InitializeGeometryAttach_CDB(RTCScene& scene, CDB::CollectorPacked& packed_
 	rtcSetGeometryBuildQuality(IntelGeometryNormal, RTCBuildQuality(geom_type));
 
 	rtcSetGeometryOccludedFilterFunction(IntelGeometryNormal, &FilterRaytrace);
-	///	rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
+	rtcSetGeometryIntersectFilterFunction(IntelGeometryNormal, &FilterRaytrace);
 
  	int v_cnt = packed_cb.getVS();
 	int t_cnt = packed_cb.getTS();

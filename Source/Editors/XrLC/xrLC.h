@@ -70,7 +70,8 @@ struct XRLC_API  SpecialArgs
 	int MaxHitsPerRay = 256;
 	bool use_cdbPacking = false;
 	bool run_mu_first = false;
- 
+	bool useUV_v2 = false;
+
 	char* special_args = 0;
 	std::string level_name;
 };

@@ -19,11 +19,12 @@ extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data
 
 CLightmap::CLightmap()
 {
+	strcpy ( lm_texture.name, "");
 }
 
 CLightmap::~CLightmap()
 {
-	
+	strcpy(lm_texture.name, "");
 }
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)

@@ -53,7 +53,9 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 		VERIFY(inlc_global_data()->RCAST_Model());
 
 		int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
+		
 		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip);
+		
 		C.mul(.5f);
 		lm.surface[_y * lm.width + _x]._set(C);
 		lm.marker[_y * lm.width + _x] = 255;

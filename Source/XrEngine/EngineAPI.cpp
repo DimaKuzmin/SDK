@@ -237,6 +237,7 @@ void CEngineAPI::CreateRendererList()
 			bSupports_r2 = true;
 			SupportsAdvancedRendering *test_rendering = (SupportsAdvancedRendering*) GetProcAddress(hRender,"SupportsAdvancedRendering");	
 			R_ASSERT(test_rendering);
+			bSupports_r2 = test_rendering();
 			bSupports_r2_5 = test_rendering();
 			FreeLibrary(hRender);
 		}

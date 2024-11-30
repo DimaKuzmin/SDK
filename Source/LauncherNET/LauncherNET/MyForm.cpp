@@ -88,7 +88,7 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->use_std = true;
     if (strstr(item, collection[13]))
         args->run_mu_first = true;
-    //if (strstr(item, collection[14]))
+     //if (strstr(item, collection[14]))
     //    args->use_cdbPacking = true;
 
     //if (strstr(item, collection[15]))
@@ -303,6 +303,9 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     
     if (RadioEmbreeG_Robust->Checked)
         args->use_RobustGeom = 1;
+
+    if (use_uv2->Checked)
+        args->useUV_v2 = true;
 
     args->embree_tnear = atof(TNear.c_str());
 

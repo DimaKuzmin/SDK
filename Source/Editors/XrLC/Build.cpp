@@ -302,15 +302,9 @@ void CBuild::Run(LPCSTR P)
    	mem_Compact					();
    	xrPhase_Subdivide			();
     log_vminfo_new("Subdividing geometry");
-
-	// Se7Kills
-	// Export Model DEFLECTORS 
-	// ExportDeflectors();
-
-
+ 
 	// Se7Kills Opacity BUFFERS
-
-	//****************************************** All lighting + lmaps building and saving
+ 	//****************************************** All lighting + lmaps building and saving
  		
 	Light						();
 	RunAfterLight				( fs );

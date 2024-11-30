@@ -237,7 +237,10 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	// xrCDB Special Features
  	build_args->use_cdbPacking = args->use_cdbPacking;
 
+	clMsg("MU IS FIRST: %s", args->run_mu_first ? "true" : "false");
 	build_args->run_mu_first = args->run_mu_first;
+	build_args->useUV_v2	 = args->useUV_v2;
+
 
 	// Custom Flags (Not Supported)
 	build_args->MaxHitsPerRay = args->MaxHitsPerRay;

@@ -132,17 +132,19 @@ void SelectionLmapSize(vecDefl& Layer)
 
 BOOL _rect_place_fast(L_rect& r, lm_layer* D, int _X, int _Y);
 
+
+#define USE_FASTER_V2
+
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
+#ifdef USE_FASTER_V2
 	// Process 	
 	int _X = 0, _Y = 0;
  	u16 _Max_y = 0;
 
 	for (int it = 0; it < Layer.size(); it++)
 	{
-//		Msg("Merge (%d), X: %d, Y: %d", it, _X, _Y);
-
-		if (0 == (it % 1024))
+ 		if (0 == (it % 1024))
 			Status("Process [%d/%d]...Merged{%d}", it, g_XSplit.size(), MERGED);
 
 		if (_Y > getLMSIZE())
@@ -179,6 +181,52 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 		Progress(float(it) / float(g_XSplit.size()));
 	}
+#else
+
+	// Process 	
+	int x = 0, y = 0;
+	u16 prev_resize_height = 0;
+	u16 prev_resize_width = 0;
+	u16 max_y = 0;
+
+
+	for (int it = 0; it < Layer.size(); it++)
+	{
+		lm_layer& L = Layer[it]->layer;
+		if (max_y < L.height + 5)
+			max_y = L.height + 5;
+
+		if (x + L.width + 2 > getLMSIZE() - 16 - L.width)
+		{
+			x = 0;  y += max_y + 5; max_y = 0;
+		}
+
+		{
+			L_rect		rT, rS;
+			rS.a.set(x, y);
+			rS.b.set(x + L.width + 2 * BORDER - 1, y + L.height + 2 * BORDER - 1);
+			rS.iArea = L.Area();
+			rT = rS;
+
+			x += L.width + 5;
+
+			BOOL		bRotated = rT.SizeX() != rS.SizeX();
+
+			if (y < getLMSIZE() - 16 - L.height)
+			{
+				lmap->Capture(Layer[it], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+				Layer[it]->bMerged = TRUE;
+				MERGED++;
+			}
+		}
+
+		Progress(float(it) / float(g_XSplit.size()));
+
+		if (0 == (it % 1024))
+			Status("Process [%d/%d]...", it, g_XSplit.size());
+	}
+
+#endif
 }
 
 #include "tbb/parallel_for.h"

@@ -146,6 +146,8 @@ private: System::Windows::Forms::RadioButton^ lightmap_4096;
 private: System::Windows::Forms::RadioButton^ lightmap_2048;
 private: System::Windows::Forms::RadioButton^ lightmap_1024;
 private: System::Windows::Forms::Label^ label17;
+private: System::Windows::Forms::CheckBox^ use_uv2;
+
 
 
 
@@ -177,6 +179,8 @@ public:
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox5 = (gcnew System::Windows::Forms::GroupBox());
+			this->label17 = (gcnew System::Windows::Forms::Label());
+			this->FastLmapsBuilder = (gcnew System::Windows::Forms::CheckBox());
 			this->lightmap_8192 = (gcnew System::Windows::Forms::RadioButton());
 			this->lightmap_4096 = (gcnew System::Windows::Forms::RadioButton());
 			this->lightmap_2048 = (gcnew System::Windows::Forms::RadioButton());
@@ -194,7 +198,6 @@ public:
 			this->RadioEmbreeGdefault = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeG_Robust = (gcnew System::Windows::Forms::RadioButton());
 			this->IntelEmbreType = (gcnew System::Windows::Forms::GroupBox());
-			this->FastLmapsBuilder = (gcnew System::Windows::Forms::CheckBox());
 			this->RadioEmbreeGUltra = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGHigh = (gcnew System::Windows::Forms::RadioButton());
 			this->RadioEmbreeGMedium = (gcnew System::Windows::Forms::RadioButton());
@@ -235,7 +238,7 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->label17 = (gcnew System::Windows::Forms::Label());
+			this->use_uv2 = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
@@ -425,6 +428,29 @@ public:
 			this->groupBox5->TabStop = false;
 			this->groupBox5->Text = L"Lightmap Size";
 			// 
+			// label17
+			// 
+			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->label17->ForeColor = System::Drawing::Color::Firebrick;
+			this->label17->Location = System::Drawing::Point(157, 57);
+			this->label17->Name = L"label17";
+			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
+			this->label17->Size = System::Drawing::Size(369, 81);
+			this->label17->TabIndex = 30;
+			this->label17->Text = L"Включает быстрое расположение (но не компактное в Lightmap) текстуре (Смещает поз"
+				L"ицию X на размер мапы и Y если X > SizeLmap превышает размер)\r\n";
+			// 
+			// FastLmapsBuilder
+			// 
+			this->FastLmapsBuilder->AutoSize = true;
+			this->FastLmapsBuilder->Location = System::Drawing::Point(212, 23);
+			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
+			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
+			this->FastLmapsBuilder->TabIndex = 4;
+			this->FastLmapsBuilder->Text = L"Быстрый BuildLmap (Не ориг)";
+			this->FastLmapsBuilder->UseVisualStyleBackColor = true;
+			// 
 			// lightmap_8192
 			// 
 			this->lightmap_8192->AutoSize = true;
@@ -515,6 +541,7 @@ public:
 			// 
 			// groupBox2
 			// 
+			this->groupBox2->Controls->Add(this->use_uv2);
 			this->groupBox2->Controls->Add(this->use_raytrace_occluded);
 			this->groupBox2->Controls->Add(this->useDXT1);
 			this->groupBox2->Location = System::Drawing::Point(27, 28);
@@ -620,16 +647,6 @@ public:
 			this->IntelEmbreType->TabIndex = 19;
 			this->IntelEmbreType->TabStop = false;
 			this->IntelEmbreType->Text = L"Тип Геометрии (Intel)";
-			// 
-			// FastLmapsBuilder
-			// 
-			this->FastLmapsBuilder->AutoSize = true;
-			this->FastLmapsBuilder->Location = System::Drawing::Point(212, 23);
-			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
-			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
-			this->FastLmapsBuilder->TabIndex = 4;
-			this->FastLmapsBuilder->Text = L"Быстрый BuildLmap (Не ориг)";
-			this->FastLmapsBuilder->UseVisualStyleBackColor = true;
 			// 
 			// RadioEmbreeGUltra
 			// 
@@ -1051,19 +1068,17 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// label17
+			// use_uv2
 			// 
-			this->label17->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label17->ForeColor = System::Drawing::Color::Firebrick;
-			this->label17->Location = System::Drawing::Point(157, 57);
-			this->label17->Name = L"label17";
-			this->label17->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->label17->Size = System::Drawing::Size(369, 81);
-			this->label17->TabIndex = 30;
-			this->label17->Text = L"Включает быстрое расположение (но не компактное в Lightmap) текстуре (Смещает поз"
-				L"ицию X на размер мапы и Y если X > SizeLmap превышает размер)\r\n";
-			// 
+			this->use_uv2->AutoSize = true;
+			this->use_uv2->Location = System::Drawing::Point(17, 113);
+			this->use_uv2->Name = L"use_uv2";
+			this->use_uv2->Size = System::Drawing::Size(133, 31);
+			this->use_uv2->TabIndex = 5;
+			this->use_uv2->Text = L"use_UV_v2";
+			this->use_uv2->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->use_uv2->UseVisualStyleBackColor = true;
+ 			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -1200,6 +1215,7 @@ public:
   		}
 
 
+ 
  
 };
 

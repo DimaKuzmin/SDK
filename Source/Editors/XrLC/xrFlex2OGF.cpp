@@ -99,7 +99,8 @@ void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF
 			{
 				// If lightmaps persist
 				CLightmap* LM = F->lmap_layer;
-				if (LM) {
+				if (LM)
+				{
 					string_path	fn;
 					xr_sprintf(fn, "%s_1", LM->lm_texture.name);
 					T.name = fn;

@@ -45,12 +45,6 @@ public:
 	{
  
 		CDeflector* D	= 0;
- 
-		#include <xmmintrin.h>
-		#include <pmmintrin.h>
-	 
-		_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-		_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 
 		for (;;) 
 		{
@@ -107,7 +101,7 @@ void	CBuild::LMapsLocal				()
 		
 	mem_Compact		();
  
-	if (build_args->use_tbb)
+	if (build_args->use_tbb) // 
 	{
 		xr_vector<CDeflector*> task;
 		for (auto d : lc_global_data()->g_deflectors())
@@ -116,16 +110,15 @@ void	CBuild::LMapsLocal				()
 		// For Data
 		u32 SizeCalculated = 0;
 		u32 TaskSize = task.size();
- 		std::mutex lock_mtx;
- 
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, task.size(), 128), [&](const tbb::blocked_range<size_t>& range)
+  
+#define MAX_SIZE_PER_THREAD 1
+
+		tbb::parallel_for(tbb::blocked_range<size_t>(0, task.size(), MAX_SIZE_PER_THREAD),
+		[&](const tbb::blocked_range<size_t>& range)
 		{
 			HASH			H;
 			CDB::COLLIDER	DB;
 			base_lighting	LightsSelected;
-
-			_MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);
-			_MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);
 
 
 			for (auto i = range.begin(); i < range.end(); i++)
@@ -133,13 +126,14 @@ void	CBuild::LMapsLocal				()
 				task[i]->Light(0, &DB, &LightsSelected, H);
 			}
 
-			SizeCalculated += 128;
+			SizeCalculated += MAX_SIZE_PER_THREAD;
 
 			if (SizeCalculated % 1024 == 0)
 			{
 				StatusNoMSG("Deflectors: Processed:%u, Store: %u", SizeCalculated, TaskSize);
 			}
-		});
+		}
+		);
 	}
 	else
 	{
@@ -151,8 +145,7 @@ void	CBuild::LMapsLocal				()
 
 		for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
 			task_pool.push_back(dit);
-
-
+ 
 		// Main process (4 threads) (-th MAX_THREADS)
 		Status("Lighting...");
 		CThreadManager	threads;
@@ -212,7 +205,7 @@ void CBuild::Light()
 		}
 		//****************************************** Implicit
 
-		if (!build_args->off_impl)
+		//if (!build_args->off_impl)
 		{
 			FPU::m64r();
 			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]", build_args->use_embree ? "intel" : "opcode");
@@ -222,7 +215,7 @@ void CBuild::Light()
 			log_vminfo_new("Implicit Memory");
 		}
 
-		if (!build_args->off_lmaps)
+		//if (!build_args->off_lmaps)
 		{
 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase(tmp);
@@ -254,9 +247,7 @@ void CBuild::Light()
 			log_vminfo_new("MU-MODELS Memory");
 		}
  	}
-
-
- 
+  
 	if (build_args->use_embree)
 		IntelEmbereUNLOAD();
 }
