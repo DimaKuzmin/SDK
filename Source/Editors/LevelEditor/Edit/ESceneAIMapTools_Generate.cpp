@@ -27,6 +27,8 @@ struct tri
 };
 
 const int	RCAST_MaxTris	= (2*1024);
+
+// RCAST_COUNT 4 // DEFAULT
 const int	RCAST_Count		= 1;
 const int	RCAST_Total		= (2*RCAST_Count+1)*(2*RCAST_Count+1);
 const float	RCAST_Depth		= 1.f;

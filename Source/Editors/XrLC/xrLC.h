@@ -7,7 +7,7 @@
 #endif
 
 #include <string>
-  
+ 
 struct XRLC_API  SpecialArgs
 {
 	enum EmbreeGeom
@@ -25,7 +25,7 @@ struct XRLC_API  SpecialArgs
 		eLightmap4096 = 2,
 		eLightmap8192 = 3
 	};
-
+  
 	// debuging 
 	bool off_lmaps = false;
 	bool off_impl = false;
@@ -74,9 +74,13 @@ struct XRLC_API  SpecialArgs
 
 	char* special_args = 0;
 	std::string level_name;
+
+	unsigned __int64 getRaysCount();
 };
 
 XRLC_API void  StartupWorking(SpecialArgs* args);
+
+extern XRLC_API SpecialArgs* current_args_data;
 
 class XRLC_API ILogger
 {
@@ -87,7 +91,7 @@ public:
 	virtual void  UpdateProgressBar(float value) = 0;
 
 	virtual void  UpdateText() = 0;
-	virtual void  UpdateTime(LPCSTR time) = 0;
+	virtual void  UpdateTime(LPCSTR time, unsigned int time_global) = 0;
 };
 
 extern XRLC_API ILogger* LoggerCL;

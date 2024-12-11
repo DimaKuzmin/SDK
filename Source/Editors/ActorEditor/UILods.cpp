@@ -105,6 +105,7 @@ void ThreadWork(UILods * logs)
 
 #include <thread>
 
+bool make_thm = false;
 
 void UILods::Draw()
 {
@@ -177,6 +178,7 @@ void UILods::Draw()
 		UI->ProgressEnd(PB);
 	}
 
+	ImGui::Checkbox("MakeTHM", &make_thm);
 	ImGui::Checkbox("HQ", &Quallyty);
 	 
 
@@ -195,14 +197,10 @@ void UILods::Draw()
  			//PB->Inc();
 			PB->Info(tmp);
 
-			ATools->GenerateLOD(Quallyty);
-
-			// while(ATools->m_Flags.is(CActorTools::flGenerateLODHQ))
-  			//	Sleep(100);
- 
-			//Sleep(1000);
-
-			//ATools->Clear();
+			if (!make_thm)
+				ATools->GenerateLOD(Quallyty);
+			else
+				ATools->MakeThumbnail();
 		}
 		else 
 		{

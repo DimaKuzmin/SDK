@@ -34,6 +34,8 @@ typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
 
 CTimer	dwStartupTime;
 
+XRLC_API SpecialArgs* current_args_data = 0;
+
 void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 {
 	create_global_data();
@@ -181,6 +183,8 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	// Close log
 	bClose					= TRUE;
 	Sleep					(500);
+
+	current_args_data = nullptr;
 }
 
 //typedef void DUMMY_STUFF (const void*,const u32&,void*);
@@ -191,6 +195,8 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 
 #include <ctime>
 #include "../XrLCLight/xrDeflector.h"
+
+
 
 
 void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
@@ -246,9 +252,14 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
  }
 
+
+
+
  
 XRLC_API void StartupWorking(SpecialArgs* args)
 {
+	current_args_data = args;
+
 	Debug._initialize(false);
 	Core._initialize("xrLC");
 
@@ -333,3 +344,9 @@ int APIENTRY WinMain(HINSTANCE hInst,
 }
 
 */
+
+
+unsigned __int64 SpecialArgs::getRaysCount()
+{
+	return build_args->RaysCalculated;
+}

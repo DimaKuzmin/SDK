@@ -294,7 +294,7 @@ void logThread(void *dummy)
 			std::string time = make_time(dwStartupTime.GetElapsed_ms() / 1000);
 
 			LoggerCL->updateStatus(status);
-			LoggerCL->UpdateTime(time.c_str());
+			LoggerCL->UpdateTime(time.c_str(), dwStartupTime.GetElapsed_ms() );
 		}
 
 		if (bWasChanges)

@@ -163,6 +163,7 @@ void FilterRaytraceOccluded(const struct RTCFilterFunctionNArguments* args)
 		ray->tfar, ray->tnear, hit->primID, hit->u, hit->v);
 }
 
+
 void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
@@ -234,8 +235,12 @@ void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 	 
 }
 
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+ 
 float RaytraceEmbreeProcess(CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& N, float range, Face* skip)
 {
+	build_args->RaysCalculated++;
+
   	RayQueryContext data_hits;
 	data_hits.Light = &L;
 	data_hits.skip  = skip;

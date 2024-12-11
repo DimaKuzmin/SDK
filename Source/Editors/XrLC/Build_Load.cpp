@@ -105,7 +105,7 @@ void CopyTextureToBuildPC(LPCSTR N)
 void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
 {
 	string128 tmp;
-	sprintf(tmp, "Cant Load THM %s", N);
+	sprintf(tmp, "Cant Load THM %s, BT Parrams[%d, %d, hasAlpha: %d, pSurface: %p]", N, BT.dwWidth, BT.dwHeight, BT.bHasAlpha, *BT.pSurface);
 
 	clMsg(tmp);
 	w->w_string(tmp);	 

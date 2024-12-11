@@ -11,6 +11,8 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 		eRefit = 3
 	};
  
+	u64 RaysCalculated = 0;
+
 	// debuging 
 	bool off_lmaps = false;
 	bool off_impl = false;

@@ -98,6 +98,9 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
 
 gcroot<LauncherNET::MyForm^>  form;
 
+unsigned int DeviceTime = 0;
+unsigned int LAST_UPDATE = 0;
+
 class  NET_Logger : ILogger
 {
 public:
@@ -127,9 +130,20 @@ public:
         form->updateProgressBar(value);
     }
 
-    virtual void UpdateTime(LPCSTR time)
+    virtual void UpdateTime(LPCSTR time, unsigned int time_global)
     {
-        form->UpdateTime(time);      
+        form->UpdateTime(time);
+        DeviceTime = time_global;
+
+        if (LAST_UPDATE  < DeviceTime)
+        {
+            LAST_UPDATE = DeviceTime + 1000;
+            
+            char text[128];
+            sprintf(text, "CurrentRays: %llu", current_args_data != nullptr ? current_args_data->getRaysCount() : 0);
+            form->updateLogFormItem(text);
+        }
+
         size_t reserved, free, used;
         vminfo_memory(&free, &reserved, &used);
 
@@ -162,12 +176,11 @@ public:
     virtual void UpdateProgress(float value)
     {
         form->updateProgressBar(value);
-        
-      //  char string[128];
-      //  sprintf(string, "Progress: %f", value);
-      //  updateLog(string);
-    }
 
+        // char string[128];
+        // sprintf(string, "Progress: %f", value);
+        // updateLog(string);
+    }
 
     virtual void UpdateText()
     {

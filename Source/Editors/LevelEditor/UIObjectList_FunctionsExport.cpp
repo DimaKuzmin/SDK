@@ -254,38 +254,42 @@ void UIObjectList::BboxSelectedObject()
 {
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
 
-	ObjectList& list = ot->GetObjects();
-
+	//Fbox box_all;
+	//Scene->GetBox(box_all, LTools->CurrentClassID());
+	
 	Fbox box_all;
+	bool boxIsset = false;
+	ObjectList& list = ot->GetObjects();
 	for (auto item : list)
 	{
  		if (!item->Selected())
 			continue;
 
-		if (CSceneObject* scene = smart_cast<CSceneObject*>(item))
-		{
- 
-		}
-
 		Fbox box;
-		item->GetBox(box);
-
-		box_all.merge(box);
-		Msg("BBOX x[%f][%f]", box.x1, box.x2);
-		Msg("BBOX z[%f][%f]", box.z1, box.z2);
-		Msg("BBOX y[%f][%f]", box.y1, box.y2);
-		
-
-		if (CSceneObject* scene = smart_cast<CSceneObject*>(item))
+		bool isRead = item->GetBox(box);
+		if (isRead)
 		{
- 			Msg("Position: %f, %f, %f", VPUSH(scene->GetPosition()));
-			Msg("RefPosition: %f, %f, %f", VPUSH(scene->m_pReference->a_vPosition));
- 		}
+			if (!boxIsset)
+			{
+				box_all.set(box.min, box.max);
+				boxIsset = true;
+			}
+			else
+			{
+				box_all.modify(box.min);
+				box_all.modify(box.max);
+			}
+		}
 		
-
-		vec_box_min = box.min;
-		vec_box_max = box.max;
+		Msg("OBJECT BBOX x[%f][%f]", box.x1, box.x2);
+		Msg("OBJECT BBOX z[%f][%f]", box.z1, box.z2);
+		Msg("OBJECT BBOX y[%f][%f]", box.y1, box.y2);
 	}
+
+	vec_box_min = box_all.min;
+	vec_box_max = box_all.max;
+
+	
 
 	Msg("Selected BBOX x[%f][%f]", box_all.x1, box_all.x2);
 	Msg("Selected BBOX z[%f][%f]", box_all.z1, box_all.z2);

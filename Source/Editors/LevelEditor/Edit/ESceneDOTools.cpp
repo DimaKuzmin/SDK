@@ -597,14 +597,31 @@ bool EDetailManager::Export(LPCSTR path)
 	    	*remap_object_it	= (u8)new_idx++;
 
     xr_string 			do_tex_name = ChangeFileExt(fn,"_details");
-    int res				= ImageLib.CreateMergedTexture(textures,do_tex_name.c_str(),STextureParams::tfDXT5,256,1024,256,1024,offsets,scales,rotated,remap);
-    if (1!=res)			bRes=FALSE;
+    int res				= ImageLib.CreateMergedTexture(
+        textures,do_tex_name.c_str(),
+        STextureParams::tfDXT5, 
+        256, 4096, // X max
+        256, 4096, // Y max
+        offsets, scales,rotated,remap);
+   
+    if (1!=res)		
+        bRes=FALSE;
 
-    pb->Inc				("export geometry");
+    if (!bRes)
+    {
+        Msg("Can't Create Merged Texture!!!");
+        ELog.DlgMsg(mtError, "EDetailManager Cant Create Merged Texture Size: %llu | %llu (engine hardkoded)", 4096, 4096);
+        return false;
+    }
+
+
+
     // objects
     int object_idx		= 0;
     if (bRes)
     {
+        pb->Inc("export geometry");
+
 	    do_tex_name 	= EFS.ExtractFileName(do_tex_name.c_str());
         F.open_chunk	(DETMGR_CHUNK_OBJECTS);
         for (DetailIt it=objects.begin(); it!=objects.end(); it++){
@@ -628,10 +645,16 @@ bool EDetailManager::Export(LPCSTR path)
         }
         F.close_chunk		();
     }
-    
-    pb->Inc	("export slots");
+   
+    if (!bRes)
+        Msg("Can't export Geometry !!!");
+  
+   
     // slots
-    if (bRes){
+    if (bRes)
+    {
+        pb->Inc("export slots");
+
     	xr_vector<DetailSlot> dt_slots(slot_cnt);
         dt_slots.assign(dtSlots,dtSlots+slot_cnt);
         for (int slot_idx=0; slot_idx<slot_cnt; slot_idx++)
@@ -663,6 +686,9 @@ bool EDetailManager::Export(LPCSTR path)
 
     	bRes 			= F.save_to(fn.c_str());
     }
+
+    if (!bRes)
+        Msg("Can't Export Slots !!!");
 
     pb->Inc();
     UI->ProgressEnd(pb);

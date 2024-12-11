@@ -781,12 +781,16 @@ void ESceneAIMapTool::RemoveSelection()
 	        pb->Inc("erasing nodes");
             // remove sel nodes
            	AINodeIt result		= std::remove_if(m_Nodes.begin(), m_Nodes.end(), delete_sel_node_pred());
-            m_Nodes.erase		(result,m_Nodes.end());
-	        pb->Inc("updating hash");
-            hash_Clear		   	();
-		    hash_FillFromNodes 	();
-	        pb->Inc("end");
-            UI->ProgressEnd(pb);
+            
+            if (result != m_Nodes.end())
+            {
+                m_Nodes.erase(result, m_Nodes.end());
+                pb->Inc("updating hash");
+                hash_Clear();
+                hash_FillFromNodes();
+                pb->Inc("end");
+                UI->ProgressEnd(pb);
+            }
         }
     }break;
     }

@@ -651,6 +651,7 @@ void CLevelSpawnConstructor::Execute							()
 
 	correct_level_changers				();
 	Msg("TimeCorrectLC Objects: %f", t.GetElapsed_sec());
+
 	verify_space_restrictors			();
 	Msg("TimeVerifySR Objects: %f", t.GetElapsed_sec());
 	

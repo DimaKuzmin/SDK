@@ -449,10 +449,11 @@ bool CActorTools::Load(LPCSTR obj_name)
         xr_delete(m_pEditObject);
         m_pEditObject = O;
         ///  m_pEditObject->Optimize ();
-          // delete visual
+        // delete visual
   
         
         MainForm->GetLeftBarForm()->SetRenderMode(false);
+        ZoomObject(true);
 
         UpdateProperties();
         return true;
