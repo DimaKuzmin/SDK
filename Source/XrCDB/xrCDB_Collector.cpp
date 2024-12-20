@@ -376,7 +376,6 @@ namespace CDB
 		{
  			DWORDList* vl = &(VM[ix][iy][iz]);;
  			
-			if (true)
 			for (DWORDIt it = vl->begin(); it != vl->end(); it++)
 			{
 				if (*it >= verts.size())
