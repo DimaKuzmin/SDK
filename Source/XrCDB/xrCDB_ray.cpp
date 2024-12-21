@@ -193,32 +193,24 @@ public:
 	MODEL* MDL;
 	TRI* tris;
  
-	OpcodeContext*	ctxt = 0;
+	bool UseIntersectionFilter = false;
 	bool			continue_work = true;
-	bool			m128_SSE = false;
-
+	OpcodeContext*	ctxt = 0;
+  
 	Fvector* verts;
-
-	ray_t			ray;
+ 	ray_t			ray;
 	float			rRange;
 	float			rRange2;
- 
-	__m128 ray_pos;
+ 	__m128 ray_pos;
 	__m128 fwd_dir;
 	__m128 inv_dir;
  
-	bool UseOccluder = false;
-	bool UseIntersectionFilter = false;
-
-	// SKIP CALC TRI EDGE
-//	TrianglePrecalculate TraangleCalculator;
-
+ 	// SKIP CALC TRI EDGE
 	ICF void			_init(COLLIDER* CL, CDB::MODEL* model,  const Fvector& C, const Fvector& D, float R)
 	{
 		dest = CL;
 		tris = model->get_tris();
 		verts = model->get_verts();
-		//tris_edges = model->get_tris_edges();
 
 		MDL = model;
 
@@ -244,12 +236,8 @@ public:
 		}
 
 		if (ctxt)
-		{
- 			UseOccluder = ctxt->filterOccluded != nullptr;
-			ctxt->result->OccludeHas = UseOccluder;
-			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
-		}
-	}
+  			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
+ 	}
 
 	// fpu
 	ICF BOOL		_box_fpu(const Fvector& bCenter, const Fvector& bExtents, Fvector& coord)
@@ -281,29 +269,6 @@ public:
 
 	Fvector edge1, edge2, pvec, tvec, qvec;
 	float det, inv_det;
- 
-	ICF bool _TriRange(Fvector* verts, ray_t& ray, u32* p, float& range)
-	{
-		// find vectors for two edges sharing vert0
-		Fvector& p0 = verts[p[0]];
-		Fvector& p1 = verts[p[1]];
-		Fvector& p2 = verts[p[2]];
-		edge1.sub(p1, p0);
-		edge2.sub(p2, p0);
-
-		pvec.crossproduct(ray.fwd_dir, edge2);
-		det = edge1.dotproduct(pvec);
-
-		if (det < EPS)
-			return false;
-
-		inv_det = 1.0f / det;
-		tvec.sub(ray.pos, p0);						// calculate distance from vert0 to ray origin
-		qvec.crossproduct(tvec, edge1);				// prepare to test V parameter
-		range = edge2.dotproduct(qvec) * inv_det;   // calculate t, scale parameters, ray intersects triangle
-
-		return true;
-	}
  
 	// FLOATING POINT
 	ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
@@ -352,26 +317,6 @@ public:
 	void _prim(DWORD prim)
 	{
  		float	u, v, r;
-		 
-		if (UseOccluder)
-		{
-			ctxt->result->IntersectContinue = true;
- 			 
-			if (!_TriRange(verts, ray, tris[prim].verts, r))
-				return;
- 
-			if (r <= 0 || r > rRange)
-				return;
-
-			// OpcodeArgs  data;
-  			ctxt->result->hit_struct.prim = prim;
-			ctxt->filterOccluded(ctxt->result);
- 			continue_work = ctxt->result->valid;
-			
-			if (!ctxt->result->IntersectContinue)
- 				return;
- 		}
-		 
   		if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))
 			return;
  		 
