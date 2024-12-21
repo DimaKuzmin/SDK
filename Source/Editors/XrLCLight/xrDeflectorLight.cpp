@@ -21,6 +21,8 @@ xrCriticalSection csDeflector;
 #ifndef DevCPU 
 #include "xrHardwareLight.h"
 #endif
+extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
 
 // NEW CDB_RAY
 void FilterIntersection(OpcodeArgs* context)
@@ -94,8 +96,6 @@ void FilterIntersection(OpcodeArgs* context)
 	if (context->energy < 0.001f)
 		context->valid = false;
 };
-
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
 {
