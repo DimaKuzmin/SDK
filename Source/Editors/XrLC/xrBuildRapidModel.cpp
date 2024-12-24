@@ -212,57 +212,57 @@ void CBuild::BuildRapid		(BOOL bSaveForOtherCompilers)
 		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
 
   	CDB::CollectorPacked	CL	(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
-	CL.UsePacking = build_args->use_cdbPacking;
+	CL.UsePacking = false;
   	 
  	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve(6 * 2 * 3);
 
  	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
 	{
- 			const Shader_xrLC& SH = F->Shader();
+ 		const Shader_xrLC& SH = F->Shader();
 
-			if (!SH.flags.bLIGHT_CastShadow)
-				return;
+		if (!SH.flags.bLIGHT_CastShadow)
+			return;
 
-			b_material& M = lc_global_data()->materials()[F->dwMaterial];
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
 
-			// Collect
-			adjacent_vec.clear();
-			for (int vit = 0; vit < 3; ++vit)
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
+		{
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
 			{
-				Vertex* V = F->v[vit];
-				for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-				{
-					adjacent_vec.push_back(V->m_adjacents[adj]);
-				}
+				adjacent_vec.push_back(V->m_adjacents[adj]);
 			}
+		}
 
-			std::sort(adjacent_vec.begin(), adjacent_vec.end());
-			adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
 
-			// Unique
-			BOOL			bAlready = FALSE;
+		// Unique
+		BOOL			bAlready = FALSE;
 
-			for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F)
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
+			if (FaceEqual(*F, *Test))
 			{
-				Face* Test = adjacent_vec[ait];
-				if (Test == F)
-					continue;
-				if (!Test->flags.bProcessed)
-					continue;
-				if (FaceEqual(*F, *Test))
-				{
-					bAlready = TRUE;
-					break;
-				}
+				bAlready = TRUE;
+				break;
 			}
+		}
 
-			//
-			if (!bAlready)
-			{
-				F->flags.bProcessed = true;
-				CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
-			}
+		//
+		if (!bAlready)
+		{
+			F->flags.bProcessed = true;
+			CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
+		}
 
 	});
  	 
@@ -296,7 +296,7 @@ void CBuild::BuildIntelModel(bool bSave)
 		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
 
 	CDB::CollectorPacked	CL(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
-	CL.UsePacking = build_args->use_cdbPacking;
+	CL.UsePacking = false;
 	 
 	xr_vector<Face*>			adjacent_vec;
 	adjacent_vec.reserve(6 * 2 * 3);

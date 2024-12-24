@@ -1,9 +1,9 @@
-#ifndef	_XRLIGHT_IPLICIDDEFLECTOR
-#define	_XRLIGHT_IPLICIDDEFLECTOR
+#pragma once 
 
 #include "lm_layer.h"
 #include "xrFacedefs.h"
-struct  b_BuildTexture;
+struct  b_BuildTexture; 
+
 class ImplicitDeflector
 {
 public:
@@ -39,4 +39,45 @@ public:
 	void		Bounds_Summary	(Fbox2& bounds);
  
 };
-#endif
+ 
+
+#include "hash2d.h"
+
+typedef hash2D <Face*, 384, 384>		IHASH;
+#include "xrFaceDefs.h"
+
+class ImplicitCalcGlobs
+{
+	IHASH* ImplicitHash;
+	ImplicitDeflector* defl;
+public:
+	ImplicitCalcGlobs() : defl(0) // , ImplicitHash(0)
+	{
+
+	}
+
+	IC	IHASH& Hash()
+	{
+		R_ASSERT(ImplicitHash);
+		return *ImplicitHash;
+	}
+
+	void Allocate()
+	{
+		ImplicitHash = xr_new<IHASH>();
+	}
+
+	void Deallocate()
+	{
+		xr_delete(ImplicitHash);
+	}
+
+	void Initialize(ImplicitDeflector& def);
+
+	IC	ImplicitDeflector& DATA()
+	{
+		R_ASSERT(defl);
+		return *defl;
+	}
+};
+extern ImplicitCalcGlobs cl_globs;

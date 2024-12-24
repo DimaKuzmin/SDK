@@ -73,26 +73,26 @@ namespace LauncherNET
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::Label^ label6;
 	private: System::Windows::Forms::Button^ button1;
-	private: System::Windows::Forms::GroupBox^ IntelEmbreType;
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeGUltra;
 
 
 
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeGHigh;
-
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeGMedium;
-
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeGLow;
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeG_Robust;
 
 
-	private: System::Windows::Forms::GroupBox^ groupBox1;
-	private: System::Windows::Forms::RadioButton^ RadioEmbreeGdefault;
+
+
+
+
+
+
+
+
+
+
 	private: System::Windows::Forms::Label^ InfoStatus;
 	private: System::Windows::Forms::Label^ BuildTime;
-	private: System::Windows::Forms::TextBox^ EmbreeTnear;
-	private: System::Windows::Forms::Label^ label10;
-	private: System::Windows::Forms::GroupBox^ groupBox2;
+
+
+
 
 
 
@@ -100,8 +100,8 @@ namespace LauncherNET
 
 
 	private: System::Windows::Forms::CheckBox^ useDXT1;
-	private: System::Windows::Forms::Label^ label11;
-	private: System::Windows::Forms::TextBox^ EmbreeHitsCollect;
+
+
 	private: System::Windows::Forms::GroupBox^ groupBox4;
 	private: System::Windows::Forms::Label^ label14;
 	private: System::Windows::Forms::Label^ label13;
@@ -130,7 +130,7 @@ private: System::Windows::Forms::CheckBox^ xrAI_Verify;
 
 
 
-private: System::Windows::Forms::Label^ label18;
+
 public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 
 private: System::Windows::Forms::Label^ label16;
@@ -139,14 +139,14 @@ private: System::Windows::Forms::ProgressBar^ CurrentProgress;
 private: System::Windows::Forms::Label^ MemoryInfo;
 
 private: System::Windows::Forms::CheckBox^ FastLmapsBuilder;
-private: System::Windows::Forms::CheckBox^ use_raytrace_occluded;
+
 private: System::Windows::Forms::GroupBox^ groupBox5;
 private: System::Windows::Forms::RadioButton^ lightmap_8192;
 private: System::Windows::Forms::RadioButton^ lightmap_4096;
 private: System::Windows::Forms::RadioButton^ lightmap_2048;
 private: System::Windows::Forms::RadioButton^ lightmap_1024;
 private: System::Windows::Forms::Label^ label17;
-private: System::Windows::Forms::CheckBox^ use_uv2;
+
 
 
 
@@ -186,22 +186,7 @@ public:
 			this->lightmap_2048 = (gcnew System::Windows::Forms::RadioButton());
 			this->lightmap_1024 = (gcnew System::Windows::Forms::RadioButton());
 			this->xrLC_JitterSamples = (gcnew System::Windows::Forms::ComboBox());
-			this->label18 = (gcnew System::Windows::Forms::Label());
-			this->label11 = (gcnew System::Windows::Forms::Label());
-			this->EmbreeHitsCollect = (gcnew System::Windows::Forms::TextBox());
-			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
-			this->use_raytrace_occluded = (gcnew System::Windows::Forms::CheckBox());
 			this->useDXT1 = (gcnew System::Windows::Forms::CheckBox());
-			this->EmbreeTnear = (gcnew System::Windows::Forms::TextBox());
-			this->label10 = (gcnew System::Windows::Forms::Label());
-			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-			this->RadioEmbreeGdefault = (gcnew System::Windows::Forms::RadioButton());
-			this->RadioEmbreeG_Robust = (gcnew System::Windows::Forms::RadioButton());
-			this->IntelEmbreType = (gcnew System::Windows::Forms::GroupBox());
-			this->RadioEmbreeGUltra = (gcnew System::Windows::Forms::RadioButton());
-			this->RadioEmbreeGHigh = (gcnew System::Windows::Forms::RadioButton());
-			this->RadioEmbreeGMedium = (gcnew System::Windows::Forms::RadioButton());
-			this->RadioEmbreeGLow = (gcnew System::Windows::Forms::RadioButton());
 			this->button1 = (gcnew System::Windows::Forms::Button());
 			this->label9 = (gcnew System::Windows::Forms::Label());
 			this->label8 = (gcnew System::Windows::Forms::Label());
@@ -238,14 +223,10 @@ public:
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->TODO = (gcnew System::Windows::Forms::TabPage());
-			this->use_uv2 = (gcnew System::Windows::Forms::CheckBox());
 			this->TabControl->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
 			this->groupBox5->SuspendLayout();
-			this->groupBox2->SuspendLayout();
-			this->groupBox1->SuspendLayout();
-			this->IntelEmbreType->SuspendLayout();
 			this->AI_Tab->SuspendLayout();
 			this->groupBox4->SuspendLayout();
 			this->groupBox3->SuspendLayout();
@@ -381,14 +362,6 @@ public:
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
 			this->Geometry_Tab->Controls->Add(this->groupBox5);
 			this->Geometry_Tab->Controls->Add(this->xrLC_JitterSamples);
-			this->Geometry_Tab->Controls->Add(this->label18);
-			this->Geometry_Tab->Controls->Add(this->label11);
-			this->Geometry_Tab->Controls->Add(this->EmbreeHitsCollect);
-			this->Geometry_Tab->Controls->Add(this->groupBox2);
-			this->Geometry_Tab->Controls->Add(this->EmbreeTnear);
-			this->Geometry_Tab->Controls->Add(this->label10);
-			this->Geometry_Tab->Controls->Add(this->groupBox1);
-			this->Geometry_Tab->Controls->Add(this->IntelEmbreType);
 			this->Geometry_Tab->Controls->Add(this->button1);
 			this->Geometry_Tab->Controls->Add(this->label9);
 			this->Geometry_Tab->Controls->Add(this->label8);
@@ -413,6 +386,7 @@ public:
 			// 
 			// groupBox5
 			// 
+			this->groupBox5->Controls->Add(this->useDXT1);
 			this->groupBox5->Controls->Add(this->label17);
 			this->groupBox5->Controls->Add(this->FastLmapsBuilder);
 			this->groupBox5->Controls->Add(this->lightmap_8192);
@@ -421,9 +395,9 @@ public:
 			this->groupBox5->Controls->Add(this->lightmap_1024);
 			this->groupBox5->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->groupBox5->Location = System::Drawing::Point(6, 430);
+			this->groupBox5->Location = System::Drawing::Point(587, 461);
 			this->groupBox5->Name = L"groupBox5";
-			this->groupBox5->Size = System::Drawing::Size(532, 146);
+			this->groupBox5->Size = System::Drawing::Size(532, 195);
 			this->groupBox5->TabIndex = 20;
 			this->groupBox5->TabStop = false;
 			this->groupBox5->Text = L"Lightmap Size";
@@ -444,6 +418,8 @@ public:
 			// FastLmapsBuilder
 			// 
 			this->FastLmapsBuilder->AutoSize = true;
+			this->FastLmapsBuilder->Checked = true;
+			this->FastLmapsBuilder->CheckState = System::Windows::Forms::CheckState::Checked;
 			this->FastLmapsBuilder->Location = System::Drawing::Point(212, 23);
 			this->FastLmapsBuilder->Name = L"FastLmapsBuilder";
 			this->FastLmapsBuilder->Size = System::Drawing::Size(300, 31);
@@ -507,191 +483,15 @@ public:
 			this->xrLC_JitterSamples->Size = System::Drawing::Size(202, 32);
 			this->xrLC_JitterSamples->TabIndex = 29;
 			// 
-			// label18
-			// 
-			this->label18->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->label18->ForeColor = System::Drawing::Color::Firebrick;
-			this->label18->Location = System::Drawing::Point(6, 296);
-			this->label18->Name = L"label18";
-			this->label18->RightToLeft = System::Windows::Forms::RightToLeft::No;
-			this->label18->Size = System::Drawing::Size(559, 81);
-			this->label18->TabIndex = 28;
-			this->label18->Text = L"Стандартный RayTrace Тоже ускорен (Отсечены лишние hits)....";
-			// 
-			// label11
-			// 
-			this->label11->AutoSize = true;
-			this->label11->ForeColor = System::Drawing::Color::Brown;
-			this->label11->Location = System::Drawing::Point(602, 28);
-			this->label11->Name = L"label11";
-			this->label11->Size = System::Drawing::Size(207, 27);
-			this->label11->TabIndex = 25;
-			this->label11->Text = L"Embree Hits Per Ray";
-			// 
-			// EmbreeHitsCollect
-			// 
-			this->EmbreeHitsCollect->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->EmbreeHitsCollect->Location = System::Drawing::Point(838, 28);
-			this->EmbreeHitsCollect->Name = L"EmbreeHitsCollect";
-			this->EmbreeHitsCollect->Size = System::Drawing::Size(200, 34);
-			this->EmbreeHitsCollect->TabIndex = 24;
-			this->EmbreeHitsCollect->Text = L"256";
-			// 
-			// groupBox2
-			// 
-			this->groupBox2->Controls->Add(this->use_uv2);
-			this->groupBox2->Controls->Add(this->use_raytrace_occluded);
-			this->groupBox2->Controls->Add(this->useDXT1);
-			this->groupBox2->Location = System::Drawing::Point(27, 28);
-			this->groupBox2->Name = L"groupBox2";
-			this->groupBox2->Size = System::Drawing::Size(361, 240);
-			this->groupBox2->TabIndex = 23;
-			this->groupBox2->TabStop = false;
-			this->groupBox2->Text = L"Debuging";
-			// 
-			// use_raytrace_occluded
-			// 
-			this->use_raytrace_occluded->AutoSize = true;
-			this->use_raytrace_occluded->Location = System::Drawing::Point(17, 76);
-			this->use_raytrace_occluded->Name = L"use_raytrace_occluded";
-			this->use_raytrace_occluded->Size = System::Drawing::Size(142, 31);
-			this->use_raytrace_occluded->TabIndex = 4;
-			this->use_raytrace_occluded->Text = L"rtcOccluded";
-			this->use_raytrace_occluded->UseVisualStyleBackColor = true;
-			// 
 			// useDXT1
 			// 
 			this->useDXT1->AutoSize = true;
-			this->useDXT1->Location = System::Drawing::Point(17, 39);
+			this->useDXT1->Location = System::Drawing::Point(293, 158);
 			this->useDXT1->Name = L"useDXT1";
-			this->useDXT1->Size = System::Drawing::Size(219, 31);
+			this->useDXT1->Size = System::Drawing::Size(212, 31);
 			this->useDXT1->TabIndex = 3;
 			this->useDXT1->Text = L"use_DXT1 (noAlpha)";
 			this->useDXT1->UseVisualStyleBackColor = true;
-			// 
-			// EmbreeTnear
-			// 
-			this->EmbreeTnear->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->EmbreeTnear->Location = System::Drawing::Point(838, 68);
-			this->EmbreeTnear->Name = L"EmbreeTnear";
-			this->EmbreeTnear->Size = System::Drawing::Size(200, 34);
-			this->EmbreeTnear->TabIndex = 22;
-			this->EmbreeTnear->Text = L"0.001";
-			// 
-			// label10
-			// 
-			this->label10->AutoSize = true;
-			this->label10->ForeColor = System::Drawing::Color::Brown;
-			this->label10->Location = System::Drawing::Point(624, 68);
-			this->label10->Name = L"label10";
-			this->label10->Size = System::Drawing::Size(143, 27);
-			this->label10->TabIndex = 21;
-			this->label10->Text = L"Embree Tnear";
-			// 
-			// groupBox1
-			// 
-			this->groupBox1->Controls->Add(this->RadioEmbreeGdefault);
-			this->groupBox1->Controls->Add(this->RadioEmbreeG_Robust);
-			this->groupBox1->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->groupBox1->Location = System::Drawing::Point(579, 582);
-			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(562, 107);
-			this->groupBox1->TabIndex = 20;
-			this->groupBox1->TabStop = false;
-			this->groupBox1->Text = L"Тип Рейтрейсинга";
-			// 
-			// RadioEmbreeGdefault
-			// 
-			this->RadioEmbreeGdefault->AutoSize = true;
-			this->RadioEmbreeGdefault->Checked = true;
-			this->RadioEmbreeGdefault->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->RadioEmbreeGdefault->Location = System::Drawing::Point(10, 70);
-			this->RadioEmbreeGdefault->Name = L"RadioEmbreeGdefault";
-			this->RadioEmbreeGdefault->Size = System::Drawing::Size(144, 31);
-			this->RadioEmbreeGdefault->TabIndex = 5;
-			this->RadioEmbreeGdefault->TabStop = true;
-			this->RadioEmbreeGdefault->Text = L"DefaultFlags";
-			this->RadioEmbreeGdefault->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->RadioEmbreeGdefault->UseVisualStyleBackColor = true;
-			// 
-			// RadioEmbreeG_Robust
-			// 
-			this->RadioEmbreeG_Robust->AutoSize = true;
-			this->RadioEmbreeG_Robust->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->RadioEmbreeG_Robust->Location = System::Drawing::Point(10, 33);
-			this->RadioEmbreeG_Robust->Name = L"RadioEmbreeG_Robust";
-			this->RadioEmbreeG_Robust->Size = System::Drawing::Size(293, 31);
-			this->RadioEmbreeG_Robust->TabIndex = 4;
-			this->RadioEmbreeG_Robust->TabStop = true;
-			this->RadioEmbreeG_Robust->Text = L"RTC_SCENE_FLAG_ROBUST";
-			this->RadioEmbreeG_Robust->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->RadioEmbreeG_Robust->UseVisualStyleBackColor = true;
-			// 
-			// IntelEmbreType
-			// 
-			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGUltra);
-			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGHigh);
-			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGMedium);
-			this->IntelEmbreType->Controls->Add(this->RadioEmbreeGLow);
-			this->IntelEmbreType->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(204)));
-			this->IntelEmbreType->Location = System::Drawing::Point(575, 430);
-			this->IntelEmbreType->Name = L"IntelEmbreType";
-			this->IntelEmbreType->Size = System::Drawing::Size(566, 146);
-			this->IntelEmbreType->TabIndex = 19;
-			this->IntelEmbreType->TabStop = false;
-			this->IntelEmbreType->Text = L"Тип Геометрии (Intel)";
-			// 
-			// RadioEmbreeGUltra
-			// 
-			this->RadioEmbreeGUltra->AutoSize = true;
-			this->RadioEmbreeGUltra->Checked = true;
-			this->RadioEmbreeGUltra->Location = System::Drawing::Point(15, 93);
-			this->RadioEmbreeGUltra->Name = L"RadioEmbreeGUltra";
-			this->RadioEmbreeGUltra->Size = System::Drawing::Size(77, 31);
-			this->RadioEmbreeGUltra->TabIndex = 3;
-			this->RadioEmbreeGUltra->TabStop = true;
-			this->RadioEmbreeGUltra->Text = L"Ultra";
-			this->RadioEmbreeGUltra->UseVisualStyleBackColor = true;
-			// 
-			// RadioEmbreeGHigh
-			// 
-			this->RadioEmbreeGHigh->AutoSize = true;
-			this->RadioEmbreeGHigh->Location = System::Drawing::Point(14, 70);
-			this->RadioEmbreeGHigh->Name = L"RadioEmbreeGHigh";
-			this->RadioEmbreeGHigh->Size = System::Drawing::Size(71, 31);
-			this->RadioEmbreeGHigh->TabIndex = 2;
-			this->RadioEmbreeGHigh->TabStop = true;
-			this->RadioEmbreeGHigh->Text = L"High";
-			this->RadioEmbreeGHigh->UseVisualStyleBackColor = true;
-			// 
-			// RadioEmbreeGMedium
-			// 
-			this->RadioEmbreeGMedium->AutoSize = true;
-			this->RadioEmbreeGMedium->Location = System::Drawing::Point(14, 47);
-			this->RadioEmbreeGMedium->Name = L"RadioEmbreeGMedium";
-			this->RadioEmbreeGMedium->Size = System::Drawing::Size(98, 31);
-			this->RadioEmbreeGMedium->TabIndex = 1;
-			this->RadioEmbreeGMedium->TabStop = true;
-			this->RadioEmbreeGMedium->Text = L"Medium";
-			this->RadioEmbreeGMedium->UseVisualStyleBackColor = true;
-			// 
-			// RadioEmbreeGLow
-			// 
-			this->RadioEmbreeGLow->AutoSize = true;
-			this->RadioEmbreeGLow->Location = System::Drawing::Point(15, 22);
-			this->RadioEmbreeGLow->Name = L"RadioEmbreeGLow";
-			this->RadioEmbreeGLow->Size = System::Drawing::Size(63, 31);
-			this->RadioEmbreeGLow->TabIndex = 0;
-			this->RadioEmbreeGLow->TabStop = true;
-			this->RadioEmbreeGLow->Text = L"Low";
-			this->RadioEmbreeGLow->UseVisualStyleBackColor = true;
 			// 
 			// button1
 			// 
@@ -1068,17 +868,6 @@ public:
 			this->TODO->TabIndex = 4;
 			this->TODO->Text = L"TODO";
 			// 
-			// use_uv2
-			// 
-			this->use_uv2->AutoSize = true;
-			this->use_uv2->Location = System::Drawing::Point(17, 113);
-			this->use_uv2->Name = L"use_uv2";
-			this->use_uv2->Size = System::Drawing::Size(133, 31);
-			this->use_uv2->TabIndex = 5;
-			this->use_uv2->Text = L"use_UV_v2";
-			this->use_uv2->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->use_uv2->UseVisualStyleBackColor = true;
- 			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
@@ -1099,12 +888,6 @@ public:
 			this->Geometry_Tab->PerformLayout();
 			this->groupBox5->ResumeLayout(false);
 			this->groupBox5->PerformLayout();
-			this->groupBox2->ResumeLayout(false);
-			this->groupBox2->PerformLayout();
-			this->groupBox1->ResumeLayout(false);
-			this->groupBox1->PerformLayout();
-			this->IntelEmbreType->ResumeLayout(false);
-			this->IntelEmbreType->PerformLayout();
 			this->AI_Tab->ResumeLayout(false);
 			this->groupBox4->ResumeLayout(false);
 			this->groupBox4->PerformLayout();

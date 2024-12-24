@@ -334,6 +334,8 @@ void CBuild::xrPhase_MergeLM()
 {
 	vecDefl			Layer;
 
+	bool USE_METHOD_FAST = true;
+
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
@@ -365,10 +367,10 @@ void CBuild::xrPhase_MergeLM()
 			materials()[D->GetBaseMaterial()].internal_max_area = _max(D->layer.Area(), materials()[D->GetBaseMaterial()].internal_max_area);
 		}
 
-		if (!build_args->use_fast_lmapsbuilder)
-			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);	//  sort_defl_fast
+		if (USE_METHOD_FAST)
+			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_fast);	//  sort_defl_fast
 		else 
-			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_fast);	//  
+			std::stable_sort(Layer.begin(), Layer.end(), sort_defl_complex);	//  
 
 		// Select first deflectors which can fit
 		Status("Selection...");
@@ -383,7 +385,7 @@ void CBuild::xrPhase_MergeLM()
 
 		int MERGED = 0;
  		
-		if (build_args->use_fast_lmapsbuilder)
+		if (USE_METHOD_FAST)
 			MergeLmap(Layer, lmap, MERGED);
 		else
 			MergeOriginal(Layer, lmap, MERGED);

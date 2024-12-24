@@ -116,8 +116,13 @@ void CBuild::BuildCForm	()
 	p_cost  = 1.f/(cfFaces->size());
 
 	// Collect faces
+
+	// Se7kills OFF xrCDB Packing
+
 	CDB::CollectorPacked CL	(BB,cfVertices->size(),cfFaces->size());
- 	CL.UsePacking = build_args->use_cdbPacking;
+ 	CL.UsePacking = false;
+
+
 	int next_ID = 0;
 	for (vecFaceIt F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{

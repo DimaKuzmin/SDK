@@ -38,8 +38,7 @@ struct OpcodeArgs
 	 	
 	Fvector pos;
 	bool valid = 1;
-	bool IntersectContinue = 1;
-	bool OccludeHas = false;
+ 	bool OccludeHas = false;
 
 	float energy;
 

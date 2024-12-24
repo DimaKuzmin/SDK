@@ -514,12 +514,12 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;DEBUG;_WINDOWS;DevCPU;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <Optimization>MaxSpeed</Optimization>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -549,8 +549,8 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <Optimization>MaxSpeed</Optimization>
-      <FloatingPointModel>Precise</FloatingPointModel>
+      <Optimization>Full</Optimization>
+      <FloatingPointModel>Fast</FloatingPointModel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
@@ -613,7 +613,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <FloatingPointModel>Fast</FloatingPointModel>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -691,6 +691,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClInclude Include="xrLC_GlobalData.h" />
     <ClInclude Include="xrLC_Light.h" />
     <ClInclude Include="xrLightVertex.h" />
+    <ClInclude Include="xrLight_Embree.h" />
     <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />
     <ClInclude Include="xrLight_ImplicitRun.h" />
@@ -717,11 +718,11 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="b_build_texture.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="detail_slot_calculate.cpp" />
-    <ClCompile Include="EmbreeRecursive.cpp" />
     <ClCompile Include="ETextureParams.cpp" />
     <ClCompile Include="fitter.cpp" />
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
+    <ClCompile Include="xrLight_Embree_LightPoint.cpp" />
     <ClCompile Include="xrHardwareLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
@@ -786,19 +787,13 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="xrLC_GlobalData.cpp" />
     <ClCompile Include="xrLC_Light.cpp" />
     <ClCompile Include="xrLightVertex.cpp" />
-    <ClCompile Include="xrLight_EmbreePacked.cpp" />
-    <ClCompile Include="xrLight_Embree_v3.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
     <ClCompile Include="xrLight_Embree.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="xrLight_ImplicitHW.cpp" />
     <ClCompile Include="xrLight_ImplicitThread.cpp" />
     <ClCompile Include="xrMU_Model.cpp" />
     <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />

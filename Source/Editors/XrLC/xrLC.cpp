@@ -65,19 +65,10 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 		args->level_name.c_str(), args->no_optimize, args->no_simplify);
 	clMsg(tmp);
 
-	sprintf(tmp, "c++: EMBREE SET: Robust %d, Tnear: %f, Type: %d, USEembree: %d, avx: %d, sse: %d",
-		args->use_RobustGeom, args->embree_tnear, args->embree_geometry_type, args->use_embree, args->use_avx, args->use_sse);
+	sprintf(tmp, "c++: EMBREE SET: USE embree: %d, avx: %d, sse: %d, use DXT1: %d",
+			 args->use_embree, args->use_avx, args->use_sse, args->use_DXT1);
 	clMsg(tmp);
-
-	sprintf(tmp, "c++: DEBUG: off_impl: %d, off_lmaps: %d, off_mumodels: %d, DXT1: %d, FASTLMAPS %d",
-		args->off_impl, args->off_lmaps, args->off_mulitght, args->use_DXT1, args->use_fast_lmapsbuilder);
-	clMsg(tmp);
-
 	
-	sprintf(tmp, "c++: OPCODE CFORM Packing: %d", args->use_cdbPacking);
-	clMsg(tmp);
-
-
 
 	// Faster FPU 
 	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
@@ -207,8 +198,6 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->mu_samples = args->mu_samples;
 	build_args->sample = args->sample;
 	build_args->use_threads = args->use_threads;
- 	build_args->use_tbb = args->use_tbb;
- 
 
 	build_args->nohemi = args->nohemi;
 	build_args->norgb = args->norgb;
@@ -222,34 +211,16 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 	build_args->use_avx = args->use_avx;
 	build_args->use_embree = args->use_embree;
 	build_args->use_sse = args->use_sse;
-	build_args->use_opcode_old = args->use_opcode_old;
 
 	build_args->special_args = args->special_args;
 	build_args->level_name = args->level_name;
 
-	build_args->embree_geometry_type = args->embree_geometry_type;
-	build_args->use_RobustGeom = args->use_RobustGeom;
 	build_args->skip_weld = args->skip_weld;
-	build_args->embree_tnear = args->embree_tnear;
-
-	build_args->off_impl = args->off_impl;
-	build_args->off_lmaps = args->off_lmaps;
-	build_args->off_mulitght = args->off_mulitght;
-	build_args->off_raytrace = args->off_raytrace;
 
 	build_args->use_DXT1 = args->use_DXT1;
-	build_args->use_fast_lmapsbuilder = args->use_fast_lmapsbuilder;
-
-	// xrCDB Special Features
- 	build_args->use_cdbPacking = args->use_cdbPacking;
-
+  
 	clMsg("MU IS FIRST: %s", args->run_mu_first ? "true" : "false");
 	build_args->run_mu_first = args->run_mu_first;
-	build_args->useUV_v2	 = args->useUV_v2;
-
-
-	// Custom Flags (Not Supported)
-	build_args->MaxHitsPerRay = args->MaxHitsPerRay;
  }
 
 
@@ -345,8 +316,4 @@ int APIENTRY WinMain(HINSTANCE hInst,
 
 */
 
-
-unsigned __int64 SpecialArgs::getRaysCount()
-{
-	return build_args->RaysCalculated;
-}
+ 

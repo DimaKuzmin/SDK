@@ -217,6 +217,9 @@
     <ClInclude Include="LightThread.h">
       <Filter>do_light</Filter>
     </ClInclude>
+    <ClInclude Include="xrLight_Embree.h">
+      <Filter>Light\EmbreeLib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -378,14 +381,11 @@
     <ClCompile Include="BuildArgs.cpp">
       <Filter>kernel</Filter>
     </ClCompile>
-    <ClCompile Include="EmbreeRecursive.cpp">
+    <ClCompile Include="xrLight_Embree_LightPoint.cpp">
       <Filter>Light\EmbreeLib</Filter>
     </ClCompile>
-    <ClCompile Include="xrLight_EmbreePacked.cpp">
-      <Filter>Light\EmbreeLib</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLight_Embree_v3.cpp">
-      <Filter>Light\EmbreeLib</Filter>
+    <ClCompile Include="xrLight_ImplicitHW.cpp">
+      <Filter>Light\LightImplicit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

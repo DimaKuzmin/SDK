@@ -38,8 +38,6 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 //-----------------------------------------------------------------------
 
-int REF = false; 
-
 void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
 {
 	// trans-map
@@ -209,9 +207,7 @@ void xrMU_Model::calc_lighting()
 	CDB::MODEL* M = xr_new<CDB::MODEL>();
 	M->build(CL.getV(), (u32)CL.getVS(), CL.getT(), (u32)CL.getTS());
 
-	REF = true;
 	calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun, true);
- 	REF = false;
 
 	xr_delete(M);
  	clMsg("model '%s' - REF_lighted.", *m_name);

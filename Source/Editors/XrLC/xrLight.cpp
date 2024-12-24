@@ -100,67 +100,29 @@ void	CBuild::LMapsLocal				()
 	FPU::m64r		();
 		
 	mem_Compact		();
- 
-	if (build_args->use_tbb) // 
+
+ 	std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [](const CDeflector* defl, const CDeflector* defl2)
 	{
-		xr_vector<CDeflector*> task;
-		for (auto d : lc_global_data()->g_deflectors())
-			task.push_back(d);
-		
-		// For Data
-		u32 SizeCalculated = 0;
-		u32 TaskSize = task.size();
-  
-#define MAX_SIZE_PER_THREAD 1
-
-		tbb::parallel_for(tbb::blocked_range<size_t>(0, task.size(), MAX_SIZE_PER_THREAD),
-		[&](const tbb::blocked_range<size_t>& range)
-		{
-			HASH			H;
-			CDB::COLLIDER	DB;
-			base_lighting	LightsSelected;
+		return defl->similar_pos(*defl2, 0.1f);
+	});
 
 
-			for (auto i = range.begin(); i < range.end(); i++)
-			{
-				task[i]->Light(0, &DB, &LightsSelected, H);
-			}
-
-			SizeCalculated += MAX_SIZE_PER_THREAD;
-
-			if (SizeCalculated % 1024 == 0)
-			{
-				StatusNoMSG("Deflectors: Processed:%u, Store: %u", SizeCalculated, TaskSize);
-			}
-		}
-		);
-	}
-	else
-	{
- 		std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [](const CDeflector* defl, const CDeflector* defl2)
-		{
-			return defl->similar_pos(*defl2, 0.1f);
-		});
-
-
-		for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
-			task_pool.push_back(dit);
+	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
+		task_pool.push_back(dit);
  
-		// Main process (4 threads) (-th MAX_THREADS)
-		Status("Lighting...");
-		CThreadManager	threads;
-		CTimer	start_time;
-		start_time.Start();
+	// Main process (4 threads) (-th MAX_THREADS)
+	Status("Lighting...");
+	CThreadManager	threads;
+	CTimer	start_time;
+	start_time.Start();
 
-		int th = build_args->use_threads;
+	int th = build_args->use_threads;
 
-		for (int L = 0; L < th; L++)
-			threads.start(xr_new<CLMThread>(L), L);
-		threads.wait(500);
+	for (int L = 0; L < th; L++)
+		threads.start(xr_new<CLMThread>(L), L);
+	threads.wait(500);
 
-		clMsg("%f seconds", start_time.GetElapsed_sec());
- 	}
-
+	clMsg("%f seconds", start_time.GetElapsed_sec());
 }
 
 void	CBuild::LMaps					()
@@ -176,8 +138,7 @@ void CBuild::RunMuModels()
 {
 
 	//****************************************** Starting MU
-	if (!build_args->off_mulitght)
-	{
+ 	{
 		FPU::m64r();
 		Phase("LIGHT: Starting MU...");
 		mem_Compact();

@@ -28,204 +28,11 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
 xrCriticalSection crImplicit;
- 
-#include "xrFaceDefs.h"
-#include "hash2d.h"
-
-typedef hash2D <Face*, 384, 384>		IHASH;
-class ImplicitCalcGlobs
-{
-	IHASH* ImplicitHash;
-	ImplicitDeflector* defl;
-public:
-	ImplicitCalcGlobs() : defl(0) // , ImplicitHash(0)
-	{
-
-	}
-
-	IC	IHASH& Hash()
-	{
-		R_ASSERT(ImplicitHash);
-		return *ImplicitHash;
-	}
-
-	void Allocate()
-	{
-		ImplicitHash = xr_new<IHASH>();
-	}
-
-	void Deallocate()
-	{
-		xr_delete(ImplicitHash);
-	}
-
-	IC void Initialize(ImplicitDeflector& def) {
-		defl = &def; 
-		Fbox2 bounds;
-		defl->Bounds_Summary(bounds);
-		Hash().initialize(bounds, defl->faces.size());
-		for (u32 fid = 0; fid < defl->faces.size(); fid++)
-		{
-			Face* F = defl->faces[fid];
-			F->AddChannel(F->tc[0].uv[0], F->tc[0].uv[1], F->tc[0].uv[2]); // make compatible format with LMAPs
-			defl->Bounds(fid, bounds);
-			ImplicitHash->add(bounds, F);
-		}
-	};
-
-	IC	ImplicitDeflector& DATA()
-	{
-		R_ASSERT(defl);
-		return *defl;
-	}
-};
 
 ImplicitCalcGlobs cl_globs;
-
+ 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
-  
- 
-#ifndef DevCPU 
-  
-/** CUDA DEFINATION **/
 
-void FinalizeImplicit(ImplicitDeflector& defl, xr_vector<base_color_c>& FinalColors )
-{
-	//all that we must remember - we have fucking jitter. And that we don't have much time, because we have tons of that shit
-	u32 SurfaceRequestCursor = 0;
-	u32 AlmostMaxSurfaceLightRequest = defl.lmap.SurfaceLightRequests.size() - 1;
-	for (u32 V = 0; V < defl.lmap.height; V++)
-	{
-		for (u32 U = 0; U < defl.lmap.width; U++)
-		{
-			LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
-
-			if (LRequest.X == U && LRequest.Y == V)
-			{
-				//accumulate all color and draw to the lmap
-				base_color_c ReallyFinalColor;
-				int ColorCount = 0;
-				for (;;)
-				{
-					LRequest = defl.lmap.SurfaceLightRequests[SurfaceRequestCursor];
- 
-					if (LRequest.X != U || LRequest.Y != V || SurfaceRequestCursor == AlmostMaxSurfaceLightRequest)
-					{
-						ReallyFinalColor.scale(ColorCount);
-						ReallyFinalColor.mul(0.5f);
-						defl.Lumel(U, V)._set(ReallyFinalColor);
-						break;
-					}
-
-					base_color_c& CurrentColor = FinalColors[SurfaceRequestCursor];
-					ReallyFinalColor.add(CurrentColor);
-
-					++SurfaceRequestCursor;
-					++ColorCount;
-				}
-			}
-		}
-	}
-
-	defl.lmap.SurfaceLightRequests.clear();
-}
-
-void CalculateGPU(ImplicitDeflector& defl)
-{
-	Msg("CalculateGPU");
-	if (true)
-	{
-		//cast and finalize
-		if (defl.lmap.SurfaceLightRequests.empty())
-		{
-			return;
-		}
-		xrHardwareLight& HardwareCalculator = xrHardwareLight::Get();
-
-		//pack that shit in to task, but remember order
-		xr_vector <RayRequest> RayRequests;
-		u32 SurfaceCount = defl.lmap.SurfaceLightRequests.size();
-		RayRequests.reserve(SurfaceCount);
-		for (int SurfaceID = 0; SurfaceID < SurfaceCount; ++SurfaceID)
-		{
-			LightpointRequest& LRequest = defl.lmap.SurfaceLightRequests[SurfaceID];
-			RayRequests.push_back(RayRequest{ LRequest.Position, LRequest.Normal, LRequest.FaceToSkip });
- 		}
-		 
-		xr_vector<base_color_c> FinalColors;
-		HardwareCalculator.PerformRaycast(RayRequests, (inlc_global_data()->b_nosun() ? LP_dont_sun : 0), FinalColors, true);
-
-
-		//finalize rays
-		FinalizeImplicit(defl, FinalColors);
-	}
-}
-
-void RunCudaThread()
-{
-	ImplicitDeflector& defl = cl_globs.DATA();
-	CDB::COLLIDER			DB;
-
-	// Setup variables
-	Fvector2	dim, half;
-	dim.set(float(defl.Width()), float(defl.Height()));
-	half.set(.5f / dim.x, .5f / dim.y);
-
-	// Jitter data
-	Fvector2	JS;
-	JS.set(.499f / dim.x, .499f / dim.y);
-	u32			Jcount;
-	Fvector2* Jitter;
-	Jitter_Select(Jitter, Jcount);
-
-	// Lighting itself
-	DB.ray_options(0);
-	for (u32 V = 0; V < defl.Height(); V++)
-	{
-		if (V % 128 == 0)
-			Msg("CurV: %d", V);
-		for (u32 U = 0; U < defl.Width(); U++)
-		{
-			base_color_c	C;
-			u32				Fcount = 0;
-
-			for (u32 J = 0; J < Jcount; J++)
-			{
-				// LUMEL space
-				Fvector2				P;
-				P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-				P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-				xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
-
-				// World space
-				Fvector wP, wN, B;
-				for (vecFaceIt it = space.begin(); it != space.end(); it++)
-				{
-					Face* F = *it;
-					_TCF& tc = F->tc[0];
-					if (tc.isInside(P, B))
-					{
-						// We found triangle and have barycentric coords
-						Vertex* V1 = F->v[0];
-						Vertex* V2 = F->v[1];
-						Vertex* V3 = F->v[2];
-						wP.from_bary(V1->P, V2->P, V3->P, B);
-						wN.from_bary(V1->N, V2->N, V3->N, B);
-						wN.normalize();
-							
-						defl.lmap.SurfaceLightRequests.emplace_back(U, V, wP, wN, F);
-						defl.Marker(U, V) = 255;					
-						Fcount++;
-					}
-				}
-			} 
-		}
-	}
-
-	CalculateGPU(defl);
-}
-
-#endif
  
  
 /** NETWORK PROCESS **/
@@ -238,7 +45,7 @@ void ImplicitExecute::clear()
 }
 
 /*** THREAD MAIN (ON CPU) ***/
-
+ 
  
 xrCriticalSection csOpacity;
  
@@ -257,168 +64,90 @@ void ImplicitExecute::Execute()
 
 	// Lighting itself
  	DB.ray_options(0);
- 
-	if (build_args->use_tbb)
+ 	 
+ 	for (;;)
 	{
-		std::mutex mutex;
-		int ReadyIDS = 0;
-	
-		tbb::parallel_for(tbb::blocked_range<std::size_t>(0, defl.Height(), 1), [&] (const tbb::blocked_range<std::size_t>& range)
-		{
-			for (int V = range.begin(); V < range.end(); V++)
-			{
-				tbb::parallel_for(tbb::blocked_range<std::size_t>(0, defl.Width(), 1), [&](const tbb::blocked_range<std::size_t>& range2)
-				{
-						for (u32 U = range2.begin(); U < range2.end(); U++)
-						{
-							base_color_c	C;
-							u32				Fcount = 0;
-
-							try
-							{
-								for (u32 J = 0; J < Jcount; J++)
-								{
-									// LUMEL space
-									Fvector2				P;
-									P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-									P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-									xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
-
-									// World space
-									Fvector wP, wN, B;
-
-									for (vecFaceIt it = space.begin(); it != space.end(); it++)
-									{
-										Face* F = *it;
-										_TCF& tc = F->tc[0];
-										if (tc.isInside(P, B))
-										{
-											// We found triangle and have barycentric coords
-											Vertex* V1 = F->v[0];
-											Vertex* V2 = F->v[1];
-											Vertex* V3 = F->v[2];
-											wP.from_bary(V1->P, V2->P, V3->P, B);
-											wN.from_bary(V1->N, V2->N, V3->N, B);
-											wN.normalize();
-											u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
-											LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
-											Fcount++;
-										}
-									}
-								}
-							}
-							catch (...)
-							{
-								clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
-							}
-
-							// std::lock_guard<std::mutex> lock(mutex);
-
-							if (Fcount)
-							{
-								// Calculate lighting amount
-								C.scale(Fcount);
-								C.mul(.5f);
-
-								defl.Lumel(U, V)._set(C);
-								defl.Marker(U, V) = 255;
-							}
-							else
-							{
-								defl.Marker(U, V) = 0;
-							}
-						}
-				});
-
-				Status("Ready: %d, Seconds: %.0f", ReadyIDS, t.GetElapsed_sec());
-				Progress( float(ReadyIDS / defl.Height() ) );
-				ReadyIDS++;
-			}
-		});
-	}
-	else
-	{
-		for (;;)
-		{
-			int V = 0;
+		int V = 0;
 			
-			crImplicit.Enter();
-			V = curHeight;
-			if (curHeight >= defl.Height())
-			{
-				crImplicit.Leave();
-				break;
-			}
-			curHeight++;
+		crImplicit.Enter();
+		V = curHeight;
+		if (curHeight >= defl.Height())
+		{
 			crImplicit.Leave();
+			break;
+		}
+		curHeight++;
+		crImplicit.Leave();
 
   
-			// FOR CYCLE
- 			for(u32 U = 0; U < defl.Width(); U++)
+		// FOR CYCLE
+ 		for(u32 U = 0; U < defl.Width(); U++)
+		{
+			base_color_c	C;
+
+			u32				Fcount = 0;
+
+			try
 			{
-				base_color_c	C;
-
-				u32				Fcount = 0;
-
-				try
+				for (u32 J = 0; J < Jcount; J++)
 				{
-					for (u32 J = 0; J < Jcount; J++)
+					// LUMEL space
+					Fvector2				P;
+					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+					xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
+
+					// World space
+					Fvector wP, wN, B;
+
+					for (vecFaceIt it = space.begin(); it != space.end(); it++)
 					{
-						// LUMEL space
-						Fvector2				P;
-						P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-						P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
-						xr_vector<Face*>& space = cl_globs.Hash().query(P.x, P.y);
-
-						// World space
-						Fvector wP, wN, B;
-
-						for (vecFaceIt it = space.begin(); it != space.end(); it++)
+						Face* F = *it;
+						_TCF& tc = F->tc[0];
+						if (tc.isInside(P, B))
 						{
-							Face* F = *it;
-							_TCF& tc = F->tc[0];
-							if (tc.isInside(P, B))
-							{
-								// We found triangle and have barycentric coords
-								Vertex* V1 = F->v[0];
-								Vertex* V2 = F->v[1];
-								Vertex* V3 = F->v[2];
-								wP.from_bary(V1->P, V2->P, V3->P, B);
-								wN.from_bary(V1->N, V2->N, V3->N, B);
-								wN.normalize();
-								u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
-								LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
-								Fcount++;
-							}
+							// We found triangle and have barycentric coords
+							Vertex* V1 = F->v[0];
+							Vertex* V2 = F->v[1];
+							Vertex* V3 = F->v[2];
+							wP.from_bary(V1->P, V2->P, V3->P, B);
+							wN.from_bary(V1->N, V2->N, V3->N, B);
+							wN.normalize();
+							u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
+							
+							// LightPointEmbree( C,wP, wN, inlc_global_data()->L_static(), flags, F);
+
+							Fcount++;
 						}
 					}
 				}
-				catch (...)
-				{
-					clMsg("* THREAD #%d: Access violation. Possibly recovered."); 
-				}
-
-				if (Fcount)
-				{
-					// Calculate lighting amount
-					C.scale(Fcount);
-					C.mul(.5f);
-
-					defl.Lumel(U, V)._set(C);
-					defl.Marker(U, V) = 255;
-				}
-				else
-				{
-					defl.Marker(U, V) = 0;
-				}
-
 			}
-			// FOR CYCLE END
-
-			if (V % 128 == 0 || V == defl.Height())
+			catch (...)
 			{
-				clMsg("CurV: %d, Sec[%.0f]", V, t.GetElapsed_sec());
+				clMsg("* THREAD #%d: Access violation. Possibly recovered."); 
 			}
+
+			if (Fcount)
+			{
+				// Calculate lighting amount
+				C.scale(Fcount);
+				C.mul(.5f);
+
+				defl.Lumel(U, V)._set(C);
+				defl.Marker(U, V) = 255;
+			}
+			else
+			{
+				defl.Marker(U, V) = 0;
+			}
+
+		}
+		// FOR CYCLE END
+
+		if (V % 128 == 0 || V == defl.Height())
+		{
+			clMsg("CurV: %d, Sec[%.0f]", V, t.GetElapsed_sec());
 		}
 	}
 }

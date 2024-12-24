@@ -29,40 +29,9 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void	CThreadManager::start	(CThread*	T, u32 THID)
 {
-	if (build_args->use_std)
-	{
-		std_threads.push_back(
-
-			new std::thread([&](CThread* thread)
-				{
-					CThread* T = dynamic_cast<CThread*>(thread);
-					if (T)
-					{
-						if (T->thMessages)
-							clMsg("*STD THREAD #%d: Started.", T->thID);
-
-						DWORD_PTR affinityMask = 1ull << T->thID;
-						HANDLE threadHandle = GetCurrentThread();
-						SetThreadAffinityMask(threadHandle, affinityMask);
-
-						T->Execute();
-						T->thCompleted = TRUE;
-
-						if (T->thMessages)
-							clMsg("*STD THREAD #%d: Task Completed.", T->thID);
-					}
-				},
-				T
-			)
-
-		);
-	}
-	else
-	{
- 		R_ASSERT(T);
-		threads.push_back(T);
-		T->Start();
-	}
+ 	R_ASSERT(T);
+	threads.push_back(T);
+	T->Start();
 }
 
 void	CThreadManager::wait	(u32	sleep_time)

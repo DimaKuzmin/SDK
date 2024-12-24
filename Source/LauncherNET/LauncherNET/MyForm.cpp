@@ -36,7 +36,7 @@ void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
     }
 }
 
-#define Size 14
+#define Size 13
   
 char* collection[Size] =
 {
@@ -52,7 +52,6 @@ char* collection[Size] =
     "NO SMG",
     "NOISE GEOM",
     "SKIP WELD",
-    "USE STD THREADS",
     "MU FIRST",
    // "CFORM Packing",
    // "TBB THREADS"
@@ -85,8 +84,6 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
     if (strstr(item, collection[11]))
         args->skip_weld = true;
     if (strstr(item, collection[12]))
-        args->use_std = true;
-    if (strstr(item, collection[13]))
         args->run_mu_first = true;
      //if (strstr(item, collection[14]))
     //    args->use_cdbPacking = true;
@@ -134,16 +131,7 @@ public:
     {
         form->UpdateTime(time);
         DeviceTime = time_global;
-
-        if (LAST_UPDATE  < DeviceTime)
-        {
-            LAST_UPDATE = DeviceTime + 1000;
-            
-            char text[128];
-            sprintf(text, "CurrentRays: %llu", current_args_data != nullptr ? current_args_data->getRaysCount() : 0);
-            form->updateLogFormItem(text);
-        }
-
+ 
         size_t reserved, free, used;
         vminfo_memory(&free, &reserved, &used);
 
@@ -293,17 +281,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     auto TH_str = msclr::interop::marshal_as<std::string>(ThreadsCount->Text);
     auto PXPM_str = msclr::interop::marshal_as<std::string>(PXPM->Text);
     auto LevelName_str = msclr::interop::marshal_as < std::string >(LevelName->Text);
-    auto TNear = msclr::interop::marshal_as<std::string>(EmbreeTnear->Text);
-    auto HITS_str = msclr::interop::marshal_as<std::string>(EmbreeHitsCollect->Text);
-
-    if (RadioEmbreeGLow->Checked)
-         args->embree_geometry_type = SpecialArgs::eLow;
-    else if (RadioEmbreeGMedium->Checked)
-        args->embree_geometry_type = SpecialArgs::eMiddle;
-    else if (RadioEmbreeGHigh->Checked)
-        args->embree_geometry_type = SpecialArgs::eHigh;
-    else if (RadioEmbreeGUltra->Checked)
-        args->embree_geometry_type = SpecialArgs::eRefit;
+ 
 
     if (lightmap_1024->Checked)
         args->LightmapSize_enum = SpecialArgs::eLightmap1024;
@@ -314,14 +292,6 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     else if (lightmap_8192->Checked)
          args->LightmapSize_enum = SpecialArgs::eLightmap8192;
     
-    if (RadioEmbreeG_Robust->Checked)
-        args->use_RobustGeom = 1;
-
-    if (use_uv2->Checked)
-        args->useUV_v2 = true;
-
-    args->embree_tnear = atof(TNear.c_str());
-
     System::Collections::IEnumerator^ myEnum = FlagsCompiler->CheckedItems->GetEnumerator();
     while (myEnum->MoveNext())
     {
@@ -332,14 +302,11 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
          GetItemFromCollection(args, s.c_str());
     };
      
-    args->off_lmaps;
-
     int _Samples = atoi(Samples_str.c_str());
     int _MUSamples = atoi(MUSamples_str.c_str());
     int _TH = atoi(TH_str.c_str());
     int _PXPM = atoi(PXPM_str.c_str());
-    int _HITS = atoi( HITS_str.c_str() );
-
+ 
 
     //args->sample = ;
 
@@ -347,18 +314,10 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->use_threads = _TH;
     args->sample = _Samples;
     args->mu_samples = _MUSamples;
-    args->MaxHitsPerRay = _HITS;
-
 
     args->level_name = LevelName_str;
- 
-    args->off_raytrace = 0; //off_raytracing->Checked
-    args->off_impl = 0;     //off_implicit->Checked
-    args->off_lmaps = 0;    //off_lmaps->Checked
-    args->off_mulitght = 0; //off_mulight->Checked
-    args->use_MethodIntersection = use_raytrace_occluded->Checked; //RaytraceFast->Checked 
+   
     args->use_DXT1 = useDXT1->Checked;
-    args->use_fast_lmapsbuilder = FastLmapsBuilder->Checked;
 
     if (!IsRunned)
     {

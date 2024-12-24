@@ -35,14 +35,7 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 void RunThread(ImplicitDeflector& defl)
 {
 	CThreadManager			tmanager;
-
-	if (build_args->use_tbb)
-	{
-		ImplicitThread* th = xr_new<ImplicitThread>(0, &defl);
-		tmanager.start(th, 0);
-
-	}
-	else 
+ 
  	for (u32 thID = 0; thID < build_args->use_threads; thID++)
 	{
 		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl);
