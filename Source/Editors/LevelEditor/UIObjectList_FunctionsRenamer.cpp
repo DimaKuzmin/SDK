@@ -133,14 +133,14 @@ void UIObjectList::RenameSelectedObjects()
 		{
 			string256 name;
 
-			if (use_prefix_refname)
-			{
-				CSceneObject* scene = smart_cast<CSceneObject*>(item);
-				if (scene)
-					sprintf(name, "%s_%s_%d", scene->RefName(), &rename_prefix_name, i);
-			}
-			else
-				sprintf(name, "%s_%d", &rename_prefix_name, i);
+			//if (use_prefix_refname)
+			//{
+			//	CSceneObject* scene = smart_cast<CSceneObject*>(item);
+			//	if (scene)
+			//		sprintf(name, "%s_%s_%d", scene->RefName(), &rename_prefix_name, i);
+			//}
+			//else
+			sprintf(name, "%s_%d", &rename_prefix_name, i);
 
 			item->SetName(name);
 

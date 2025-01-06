@@ -19,6 +19,9 @@ struct XRLC_API  SpecialArgs
 	};
 
 	LightmapSize LightmapSize_enum;
+
+	int MaxHitsPerRay;
+ 
   
 	// debuging 
 	bool use_DXT1 = false;
@@ -50,6 +53,8 @@ struct XRLC_API  SpecialArgs
 	char* special_args = 0;
  
 	std::string level_name;
+
+	bool IsDOLighting = false;
 };
 
 XRLC_API void  StartupWorking(SpecialArgs* args);

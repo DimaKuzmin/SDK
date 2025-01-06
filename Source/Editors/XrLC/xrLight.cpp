@@ -153,12 +153,16 @@ void CBuild::RunMuModels()
 	}
 }
 
+
+#include "xrLC.h"
+ 
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 
 	if (g_params().m_quality != ebqDraft)
 	{
+
 		if (build_args->run_mu_first)
 		{
 			RunMuModels();
@@ -166,8 +170,7 @@ void CBuild::Light()
 		}
 		//****************************************** Implicit
 
-		//if (!build_args->off_impl)
-		{
+ 		{
 			FPU::m64r();
 			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase(tmp);
@@ -176,8 +179,8 @@ void CBuild::Light()
 			log_vminfo_new("Implicit Memory");
 		}
 
-		//if (!build_args->off_lmaps)
-		{
+ 		{
+ 
 			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
 			Phase(tmp);
 			LMaps();
@@ -204,7 +207,7 @@ void CBuild::Light()
 
 		if (!build_args->run_mu_first)
 		{
-			RunMuModels();
+ 			RunMuModels();
 			log_vminfo_new("MU-MODELS Memory");
 		}
  	}

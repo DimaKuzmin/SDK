@@ -187,7 +187,7 @@ BOOL CPEDef::Load(IReader& F)
 	R_ASSERT		(F.find_chunk(PED_CHUNK_NAME));
 	F.r_stringZ		(m_Name);
 
-	Msg("Loading Particle: %s", m_Name.c_str());
+	// Msg("Loading Particle: %s", m_Name.c_str());
 
 	R_ASSERT		(F.find_chunk(PED_CHUNK_EFFECTDATA));
 	m_MaxParticles	= F.r_u32();

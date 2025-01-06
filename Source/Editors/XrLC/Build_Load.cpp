@@ -520,6 +520,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								string128 tmp;
 								sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
 								w->w_string(tmp);
+								
+								BT.dwWidth = 1024;
+								BT.dwHeight = 1024;
+								BT.bHasAlpha = FALSE;
+								BT.THM.SetHasSurface(FALSE);
+								BT.pSurface.Clear();
 							}
  						}
 						else
@@ -528,6 +534,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							// sprintf(tmp, "Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
 							// w->w_string(tmp);
  							clMsg("(Disabled Loading DXT1) - not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
+							
+							BT.dwWidth = 1024;
+							BT.dwHeight = 1024;
+							BT.bHasAlpha = FALSE;
+							BT.THM.SetHasSurface(FALSE);
+							BT.pSurface.Clear();
 						}
 					}
 				}

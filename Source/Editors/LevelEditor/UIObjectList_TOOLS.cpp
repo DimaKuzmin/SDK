@@ -204,10 +204,10 @@ void UIObjectList::UpdateUIObjectList()
 		if (ShowRenamer)
 		{		
 			ImGui::Text("Rename Menu: (TOOL CURRENT)");
-			ImGui::Checkbox("use_prefix_by_refname", &use_prefix_refname);
+			// ImGui::Checkbox("use_prefix_by_refname", &use_prefix_refname);
 
-			if (use_prefix_refname)
-				ImGui::InputText("#repace_name (prefix)", rename_prefix_name, sizeof(rename_prefix_name));
+			//if (use_prefix_refname)
+				ImGui::InputText("#repace_name", rename_prefix_name, sizeof(rename_prefix_name));
 
 			if (ImGui::Button("rename (selected)", ImVec2(-1, 0)))
 				RenameSelectedObjects();

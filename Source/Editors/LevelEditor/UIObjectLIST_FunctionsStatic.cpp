@@ -52,27 +52,31 @@ void UIObjectList::CopyTempLODforObjects()
 			xr_string lod_name = E->GetLODTextureName();
 			xr_string l_name = lod_name.c_str();
 
-			string_path fn;
+			string_path fn, fn_nm;
 			int age, age_nm;
 
 			FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
-
+ 			FS.update_path(fn_nm, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
 
 			if (!FS.exist(fn))
 			{
 				string_path file;
-				FS.update_path(file, _game_textures_, "lod_test\\lod_01.dds");
+				FS.update_path(file, _import_, "TEMP_LODS\\lod_01.dds");
 				if (FS.exist(file))
 					FS.file_copy(file, fn);
-
-				l_name += "_nm";
-
-				FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
-				FS.update_path(file, _game_textures_, "lod_test\\lod_01_nm.dds");
+ 				l_name += "_nm";
+				Msg("Copy LOD: %s to fn", file, fn);
+ 				
+				FS.update_path(file, _import_, "TEMP_LODS\\lod_01_nm.dds");
 				if (FS.exist(file))
-					FS.file_copy(file, fn);
+					FS.file_copy(file, fn_nm);
+
+				Msg("Copy LOD: %s to fn", file, fn);
 			}
-
+			else
+			{
+				Msg("File is Exist: %s", fn);
+			}
 
 		}
 	}

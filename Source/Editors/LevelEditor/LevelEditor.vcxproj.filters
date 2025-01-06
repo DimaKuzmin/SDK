@@ -55,9 +55,6 @@
     <Filter Include="MAIN TOOLS\ETools\TOOLS\CUSTOM">
       <UniqueIdentifier>{b37d6777-b299-4f9f-94f6-788c7ad19a1c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MAIN TOOLS\ETools\TOOLS\DO">
-      <UniqueIdentifier>{013eab99-3891-4730-8623-cffe391855cb}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MAIN TOOLS\ETools\TOOLS\AI">
       <UniqueIdentifier>{f261d5d4-b0e5-4fee-a3de-e7d0e120b5ef}</UniqueIdentifier>
     </Filter>
@@ -108,6 +105,9 @@
     </Filter>
     <Filter Include="jsoncpp">
       <UniqueIdentifier>{03677500-62a6-4be8-b5b6-e1690c03cf64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MAIN TOOLS\ETools\TOOLS\DETAILS">
+      <UniqueIdentifier>{013eab99-3891-4730-8623-cffe391855cb}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -305,16 +305,16 @@
       <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneDOTools.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\DO</Filter>
+      <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneDOTools_Controls.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\DO</Filter>
+      <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneDOTools_Generate.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\DO</Filter>
+      <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneDOTools_Pick.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\DO</Filter>
+      <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneGroupControls.cpp">
       <Filter>MAIN TOOLS\ETools\TOOLS\GROUP</Filter>
@@ -665,7 +665,7 @@
       <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
     </ClInclude>
     <ClInclude Include="Edit\ESceneDOTools.h">
-      <Filter>MAIN TOOLS\ETools\TOOLS\DO</Filter>
+      <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
     </ClInclude>
     <ClInclude Include="Edit\ESceneGroupControls.h">
       <Filter>MAIN TOOLS\ETools\TOOLS\GROUP</Filter>

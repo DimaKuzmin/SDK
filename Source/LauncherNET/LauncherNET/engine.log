@@ -1,4 +1,14 @@
-* Detected CPU:  [], F0/M0/S0, 4203.00 mhz, 36-clk 'rdtsc'
+* Detected CPU:  [], F0/M0/S0, 4202.00 mhz, 41-clk 'rdtsc'
 * CPU features: RDTSC, MMX, SSE
 * CPU threads: 16
 
+    |    | c++: SCENE HITS: 16
+    |    | c++: SCENE SET: PXPM: 10.000000, SAMPLES: 9, MUSAMPLES: 6, threads: 16, SkipWeld: 0
+    |    | c++: LIGHT SET: nohemi: 0, norgb: 0, nosun: 0, noise: 1, nosmg: 0
+    |    | c++: xrLC SET:  Level: test,  no_optimize: 1, no_simplify: 0, 
+    |    | c++: EMBREE SET: USE embree: 1, avx: 1, sse: 0, use DXT1: 1
+Initializing File System...
+$fs_root$ = A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\
+using fs-ltx: A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\fsgame.ltx
+FS: 40052 files cached 0 archives, 0Kb memory used.
+Init FileSystem 0.612613 sec

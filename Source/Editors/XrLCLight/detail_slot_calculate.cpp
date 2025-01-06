@@ -59,131 +59,90 @@ __declspec(thread)		u64			t_start	= 0;
 __declspec(thread)		u64			t_time	= 0;
 __declspec(thread)		u64			t_count	= 0;
 
-
-
-IC bool RayPick(CDB::COLLIDER& DB, Fvector& P, Fvector& D, float r, R_Light& L)
-{
-	// 1. Check cached polygon
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,true);
-	if (res) {
-		if (range>0 && range<r) return true;
-	}
-
-	// 2. Polygon doesn't pick - real database query
-	t_start			= CPU::GetCLK();
-	DB.ray_query	( &gl_data.RCAST_Model, P, D,r );
-	t_time			+=	CPU::GetCLK()-t_start-CPU::clk_overhead;
-	t_count			+=	1;
-	
-	// 3. Analyze
-	if (0==DB.r_count()) {
-		return false;
-	} else {
-		// cache polygon
-		CDB::RESULT&	rpinf	= *DB.r_begin();
-		CDB::TRI&		T		= gl_data.RCAST_Model.get_tris()[rpinf.id];
-		L.tri[0].set	(rpinf.verts[0]);
-		L.tri[1].set	(rpinf.verts[1]);
-		L.tri[2].set	(rpinf.verts[2]);
-		return true;
-	}
-}
-
 float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 {
 	u32	tris_count		= DB->r_count();
 	float	scale		= 1.f;
 	Fvector B;
 
-//	X_TRY 
+ 	for (u32 I=0; I<tris_count; I++)
 	{
-		for (u32 I=0; I<tris_count; I++)
-		{
-			CDB::RESULT& rpinf = DB->r_begin()[I];
-			// Access to texture
-			CDB::TRI& clT								= gl_data.RCAST_Model.get_tris()[rpinf.id];
-			b_rc_face& F								= gl_data.g_rc_faces[rpinf.id];
-//			if (0==F)									continue;
-//			if (skip==F)								continue;
+		CDB::RESULT& rpinf = DB->r_begin()[I];
+		// Access to texture
+		b_rc_face& F								= gl_data.g_rc_faces[rpinf.id];
 
-			b_material& M	= gl_data.g_materials				[F.dwMaterial];
-			b_texture&	T	= gl_data.g_textures				[M.surfidx];
+		b_material& M	= gl_data.g_materials		[F.dwMaterial];
+		b_texture&	T	= gl_data.g_textures		[M.surfidx];
 
-		
-			const Shader_xrLC& SH	= shader( F.dwMaterial, *(gl_data.g_shaders_xrlc), gl_data.g_materials );
-//			Shader_xrLCVec&	LIB = 		gl_data.g_shaders_xrlc->Library	();
-//			if (M.shader_xrlc>=LIB.size()) return		0;		//. hack - vy gonite rebyata - eto ne hack - eto sledy zamesti - shader_xrlc - index ne togo masiva !!
-//			Shader_xrLC& SH	= LIB						[M.shader_xrlc];
+		const Shader_xrLC& SH	= shader( F.dwMaterial, *(gl_data.g_shaders_xrlc), gl_data.g_materials );
+		if (!SH.flags.bLIGHT_CastShadow)
+			continue;
 
-			if (!SH.flags.bLIGHT_CastShadow)			continue;
+		if (T.pSurface.Empty())
+			T.bHasAlpha = FALSE;
 
-#ifdef		DEBUG
-			const b_BuildTexture	&build_texture  = gl_data.g_textures			[M.surfidx];
-
-			VERIFY( !!(build_texture.THM.HasSurface()) ==  !!(!T.pSurface.Empty()) );
-#endif
-
-			if (T.pSurface.Empty())	T.bHasAlpha = FALSE;
-			if (!T.bHasAlpha)	{
-				// Opaque poly - cache it
-				L.tri[0].set	(rpinf.verts[0]);
-				L.tri[1].set	(rpinf.verts[1]);
-				L.tri[2].set	(rpinf.verts[2]);
-				return 0;
-			}
-
-			// barycentric coords
-			// note: W,U,V order
-			B.set	(1.0f - rpinf.u - rpinf.v,rpinf.u,rpinf.v);
-
-			// calc UV
-			Fvector2*	cuv = F.t;
-			Fvector2	uv;
-			uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-			uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-			int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-			int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-			U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
-			V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-			u32* raw = static_cast<u32*>(*T.pSurface);
-			u32 pixel		= raw[V*T.dwWidth+U];
-			u32 pixel_a		= color_get_A(pixel);
-			float opac		= 1.f - float(pixel_a)/255.f;
-			scale			*= opac;
+		if (!T.bHasAlpha)	{
+			// Opaque poly - cache it
+			L.tri[0].set	(rpinf.verts[0]);
+			L.tri[1].set	(rpinf.verts[1]);
+			L.tri[2].set	(rpinf.verts[2]);
+			return 0;
 		}
-	} 
-//	X_CATCH
-//	{
-//		clMsg("* ERROR: getLastRP_Scale");
-//	}
 
-	return scale;
+		// barycentric coords
+		// note: W,U,V order
+		B.set	(1.0f - rpinf.u - rpinf.v,rpinf.u,rpinf.v);
+
+		// calc UV
+		Fvector2*	cuv = F.t;
+		Fvector2	uv;
+		uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
+		uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
+
+		int U = iFloor(uv.x*float(T.dwWidth) + .5f);
+		int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
+		U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
+		V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
+		u32* raw = static_cast<u32*>(*T.pSurface);
+		u32 pixel		= raw[V*T.dwWidth+U];
+		u32 pixel_a		= color_get_A(pixel);
+		float opac		= 1.f - float(pixel_a)/255.f;
+		scale			*= opac;
+	}
+
+ 	return scale;
 }
 
-float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)//, Face* skip)
+extern float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range);
+
+float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)  
 {
-	R_ASSERT	(DB);
+	return RaytraceEmbreeDetails(L, P, D, R);
 
-	// 1. Check cached polygon
-	float _u,_v,range;
-	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
-	if (res) {
-		if (range>0 && range<R) return 0;
-	}
-
-	// 2. Polygon doesn't pick - real database query
-	DB->ray_query	(&gl_data.RCAST_Model,P,D,R);
-
-	// 3. Analyze polygons and cache nearest if possible
-	if (0==DB->r_count()) {
-		return 1;
-	} else {
-		return getLastRP_Scale(DB,L);//,skip);
-	}
-	return 0;
+//	R_ASSERT	(DB);
+//
+//	// 1. Check cached polygon
+//	float _u,_v,range;
+//	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
+//	if (res) {
+//		if (range>0 && range<R) return 0;
+//	}
+//
+//	// 2. Polygon doesn't pick - real database query
+//	DB->ray_query	(&gl_data.RCAST_Model,P,D,R);
+//
+//	// 3. Analyze polygons and cache nearest if possible
+//	if (0==DB->r_count()) 
+//	{
+//		return 1;
+//	} 
+//	else
+//	{
+//		return getLastRP_Scale(DB,L);//,skip);
+//	}
+//	return 0;
 }
+
 
 void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
 {

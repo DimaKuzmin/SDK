@@ -145,14 +145,20 @@ std::vector<LPCSTR> GetSelectedFiles(const OPENFILENAME& ofn)
     return selectedFiles;
 }
 
-bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext )
+bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, int sz_buf, bool bMulti, LPCSTR offset, int start_flt_ext, bool use_all_files)
 {
 	VERIFY				(buffer&&(sz_buf>0));
 	FS_Path& P			= *FS.get_path(initial);
 	
     string1024 			flt;
-	MakeFilter			(flt,P.m_FilterCaption?P.m_FilterCaption:"",P.m_DefExt);
 
+
+    LPSTR fileExtension = P.m_DefExt;
+    if (use_all_files)
+        fileExtension = "*";
+ 
+	MakeFilter			(flt, P.m_FilterCaption?P.m_FilterCaption:"", fileExtension);
+ 
 	OPENFILENAME 		ofn;
 	Memory.mem_fill		( &ofn, 0, sizeof(ofn) );
 
@@ -174,7 +180,8 @@ bool EFS_Utils::GetOpenNameInternal(HWND hWnd, LPCSTR initial,  LPSTR buffer, in
 
     ofn.lStructSize		= sizeof(OPENFILENAME);
 	ofn.hwndOwner 		= hWnd;
-	ofn.lpstrDefExt 	= P.m_DefExt;
+	
+    ofn.lpstrDefExt 	= fileExtension;
     
     //BUFFER TO EXIT
 	ofn.lpstrFile 		= buffer;

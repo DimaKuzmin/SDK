@@ -31,8 +31,9 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 	xr_string temp_fn = "";
 
 	loaded += 1;
-
-	if (!use_path && EFS.GetOpenName(EDevice.m_hWnd, _import_, temp_fn) || use_path)
+ 
+ 
+	if (use_path || EFS.GetOpenNameNoExt(EDevice.m_hWnd, _import_, temp_fn) )
 	{
 		objects_to_move.clear();
 

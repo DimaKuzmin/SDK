@@ -1,21 +1,21 @@
 //----------------------------------------------------
 // file: FileSystem.h
 //----------------------------------------------------
-
-#ifndef FileSystemH
-#define FileSystemH
-
+#pragma once
+ 
 #define BACKUP_FILE_LEVEL 5
 
 class XRCORE_API EFS_Utils {
 protected:
-	bool 		GetOpenNameInternal		(HWND hWnd, LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
-		
+	bool 		GetOpenNameInternal				(HWND hWnd, LPCSTR initial, LPSTR buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1, bool use_all_files=false);
+ 
 	bool 		GetOpenNameInternalMulty		(HWND hWnd, LPCSTR initial, xr_string& path, xr_vector<xr_string>& files, LPCSTR offset=0, int start_flt_ext=-1 );
 
-	bool 		GetOpenNameInternal_2 	(HWND hWnd, LPCSTR initial, LPSTR file, LPSTR path);
+	bool 		GetOpenNameInternal_2			(HWND hWnd, LPCSTR initial, LPSTR file, LPSTR path);
 
 public:
+ 	
+
 				EFS_Utils		();
 	virtual 	~EFS_Utils		();
 	void 		_initialize		(){}
@@ -25,6 +25,8 @@ public:
 
 	bool 		GetOpenName		(HWND hWnd, LPCSTR initial, string_path& buffer, int sz_buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
 	bool 		GetOpenName		(HWND hWnd, LPCSTR initial, xr_string& buf, bool bMulti=false, LPCSTR offset=0, int start_flt_ext=-1 );
+	
+	bool 		GetOpenNameNoExt (HWND hWnd, LPCSTR initial, xr_string& buf);
 
 	bool 		GetOpenNameMulty (HWND hWnd, LPCSTR initial, xr_string& path, xr_vector<xr_string>& files, LPCSTR offset=0, int start_flt_ext=-1 );
 
@@ -50,6 +52,4 @@ public:
 };
 extern XRCORE_API	EFS_Utils*	xr_EFS;
 #define EFS (*xr_EFS)
-
-#endif /*_INCDEF_FileSystem_H_*/
-
+ 

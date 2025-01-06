@@ -36,66 +36,37 @@ CTimer	dwStartupTime;
 
 XRLC_API SpecialArgs* current_args_data = 0;
 
-void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
+void Startup(SpecialArgs* args)
 {
 	create_global_data();
-	char cmd[512],name[256];
-	BOOL bModifyOptions		= FALSE;
-
-	xr_strcpy(cmd,lpCmdLine);
-	strlwr(cmd);
- 	
-	// Give a LOG-thread a chance to startup
+  
+ 	// Give a LOG-thread a chance to startup
 	//_set_sbh_threshold(1920);
 	InitCommonControls		();
 	thread_spawn			(logThread, "log-update",	1024*1024,0);
 	Sleep					(150);
-	
-
-	char tmp[256];
-	sprintf(tmp, "c++: SCENE SET: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
-		args->pxpm, args->sample, args->mu_samples, args->use_threads, args->skip_weld);
-	clMsg(tmp);
-
-	sprintf(tmp, "c++: LIGHT SET: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d",
-		args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
-	clMsg(tmp);
-
-	sprintf(tmp, "c++: xrLC SET:  Level: %s,  no_optimize: %d, no_simplify: %d, ",
-		args->level_name.c_str(), args->no_optimize, args->no_simplify);
-	clMsg(tmp);
-
-	sprintf(tmp, "c++: EMBREE SET: USE embree: %d, avx: %d, sse: %d, use DXT1: %d",
-			 args->use_embree, args->use_avx, args->use_sse, args->use_DXT1);
-	clMsg(tmp);
-	
 
 	// Faster FPU 
 	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
-
- 
-
 	log_vminfo();
-	
-	// Load project
-	name[0]=0;				
-	//sscanf(strstr(cmd,"-f")+2,"%s",name);
+	  
+	std::string name = build_args->level_name.c_str();
 
 	// Se7Kills ADD NEW Name Reading
-	xr_strcpy(name, build_args->level_name.c_str() );
-	clMsg("LevelName: %s", name);
+ 	clMsg("LevelName: %s", name);
 
 	extern  HWND logWindow;
 	string256				temp;
-	xr_sprintf				(temp, "%s - Levels Compiler", name);
+	xr_sprintf				(temp, "%s - Levels Compiler", name.c_str());
 	SetWindowText			(logWindow, temp);
 
  
 
 	string_path				prjName;
-	FS.update_path			(prjName,"$game_levels$",strconcat(sizeof(prjName),prjName,name,"\\build.prj"));
+	FS.update_path			(prjName,"$game_levels$", strconcat(sizeof(prjName), prjName, name.c_str(), "\\build.prj"));
+	
 	string256				phaseName;
-	Phase					(strconcat(sizeof(phaseName),phaseName,"Reading project [",name,"]..."));
+	Phase					(strconcat(sizeof(phaseName), phaseName,"Reading project [", name.c_str(), "]..."));
  
 	string256 inf;
 	IReader*	F			= FS.r_open(prjName);
@@ -116,23 +87,6 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	b_params				Params;
 	F->r_chunk			(EB_Parameters,&Params);
 
-	// Show options if needed
-	/* 
-	if (bModifyOptions)		
-	{
-		Phase		("Project options...");
-		HMODULE		L = LoadLibrary		("xrLC_Options.dll");
-		void*		P = GetProcAddress	(L,"_frmScenePropertiesRun");
-		R_ASSERT	(P);
-		xrOptions*	O = (xrOptions*)P;
-		int			R = O(&Params,version,false);
-		FreeLibrary	(L);
-		if (R==2)	{
-			ExitProcess(0);
-		}
-	}
-	*/
- 
 	// Conversion
 	Phase					("Converting data structures...");
 	pBuild					= xr_new<CBuild>();
@@ -156,7 +110,7 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	
 	dwStartupTime.Start();
 
-	FS.update_path			(lfn,_game_levels_,name);
+	FS.update_path			(lfn,_game_levels_, name.c_str());
 	pBuild->Run				(lfn);
 	xr_delete				(pBuild);
 
@@ -165,9 +119,6 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	u32	dwEndTime			= dwStartupTime.GetElapsed_ms();
 	xr_sprintf					(inf,"Time elapsed: %s",make_time(dwEndTime/1000).c_str());
 	clMsg					("Build succesful!\n%s",inf);
-
-	//if (!strstr(cmd,"-silent"))
-	//	MessageBox			(logWindow,inf,"Congratulation!",MB_OK|MB_ICONINFORMATION);
 
 	Status("Построение Уровня Законечено! ");
 
@@ -178,11 +129,40 @@ void Startup(LPSTR     lpCmdLine, SpecialArgs* args)
 	current_args_data = nullptr;
 }
 
-//typedef void DUMMY_STUFF (const void*,const u32&,void*);
-//XRCORE_API DUMMY_STUFF	*g_temporary_stuff;
-//XRCORE_API DUMMY_STUFF	*g_dummy_stuff;
+void Startup_DO(SpecialArgs* args)
+{
+	dwStartupTime.Start();
 
+	// Give a LOG-thread a chance to startup
+	InitCommonControls();
+	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
+	Sleep(150);
 
+	clMsg("Starting Thread Sturtup For Details Objects");
+
+	// Load project
+ 	extern  HWND logWindow;
+	string256			temp;
+	xr_sprintf(temp, "%s - Detail Compiler", args->level_name);
+	SetWindowText(logWindow, temp);
+
+	//FS.update_path	(name,"$game_levels$",name);
+	FS.get_path("$level$")->_set(args->level_name.c_str());
+
+	CTimer				dwStartupTime;
+	dwStartupTime.Start();
+	 
+	xrCompileDO();
+
+	// Show statistic
+	char	stats[256];
+	extern	std::string make_time(u32 sec);
+	xr_sprintf(stats, "Time elapsed: %s", make_time((dwStartupTime.GetElapsed_ms()) / 1000).c_str());
+	clMsg(stats);
+
+	bClose = TRUE;
+	Status("Построение Уровня Законечено! ");
+}
 
 #include <ctime>
 #include "../XrLCLight/xrDeflector.h"
@@ -225,10 +205,47 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 
 
 
+extern XRLC_LIGHT_API int StageMAXHits;
 
  
 XRLC_API void StartupWorking(SpecialArgs* args)
 {
+	if (args->IsDOLighting)
+	{
+		build_args = new SpecialArgsXRLCLight();
+		ReadArgs(build_args, args);
+
+		Debug._initialize(false);
+		Core._initialize("xrDO");
+		Startup_DO(args);
+		Core._destroy();
+		return;
+	}
+
+	char tmp[256];
+	sprintf(tmp, "c++: SCENE HITS: %d",
+		args->MaxHitsPerRay);
+	clMsg(tmp);
+
+	StageMAXHits = args->MaxHitsPerRay;
+
+	 
+	sprintf(tmp, "c++: SCENE SET: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
+		args->pxpm, args->sample, args->mu_samples, args->use_threads, args->skip_weld);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++: LIGHT SET: nohemi: %d, norgb: %d, nosun: %d, noise: %d, nosmg: %d",
+		args->nohemi, args->norgb, args->nosun, args->noise, args->nosmg);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++: xrLC SET:  Level: %s,  no_optimize: %d, no_simplify: %d, ",
+		args->level_name.c_str(), args->no_optimize, args->no_simplify);
+	clMsg(tmp);
+
+	sprintf(tmp, "c++: EMBREE SET: USE embree: %d, avx: %d, sse: %d, use DXT1: %d",
+		args->use_embree, args->use_avx, args->use_sse, args->use_DXT1);
+	clMsg(tmp);
+
 	current_args_data = args;
 
 	Debug._initialize(false);
@@ -256,64 +273,14 @@ XRLC_API void StartupWorking(SpecialArgs* args)
 		}break;
 
 	};
-
-	
-
  
 	build_args = new SpecialArgsXRLCLight();
 	ReadArgs(build_args, args);
  
  	g_using_smooth_groups = args->nosmg;
-	Startup("", args);
+	Startup(args);
 
 
 	Core._destroy();
 }
-
-
-/*
- 
-int APIENTRY WinMain(HINSTANCE hInst,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
-{
-//	g_temporary_stuff	= &trivial_encryptor::decode;
-//	g_dummy_stuff		= &trivial_encryptor::encode;
-
-	// Initialize debugging
-	Debug._initialize	(false);
-	Core._initialize	("xrLC");
-	
- 
-	Startup				(lpCmdLine);
-	Core._destroy		();
-
-	// Get the current time
-	std::time_t currentTime = std::time(nullptr);
-
-	// Convert the time to a string representation
-	char* timeString = std::ctime(&currentTime);
-
-
-	string_path pp;
-	string128 tmp;
-	sprintf(tmp, "xrLC_compile_log_%s.log", timeString);
-
-
-	FS.update_path(pp, "$app_root$", tmp);
-	
-	IWriter * log_file_time = FS.w_open(pp);
-	for (auto phase : *phases_timers_Get())
-	{
-		log_file_time->w_stringZ(phase.c_str());
- 	}
-	
-	FS.w_close(log_file_time);
-	 
-	return 0;
-}
-
-*/
-
  

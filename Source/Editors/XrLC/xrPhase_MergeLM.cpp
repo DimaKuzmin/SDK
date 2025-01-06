@@ -247,58 +247,59 @@ void MergeOriginal(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 		curarea += defl_area;
 		merge_count++;
 	}
+ 
+	/* 	std::mutex mtx;
+ 		int Merged = 0;
+ 		std::atomic<u64> MergedArea = 0;
+ 		// u64 MaximalArea = (getLMSIZE() * getLMSIZE()) * 1.4f;
+ 	 
+ 		std::atomic<int> Processed = 0;
+ 
+ 		tbb::parallel_for(tbb::blocked_range<int>(0, merge_count, merge_count / 128), [&](const tbb::blocked_range<int>& range)
+ 		{
+ 			for (auto ID = range.begin(); ID < range.end(); ID++)
+ 			{
+ 				//if (MergedArea.load() > MaximalArea)
+ 				//	break;
+ 
+ 				//if (0 == (ID % 128))
+ 				//	Status("Process [%d/%d]... Merged[%d]", ID, merge_count, Merged);
+ 
+ 				StatusNoMSG("Process [%d/%d]... Merged[%d] Proccessed[%d], MergedArea[%d]", ID, merge_count, Merged, Processed.load(), CurrentArea);
+ 
+ 				lm_layer& L = Layer[ID]->layer;
+ 				L_rect		rT, rS;
+ 				rS.a.set(0, 0);
+ 				rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
+ 				rS.iArea = L.Area();
+ 				rT = rS;
+ 
+ 				if (_rect_place(rT, &L))
+ 				{
+ 					BOOL		bRotated;
+ 					if (rT.SizeX() == rS.SizeX())
+ 						bRotated = FALSE;
+ 					else
+ 						bRotated = TRUE;
+ 
+ 					mtx.lock();
+ 					lmap->Capture(Layer[ID], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
+ 					Merged++;
+ 					mtx.unlock();
+ 
+ 					Layer[ID]->bMerged = TRUE;
+ 					MERGED++;
+ 					// MergedArea.fetch_add(rT.SizeX() * rT.SizeY());
+ 				}
+ 
+ 				Processed++;
+ 
+ 				// Progress(_sqrt(float(ID) / float(merge_count)));
+ 			}		
+ 		});
+	*/
 
-	std::mutex mtx;
-	int Merged = 0;
-	std::atomic<u64> MergedArea = 0;
-	// u64 MaximalArea = (getLMSIZE() * getLMSIZE()) * 1.4f;
-	 
-	std::atomic<int> Processed = 0;
-
-	tbb::parallel_for(tbb::blocked_range<int>(0, merge_count, merge_count / 128), [&](const tbb::blocked_range<int>& range)
-	{
-		for (auto ID = range.begin(); ID < range.end(); ID++)
-		{
-			//if (MergedArea.load() > MaximalArea)
-			//	break;
-
-			//if (0 == (ID % 128))
-			//	Status("Process [%d/%d]... Merged[%d]", ID, merge_count, Merged);
-
-			StatusNoMSG("Process [%d/%d]... Merged[%d] Proccessed[%d], MergedArea[%d]", ID, merge_count, Merged, Processed.load(), CurrentArea);
-
-			lm_layer& L = Layer[ID]->layer;
-			L_rect		rT, rS;
-			rS.a.set(0, 0);
-			rS.b.set(L.width + 2 * BORDER - 1, L.height + 2 * BORDER - 1);
-			rS.iArea = L.Area();
-			rT = rS;
-
-			if (_rect_place(rT, &L))
-			{
-				BOOL		bRotated;
-				if (rT.SizeX() == rS.SizeX())
-					bRotated = FALSE;
-				else
-					bRotated = TRUE;
-
-				mtx.lock();
-				lmap->Capture(Layer[ID], rT.a.x, rT.a.y, rT.SizeX(), rT.SizeY(), bRotated);
-				Merged++;
-				mtx.unlock();
-
-				Layer[ID]->bMerged = TRUE;
-				MERGED++;
-				// MergedArea.fetch_add(rT.SizeX() * rT.SizeY());
-			}
-
-			Processed++;
-
-			// Progress(_sqrt(float(ID) / float(merge_count)));
-		}		
-	});
-
-	/*for (u32 it = 0; it < merge_count; it++)
+	for (u32 it = 0; it < merge_count; it++)
 	{
 		if (0 == (it % 1024))
 			Status("Process [%d/%d]...", it, merge_count);
@@ -324,7 +325,7 @@ void MergeOriginal(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 		Progress(_sqrt(float(it) / float(merge_count)));
 	}
-	*/
+
 }
 
 

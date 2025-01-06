@@ -251,9 +251,7 @@ void CBuild::Run(LPCSTR P)
 		BuildRapid(TRUE);
 	
 	log_vminfo_new("rcast-CFORM model momory_after");
- 
-
-
+  
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
 	{
@@ -263,20 +261,6 @@ void CBuild::Run(LPCSTR P)
 		Light_prepare				();
 		xrPhase_Radiosity			();
 	}
-
-	//****************************************** Starting MU
-	/* 	Moved TO After LIGHT (После стадии Convert To OGF и возможность задать ключом -th потоки)	 (Возможно для сетевой компиляции стартуют раньше)
-	FPU::m64r					();
-	Phase						("LIGHT: Starting MU...");
-	mem_Compact					();
-	Light_prepare				();
-	if(g_build_options.b_net_light)
-	{
-		lc_global_data()->mu_models_calc_materials();
-		RunNetCompileDataPrepare( );
-	}
-	StartMu						();
-	*/
 
 	//****************************************** Resolve materials
 	FPU::m64r					();

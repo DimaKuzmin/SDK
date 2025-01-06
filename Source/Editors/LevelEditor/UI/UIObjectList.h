@@ -4,13 +4,13 @@ class CCustomObject;
  
 
 
-class UIObjectList:public XrUI
+class UIObjectList :public XrUI
 {
 private:
 	static UIObjectList* Form;
 	// Static Object Export Position Type
 	bool use_global_position = false;
-	 
+
 	// MOVE OFFSETS
 	Fvector3 vec_offset = Fvector().set(0, 0, 0);
 	Fvector3 vec_box_min = Fvector().set(0, 0, 0);
@@ -19,7 +19,7 @@ private:
 	// BOX Выборка Обьектов
 	bool use_outside_box = false;
 	xr_map<CCustomObject*, Fvector> objects_to_move;
-	 
+
 
 private:
 	// SPAWNES
@@ -28,7 +28,7 @@ private:
 
 	string_path spawnnew_custom_data;
 
- 	bool current_only_customdata = 0;
+	bool current_only_customdata = 0;
 	bool IgnoreVisual = false;
 	bool IgnoreNotVisual = false;
 	xr_vector<shared_str> Errored_objects;
@@ -37,7 +37,7 @@ private:
 public:
 	bool use_genarate_cfgs = false;
 	bool MultiplySelect = false;
- 
+
 	// DISTANCE IN OBJECT LIST ITEMS
 
 	int DistanceObjects = 0;
@@ -53,18 +53,18 @@ public:
 	static void Update();
 	static void Show();
 	static void Close();
-	static IC bool IsOpen()  { return Form; }
+	static IC bool IsOpen() { return Form; }
 
- private:
-	 // GLOBAL MENU CHECKBOXES
-	 bool ShowEXPORT = false;
- 	 bool ShowLOAD = false;
-	 bool ShowRenamer = false;
+private:
+	// GLOBAL MENU CHECKBOXES
+	bool ShowEXPORT = false;
+	bool ShowLOAD = false;
+	bool ShowRenamer = false;
 
 
 
 	void DrawObjects();
-	void DrawObject(CCustomObject* obj,const char*name);
+	void DrawObject(CCustomObject* obj, const char* name);
 
 	ObjClassID m_cur_cls;
 	enum EMode
@@ -76,13 +76,13 @@ public:
 	EMode m_Mode;
 	CCustomObject* m_SelectedObject;
 	bool serch_mode;
-	string_path m_Filter = {0};
+	string_path m_Filter = { 0 };
 	string_path m_Filter_type = { 0 };
 	string_path m_Filter_visual = { 0 };
 
 public:
-// NEW se7kills
-//	Misc Functions 
+	// NEW se7kills
+	//	Misc Functions 
 	void UndoLoad();
 	void SelectLoaded();
 	void MoveObjectsToOffset();
@@ -92,7 +92,7 @@ public:
 
 	xr_vector<Fvector3> getAIPOS(LPCSTR file);
 
-// IMGUI
+	// IMGUI
 
 	void UpdateDefaultMeny();
 	void UpdateUIObjectList();
@@ -106,7 +106,7 @@ public:
 
 	// Spawn
 private:
- 	string_path prefix_cfg_section;
+	string_path prefix_cfg_section;
 	string_path prefix_cfg_prefix;
 	string_path prefix_cfg_map;
 public:
@@ -122,7 +122,7 @@ public:
 	void LoadErrorsGraphs();
 	void ReplaceItemToPHYSIC_STATIC();
 	void UpdateReplaceNames();
- 
+
 	// Static
 	void BboxSelectedObject();
 	void POS_ObjectsToLTX();
@@ -150,7 +150,7 @@ public:
 	void ExportAIMap(Fbox* box, LPCSTR name);
 	bool LoadAiMAP();
 	void SelectAIMAPFile();
- 	void ModifyAIMAPFiles(Fvector pos);
+	void ModifyAIMAPFiles(Fvector pos);
 	void MergeAIMAP(u32 file);
 	void MergeAI_FromINI(CInifile* file);
 	void SetTerrainOffsetForAI();
@@ -158,7 +158,7 @@ public:
 
 	// Rename 
 private:
-	string_path rename_prefix_name;
+	string128 rename_prefix_name = {0};
 	// RENAME CFG
 
 public:

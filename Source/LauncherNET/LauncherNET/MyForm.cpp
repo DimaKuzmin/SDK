@@ -281,6 +281,12 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     auto TH_str = msclr::interop::marshal_as<std::string>(ThreadsCount->Text);
     auto PXPM_str = msclr::interop::marshal_as<std::string>(PXPM->Text);
     auto LevelName_str = msclr::interop::marshal_as < std::string >(LevelName->Text);
+
+
+    auto hitsImpl_str = msclr::interop::marshal_as < std::string >(MaxHitsCount->Text);
+   
+
+    args->MaxHitsPerRay = atoi(hitsImpl_str.c_str());
  
 
     if (lightmap_1024->Checked)
@@ -318,7 +324,8 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
     args->level_name = LevelName_str;
    
     args->use_DXT1 = useDXT1->Checked;
-
+    args->IsDOLighting = false;
+ 
     if (!IsRunned)
     {
         IsRunned = true;
@@ -419,4 +426,24 @@ System::Void LauncherNET::MyForm::xrAI_StartSpawn_Click(System::Object^ sender, 
     {
         LoggerCL_xrAI->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
     }
+}
+
+System::Void LauncherNET::MyForm::DetailsButtonWork_Click(System::Object^ sender, System::EventArgs^ e)
+{
+    SpecialArgs* args = new SpecialArgs();
+    args->use_threads = atoi(msclr::interop::marshal_as<std::string>(ThreadsCount_DO->Text).c_str());
+    args->level_name = msclr::interop::marshal_as < std::string >(LevelNameDO->Text).c_str();
+    args->IsDOLighting = true;
+ 
+    if (!IsRunned)
+    {
+        IsRunned = true;
+        StartThread(args);
+    }
+    else
+    {
+        LoggerCL->updateLog("Не Стартуй Не завершен еще прежний компил!!!");
+    }
+
+    return System::Void();
 }

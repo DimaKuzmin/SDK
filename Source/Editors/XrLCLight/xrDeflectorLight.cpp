@@ -22,7 +22,7 @@ xrCriticalSection csDeflector;
 #include "xrHardwareLight.h"
 #endif
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
+extern XRLC_LIGHT_API int StageMAXHits;
 
 ICF bool CalculateEnergy(Face* skip, base_Face* F, float& energy, float v, float u)
 {
@@ -69,15 +69,16 @@ ICF bool CalculateEnergy(Face* skip, base_Face* F, float& energy, float v, float
 		return false;
 	return true;
 }
-
+ 
 // NEW CDB_RAY
-ICF void FilterIntersection(OpcodeArgs* context)
+ICF void FilterIntersection(OpcodeArgs* context)	// Оптимизация поиска пересечений (усечение до 4-MAX хитов макс)
 {
-	CDB::MODEL* MDL = (CDB::MODEL*)context->MDL;
+	CDB::MODEL* MDL = (CDB::MODEL*) context->MDL;
 
 	// Access to texture
 	CDB::TRI& clT = MDL->get_tris()[context->hit_struct.prim];
 	base_Face* F = (base_Face*)clT.pointer;
+
  	if (F->flags.bOpaque)
 	{
 		R_Light& light = (*((R_Light*)context->Light));
@@ -98,8 +99,12 @@ ICF void FilterIntersection(OpcodeArgs* context)
 	}
 	else
 	{
+		context->HitsCount += 1;
 		context->valid = true;
 	}
+
+	if (context->HitsCount > StageMAXHits) // OPTIMIZING MAX_FROM form_parrams
+ 		context->valid = false;
 };
 
 float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
@@ -121,8 +126,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	ctxt.r_dir = D;
 	ctxt.r_start = P;
 	ctxt.r_range = R;
-
- 
+	 
 	OpcodeArgs args;
 	args.energy = 1.0f;
 	args.Light = (void*)&L;
@@ -130,6 +134,7 @@ float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, 
 	args.MDL = (void*)MDL;
 	args.valid = true;
 	args.pos = P;
+	args.HitsCount = 0;
 	
 
 	ctxt.result = &args;
@@ -497,26 +502,29 @@ float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvec
 	if (build_args->use_embree && !use_opcode)
 		return RaytraceEmbreeProcess(L, P, D, R, skip);
 
-	// return rayTraceCheck(DB, MDL, L, P, D, R, skip);
-	// 1. Check cached polygon
+	return rayTraceCheck(DB, MDL, L, P, D, R, skip);
 	
-	float _u, _v, range;
-	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
-	if (res)
-	{
-		if (range > 0 && range < R) return 0;
-	}
- 
-	// 2. Polygon doesn't pick - real database query
-	DB->ray_query(MDL, P, D, R);
-	
-	// 3. Analyze polygons and cache nearest if possible
-	if (0 == DB->r_count()) 
- 		return 1;
- 	else
- 		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
+ 	/*
+ 	// 1. Check cached polygon
  	
-	return 0;
+ 	float _u, _v, range;
+ 	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
+ 	if (res)
+ 	{
+ 		if (range > 0 && range < R) return 0;
+ 	}
+  
+ 	// 2. Polygon doesn't pick - real database query
+ 	DB->ray_query(MDL, P, D, R);
+ 	
+ 	// 3. Analyze polygons and cache nearest if possible
+ 	if (0 == DB->r_count()) 
+  		return 1;
+  	else
+  		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
+  	
+ 	return 0;
+	*/
 }
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)
@@ -633,7 +641,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir, MAX_DISTANCE,skip,bUseFaceDisable, use_opcode);
+				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir, MAX_DISTANCE, skip,bUseFaceDisable, use_opcode);
 				C.sun		+=	scale;
 			} 
 			else 
@@ -660,43 +668,41 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 	if (0==(flags&LP_dont_hemi))
 	{
-		R_Light	*L	= &*lights.hemi.begin(), *E = &*lights.hemi.end();
-		for (;L!=E; L++)
+ 		R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
+		for (; L != E; L++)
 		{
-			if (L->type==LT_DIRECT) 
-			{	
- 				// Cos
-				Ldir.invert	(L->direction);
-				float D		= Ldir.dotproduct( N );
-				if( D <=0 ) continue;
-
+			if (L->type == LT_DIRECT) 
+			{
+				// Cos
+				Ldir.invert(L->direction);
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) continue;
 
 				// Trace Light
-				Fvector		PMoved;
-				PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,PMoved,Ldir, MAX_DISTANCE, skip,bUseFaceDisable, use_opcode);
-				C.hemi		+=	scale;
- 			}
-			else
-			{
- 				// Distance
-				float sqD	=	P.distance_to_sqr(L->position);
+				Fvector		PMoved;	
+				PMoved.mad(Pnew, Ldir, 0.001f); // Смещение HEMI 
+
+				float scale = L->energy * rayTrace(DB, MDL, *L, PMoved, Ldir, 1000.f, skip, bUseFaceDisable, use_opcode);
+				C.hemi += scale;
+			}
+			else {
+				// Distance
+				float sqD = P.distance_to_sqr(L->position);
 				if (sqD > L->range2) continue;
 
 				// Dir
-				Ldir.sub			(L->position,P);
-				Ldir.normalize_safe	();
-				float D		=	Ldir.dotproduct( N );
-				if( D <=0 ) continue;
+				Ldir.sub(L->position, P);
+				Ldir.normalize_safe();
+				float D = Ldir.dotproduct(N);
+				if (D <= 0) continue;
 
 				// Trace Light
-				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir,R,skip,bUseFaceDisable, use_opcode);
-				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
+				float R = _sqrt(sqD);
+				float scale = D * L->energy * rayTrace(DB, MDL, *L, Pnew, Ldir, R, skip, bUseFaceDisable, use_opcode);
+				float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
 
-				C.hemi		+=	A;
+				C.hemi += A;
 			}
- 
 		}
 	}
 } 

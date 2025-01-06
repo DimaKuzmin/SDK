@@ -260,8 +260,8 @@ void CDeflector::OA_Export()
 
 	// Surface
 	VERIFY(inlc_global_data());
-	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u,512u-2*BORDER);
-	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u,512u-2*BORDER);
+	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2*BORDER);
+	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2*BORDER);
 	layer.create	(dwWidth,dwHeight);
 }
 
@@ -387,8 +387,8 @@ void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSel
 		}
 
 		// Calculate
-		R_ASSERT		(lm.width	<=(getLMSIZE() -2*BORDER));
-		R_ASSERT		(lm.height	<=(getLMSIZE() -2*BORDER));
+		R_ASSERT		(lm.width	<= (getLMSIZE() -2 * BORDER));
+		R_ASSERT		(lm.height	<= (getLMSIZE() -2 * BORDER));
 		lm.create		(lm.width,lm.height);
 		L_Direct		(th, DB,LightsSelected,H, use_cpu);
 	} 

@@ -9,9 +9,6 @@
 
 global_claculation_data	gl_data;
 
-
-
-
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 {
@@ -41,6 +38,8 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 	return false;
 }
 
+// INTEL SELECTION
+extern  void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI);
 
 void global_claculation_data::xrLoad()
 {
@@ -59,10 +58,10 @@ void global_claculation_data::xrLoad()
 		fs->r				(&H,sizeof(hdrCFORM));
 		R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 		
-		Fvector*	verts	= (Fvector*)fs->pointer();
+		Fvector*	verts	= (Fvector*) fs->pointer();
 
 
-		xr_vector< CDB::TRI> tris(H.facecount);
+		xr_vector< CDB::TRI > tris(H.facecount);
 		{
 			u8* tris_pointer = (u8*)(verts + H.vertcount);
 			for (u32 i = 0; i < H.facecount; i++)
@@ -72,8 +71,13 @@ void global_claculation_data::xrLoad()
 			}
 
 		}
+		
+		// Create CFORM MODEL
+		clMsg("Raytrace Model: verts: %u, triangle: %u", H.vertcount, tris.size());
+		InitEmbreeDetails(verts, tris.data(), tris.size());
+
 		RCAST_Model.build	( verts, H.vertcount, tris.data(), H.facecount );
-		Msg("* Level CFORM: %dK",RCAST_Model.memory()/1024);
+		// Msg("* Level CFORM: %dK", RCAST_Model.memory()/1024 );
 
 		g_rc_faces.resize	(H.facecount);
 		R_ASSERT(fs->find_chunk(1));
@@ -85,6 +89,7 @@ void global_claculation_data::xrLoad()
 	{
 		slots_data.Load( );
 	}
+
 	// Lights
 	{
 		IReader*			fs = FS.r_open("$level$","build.lights");
@@ -159,67 +164,80 @@ void global_claculation_data::xrLoad()
 				if (strchr(N,'.')) *(strchr(N,'.')) = 0;
 				strlwr			(N);
 
-				if (0==xr_strcmp(N,"level_lods"))	{
+				if (0==xr_strcmp(N,"level_lods"))	
+				{
 					// HACK for merged lod textures
 					BT.dwWidth	= 1024;
 					BT.dwHeight	= 1024;
 					BT.bHasAlpha= TRUE;
 					BT.pSurface.Clear();
 					BT.THM.SetHasSurface(FALSE);
-				} else {
+				} 
+				else
+				{
 					string_path			th_name;
 					FS.update_path(th_name, "$game_textures$", strconcat(sizeof(th_name), th_name, N, ".thm"));
 					clMsg("processing: %s", th_name);
 					IReader* THM = FS.r_open(th_name);
-					R_ASSERT2(THM, th_name);
-
-					// version
-					u32 version				= 0;
-					R_ASSERT				(THM->r_chunk(THM_CHUNK_VERSION,&version));
-					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
-
-					// analyze thumbnail information
-					R_ASSERT(THM->find_chunk(THM_CHUNK_TEXTUREPARAM));
-					THM->r                  (&BT.THM.fmt,sizeof(STextureParams::ETFormat));
-					BT.THM.flags.assign		(THM->r_u32());
-					BT.THM.border_color		= THM->r_u32();
-					BT.THM.fade_color		= THM->r_u32();
-					BT.THM.fade_amount		= THM->r_u32();
-					BT.THM.mip_filter		= THM->r_u32();
-					BT.THM.width			= THM->r_u32();
-					BT.THM.height           = THM->r_u32();
-					BOOL			bLOD=FALSE;
-					if (N[0]=='l' && N[1]=='o' && N[2]=='d' && N[3]=='\\') bLOD = TRUE;
-
-					// load surface if it has an alpha channel or has "implicit lighting" flag
-					BT.dwWidth				= BT.THM.width;
-					BT.dwHeight				= BT.THM.height;
-					BT.bHasAlpha			= BT.THM.HasAlphaChannel();
-					BT.pSurface.Clear();
-					BT.THM.SetHasSurface(FALSE);
-					if (!bLOD) 
+					
+					if (!THM)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
-						{
-							clMsg		("- loading: %s",N);
-							string_path name;
-							R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
-							R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
-							BT.pSurface.ClearMipLevels();
-							BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
-							BT.pSurface.SwapRB();
-							BT.THM.SetHasSurface(TRUE);
-							if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
-							{
-								Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
- 
-								BT.dwWidth =  BT.pSurface.GetSize().x;
-								BT.dwHeight = BT.pSurface.GetSize().y;;
-							}
+						BT.dwWidth = 1024;
+						BT.dwHeight = 1024;
+						BT.bHasAlpha = FALSE;
+						BT.pSurface.Clear();
+						BT.THM.SetHasSurface(FALSE);
+ 					}
+					else
+					{
+						u32 version = 0;
+						R_ASSERT(THM->r_chunk(THM_CHUNK_VERSION, &version));
+						// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
 
-							BT.Vflip	();
-						} else {
-							// Free surface memory
+						// analyze thumbnail information
+						R_ASSERT(THM->find_chunk(THM_CHUNK_TEXTUREPARAM));
+						THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
+						BT.THM.flags.assign(THM->r_u32());
+						BT.THM.border_color = THM->r_u32();
+						BT.THM.fade_color = THM->r_u32();
+						BT.THM.fade_amount = THM->r_u32();
+						BT.THM.mip_filter = THM->r_u32();
+						BT.THM.width = THM->r_u32();
+						BT.THM.height = THM->r_u32();
+						BOOL			bLOD = FALSE;
+						if (N[0] == 'l' && N[1] == 'o' && N[2] == 'd' && N[3] == '\\') bLOD = TRUE;
+
+						// load surface if it has an alpha channel or has "implicit lighting" flag
+						BT.dwWidth = BT.THM.width;
+						BT.dwHeight = BT.THM.height;
+						BT.bHasAlpha = BT.THM.HasAlphaChannel();
+						BT.pSurface.Clear();
+						BT.THM.SetHasSurface(FALSE);
+						if (!bLOD)
+						{
+							if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted))
+							{
+								clMsg("- loading: %s", N);
+								string_path name;
+								R_ASSERT2(Surface_Detect(name, N), "Can't load surface");
+								R_ASSERT2(BT.pSurface.LoadFromFile(name), "Can't load surface");
+								BT.pSurface.ClearMipLevels();
+								BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
+								BT.pSurface.SwapRB();
+								BT.THM.SetHasSurface(TRUE);
+								if ((BT.pSurface.GetSize().x != BT.dwWidth) || (BT.pSurface.GetSize().y != BT.dwHeight))
+								{
+									Msg("! THM doesn't correspond to the texture: %dx%d -> %dx%d", BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y);
+
+									BT.dwWidth = BT.pSurface.GetSize().x;
+									BT.dwHeight = BT.pSurface.GetSize().y;;
+								}
+
+								BT.Vflip();
+							}
+							else {
+								// Free surface memory
+							}
 						}
 					}
 				}

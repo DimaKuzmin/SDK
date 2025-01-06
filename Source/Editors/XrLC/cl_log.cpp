@@ -98,8 +98,6 @@ void __cdecl StatusNoMSG(const char* format, ...)
 	va_start(mark, format);
 	vsprintf(status, format, mark);
 	bStatusChange = TRUE;
-
-	 
  	csLog.Leave();
 }
 
@@ -129,12 +127,6 @@ bool phase_inited = false;
  
 void Phase			(const char *phase_name)
 {
-	// while (!(hwPhaseTime && hwStage))
-	//	Sleep(1);
-
-
-
-
 	csLog.Enter			();
 	char	tbuf[512];
 	bPhaseChange = TRUE;
@@ -240,6 +232,8 @@ void logThread(void *dummy)
 				const char *S = *(*LogFile)[LogSize];
 				if (0==S)
 					S = "";
+				if (LoggerCL != 0)
+					LoggerCL->updateLog(S);
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
 			}
 

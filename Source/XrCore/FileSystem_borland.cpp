@@ -37,6 +37,22 @@ bool EFS_Utils::GetOpenName(HWND hWnd,LPCSTR initial, xr_string& buffer, bool bM
 	return bRes;
 }
 
+bool EFS_Utils::GetOpenNameNoExt(HWND hWnd, LPCSTR initial, xr_string& buffer)
+{
+	bool bMulti = false;
+	LPCSTR offset = 0;
+	int start_flt_ext = -1;
+
+	char			buf[255 * 255]; //max files to select
+	xr_strcpy(buf, buffer.c_str());
+	bool bRes = GetOpenNameInternal(hWnd, initial, buf, sizeof(buf), bMulti, offset, start_flt_ext, true);
+
+	if (bRes)
+		buffer = (char*)buf;
+
+	return bRes;
+}
+
 bool EFS_Utils::GetOpenNameMulty(HWND hWnd, LPCSTR initial, xr_string& path, xr_vector<xr_string>& files, LPCSTR offset, int start_flt_ext)
 { 
 	bool bRes		= GetOpenNameInternalMulty(hWnd, initial, path, files, offset, start_flt_ext);

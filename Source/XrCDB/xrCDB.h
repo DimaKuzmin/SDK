@@ -41,9 +41,9 @@ struct OpcodeArgs
  	bool OccludeHas = false;
 
 	float energy;
+	u32 HitsCount = 0;
 
-	//int count = 0;
-	void * MDL;
+ 	void * MDL;
 	void * skip;
 	void * Light;
 };

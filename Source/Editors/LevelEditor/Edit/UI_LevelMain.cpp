@@ -951,7 +951,7 @@ void CLevelMain::RegisterCommands()
 	REGISTER_CMD_S	    (COMMAND_SCENE_HIGHLIGHT_TEXTURE,	CommandSceneHighlightTexture);
 	REGISTER_CMD_SE	    (COMMAND_OPTIONS,              		"Scene\\Options",		        CommandOptions,false);
 	REGISTER_CMD_SE	    (COMMAND_BUILD,              		"Compile\\Build",		        CommandBuild,false);
-    REGISTER_CMD_SE     (COMMAND_BUILD_FULL,                "Compile\\Build + PORTALS",     CommandBuild_Portals, false);
+//    REGISTER_CMD_SE     (COMMAND_BUILD_FULL,                "Compile\\Build + PORTALS",     CommandBuild_Portals, false);
 
     REGISTER_CMD_SE     (COMMAND_MAKE_SPAWN,                "Compile\\Make level.spawn",    CommandMakeSpawn, false);
     REGISTER_CMD_SE	    (COMMAND_MAKE_GAME,              	"Compile\\Make Game",	        CommandMakeGame,false);
