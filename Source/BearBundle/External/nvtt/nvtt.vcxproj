@@ -635,7 +635,6 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>.;$(External)Public\Nvtt;$(External)Public\Nvtt\nvcore;$(External)Public\Nvtt\nvimage;$(External)Public\Nvtt\nvmath;$(External)Public\Nvtt\nvthread;$(External)Public\Nvtt\nvtt;$(External)Public\Nvtt\squish;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

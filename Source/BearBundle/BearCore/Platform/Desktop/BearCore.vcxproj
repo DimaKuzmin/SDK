@@ -549,7 +549,6 @@
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>DEVELOPER_VERSION;NDEBUG;BEARCORE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>BearCore.hpp</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..;.;$(External)zlib\include;$(External)lzo\include;$(External)tinyxml\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
