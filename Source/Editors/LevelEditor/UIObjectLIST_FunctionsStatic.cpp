@@ -2,6 +2,9 @@
 #include "UI/UIObjectList.h"
 #include "SceneObject.h"
  
+#include "../../XrECore/Editor/Library.h"
+#include "../XrECore/Editor/EThumbnail.h"
+
 void UIObjectList::POS_ObjectsToLTX()
 {
 	xr_string file;
@@ -45,37 +48,41 @@ void UIObjectList::CopyTempLODforObjects()
 
 	for (auto obj : list)
 	{
-		CSceneObject* object_scene = (CSceneObject*)(obj);
+		CSceneObject* object_scene = smart_cast<CSceneObject*>(obj);
 		if (object_scene && object_scene->IsMUStatic())
 		{
 			CEditableObject* E = object_scene->GetReference();
 			xr_string lod_name = E->GetLODTextureName();
-			xr_string l_name = lod_name.c_str();
-
+			  
 			string_path fn, fn_nm;
 			int age, age_nm;
 
-			FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
- 			FS.update_path(fn_nm, _game_textures_, EFS.ChangeFileExt(l_name, ".dds").c_str());
+			FS.update_path(fn, _game_textures_, EFS.ChangeFileExt(lod_name, ".dds").c_str());
+			lod_name += "_nm";
+ 			FS.update_path(fn_nm, _game_textures_, EFS.ChangeFileExt(lod_name, ".dds").c_str());
 
-			if (!FS.exist(fn))
+			if (!FS.exist(fn) || !FS.exist(fn_nm))
 			{
 				string_path file;
 				FS.update_path(file, _import_, "TEMP_LODS\\lod_01.dds");
 				if (FS.exist(file))
 					FS.file_copy(file, fn);
- 				l_name += "_nm";
-				Msg("Copy LOD: %s to fn", file, fn);
+				else
+					Msg("Strange Cant Find : %s", file);
+				
+				Msg("Copy LOD: %s to fn: %s", file, fn);
  				
 				FS.update_path(file, _import_, "TEMP_LODS\\lod_01_nm.dds");
 				if (FS.exist(file))
 					FS.file_copy(file, fn_nm);
+				else
+					Msg("Strange Cant Find : %s", file);
 
-				Msg("Copy LOD: %s to fn", file, fn);
+				Msg("Copy LOD: %s to fn: %s", file, fn_nm);
 			}
 			else
 			{
-				Msg("File is Exist: %s", fn);
+			//	Msg("File is Exist: %s", fn);
 			}
 
 		}
@@ -97,7 +104,7 @@ void UIObjectList::SaveSelectedObjects()
 		{
 			CSceneObject* object_scene = smart_cast<CSceneObject*>(obj);
 
-			if (obj->Selected() && object_scene)
+			if (object_scene && obj->Selected())
 			{
 				write->open_chunk(EOBJ_CHUNK_OBJECT_BODY);
 				CEditableObject* edit_obj = object_scene->GetReference();
@@ -114,5 +121,210 @@ void UIObjectList::SaveSelectedObjects()
 
 
 		FS.w_close(write);
+	}
+}
+
+void SaveFileDDS(xr_string& path, xr_string& to, char* prefix)
+{
+	xr_string pstr = path;
+	pstr += prefix;
+	pstr += ".dds";
+
+	xr_string pexp = to;
+	pexp += prefix;
+	pexp += ".dds";
+
+	if (FS.exist(pstr.c_str()))
+	{
+		FS.file_copy(pstr.c_str(), pexp.c_str());
+		// Msg("From: %s, to Save: %s", pstr.c_str(), pexp.c_str());
+	}
+	else
+	{
+		Msg("Can't Extract: %s", pstr.c_str());
+	}
+}
+
+void SaveFileTHM(xr_string& path, xr_string& to, char* prefix)
+{
+	xr_string pstr = path;
+	pstr += prefix;
+	pstr += ".thm";
+
+	xr_string pexp = to;
+	pexp += prefix;
+	pexp += ".thm";
+
+
+	if (FS.exist(pstr.c_str()))
+	{
+		FS.file_copy(pstr.c_str(), pexp.c_str());
+		// Msg("Save: %s", pexp.c_str());
+	}
+	else
+	{
+		Msg("Can't Extract: %s", pstr.c_str());
+	}
+
+}
+
+
+void ConstuctPath(xr_string& surface, xr_string& path_in, xr_string& path_out)
+{
+	string_path path, exportPath;
+	FS.update_path(path, _game_textures_, "");
+	FS.update_path(exportPath, _export_, "");
+ 
+	path_in = path;
+	path_in += surface.c_str();
+
+	path_out = exportPath;
+	path_out += "textures\\";
+	path_out += surface.c_str();
+
+}
+
+void UIObjectList::ExportUsedTextures()
+{
+	Msg("ExportUsedTextures");
+
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+	ObjectList& list = ot->GetObjects();
+
+	xr_vector<xr_string> surface_textures;
+
+	for (auto obj : list)
+	{
+		CSceneObject* sobject = smart_cast<CSceneObject*>(obj);
+		if (sobject)
+		{
+ 			for (auto surface : sobject->m_Surfaces)
+			{
+				//Msg("Surf [%d]: %s", ID, surface->m_Texture.c_str());
+				auto it = std::find_if(surface_textures.begin(), surface_textures.end(), [&](xr_string& s) {
+					return s._Equal(surface->m_Texture.c_str()); 
+					});
+				if (it == surface_textures.end())
+				{
+					xr_string text = surface->m_Texture.c_str();
+					
+					surface_textures.push_back(text);
+				}
+			}
+ 
+		}
+	}
+
+
+	auto ParseBumpFromTexture = [&](xr_string& InFileThm, xr_string& game_textures, xr_string& out_folder)
+		{
+
+			ETextureThumbnail* pThmTexture = (ETextureThumbnail*) ImageLib.CreateThumbnail(InFileThm.c_str(), ECustomThumbnail::ETTexture);
+			pThmTexture->Load(InFileThm.c_str(), "");
+
+			if (pThmTexture != nullptr)
+			{
+				shared_str Temp = *pThmTexture->_Format().bump_name;
+
+				if (Temp.size() > 0)
+				{
+					{
+						xr_string BumpTextureIn = game_textures + *Temp + ".dds";
+						xr_string BumpTextureOut = out_folder + "\\" + *Temp + ".dds";
+						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+
+						xr_string BumpTextureIn2 = game_textures + *Temp + "#.dds";
+						xr_string BumpTextureOut2 = out_folder + "\\" + *Temp + "#.dds";
+						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
+					}
+
+					{
+						xr_string BumpTextureIn = game_textures + *Temp + ".thm";
+						xr_string BumpTextureOut = out_folder + "\\" + *Temp + ".thm";
+						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+
+						xr_string BumpTextureIn2 = game_textures + *Temp + "#.thm";
+						xr_string BumpTextureOut2 = out_folder + "\\" + *Temp + "#.thm";
+						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
+					}
+				}
+			}
+		};
+
+	auto ConstuctGamePathes = [&](xr_string& path_in, xr_string& path_out)
+		{
+			string_path path, exportPath;
+			FS.update_path(path, _game_textures_, "");
+			FS.update_path(exportPath, _export_, "");
+
+			path_in = path;
+			path_out = exportPath;
+			path_out += "textures\\";
+		};
+
+
+	int ID = 0;
+	for (auto surface : surface_textures)
+	{
+		xr_string game_textures, game_export;
+		ConstuctGamePathes(game_textures, game_export);
+
+		xr_string path_in, path_to;
+ 		ConstuctPath(surface, path_in, path_to);
+
+		// DDS
+		SaveFileDDS(path_in, path_to, "");
+		// THM
+		SaveFileTHM(path_in, path_to, "");
+
+		ParseBumpFromTexture(surface, game_textures, game_export);
+	
+
+ 		// // BUMP
+		// SaveFileDDS(path_in, path_to, "_bump");
+ 		// // BUMP#
+		// SaveFileDDS(path_in, path_to, "_bump#");
+		
+		// // BUMP
+		// SaveFileTHM(path_in, path_to, "_bump");
+		// // BUMP#
+		// SaveFileTHM(path_in, path_to, "_bump#");
+		
+		ID++;
+	}
+}
+
+
+void UIObjectList::ExportUsedObjects()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+	ObjectList& list = ot->GetObjects();
+
+	xr_map<shared_str, int> reference;
+	for (auto obj : list)
+	{
+		reference[obj->RefName()]++;
+	}
+
+	for (auto obj : reference)
+	{
+		string_path path = { 0 };;
+		FS.update_path(path, _objects_, obj.first.c_str());
+		xr_strcat(path, ".object");
+
+		string_path path_E = {0};
+		FS.update_path(path_E, _export_, "");
+	
+		xr_string tmp;
+		tmp += path_E;
+		tmp += "objects\\";
+		tmp += obj.first.c_str();
+		tmp += ".object";		 
+		
+		if (FS.exist(path))
+		{
+			FS.file_copy(path, tmp.c_str());
+			Msg("Ref Copy: %s to %s", path, path_E);
+		}
 	}
 }

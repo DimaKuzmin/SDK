@@ -128,6 +128,7 @@ public:
 	void POS_ObjectsToLTX();
 	void CopyTempLODforObjects();
 	void SaveSelectedObjects();
+	void ExportUsedTextures();
 	void ExportUsedObjects();
 
 	// Export Functions , Import

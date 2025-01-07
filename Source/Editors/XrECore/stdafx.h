@@ -125,7 +125,7 @@ struct astr_pred
 #define _omotions_			"$omotions$"
 #define _smotion_			"$smotion$"
 #define _detail_objects_	"$detail_objects$"
-#define _export_objects_	"$export_objects$"
+
 
 #define		TEX_POINT_ATT	"internal\\internal_light_attpoint"
 #define		TEX_SPOT_ATT	"internal\\internal_light_attclip"

@@ -92,10 +92,12 @@ void UIObjectList::UpdateDefaultMeny()
 	{
 		ImGui::Text("SCENE: ");
 		
-		if (ImGui::Button("Export RawdataObjects", ImVec2(-1, 0)))
+		if (ImGui::Button("Export Used Objects", ImVec2(-1, 0)))
 			ExportUsedObjects();
+		if (ImGui::Button("Export Used Textures", ImVec2(-1, 0)))
+			ExportUsedTextures();
 
-		if (ImGui::Button("temp lods", ImVec2(-1, 0)))
+		if (ImGui::Button("Create Temp Loads (for unexist)", ImVec2(-1, 0)))
 			CopyTempLODforObjects();
 
 		ImGui::Checkbox("use_global_pos", &use_global_position);
