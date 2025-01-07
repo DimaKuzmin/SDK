@@ -68,7 +68,7 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 	}
 }
 
-void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
+void ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
 {
 	try 
 	{
@@ -185,7 +185,7 @@ void CBuild::Flex2OGF()
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face
-			ThreadOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
+			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
  
 			mtx.lock();
 			g_tree.push_back(pOGF);
