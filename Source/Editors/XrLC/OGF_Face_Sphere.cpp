@@ -26,7 +26,7 @@ BOOL				SphereValid	(xr_vector<Fvector>& geom, Fsphere& test)
 void				OGF_Base::CalcBounds	() 
 {
 	// get geometry
-	static xr_vector<Fvector>		V;
+	xr_vector<Fvector>		V;
 	xr_vector<Fvector>::iterator	I;
 	V.clear						();
 	V.reserve					(4096);
@@ -42,7 +42,8 @@ void				OGF_Base::CalcBounds	()
 	// 2: calc ordinary algorithm (2nd)
 	Fsphere	S2;
 	bbox.invalidate				();
-	for (I=V.begin(); I!=V.end(); I++)	bbox.modify(*I);
+	for (I=V.begin(); I!=V.end(); I++)	
+		bbox.modify(*I);
 	bbox.grow					(EPS_L);
 	bbox.getsphere				(S2.P,S2.R);
 	S2.R = -1;
