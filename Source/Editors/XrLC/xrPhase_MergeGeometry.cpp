@@ -623,7 +623,7 @@ void CBuild::xrPhase_MergeGeometry()
 		// Clear Data
 		thread_faces.clear();
 		
-		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { return ptr->empty(); }), g_XSplit.end());
+		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { if (ptr == nullptr) return true; return ptr->empty(); }), g_XSplit.end());
 
 	}
 	else
