@@ -14,7 +14,10 @@ void CBuild::validate_splits			()
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
-		if ((*it)->size() > c_SS_HighVertLimit*2)	
+
+	 
+
+		if ((*it)->size() > c_SS_HighVertLimit*2 || (*it)->size() == 0)
 		{
 			Errors++;
 		//	clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
@@ -64,10 +67,6 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 		OGF_AddFace( ogf, *FF, _tc_ );
 	}
 }
-
-xr_vector<int> thread_list;
-xrCriticalSection csOGF;
- 
 
 void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
 {
@@ -130,28 +129,20 @@ void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF
 	{
 		clMsg("* ERROR: Flex2OGF, 1st part, model# %d", MODEL_ID);
 	}
-	
-// 	StatusNoMSG("ModelID: %d", MODEL_ID);
-
+ 
 	try
 	{
-		
- 		clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+ 		//clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->Optimize();
  		
-		clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+		//clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
 		pOGF->CalcBounds();
- 	
-		csOGF.Enter();
- 	
-		clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
 
-		clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		pOGF->Stripify();
-
-		csOGF.Leave();
-		 
+		// clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+		// pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
+		// 
+		// clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+		// pOGF->Stripify(); 
 	}
 	catch (...) 
 	{
@@ -159,35 +150,11 @@ void ThreadOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF
 	}
  
 };
-
-void MainThreadOGF(CBuild* build, int thID, bool use_mt_progresive)
-{
-	for (;;)
-	{	 
-		csOGF.Enter();
-
-		if (thread_list.empty())
-		{
-			csOGF.Leave();
-			break;
-		}
-
-		int id = thread_list.back();
-		thread_list.pop_back();
-		csOGF.Leave();	
-
-		OGF* pOGF = xr_new<OGF>();
-		Face* F = g_XSplit[id]->front();			// first face
-		b_material* M = &(build->materials()[F->dwMaterial]);	// and it's material
-
-		ThreadOgf(id, g_XSplit[id], F, M, pOGF, build);
-		
-		g_tree.push_back(pOGF);
- 	}
-};
+ 
 
 #include <thread>
-    
+#include "ppl.h"
+
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
@@ -202,15 +169,28 @@ void CBuild::Flex2OGF()
 	g_tree.reserve	(4096);
 	Status("Converting to OGF size [%d]", g_XSplit.size());
 
-
-
-	//for (splitIt it = g_XSplit.begin(); it != g_XSplit.end(); it++)
-	for (int i = 0; i < g_XSplit.size(); i++)
-		thread_list.push_back(i);
- 
+	int ID = 0;
+	for (auto& SPLIT : g_XSplit)
 	{
-	  	MainThreadOGF(this, 0, false);
+		if (SPLIT == nullptr)
+		{
+			Msg("Problem In SPLIT: %d", ID);
+		}
+		ID++;
 	}
-
+	 
+	std::mutex mtx;
+ 	concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
+	{
+			OGF* pOGF = xr_new<OGF>();
+			auto& SPLIT = g_XSplit[ID];
+			Face* Face = SPLIT->front();			// first face
+			ThreadOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
+ 
+			mtx.lock();
+			g_tree.push_back(pOGF);
+			mtx.unlock();
+	});
+ 
 	g_XSplit.clear_and_free();
 }
