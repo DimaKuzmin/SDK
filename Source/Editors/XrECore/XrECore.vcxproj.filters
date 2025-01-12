@@ -13,6 +13,9 @@
     <Filter Include="Render">
       <UniqueIdentifier>{593c3986-0d03-46a3-af38-f8fdcf08f115}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Optick">
+      <UniqueIdentifier>{83dc0edb-940a-49e5-990a-c4da4d5f2994}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WildMagic\WmlMath.cpp">
