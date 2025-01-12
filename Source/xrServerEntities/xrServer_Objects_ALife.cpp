@@ -128,7 +128,8 @@ void	SFillPropData::load			()
     // location type
     LPCSTR					N,V;
     u32 					k;
-	for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i){
+	for (int i=0; i<GameGraph::LOCATION_TYPE_COUNT; ++i)
+	{
         VERIFY				(locations[i].empty());
         string256			caSection, T;
         strconcat			(sizeof(caSection),caSection,SECTION_HEADER,itoa(i,T,10));
@@ -137,15 +138,25 @@ void	SFillPropData::load			()
             locations[i].push_back	(xr_rtoken(V,atoi(N)));
     }
 
-     for (k = 0; Ini->r_line("graph_points_draw_color_palette",k,&N,&V); ++k)
+	if (Ini->section_exist("graph_points_draw_color_palette"))
 	{
-		u32 color;
-		if(1==sscanf(V,"%x", &color))
+		for (k = 0; Ini->r_line("graph_points_draw_color_palette", k, &N, &V); ++k)
 		{
-			location_colors[N]  = color;
-		}else
-			Msg("! invalid record format in [graph_points_draw_color_palette] %s=%s",N,V);
+			u32 color;
+			if (1 == sscanf(V, "%x", &color))
+			{
+				location_colors[N] = color;
+			}
+			else
+				Msg("! invalid record format in [graph_points_draw_color_palette] %s=%s", N, V);
+		}
 	}
+	else 
+	{
+		Msg("~~~ ERROR CANT FIND GRAPH POINT DRAW COLLOR !!! in game.ltx");
+	}
+
+
     
 	// level names/ids
     VERIFY					(level_ids.empty());

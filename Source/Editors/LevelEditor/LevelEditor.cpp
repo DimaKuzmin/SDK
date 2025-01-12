@@ -8,11 +8,16 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     if(!IsDebuggerPresent())
         Debug._initialize(false);
 
-   
+
+    OPTICK_APP("Level Editor");
+    OPTICK_START_THREAD("MAIN_THREAD");
+
+
     Msg("CMD START: %s", pCmdLine);
     
     Core._initialize("Actor", ELogCallback, 1, "fs.ltx", true);
     XrSE_Factory::initialize();
+
     Tools = xr_new<CLevelTool>();
     LTools = (CLevelTool*)Tools;
 
@@ -27,9 +32,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     UIMainForm* MainForm = xr_new< UIMainForm>();
     ::MainForm = MainForm;
     UI->Push(MainForm, false);
+   
     while (MainForm->Frame())
     {
     }
+
+    OPTICK_STOP_THREAD();
     xr_delete(MainForm);
     XrSE_Factory::destroy();
     Core._destroy();

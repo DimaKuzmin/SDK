@@ -83,13 +83,15 @@ EScene::EScene()
    // mapRenderObjects.init(MAX_VISUALS);
 // 	Build options
     m_SummaryInfo	= 0;
-    //ClearSnapList	(false);
-//   g_frmConflictLoadObject 		= xr_new<TfrmAppendObjectInfo>((TComponent*)NULL);
+
+    // 
 
 }
 
 EScene::~EScene()
 {
+  
+
 	//xr_delete(g_frmConflictLoadObject);
 	VERIFY( m_Valid == false );
     m_ESO_SnapObjects.clear	();
@@ -211,18 +213,28 @@ int EScene::MultiRenameObjects()
 }
 
 void EScene::OnFrame( float dT )
-{
-	if( !valid() ) return;
-	if( locked() ) return;
+{    
+    OPTICK_FRAME("EDITOR FRAME");
+
+    PROFILE_EDITOR("EDITOR FRAME")
+
+	if( !valid() )
+        return;
+	if( locked() ) 
+        return;
 
     SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
     SceneToolsMapPairIt t_end 	= m_SceneTools.end();
     for (; t_it!=t_end; t_it++)
         if (t_it->second && t_it->second->IsEnabled() && t_it->second->IsVisible())
         	t_it->second->OnFrame();
+    
+    PROFILE_EDITOR_STOP
 
     if(m_RTFlags.test(flUpdateSnapList) )
 		UpdateSnapListReal();    
+
+  
 }
 
 void EScene::Reset()
@@ -491,12 +503,16 @@ bool EScene::Validate(bool bNeedOkMsg, bool bTestPortal, bool bTestHOM, bool bTe
         }
     }
 
+    CTimer t; t.Start();
+
     if (FindDuplicateName())
     {
     	ELog.Msg(mtError,"*ERROR: Found duplicate object name.");
         bRes = false;
     }
     
+    Msg("Finding Dublicate Time: %f", t.GetElapsed_ms_float());
+
     if (bTestShaderCompatible)
     {
     	bool res = true;

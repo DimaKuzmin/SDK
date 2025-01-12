@@ -16,6 +16,16 @@
 #define         R_R2    2
 #define         RENDER  R_R1
 
+#include "optick/optick.h"
+#pragma comment(lib, "OptickCore.lib")
+
+#define PROFILE_ECAPTURE_START OPTICK_START_CAPTURE
+#define PROFILE_ECAPTURE_STOP  OPTICK_STOP_CAPTURE 
+#define PROFILE_ECAPTURE_SAVE (a) OPTICK_SAVE_CAPTURE(a)
+
+#define PROFILE_EDITOR(a) OPTICK_EVENT(a)
+#define PROFILE_EDITOR_STOP
+
 // Std C++ headers
 
 // iseful macros

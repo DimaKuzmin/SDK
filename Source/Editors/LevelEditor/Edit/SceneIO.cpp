@@ -879,7 +879,10 @@ bool EScene::ReadObjectsStream(IReader& F, u32 chunk_id, TAppendObject on_append
             
             string128 tmp;
             sprintf(tmp, "objects : %u / %u", ID, count);
-            pb->Info(tmp);
+            if (pb)
+                pb->Info(tmp);
+            else
+                Msg(tmp);
 
         }
         OBJ->close();

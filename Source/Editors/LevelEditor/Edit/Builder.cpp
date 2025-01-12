@@ -86,21 +86,51 @@ BOOL SceneBuilder::Compile(bool b_selected_only)
             
             // fill simple hemi
             simple_hemi.clear	();
+
+            CTimer time__;
+            time__.Start();
 	        xrHemisphereBuild	(1,2.f,simple_hemi_callback,&simple_hemi);
+
+            Msg("HemiBuild: %u", time__.GetElapsed_ms());  time__.Start();
         	// build
             VERIFY_COMPILE		(PreparePath(),				"Failed to prepare level path","");
+            Msg("PreparePath: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(PrepareFolders(),			"Failed to prepare level folders","");
+            Msg("PrepareFolders: %u", time__.GetElapsed_ms()); time__.Start();
+
+
             VERIFY_COMPILE		(EvictResource(),	  		"Failed to evict resource","");
+            Msg("EvictResource: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(GetBounding(),				"Failed to acquire level bounding volume","");
+            Msg("GetBounding: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(RenumerateSectors(), 		"Failed to renumerate sectors","");
+            Msg("RenumerateSectors: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(CompileStatic(false),	  		"Failed static remote build","");
+            Msg("CompileStatic: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(EvictResource(),	  		"Failed to evict resource","");
+            Msg("EvictResource: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(BuildLTX(),		  		"Failed to build level description","");
+           Msg("BuildLTX: %u", time__.GetElapsed_ms()); time__.Start();
+
             VERIFY_COMPILE		(BuildGame(),		  		"Failed to build game","");
+            Msg("BuildGame: %u", time__.GetElapsed_ms());   time__.Start();
+
             VERIFY_COMPILE		(BuildSceneStat(),			"Failed to build scene statistic","");
+            Msg("BuildSceneStat: %u", time__.GetElapsed_ms());  time__.Start();
+
             BuildHOMModel		();
             BuildSOMModel		();
-    	    // build tools
+
+            Msg("Build HOM-SOM: %u", time__.GetElapsed_ms());  time__.Start();
+    	    
+            
+            // build tools
             SceneToolsMapPairIt _I 	= Scene->FirstTool();
             SceneToolsMapPairIt _E	= Scene->LastTool();
             for (; _I!=_E; ++_I)

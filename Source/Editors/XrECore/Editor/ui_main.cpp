@@ -493,15 +493,15 @@ void TUI::OnFrame()
 	EDevice.FrameMove	();
     SndLib->OnFrame		();
     // tools on frame
-    if (m_Flags.is(flUpdateScene)) RealUpdateScene();
+    if (m_Flags.is(flUpdateScene)) 
+        RealUpdateScene();
+
     Tools->OnFrame		();
+
 	// show hint
     ShowObjectHint		();
 	ResetBreak			();
-#if 0
-	// check mail
-    CheckMailslot		();
-#endif
+ 
     // Progress
     ProgressDraw		();
 }

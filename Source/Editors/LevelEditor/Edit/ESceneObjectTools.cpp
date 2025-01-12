@@ -48,21 +48,27 @@ xr_vector<DATA_LOD> allready_textures;
 
 bool ESceneObjectTool::Validate(bool full_test)
 {
-
     allready_textures.clear();
 
     bool bRes = inherited::Validate(full_test);
    
-     Msg("SceneObject PRE CHECK RES: %d", bRes);
+    Msg("SceneObject PRE CHECK RES: %d", bRes);
     
     // verify position & refs duplicate
     CSceneObject *A, *B;
 
     int LOD_ID = 0;
+
+    CTimer tTicks;
+    tTicks.Start();
+
+
     for (ObjectIt a_it=m_Objects.begin(); a_it!=m_Objects.end(); a_it++)
     {
         A = (CSceneObject*)(*a_it);
-	    for (ObjectIt b_it=m_Objects.begin(); b_it!=m_Objects.end(); b_it++)
+
+
+        for (ObjectIt b_it=m_Objects.begin(); b_it!=m_Objects.end(); b_it++)
         {
             B = (CSceneObject*)(*b_it);
         	if (A==B) continue;
@@ -74,6 +80,7 @@ bool ESceneObjectTool::Validate(bool full_test)
                 }
             }
         }
+        // Msg("Dublicate Time : %u", t.GetElapsed_ms());
 	    // validate lods
  
         if (full_test&&A->IsMUStatic())
@@ -83,8 +90,6 @@ bool ESceneObjectTool::Validate(bool full_test)
             xr_string l_name	= lod_name.c_str();
             string_path fn;
             int age,age_nm;
-//.          FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
-
             FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
             age					= FS.get_file_age(fn);
             if (age == -1)
@@ -128,24 +133,13 @@ bool ESceneObjectTool::Validate(bool full_test)
 
 
             l_name 				+= "_nm";
-//.         FS.update_path		(fn,_textures_,EFS.ChangeFileExt(l_name,".tga").c_str());
             FS.update_path		(fn,_game_textures_,EFS.ChangeFileExt(l_name,".dds").c_str());
             age_nm				= FS.get_file_age(fn);
             if(age_nm==-1)    
                 Msg("!There is no texture '%s'", fn);
 
             if(age_nm==-1 || age==-1)
-               bRes 			= false;
-
-/*
-            if ((age!=E->Version()) || (age_nm!=E->Version()) )
-            {
-                Msg				("!Invalid LOD texture version: '%s'",E->GetName());
-                Msg             ("tex=%d obj=%d", age, E->Version());
-                Msg             ("tex=%d obj=%d", age_nm, E->Version());
-                bRes 			= false;
-            }
-*/            
+               bRes 			= false;          
         }
     }
 
@@ -156,7 +150,7 @@ bool ESceneObjectTool::Validate(bool full_test)
         Msg("!!! Cant Load LOD Texture: ID[%d], NAME: %s : N: %d", ID, tex.lod_name.c_str(), tex.count);
     }
 
-    Msg("SceneObject RES: %d", bRes);
+    Msg("SceneObject RES: %d, TimeElapsed: %d", bRes, tTicks.GetElapsed_ms());
     
     return bRes;
 }
@@ -239,7 +233,10 @@ bool ESceneObjectTool::GetBox		(Fbox& bb)
 void ESceneObjectTool::OnFrame		()
 {
 	inherited::OnFrame				();
-	if (m_Flags.is(flAppendRandomUpdateProps)){
+	
+    
+    if (m_Flags.is(flAppendRandomUpdateProps))
+    {
     	m_Flags.set					(flAppendRandomUpdateProps,FALSE);
         FillAppendRandomPropertiesBegin	(true);
     }

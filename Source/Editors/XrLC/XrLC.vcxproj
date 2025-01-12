@@ -467,6 +467,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3dx9.lib;Winmm.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\embree4.dll"  "$(OutDir)"
+xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">
     <ClCompile>
