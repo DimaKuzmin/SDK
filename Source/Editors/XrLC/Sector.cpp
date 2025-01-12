@@ -36,7 +36,8 @@ IC BOOL	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 	// OK
 	return TRUE;
 }
-
+#include <atomic>
+#include "ppl.h"
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
@@ -82,22 +83,45 @@ void CSector::BuildHierrarhy()
 				int		best_id = -1;
 				float	best_volume = flt_max;
 
-				for (int J = 0; J < iSize; J++)
-				{
-					OGF_Base* candidate = g_tree[J];
-					if (candidate->bConnected)			continue;
-					if (candidate->Sector != SelfID)	continue;
+				// TODO se7kills (ADD MT )
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
+#pragma  todo("se7kills Need MT Sectors")
 
-					float V;
-					if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
+				std::atomic<bool> isFinded;
+ 
+				//for (int J = 0; J < iSize; J++)										// NEED MT // se7kills
+				
+				concurrency::parallel_for(size_t(0), size_t(iSize), 
+					
+				[&](size_t J) 
 					{
-						if (V < best_volume)
+						if (isFinded.load())
+							return;
+
+						OGF_Base* candidate = g_tree[J];
+						if (candidate->bConnected)			return;
+						if (candidate->Sector != SelfID)	return;
+
+						float V;
+						if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
 						{
-							best_volume = V;
-							best_id = J;
+							if (V < best_volume)
+							{
+								isFinded = true;
+								best_volume = V;
+								best_id = J;
+							}
 						}
 					}
-				}
+				);
+				
 
 				// Analyze
 				if (best_id < 0)	

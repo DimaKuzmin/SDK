@@ -244,9 +244,6 @@ BOOL EScene::LoadLevelPartLTX(ESceneToolBase* M, LPCSTR mn)
         if (!b_is_inifile)
             return false;
 
-        //if(!b_is_inifile)
-        //    return LoadLevelPart(M, map_name);
-
         M->m_EditFlags.set(ESceneToolBase::flReadonly,FALSE);
 
         CInifile			ini(map_name);
@@ -853,7 +850,9 @@ bool EScene::ReadObjectsStream(IReader& F, u32 chunk_id, TAppendObject on_append
     if (OBJ)
     {
         IReader* O   	= OBJ->open_chunk(0);
-        for (int count=1; O; ++count)
+
+        int ID = 0;
+        for (int count=1; O; ++count, ++ID)
         {
             CCustomObject* obj	=NULL;
             if (ReadObjectStream(*O, obj))
@@ -862,39 +861,11 @@ bool EScene::ReadObjectsStream(IReader& F, u32 chunk_id, TAppendObject on_append
                 CCustomObject* existing = FindObjectByName(obj_name,obj->FClassID);
                 if(existing)
                 {
-                	/*if(g_frmConflictLoadObject->m_result!=2 && g_frmConflictLoadObject->m_result!=4 && g_frmConflictLoadObject->m_result!=6)
-                    {
-                        g_frmConflictLoadObject->m_existing_object 	= existing;
-                        g_frmConflictLoadObject->m_new_object 		= obj;
-                        g_frmConflictLoadObject->Prepare			();
-                        g_frmConflictLoadObject->ShowModal			();
-                    }
-                    switch(g_frmConflictLoadObject->m_result)
-                    {
-                    	case 1: //Overwrite
-                    	case 2: //Overwrite All
-                        {
-                           bool res = RemoveObject		(existing, true, true);
-							if(!res)
-                            	Msg("! RemoveObject [%s] failed", existing->Name);
-                             else
-                             	xr_delete(existing);
-                        }break;
-                    	case 3: //Insert new
-                    	case 4: //Insert new All*/
-                        
-                            string256 				buf;
-    						GenObjectName			(obj->FClassID, buf, obj->GetName());
-    						obj->SetName(buf);
-                        /*}break;
-                    	case 0: //Cancel
-                    	case 5: //Skip
-                    	case 6: //Skip All
-                        {
-                        	xr_delete(obj);
-                        }break;
-                    }*/
+                    string256 				buf;
+    				GenObjectName			(obj->FClassID, buf, obj->GetName());
+    				obj->SetName(buf);
                 }
+
             	if (obj && !on_append(obj))
                 	xr_delete(obj);}
             else
@@ -904,7 +875,12 @@ bool EScene::ReadObjectsStream(IReader& F, u32 chunk_id, TAppendObject on_append
             O 			= OBJ->open_chunk(count);
 
             if (pb)
-            pb->Inc();
+                pb->Inc();
+            
+            string128 tmp;
+            sprintf(tmp, "objects : %u / %u", ID, count);
+            pb->Info(tmp);
+
         }
         OBJ->close();
     }

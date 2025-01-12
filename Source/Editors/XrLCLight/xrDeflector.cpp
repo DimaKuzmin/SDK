@@ -272,7 +272,7 @@ BOOL CDeflector::OA_Place	(Face *owner)
 	VERIFY( inlc_global_data() );
 	if (cosa<_cos(deg2rad(inlc_global_data()->g_params().m_sm_angle+1)))
 		return FALSE;
-
+ 
 	UVtri				T;
 	T.owner				= owner;
 	owner->pDeflector	= this;
@@ -368,7 +368,7 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 }
 
 
-void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
+void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
 {
 	try 
 	{
@@ -390,7 +390,7 @@ void CDeflector::L_Calculate(int th, CDB::COLLIDER* DB, base_lighting* LightsSel
 		R_ASSERT		(lm.width	<= (getLMSIZE() -2 * BORDER));
 		R_ASSERT		(lm.height	<= (getLMSIZE() -2 * BORDER));
 		lm.create		(lm.width,lm.height);
-		L_Direct		(th, DB,LightsSelected,H, use_cpu);
+		L_Direct		(DB, LightsSelected, H, use_cpu);
 	} 
 	catch (...)
 	{

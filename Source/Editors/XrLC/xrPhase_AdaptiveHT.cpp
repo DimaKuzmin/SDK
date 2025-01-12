@@ -124,65 +124,9 @@ void GSaveAsSMF					(LPCSTR fname)
 
 
 xrCriticalSection csAdaptive;
-int id = 0;
-
-xr_vector<int> ThreadPrecalcHemi;
-
+ 
 #include "embree4/rtcore.h"
 #include "../XrLCLight/xrLight_Embree.h"
-
-class CPrecalcBaseHemiThread: 
-public CThread
-{
- 	CDB::COLLIDER	DB;
-	
-public:
-	CPrecalcBaseHemiThread(u32 ID): CThread(ID)  
-	{	
- 
-	}
- 
-	virtual	void Execute()
-	{
-		DB.ray_options	(0);
-
-		RTCRayQueryContext context;
-
-
-		for (;;)
-		{
-			int ID = 0;
-
-			csAdaptive.Enter();
-
-			if (ThreadPrecalcHemi.empty())
-			{
-				csAdaptive.Leave();
-				break;
-			}
-
-			ID = ThreadPrecalcHemi.back();
-			ThreadPrecalcHemi.pop_back();
-			StatusNoMSG("Vertex %d/%d, query: %d", lc_global_data()->g_vertices().size()-ID, lc_global_data()->g_vertices().size(), ThreadPrecalcHemi.size());
-
-			thProgress =  float( (lc_global_data()->g_vertices().size() - ThreadPrecalcHemi.size() ) / lc_global_data()->g_vertices().size() );
-
-			csAdaptive.Leave();
-
-			base_color_c		vC;
- 			vecVertex& verts = lc_global_data()->g_vertices();
- 			Vertex* V = verts[ID];
-			V->normalFromAdj();
-		
-  			LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
-
-			vC.mul(0.5f);
-			V->C._set(vC);
-		}	
-	}
-};
-
-CThreadManager	precalc_base_hemi;
 
 #ifndef DevCPU
 	#include "../XrLCLight/xrHardwareLight.h"
@@ -195,11 +139,10 @@ void SetOpacityRaycastModel();
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 extern void log_vminfo_new(LPCSTR stage);
 
+#include "ppl.h"
+
 void CBuild::xrPhase_AdaptiveHT	()
 {
-	CDB::COLLIDER	DB;
-	DB.ray_options	(0);
-
 	Status			("Tesselating...");
 	
 	if (!build_args->no_optimize)
@@ -212,62 +155,48 @@ void CBuild::xrPhase_AdaptiveHT	()
 		}
 		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
 	}
-
-
-
+	 
 	// Tesselate + calculate
 	Status			("Precalculating...");
 	{
 		mem_Compact					();
- 		// Intel Embree
-		if (build_args->use_embree)
-		{
- 			BuildIntelModel(FALSE);
-			log_vminfo_new("Builded Intel Model");
- 		}
-		else
-		{
-			// Build model
- 			BuildRapid(FALSE);
-			log_vminfo_new("Builded Rapid Model");
-		}
-
-#ifndef DevCPU
-		xrHardwareLight& hw_light = xrHardwareLight::Get();
-
-		if (char* str = strstr(Core.Params, "-hw_light"))
-		{
-			Status("Load GPU Model");
-			hw_light.SetEnabled(true);
-  			int value = 1;
-			if (sscanf(str+9, "%d", &value) == 1)
-				hw_light.setMaxMem(value);
- 	 
-			Status("Setup OptiX scene ... MaxMem: %d", value);
-			hw_light.LoadLevel(lc_global_data()->RCAST_Model(), lc_global_data()->L_static(), lc_global_data()->textures());
-			log_vminfo();
-		}
-		else
-		{
-			hw_light.SetEnabled(false);
-		}
-#endif
- 
+ 		 
+		// Build model
+ 		BuildRapid(FALSE);
+		log_vminfo_new("Builded Rapid Model");
+  
 		// Prepare LIGHT FOR LIGHTING
  		Status("Precalculating : base hemisphere ...");
 		mem_Compact();
 		Light_prepare();
 
 		Status("Start AdaptiveHT");	
- 
-		// calc approximate normals for vertices + base lighting
-		for (int i = 0; i < lc_global_data()->g_vertices().size(); i++)
-			ThreadPrecalcHemi.push_back(i);
+  
+		thread_local CDB::COLLIDER	DB;
+		DB.ray_options(0);
 
-		for (int i = 0; i < build_args->use_threads; i++)
-			precalc_base_hemi.start(xr_new<CPrecalcBaseHemiThread>(i), i);
+		std::atomic<int> Processed;
+ 		 
+		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t ID)
+		{
+			 
+  
+			base_color_c		vC;
+			vecVertex& verts = lc_global_data()->g_vertices();
+			Vertex* V = verts[ID];
+			V->normalFromAdj();
+
+			LightPoint(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, pBuild->L_static(), LP_dont_rgb + LP_dont_sun, 0);
+
+			vC.mul(0.5f);
+			V->C._set(vC);
+
+			Processed.fetch_add(1);
+
+			// if (Processed.load() % 128 == 0)
+			StatusNoMSG("Vertex {%d} {%d}", Processed.load(), lc_global_data()->g_vertices().size());
+		});
  
-  		precalc_base_hemi.wait();
 	}
  
 	//////////////////////////////////////////////////////////////////////////
@@ -478,41 +407,58 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 		g_bUnregister		= true;
 }
 
+#include "PPL.h"
+
 void CBuild::u_SmoothVertColors(int count)
 {
+	std::mutex mtx;
+
+
 	for (int iteration=0; iteration<count; ++iteration)
 	{
 		Progress( float(iteration/count) );
 
 		// Gather
 		xr_vector<base_color>	colors;
-		colors.resize			(lc_global_data()->g_vertices().size());
-		for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
+ 		colors.resize			(lc_global_data()->g_vertices().size());
+
+		//for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
+		
+		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t IDX)
 		{
-			// Circle
-			xr_vector<Vertex*>	circle_vec;
-			Vertex*		V		= lc_global_data()->g_vertices()[it];
+ 			{
+				// Circle
+				xr_vector<Vertex*>	circle_vec;
+				Vertex* V = lc_global_data()->g_vertices()[IDX];
 
-			for (u32 fit=0; fit<V->m_adjacents.size(); ++fit)
-			{
-				Face*	F		= V->m_adjacents[fit];
-				circle_vec.push_back(F->v[0]);
-				circle_vec.push_back(F->v[1]);
-				circle_vec.push_back(F->v[2]);
-			}
-			std::sort				(circle_vec.begin(),circle_vec.end());
-			circle_vec.erase		(std::unique(circle_vec.begin(),circle_vec.end()),circle_vec.end());
+				for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
+				{
+					Face* F = V->m_adjacents[fit];
+					circle_vec.push_back(F->v[0]);
+					circle_vec.push_back(F->v[1]);
+					circle_vec.push_back(F->v[2]);
+				}
+				std::sort(circle_vec.begin(), circle_vec.end());
+				circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
 
-			// Average
-			base_color_c		avg,tmp;
-			for (u32 cit=0; cit<circle_vec.size(); ++cit)
-			{
-				circle_vec[cit]->C._get	(tmp);
-				avg.add					(tmp);
+				// Average
+				base_color_c		avg, tmp;
+				for (u32 cit = 0; cit < circle_vec.size(); ++cit)
+				{
+					circle_vec[cit]->C._get(tmp);
+					avg.add(tmp);
+				}
+				avg.scale(circle_vec.size());
+
+				// mtx.lock();
+				colors[IDX]._set(avg);
+				// mtx.unlock();
 			}
-			avg.scale			(circle_vec.size());
-			colors[it]._set		(avg);
-		}
+		
+		});
+
+
+		
 
 		// Transfer
 		for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)

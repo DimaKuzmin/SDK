@@ -13,6 +13,7 @@ private:
 
 public:
 	void			_initialize			(const bool &dedicated);
+	void			Callstack();
 	void			_destroy			();
 	
 public:

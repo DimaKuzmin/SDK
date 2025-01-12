@@ -99,8 +99,7 @@ public:
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
 	void	BuildRapid				(BOOL bSave);
-	void	BuildIntelModel			(bool bSave);
-
+ 
 	void	SaveForOthers			(CDB::CollectorPacked& CL);
 
 	void	xrPhase_Radiosity		();

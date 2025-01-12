@@ -537,6 +537,8 @@ const Fvector hemi_3[HEMI3_VERTS] =
 	{+0.1525,	+0.0799,	-0.4694	},
 	{+0.3971,	+0.0952,	-0.2885	},
 };
+
+
 #pragma warning(default:4305)
 
 void ECORE_API xrHemisphereBuild	(int quality, float energy, xrHemisphereIterator* iterator, LPVOID param)

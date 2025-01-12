@@ -47,68 +47,77 @@ void export_ogf( xrMU_Reference& mu_reference )
 			g_tree.push_back		(pOGF);
 		}
 	}
+	
+	if (mu_reference.color.size() == 0)
+	{
+		Msg("MuRefference[%d]: %s is colors buffer == 0", model->m_lod_ID, mu_reference.model->m_name);
+		return;
+	}
 
 	// Now, let's fuck with LODs
-	if (u16(-1) == model->m_lod_ID)	return;
+	if (u16(-1) == model->m_lod_ID)
+		return;
+	
+	
+ 	// Create Node and fill it with information
+	b_lod&		LOD		= pBuild->lods	[model->m_lod_ID];
+	OGF_LOD*	pNode	= xr_new<OGF_LOD> (1,mu_reference.sector);
+	pNode->lod_Material	= LOD.dwMaterial;
+	for (int lf=0; lf<8; lf++)
 	{
-		// Create Node and fill it with information
-		b_lod&		LOD		= pBuild->lods	[model->m_lod_ID];
-		OGF_LOD*	pNode	= xr_new<OGF_LOD> (1,mu_reference.sector);
-		pNode->lod_Material	= LOD.dwMaterial;
-		for (int lf=0; lf<8; lf++)
+		b_lod_face&		F = LOD.faces[lf];
+		OGF_LOD::_face& D = pNode->lod_faces[lf];
+		for (int lv=0; lv<4; lv++)
 		{
-			b_lod_face&		F = LOD.faces[lf];
-			OGF_LOD::_face& D = pNode->lod_faces[lf];
-			for (int lv=0; lv<4; lv++)
-			{
-				mu_reference.xform.transform_tiny(D.v[lv].v,F.v[lv]);
-				D.v[lv].t			= F.t[lv];
-				D.v[lv].c_rgb_hemi	= 0xffffffff;
-				D.v[lv].c_sun		= 0xff;
-			}
+			mu_reference.xform.transform_tiny(D.v[lv].v,F.v[lv]);
+			D.v[lv].t			= F.t[lv];
+			D.v[lv].c_rgb_hemi	= 0xffffffff;
+			D.v[lv].c_sun		= 0xff;
 		}
+	}
 
-		// Add all 'OGFs' with such LOD-id
-		for (u32 o=0; o<generated_ids.size(); o++)
-			pNode->AddChield(generated_ids[o]);
+	// Add all 'OGFs' with such LOD-id
+	for (u32 o=0; o<generated_ids.size(); o++)
+		pNode->AddChield(generated_ids[o]);
 
-		// Register node
-		R_ASSERT						(pNode->chields.size());
-		pNode->CalcBounds				();
-		g_tree.push_back				(pNode);
+	// Register node
+	R_ASSERT						(pNode->chields.size());
+	pNode->CalcBounds				();
+	g_tree.push_back				(pNode);
 
-		// Calculate colors
-		const float sm_range		= 5.f;
-		for (int lf=0; lf<8; lf++)
+		
+	// Calculate colors
+	const float sm_range = 5.f;
+	for (int lf = 0; lf < 8; lf++)
+	{
+		OGF_LOD::_face& F = pNode->lod_faces[lf];
+		for (int lv = 0; lv < 4; lv++)
 		{
-			OGF_LOD::_face& F = pNode->lod_faces[lf];
-			for (int lv=0; lv<4; lv++)
+			Fvector	ptPos = F.v[lv].v;
+ 			base_color_c	_C;
+			float 			_N = 0;
+ 			for (u32 v_it = 0; v_it < model->m_vertices.size(); v_it++)
 			{
-				Fvector	ptPos	= F.v[lv].v;
+				// get base
+				Fvector			baseP;
+				mu_reference.xform.transform_tiny(baseP, model->m_vertices[v_it]->P);
+				base_color_c	baseC;
+				mu_reference.color[v_it]._get(baseC);
 
-				base_color_c	_C;
-				float 			_N	= 0;
-
-				for (u32 v_it=0; v_it<model->m_vertices.size(); v_it++)
-				{
-					// get base
-					Fvector			baseP;	mu_reference.xform.transform_tiny	(baseP,model->m_vertices[v_it]->P);
-					base_color_c	baseC;	mu_reference.color[v_it]._get(baseC);
-
-					base_color_c	vC;
-					float			oD	= ptPos.distance_to	(baseP);
-					float			oA  = 1/(1+100*oD*oD);
-					vC = 			(baseC);
-					vC.mul			(oA);
-					_C.add			(vC);
-					_N				+= oA;
-				}
-
-				float	s			= 1/(_N+EPS);
-				_C.mul				(s);
-				F.v[lv].c_rgb_hemi	= color_rgba(u8_clr(_C.rgb.x),u8_clr(_C.rgb.y),u8_clr(_C.rgb.z),u8_clr(_C.hemi));
-				F.v[lv].c_sun		= u8_clr	(_C.sun);
+				base_color_c	vC;
+				float			oD = ptPos.distance_to(baseP);
+				float			oA = 1 / (1 + 100 * oD * oD);
+				vC = (baseC);
+				vC.mul(oA);
+				_C.add(vC);
+				_N += oA;
+				
 			}
+ 
+			float	s = 1 / (_N + EPS);
+			_C.mul(s);
+			F.v[lv].c_rgb_hemi = color_rgba(u8_clr(_C.rgb.x), u8_clr(_C.rgb.y), u8_clr(_C.rgb.z), u8_clr(_C.hemi));
+			F.v[lv].c_sun = u8_clr(_C.sun);
 		}
 	}
 }

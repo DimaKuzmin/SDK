@@ -179,18 +179,34 @@ void CBuild::Flex2OGF()
 		ID++;
 	}
 	 
-	std::mutex mtx;
- 	concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
+	if (g_XSplit.size() > 256)
 	{
+		std::mutex mtx;
+		concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
+		{
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face
 			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
- 
+
 			mtx.lock();
 			g_tree.push_back(pOGF);
 			mtx.unlock();
-	});
+		});
+	}
+	else
+	{
+		for (size_t ID = (0); ID < g_XSplit.size(); ID++)
+		{
+			OGF* pOGF = xr_new<OGF>();
+			auto& SPLIT = g_XSplit[ID];
+			Face* Face = SPLIT->front();			// first face
+			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
+ 			g_tree.push_back(pOGF);
+		};
+	}
+
+	
  
 	g_XSplit.clear_and_free();
 }

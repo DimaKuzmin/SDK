@@ -13,6 +13,7 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	// debuging 
 	bool use_DXT1 = false;
 
+
 	// XRLC ADVANCED SETTINGS
 
 	bool use_embree = 0;			//+

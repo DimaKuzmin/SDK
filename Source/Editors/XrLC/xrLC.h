@@ -21,7 +21,7 @@ struct XRLC_API  SpecialArgs
 	LightmapSize LightmapSize_enum;
 
 	int MaxHitsPerRay;
- 
+	bool test_build = false;
   
 	// debuging 
 	bool use_DXT1 = false;

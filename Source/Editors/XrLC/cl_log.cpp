@@ -232,8 +232,8 @@ void logThread(void *dummy)
 				const char *S = *(*LogFile)[LogSize];
 				if (0==S)
 					S = "";
-				if (LoggerCL != 0)
-					LoggerCL->updateLog(S);
+				/// if (LoggerCL != 0)
+				/// 	LoggerCL->updateLog(S);
 				SendMessage	( hwLog, LB_ADDSTRING, 0, (LPARAM) S);
 			}
 

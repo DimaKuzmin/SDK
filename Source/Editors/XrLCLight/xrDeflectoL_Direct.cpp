@@ -16,7 +16,7 @@ extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 #include "BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
-void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
+void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
 {
 	Fvector		vdir;
 	vdir.sub	(v2,v1);
@@ -62,7 +62,7 @@ void CDeflector::L_Direct_Edge (int th, CDB::COLLIDER* DB, base_lighting* Lights
 	}
 }
   	 
-void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
+void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
 {
  	R_ASSERT	(DB);
 	R_ASSERT	(LightsSelected);
@@ -175,9 +175,9 @@ void CDeflector::L_Direct	(int th, CDB::COLLIDER* DB, base_lighting* LightsSelec
 		R_ASSERT	(F);
 		try 
 		{
-			L_Direct_Edge	(th, DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
-			L_Direct_Edge	(th, DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
-			L_Direct_Edge	(th, DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
+			L_Direct_Edge	(DB,LightsSelected, T.uv[0], T.uv[1], F->v[0]->P, F->v[1]->P, F->N, texel_size,F);
+			L_Direct_Edge	(DB,LightsSelected, T.uv[1], T.uv[2], F->v[1]->P, F->v[2]->P, F->N, texel_size,F);
+			L_Direct_Edge	(DB,LightsSelected, T.uv[2], T.uv[0], F->v[2]->P, F->v[0]->P, F->N, texel_size,F);
 		}
 		catch (...)
 		{

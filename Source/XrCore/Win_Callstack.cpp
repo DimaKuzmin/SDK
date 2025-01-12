@@ -181,7 +181,7 @@ void  callstack_mdmp(_EXCEPTION_POINTERS* pExceptionInfo)
 			sprintf(tmp, "callstack[%d]: SYMVOL:%s, LINE: %d, File: %s", id, stack.name_symvol.c_str(), stack.line, stack.name_file.c_str());
 
 			writer_callstack->w_string(tmp);
-			//Msg("callstack[%d]: SYMVOL:%s, LINE: %d, File: %s", id, stack.name_symvol.c_str(), stack.line, stack.name_file.c_str());
+			Msg("callstack[%d]: SYMVOL:%s, LINE: %d, File: %s", id, stack.name_symvol.c_str(), stack.line, stack.name_file.c_str());
 		}
 	}
 

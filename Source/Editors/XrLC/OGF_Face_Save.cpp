@@ -250,7 +250,9 @@ void	OGF::PreSave		(u32 tree_id)
 	// X-vertices/faces
 	if (fast_path_data.vertices.size() && fast_path_data.faces.size())
 	{
+#ifdef __DEBUG
 		clMsg			("%4d: v(%3d)/f(%3d)",tree_id,fast_path_data.vertices.size(),fast_path_data.faces.size());
+#endif 
 		VDeclarator		x_D;
 		x_D.set			(x_decl_vert);
 		x_VB.Begin		(x_D);

@@ -48,21 +48,19 @@ bool CSceneObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
             }
             if(!bRes)
             {
-             
-
-               /* if ( (mr==mrNone||mr==mrYes) && TfrmChoseItem::SelectItem(smObject,new_val,1))
+                /* 
+                if ( (mr==mrNone||mr==mrYes) && TfrmChoseItem::SelectItem(smObject,new_val,1))
                 {
                     bRes = SetReference(new_val);
                     if(bRes)
                         Scene->RegisterSubstObjectName(ref_name.c_str(), new_val);
-                }*/
+                }
+                */
             }
 
             Scene->Modified();
         }
-//        if(!CheckVersion())
-//            ELog.Msg( mtError, "CSceneObject: '%s' different file version!", ref_name.c_str() );
-
+ 
       	m_Flags.assign(ini.r_u32(sect_name, "flags"));
         if (m_Flags.test(flUseSurface))
         {
@@ -200,28 +198,14 @@ bool CSceneObject::LoadStream(IReader& F)
             }
             if(!bRes)
             {
-     
-
-                /*if ( (mr==mrNone||mr==mrYes) && TfrmChoseItem::SelectItem(smObject,new_val,1))
-                {
-                    bRes = SetReference(new_val);
-                    if(bRes)
-                        Scene->RegisterSubstObjectName(buf, new_val);
-                }*/
             }
 
             Scene->Modified();
         }
-       
         
-
-
-//        if(!CheckVersion()){
-//            ELog.Msg( mtError, "CSceneObject: '%s' different file version!", buf );
-//            }
-
         // flags
-        if (F.find_chunk(SCENEOBJ_CHUNK_FLAGS)){
+        if (F.find_chunk(SCENEOBJ_CHUNK_FLAGS))
+        {
         	m_Flags.assign(F.r_u32());
         }
         if (m_Flags.test(flUseSurface))

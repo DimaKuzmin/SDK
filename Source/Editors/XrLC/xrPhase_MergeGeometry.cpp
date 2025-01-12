@@ -20,9 +20,7 @@ IC BOOL	FaceEqual		(Face* F1, Face* F2)
 std::mutex lock;
 
 xr_map<u32, Fbox > bb_bases;
-
-bool use_avx = false;
-
+  
 ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
 	if (bb_bases.find(id) == bb_bases.end())
@@ -131,156 +129,8 @@ IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u3
 	// OK
 	return TRUE;
 }
-
-void FindBestMergeCandidate( u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base );
-//void FindMergeBBOX(u32* selected, float* selected_volume, u32 split, u32 split_size, vecFace* subdiv, Fbox* bb_base_orig, Fbox* bb_base);
-
-typedef struct MERGEGM_PARAMS
-{
-	u32 selected;
-	float selected_volume;
-	u32 split;
-	u32 split_size;
-	vecFace* subdiv;
-	Fbox* bb_base_orig;
-	Fbox* bb_base;
-	HANDLE hEvents[3];	// 0=start,1=terminate,2=ready
-} * LP_MERGEGM_PARAMS;
-
-static CRITICAL_SECTION mergegm_cs;
-static BOOL mergegm_threads_initialized = FALSE;
-static u32 mergegm_threads_count = 0;
-static LPHANDLE mergegm_threads_handles = NULL;
-static LPHANDLE mergegm_ready_events = NULL;
-static LP_MERGEGM_PARAMS mergegm_params = NULL;
-
-DWORD WINAPI MergeGmThreadProc( LPVOID lpParameter )
-{
-	LP_MERGEGM_PARAMS pParams = ( LP_MERGEGM_PARAMS ) lpParameter;
- 	while( TRUE ) 
-	{
-		// Wait for "start" and "terminate" events
-		switch ( WaitForMultipleObjects( 2 , pParams->hEvents , FALSE , INFINITE ) ) {
-			case WAIT_OBJECT_0 + 0 :				 
-				FindBestMergeCandidate(
-					&pParams->selected, &pParams->selected_volume, pParams->split, pParams->split_size,
-					 pParams->bb_base_orig, pParams->bb_base
-				);
  
-
-				// Signal "ready" event
-				SetEvent( pParams->hEvents[ 2 ] );
-				break;
-			case WAIT_OBJECT_0 + 1 :
-				ExitThread( 0 );
-				break;
-			default :
-				// Error ?
-				ExitThread( 1 );
-				break;
-		} // switch
-	} // while
-
-	return 0;
-}
-
-void InitMergeGmThreads()
-{
-	if ( mergegm_threads_initialized )
-		return;
-	
-	SYSTEM_INFO SystemInfo;
-	GetSystemInfo( &SystemInfo );
-	mergegm_threads_count = SystemInfo.dwNumberOfProcessors;
-
-	mergegm_threads_handles = (LPHANDLE) xr_malloc( mergegm_threads_count * sizeof( HANDLE ) );
-	mergegm_ready_events = (LPHANDLE) xr_malloc( mergegm_threads_count * sizeof( HANDLE ) );
-	mergegm_params = (LP_MERGEGM_PARAMS) xr_malloc( mergegm_threads_count * sizeof( MERGEGM_PARAMS ) );
-
-	InitializeCriticalSection( &mergegm_cs );
-
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) {
-
-		ZeroMemory( &mergegm_params[ i ] , sizeof( MERGEGM_PARAMS ) );
-
-		// Creating start,terminate,ready events for each thread
-		for( u32 x = 0 ; x < 3 ; x++ )
-			mergegm_params[ i ].hEvents[ x ] = CreateEvent( NULL , FALSE , FALSE , NULL );
-
-		// Duplicate ready event into array
-		mergegm_ready_events[ i ] = mergegm_params[ i ].hEvents[ 2 ];
-
-		mergegm_threads_handles[ i ] = CreateThread( NULL , 0 , &MergeGmThreadProc , &mergegm_params[ i ] , 0 , NULL );
-	}
-
-	mergegm_threads_initialized = TRUE;
-}
-
-void DoneMergeGmThreads()
-{
-	if ( ! mergegm_threads_initialized )
-		return;
-
-	// Asking helper threads to terminate
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ )
-		SetEvent( mergegm_params[ i ].hEvents[ 1 ] );
-
-	// Waiting threads for completion
-	WaitForMultipleObjects( mergegm_threads_count , mergegm_threads_handles , TRUE , INFINITE );
-
-	// Deleting events
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ )
-		for( u32 x = 0 ; x < 3 ; x++ )
-			CloseHandle( mergegm_params[ i ].hEvents[ x ] );
-
-	// Freeing resources
-	DeleteCriticalSection( &mergegm_cs );
-
-	xr_free( mergegm_threads_handles );		mergegm_threads_handles = NULL;
-	xr_free( mergegm_ready_events );		mergegm_ready_events = NULL;
-	xr_free( mergegm_params );				mergegm_params = NULL;
-
-	mergegm_threads_count = 0;
-
-	mergegm_threads_initialized = FALSE;
-}
-
-ICF void FindBestMergeCandidate_threads( u32* selected ,  float* selected_volume , u32 split , u32 split_size , vecFace* subdiv , Fbox* bb_base_orig , Fbox* bb_base )
-{
-	u32 m_range = ( split_size - split ) / mergegm_threads_count;
-
-	// Assigning parameters
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) 
-	{
-		mergegm_params[ i ].selected = *selected;
-		mergegm_params[ i ].selected_volume = *selected_volume;
-
-		mergegm_params[ i ].split = split + ( i * m_range );
-		mergegm_params[ i ].split_size = ( i == ( mergegm_threads_count - 1 ) ) ? split_size : mergegm_params[ i ].split + m_range;
-
-		mergegm_params[ i ].subdiv = subdiv;
-		mergegm_params[ i ].bb_base_orig = bb_base_orig;
-		mergegm_params[ i ].bb_base = bb_base;
-
-		SetEvent( mergegm_params[ i ].hEvents[ 0 ] );
-	} // for
-
-	
-	// Wait for result
-	WaitForMultipleObjects( mergegm_threads_count , mergegm_ready_events , TRUE , INFINITE );
-		   
-	// Compose results
-	for ( u32 i = 0 ; i < mergegm_threads_count ; i++ ) 
-	{
-		if ( mergegm_params[ i ].selected_volume < *selected_volume ) 
-		{
-			*selected = mergegm_params[ i ].selected;
-			*selected_volume = mergegm_params[ i ].selected_volume;
-		}
-	}
-}
-
-
+// MERGING GEOMETRY FUNCTIONS
 
 ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base )
 {
@@ -525,15 +375,11 @@ void CBuild::xrPhase_MergeGeometry()
 
 	tGlobalMerge.Start();
 
-	use_avx = build_args->use_avx;
-
-	bool use_fast_way = true;
-
+ 	 
 	CTimer t; 
 	t.Start();
 
-	if (use_fast_way)
-	{ 
+ 	{ 
   		for (int split = 0; split < g_XSplit.size(); split++)
  			thread_faces[g_XSplit[split]->front()->dwMaterial].faces_vec.push_back(data_vec{split});
  
@@ -568,7 +414,7 @@ void CBuild::xrPhase_MergeGeometry()
 		 
  
 							auto id = reserved.back();
-							// clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
+							clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
 							Progress( float ( 1 / reserved.size()) );
 							reserved.pop_back();
 							lock.unlock();
@@ -605,7 +451,7 @@ void CBuild::xrPhase_MergeGeometry()
 					}
  
 					auto id = reserved_big_objects.back();
-					// clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
+					clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
 					Progress( float ( 1 / reserved_big_objects.size()) );
 					reserved_big_objects.pop_back();
 					lock.unlock();
@@ -626,48 +472,7 @@ void CBuild::xrPhase_MergeGeometry()
 		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { if (ptr == nullptr) return true; return ptr->empty(); }), g_XSplit.end());
 
 	}
-	else
-	{ 
-		InitMergeGmThreads();
-
-		for (u32 split = 0; split < g_XSplit.size(); split++)
-		{
-			vecFace& subdiv = *(g_XSplit[split]);
-			bool		bb_base_orig_inited = false;
-			Fbox		bb_base_orig;
-			Fbox		bb_base;
-
-			while (NeedMerge(subdiv, bb_base, split))
-			{
-				//	Save original AABB for later tests
-				if (!bb_base_orig_inited)
-				{
-					bb_base_orig_inited = true;
-					bb_base_orig = bb_base;
-				}
-
-				// **OK**. Let's find the best candidate for merge
-				u32	selected = split;
-				float	selected_volume = flt_max;
-
-				FindBestMergeCandidate_threads(&selected, &selected_volume, split + 1, g_XSplit.size(), &subdiv, &bb_base_orig, &bb_base);
-
-				if (selected == split)
-					break;
-
-				// **OK**. Perform merge
-				subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
-				xr_delete(g_XSplit[selected]);
-				g_XSplit.erase(g_XSplit.begin() + selected);
-				bb_bases.erase(split);
-			}
-
-			Progress(float(split) / float(g_XSplit.size()));
-			StatusNoMSG("Merge %d/%d, time: %.0f", split, g_XSplit.size(), t.GetElapsed_sec());
-		}
-
-		DoneMergeGmThreads();
-	}
+ 
 	
 	clMsg("%d subdivisions.",g_XSplit.size());
 	validate_splits			();

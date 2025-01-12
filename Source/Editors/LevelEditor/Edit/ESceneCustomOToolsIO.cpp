@@ -104,7 +104,7 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
 
     u32 count			= ini.r_u32("main", "objects_count");
 
-	SPBItem* pb 		= UI->ProgressStart(count,xr_string().sprintf("Loading %s(ltx)...",ClassDesc()).c_str());
+	SPBItem* pb 		= UI->ProgressStart(count, "Objects Loading ...");
 
     u32 i				= 0;
     string128			buff;
@@ -124,10 +124,14 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
         }
 
         pb->Inc();
-       
-        /* thread_work.push_back(buff);  */
+
+
+        string128 tmp;
+        sprintf(tmp, "objects: %d / %d", i, count);
+        pb->Info(tmp);
     }
-     /*
+     
+    /*
     std::thread* th[8];
     for (int i = 0; i < 8; i++)
         th[i] = new std::thread(LoadThread, Scene, &ini, pb);

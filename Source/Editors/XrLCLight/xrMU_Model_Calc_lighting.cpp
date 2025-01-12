@@ -210,5 +210,8 @@ void xrMU_Model::calc_lighting()
 	calc_lighting(color, Fidentity, M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun, true);
 
 	xr_delete(M);
+#ifdef __DEBUG
  	clMsg("model '%s' - REF_lighted.", *m_name);
+#endif 
+
 }

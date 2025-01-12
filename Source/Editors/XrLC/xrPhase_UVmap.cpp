@@ -82,9 +82,9 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 void CBuild::xrPhase_UVmap()
 {
-	bool USE_V2 = false;
+	bool USE_V2 = true;
 
-	if (!USE_V2)
+	if (USE_V2)
 	{
 
 		// Main loop
@@ -349,9 +349,6 @@ void CBuild::xrPhase_UVmap()
 						faces_selected->end()
 					);
 				}
-
-
-				// clMsg("NEW AFFECTED: %d, XSplit: %d, SPLIT: %d", temp_faces.size(), g_XSplit.size(), SP);
 
 				// Cancel infine loop (while)
 

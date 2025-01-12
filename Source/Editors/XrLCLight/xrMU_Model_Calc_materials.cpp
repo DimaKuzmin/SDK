@@ -48,6 +48,8 @@ void xrMU_Model::calc_materials	()
 		m_subdivs.erase	(m_subdivs.begin()+it);
 		it--;
 	}
+#ifdef __DEBUG
+	 clMsg	("model '%s' - %d subdivisions",*m_name,m_subdivs.size());
+#endif
 
-	clMsg	("model '%s' - %d subdivisions",*m_name,m_subdivs.size());
 }

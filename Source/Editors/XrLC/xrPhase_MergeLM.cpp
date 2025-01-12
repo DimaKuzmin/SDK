@@ -145,7 +145,7 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 	for (int it = 0; it < Layer.size(); it++)
 	{
  		if (0 == (it % 1024))
-			Status("Process [%d/%d]...Merged{%d}", it, g_XSplit.size(), MERGED);
+			StatusNoMSG("Process [%d/%d]...Merged{%d}", it, g_XSplit.size(), MERGED);
 
 		if (_Y > getLMSIZE())
   			break;
@@ -337,6 +337,8 @@ void CBuild::xrPhase_MergeLM()
 
 	bool USE_METHOD_FAST = true;
 
+	Phase("Building Lightmaps...");
+
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
@@ -346,15 +348,13 @@ void CBuild::xrPhase_MergeLM()
 		Layer.push_back(D);
 	}
  
-//	setLMSIZE(c_LMAP_size);
- 
 	// Merge this layer (which left unmerged)
 	while (Layer.size())
 	{
 		VERIFY(lc_global_data());
 		string512	phase_name;
 		xr_sprintf(phase_name, "Building lightmap %d...", lc_global_data()->lightmaps().size());
-		Phase(phase_name);
+		Status(phase_name);
 
 		// Sort layer by similarity (state changes)
 		// + calc material area

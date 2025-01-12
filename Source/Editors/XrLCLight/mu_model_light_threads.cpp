@@ -106,11 +106,11 @@ public:
  
 			try
 			{
-				CTimer t;
-				t.Start();
+				//CTimer t;
+				//t.Start();
 				model->calc_materials();
 				model->calc_lighting();
-				clMsg("Base mu-Model: %s, time: %d", model->m_name.c_str(), t.GetElapsed_ms());
+				// clMsg("Base mu-Model: %s, time: %d", model->m_name.c_str(), t.GetElapsed_ms());
 			}
 			catch (...)
 			{
@@ -158,10 +158,10 @@ public:
  				  
 			try
 			{	
-				CTimer t;
-				t.Start();
+				//CTimer t;
+				//t.Start();
 				ref->calc_lighting();
-				clMsg("MuRefModel: %s, time: %d", ref->model->m_name.c_str(), t.GetElapsed_ms());
+				// clMsg("MuRefModel: %s, time: %d", ref->model->m_name.c_str(), t.GetElapsed_ms());
 			}
 			catch (...)
 			{

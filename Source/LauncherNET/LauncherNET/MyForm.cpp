@@ -36,7 +36,7 @@ void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
     }
 }
 
-#define Size 13
+#define Size 14
   
 char* collection[Size] =
 {
@@ -53,6 +53,7 @@ char* collection[Size] =
     "NOISE GEOM",
     "SKIP WELD",
     "MU FIRST",
+    "TEST BUILD"
    // "CFORM Packing",
    // "TBB THREADS"
 };
@@ -85,6 +86,8 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->skip_weld = true;
     if (strstr(item, collection[12]))
         args->run_mu_first = true;
+    if (strstr(item, collection[13]))
+        args->test_build = true;
      //if (strstr(item, collection[14]))
     //    args->use_cdbPacking = true;
 
@@ -230,6 +233,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
    
     Application::Run(form);
    
+    LoggerCL = 0;
+    LoggerCL_xrAI = 0;
+
 
     return 0;
 }

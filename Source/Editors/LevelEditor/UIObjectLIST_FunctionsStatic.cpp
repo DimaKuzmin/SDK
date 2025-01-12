@@ -225,6 +225,8 @@ void UIObjectList::ExportUsedTextures()
 			if (pThmTexture != nullptr)
 			{
 				shared_str Temp = *pThmTexture->_Format().bump_name;
+				shared_str Detail_Map = *pThmTexture->_Format().detail_name;
+ 
 
 				if (Temp.size() > 0)
 				{
@@ -245,6 +247,29 @@ void UIObjectList::ExportUsedTextures()
 
 						xr_string BumpTextureIn2 = game_textures + *Temp + "#.thm";
 						xr_string BumpTextureOut2 = out_folder + "\\" + *Temp + "#.thm";
+						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
+					}
+				}
+
+				if (Detail_Map.size() > 0)
+				{
+					{
+						xr_string BumpTextureIn = game_textures + *Detail_Map + ".dds";
+						xr_string BumpTextureOut = out_folder + "\\" + *Detail_Map + ".dds";
+						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+
+						xr_string BumpTextureIn2 = game_textures + *Detail_Map + "#.dds";
+						xr_string BumpTextureOut2 = out_folder + "\\" + *Detail_Map + "#.dds";
+						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
+					}
+
+					{
+						xr_string BumpTextureIn = game_textures + *Detail_Map + ".thm";
+						xr_string BumpTextureOut = out_folder + "\\" + *Detail_Map + ".thm";
+						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+
+						xr_string BumpTextureIn2 = game_textures + *Detail_Map + "#.thm";
+						xr_string BumpTextureOut2 = out_folder + "\\" + *Detail_Map + "#.thm";
 						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
 					}
 				}

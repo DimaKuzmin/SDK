@@ -680,7 +680,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				Fvector		PMoved;	
-				PMoved.mad(Pnew, Ldir, 0.001f); // Смещение HEMI 
+				PMoved.mad(Pnew, Ldir, 0.1f); // Смещение HEMI 
 
 				float scale = L->energy * rayTrace(DB, MDL, *L, PMoved, Ldir, 1000.f, skip, bUseFaceDisable, use_opcode);
 				C.hemi += scale;
@@ -888,7 +888,7 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 	return FALSE;
 }
  
-void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
+void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
 	// Geometrical bounds
 	Fbox bb;		bb.invalidate	();
@@ -913,7 +913,7 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
  
 	// Calculate and fill borders
-	L_Calculate			(th, DB,LightsSelected, H);
+	L_Calculate			(DB,LightsSelected, H);
  	
 	for (u32 ref = 254; ref > 0; ref--)
 	if (!ApplyBorders(layer, ref))
@@ -932,7 +932,7 @@ void CDeflector::Light(int th, CDB::COLLIDER* DB, base_lighting* LightsSelected,
 		{
 			// Reacalculate lightmap at lower resolution
 			layer.create(w, h);
-			L_Calculate(th, DB, LightsSelected, H, true);
+			L_Calculate(DB, LightsSelected, H, true);
 		}
 	}
 	catch (...)

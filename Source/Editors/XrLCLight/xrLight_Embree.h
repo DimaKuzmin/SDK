@@ -42,3 +42,4 @@ namespace Embree
 extern XRLC_LIGHT_API int StageMAXHits;
 extern XRLC_LIGHT_API float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
 extern XRLC_LIGHT_API void LightPointEmbree(base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, void* skip);
+ 

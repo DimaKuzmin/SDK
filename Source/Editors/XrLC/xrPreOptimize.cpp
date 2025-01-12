@@ -24,6 +24,8 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 }
 
 #include <execution>
+#include <ppl.h>
+#include <atomic>
 
 #include <immintrin.h>
 #include <xmmintrin.h>
@@ -101,6 +103,32 @@ void CBuild::PreOptimize()
 
 		if (!SkipWeld) 
 		{
+			//std::atomic<bool> selected = false;
+			//// std::atomic<int> result = -1;
+			//Vertex* result = nullptr;
+			//concurrency::parallel_for_each((H.begin()), (H.end()), [&](Vertex* V)
+			//{
+			//	if (selected == true)
+			//		return;
+			//	 
+			//	if (V->similar(*pTest, g_params().m_weld_distance))
+			//	{
+			//		selected = true;
+			//		result = V;
+			//	}
+			//});
+			//	 
+			//if (result != nullptr)
+			//{
+			//	while(pTest->m_adjacents.size())	
+			//		pTest->m_adjacents.front()->VReplace(pTest, result);
+			//
+			//	lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
+			//	Vremoved			+= 1;
+			//	pTest				= NULL;
+			//} 
+
+
 			auto parsed = std::find_if(std::execution::par, H.begin(), H.end(), [&] (Vertex* v) 
 			{ 
 				if (v->similar(*pTest, g_params().m_weld_distance) )
@@ -108,16 +136,16 @@ void CBuild::PreOptimize()
 				else 
 					return false;
 			}) ;
-	 
+
 			if (parsed != H.end())
 			{
-				while(pTest->m_adjacents.size())	
+				while (pTest->m_adjacents.size())
 					pTest->m_adjacents.front()->VReplace(pTest, *parsed);
 
 				lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
-				Vremoved			+= 1;
-				pTest				= NULL;
-			} 
+				Vremoved += 1;
+				pTest = NULL;
+			}
 		}
 		 
 		/*

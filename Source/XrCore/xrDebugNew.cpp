@@ -606,6 +606,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #endif
 
 //////////////////////////////////////////////////////////////////////
+void xrDebug::Callstack()
+{
+	callstack_mdmp(0);
+}
+
 #ifdef M_BORLAND
 	namespace std{
 		extern new_handler _RTLENTRY _EXPFUNC set_new_handler( new_handler new_p );

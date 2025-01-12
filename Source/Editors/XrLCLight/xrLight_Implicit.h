@@ -39,10 +39,7 @@ protected:
 	Fvector2 JS;
 public:
 
-
-	void		Execute			();
-
- 	void		clear();
+ 	void		Execute			();
 };
 
 

@@ -122,7 +122,7 @@ void CLightmap::Save( LPCSTR path )
 {
 	static int		lmapNameID = 0; ++lmapNameID;
 
-	Phase			("Saving...");
+	Status			("Saving...");
 
 	// Borders correction
 	Status			("Borders...");
@@ -141,18 +141,19 @@ void CLightmap::Save( LPCSTR path )
 		}
 	}
 
-	Status("APPLY BORDERS");	
+	CTimer t; t.Start();
+	Status("Apply Borders...");
 	int p = 0;
 	for (u32 ref=254; ref>(254-16); ref--) 
 	{
 		p++;
 		ApplyBorders	(lm,ref);
-		clMsg("REF %d / %d", ref, 254-16);
-		Progress		( float (p / 16 ) );
+ 		Progress		( float (p / 16 ) );
 	}
+	clMsg("Borders: %d sec", t.GetElapsed_sec());
 
 	Progress			(1.f);
-	Status("END BORDERS");
+ 
 	xr_vector<u32>			lm_packed;
 	lm.Pack					(lm_packed);
 	xr_vector<u32>			hemi_packed;
@@ -167,7 +168,7 @@ void CLightmap::Save( LPCSTR path )
 	
 	// Saving			(DXT5.dds)
 	Status			("Compression base...");
-	
+	t.Start();
 	{
 		string_path				FN;
 		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
@@ -184,10 +185,12 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
+	clMsg("Compression Base: %d sec", t.GetElapsed_sec());
 
 	lm_packed.clear_and_free();
 
 	Status			("Compression hemi..."); //.
+	t.Start();
 	{
 
 
@@ -207,6 +210,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
+	clMsg("Compression Hemi: %d sec", t.GetElapsed_sec());
 
 
 }

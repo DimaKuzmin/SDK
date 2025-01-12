@@ -28,14 +28,8 @@
     <Filter Include="External\NV_Mender2002\NV_Basis">
       <UniqueIdentifier>{94dc8dc0-c6dc-4fbd-b40d-b5a96acfb350}</UniqueIdentifier>
     </Filter>
-    <Filter Include="- OLD -">
-      <UniqueIdentifier>{54b9058b-64a0-4bb9-a595-4a736f4d9bb7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a">
       <UniqueIdentifier>{01d9c3f8-4397-4924-b920-2120ef046d90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Deflector">
-      <UniqueIdentifier>{f4575153-4953-466e-8981-259537898832}</UniqueIdentifier>
     </Filter>
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\XRAY">
       <UniqueIdentifier>{957e4dc5-9e76-42a5-8100-8578f2c50460}</UniqueIdentifier>
@@ -181,33 +175,6 @@
     <ClCompile Include="NvMender2002\nv_algebra.cpp">
       <Filter>External\NV_Mender2002\NV_Basis</Filter>
     </ClCompile>
-    <ClCompile Include="xrDetailPatch.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrFlex2LOD.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrHierrarhy.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrPVS.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrResolveMaterials.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrSoftenLights.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrTesselate.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrUVmapping.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
-    <ClCompile Include="xrVis.cpp">
-      <Filter>- OLD -</Filter>
-    </ClCompile>
     <ClCompile Include="Build.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
@@ -232,16 +199,10 @@
     <ClCompile Include="xrLight.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
-    <ClCompile Include="xrOptimizeCFORM.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
     <ClCompile Include="xrOptimizeCFORM_qslim.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_AdaptiveHT.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="xrPhase_AdaptiveHT_qslim.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_GI.cpp">
@@ -260,9 +221,6 @@
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_TangentBasis.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="xrPhase_TangentBasis2002.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_UVmap.cpp">
@@ -289,9 +247,6 @@
     <ClCompile Include="OGF_CalculateTB.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
     </ClCompile>
-    <ClCompile Include="OGF_CalculateTB2002.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
-    </ClCompile>
     <ClCompile Include="OGF_Face.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
     </ClCompile>
@@ -311,12 +266,6 @@
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader</Filter>
     </ClCompile>
     <ClCompile Include="xrMU_Model_Calc_ogf.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMU_Model_export_cform_game.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
-    </ClCompile>
-    <ClCompile Include="xrMU_Model_export_cform_game_s.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
     </ClCompile>
     <ClCompile Include="xrMU_Model_export_geometry.cpp">

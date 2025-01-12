@@ -156,10 +156,10 @@ struct NodeCompressed
 {
 public:
 #ifndef _USE_NODE_POSITION_11
-	u8			data[12];
+	u8				data[12];
 #else 
 	u32				data[4];
-	u8 data_light;
+	u8				data_light;
 #endif
 
 private:

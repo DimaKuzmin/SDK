@@ -23,8 +23,11 @@ void	export_ogf		( xrMU_Reference& mu_reference );
 
 
 #include "../XrLCLight/BuildArgs.h"
-
+#include "xrLC.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+
+extern  SpecialArgs* current_args_data;
+
 
 using namespace			std;
 struct OGF_Base;
@@ -161,7 +164,7 @@ void CBuild::Run(LPCSTR P)
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
 
 	bool CformOnly = false;
-	 
+
 #pragma todo("se7kills TODO CFORM BUILD PARAMS ")
 
   	//****************************************** Open Level
@@ -244,11 +247,7 @@ void CBuild::Run(LPCSTR P)
 
 	mem_Compact();
  	Light_prepare();
-	
-	if (build_args->use_embree)
-		BuildIntelModel(TRUE);
-	else 
-		BuildRapid(TRUE);
+	BuildRapid(TRUE);
 	
 	log_vminfo_new("rcast-CFORM model momory_after");
   
@@ -280,17 +279,21 @@ void CBuild::Run(LPCSTR P)
  	
 	log_vminfo_new("Build UV mapping");
 
+
 	//****************************************** Subdivide geometry
   	FPU::m64r					();
   	Phase						("Subdividing geometry...");
    	mem_Compact					();
+  
    	xrPhase_Subdivide			();
     log_vminfo_new("Subdividing geometry");
  
 	// Se7Kills Opacity BUFFERS
  	//****************************************** All lighting + lmaps building and saving
- 		
-	Light						();
+ 	
+	if (!current_args_data->test_build)
+		Light						();
+
 	RunAfterLight				( fs );
 
 }

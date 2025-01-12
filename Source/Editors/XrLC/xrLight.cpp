@@ -9,9 +9,8 @@
 #include "../../xrcore/xrSyncronize.h"
  
 //#include "../xrLCLight/net_task_manager.h"
- #include "../xrLCLight/mu_model_light.h"
-
- 
+#include "../xrLCLight/mu_model_light.h"
+#include "../XrLCLight/xrLight_Embree.h"
 
 #include "../XrLCLight/base_face.h"
 
@@ -45,7 +44,7 @@ public:
 	{
  
 		CDeflector* D	= 0;
-
+ 
 		for (;;) 
 		{
 			// Get task
@@ -62,11 +61,11 @@ public:
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
 
 			 
- 			StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
-				lc_global_data()->g_deflectors().size() - task_pool.size(), 
-				lc_global_data()->g_deflectors().size(),
-				D->layer.width, D->layer.height
-			);
+ 			// StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
+			// 	lc_global_data()->g_deflectors().size() - task_pool.size(), 
+			// 	lc_global_data()->g_deflectors().size(),
+			// 	D->layer.width, D->layer.height
+			// );
 			 
 			
 			task_pool.pop_back	();
@@ -75,7 +74,7 @@ public:
 			// Perform operation
 			try 
 			{
-				D->Light	(thID, &DB,&LightsSelected,H);
+				D->Light	(&DB,&LightsSelected,H);
 			} 
 			catch (...)
 			{
@@ -86,14 +85,9 @@ public:
 };
 
 void IntelEmbereUNLOAD();
-
-
-#include <tbb/parallel_for_each.h>
-#include <random>
-#include <xmmintrin.h>
-#include <pmmintrin.h>
-
-
+ 
+#include "ppl.h"
+#include <atomic>
   
 void	CBuild::LMapsLocal				()
 {
@@ -105,22 +99,62 @@ void	CBuild::LMapsLocal				()
 	{
 		return defl->similar_pos(*defl2, 0.1f);
 	});
-
-
-	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
-		task_pool.push_back(dit);
- 
-	// Main process (4 threads) (-th MAX_THREADS)
-	Status("Lighting...");
-	CThreadManager	threads;
+	 
 	CTimer	start_time;
 	start_time.Start();
 
-	int th = build_args->use_threads;
+	// Main process (4 threads) (-th MAX_THREADS)
+	Status("Lighting...");
+ 
+	/// CThreadManager	threads;
+	/// 	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
+	/// task_pool.push_back(dit);
+	/// int th = build_args->use_threads;
+	/// 
+	/// for (int L = 0; L < th; L++)
+	/// 	threads.start(xr_new<CLMThread>(L), L);
+	/// threads.wait(500);
+	 
 
-	for (int L = 0; L < th; L++)
-		threads.start(xr_new<CLMThread>(L), L);
-	threads.wait(500);
+	thread_local HASH			H;
+	thread_local CDB::COLLIDER	DB;
+	thread_local base_lighting	LightsSelected;
+
+	u32 Progress = 0;
+	std::atomic<int> processed;
+
+	u32 LastProgressBar = 0;
+
+	u32 MaxSize = lc_global_data()->g_deflectors().size();
+	   
+	concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t ID)
+	{
+ 		
+		// Get task
+ 		CDeflector* D = lc_global_data()->g_deflectors()[ID];
+		  
+		// Perform operation
+		try
+		{
+			D->Light(&DB, &LightsSelected, H);
+		}
+		catch (...)
+		{
+			clMsg("* ERROR: CLMThread::Execute - light");
+		}
+	
+ 		processed.fetch_add(1);
+		
+		if (LastProgressBar < processed)
+		{
+			StatusNoMSG("Deflectors Ended : %u ", processed.load());
+			LastProgressBar = processed + 4096;
+		}
+		
+		// StatusNoMSG("DEFL[%d]/[%d]", ID, lc_global_data()->g_deflectors().size());
+	});
+
+
 
 	clMsg("%f seconds", start_time.GetElapsed_sec());
 }

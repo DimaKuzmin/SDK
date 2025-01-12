@@ -36,8 +36,14 @@ CTimer	dwStartupTime;
 
 XRLC_API SpecialArgs* current_args_data = 0;
 
+#include "ppl.h"
 void Startup(SpecialArgs* args)
 {
+	Concurrency::SchedulerPolicy policy(1, Concurrency::MaxConcurrency, build_args->use_threads); // Ограничение до 4 потоков
+
+	// Применяем новый планировщик
+	Concurrency::CurrentScheduler::Create(policy);
+
 	create_global_data();
   
  	// Give a LOG-thread a chance to startup
@@ -106,8 +112,6 @@ void Startup(SpecialArgs* args)
 
 	// Call for builder
 	string_path				lfn;
-	
-	
 	dwStartupTime.Start();
 
 	FS.update_path			(lfn,_game_levels_, name.c_str());
@@ -125,6 +129,8 @@ void Startup(SpecialArgs* args)
 	// Close log
 	bClose					= TRUE;
 	Sleep					(500);
+
+	Concurrency::CurrentScheduler::Detach();
 
 	current_args_data = nullptr;
 }

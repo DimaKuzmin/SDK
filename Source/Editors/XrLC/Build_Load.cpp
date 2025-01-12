@@ -450,7 +450,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  				string_path			th_name;
 				FS.update_path	(th_name,"$game_textures$",strconcat(sizeof(th_name),th_name,N,".thm"));
 				
-				clMsg			("processing: %s",th_name);
+				// clMsg			("processing: %s",th_name);
 				
 				IReader* THM	= FS.r_open(th_name);
 				 
@@ -489,13 +489,16 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						if ( ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1) || BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
+						//  ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1) 
+
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
-							clMsg("- loading: %s", N);
 							string_path name;
 							
 							if  ( Surface_Detect(name, N) && BT.pSurface.LoadFromFile(name) )
 							{		
+								clMsg("- loading: %s", N);
+
 								BT.pSurface.ClearMipLevels();
 								BT.THM.SetHasSurface(true);
 								BT.pSurface.Convert(BearTexturePixelFormat::R8G8B8A8);
@@ -516,9 +519,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							}
 							else
 							{
-								clMsg("- can't load %s", N);
+								// clMsg("- can't load %s", N);
+								
 								string128 tmp;
-								sprintf(tmp, "DXT 1 Face Ignoring: %s", N);
+								sprintf(tmp, "Texture Ignoring: %s, fmt: %s", N, GetFormat(BT.THM.fmt));
 								w->w_string(tmp);
 								
 								BT.dwWidth = 1024;
@@ -530,10 +534,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  						}
 						else
 						{
-							// string128 tmp;
-							// sprintf(tmp, "Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
-							// w->w_string(tmp);
- 							clMsg("(Disabled Loading DXT1) - not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
+							string128 tmp;
+							sprintf(tmp, "DXT1 (NO HAS ALPHA) Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
+							w->w_string(tmp);
+ 							// clMsg("(Disabled Loading DXT1) - not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
 							
 							BT.dwWidth = 1024;
 							BT.dwHeight = 1024;

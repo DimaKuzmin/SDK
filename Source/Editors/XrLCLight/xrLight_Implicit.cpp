@@ -6,11 +6,6 @@
 
 #include "tga.h"
 
-#ifndef DevCPU
-#include "xrHardwareLight.h"
-#endif
-
-
 #include "light_point.h"
 #include "xrdeflector.h"
 #include "xrLC_GlobalData.h"
@@ -19,69 +14,51 @@
 #include "../../xrcdb/xrcdb.h"
 #include "BuildArgs.h"
 
-#include "tbb/parallel_for.h"
-#include "tbb/blocked_range.h"
-
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
-xrCriticalSection crImplicit;
-
 ImplicitCalcGlobs cl_globs;
- 
 DEF_MAP(Implicit,u32,ImplicitDeflector);
 
- 
- 
-/** NETWORK PROCESS **/
+/** MAIN THREAD CALL EXECUTION, SORTING, SAVE**/
 
+#include "ppl.h"
+#include "xrLight_Embree.h"
 
-u32 curHeight = 0;
-void ImplicitExecute::clear()
+void PPL_MT()
 {
-	curHeight = 0;
-}
+	thread_local CDB::COLLIDER DB;
 
-/*** THREAD MAIN (ON CPU) ***/
- 
- 
-xrCriticalSection csOpacity;
- 
-void ImplicitExecute::Execute()
-{ 
-	ImplicitDeflector& defl = cl_globs.DATA();
+	thread_local u32 Jcount;
+	thread_local Fvector2* Jitter;
+	thread_local Fvector2 dim;
+	thread_local Fvector2 half;
+	thread_local Fvector2 JS;
 	 
-	dim.set(float(defl.Width()), float(defl.Height()));
-	half.set(.5f / dim.x, .5f / dim.y);
-
-	// Jitter data
-	JS.set(.499f / dim.x, .499f / dim.y);
-	CTimer t;
+	CTimer t; 
 	t.Start();
-	Jitter_Select(Jitter, Jcount);
 
-	// Lighting itself
- 	DB.ray_options(0);
- 	 
- 	for (;;)
-	{
-		int V = 0;
-			
-		crImplicit.Enter();
-		V = curHeight;
-		if (curHeight >= defl.Height())
-		{
-			crImplicit.Leave();
-			break;
-		}
-		curHeight++;
-		crImplicit.Leave();
+	std::atomic <int> Processed;
+	 
+	concurrency::parallel_for(size_t(0), size_t(cl_globs.DATA().Height()), [&](size_t V)
+	{		
+		 
+		ImplicitDeflector& defl = cl_globs.DATA();
 
-  
+		dim.set(float(defl.Width()), float(defl.Height()));
+		half.set(.5f / dim.x, .5f / dim.y);
+
+		// Jitter data
+		JS.set(.499f / dim.x, .499f / dim.y);
+		Jitter_Select(Jitter, Jcount);
+ 
+		// Lighting itself
+		DB.ray_options(0);
+
 		// FOR CYCLE
- 		for(u32 U = 0; U < defl.Width(); U++)
+		for (u32 U = 0; U < defl.Width(); U++)
 		{
 			base_color_c	C;
 
@@ -115,9 +92,6 @@ void ImplicitExecute::Execute()
 							wN.normalize();
 							u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
 							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
-							
-							// LightPointEmbree( C,wP, wN, inlc_global_data()->L_static(), flags, F);
-
 							Fcount++;
 						}
 					}
@@ -125,7 +99,7 @@ void ImplicitExecute::Execute()
 			}
 			catch (...)
 			{
-				clMsg("* THREAD #%d: Access violation. Possibly recovered."); 
+				clMsg("* THREAD #%d: Access violation. Possibly recovered.");
 			}
 
 			if (Fcount)
@@ -145,13 +119,18 @@ void ImplicitExecute::Execute()
 		}
 		// FOR CYCLE END
 
-		if (V % 128 == 0 || V == defl.Height())
+		if (Processed.load() % 128 == 0)
 		{
-			clMsg("CurV: %d, Sec[%.0f]", V, t.GetElapsed_sec());
+			clMsg("Processed: %d, Timer: %f", Processed.load(), t.GetElapsed_sec());
 		}
+		Processed.fetch_add(1);
 	}
+
+ 	);
+
+	ImplicitDeflector& defl = cl_globs.DATA();
+	clMsg("Ligting Implicit: %s, Timer: %f", defl.texture->name, t.GetElapsed_sec());
 }
-/** MAIN THREAD CALL EXECUTION, SORTING, SAVE**/
 
 static xr_vector<u32> not_clear;
 void ImplicitLightingExec(BOOL b_net)
@@ -203,20 +182,26 @@ void ImplicitLightingExec(BOOL b_net)
 		Progress					(0);
 		cl_globs.Initialize( defl );
  		
-		RunImplicitMultithread(defl);
+		//se7kills PPL Style MT
+ 		PPL_MT();
+
+		// RunImplicitMultithread(defl);
 						  
 		defl.faces.clear_and_free();
 
 		// Expand
 		Status	("Processing lightmap...");
-		for (u32 ref=254; ref>0; ref--)
-		if (!ApplyBorders(defl.lmap,ref)) 
-		break;
+		for (u32 ref = 254; ref > 0; ref--)
+		{
+			if (!ApplyBorders(defl.lmap, ref))
+				break;
+		}
 
 		Status	("Mixing lighting with texture...");
 		{
 			b_BuildTexture& TEX		=	*defl.texture;
-			VERIFY					(!TEX.pSurface.Empty());
+			if (TEX.pSurface.Empty())
+				Msg("[ImplicitLighting] Problem Texture : %s, Detected", * TEX.name);
 			u32*			color	= static_cast<u32*>(*TEX.pSurface);
 			for (u32 V=0; V<defl.Height(); V++)	{
 				for (u32 U=0; U<defl.Width(); U++)	{
@@ -238,7 +223,7 @@ void ImplicitLightingExec(BOOL b_net)
 		{
 			string_path				name, out_name;
 			
-			//se7kills rewrite		//sscanf					(strstr(Core.Params,"-f")+2,"%s",name);
+			//se7kills rewrite		 
 			sprintf(name, "%s", build_args->level_name.c_str());
 
 			R_ASSERT				(name[0] && defl.texture);
@@ -262,12 +247,8 @@ void ImplicitLightingExec(BOOL b_net)
 		// lmap
 		Status	("Saving lmap...");
 		{
-			//xr_vector<u32>			packed;
-			//defl.lmap.Pack			(packed);
-
 			string_path				name, out_name;
-			//sscanf					(strstr(GetCommandLine(),"-f")+2,"%s",name);
-			sprintf(name, "%s", build_args->level_name.c_str());
+ 			sprintf(name, "%s", build_args->level_name.c_str());
 			
 			b_BuildTexture& TEX		=	*defl.texture;
 			strconcat				(sizeof(out_name),out_name,name,"\\",TEX.name,"_lm.dds");
