@@ -66,13 +66,9 @@ int get_texture_load_lod(LPCSTR fn)
 		}
 	}
 
-	if(psTextureLOD<2) {
-//		if ( enough_address_space_available || (g_current_renderer < 2) )
-			return 0;
-//		else
-//			return 1;
-	}
-	else
+	if(psTextureLOD<2) 
+  		return 0;
+ 	else
 	if(psTextureLOD<4)
 		return 1;
 	else
@@ -104,6 +100,7 @@ IC u32 GetPowerOf2Plus1	(u32 v)
         while (v) {v>>=1; cnt++; };
         return cnt;
 }
+
 IC void	Reduce				(int& w, int& h, int& l, int& skip)
 {
 	while ((l>1) && skip)
@@ -213,6 +210,7 @@ IC	void	TW_Iterate_1OP
 		t_src->UnlockRect			(i);
 	}
 }
+
 template	<class _It>
 IC	void	TW_Iterate_2OP
 (
@@ -258,6 +256,7 @@ IC u32 it_gloss_rev		(u32 d, u32 s)	{	return	color_rgba	(
 	color_get_G(d),
 	color_get_R(d)		);
 }
+
 IC u32 it_gloss_rev_base(u32 d, u32 s)	{	
 	u32		occ		= color_get_A(d)/3;
 	u32		def		= 8;
@@ -269,24 +268,28 @@ IC u32 it_gloss_rev_base(u32 d, u32 s)	{
 		color_get_R(d)
 	);
 }
+
 IC u32 it_difference	(u32 d, u32 orig, u32 ucomp)	{	return	color_rgba(
 	128+(int(color_get_R(orig))-int(color_get_R(ucomp)))*2,		// R-error
 	128+(int(color_get_G(orig))-int(color_get_G(ucomp)))*2,		// G-error
 	128+(int(color_get_B(orig))-int(color_get_B(ucomp)))*2,		// B-error
 	128+(int(color_get_A(orig))-int(color_get_A(ucomp)))*2	);	// A-error	
 }
+
 IC u32 it_height_rev	(u32 d, u32 s)	{	return	color_rgba	(
 	color_get_A(d),					// diff x
 	color_get_B(d),					// diff y
 	color_get_G(d),					// diff z
 	color_get_R(s)	);				// height
 }
+
 IC u32 it_height_rev_base(u32 d, u32 s)	{	return	color_rgba	(
 	color_get_A(d),					// diff x
 	color_get_B(d),					// diff y
 	color_get_G(d),					// diff z
 	(color_get_R(s)+color_get_G(s)+color_get_B(s))/3	);	// height
 }
+ 
 #ifdef _EDITOR
 inline _D3DFORMAT Convert(BearTexturePixelFormat format, BearImage& image)
 {
@@ -389,19 +392,23 @@ inline _D3DFORMAT Convert(BearTexturePixelFormat format, BearImage& image)
 	}
 	return _D3DFORMAT::D3DFMT_UNKNOWN;
 }
+
 ID3DBaseTexture* CRender::texture_load_software(LPCSTR fRName, u32& ret_msize)
 {	// validation
 	ID3DTexture2D*			Texture2D = NULL;
 	IDirect3DCubeTexture9*  TextureCUBE = NULL;
 	R_ASSERT(fRName);
 	R_ASSERT(fRName[0]);
+	
+	
 	string_path				fn;
 	// make file name
+	
 	string_path				fname;
-	xr_strcpy(fname, fRName); //. andy if (strext(fname)) *strext(fname)=0;
+	xr_strcpy(fname, fRName); 
 	fix_texture_name(fname);
 	IReader* S = NULL;
-	//if (FS.exist(fn,"$game_textures$",fname,	".dds")	&& strstr(fname,"_bump"))	goto _BUMP;
+
 	bool IsBump = false;
 	D3DFORMAT Format;
 	if (FS.exist(fn, "$game_textures$", fname, ".dds") && strstr(fname, "_bump"))
@@ -513,8 +520,7 @@ ID3DBaseTexture* CRender::texture_load_software(LPCSTR fRName, u32& ret_msize)
 				u32 h = Image.GetSize().y;
 				ID3DTexture2D* T_normal_1C = TW_LoadTextureFromTexture(T_normal_1, Format, img_loaded_lod,w ,h );
 				int mip_cnt = T_normal_1C->GetLevelCount();
-		// T_normal_1C	- normal.gloss,		reversed
-		// T_normal_2C	- 2*error.height,	non-reversed
+
 				_RELEASE(Texture2D);
 				_RELEASE(T_normal_1);
 				return				T_normal_1C;
@@ -528,6 +534,7 @@ ID3DBaseTexture* CRender::texture_load_software(LPCSTR fRName, u32& ret_msize)
 
 }
 #endif
+ 
 ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 {
 	ID3DTexture2D*		pTexture2D		= NULL;
@@ -553,22 +560,10 @@ ID3DBaseTexture*	CRender::texture_load(LPCSTR fRName, u32& ret_msize)
 	if (FS.exist(fn,"$game_saves$",		fname,	".dds"))							goto _DDS;
 	if (FS.exist(fn,"$game_textures$",	fname,	".dds"))							goto _DDS;
 
-
-#ifdef _EDITOR
 	ELog.Msg(mtError,"Can't find texture '%s'",fname);
-
 	goto _IMPORT;
 
 	return 0;
-#else
-
-	Msg("! Can't find texture '%s'",fname);
-	R_ASSERT(FS.exist(fn,"$game_textures$",	"ed\\ed_not_existing_texture",".dds"));
-	goto _DDS;
-
-//	Debug.fatal(DEBUG_INFO,"Can't find texture '%s'",fname);
-
-#endif
 
 _IMPORT:
 	{

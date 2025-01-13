@@ -16,18 +16,7 @@
 
 //	Already defined in Texture.cpp
 void fix_texture_name(LPSTR fn);
-/*
-void fix_texture_name(LPSTR fn)
-{
-	LPSTR _ext = strext(fn);
-	if(  _ext					&&
-	  (0==stricmp(_ext,".tga")	||
-		0==stricmp(_ext,".dds")	||
-		0==stricmp(_ext,".bmp")	||
-		0==stricmp(_ext,".ogm")	) )
-		*_ext = 0;
-}
-*/
+ 
 //--------------------------------------------------------------------------------------------------------------
 template <class T>
 BOOL	reclaim		(xr_vector<T*>& vec, const T* ptr)
@@ -46,20 +35,11 @@ IBlender* CResourceManager::_GetBlender		(LPCSTR Name)
 
 	LPSTR N = LPSTR(Name);
 	map_Blender::iterator I = m_blenders.find	(N);
-#ifdef _EDITOR
-	if (I==m_blenders.end())	return 0;
-#else
-//	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
+
 	if (I==m_blenders.end())	
-	{
-		Msg("DX10: Shader '%s' not found in library.",Name); 
 		return 0;
-	}
-#endif
-	if (I==m_blenders.end())	{ Debug.fatal(DEBUG_INFO,"Shader '%s' not found in library.",Name); return 0; }
-#endif
-	else					return I->second;
+	else					
+		return I->second;
 }
 
 IBlender* CResourceManager::_FindBlender		(LPCSTR Name)
@@ -105,8 +85,7 @@ void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 			strlwr		(N.begin());
 
 			fix_texture_name( N.begin() );
-//. andy			if (strext(N.begin())) *strext(N.begin())=0;
-			dest.push_back(N.begin());
+ 			dest.push_back(N.begin());
 			N.clear		();
 		} else {
 			N.push_back	(*P);
@@ -120,18 +99,19 @@ void	CResourceManager::_ParseList(sh_list& dest, LPCSTR names)
 		strlwr		(N.begin());
 
 		fix_texture_name( N.begin() );
-//. andy		if (strext(N.begin())) *strext(N.begin())=0;
-		dest.push_back(N.begin());
+ 		dest.push_back(N.begin());
 	}
 }
 
 ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 {
-	if (S.passes.empty())		return	0;
+	if (S.passes.empty())	
+		return	0;
 
 	// Search equal in shaders array
 	for (u32 it=0; it<v_elements.size(); it++)
-		if (S.equal(*(v_elements[it])))	return v_elements[it];
+	if (S.equal(*(v_elements[it])))	
+		return v_elements[it];
 
 	// Create _new_ entry
 	ShaderElement*	N		=	xr_new<ShaderElement>(S);
@@ -142,8 +122,10 @@ ShaderElement* CResourceManager::_CreateElement			(ShaderElement& S)
 
 void CResourceManager::_DeleteElement(const ShaderElement* S)
 {
-	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	return;
-	if (reclaim(v_elements,S))						return;
+	if (0==(S->dwFlags&xr_resource_flagged::RF_REGISTERED))	
+		return;
+	if (reclaim(v_elements,S))				
+		return;
 	Msg	("! ERROR: Failed to find compiled 'shader-element'");
 }
 
@@ -152,17 +134,16 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	CBlender_Compile	C;
 	Shader				S;
 
-	//.
-	// if (strstr(s_shader,"transparent"))	__asm int 3;
-
 	// Access to template
 	C.BT				= B;
 	C.bEditor			= FALSE;
 	C.bDetail			= FALSE;
-#ifdef _EDITOR
-	if (!C.BT)			{ ELog.Msg(mtError,"Can't find shader '%s'",s_shader); return 0; }
+	if (!C.BT)		
+	{ 
+		ELog.Msg(mtError,"Can't find shader '%s'",s_shader); 
+		return 0;
+	}
 	C.bEditor			= TRUE;
-#endif
 
 	// Parse names
 	_ParseList			(C.L_textures,	s_textures	);
@@ -173,8 +154,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	{
 		C.iElement			= 0;
 		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
-//.		C.bDetail			= _GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		ShaderElement		E;
+ 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[0]				= _CreateElement	(E);
 	}
@@ -182,8 +162,7 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 	// Compile element	(LOD1)
 	{
 		C.iElement			= 1;
-//.		C.bDetail			= _GetDetailTexture(*C.L_textures[0],C.detail_texture,C.detail_scaler);
-		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
+ 		C.bDetail			= m_textures_description.GetDetailTexture(C.L_textures[0],C.detail_texture,C.detail_scaler);
 		ShaderElement		E;
 		C._cpp_Compile		(&E);
 		S.E[1]				= _CreateElement	(E);
@@ -241,93 +220,17 @@ Shader*	CResourceManager::_cpp_Create	(IBlender* B, LPCSTR s_shader, LPCSTR s_te
 
 Shader*	CResourceManager::_cpp_Create	(LPCSTR s_shader, LPCSTR s_textures, LPCSTR s_constants, LPCSTR s_matrices)
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-#endif    
-	{
-		//	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
-		IBlender	*pBlender = _GetBlender(s_shader?s_shader:"null");
-		if (!pBlender) return NULL;
-		return	_cpp_Create(pBlender ,s_shader,s_textures,s_constants,s_matrices);
-#else	//	USE_DX10
-		return	_cpp_Create(_GetBlender(s_shader?s_shader:"null"),s_shader,s_textures,s_constants,s_matrices);
-#endif	//	USE_DX10
-//#else
-	}
-#ifndef _EDITOR
-	else
-#endif    
-	{
-		return NULL;
-	}
-//#endif
+	return	_cpp_Create(_GetBlender(s_shader?s_shader:"null"),s_shader,s_textures,s_constants,s_matrices);
 }
 
 Shader*		CResourceManager::Create	(IBlender*	B,		LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants, LPCSTR s_matrices)
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-#endif
-	{
-		return	_cpp_Create	(B,s_shader,s_textures,s_constants,s_matrices);
-//#else
-	}
-#ifndef _EDITOR
-	else
-#endif
-	{
-		return NULL;
-//#endif
-	}
+	return	_cpp_Create	(B,s_shader,s_textures,s_constants,s_matrices);
 }
 
 Shader*		CResourceManager::Create	(LPCSTR s_shader,	LPCSTR s_textures,	LPCSTR s_constants,	LPCSTR s_matrices)
 {
-//#ifndef DEDICATED_SERVER
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-#endif
-	{
-		//	TODO: DX10: When all shaders are ready switch to common path
-#if defined(USE_DX10) || defined(USE_DX11)
-		if	(_lua_HasShader(s_shader))		
-			return	_lua_Create	(s_shader,s_textures);
-		else								
-		{
-			Shader* pShader = _cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
-			if (pShader)
-				return pShader;
-			else
-			{
-				if (_lua_HasShader("stub_default"))
-					return	_lua_Create	("stub_default",s_textures);
-				else
-				{
-					FATAL("Can't find stub_default.s");
-					return 0;
-				}
-			}
-		}
-#else	//	USE_DX10
-#ifndef _EDITOR
-		if	(_lua_HasShader(s_shader))		
-			return	_lua_Create	(s_shader,s_textures);
-		else								
-#endif
-			return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
-#endif	//	USE_DX10
-	}
-//#else
-#ifndef _EDITOR
-	else
-#endif
-	{
-		return NULL;
-	}
-//#endif
+	return	_cpp_Create	(s_shader,s_textures,s_constants,s_matrices);
 }
 
 void CResourceManager::Delete(const Shader* S)
@@ -345,14 +248,7 @@ void CResourceManager::DeferredUpload()
 		t->second->Load();
 	}
 }
-/*
-void	CResourceManager::DeferredUnload	()
-{
-	if (!RDEVICE.b_is_Ready)				return;
-	for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
-		t->second->Unload();
-}
-*/
+
 #ifdef _EDITOR
 void	CResourceManager::ED_UpdateTextures(AStringVec* names)
 {
@@ -370,80 +266,6 @@ void	CResourceManager::ED_UpdateTextures(AStringVec* names)
 		for (map_TextureIt t=m_textures.begin(); t!=m_textures.end(); t++)
 			t->second->Unload();
 	}
-
-	// 2. Load
-	// DeferredUpload	();
-}
-void CResourceManager::ExportTexturesToDir(LPCSTR name)
-{
-	for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
-	{
-		if (xr_strcmp("$null", t->second->cName.c_str()) == 0)
-			continue;
-		 
-		{
-			string_path new_path, old_path;
-			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(new_path, "$export_textures$", t->second->cName.c_str());
-
-			xr_strcat(old_path, ".dds");
-			xr_strcat(new_path, ".dds");
-
-			string_path bump, bump2, bump_copy, bump_copy_2;
-
-			FS.update_path(bump, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(bump2, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(bump_copy, "$export_textures$", t->second->cName.c_str());
-			FS.update_path(bump_copy_2, "$export_textures$", t->second->cName.c_str());
-
-			xr_strcat(bump, "_bump.dds");
-			xr_strcat(bump2, "_bump#.dds");
-			xr_strcat(bump_copy, "_bump.dds");
-			xr_strcat(bump_copy_2, "_bump#.dds");
-
-
-			if (FS.exist(bump))
-				FS.file_copy(bump, bump_copy);
-			if (FS.exist(bump2))
-				FS.file_copy(bump2, bump_copy_2);
-
-			if (FS.exist(old_path))
-				FS.file_copy(old_path, new_path);
-		}
-		
-
-		{
-			string_path new_path, old_path;
-			FS.update_path(old_path, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(new_path, "$export_textures$", t->second->cName.c_str());
-
-			xr_strcat(old_path, ".thm");
-			xr_strcat(new_path, ".thm");
-
-			string_path bump, bump2, bump_copy, bump_copy_2;
-
-			FS.update_path(bump, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(bump2, "$game_textures$", t->second->cName.c_str());
-			FS.update_path(bump_copy, "$export_textures$", t->second->cName.c_str());
-			FS.update_path(bump_copy_2, "$export_textures$", t->second->cName.c_str());
-
-			xr_strcat(bump, "_bump.thm");
-			xr_strcat(bump2, "_bump#.thm");
-			xr_strcat(bump_copy, "_bump.thm");
-			xr_strcat(bump_copy_2, "_bump#.thm");
-
-
-			if (FS.exist(bump))
-				FS.file_copy(bump, bump_copy);
-			if (FS.exist(bump2))
-				FS.file_copy(bump2, bump_copy_2);
-
-			if (FS.exist(old_path))
-				FS.file_copy(old_path, new_path);
-		}
-	}
-
-
 }
 #endif
 
@@ -466,6 +288,7 @@ void	CResourceManager::_GetMemoryUsage(u32& m_base, u32& c_base, u32& m_lmaps, u
 		}
 	}
 }
+
 void	CResourceManager::_DumpMemoryUsage		()
 {
 	xr_multimap<u32,std::pair<u32,shared_str> >		mtex	;
@@ -494,21 +317,5 @@ void	CResourceManager::_DumpMemoryUsage		()
 void	CResourceManager::Evict()
 {
 	//	TODO: DX10: check if we really need this method
-#if !defined(USE_DX10) && !defined(USE_DX11)
 	CHK_DX	(HW.pDevice->EvictManagedResources());
-#endif	//	USE_DX10
 }
-/*
-BOOL	CResourceManager::_GetDetailTexture(LPCSTR Name,LPCSTR& T, R_constant_setup* &CS)
-{
-	LPSTR N = LPSTR(Name);
-	map_TD::iterator I = m_td.find	(N);
-	if (I!=m_td.end())
-	{
-		T	= I->second.T;
-		CS	= I->second.cs;
-		return TRUE;
-	} else {
-		return FALSE;
-	}
-}*/

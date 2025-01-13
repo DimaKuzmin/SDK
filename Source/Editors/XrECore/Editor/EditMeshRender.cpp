@@ -195,7 +195,7 @@ void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
     {
         RBVector& rb_vec = rb_pair->second;
         for (RBVecIt rb_it=rb_vec.begin(); rb_it!=rb_vec.end(); rb_it++)
-            EDevice.DP(D3DPT_TRIANGLELIST,rb_it->pGeom,0,rb_it->dwNumVertex/3);
+            EDevice.DP(D3DPT_TRIANGLELIST, rb_it->pGeom,0,rb_it->dwNumVertex/3);
     }
 }
 //----------------------------------------------------

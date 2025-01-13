@@ -4,12 +4,6 @@
 
 #include "../../xrcore/xr_resource.h"
 
-
-#if defined(USE_DX10) || defined(USE_DX11)
-#include "..\DX10\dx10ConstantBuffer.h"
-#endif	//	USE_DX10
-
-
 class  ECORE_API	R_constant_setup;
 
 enum

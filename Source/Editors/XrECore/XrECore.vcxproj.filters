@@ -22,6 +22,27 @@
     <Filter Include="Render\Backend">
       <UniqueIdentifier>{82ad706a-eca5-4ccc-b3dc-c670b9ee9091}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Render\Particle">
+      <UniqueIdentifier>{691d62ad-79b9-4694-8b32-71f3211a61bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\FMesh">
+      <UniqueIdentifier>{b6245fde-5c77-4674-aefc-4e2638da26aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\HW">
+      <UniqueIdentifier>{e4cb50ce-46f8-43aa-95f0-3a2a2a4b871f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\HW\API">
+      <UniqueIdentifier>{03a3d994-e84e-49d2-b93e-b53c42650d60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Backend\Include">
+      <UniqueIdentifier>{90b8c862-88ad-4e17-93e7-6e510de750b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Backend\r_constants">
+      <UniqueIdentifier>{d0a7a993-238b-41b2-97f2-629944420d47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Backend\SH">
+      <UniqueIdentifier>{51c95eca-2825-4188-a17c-c82aa8aef618}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WildMagic\WmlMath.cpp">
@@ -320,76 +341,16 @@
     <ClCompile Include="..\..\XrEngine\xrHemisphere.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\FBasicVisual.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\FHierrarhyVisual.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SkeletonAnimated.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SkeletonCustom.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SkeletonRigid.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SkeletonX.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\tga.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\DetailModel.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ModelPool.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ParticleEffect.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ParticleGroup.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\PSLibrary.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Texture.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\xrRender_console.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\FVisual.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ParticleEffectDef.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\FProgressive.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\FSkinned.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\Animation.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\HWCaps.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\HW.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\dxRenderFactory.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\dxFontRender.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\DX9\dx9r_constants_cache.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\r_constants.cpp">
@@ -398,31 +359,7 @@
     <ClCompile Include="..\..\XrRender\Private\R_DStreams.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SH_Matrix.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SH_Texture.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SH_Atomic.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SH_RT.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\SH_Constant.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Shader.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\tss_def.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\TextureDescrManager.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ETextureParams.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\stats_manager.cpp">
@@ -549,6 +486,90 @@
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\R_Backend_tree.cpp">
       <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SH_Atomic.cpp">
+      <Filter>Render\Backend\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SH_Constant.cpp">
+      <Filter>Render\Backend\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SH_Matrix.cpp">
+      <Filter>Render\Backend\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SH_RT.cpp">
+      <Filter>Render\Backend\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SH_Texture.cpp">
+      <Filter>Render\Backend\SH</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ParticleEffectDef.cpp">
+      <Filter>Render\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ParticleEffect.cpp">
+      <Filter>Render\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ParticleGroup.cpp">
+      <Filter>Render\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\PSLibrary.cpp">
+      <Filter>Render\Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\FHierrarhyVisual.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\FBasicVisual.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\FProgressive.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\FVisual.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\FSkinned.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SkeletonAnimated.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SkeletonRigid.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SkeletonCustom.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\SkeletonX.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\tga.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\HWCaps.cpp">
+      <Filter>Render\HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\HW.cpp">
+      <Filter>Render\HW</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\DX9\dx9r_constants_cache.cpp">
+      <Filter>Render\HW\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\dxRenderFactory.cpp">
+      <Filter>Render\HW\API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ETextureParams.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Texture.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\TextureDescrManager.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ModelPool.cpp">
+      <Filter>Render\FMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Shader.cpp">
+      <Filter>Render\Backend\SH</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -784,6 +805,33 @@
     </ClInclude>
     <ClInclude Include="Editor\UIEditLightAnim.h">
       <Filter>Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_Backend.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_hemi.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_tree.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_Runtime.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_xform.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\R_DStreams.h">
+      <Filter>Render\Backend\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\r_constants.h">
+      <Filter>Render\Backend\r_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrRender\Private\r_constants_cache.h">
+      <Filter>Render\Backend\r_constants</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\XrCore\xr_resource.h">
+      <Filter>Render\Backend\r_constants</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

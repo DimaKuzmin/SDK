@@ -56,11 +56,12 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 		base		=	BT->oT_Name;
 		if (id>=0)	
 		{
-			if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
+			if (id>=int(lst.size()))	
+				Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 			base	=	*lst [id];
 		}
-//.		if (!dxRenderDeviceRender::Instance().Resources->_GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
-		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))	bDetail	= FALSE;
+ 		if (!DEV->m_textures_description.GetDetailTexture(base,detail_texture,detail_scaler))
+			bDetail	= FALSE;
 	} 
 	else 
 	{
@@ -74,57 +75,24 @@ void	CBlender_Compile::_cpp_Compile	(ShaderElement* _SH)
 			base		=	BT->oT_Name;
 			if (id>=0)	
 			{
-				if (id>=int(lst.size()))	Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
+				if (id>=int(lst.size()))	
+					Debug.fatal(DEBUG_INFO,"Not enought textures for shader. Base texture: '%s'.",*lst[0]);
 				base	=	*lst [id];
 			}
 		}
 		//	Igor
 		////////////////////
-
-		bDetail	= FALSE;
+ 		bDetail	= FALSE;
 	}
 
 	// Validate for R1 or R2
 	bDetail_Diffuse	= FALSE;
 	bDetail_Bump	= FALSE;
-
-#ifndef _EDITOR
-#if RENDER==R_R1
-	if (RImplementation.o.no_detail_textures)
-		bDetail = FALSE;
-#endif
-#endif
-
+	 
 	if(bDetail)
-	{
-		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
-
-#ifndef _EDITOR
-#if RENDER!=R_R1
-		//	Detect the alowance of detail bump usage here.
-		if (  !(RImplementation.o.advancedpp && ps_r2_ls_flags.test(R2FLAG_DETAIL_BUMP) ) )
-		{
-			bDetail_Diffuse |= bDetail_Bump;
-			bDetail_Bump = false;
-		}
-#endif
-#endif
-
-	}
-
-	bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) 
-		&& BT->canUseSteepParallax();
-/*
-	if (DEV->m_textures_description.UseSteepParallax(base))
-	{
-		bool bSteep = BT->canUseSteepParallax();
-		DEV->m_textures_description.UseSteepParallax(base);
-		bUseSteepParallax = true;
-	}
-*/	
-#ifdef USE_DX11
-	TessMethod = 0;
-#endif
+ 		DEV->m_textures_description.GetTextureUsage(base, bDetail_Diffuse, bDetail_Bump);
+ 
+	bUseSteepParallax = DEV->m_textures_description.UseSteepParallax(base) && BT->canUseSteepParallax();
 
 	// Compile
 	BT->Compile		(*this);

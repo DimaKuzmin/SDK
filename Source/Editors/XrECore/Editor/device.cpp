@@ -397,9 +397,11 @@ void CEditorRenderDevice::PrintDP_Stats()
 
 void CEditorRenderDevice::DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
+	OPTICK_EVENT("DirectX_Render");
 	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
     u32 dwRequired			= S->E[0]->passes.size();
     RCache.set_Geometry		(geom);
+
     for (u32 dwPass = 0; dwPass<dwRequired; dwPass++)
 	{
     	RCache.set_Shader	(S,dwPass);

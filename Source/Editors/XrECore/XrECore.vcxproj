@@ -309,6 +309,15 @@
     <ClCompile Include="WildMagic\WmlWinSystem.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\XrCore\xr_resource.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_Backend.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_hemi.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_Runtime.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_tree.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_Backend_xform.h" />
+    <ClInclude Include="..\..\XrRender\Private\r_constants.h" />
+    <ClInclude Include="..\..\XrRender\Private\r_constants_cache.h" />
+    <ClInclude Include="..\..\XrRender\Private\R_DStreams.h" />
     <ClInclude Include="Editor\ArbitraryList.h" />
     <ClInclude Include="Editor\ColorPicker.h" />
     <ClInclude Include="Editor\D3DUtils.h" />
@@ -923,6 +932,9 @@
       <EnableUAC>false</EnableUAC>
       <AdditionalDependencies>d3d9.lib;d3dx9.lib;vfw32.lib;Winmm.lib;dxguid.lib;dinput8.lib;Rpcrt4.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Y /I "$(SolutionDir)..\SDK\Bin\OptickCore.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

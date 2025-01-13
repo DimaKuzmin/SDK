@@ -235,7 +235,7 @@ public:
 	virtual void*					GetUpdateCallbackParam() { return Update_Callback_Param;}
 
 	// debug
-#ifdef DEBUG
+#ifdef DEBUG_0
 	void							DebugRender			(Fmatrix& XFORM);
 protected:
 	virtual shared_str		_BCL	getDebugName()	{ return dbg_name; }

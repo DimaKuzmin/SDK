@@ -3,10 +3,6 @@
 
 #include "ResourceManager.h"
 
-#ifndef _EDITOR
-#include "../../xrEngine/render.h"
-#endif
-
 #include "../../xrEngine/tntQAVI.h"
 #include "../../xrEngine/xrTheora_Surface.h"
 
@@ -52,7 +48,8 @@ CTexture::~CTexture()
 
 void					CTexture::surface_set	(ID3DBaseTexture* surf )
 {
-	if (surf)			surf->AddRef		();
+	if (surf)		
+		surf->AddRef		();
 
 	_RELEASE								(pSurface);
 
@@ -150,11 +147,14 @@ void CTexture::Load		()
 {
 	flags.bLoaded					= true;
 	desc_cache						= 0;
-	if (pSurface)					return;
+	if (pSurface)					
+		return;
 
 	flags.bUser						= false;
 	flags.MemoryUsage				= 0;
-	if (0==stricmp(*cName,"$null"))	return;
+	if (0==stricmp(*cName,"$null"))	
+		return;
+
 	if (0!=strstr(*cName,"$user$"))	
 	{
 		flags.bUser	= true;
@@ -162,10 +162,7 @@ void CTexture::Load		()
 	}
 
 	Preload							();
-//#ifndef		DEDICATED_SERVER
-#ifndef _EDITOR
-	if (!g_dedicated_server)
-#endif
+
 	{
 		// Check for OGM
 		string_path			fn;
@@ -284,7 +281,6 @@ void CTexture::Load		()
 				flags.MemoryUsage		=	mem;
 			}
 		}
-//#endif
 	}
 	PostLoad	()		;
 }

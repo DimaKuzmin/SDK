@@ -1,5 +1,3 @@
-#ifndef	dx9R_Backend_Runtime_included
-#define	dx9R_Backend_Runtime_included
 #pragma once
 
 IC void		CBackend::set_xform			(u32 ID, const Fmatrix& M)
@@ -100,7 +98,8 @@ ICF void CBackend::set_Indices(ID3DIndexBuffer* _ib)
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)
 {
-	//Fix D3D ERROR
+	OPTICK_EVENT("Render Indexed");
+ 	//Fix D3D ERROR
 	if (PC==0)
 		return;
 
@@ -114,6 +113,8 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 baseV, u32 startV, u32 countV,
 
 ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 {
+	OPTICK_EVENT("Render");
+
 	//Fix D3D ERROR
 	if (PC==0)
 		return;
@@ -128,6 +129,7 @@ ICF void CBackend::Render(D3DPRIMITIVETYPE T, u32 startV, u32 PC)
 
 IC void CBackend::set_Geometry(SGeometry* _geom)
 {
+	OPTICK_EVENT("set_Geometry");
 	set_Format			(_geom->dcl._get()->dcl);
 	set_Vertices		(_geom->vb, _geom->vb_stride);
 	set_Indices			(_geom->ib);
@@ -231,5 +233,3 @@ IC void CBackend::set_Constants			(R_constant_table* C)
 			Cs->handler->setup(Cs);
 	}
 }
-
-#endif	//	dx9R_Backend_Runtime_included

@@ -52,10 +52,7 @@ IC	ID3DDepthStencilView* CBackend::get_ZB				()
 
 ICF void	CBackend::set_States		(ID3DState* _state)
 {
-//	DX10 Manages states using it's own algorithm. Don't mess with it.
-#if !defined(USE_DX10) && !defined(USE_DX11)
 	if (state!=_state)
-#endif	//	USE_DX10
 	{
 		PGO				(Msg("PGO:state_block"));
 #ifdef DEBUG
@@ -81,8 +78,7 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 					matrices	[it]	= mat;
 					mat->Calculate		();
 					set_xform			(D3DTS_TEXTURE0+it,mat->xform);
-	//				stat.matrices		++;
-				}
+ 				}
 			}
 		}
 	}
@@ -91,23 +87,14 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 
 IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 {
+	OPTICK_EVENT("set_Element");
 	SPass&	P		= *(S->passes[pass]);
 	set_States		(P.state);
 	set_PS			(P.ps);
 	set_VS			(P.vs);
-#if defined(USE_DX10) || defined(USE_DX11)
-	set_GS			(P.gs);
-#ifdef USE_DX11
-	set_HS			(P.hs);
-	set_DS			(P.ds);
-	set_CS			(P.cs);
-#endif
-#endif	//	USE_DX10
 	set_Constants	(P.constants);
 	set_Textures	(P.T);
-#ifdef _EDITOR
 	set_Matrices	(P.M);
-#endif
 }
 
 ICF void CBackend::set_Shader			(Shader* S, u32 pass)
