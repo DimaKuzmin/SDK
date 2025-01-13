@@ -363,7 +363,7 @@ extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
 	PrepareRedraw();
-    try{
+  //  try{
     
         if (u32(RTSize.x * EDevice.m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice.m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
         {
@@ -422,12 +422,12 @@ void TUI::Redraw()
                     DU_impl.DrawPivot(m_Pivot);
                 }
 
-                try {
+                //try {
                     Tools->Render();
-                }
-                catch (...) {
-                    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
-                }
+                //}
+                //catch (...) {
+                //    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
+                //}
 
                 // draw selection rect
                 if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
@@ -446,27 +446,27 @@ void TUI::Redraw()
                 RCache.set_ZB(HW.pBaseZB);
             }
 
-            try {
+            //try {
                 EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
                 g_bRendering = FALSE;
                 Draw();
                 EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
                 // end draw
                 EDevice.End();
-            }
-            catch (...) {
-                ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
-            }
+            //}
+            //catch (...) {
+            //    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
+            //}
 
         }
-    }catch(...){
-    	ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
-//		_clear87();
-//		FPU::m24r();
-//    	ELog.DlgMsg(mtError, "Critical error has occured in render routine.\nEditor may work incorrectly.");
-        EDevice.End();
-//		EDevice.Resize(m_D3DWindow->Width,m_D3DWindow->Height);
-    }
+   // }
+   // catch(...)
+   // {
+   //     // Debug.Callstack();
+   // 	// ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
+   //     EDevice.End();
+   //   
+   // }
 
 	OutInfo();
 }
@@ -485,7 +485,6 @@ void TUI::RealUpdateScene()
 }
 void TUI::RealRedrawScene()
 {
-
     Redraw				();         
 }
 void TUI::OnFrame()
@@ -507,9 +506,10 @@ void TUI::OnFrame()
 }
 bool TUI::Idle()         
 {
-	VERIFY(m_bReady);
-   // EDevice.b_is_Active  = Application->Active;
-	// input
+    OPTICK_FRAME("Main Thread");
+
+    OPTICK_EVENT("MAIN::Idle");
+
     MSG msg;
     do
     {
@@ -526,19 +526,30 @@ bool TUI::Idle()
         }
 
     } while (msg.message);
-    if (m_Flags.is(flResetUI))RealResetUI();
 
+ 
+    if (m_Flags.is(flResetUI))
+        RealResetUI();
+
+ 
+    OPTICK_EVENT("__Input__Onframe__");
     pInput->OnFrame();
     Sleep(1);
+    OPTICK_POP();
 
+    OPTICK_EVENT("__OnFrame__");
     OnFrame			();
+    OPTICK_POP();
     
+    OPTICK_EVENT("__RedrawScene__");
     if ( !m_Flags.is(flNeedQuit) && !m_AppClosed)  //m_bAppActive &&
         RealRedrawScene();
+    OPTICK_POP();
 
     // test quit
     if (m_Flags.is(flNeedQuit))
         RealQuit();
+
     return !m_AppClosed;
 }
 //---------------------------------------------------------------------------
@@ -555,9 +566,6 @@ bool TUI::OnCreate()
 {
 // create base class
 	EDevice.InitTimer();
-
-  //  m_D3DWindow 	= w;
-  //  m_D3DPanel		= p;
     EDevice.Initialize();
 	// Creation
 	ETOOLS::ray_options	(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
@@ -567,12 +575,6 @@ bool TUI::OnCreate()
 
     m_bReady		= true;
 
-#if 0
-    if (!CreateMailslot()) {
-        ELog.DlgMsg(mtError, "Can't create mail slot.\nIt's possible two Editors started.");
-        return 		false;
-    }
-#endif
     string_path log_path;
     if (!FS.exist(log_path,_temp_,""))
     {

@@ -121,10 +121,18 @@ void __cdecl Msg_IN_FILE(const char* format, ...)
 	va_start(mark, format);
 	int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark); buf[sizeof(buf) - 1] = 0;
 	va_end(mark);
+	
 	if (sz)
 	{
-		AddOne_fast(buf);
+		OutputDebugString(buf);
+		OutputDebugString("\n");
 	}
+
+
+	//if (sz)
+	//{
+	//	AddOne_fast(buf);
+	//}
 }
 
 

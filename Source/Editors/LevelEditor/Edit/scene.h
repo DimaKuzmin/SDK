@@ -117,9 +117,7 @@ class EScene
 public:
 	typedef	FixedMAP<float,CCustomObject*, render_allocator>	mapObject_D;
 	typedef mapObject_D::TNode	 	    	mapObject_Node;
-	mapObject_D						    	mapRenderObjects;
-
-	mapObject_D						    	mapRenderObjectsTH[8];
+	mapObject_D						    	mapRenderObjects[2];
 
 public:
 	st_LevelOptions	m_LevelOp;
@@ -233,7 +231,7 @@ public:
 	void 			RenderSky			(const Fmatrix& camera);
 
 	u32				LastUpdateRender = 0;
-	void			UpdateRenderList	(void* object_tools);
+	void			UpdateRenderList	(void* object_tools, bool useMT);
 	void 			Render              (const Fmatrix& camera);
 	void 			OnFrame				(float dT);
 

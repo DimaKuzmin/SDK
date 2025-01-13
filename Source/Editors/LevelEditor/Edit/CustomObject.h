@@ -152,7 +152,8 @@ public:
     void			SetRenderIfSelected(BOOL flag){m_CO_Flags.set(flRenderAnyWayIfSelected,flag);}
 
 	virtual bool 	IsRender		();
-	virtual void 	Render			(int priority, bool strictB2F);
+ 
+    virtual void 	Render			(int priority, bool strictB2F);
         	void 	RenderRoot		(int priority, bool strictB2F);
 	virtual void 	OnFrame			();
     virtual void 	OnUpdateTransform();

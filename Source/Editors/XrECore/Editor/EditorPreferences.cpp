@@ -141,7 +141,9 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateU32		(props,"Scene\\Common\\Undo Level", 		    &scene_undo_level,	0, 		125);
     PHelper().CreateFloat	(props,"Scene\\Grid\\Cell Size", 	           	&grid_cell_size,	0.1f,	10.f);
     PHelper().CreateU32		(props,"Scene\\Grid\\Cell Count", 	           	&grid_cell_count,	10, 	1000);
-    PHelper().CreateFloat(props, "Scene\\RadiusRender", &EDevice.RadiusRender,10.f,100000.f);
+    PHelper().CreateFloat   (props, "Scene\\RadiusRender",                  &EDevice.RadiusRender,10.f,100000.f);
+    PHelper().CreateU32     (props, "Scene\\RenderObjectsUTime",            &EDevice.RenderReloadObjectsTime, 1, 1000);
+    
 
     PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Limited Depth",		&bp_lim_depth);
     PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Back Face Culling",	&bp_cull);
@@ -167,7 +169,9 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateAngle	(props,"Viewport\\FOV",		  				    &view_fov,			deg2rad(0.1f), deg2rad(170.f));
     PHelper().CreateColor	(props,"Viewport\\Clear Color",		           	&scene_clear_color	);
 
-   ButtonValue* B = PHelper().CreateButton	(props,"Keyboard\\Common\\File","Load,Save", 0);
+ 
+
+    ButtonValue* B = PHelper().CreateButton	(props,"Keyboard\\Common\\File","Load,Save", 0);
     B->OnBtnClickEvent.bind	(this,&CCustomPreferences::OnKeyboardCommonFileClick);
     ECommandVec& cmds		= GetEditorCommands();
     for (u32 cmd_idx=0; cmd_idx<cmds.size(); cmd_idx++){
@@ -340,6 +344,12 @@ void CCustomPreferences::Draw()
     {
         m_ItemProps->Draw();
     }
+
+    if (ImGui::Button("Apply"))
+    {
+        ApplyValues();
+    }
+
     ImGui::End();
 }
 

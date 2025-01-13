@@ -210,6 +210,7 @@ class ECORE_API CEditableMesh {
 	
 	shared_str			m_Name;
 
+
     CEditableObject*	m_Parent;
 
     void            GenerateCFModel		();
@@ -244,6 +245,9 @@ private:
 	Flags8			m_Flags;
 public:
 	st_MeshOptions	m_Ops;
+
+	bool isVisiableRender = false;
+
 protected:
 	Fbox			m_Box;
 

@@ -30,7 +30,6 @@ class ECORE_API CEditorRenderDevice :
 
 	//u32						Timer_MM_Delta;
 	//CTimer					Timer;
-	//CTimer					TimerGlobal;
 
     ref_shader				m_CurrentShader;
 
@@ -39,12 +38,17 @@ class ECORE_API CEditorRenderDevice :
 	void					_Destroy	(BOOL	bKeepTextures);
 	void 					Reset  		();
 public:
+	CTimer					TimerGlobal;
+
+
     ref_shader				m_WireShader;
     ref_shader				m_SelectionShader;
 
     Fmaterial				m_DefaultMat;
 public:
 	float RadiusRender;
+	u32 RenderReloadObjectsTime = 1;
+
    // u32 					dwWidth, dwHeight;
 	u32 					m_RenderWidth, m_RenderHeight;
     float					m_RenderArea;

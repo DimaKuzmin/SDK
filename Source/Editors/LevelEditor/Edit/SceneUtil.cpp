@@ -43,7 +43,7 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 
 CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
-    PROFILE_EDITOR("FindObjectByName")
+    OPTICK_EVENT("FindObjectByName")
 
     SceneToolsMapPairIt _I = m_SceneTools.begin();
     SceneToolsMapPairIt _E = m_SceneTools.end();
@@ -79,10 +79,6 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object
 
     if (object != 0)
         return object;
-
-    PROFILE_EDITOR_STOP;
- 
-
 
     return 0;
 }

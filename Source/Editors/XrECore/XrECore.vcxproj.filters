@@ -13,8 +13,14 @@
     <Filter Include="Render">
       <UniqueIdentifier>{593c3986-0d03-46a3-af38-f8fdcf08f115}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Optick">
-      <UniqueIdentifier>{83dc0edb-940a-49e5-990a-c4da4d5f2994}</UniqueIdentifier>
+    <Filter Include="Render\Blender">
+      <UniqueIdentifier>{d691f934-9a51-41bb-816e-c8091870a453}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Resources">
+      <UniqueIdentifier>{e64a87cb-16fe-4231-84e8-784dd8cbc741}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Render\Backend">
+      <UniqueIdentifier>{82ad706a-eca5-4ccc-b3dc-c670b9ee9091}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -332,33 +338,6 @@
     <ClCompile Include="..\..\XrRender\Private\SkeletonX.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Reset.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Editor_Selection.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Screen_SET.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Editor_Wire.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Lm(EbB).cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Model_EbB.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_detail_still.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_tree.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_BmmD.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\tga.cpp">
       <Filter>Render</Filter>
     </ClCompile>
@@ -410,21 +389,6 @@
     <ClCompile Include="..\..\XrRender\Private\dxFontRender.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend_hemi.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend_tree.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend_xform.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend_Runtime.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend_DBG.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\DX9\dx9r_constants_cache.cpp">
       <Filter>Render</Filter>
     </ClCompile>
@@ -432,15 +396,6 @@
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\R_DStreams.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Loader.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Resources.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\ResourceManager.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\SH_Matrix.cpp">
@@ -464,61 +419,13 @@
     <ClCompile Include="..\..\XrRender\Private\tss_def.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Recorder_StandartBinding.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\blenders\Blender.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\blenders\Blender_Palette.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\blenders\Blender_Recorder.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\TextureDescrManager.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\ETextureParams.cpp">
       <Filter>Render</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Recorder_R2.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\XrRender\Private\stats_manager.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\BlenderDefault.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_default_aref.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Vertex.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Vertex_aref.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Screen_GRAY.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Blur.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_LaEmB.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Model.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Shadow_World.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\R_Backend.cpp">
-      <Filter>Render</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\XrRender\Private\Blender_Particle.cpp">
       <Filter>Render</Filter>
     </ClCompile>
     <ClCompile Include="..\..\XrCPU_Pipe\xrSkin2W.cpp" />
@@ -543,6 +450,105 @@
     </ClCompile>
     <ClCompile Include="Editor\UIEditLightAnim.cpp">
       <Filter>Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\BlenderDefault.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Blur.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_BmmD.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_default_aref.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_detail_still.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Editor_Selection.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Editor_Wire.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_LaEmB.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Lm(EbB).cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Model.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Model_EbB.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\blenders\Blender_Palette.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Particle.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\blenders\Blender_Recorder.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Recorder_R2.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Recorder_StandartBinding.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Screen_GRAY.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_Screen_SET.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Shadow_World.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\Blender_tree.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Vertex.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\R1_PC\Blender_Vertex_aref.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\blenders\Blender.cpp">
+      <Filter>Render\Blender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Resources.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ResourceManager.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Loader.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\ResourceManager_Reset.cpp">
+      <Filter>Render\Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend_xform.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend_DBG.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend_hemi.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend_Runtime.cpp">
+      <Filter>Render\Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\XrRender\Private\R_Backend_tree.cpp">
+      <Filter>Render\Backend</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

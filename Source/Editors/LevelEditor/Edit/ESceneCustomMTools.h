@@ -106,7 +106,9 @@ public:
     // render
     virtual void		BeforeRender			(){;}
     virtual void		OnRender				(int priority, bool strictB2F)=0;
-    		void		OnRenderRoot			(int priority, bool strictB2F){if(IsVisible())OnRender(priority, strictB2F);};
+ 
+    virtual void		OnRenderRoot			(int priority, bool strictB2F){if(IsVisible())  OnRender(priority, strictB2F);};
+      
     virtual void		AfterRender				(){;}
 
     // IO

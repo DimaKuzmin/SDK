@@ -17,28 +17,20 @@
 //----------------------------------------------------
 void CEditableMesh::GenerateRenderBuffers()
 {
-//    CTimer T;
-//    T.Start();
-/*
-    CMemoryWriter 	F;
-    m_Parent->PrepareOGF(F,false,this);
-	IReader R		(F.pointer(), F.size());
-	m_Visual 		= ::Render->Models->Create(GetName(),&R);
-//    Log				("Time: ",T.GetElapsed_sec());
-//	string_path fn;
-//	strconcat		(fn,"_alexmx_\\",GetName(),".ogf");
-//	FS.update_path	(fn,_import_,fn);
-//	F.save_to		(fn);
-	return;
-*/
-    if (m_RenderBuffers) return;
+    //OPTICK_EVENT("CEditorMesh::GenerateRenderBuffers")
+
+ 
+    if (m_RenderBuffers) 
+        return;
+
     m_RenderBuffers		= xr_new<RBMap>();
 
     GenerateVNormals	(0);
 
     VERIFY				(m_VertexNormals);
 
-    for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++){
+    for (SurfFacesPairIt sp_it=m_SurfFaces.begin(); sp_it!=m_SurfFaces.end(); sp_it++)
+    {
 		IntVec& face_lst = sp_it->second;
         CSurface* _S = sp_it->first;
         int num_verts=face_lst.size()*3;
@@ -47,30 +39,7 @@ void CEditableMesh::GenerateRenderBuffers()
         int start_face=0;
         int num_face;
         VERIFY3	(v_cnt,"Empty surface arrive.",_S->_Name());
-#if 0
-        do{
-	        rb_vec.push_back	(st_RenderBuffer(0,(v_cnt<V_LIM)?v_cnt:V_LIM));
-            st_RenderBuffer& rb	= rb_vec.back();
-            if (_S->m_Flags.is(CSurface::sf2Sided)) 	rb.dwNumVertex *= 2;
-            num_face			= (v_cnt<V_LIM)?v_cnt/3:F_LIM;
-
-            int buf_size		= D3DXGetFVFVertexSize(_S->_FVF())*rb.dwNumVertex;
-            R_ASSERT2			(buf_size,"Empty buffer size or bad FVF.");
-			u8*	bytes			= 0;
-			IDirect3DVertexBuffer9*	pVB=0;
-//			IDirect3DIndexBuffer9*	pIB=0;
-			R_CHK(HW.pDevice->CreateVertexBuffer(buf_size, D3DUSAGE_WRITEONLY, 0, D3DPOOL_MANAGED, &pVB, 0));
-//            R_CHK(HW.pDevice->CreateIndexBuffer(i_cnt*sizeof(u16),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&pIB,NULL));
-			rb.pGeom.create		(_S->_FVF(),pVB,0);
-
-			R_CHK				(pVB->Lock(0,0,(LPVOID*)&bytes,0));
-			FillRenderBuffer	(face_lst,start_face,num_face,_S,bytes);
-			pVB->Unlock			();
-
-            v_cnt				-= V_LIM;
-            start_face			+= (_S->m_Flags.is(CSurface::sf2Sided))?rb.dwNumVertex/6:rb.dwNumVertex/3;
-        }while(v_cnt>0);
-#else
+ 
         {
             rb_vec.push_back(st_RenderBuffer(0, v_cnt));
             st_RenderBuffer& rb = rb_vec.back();
@@ -90,7 +59,7 @@ void CEditableMesh::GenerateRenderBuffers()
 
             start_face += (_S->m_Flags.is(CSurface::sf2Sided)) ? rb.dwNumVertex / 6 : rb.dwNumVertex / 3;
         }
-#endif
+ 
         if (num_verts>0) m_RenderBuffers->insert(mk_pair(_S,rb_vec));
     }
     UnloadVNormals();
@@ -99,6 +68,8 @@ void CEditableMesh::GenerateRenderBuffers()
 
 void CEditableMesh::UnloadRenderBuffers()
 {
+    //OPTICK_EVENT("CEditorMesh::UnloadRenderBuffers")
+
 	if (m_RenderBuffers){
         for (RBMapPairIt rbmp_it=m_RenderBuffers->begin(); rbmp_it!=m_RenderBuffers->end(); rbmp_it++){
             for(RBVecIt rb_it=rbmp_it->second.begin(); rb_it!=rbmp_it->second.end(); rb_it++)
@@ -115,6 +86,8 @@ void CEditableMesh::UnloadRenderBuffers()
 
 void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_face, const CSurface* surf, LPBYTE& src_data)
 {
+    //OPTICK_EVENT("CEditorMesh::FillRenderBuffer")
+
 	LPBYTE data 		= src_data;
     u32 dwFVF 			= surf->_FVF();
 	u32 dwTexCnt 		= ((dwFVF&D3DFVF_TEXCOUNT_MASK)>>D3DFVF_TEXCOUNT_SHIFT);
@@ -199,18 +172,22 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 //----------------------------------------------------
 void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 {
-  
+    //OPTICK_EVENT("CEditorMesh::Render")
 
-    if (0==m_RenderBuffers) GenerateRenderBuffers();
+    if (0==m_RenderBuffers) 
+        GenerateRenderBuffers();
+
     // visibility test
-    if (!m_Flags.is(flVisible)) return;
+    if (!m_Flags.is(flVisible)) 
+        return;
     // frustum test
     
     Fbox bb; 
     bb.set(m_Box);
     bb.xform(parent);
 
-    if (!::Render->occ_visible(bb)) return;
+    if (!::Render->occ_visible(bb)) 
+        return;
   
     // render
     RBMapPairIt rb_pair = m_RenderBuffers->find(S);
@@ -228,6 +205,7 @@ static int RB_cnt=0;
 
 void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, IntVec& fl)
 {
+    //OPTICK_EVENT("CEditorMesh::RenderList")
 //	if (!m_Visible) return;
 //	if (!m_LoadState.is(LS_RBUFFERS)) CreateRenderBuffers();
 
@@ -265,7 +243,10 @@ void CEditableMesh::RenderList(const Fmatrix& parent, u32 color, bool bEdge, Int
 
 void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 color)
 {
-    if (0==m_RenderBuffers) GenerateRenderBuffers();
+    //OPTICK_EVENT("CEditorMesh::RenderSelection")
+
+    if (0==m_RenderBuffers) 
+        GenerateRenderBuffers();
 //	if (!m_Visible) return;
     Fbox bb; bb.set(m_Box);
     bb.xform(parent);
@@ -289,9 +270,12 @@ void CEditableMesh::RenderSelection(const Fmatrix& parent, CSurface* s, u32 colo
 
 void CEditableMesh::RenderEdge(const Fmatrix& parent, CSurface* s, u32 color)
 {
-    if (0==m_RenderBuffers) GenerateRenderBuffers();
-//	if (!m_Visible) return;
-	RCache.set_xform_world(parent);
+    //OPTICK_EVENT("CEditorMesh::RenderEdge")
+
+    if (0==m_RenderBuffers) 
+        GenerateRenderBuffers();
+ 
+    RCache.set_xform_world(parent);
 	EDevice.SetShader(EDevice.m_WireShader);
 	EDevice.RenderNearer(0.001);
 
@@ -323,6 +307,8 @@ struct svertRender
 };
 void CEditableMesh::RenderSkeleton(const Fmatrix&, CSurface* S)
 {
+    //OPTICK_EVENT("CEditorMesh::RenderSkeleton")
+     
     if (false==IsGeneratedSVertices(RENDER_SKELETON_LINKS))
     	GenerateSVertices(RENDER_SKELETON_LINKS);
 

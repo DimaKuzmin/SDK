@@ -10,6 +10,7 @@ class ESceneCustomOTool: public ESceneToolBase
 	typedef ESceneToolBase inherited;
 protected:
 	ObjectList			m_Objects;
+    ObjectList			m_ObjectsToRender;
     
 	bool 				OnLoadSelectionAppendObject(CCustomObject* obj);
 	bool 				OnLoadAppendObject		(CCustomObject* obj);

@@ -293,7 +293,7 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\Lib\$(Platform)\$(Configuration);$(SolutionDir)..\SDK\Lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)..\Libs\$(Platform)\$(Configuration);$(SolutionDir)..\SDK\Lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V10|x64'">

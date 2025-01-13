@@ -61,28 +61,17 @@ bool UIMainForm::Frame()
     return false;
 }
 
-/*
-
-#define PROFILE_ECAPTURE_START OPTICK_START_CAPTURE
-#define PROFILE_ECAPTURE_STOP  OPTICK_STOP_CAPTURE 
-#define PROFILE_ECAPTURE_SAVE (a) OPTICK_SAVE_CAPTURE(a)
-
-#define PROFILE_EDITOR(a) { OPTICK_EVENT(a)
-#define PROFILE_EDITOR_STOP }
-
-*/
-
 void UIMainForm::DrawContextMenu()
 {
     if (ImGui::BeginMenu("OptickCapture"))
     {
         if (ImGui::MenuItem("OptickStartCapture"))
         {
-            PROFILE_ECAPTURE_START();
+            OPTICK_START_CAPTURE();
         }
         if (ImGui::MenuItem("OptickSaveCapture"))
         {
-            PROFILE_ECAPTURE_STOP();
+            OPTICK_STOP_CAPTURE();
             try 
             {
                 OPTICK_SAVE_CAPTURE("Optick_data.opt");

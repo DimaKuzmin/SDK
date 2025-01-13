@@ -93,8 +93,90 @@ extern u32 GlobalRender = 0;
 extern float 	ssaLIMIT;
 extern float	g_fSCREEN;
 static const float ssaLim = 64.f*64.f/(640*480);
+
+#include <execution>
+void CEditableObject::RenderPrecalculate(const Fmatrix& parent)
+{
+    auto fun = [&](CEditableMesh* mesh)
+    {
+        Fbox bbox;
+        mesh->GetBox(bbox);
+        bbox.xform(parent);
+
+        float distance = 0.f;
+        {
+            Fvector center;
+            bbox.getcenter(center);
+            distance = center.distance_to_sqr(EDevice.vCameraPosition);
+        }
+
+        if (distance + bbox.getradius() < EDevice.RadiusRender * EDevice.RadiusRender)
+            mesh->isVisiableRender = true;
+        else
+            mesh->isVisiableRender = false;
+    };
+
+    if (m_Meshes.size() > 64)
+        std::for_each(std::execution::par, m_Meshes.begin(), m_Meshes.end(), fun);
+    else
+        std::for_each(m_Meshes.begin(), m_Meshes.end(), fun);
+}
+
+
+
+
+
+#include <mutex>
+std::mutex       mtx;
+
+struct RenderData
+{
+    Fmatrix parent;
+    CEditableMesh* mesh;
+
+    u32 s_id;
+    SurfaceVec surfaces;
+
+    CSurface* surface;
+ 
+    
+    bool skeleton;
+};
+xr_vector<RenderData> vector_rendering;
+
+extern  ECORE_API void RenderDirectx()
+{
+    //int ID = 0;
+    //Msg("RenderData: %d", vector_rendering.size());
+    // for (auto& ren_data : vector_rendering)
+    // {
+    //     CEditableMesh* mesh = ren_data.mesh;
+    //     if (!mesh)
+    //         continue;
+    // 
+    //     ref_shader& sh = ren_data.surfaces.size() ? ren_data.surfaces[ren_data.s_id]->_Shader() : ren_data.surface->_Shader();
+    //      
+    //     RCache.set_xform_world(ren_data.parent);
+    //     if (ren_data.skeleton)
+    //     {
+    //         EDevice.SetShader(sh);
+    //         mesh->RenderSkeleton(ren_data.parent, ren_data.surface);
+    //     }
+    //     else
+    //     {
+    //         EDevice.SetShader(sh);
+    //         mesh->Render(ren_data.parent, ren_data.surface);
+    //     }
+    // }
+    // 
+    // vector_rendering.clear();
+}
+
+
 void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
 {
+    OPTICK_EVENT("CEditableObject");
+
     if (!(m_LoadState.is(LS_RBUFFERS)))
     	DefferedLoadRP();
 
@@ -112,51 +194,137 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
     }
     else
     {
-        RCache.set_xform_world	(parent);
-
         if (m_objectFlags.is(eoHOM))
         {
-            if ((1==priority)&&(false==strictB2F))
-            	RenderEdge		(parent,0,0,0x40B64646);
-
-            if ((2==priority)&&(true==strictB2F))
-            	RenderSelection	(parent,0,0,0xA0FFFFFF);
-
+           RCache.set_xform_world(parent);
+           if ((1==priority)&&(false==strictB2F))
+           	    RenderEdge		(parent,0,0,0x40B64646);
+           
+           if ((2==priority)&&(true==strictB2F))
+           	    RenderSelection	(parent,0,0,0xA0FFFFFF);
+           
         }
         else
         if (m_objectFlags.is(eoSoundOccluder))
         {
-            if ((1==priority)&&(false==strictB2F))
-            	RenderEdge		(parent,0,0,0xFF000000);
-
-            if ((2==priority)&&(true==strictB2F))
-            	RenderSelection	(parent,0,0,0xA00000FF);
+           RCache.set_xform_world(parent);
+           if ((1==priority)&&(false==strictB2F))
+                RenderEdge		(parent,0,0,0xFF000000);
+           
+           if ((2==priority)&&(true==strictB2F))
+           	    RenderSelection	(parent,0,0,0xA00000FF);
         }
         else
         {
             if(psDeviceFlags.is(rsEdgedFaces)&&(1==priority)&&(false==strictB2F))
                 RenderEdge(parent);
+           
+            RCache.set_xform_world(parent);
+
+
             size_t s_id = 0;
             for(SurfaceIt s_it=m_Surfaces.begin(); s_it!=m_Surfaces.end(); s_it++)
             {
+               
             	int pr = (*s_it)->_Priority();
                 bool strict = (*s_it)->_StrictB2F();
                 
-                if ((priority==pr)&&(strictB2F==strict))
-                {
-                    if (surfaces)
+                if ((priority == pr) && (strictB2F == strict))
+                {                     
+                    if (IsMUStatic())
                     {
-                        EDevice.SetShader((*surfaces)[s_id]->_Shader());
+                       
+                        // Se7kills
+                        // Recursive Render 
+                        for (auto& mesh : m_Meshes)
+                        {
+                           ref_shader& sh = surfaces ? (*surfaces)[s_id]->_Shader() : (*s_it)->_Shader();
+                           EDevice.SetShader(sh);
+
+                           // 
+                           // RenderData data;
+                           // data.parent = parent;
+                           // data.mesh = mesh;
+                           // data.surface = *s_it;
+                           // data.skeleton = IsSkeleton();
+                           // data.s_id = s_id;
+                           // 
+                           // if (surfaces != nullptr)
+                           //  data.surfaces = *surfaces;
+                           // 
+                           // mtx.lock();
+                           // vector_rendering.push_back(data);
+                           // mtx.unlock();         
+                           
+                           if (IsSkeleton())
+                               mesh->RenderSkeleton(parent, *s_it);
+                           else
+                               mesh->Render(parent, *s_it);
+                        }
                     }
                     else
                     {
-                        EDevice.SetShader((*s_it)->_Shader());
+                        if (this->dwUpdate < EDevice.dwTimeGlobal)
+                        {
+                            this->dwUpdate = 1000 + EDevice.dwTimeGlobal;
+
+                            std::for_each(std::execution::par, m_Meshes.begin(), m_Meshes.end(), [&](CEditableMesh* mesh)
+                                {
+                                    Fbox bbox;
+                                    mesh->GetBox(bbox);
+                                    bbox.xform(parent);
+
+                                    float distance = 0.f;
+                                    {
+                                        Fvector center;
+                                        bbox.getcenter(center);
+                                        distance = center.distance_to_sqr(EDevice.vCameraPosition);
+                                    }
+
+                                    if (distance + ( bbox.getradius() * bbox.getradius() ) < EDevice.RadiusRender * EDevice.RadiusRender) //EDevice.RadiusRender
+                                        mesh->isVisiableRender = true;
+                                    else
+                                        mesh->isVisiableRender = false;
+                                });
+
+                            m_MeshesRenderable.resize(0);
+                            // m_MeshesRenderable.reserve(64);
+                            for (auto& mesh : m_Meshes)
+                            {
+                                if (!mesh->isVisiableRender)
+                                    continue;
+                                m_MeshesRenderable.push_back(mesh);
+                            }
+                        }
+
+                        // Se7kills
+                        // Recursive Render 
+                        for (auto& mesh : m_MeshesRenderable)
+                        {
+                            ref_shader& sh = surfaces ? (*surfaces)[s_id]->_Shader() : (*s_it)->_Shader();
+                            EDevice.SetShader(sh);
+                            // 
+                            // RenderData data;
+                            // data.mesh = mesh;
+                            // data.surface = *s_it;
+                            // data.skeleton = IsSkeleton();
+                            // data.s_id = s_id;
+                            // 
+                            // if (surfaces != nullptr)
+                            //     data.surfaces = *surfaces;
+                            // 
+                            // mtx.lock();
+                            // vector_rendering.push_back(data);
+                            // mtx.unlock();
+                             
+                             if (IsSkeleton())
+                                 mesh->RenderSkeleton(parent, *s_it);
+                             else
+                                 mesh->Render(parent, *s_it);
+                        }
                     }
-                    for (EditMeshIt _M=m_Meshes.begin(); _M!=m_Meshes.end(); _M++)
-                    if (IsSkeleton())
-                        (*_M)->RenderSkeleton	(parent,*s_it);
-                    else
-                        (*_M)->Render			(parent,*s_it);
+                     
+                   
                 }
                 s_id++;
             }

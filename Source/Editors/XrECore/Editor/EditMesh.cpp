@@ -104,7 +104,8 @@ void CEditableMesh::UnloadAdjacency	(bool force)
 
 void CEditableMesh::RecomputeBBox()
 {
-	if( 0==m_VertCount ){
+	if( 0==m_VertCount )
+    {
 		m_Box.set(0,0,0, 0,0,0);
 		return;
     }
@@ -181,130 +182,7 @@ void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform)
 	UnloadFNormals		();
     UnloadAdjacency		();
 }
-/*
-void CEditableMesh::GenerateVNormals(const Fmatrix* parent_xform)
-{
-	m_VNormalsRefs++;
-    if (m_VertexNormals)		return;
-	m_VertexNormals				= xr_alloc<Fvector>(m_FaceCount*3);
 
-	// gen req    
-	GenerateFNormals	();
-	GenerateAdjacency	();
-
-	// vertex normals
-	if (m_Flags.is(flSGMask))
-	{
-		for (u32 f_i=0; f_i<m_FaceCount; f_i++ )
-		{
-			u32 sg				= m_SmoothGroups[f_i];
-			Fvector& FN 		= m_FaceNormals[f_i];
-			for (int k=0; k<3; k++)
-			{
-				Fvector& N 	= m_VertexNormals[f_i*3+k];
-				IntVec& a_lst=(*m_Adjs)[m_Faces[f_i].pv[k].pindex];
-//
-				typedef itterate_adjacents< itterate_adjacents_params_dynamic<st_FaceVert> > iterate_adj ;
-				iterate_adj::recurse_tri_params p( N, m_SmoothGroups, m_FaceNormals, a_lst, m_Faces, m_FaceCount );
-				iterate_adj::RecurseTri( 0, p );
-//
-				if (sg)
-				{
-					N.set		(0,0,0);
-					
-					VERIFY(a_lst.size());
-					for (IntIt i_it=a_lst.begin(); i_it!=a_lst.end(); i_it++)
-						if (sg&m_SmoothGroups[*i_it]) 
-							N.add	(m_FaceNormals[*i_it]);
-
-                    float len 	= N.magnitude();
-                    if (len>EPS_S)
-					{
-	                    N.div	(len);
-                    }else
-					{
-//.                    	Msg		("!Invalid smooth group found (MAX type). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]",m_Parent->GetName(),VPUSH(m_Vertices[m_Faces[f_i].pv[k].pindex]));
-#ifdef _EDITOR
-						Fvector p0;
-                        p0 = m_Vertices[m_Faces[f_i].pv[k].pindex];
-                        Tools->m_DebugDraw.AppendPoint(p0, 0xffff0000, true, true, "invalid vNORMAL");
-#endif
-                        N.set	(m_FaceNormals[a_lst.front()]);
-                    }
-				}else
-				{
-					N.set		(FN);
-				}
-			}
-		}
-	}else{
-		for (u32 f_i=0; f_i<m_FaceCount; f_i++ )
-		{
-			u32 sg			= m_SmoothGroups[f_i];
-			Fvector& FN 	= m_FaceNormals[f_i];
-			for (int k=0; k<3; k++)
-			{
-				Fvector& N 	= m_VertexNormals[f_i*3+k];
-				if (sg!=-1)
-				{
-					N.set		(0,0,0);
-					IntVec& a_lst=(*m_Adjs)[m_Faces[f_i].pv[k].pindex];
-//
-				typedef itterate_adjacents< itterate_adjacents_params_dynamic<st_FaceVert> > iterate_adj ;
-				iterate_adj::recurse_tri_params p( N, m_SmoothGroups, m_FaceNormals, a_lst, m_Faces, m_FaceCount );
-				iterate_adj::RecurseTri( 0, p );
-//
-					VERIFY		(a_lst.size());
-					for (IntIt i_it=a_lst.begin(); i_it!=a_lst.end(); i_it++)
-					{
-						if (sg != m_SmoothGroups[*i_it]) 
-							continue;
-						N.add	(m_FaceNormals[*i_it]);
-					}
-                    float len 	= N.magnitude();
-                    if (len>EPS_S)
-					{
-	                    N.div	(len);
-                    }else
-					{
-//.                    	Msg		("!Invalid smooth group found (Maya type). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]",m_Parent->GetName(),VPUSH(m_Vertices[m_Faces[f_i].pv[k].pindex]));
-
-#ifdef _EDITOR
-						if(parent_xform)
-                        {
-						Fvector p0;
-                      	parent_xform->transform_tiny(p0, m_Vertices[m_Faces[f_i].pv[k].pindex]);
-                        Tools->m_DebugDraw.AppendPoint(p0, 0xffff0000, true, true, "invalid vNORMAL");
-                        }
-#endif
-
-                        N.set	(m_FaceNormals[a_lst.front()]);
-                    }
-				}
-				else
-				{
-					N.set		(FN);
-                    
-					//IntVec& a_lst=(*m_Adjs)[m_Faces[f_i].pv[k].pindex];
-					//VERIFY(a_lst.size());
-					//for (IntIt i_it=a_lst.begin(); i_it!=a_lst.end(); i_it++)
-					//	N.add	(m_FNormals[*i_it]);
-     //               float len 	= N.magnitude();
-     //               if (len>EPS_S){
-	    //                N.div	(len);
-     //               }else{
-     //               	Msg		("!Invalid smooth group found (No smooth). Object: '%s'. Vertex: [%3.2f, %3.2f, %3.2f]",m_Parent->GetName(),VPUSH(m_Verts[m_Faces[f_i].pv[k].pindex]));
-     //                   N.set	(m_FNormals[a_lst.front()]);
-     //               }
-                    
-				}
-			}
-		}
-	}
-    UnloadFNormals		();
-    UnloadAdjacency		();
-}
-*/
 void CEditableMesh::GenerateSVertices(u32 influence)
 {
 	if (!m_Parent->IsSkeleton())return;

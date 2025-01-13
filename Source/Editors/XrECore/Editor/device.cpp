@@ -227,6 +227,7 @@ void CEditorRenderDevice::_SetupStates()
 void CEditorRenderDevice::_Create(IReader* F)
 {
 	b_is_Ready				= TRUE;
+	TimerGlobal.Start();
 
 	// General Render States
     _SetupStates		();
@@ -396,8 +397,6 @@ void CEditorRenderDevice::PrintDP_Stats()
 
 void CEditorRenderDevice::DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 pc)
 {
-	timerDP.Start();
-
 	ref_shader S 			= m_CurrentShader?m_CurrentShader:m_WireShader;
     u32 dwRequired			= S->E[0]->passes.size();
     RCache.set_Geometry		(geom);
@@ -406,8 +405,6 @@ void CEditorRenderDevice::DP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 vBase, u32 
     	RCache.set_Shader	(S,dwPass);
 		RCache.Render		(pt,vBase,pc);
     }
-
-	DeviceTicksRender += timerDP.GetElapsed_ticks();
 }
 
 void CEditorRenderDevice::DIP(D3DPRIMITIVETYPE pt, ref_geom geom, u32 baseV, u32 startV, u32 countV, u32 startI, u32 PC)

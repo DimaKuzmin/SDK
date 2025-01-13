@@ -61,11 +61,13 @@ public:
 			D					= lc_global_data()->g_deflectors()[task_pool.back()];
 
 			 
- 			// StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
-			// 	lc_global_data()->g_deflectors().size() - task_pool.size(), 
-			// 	lc_global_data()->g_deflectors().size(),
-			// 	D->layer.width, D->layer.height
-			// );
+			int IDX = lc_global_data()->g_deflectors().size() - task_pool.size();
+			if (IDX % 512 == 0)
+ 			StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
+				lc_global_data()->g_deflectors().size() - task_pool.size(), 
+				lc_global_data()->g_deflectors().size(),
+				D->layer.width, D->layer.height
+			);
 			 
 			
 			task_pool.pop_back	();
@@ -106,53 +108,53 @@ void	CBuild::LMapsLocal				()
 	// Main process (4 threads) (-th MAX_THREADS)
 	Status("Lighting...");
  
-	/// CThreadManager	threads;
-	/// 	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
-	/// task_pool.push_back(dit);
-	/// int th = build_args->use_threads;
-	/// 
-	/// for (int L = 0; L < th; L++)
-	/// 	threads.start(xr_new<CLMThread>(L), L);
-	/// threads.wait(500);
+	CThreadManager	threads;
+	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
+		task_pool.push_back(dit);
+
+	int th = build_args->use_threads;
+ 	for (int L = 0; L < th; L++)
+		threads.start(xr_new<CLMThread>(L), L);
+	threads.wait(500);
 	 
 
-	thread_local HASH			H;
-	thread_local CDB::COLLIDER	DB;
-	thread_local base_lighting	LightsSelected;
-
-	u32 Progress = 0;
-	std::atomic<int> processed;
-
-	u32 LastProgressBar = 0;
-
-	u32 MaxSize = lc_global_data()->g_deflectors().size();
-	   
-	concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t ID)
-	{
- 		
-		// Get task
- 		CDeflector* D = lc_global_data()->g_deflectors()[ID];
-		  
-		// Perform operation
-		try
-		{
-			D->Light(&DB, &LightsSelected, H);
-		}
-		catch (...)
-		{
-			clMsg("* ERROR: CLMThread::Execute - light");
-		}
-	
- 		processed.fetch_add(1);
-		
-		if (LastProgressBar < processed)
-		{
-			StatusNoMSG("Deflectors Ended : %u ", processed.load());
-			LastProgressBar = processed + 4096;
-		}
-		
-		// StatusNoMSG("DEFL[%d]/[%d]", ID, lc_global_data()->g_deflectors().size());
-	});
+	// thread_local HASH			H;
+	// thread_local CDB::COLLIDER	DB;
+	// thread_local base_lighting	LightsSelected;
+	// 
+	// u32 Progress = 0;
+	// std::atomic<int> processed;
+	// 
+	// u32 LastProgressBar = 0;
+	// 
+	// u32 MaxSize = lc_global_data()->g_deflectors().size();
+	//    
+	// concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t ID)
+	// {
+ 	// 	
+	// 	// Get task
+ 	// 	CDeflector* D = lc_global_data()->g_deflectors()[ID];
+	// 	  
+	// 	// Perform operation
+	// 	try
+	// 	{
+	// 		D->Light(&DB, &LightsSelected, H);
+	// 	}
+	// 	catch (...)
+	// 	{
+	// 		clMsg("* ERROR: CLMThread::Execute - light");
+	// 	}
+	// 
+ 	// 	processed.fetch_add(1);
+	// 	
+	// 	if (LastProgressBar < processed)
+	// 	{
+	// 		StatusNoMSG("Deflectors Ended : %u ", processed.load());
+	// 		LastProgressBar = processed + 4096;
+	// 	}
+	// 	
+	// 	// StatusNoMSG("DEFL[%d]/[%d]", ID, lc_global_data()->g_deflectors().size());
+	// });
 
 
 

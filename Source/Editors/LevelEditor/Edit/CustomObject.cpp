@@ -48,16 +48,8 @@ CCustomObject::~CCustomObject()
 }
 bool CCustomObject::IsRender()
 {
-	Fbox bb; GetBox(bb);
-    float distance = 0.f;
-    {
-        Fvector center;
-        bb.getcenter(center);
-        distance = center.distance_to(EDevice.vCameraPosition);
-    }
-    if (distance > bb.getradius() + EDevice.RadiusRender)
-        return false;
-    return ::Render->occ_visible(bb)||( Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected|flMotion) );
+	
+    return /*::Render->occ_visible(bb) ||*/ true || (Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected | flMotion));
 }
 
 void CCustomObject::OnUpdateTransform()
@@ -265,18 +257,18 @@ void CCustomObject::OnFrame()
 
 void CCustomObject::RenderRoot(int priority, bool strictB2F)
 {
-	if(FParentTools->IsVisible())
+	if(FParentTools && FParentTools->IsVisible())
 		Render(priority, strictB2F);
 }
 
 void CCustomObject::Render(int priority, bool strictB2F)
 {
-	if ((1==priority)&&(false==strictB2F))
+	if ( (1==priority) && (false==strictB2F) )
     {
-        if (EPrefs->object_flags.is(epoDrawPivot)&&Selected())
+        if (EPrefs->object_flags.is(epoDrawPivot) && Selected())
             DU_impl.DrawObjectAxis(FTransformRP,0.1f,Selected());
        
-        if (m_Motion&&Visible()&&Selected())
+        if (m_Motion && Visible() && Selected())
             AnimationDrawPath();
     }
 }

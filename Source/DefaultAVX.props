@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir>A:\SDK PRIPYAT FULL\SDK - PRIPYAT FULL\Bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
@@ -20,10 +20,10 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <LanguageStandard>stdcpp14</LanguageStandard>
-      <Optimization>MaxSpeed</Optimization>
+      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <FavorSizeOrSpeed>Size</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>

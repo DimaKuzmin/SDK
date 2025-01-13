@@ -296,16 +296,16 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 		}
 	}
 
-	//if (ImGui::GetIO().KeyAlt)
-	//	obj->Select(false);
+	if (ImGui::GetIO().KeyAlt)
+		obj->Select(false);
 
-	// if (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift)
-	// {
-	// 	if (!obj->Selected())
-	// 	{
-	// 		obj->Select(true);
-	// 	}	 
- 	// }
+	 if (ImGui::GetIO().KeyCtrl && ImGui::GetIO().KeyShift)
+	 {
+	 	if (!obj->Selected())
+	 	{
+	 		obj->Select(true);
+	 	}	 
+ 	 }
  
 }
 #pragma optimize("", on)

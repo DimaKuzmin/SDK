@@ -22,7 +22,7 @@ void UIObjectList::ReplaceItemToPHYSIC_STATIC()
 
 	xr_vector<Replace> respawn;
 
-	for (auto obj : Spawn_Tool->GetObjects())
+	for (auto& obj : Spawn_Tool->GetObjects())
 	{
 		CSpawnPoint* point = smart_cast<CSpawnPoint*>(obj);
 		if (point->Selected())
@@ -38,12 +38,12 @@ void UIObjectList::ReplaceItemToPHYSIC_STATIC()
 		}
 	}
 
-	for (auto item : remove)
+	for (auto& item : remove)
 	{
 		Scene->RemoveObject(item, false, true);
 	}
 
-	for (auto data : respawn)
+	for (auto& data : respawn)
 	{
 		CSpawnPoint* Item = (CSpawnPoint*) Spawn_Tool->CreateObject("physic_object", data.name.c_str());
 		if (Item)

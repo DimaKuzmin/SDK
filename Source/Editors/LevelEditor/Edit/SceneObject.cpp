@@ -99,22 +99,44 @@ bool CSceneObject::GetUTBox( Fbox& box )
 
 bool CSceneObject::IsRender()
 {
-	if (!m_pReference) return false;
+	if (!m_pReference) 
+        return false;
+
+   // if (m_pReference->IsMUStatic())
+    {
+        Fbox bb;
+        GetBox(bb);
+
+        float distance = 0.f;
+        {
+            Fvector center;
+            bb.getcenter(center);
+            distance = center.distance_to(EDevice.vCameraPosition);
+        }
+
+        if (distance > bb.getradius() + EDevice.RadiusRender)
+            return false;
+    }
+
     return inherited::IsRender();
 }
-
-
+ 
 void CSceneObject::Render(int priority, bool strictB2F)
 {
-	inherited::Render(priority,strictB2F);
-    if (!m_pReference) return;
+ 	inherited::Render(priority,strictB2F);
+    if (!m_pReference)
+        return;
+
 #ifdef _LEVEL_EDITOR    
     Scene->SelectLightsForObject(this);
 #endif
-	m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
+	
+    m_pReference->Render(_Transform(), priority, strictB2F, &m_Surfaces);
+   
     if (Selected())
     {
-    	if (1==priority){
+    	if (1==priority)
+        {
             if (false==strictB2F){
                 EDevice.SetShader(EDevice.m_WireShader);
                 RCache.set_xform_world(_Transform());
@@ -229,8 +251,11 @@ void CSceneObject::GetFullTransformToLocal( Fmatrix& m )
 
 CEditableObject* CSceneObject::UpdateReference()
 {
-    for (CSurface* i : m_Surfaces) { i->OnDeviceDestroy(); xr_delete(i); }
+    for (CSurface* i : m_Surfaces)
+    { i->OnDeviceDestroy(); xr_delete(i); }
     m_Surfaces.clear();
+
+
 	Lib.RemoveEditObject(m_pReference);
 	m_pReference		= (m_ReferenceName.size())?Lib.CreateEditObject(*m_ReferenceName):0;
     UpdateTransform		();
@@ -245,6 +270,7 @@ CEditableObject* CSceneObject::UpdateReference()
                 surf->OnDeviceCreate();
         }
     } 
+
     return m_pReference;
 }
 
@@ -258,7 +284,8 @@ void CSceneObject::OnFrame()
 {
 	inherited::OnFrame();
 	if (!m_pReference) return;
-	if (m_pReference) m_pReference->OnFrame();
+	if (m_pReference) 
+        m_pReference->OnFrame();
 	if (psDeviceFlags.is(rsStatistic)){
     	if (IsStatic()||IsMUStatic()||Selected()){
             EDevice.Statistic->dwLevelSelFaceCount 	+= GetFaceCount();

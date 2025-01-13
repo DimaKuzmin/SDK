@@ -33,7 +33,7 @@ Embree::TriEmbree* trianglesNormal = 0;
 xr_vector<void*> TriNormal_Dummys;
 
 // Качество сцены желательно REFIT юзать на более низких может криво отработать 
-auto geom_type = RTCBuildQuality::RTC_BUILD_QUALITY_LOW;
+auto geom_type = RTCBuildQuality::RTC_BUILD_QUALITY_REFIT;
 
 // 20% Гдето задержка на ROBUST
 auto scene_flags = RTCSceneFlags::RTC_SCENE_FLAG_NONE; 
@@ -131,9 +131,9 @@ ICF void FilterRaytrace(const struct RTCFilterFunctionNArguments* args)
 		return;
 	}
 
- 	// ctxt->Hits += 1;
- 	// if (ctxt->Hits > StageMAXHits)
-	// 	return;
+ 	ctxt->Hits += 1;
+ 	if (ctxt->Hits > StageMAXHits)
+		return;
 
 	args->valid[0] = 0; // Задаем чтобы продолжил поиск
 }

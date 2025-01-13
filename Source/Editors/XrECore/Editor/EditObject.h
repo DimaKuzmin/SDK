@@ -12,6 +12,8 @@
 #	include "..\..\..\xrRender\Public\kinematics.h"
 
 #include "physicsshellholdereditorbase.h"
+
+
 //----------------------------------------------------
 struct 	SRayPickInfo;
 class 	CEditableMesh;
@@ -40,6 +42,8 @@ class	CCustomObject;
 // refs
 class XRayMtl;
 class SSimpleImage;
+
+extern ECORE_API void RenderDirectx();
 
 class ECORE_API CSurface
 {
@@ -85,6 +89,7 @@ public:
     IC int			_Priority		()	{return _Shader()?_Shader()->E[0]->flags.iPriority:1;}
     IC bool			_StrictB2F		()	{return _Shader()?_Shader()->E[0]->flags.bStrictB2F:false;}
 	IC ref_shader	_Shader			()	{if (!m_RTFlags.is(rtValidShader)) OnDeviceCreate(); return m_Shader;}
+    IC bool         _ShaderExist() { return m_Shader; }
 #endif
     IC LPCSTR		_Name			()const {return *m_Name;}
     IC LPCSTR		_ShaderName		()const {return *m_ShaderName;}
@@ -175,6 +180,7 @@ public CPhysicsShellHolderEditorBase
 	xr_string		m_ClassScript;
 
 	EditMeshVec		m_Meshes;
+    EditMeshVec		m_MeshesRenderable;
 
     ref_shader		m_LODShader;
 
@@ -195,6 +201,9 @@ public:
 public:
 	// options
 	Flags32			m_objectFlags;
+    u32 dwUpdate = 0;
+
+
 	enum{
 		eoDynamic 	 	= (1<<0),			
 		eoProgressive 	= (1<<1),			
@@ -331,6 +340,8 @@ public:
     int 			GetSurfFaceCount		(LPCSTR surf_name);
 
     // render methods
+    void            RenderPrecalculate      (const Fmatrix& parent);
+  
 	void 			Render					(const Fmatrix& parent, int priority, bool strictB2F,SurfaceVec * surfaces=nullptr);
 	void 			RenderSelection			(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0x40E64646);
  	void 			RenderEdge				(const Fmatrix& parent, CEditableMesh* m=0, CSurface* s=0, u32 c=0xFFC0C0C0);

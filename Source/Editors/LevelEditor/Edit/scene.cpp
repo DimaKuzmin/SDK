@@ -143,17 +143,16 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
     }
 }
 
+extern bool NeedReupdate = false;
+
 bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
 {
-	VERIFY				(object);
-	VERIFY				(m_Valid);
-
     ESceneCustomOTool* mt 	= GetOTool(object->FClassID);
     if (mt&&mt->IsEditable())
     {
     	mt->_RemoveObject(object);
-        // signal everyone "I'm deleting"
-//        if (object->ClassID==OBJCLASS_SCENEOBJECT)
+        
+ 
         {
             m_ESO_SnapObjects.remove			(object);
 
@@ -169,7 +168,9 @@ bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
         UI->UpdateScene	();
     }
    
-    if (bUndo)
+    NeedReupdate = true;
+
+     if (bUndo)
         UndoSave();
     return true;
 }
@@ -214,10 +215,6 @@ int EScene::MultiRenameObjects()
 
 void EScene::OnFrame( float dT )
 {    
-    OPTICK_FRAME("EDITOR FRAME");
-
-    PROFILE_EDITOR("EDITOR FRAME")
-
 	if( !valid() )
         return;
 	if( locked() ) 
@@ -228,13 +225,9 @@ void EScene::OnFrame( float dT )
     for (; t_it!=t_end; t_it++)
         if (t_it->second && t_it->second->IsEnabled() && t_it->second->IsVisible())
         	t_it->second->OnFrame();
-    
-    PROFILE_EDITOR_STOP
-
+     
     if(m_RTFlags.test(flUpdateSnapList) )
-		UpdateSnapListReal();    
-
-  
+		UpdateSnapListReal();      
 }
 
 void EScene::Reset()

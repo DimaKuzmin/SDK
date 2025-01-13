@@ -343,64 +343,7 @@ void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges
 }
 
 #include <execution>
-
-
-bool similar_vectorAVX(sVert v1[8], Fvector v2[8], float E = 0.001f)  
-{
-    /*
-    __m256 EVector = _mm256_set1_ps(E);
-    
-    __m256 diffX = _mm256_sub_ps(_mm256_set1_ps(v1.x), _mm256_set1_ps(v2.x));
-    __m256 diffY = _mm256_sub_ps(_mm256_set1_ps(v1.y), _mm256_set1_ps(v2.y));
-    __m256 diffZ = _mm256_sub_ps(_mm256_set1_ps(v1.z), _mm256_set1_ps(v2.z));
-
-    __m256 absDiffX = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffX);
-    __m256 absDiffY = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffY);
-    __m256 absDiffZ = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffZ);
-
-    __m256 comparisonX = _mm256_cmp_ps(absDiffX, EVector, _CMP_LT_OS);
-    __m256 comparisonY = _mm256_cmp_ps(absDiffY, EVector, _CMP_LT_OS);
-    __m256 comparisonZ = _mm256_cmp_ps(absDiffZ, EVector, _CMP_LT_OS);
-
-
-
-    // Оператор "и" для всех трех компонентов
-    __m256 comparisonResult = _mm256_and_ps(_mm256_and_ps(comparisonX, comparisonY), comparisonZ);
-    */
-   
-    /* __m256 EVector = _mm256_set1_ps(E);
-
-    __m256 v1Vector = _mm256_load_ps((float*) &v1);
-    __m256 v2Vector = _mm256_load_ps((float*) &v2);
  
-    __m256 diffVector = _mm256_sub_ps(v1Vector, v2Vector);
-    __m256 absDiffVector = _mm256_andnot_ps(_mm256_set1_ps(-0.0f), diffVector);
-
-    __m256 comparisonResult = _mm256_cmp_ps(absDiffVector, EVector, _CMP_LT_OS);
-
-    // Проверка, все ли компоненты удовлетворяют условию
-    int mask = _mm256_movemask_ps(comparisonResult);
-    return (mask == 0xff);
-    */
-          
-    float vector_1[] = 
-    { 
-        v1[0].x, v1[1].x, v1[2].x, v1[3].x, 
-        v1[4].x, v1[5].x, v1[6].x, v1[7].x
-    };
-
-    float vector_2[] = 
-    { 
-        v2[0].x, v2[1].x, v2[2].x, v2[3].x, 
-        v2[4].x, v2[5].x, v2[6].x, v2[7].x
-    };
-
-    __m256 dd = _mm256_load_ps(( float*) &vector_1);
-
-
-   // return std::abs(v1.x-v2.x)<E && std::abs(v1.y-v2.y)<E && std::abs(v1.z-v2.z)<E;
-}
-
 //#define USE_MT_FAST
 #define USE_SLOW_WAY
 
@@ -450,14 +393,12 @@ public:
             auto iterator = std::find_if(it, it_e, [&](auto vector)  // 
             {
                  return (*( verts_begin + vector) ).similar(V); 
-                 //return similar_vectorAVX( (sVert&) (*( verts_begin + vector) ), V); 
-            });
+             });
 #else 
             auto iterator = std::find_if(std::execution::par_unseq, it, it_e, [&](auto vector)  // 
             {
                  return (*( verts_begin + vector) ).similar(V); 
-                 //return similar_vectorAVX( (sVert&) (*( verts_begin + vector) ), V); 
-            });
+             });
 #endif
            
             if (iterator != it_e)

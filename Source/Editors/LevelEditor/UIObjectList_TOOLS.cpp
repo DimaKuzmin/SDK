@@ -17,6 +17,8 @@
 #include "../xrServerEntities/xrServer_Objects_Alife_Smartcovers.h"
 #include "SpawnPoint.h"
  
+
+extern float RenderRadius;
 void UIObjectList::UpdateDefaultMeny()
 {
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
