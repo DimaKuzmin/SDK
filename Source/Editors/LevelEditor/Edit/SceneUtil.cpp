@@ -19,12 +19,9 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 	CCustomObject* object = 0;
     if (classfilter==OBJCLASS_DUMMY)
     {
-        SceneToolsMapPairIt _I = m_SceneTools.begin();
-        SceneToolsMapPairIt _E = m_SceneTools.end();
-        for (; _I!=_E; ++_I)
+        for (auto& tool : m_SceneTools)
         {
-            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
-
+            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
             if (mt&&(0!=(object=mt->FindObjectByName(name))))
             	return object;
         }
@@ -43,61 +40,39 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 
 CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
-    OPTICK_EVENT("FindObjectByName")
-
-    SceneToolsMapPairIt _I = m_SceneTools.begin();
-    SceneToolsMapPairIt _E = m_SceneTools.end();
-    /*
-    for (; _I!=_E; _I++)
-    {
-        ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
-        if (mt&&(0!=(object=mt->FindObjectByName(name,pass_object))))
-            return object;
-    }
-    */
-
-    CCustomObject* object = 0;
-    std::atomic<bool> finded = false;
-
-    std::for_each(std::execution::par, _I, _E, [&] (const std::pair<ObjClassID, ESceneToolBase*>& tool)
+    OPTICK_EVENT("FindObjectByName")     
+    for (auto& tool : m_SceneTools)
     {   
-        if (finded == true)
-            return;
-
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
         if (mt != nullptr)
         {
             auto O = mt->FindObjectByName(name, pass_object);
             if (O)
             {
-                finded = true;
-                object = O;
+                return O;
             }
         }
-  
-    });
-
-    if (object != 0)
-        return object;
-
-    return 0;
+    } 
+    return nullptr;
 }
 
 bool EScene::FindDuplicateName()
 {
 // find duplicate name
-    SceneToolsMapPairIt _I = m_SceneTools.begin();
-    SceneToolsMapPairIt _E = m_SceneTools.end();
-    for (; _I!=_E; _I++){
-        ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(_I->second);
+    
+    for (auto& tool : m_SceneTools)
+    {
+        ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
         if (mt)
         {
-        	ObjectList& lst = mt->GetObjects(); 
-            for(ObjectIt _F = lst.begin();_F!=lst.end();_F++)
-                if (FindObjectByName((*_F)->GetName(), *_F)){
-                    ELog.DlgMsg(mtError,"Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]",(*_F)->GetName(), (mt->FClassID), (*_F)->RefName(), VPUSH((*_F)->GetPosition()) );
+            for (auto F : mt->GetObjects())
+            {
+                if (mt->FindObjectByName( (F)->GetName(), F))
+                {
+                    ELog.DlgMsg(mtError, "Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", F->GetName(), (mt->FClassID), F->RefName(), VPUSH(F->GetPosition()));
                     return true;
                 }
+            }
         }
     }
     return false;

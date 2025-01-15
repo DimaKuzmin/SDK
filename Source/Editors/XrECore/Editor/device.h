@@ -48,6 +48,7 @@ public:
 public:
 	float RadiusRender;
 	u32 RenderReloadObjectsTime = 1;
+	BOOL RenderOptimize;
 
    // u32 					dwWidth, dwHeight;
 	u32 					m_RenderWidth, m_RenderHeight;

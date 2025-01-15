@@ -143,7 +143,7 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
     }
 }
 
-extern bool NeedReupdate = false;
+
 
 bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
 {
@@ -168,7 +168,7 @@ bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
         UI->UpdateScene	();
     }
    
-    NeedReupdate = true;
+//    NeedReupdate = true;
 
      if (bUndo)
         UndoSave();
@@ -232,8 +232,11 @@ void EScene::OnFrame( float dT )
 
 void EScene::Reset()
 {
+    m_Valid = false;
+
 	// unload scene
     Unload				(FALSE);
+
     // reset tools
     SceneToolsMapPairIt t_it 	= m_SceneTools.begin();
     SceneToolsMapPairIt t_end 	= m_SceneTools.end();
@@ -241,6 +244,10 @@ void EScene::Reset()
         if (t_it->second&&t_it->first!=OBJCLASS_DUMMY)
             t_it->second->Reset	();
     g_scene_physics.UpdateLevelCollision();
+     
+    RenderClearObjects();
+  
+    m_Valid = true;
 }
 
 void EScene::Unload		(BOOL bEditableOnly)
@@ -249,6 +256,7 @@ void EScene::Unload		(BOOL bEditableOnly)
 	Clear				(bEditableOnly);
 	//if (m_SummaryInfo) 	m_SummaryInfo->HideProperties();
 }
+
 
 void EScene::Clear(BOOL bEditableToolsOnly)
 {
@@ -272,7 +280,7 @@ void EScene::Clear(BOOL bEditableToolsOnly)
     m_OwnerName				= xr_string().sprintf("\\\\%s\\%s",Core.CompName,Core.UserName).c_str();
     m_CreateTime			= time(NULL);
 
-    m_SaveCache.free		();
+    m_SaveCache.free();
 }
 //----------------------------------------------------
 

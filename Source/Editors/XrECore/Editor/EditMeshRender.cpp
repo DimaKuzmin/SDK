@@ -131,8 +131,11 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 //                Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
             }
         }
-        if (surf->m_Flags.is(CSurface::sf2Sided)){
-            for (int k=2; k>=0; k--){
+        
+        if (surf->m_Flags.is(CSurface::sf2Sided))
+        {
+            for (int k=2; k>=0; k--)
+            {
                 st_FaceVert& fv = face.pv[k];
 	            Fvector& PN = m_VertexNormals[f_index*3+k];
                 int sz;
@@ -163,7 +166,6 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
     	            VERIFY2(vm_pt.index<vmap->size(),"- VMap point index out of range");
                     CopyMemory(data,&vmap->getUV(vm_pt.index),sz); data+=sz;
 
-//	                Msg("%3.2f, %3.2f",vmap->getUV(vm_pt.index).x,vmap->getUV(vm_pt.index).y);
                 }
             }
         }

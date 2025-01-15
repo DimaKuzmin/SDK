@@ -160,6 +160,7 @@ bool CGroupObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
     }
     VERIFY(m_ObjectsInGroup.size());
 
+    
    	SetRefName(ini.r_string	(sect_name, "ref_name")) ;
 	if (!m_ReferenceName_.size())
         ELog.Msg			(mtError,"ERROR: group '%s' - has empty reference. Corrupted file?", GetName());

@@ -141,9 +141,11 @@ void CCustomPreferences::FillProp(PropItemVec& props)
     PHelper().CreateU32		(props,"Scene\\Common\\Undo Level", 		    &scene_undo_level,	0, 		125);
     PHelper().CreateFloat	(props,"Scene\\Grid\\Cell Size", 	           	&grid_cell_size,	0.1f,	10.f);
     PHelper().CreateU32		(props,"Scene\\Grid\\Cell Count", 	           	&grid_cell_count,	10, 	1000);
+   
     PHelper().CreateFloat   (props, "Scene\\RadiusRender",                  &EDevice.RadiusRender,10.f,100000.f);
     PHelper().CreateU32     (props, "Scene\\RenderObjectsUTime",            &EDevice.RenderReloadObjectsTime, 1, 1000);
-    
+    PHelper().CreateBOOL    (props, "Scene\\Render_Optimize",               &EDevice.RenderOptimize);
+
 
     PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Limited Depth",		&bp_lim_depth);
     PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Back Face Culling",	&bp_cull);

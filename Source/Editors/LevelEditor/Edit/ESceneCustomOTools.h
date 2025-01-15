@@ -2,6 +2,9 @@
 #define ESceneCustomOToolsH
 
 #include "ESceneCustomMTools.h"
+ 
+#include <unordered_map>
+#include <functional>
 
 struct SRayPickInfo;
 struct mesh_build_data;
@@ -10,7 +13,7 @@ class ESceneCustomOTool: public ESceneToolBase
 	typedef ESceneToolBase inherited;
 protected:
 	ObjectList			m_Objects;
-    ObjectList			m_ObjectsToRender;
+    ObjectList			m_Objects_to_process;
     
 	bool 				OnLoadSelectionAppendObject(CCustomObject* obj);
 	bool 				OnLoadAppendObject		(CCustomObject* obj);
@@ -79,6 +82,7 @@ public:
     IC ObjectList&		GetObjects				(){return m_Objects;}
     IC int				ObjCount				(){return m_Objects.size();}
 
+    virtual BOOL 		_NotifyObject(CCustomObject* object);
 	virtual BOOL 		_AppendObject			(CCustomObject* object);
 	virtual BOOL 		_RemoveObject			(CCustomObject* object);
 
@@ -88,8 +92,15 @@ public:
     virtual BOOL 		SpherePick				(ObjectList& lst, const Fvector& center, float radius);
     virtual int 		GetQueryObjects			(ObjectList& lst, int iSel, int iVis, int iLock);
 
-    virtual CCustomObject* FindObjectByName		(LPCSTR name, CCustomObject* pass=0);
+   
 
+    std::hash<std::string> hasher_map;
+    xr_map< size_t, CCustomObject*> objects_by_name;
+   
+    u32 LastHashUpdate = -1;
+    u32 UpdateObjectsHash();
+
+    virtual CCustomObject* FindObjectByName		(LPCSTR name, CCustomObject* pass=0);
     virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name)=0;
 
     virtual int			MultiRenameObjects		();

@@ -49,9 +49,10 @@ void EScene::CreateSceneTools()
     RegisterSceneTools		(xr_new<ESceneWallmarkTool>	()	); //+
     RegisterSceneTools		(xr_new<ESceneFogVolumeTool>()	); //+
 }
-
+ 
 void EScene::DestroySceneTools()
 {
+    Msg("DestroyScene Tools: Start");
     SceneToolsMapPairIt _I = m_SceneTools.begin();
     SceneToolsMapPairIt _E = m_SceneTools.end();
     for (; _I!=_E; _I++)
@@ -62,5 +63,6 @@ void EScene::DestroySceneTools()
     	xr_delete(_I->second);
     }
     m_SceneTools.clear		();
+    Msg("DestroyScene Tools: End");
 }
 

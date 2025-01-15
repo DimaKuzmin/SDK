@@ -72,11 +72,13 @@ void CLevelTool::OnDestroy()
 {
 	inherited::OnDestroy();
     xr_delete(m_Props);
-    /*TfrmObjectList::DestroyForm(pObjectListForm);
-	TProperties::DestroyForm(m_Props);*/
+ 
+    Msg("SceneDestroying : Start");
     // scene destroing
     if (pCurTool)
     	pCurTool->OnDeactivate();
+
+    Msg("SceneDestroying : End");
 	Scene->OnDestroy		();
 }
 //---------------------------------------------------------------------------

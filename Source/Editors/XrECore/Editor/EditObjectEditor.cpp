@@ -142,40 +142,10 @@ struct RenderData
     
     bool skeleton;
 };
-xr_vector<RenderData> vector_rendering;
-
-extern  ECORE_API void RenderDirectx()
-{
-    //int ID = 0;
-    //Msg("RenderData: %d", vector_rendering.size());
-    // for (auto& ren_data : vector_rendering)
-    // {
-    //     CEditableMesh* mesh = ren_data.mesh;
-    //     if (!mesh)
-    //         continue;
-    // 
-    //     ref_shader& sh = ren_data.surfaces.size() ? ren_data.surfaces[ren_data.s_id]->_Shader() : ren_data.surface->_Shader();
-    //      
-    //     RCache.set_xform_world(ren_data.parent);
-    //     if (ren_data.skeleton)
-    //     {
-    //         EDevice.SetShader(sh);
-    //         mesh->RenderSkeleton(ren_data.parent, ren_data.surface);
-    //     }
-    //     else
-    //     {
-    //         EDevice.SetShader(sh);
-    //         mesh->Render(ren_data.parent, ren_data.surface);
-    //     }
-    // }
-    // 
-    // vector_rendering.clear();
-}
-
-
+ 
 void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F, SurfaceVec* surfaces)
 {
-    OPTICK_EVENT("CEditableObject");
+    // OPTICK_EVENT("CEditableObject");
 
     if (!(m_LoadState.is(LS_RBUFFERS)))
     	DefferedLoadRP();
@@ -231,31 +201,14 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
                 
                 if ((priority == pr) && (strictB2F == strict))
                 {                     
-                    if (IsMUStatic())
+                    if (IsMUStatic() || !EDevice.RenderOptimize)
                     {
-                       
-                        // Se7kills
-                        // Recursive Render 
+                        // Se7kills  // Recursive Render 
                         for (auto& mesh : m_Meshes)
                         {
                            ref_shader& sh = surfaces ? (*surfaces)[s_id]->_Shader() : (*s_it)->_Shader();
                            EDevice.SetShader(sh);
-
-                           // 
-                           // RenderData data;
-                           // data.parent = parent;
-                           // data.mesh = mesh;
-                           // data.surface = *s_it;
-                           // data.skeleton = IsSkeleton();
-                           // data.s_id = s_id;
-                           // 
-                           // if (surfaces != nullptr)
-                           //  data.surfaces = *surfaces;
-                           // 
-                           // mtx.lock();
-                           // vector_rendering.push_back(data);
-                           // mtx.unlock();         
-                           
+ 
                            if (IsSkeleton())
                                mesh->RenderSkeleton(parent, *s_it);
                            else
@@ -269,7 +222,7 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
                             this->dwUpdate = 1000 + EDevice.dwTimeGlobal;
 
                             std::for_each(std::execution::par, m_Meshes.begin(), m_Meshes.end(), [&](CEditableMesh* mesh)
-                                {
+                            {
                                     Fbox bbox;
                                     mesh->GetBox(bbox);
                                     bbox.xform(parent);
@@ -281,11 +234,22 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
                                         distance = center.distance_to_sqr(EDevice.vCameraPosition);
                                     }
 
-                                    if (distance + ( bbox.getradius() * bbox.getradius() ) < EDevice.RadiusRender * EDevice.RadiusRender) //EDevice.RadiusRender
+                                    if (distance + (bbox.getradius() * bbox.getradius()) < EDevice.RadiusRender * EDevice.RadiusRender) //EDevice.RadiusRender
                                         mesh->isVisiableRender = true;
                                     else
                                         mesh->isVisiableRender = false;
-                                });
+
+                                    for (auto surf : mesh->Surfaces())
+                                    {
+                                        if (strstr(surf.first->_ShaderName(), "level")) // terrain 
+                                        {
+                                            mesh->isVisiableRender = true;
+                                            break;
+                                        }
+                                    }  
+                                    
+                                    //Msg("Surfaces: [%d] = Name: %s, Shader: %s /// for (auto surf : mesh->Surfaces())
+                            });
 
                             m_MeshesRenderable.resize(0);
                             // m_MeshesRenderable.reserve(64);
@@ -303,28 +267,13 @@ void CEditableObject::Render(const Fmatrix& parent, int priority, bool strictB2F
                         {
                             ref_shader& sh = surfaces ? (*surfaces)[s_id]->_Shader() : (*s_it)->_Shader();
                             EDevice.SetShader(sh);
-                            // 
-                            // RenderData data;
-                            // data.mesh = mesh;
-                            // data.surface = *s_it;
-                            // data.skeleton = IsSkeleton();
-                            // data.s_id = s_id;
-                            // 
-                            // if (surfaces != nullptr)
-                            //     data.surfaces = *surfaces;
-                            // 
-                            // mtx.lock();
-                            // vector_rendering.push_back(data);
-                            // mtx.unlock();
-                             
+                            
                              if (IsSkeleton())
                                  mesh->RenderSkeleton(parent, *s_it);
                              else
                                  mesh->Render(parent, *s_it);
                         }
                     }
-                     
-                   
                 }
                 s_id++;
             }

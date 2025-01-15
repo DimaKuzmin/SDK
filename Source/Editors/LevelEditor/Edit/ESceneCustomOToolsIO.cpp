@@ -122,14 +122,15 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
             if (!OnLoadAppendObject(obj))
                 xr_delete(obj);
         }
-
         pb->Inc();
 
+        UpdateObjectsHash();
 
         string128 tmp;
         sprintf(tmp, "objects: %d / %d", i, count);
         pb->Info(tmp);
     }
+
      
     /*
     std::thread* th[8];

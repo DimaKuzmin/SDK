@@ -46,10 +46,20 @@ CCustomObject::~CCustomObject()
 	xr_delete				(m_Motion);
     xr_delete				(m_MotionParams);
 }
+
 bool CCustomObject::IsRender()
 {
+    Fbox bb; GetBox(bb);
+    float distance = 0.f;
+    {
+        Fvector center;
+        bb.getcenter(center);
+        distance = center.distance_to(EDevice.vCameraPosition);
+    }
+    if (distance > bb.getradius() + EDevice.RadiusRender)
+        return false;
 	
-    return /*::Render->occ_visible(bb) ||*/ true || (Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected | flMotion));
+    return ::Render->occ_visible(bb) || (Selected() && m_CO_Flags.is_any(flRenderAnyWayIfSelected | flMotion));
 }
 
 void CCustomObject::OnUpdateTransform()
@@ -104,6 +114,8 @@ bool  CCustomObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	m_CO_Flags.assign	(ini.r_u32(sect_name, "co_flags") );
 
 	FName				= ini.r_string(sect_name, "name");
+    // SetHash(GenHash());
+
     FPosition			= ini.r_fvector3 	(sect_name, "position");
     VERIFY2				(_valid(FPosition), sect_name);
     FRotation			= ini.r_fvector3 	(sect_name, "rotation");
@@ -135,6 +147,7 @@ bool CCustomObject::LoadStream(IReader& F)
     	
         R_ASSERT(F.find_chunk(CUSTOMOBJECT_CHUNK_NAME));
         F.r_stringZ		(FName);
+        // SetHash(GenHash());
     }
 
 	if(F.find_chunk(CUSTOMOBJECT_CHUNK_TRANSFORM))
@@ -305,3 +318,25 @@ void CCustomObject::OnSynchronize()
 	OnFrame		();
 }
 
+
+
+// SetName
+ 
+void CCustomObject::SetName(LPCSTR N)
+{
+    string256 tmp;
+    strcpy(tmp, N);
+    strlwr(tmp);
+    FName = tmp;
+    
+    auto TOOL = Scene->GetOTool(FClassID);
+    if (TOOL)
+    {
+        TOOL->_NotifyObject(this);
+    }
+}
+
+LPCSTR CCustomObject::GetName() const
+{
+    return *FName;
+}

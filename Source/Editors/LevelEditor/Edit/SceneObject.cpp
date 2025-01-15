@@ -99,25 +99,7 @@ bool CSceneObject::GetUTBox( Fbox& box )
 
 bool CSceneObject::IsRender()
 {
-	if (!m_pReference) 
-        return false;
-
-   // if (m_pReference->IsMUStatic())
-    {
-        Fbox bb;
-        GetBox(bb);
-
-        float distance = 0.f;
-        {
-            Fvector center;
-            bb.getcenter(center);
-            distance = center.distance_to(EDevice.vCameraPosition);
-        }
-
-        if (distance > bb.getradius() + EDevice.RadiusRender)
-            return false;
-    }
-
+	if (!m_pReference)   return false;
     return inherited::IsRender();
 }
  

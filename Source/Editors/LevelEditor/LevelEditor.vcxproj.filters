@@ -52,9 +52,6 @@
     <Filter Include="MAIN TOOLS\ETools\TOOLS\GROUP">
       <UniqueIdentifier>{d2789a5f-4c03-4e72-91cf-7ca5c0dd1cfe}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MAIN TOOLS\ETools\TOOLS\CUSTOM">
-      <UniqueIdentifier>{b37d6777-b299-4f9f-94f6-788c7ad19a1c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="MAIN TOOLS\ETools\TOOLS\AI">
       <UniqueIdentifier>{f261d5d4-b0e5-4fee-a3de-e7d0e120b5ef}</UniqueIdentifier>
     </Filter>
@@ -108,6 +105,9 @@
     </Filter>
     <Filter Include="MAIN TOOLS\ETools\TOOLS\DETAILS">
       <UniqueIdentifier>{013eab99-3891-4730-8623-cffe391855cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MAIN TOOLS\ETools\BASE_CLASS\CUSTOM">
+      <UniqueIdentifier>{b37d6777-b299-4f9f-94f6-788c7ad19a1c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -290,19 +290,19 @@
       <Filter>MAIN TOOLS\ETools\TOOLS\AI</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneCustomMTools.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneCustomMToolsControls.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneCustomOTools.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneCustomOToolsFactory.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneCustomOToolsIO.cpp">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClCompile>
     <ClCompile Include="Edit\ESceneDOTools.cpp">
       <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>
@@ -659,10 +659,10 @@
       <Filter>MAIN TOOLS\ETools\TOOLS\AI</Filter>
     </ClInclude>
     <ClInclude Include="Edit\ESceneCustomMTools.h">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClInclude>
     <ClInclude Include="Edit\ESceneCustomOTools.h">
-      <Filter>MAIN TOOLS\ETools\TOOLS\CUSTOM</Filter>
+      <Filter>MAIN TOOLS\ETools\BASE_CLASS\CUSTOM</Filter>
     </ClInclude>
     <ClInclude Include="Edit\ESceneDOTools.h">
       <Filter>MAIN TOOLS\ETools\TOOLS\DETAILS</Filter>

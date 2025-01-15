@@ -96,7 +96,6 @@ DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
 
 void RenderScene(SceneToolsMap& scene, int P, bool B)
 {
-     
     for (auto& tool : scene)
     {
         EDevice.SetShader(B ? EDevice.m_SelectionShader : EDevice.m_WireShader);
@@ -116,46 +115,45 @@ int KeyRender = 1;
 void EScene::UpdateRenderList(void* List, bool useMT)
 {
     // extract and sort object tools
- 
     tasks.wait();
 
     auto fun = [&]()
     {
         SceneOToolsSet object_tools;
+ 
+        OPTICK_FRAME("RenderList Update Thread");
+        OPTICK_EVENT("Render Update Render List")
+
+        mapRenderObjects[KeyCalc].clear();
+
+        object_tools.clear();
+
+        SceneToolsMapPairIt t_it = m_SceneTools.begin();
+        SceneToolsMapPairIt t_end = m_SceneTools.end();
+        for (; t_it != t_end; t_it++)
+        if (t_it->second)
         {
-            OPTICK_FRAME("RenderList Update Thread");
+            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(t_it->second);
+            if (mt)
+                object_tools.insert(mt);
+        }
 
-            mapRenderObjects[KeyCalc].clear();
+        for (auto tool : object_tools)
+        {
+            ObjectList& list_objects = tool->GetObjects();
 
-            object_tools.clear();
-
-            SceneToolsMapPairIt t_it = m_SceneTools.begin();
-            SceneToolsMapPairIt t_end = m_SceneTools.end();
-            for (; t_it != t_end; t_it++)
-                if (t_it->second)
-                {
-                    ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(t_it->second);
-                    if (mt)
-                        object_tools.insert(mt);
-                }
-
-            for (auto tool : object_tools)
+            for (auto O : list_objects)
             {
-                ObjectList& list_objects = tool->GetObjects();
+                if (!O)
+                    return;
 
-                for (auto O : list_objects)
+                if (O->Visible() && O->IsRender())
                 {
-                    if (!O)
-                        return;
-
-                    if (O->Visible() && O->IsRender())
-                    {
-                        float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
-                        mapRenderObjects[KeyCalc].insertInAnyWay(distSQ, O);
-                    }
+                    float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
+                    mapRenderObjects[KeyCalc].insertInAnyWay(distSQ, O);
                 }
-
             }
+
         }
     };
 
@@ -169,84 +167,36 @@ void EScene::UpdateRenderList(void* List, bool useMT)
     }
 };
 
-extern bool NeedReupdate;
+void EScene::RenderClearObjects()
+{
+    mapRenderObjects[0].clear();
+    mapRenderObjects[1].clear();
+}
+ 
  
 void EScene::Render(const Fmatrix& camera)
 {
     if (!valid())
-        return;
-
+          return;
+     
     int idx = KeyCalc;
     KeyRender = idx;
     KeyCalc   = (idx + 1) % 2;
-
-    if (NeedReupdate)
-    {
-        KeyRender = 0;
-        KeyCalc   = 0;
-    }
     
-    // EDevice.dwFrame % EDevice.RenderReloadObjectsTime == 0 
+    if (EDevice.dwFrame % EDevice.RenderReloadObjectsTime == 0) 
     {
-        OPTICK_EVENT("Render Update Render List") 
-        UpdateRenderList(0, !NeedReupdate);
+        UpdateRenderList(0, true);
     }
-   
+     
     auto& map = mapRenderObjects[KeyRender];
-
     if (map.size() == 0)
         return;
 
     {
-        OPTICK_EVENT("Render Traverse")
-
-         /*
-        // priority #0
-        // normal
-        map.traverseLR(object_Normal_0);
-        RenderScene(m_SceneTools, 0, false);
-       
-        // alpha
-        map.traverseRL(object_StrictB2F_0);
-        RenderScene(m_SceneTools, 0, true);
-        
-        // priority #1
-        // normal
-        map.traverseLR(object_Normal_1);
-        RenderScene(m_SceneTools, 1, false);
-        
-        // alpha
-        map.traverseRL(object_StrictB2F_1);
-        RenderScene(m_SceneTools, 1, true);
-
-        // priority #2
-        // normal
-        map.traverseLR(object_Normal_2);
-        RenderScene(m_SceneTools, 2, false);
-
-        // alpha
-        map.traverseRL(object_StrictB2F_2);
-        RenderScene(m_SceneTools, 2, true);
-
-        // priority #3
-
-        // normal
-        map.traverseLR(object_Normal_3);
-        RenderScene(m_SceneTools, 3, false);
-
-        // alpha
-        map.traverseRL(object_StrictB2F_3);
-        RenderScene(m_SceneTools, 3, true);
-
-
-         */
- 
+        OPTICK_EVENT("Render Traverse") 
         if (m_SceneTools.empty())
             return;
 
-        if (map.begin() == nullptr)
-            return;
-         
         // PRIORITY 0
         for (auto& O : map)
         {

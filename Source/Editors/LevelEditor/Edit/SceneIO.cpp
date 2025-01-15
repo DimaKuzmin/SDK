@@ -762,7 +762,7 @@ bool EScene::ReadObjectLTX(CInifile& ini, LPCSTR sect_name, CCustomObject*& O)
     ObjClassID clsid		= OBJCLASS_DUMMY;
     clsid 					= ObjClassID(ini.r_u32(sect_name,"clsid"));
 	O 						= GetOTool(clsid)->CreateObject(0,0);
-
+   
     bool bRes 				= O->LoadLTX(ini, sect_name);
 
 	if (!bRes)
@@ -778,67 +778,36 @@ bool EScene::ReadObjectsLTX(CInifile& ini,  LPCSTR sect_name_parent, LPCSTR sect
 	sprintf				(buff, "%s_count", sect_name_prefix);
     u32 count			= ini.r_u32(sect_name_parent, buff);
 	bool bRes 			= true;
-
+    
+    
+    u32 ClassID = 0;
 	for(u32 i=0; i<count; ++i)
     {
     	sprintf				(buff, "%s_%s_%d", sect_name_parent, sect_name_prefix, i);
         CCustomObject* obj	= NULL;
-
         if (ReadObjectLTX(ini, buff, obj))
         {
             LPCSTR obj_name = obj->GetName();
             CCustomObject* existing = FindObjectByName(obj_name, obj->FClassID);
             if (existing)
             {
-
-                /*if(g_frmConflictLoadObject->m_result!=2 && g_frmConflictLoadObject->m_result!=4 && g_frmConflictLoadObject->m_result!=6)
-                {
-                    g_frmConflictLoadObject->m_existing_object 	= existing;
-                    g_frmConflictLoadObject->m_new_object 		= obj;
-                    g_frmConflictLoadObject->Prepare			();
-                    g_frmConflictLoadObject->ShowModal			();
-                }*/
-                /*     switch(g_frmConflictLoadObject->m_result)
-                     {
-                         case 1: //Overwrite
-                         case 2: //Overwrite All
-                         {
-                            bool res = RemoveObject		(existing, true, true);
-                             if(!res)
-                                 Msg("! RemoveObject [%s] failed", existing->GetName());
-                              else
-                                 xr_delete(existing);
-                         }break;
-                         case 3: //Insert new
-                         case 4: //Insert new All
-                         {
-                             string256 				buf;
-                             GenObjectName			(obj->FClassID, buf, obj->GetName());
-                             obj->SetName(buf);
-                         }break;
-                         case 0: //Cancel
-                         case 5: //Skip
-                         case 6: //Skip All
-                         {
-                             xr_delete(obj);
-                         }break;
-                     } //switch
-                 } //if exist*/
                 string256 				buf;
                 GenObjectName(obj->FClassID, buf, obj->GetName());
+                ClassID = obj->FClassID;
                 obj->SetName(buf);
             }
             if (obj && !on_append(obj))
                 xr_delete(obj);
-
         }
-        
         else
         	bRes = false;
+
+        
 
         if (pb)
 			pb->Inc();
     }
+
     return bRes;
 }
 

@@ -302,13 +302,15 @@ CCommandVar CommandSave(CCommandVar p1, CCommandVar p2)
 
 CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 {
-    if( !Scene->locked() ){
+    if( !Scene->locked() )
+    {
         if (!Scene->IfModified()) return TRUE;
         EDevice.m_Camera.Reset	();
         Scene->Reset			();
         Scene->m_LevelOp.Reset	();
         Tools->m_LastFileName 		= "";
         LTools->m_LastSelectionName = "";
+
         Scene->UndoClear		();
         ExecCommand				(COMMAND_UPDATE_CAPTION);
         ExecCommand				(COMMAND_CHANGE_TARGET,OBJCLASS_SCENEOBJECT);
@@ -316,7 +318,9 @@ CCommandVar CommandClear(CCommandVar p1, CCommandVar p2)
 	    ExecCommand				(COMMAND_UPDATE_PROPERTIES,1);
         Scene->UndoSave			();
         return 					TRUE;
-    } else {
+    } 
+    else
+    {
         ELog.DlgMsg( mtError, "Scene sharing violation" );
         return					FALSE;
     }

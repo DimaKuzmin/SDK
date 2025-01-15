@@ -108,8 +108,14 @@ public:
     void  	OnMotionCurrentFrameChange(PropValue* value); 
     void  	OnMotionCameraViewChange(PropValue* value); 
 public:
-	LPCSTR			GetName			() const {return *FName; }
-	void			SetName			(LPCSTR N){string256 tmp; strcpy(tmp,N); strlwr(tmp); FName=tmp;}
+    size_t          hash_name = 0;
+
+    size_t          GetHash() { return hash_name; };
+    void            SetHash(size_t Hash) { hash_name = Hash; };
+
+    LPCSTR			GetName() const;
+    void			SetName(LPCSTR N);
+     
 
     virtual const Fvector& GetPosition	()	const { return FPosition; 	}
  

@@ -209,7 +209,8 @@ bool ESceneObjectTool::FillAppendRandomPropertiesEnd()
 //----------------------------------------------------
 
 void ESceneObjectTool::Clear		(bool bSpecific)
-{
+{   
+    Msg("SceneTools Clearing: Start");
 	inherited::Clear				(bSpecific);
     m_AppendRandomMinScale.set		(1.f,1.f,1.f);
     m_AppendRandomMaxScale.set		(1.f,1.f,1.f);
@@ -217,6 +218,7 @@ void ESceneObjectTool::Clear		(bool bSpecific)
     m_AppendRandomMaxRotation.set	(0.f,0.f,0.f);
     m_AppendRandomObjects.clear		();
     m_Flags.zero					();
+    Msg("SceneTools Clearing: End");
 }
 
 bool ESceneObjectTool::GetBox		(Fbox& bb)
