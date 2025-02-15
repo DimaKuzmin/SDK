@@ -681,11 +681,12 @@ extern Flags32		psEnvFlags;
 extern int			g_ErrorLineCount;
 
 
-
+extern float f_base_size = 0.1f;
 
 ENGINE_API int			ps_r__Supersample			= 1;
 void CCC_Register()
 {
+	CMD4(CCC_Float, "rs_stats_size", &f_base_size, 0, 1);
 	// General
 	CMD1(CCC_Help,		"help"					);
 	CMD1(CCC_Quit,		"quit"					);

@@ -9,6 +9,8 @@
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
+int CountErrors;
+
 void export_ogf( xrMU_Reference& mu_reference )
 {
 	xr_vector<u32>		generated_ids;
@@ -50,7 +52,11 @@ void export_ogf( xrMU_Reference& mu_reference )
 	
 	if (mu_reference.color.size() == 0)
 	{
-		Msg("MuRefference[%d]: %s is colors buffer == 0", model->m_lod_ID, mu_reference.model->m_name);
+		if (CountErrors < 10)
+		{
+			Msg("MuRefference[%d]: %s is colors buffer == 0", model->m_lod_ID, mu_reference.model->m_name);
+		}
+		CountErrors++;
 		return;
 	}
 

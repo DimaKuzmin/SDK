@@ -1,5 +1,3 @@
-#ifndef r_backend_treeH
-#define r_backend_treeH
 #pragma once
 
 class ECORE_API	R_tree
@@ -36,4 +34,3 @@ public:
 	void			set_c_bias			(float x, float y, float z, float w);
 	void			set_c_sun			(float x, float y, float z, float w);
 };
-#endif

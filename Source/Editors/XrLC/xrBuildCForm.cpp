@@ -56,11 +56,8 @@ extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 extern void log_vminfo_new(LPCSTR msg);
 void CBuild::BuildCForm	()
 {
-	
-
-	// Collecting data
-	//Phase		("CFORM: creating...");
-	Phase("CFORM: collision model...");
+  	// Collecting data
+ 	Phase("CFORM: collision model...");
 
 	vecFace*	cfFaces		= xr_new<vecFace>	();
 	vecVertex*	cfVertices	= xr_new<vecVertex>	();

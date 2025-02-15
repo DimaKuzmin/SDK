@@ -81,6 +81,7 @@ void PPL_MT()
 					{
 						Face* F = *it;
 						_TCF& tc = F->tc[0];
+						
 						if (tc.isInside(P, B))
 						{
 							// We found triangle and have barycentric coords
@@ -90,9 +91,19 @@ void PPL_MT()
 							wP.from_bary(V1->P, V2->P, V3->P, B);
 							wN.from_bary(V1->N, V2->N, V3->N, B);
 							wN.normalize();
-							u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
-							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
-							Fcount++;
+
+							if (!build_args->LmapsHemi)
+							{
+								u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+								LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
+								Fcount++;
+							}
+							else
+							{
+								C.hemi += 1.f;
+							}
+
+							
 						}
 					}
 				}
@@ -104,6 +115,7 @@ void PPL_MT()
 
 			if (Fcount)
 			{
+				
 				// Calculate lighting amount
 				C.scale(Fcount);
 				C.mul(.5f);

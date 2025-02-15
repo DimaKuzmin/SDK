@@ -180,34 +180,23 @@ void CEditableMesh::GetTiesFaces(int start_id, U32Vec& fl, float fSoftAngle, boo
 	UnloadAdjacency		();
 }
 //----------------------------------------------------
-
-
-
-
-xrXRC DB[8];
-
-bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf, int TH)
+ 
+bool CEditableMesh::BoxPick(const Fbox& box, const Fmatrix& inv_parent, SBoxPickInfoVec& pinf)
 {
-    if (!m_CFModel) 
+    if (!m_CFModel)
         GenerateCFModel();
- 
-    DB[TH].box_query(inv_parent, m_CFModel, box);
-    
-    //ETOOLS::box_query_m(inv_parent, m_CFModel, box);
- 
-    if (DB[TH].r_count())//(ETOOLS::r_count())
+
+    ETOOLS::box_query_m(inv_parent, m_CFModel, box);
+
+    if (ETOOLS::r_count())
     {
     	pinf.push_back(SBoxPickInfo());
 		pinf.back().e_obj 	= m_Parent;
 	    pinf.back().e_mesh	= this;
-	   
-      //  for (CDB::RESULT* I=ETOOLS::r_begin(); I!=ETOOLS::r_end(); I++) 
-        for (auto I = DB[TH].r_begin(); I != DB[TH].r_end();I++)
-            pinf.back().AddRESULT(m_CFModel,I);
-
+	    for (CDB::RESULT* I=ETOOLS::r_begin(); I!=ETOOLS::r_end(); I++) pinf.back().AddRESULT(m_CFModel,I);
         return true;
     }
-
+   
     return false;
 }
 //----------------------------------------------------

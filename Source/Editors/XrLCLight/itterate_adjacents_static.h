@@ -102,8 +102,10 @@ public:
 	{
 		const	type_face *start_face	= current_adjacents_face( start_face_idx );
 				type_face *test_face	= current_adjacents_face( test_face_idx );
+		
 		if(is_processed(*test_face))
 				return false;
+
 		u16 StartFace_common_edge_index = u16(-1);
 		u16 TestFace_common_edge_index = u16(-1);
 		if ( has_same_edge( start_face, test_face, StartFace_common_edge_index, TestFace_common_edge_index ) )

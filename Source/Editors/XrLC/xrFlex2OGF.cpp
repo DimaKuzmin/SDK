@@ -14,13 +14,11 @@ void CBuild::validate_splits			()
 	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
 	{
 		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
-
-	 
-
+ 
 		if ((*it)->size() > c_SS_HighVertLimit*2 || (*it)->size() == 0)
 		{
 			Errors++;
-		//	clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
+			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
 		}
 	};
 
@@ -68,10 +66,12 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 	}
 }
 
-void ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
+bool ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
 {
 	try 
 	{
+		// Msg_IN_FILE("OGF [%u] faces[%u] material[%u]", MODEL_ID, faces->size(), F->dwMaterial);
+
 		// Common data
 		pOGF->Sector = M->sector;
 		pOGF->material = F->dwMaterial;
@@ -97,23 +97,26 @@ void ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 			else
 			{
 				// If lightmaps persist
-				CLightmap* LM = F->lmap_layer;
+				CLightmap* LM = dynamic_cast<CLightmap*> ( F->lmap_layer );
 				if (LM)
 				{
-					string_path	fn;
+ 					string_path	fn;
 					xr_sprintf(fn, "%s_1", LM->lm_texture.name);
 					T.name = fn;
 					T.pBuildSurface = &(LM->lm_texture);
 					R_ASSERT(T.pBuildSurface);
 					R_ASSERT(pOGF);
-					pOGF->textures.push_back(T);					//.
+					pOGF->textures.push_back(T);				 
 					xr_sprintf(fn, "%s_2", LM->lm_texture.name);
 					T.name = fn;
 					pOGF->textures.push_back(T);
 				}
 			}
 		}
-		catch (...) { clMsg("* ERROR: Flex2OGF, model# %d, *textures*", MODEL_ID); }
+		catch (...) 
+		{
+			clMsg("* ERROR: Flex2OGF, model# %d, *textures*", MODEL_ID);
+		}
 
 		// Collect faces & vertices
 		F->CacheOpacity();
@@ -129,19 +132,15 @@ void ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 	{
 		clMsg("* ERROR: Flex2OGF, 1st part, model# %d", MODEL_ID);
 	}
- 
+
+	if (! pOGF->data.vertices.size())
+ 		return false;
+  
 	try
 	{
- 		//clMsg("%3d: opt : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		pOGF->Optimize();
- 		
-		//clMsg("%3d: cb  : v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		pOGF->CalcBounds();
-
-		// clMsg("%3d: prog: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
-		// pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
-		// 
-		// clMsg("%3d: strp: v(%d)-f(%d)", MODEL_ID, pOGF->data.vertices.size(), pOGF->data.faces.size());
+ 		pOGF->Optimize();
+ 		pOGF->CalcBounds();
+ 		// pOGF->MakeProgressive(MODEL_ID, c_PM_MetricLimit_static);
 		// pOGF->Stripify(); 
 	}
 	catch (...) 
@@ -149,6 +148,8 @@ void ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 		clMsg("* ERROR: Flex2OGF, 2nd part, model# %d", MODEL_ID);
 	}
  
+
+	return true;
 };
  
 
@@ -184,25 +185,56 @@ void CBuild::Flex2OGF()
 		std::mutex mtx;
 		concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
 		{
+			if (ID % 8192 == 0)
+				clMsg("Processed MT OGF (%u|%u) ", ID, g_XSplit.size());
+
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face
-			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
-
-			mtx.lock();
-			g_tree.push_back(pOGF);
-			mtx.unlock();
+			
+			bool isUSE = true;
+			if (!ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this))
+			{
+				clMsg("! OGF[%u] is Currupted : vertes: %u, tris: %u",
+					ID,
+					pOGF ? pOGF->data.vertices.size() : 0,
+					pOGF ? pOGF->data.faces.size() : 0
+				);
+				isUSE = false;
+			}  
+	
+			if (isUSE)
+			{
+				mtx.lock();
+				g_tree.push_back(pOGF);
+				mtx.unlock();
+			}
 		});
 	}
 	else
 	{
 		for (size_t ID = (0); ID < g_XSplit.size(); ID++)
 		{
+			if (ID % 8192 == 0)
+				clMsg("Processed (%u|%u) ", ID, g_XSplit.size());
+
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face
-			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
- 			g_tree.push_back(pOGF);
+
+			bool isUSE = true;
+			if (!ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this))
+			{
+				clMsg("! OGF[%u] is Currupted : vertes: %u, tris: %u",
+					ID,
+					pOGF ? pOGF->data.vertices.size() : 0,
+					pOGF ? pOGF->data.faces.size() : 0
+				);
+				isUSE = false;
+			}
+			
+			if (isUSE)
+ 				g_tree.push_back(pOGF);
 		};
 	}
 

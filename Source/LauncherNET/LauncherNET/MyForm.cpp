@@ -6,12 +6,11 @@
 #include "../../Editors/XrAI/xrAI.h"
 
 #include "thread"
-#include <vcclr.h>
+#include <vcclr.h> 
 
 #pragma comment(lib, "xrLC.lib")
 #pragma comment(lib, "xrAI.lib")
-
-
+ 
 using namespace System;
 using namespace System::Windows::Forms;
 
@@ -36,7 +35,7 @@ void vminfo_memory(size_t* _free, size_t* reserved, size_t* committed)
     }
 }
 
-#define Size 14
+#define Size 13
   
 char* collection[Size] =
 {
@@ -52,10 +51,7 @@ char* collection[Size] =
     "NO SMG",
     "NOISE GEOM",
     "SKIP WELD",
-    "MU FIRST",
-    "TEST BUILD"
-   // "CFORM Packing",
-   // "TBB THREADS"
+    "MU FIRST"
 };
   
 void GetItemFromCollection(SpecialArgs* args, const char* item)
@@ -86,17 +82,87 @@ void GetItemFromCollection(SpecialArgs* args, const char* item)
         args->skip_weld = true;
     if (strstr(item, collection[12]))
         args->run_mu_first = true;
-    if (strstr(item, collection[13]))
-        args->test_build = true;
-     //if (strstr(item, collection[14]))
-    //    args->use_cdbPacking = true;
-
-    //if (strstr(item, collection[15]))
-    //    args->use_tbb = true;
 }
-#include <vcclr.h> // Include for gcroot
+ 
+
+char* CvrtFloatToText(int value)
+{
+    char* text = new char[32];
+    sprintf(text, "%f", value);
+    return text;
+}
+
+
+char* CvrtIntToText(int value)
+{
+    char* text = new char[32];
+    itoa(value, text, 10);
+    return text;
+}
 
 gcroot<LauncherNET::MyForm^>  form;
+
+System::Void ConvertStructure(SpecialArgs* args)
+{
+    if (args->EmbreeGeomType == 0)
+        form->LowGeomEmbree->Checked = 1;
+    else if (args->EmbreeGeomType == 1)
+        form->MiddleGeomEmbree->Checked = 1;
+    else if (args->EmbreeGeomType == 2)
+        form->HighGeomEmbree->Checked = 1;
+    else if (args->EmbreeGeomType == 3)
+        form->RefitGeomEmbree->Checked = 1;
+
+    form->EmbreeRobust->Checked = args->useRobust;
+    
+    if (args->LightmapSize_enum == SpecialArgs::eLightmap1024)
+        form->lightmap_1024->Checked = 1;
+    else if (args->LightmapSize_enum == SpecialArgs::eLightmap2048)
+        form->lightmap_2048->Checked = 1;
+    else if (args->LightmapSize_enum == SpecialArgs::eLightmap4096)
+        form->lightmap_4096->Checked = 1;
+    else if (args->LightmapSize_enum == SpecialArgs::eLightmap8192)
+        form->lightmap_8192->Checked = 1;
+ 
+      
+    form->ThreadsCount->Text = gcnew System::String(CvrtIntToText(args->use_threads));
+   
+    form->PXPM->Text = gcnew System::String(CvrtFloatToText(args->pxpm));
+    form->MUSamples->Text = gcnew System::String(CvrtIntToText(args->mu_samples));
+  
+     form->LevelName->Text = gcnew System::String(args->level_name.c_str());
+
+    
+    if (args->sample == 1)
+        form->xrLC_JitterSamples->SelectedIndex = 0;
+    else if (args->sample == 4)
+        form->xrLC_JitterSamples->SelectedIndex = 1;
+    else if (args->sample == 9)
+        form->xrLC_JitterSamples->SelectedIndex = 2;
+
+
+    // debuging 
+    form->useDXT1->Checked = args->use_DXT1;
+
+    form->FlagsCompiler->SetItemChecked(0, args->use_embree);
+    form->FlagsCompiler->SetItemChecked(1, args->use_avx);
+    form->FlagsCompiler->SetItemChecked(2, args->use_sse);
+    form->FlagsCompiler->SetItemChecked(3, args->no_optimize);
+    form->FlagsCompiler->SetItemChecked(4, args->no_invalide_faces);
+    form->FlagsCompiler->SetItemChecked(5, args->nosun);
+    form->FlagsCompiler->SetItemChecked(6, args->norgb);
+    form->FlagsCompiler->SetItemChecked(7, args->nohemi);
+    form->FlagsCompiler->SetItemChecked(8, args->no_simplify);
+    form->FlagsCompiler->SetItemChecked(9, args->noise);
+    form->FlagsCompiler->SetItemChecked(10, args->nosmg);
+    form->FlagsCompiler->SetItemChecked(11, args->skip_weld);
+    form->FlagsCompiler->SetItemChecked(12, args->run_mu_first);
+ 
+}
+
+ 
+
+
 
 unsigned int DeviceTime = 0;
 unsigned int LAST_UPDATE = 0;
@@ -143,7 +209,6 @@ public:
         form->UpdateMemory(text);
     }
 };
-
   
 class  NET_LoggerAI : ILoggerAI
 {
@@ -190,6 +255,7 @@ public:
     }
 };
 
+
 extern XRLC_API ILogger* LoggerCL;
 extern XRAI_API ILoggerAI* LoggerCL_xrAI;
 
@@ -216,6 +282,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     NET_Logger lLC;
     LoggerCL = (ILogger*)&lLC;
 
+  
+
 
     Application::SetCompatibleTextRenderingDefault(false);
     Application::EnableVisualStyles();
@@ -230,6 +298,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
     form->xrLC_JitterSamples->MaxDropDownItems = 3;
     form->xrLC_JitterSamples->SelectedIndex = 0;
+
+
+
+    SpecialArgs arguments_load;
+    if (LoadParrams(&arguments_load))
+    {
+        ConvertStructure(&arguments_load);
+    }  
    
     Application::Run(form);
    
@@ -276,6 +352,7 @@ void StartThread(SpecialArgs* main_args)
 }
 
 #include <msclr\marshal_cppstd.h>
+
  
 
 System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System::EventArgs^ e)
@@ -290,11 +367,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
 
     auto hitsImpl_str = msclr::interop::marshal_as < std::string >(MaxHitsCount->Text);
-   
-
-    args->MaxHitsPerRay = atoi(hitsImpl_str.c_str());
  
-
     if (lightmap_1024->Checked)
         args->LightmapSize_enum = SpecialArgs::eLightmap1024;
     else if (lightmap_2048->Checked)
@@ -303,21 +376,34 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
         args->LightmapSize_enum = SpecialArgs::eLightmap4096;
     else if (lightmap_8192->Checked)
          args->LightmapSize_enum = SpecialArgs::eLightmap8192;
+
+    if (LowGeomEmbree->Checked)
+        args->EmbreeGeomType = 0;
+    else if (MiddleGeomEmbree->Checked)
+        args->EmbreeGeomType = 1;
+    else if (HighGeomEmbree->Checked)
+        args->EmbreeGeomType = 2;
+    else if (RefitGeomEmbree->Checked)
+        args->EmbreeGeomType = 3;
+
+    args->useRobust = EmbreeRobust->Checked;
+
     
     System::Collections::IEnumerator^ myEnum = FlagsCompiler->CheckedItems->GetEnumerator();
     while (myEnum->MoveNext())
     {
         String^ item = safe_cast<String^>(myEnum->Current);
+        
         // Ваш код для обработки каждого элемента item
         String^ prefix = "Chacked: " + item;
         auto s =  msclr::interop::marshal_as<std::string>(prefix);
-         GetItemFromCollection(args, s.c_str());
+            GetItemFromCollection(args, s.c_str());
     };
      
     int _Samples = atoi(Samples_str.c_str());
     int _MUSamples = atoi(MUSamples_str.c_str());
     int _TH = atoi(TH_str.c_str());
-    int _PXPM = atoi(PXPM_str.c_str());
+    float _PXPM = atof(PXPM_str.c_str());
  
 
     //args->sample = ;
@@ -329,12 +415,21 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
     args->level_name = LevelName_str;
    
+    args->adptive_ht = AdaptiveHT->Checked;
+    args->cform_export = cform_export->Checked;
     args->use_DXT1 = useDXT1->Checked;
+   
+    args->LmapsHemi = LMAPS_HEMI_FAST->Checked;
+    args->LmapsComputation = LmapsComputation->Checked;
+
     args->IsDOLighting = false;
  
     if (!IsRunned)
     {
         IsRunned = true;
+
+        SaveParrams(args);
+
         StartThread(args);
     }
     else
@@ -345,6 +440,7 @@ System::Void LauncherNET::MyForm::button1_Click_1(System::Object^ sender, System
 
 void StartThread_xrAI(SpecialArgsAI* argsb)
 {
+ 
     std::thread* th = new std::thread(
         [](SpecialArgsAI* args)
         {
@@ -438,9 +534,11 @@ System::Void LauncherNET::MyForm::DetailsButtonWork_Click(System::Object^ sender
 {
     SpecialArgs* args = new SpecialArgs();
     args->use_threads = atoi(msclr::interop::marshal_as<std::string>(ThreadsCount_DO->Text).c_str());
-    args->level_name = msclr::interop::marshal_as < std::string >(LevelNameDO->Text).c_str();
+    args->level_name  = msclr::interop::marshal_as < std::string >(LevelNameDO->Text).c_str();
+    args->DoSamples   = atoi( msclr::interop::marshal_as<std::string>(DOSamples->Text).c_str() );
+    
     args->IsDOLighting = true;
- 
+    
     if (!IsRunned)
     {
         IsRunned = true;

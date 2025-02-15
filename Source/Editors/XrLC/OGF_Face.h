@@ -1,11 +1,8 @@
 #pragma once
-
-//.#include "communicate.h"
-
+ 
 #include "progmesh.h"
 #include "xrSpherical.h"
 
-//#include "../XrETools/PropSlimTools.h"
 #include "vbm.h"
 
 #include "../xrLCLight/xruvpoint.h"
@@ -33,6 +30,7 @@ struct OGF_Vertex
 	BOOL				similar		(OGF* p, OGF_Vertex&	other);
 	void				dump		(u32 id);
 };
+
 typedef xr_vector<OGF_Vertex>		vecOGF_V;
 typedef vecOGF_V::iterator			itOGF_V;
 typedef vecOGF_V::const_iterator	citOGF_V;
@@ -42,6 +40,7 @@ struct x_vertex						// "fast" geometry, 16b/vertex
 	x_vertex			(const OGF_Vertex& c)	{ P	= c.P; }
 	BOOL				similar		(OGF* p, x_vertex&	other);
 };
+
 typedef xr_vector<x_vertex>			vec_XV;
 typedef vec_XV::iterator			itXV;
 
@@ -88,7 +87,8 @@ struct OGF_Base
 	Fvector				C;
 	float				R;
 
-	OGF_Base(int _Level) {
+	OGF_Base(int _Level)
+	{
 		bbox.invalidate	();
 		iLevel			= _Level;
 		bConnected		= FALSE;
@@ -109,29 +109,11 @@ struct OGF : public OGF_Base
  
 	u32					material	;
 	vecOGF_T			textures	;
-/*
-	vecOGF_V			vertices	;
-	vecOGF_F			faces		;
 
-	// fast-vertices
-	vec_XV				x_vertices	;
-	vecOGF_F			x_faces		;
-
-	// Progressive
-	FSlideWindowItem	m_SWI		;		// The records of the collapses.
-	FSlideWindowItem	x_SWI		;		// The records of the collapses / fast-path
-*/
 	// for build only
 	u32					dwRelevantUV	;
 	u32					dwRelevantUVMASK;
-/*
-	u32					vb_id	,	xvb_id;
-	u32					vb_start,	xvb_start;
-	u32					ib_id	,	xib_id;
-	u32					ib_start,	xib_start;
-	u32					sw_id	,	xsw_id;
-*/
-	
+
 	template <typename t_vertices>
 	struct	ogf_container
 	{
@@ -149,7 +131,8 @@ struct OGF : public OGF_Base
 	ogf_container	<vecOGF_V>	data;
 	ogf_container	<vec_XV>	fast_path_data;
 
-	OGF() : OGF_Base(0) {
+	OGF() : OGF_Base(0)
+	{
 		data.m_SWI.count			= 0;
 		data.m_SWI.sw			= 0;
 		data.m_SWI.reserved[0]	= 0;
@@ -158,8 +141,6 @@ struct OGF : public OGF_Base
 		data.m_SWI.reserved[3]	= 0;
 		dwRelevantUV		= 0;
 		dwRelevantUVMASK	= 0;
-
-		//vb_id=xvb_id=vb_start=xvb_start=ib_id=xib_id=ib_start=xib_start=sw_id=xsw_id=u32(-1);
 	};
 	~OGF(){
 		xr_free			(data.m_SWI.sw);
@@ -189,12 +170,8 @@ struct OGF : public OGF_Base
 	virtual void		PreSave			(u32 tree_id);
 	virtual void		Save			(IWriter &fs);
 
-//	void				Save_Cached		(IWriter &fs, ogf_header& H, BOOL bColors);
-
 	void				Save_Normal_PM	(IWriter &fs, ogf_header& H, BOOL bColors);
 	void				Load_Normal_PM	(IReader &fs, ogf_header& H, BOOL bColors);
-
-//	void				Save_Progressive(IWriter &fs, ogf_header& H, BOOL bColors);
 
 	virtual void		GetGeometry		(xr_vector<Fvector> &R)
 	{
@@ -246,39 +223,18 @@ struct OGF_Node : public OGF_Base
 
 	void				AddChield	(u32 ID)
 	{
-		/*
-		xr_vector<OGF_Base*>::iterator	P = g_tree.begin() + ID;
-		chields.push_back	(P);
-		R_ASSERT			((*P)->Sector == Sector);
-		bbox.merge			( (*P)->bbox);
-		(*P)->bConnected		= TRUE;
-		*/
-
 		OGF_Base* P = g_tree[ID];
 		chields.push_back	(ID);
 		R_ASSERT			(P->Sector == Sector);
 		bbox.merge			(P->bbox);
 		P->bConnected		= TRUE;
 	}
-	/*
-	void				AddChieldSTD	(xr_vector<OGF_Base*>::iterator ID)
-	{
- 		OGF_Base*			P = *ID;
-		chields.push_back	(ID);
-		R_ASSERT			(P->Sector == Sector);
-		bbox.merge			(P->bbox);
-		P->bConnected		= TRUE;
-	}
-	*/
   
 	virtual void		Save		(IWriter &fs);
 	virtual void		GetGeometry	(xr_vector<Fvector> &R)
 	{
 		for (xr_vector<u32>::iterator I=chields.begin(); I!=chields.end(); I++)
-		g_tree[*I]->GetGeometry(R);
-		
-		//for (auto base : chields)	
-		//	(*base)->GetGeometry(R);
+			g_tree[*I]->GetGeometry(R);
 	}
 };
 

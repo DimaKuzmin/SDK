@@ -27,10 +27,6 @@ class ECORE_API CEditorRenderDevice :
     friend class 			TUI;
 
     float 					m_fNearer;
-
-	//u32						Timer_MM_Delta;
-	//CTimer					Timer;
-
     ref_shader				m_CurrentShader;
 
     void					_SetupStates();
@@ -49,6 +45,7 @@ public:
 	float RadiusRender;
 	u32 RenderReloadObjectsTime = 1;
 	BOOL RenderOptimize;
+	u32 RenderTasks;
 
    // u32 					dwWidth, dwHeight;
 	u32 					m_RenderWidth, m_RenderHeight;
@@ -58,36 +55,9 @@ public:
 	u32 					dwFillMode;
     u32						dwShadeMode;
 public:
-//   HWND 					m_hWnd;
-
-
-//	u32						dwFrame;
-//	u32						dwPrecacheFrame;
-
-//	BOOL					b_is_Ready;
-//	BOOL					b_is_Active;
-
-	// Engine flow-control
-	//float					fTimeDelta;
-	//float					fTimeGlobal;
-	//u32						dwTimeDelta;
-	//u32						dwTimeGlobal;
- //   u32						dwTimeContinual;
 
     // camera
 	CUI_Camera 				m_Camera;
-
- //   Fvector					vCameraPosition;
- //   Fvector					vCameraDirection;
- //   Fvector					vCameraTop;
- //   Fvector					vCameraRight;
- //   
-	//Fmatrix					mView;
-	//Fmatrix 				mProjection;
-	//Fmatrix					mFullTransform;
-
- //   float					fFOV;
-	//float					fASPECT;
 
 	// Dependent classes
 	CResourceManager*		Resources;	  
@@ -95,16 +65,6 @@ public:
 
 	CGameFont* 				pSystemFont;
 
-	// registrators
-//	CRegistrator <pureDeviceDestroy>	seqDevDestroy;
-//	CRegistrator <pureDeviceCreate>		seqDevCreate;
-
-	//CRegistrator <pureFrame>					seqFrame;				
-	//CRegistrator <pureRender>					seqRender;
-	//CRegistrator <pureAppStart>					seqAppStart;
-	//CRegistrator <pureAppEnd>					seqAppEnd;
-	//CRegistrator <pureAppActivate	>			seqAppActivate;
-	//CRegistrator <pureAppDeactivate	>			seqAppDeactivate;
 public:
 							CEditorRenderDevice 	();
     virtual 				~CEditorRenderDevice	();

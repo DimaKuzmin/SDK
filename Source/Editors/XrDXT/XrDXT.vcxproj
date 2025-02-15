@@ -51,6 +51,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="dds_write.cpp" />
     <ClCompile Include="DXT.cpp" />
     <ClCompile Include="Image_DXTC.cpp" />
     <ClCompile Include="NormalMapGen.cpp" />
@@ -91,6 +92,7 @@
     <ClInclude Include="colorconvert.h" />
     <ClInclude Include="dds.h" />
     <ClInclude Include="ddsTypes.h" />
+    <ClInclude Include="dds_write.h" />
     <ClInclude Include="dxtlib.h" />
     <ClInclude Include="Image_DXTC.h" />
     <ClInclude Include="NVI_Convolution.h" />

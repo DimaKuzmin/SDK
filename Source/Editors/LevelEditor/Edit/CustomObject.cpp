@@ -114,7 +114,13 @@ bool  CCustomObject::LoadLTX(CInifile& ini, LPCSTR sect_name)
 	m_CO_Flags.assign	(ini.r_u32(sect_name, "co_flags") );
 
 	FName				= ini.r_string(sect_name, "name");
-    // SetHash(GenHash());
+
+    if (!FName || FName == "" || FName == " ")
+    {
+        FName = (Scene->GetOTool(FClassID)->ClassName());
+    }
+    GenHash();
+   
 
     FPosition			= ini.r_fvector3 	(sect_name, "position");
     VERIFY2				(_valid(FPosition), sect_name);
@@ -147,8 +153,7 @@ bool CCustomObject::LoadStream(IReader& F)
     	
         R_ASSERT(F.find_chunk(CUSTOMOBJECT_CHUNK_NAME));
         F.r_stringZ		(FName);
-        // SetHash(GenHash());
-    }
+     }
 
 	if(F.find_chunk(CUSTOMOBJECT_CHUNK_TRANSFORM))
     {
@@ -318,21 +323,23 @@ void CCustomObject::OnSynchronize()
 	OnFrame		();
 }
 
-
-
 // SetName
  
 void CCustomObject::SetName(LPCSTR N)
 {
+    shared_str PreName = FName;
+
     string256 tmp;
     strcpy(tmp, N);
     strlwr(tmp);
     FName = tmp;
-    
-    auto TOOL = Scene->GetOTool(FClassID);
-    if (TOOL)
+ 
+    size_t pre = GetHash();
+    GenHash();
+    if (pre != GetHash())
     {
-        TOOL->_NotifyObject(this);
+        Msg("New Name: %s, Old Name: %s | hash: %llu | %llu",
+            PreName.c_str(), FName.c_str(), pre, GetHash());
     }
 }
 

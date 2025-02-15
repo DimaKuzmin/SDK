@@ -1,5 +1,3 @@
-#ifndef dx9r_constants_cacheH
-#define dx9r_constants_cacheH
 #pragma once
 
 template <class T, u32 limit>
@@ -29,13 +27,10 @@ public:
 	typedef		R_constant_cache<BOOL,16>		t_b;
 public:
 	ALIGN(16)	t_f					c_f;
-//	ALIGN(16)	t_i					c_i;
-//	ALIGN(16)	t_b					c_b;
+
 	BOOL							b_dirty;
 public:
 	t_f&					get_array_f		()	{ return c_f;	}
-//	t_i&					get_array_i		()	{ return c_i;	}
-//	t_b&					get_array_b		()	{ return c_b;	}
 
 	void					set		(R_constant* C, R_constant_load& L, const Fmatrix& A)
 	{
@@ -167,7 +162,7 @@ public:
 	//
 	ICF void					flush	()
 	{
-		if (a_pixel.b_dirty || a_vertex.b_dirty)	flush_cache();
+		if (a_pixel.b_dirty || a_vertex.b_dirty)
+			flush_cache();
 	}
 };
-#endif	//	dx9r_constants_cacheH

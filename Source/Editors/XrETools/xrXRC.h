@@ -2,13 +2,14 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
-#define AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_
 #pragma once
 
 #include "../../xrCDB/xrCDB.h"
 
-class ENGINE_API xrXRC
+#pragma todo("Add Optick Profiler")
+ 
+
+class ENGINE_API xrXRC_Editor
 {
 	CDB::COLLIDER	CL;
 public:
@@ -19,13 +20,7 @@ public:
 	}
 	IC void			ray_query		(const CDB::MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range)
 	{
-#ifndef NO_XRC_STATS
-		Device.Statistic->clRAY.Begin();
-#endif
         CL.ray_query(m_def,r_start,r_dir,r_range);
-#ifndef NO_XRC_STATS
-		Device.Statistic->clRAY.End	();
-#endif
 	}
 	IC void			ray_query		(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range)
 	{
@@ -42,13 +37,7 @@ public:
 	}
 	IC void			box_query		(const CDB::MODEL *m_def, const Fvector& b_center, const Fvector& b_dim)
 	{
-#ifndef NO_XRC_STATS
-		Device.Statistic->clBOX.Begin();
-#endif
         CL.box_query(m_def,b_center,b_dim);
-#ifndef NO_XRC_STATS
-		Device.Statistic->clBOX.End	();
-#endif
 	}
 	IC void			box_query		(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fbox& src)
 	{
@@ -66,13 +55,7 @@ public:
 	}
 	IC void			frustum_query	(const CDB::MODEL *m_def, const CFrustum& F)
 	{
-#ifndef NO_XRC_STATS
-		Device.Statistic->clFRUSTUM.Begin();
-#endif
 		CL.frustum_query(m_def,F);
-#ifndef NO_XRC_STATS
-		Device.Statistic->clFRUSTUM.End	();
-#endif
 	}
 
 	IC CDB::RESULT*	r_begin			()	{	return CL.r_begin();		};
@@ -81,6 +64,9 @@ public:
 	IC int			r_count			()	{	return CL.r_count();		};
 	IC void			r_clear			()	{	CL.r_clear();				};
 };
-ENGINE_API extern xrXRC XRC;
 
-#endif // !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
+// ENGINE_API extern thread_local xrXRC XRC;
+
+
+extern __declspec(thread) xrXRC_Editor g_XRC;
+ 

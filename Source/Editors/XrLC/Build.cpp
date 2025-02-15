@@ -35,14 +35,7 @@ SBuildOptions			g_build_options;
 
 xr_vector<OGF_Base *>	g_tree;
 vec2Face				g_XSplit;
-
-
-//BOOL					b_noise		= FALSE;
-//BOOL					b_radiosity	= FALSE;
-//BOOL					b_net_light	= FALSE;
-
-
- 
+  
 void	CBuild::CheckBeforeSave( u32 stage )
 {
 	bool b_g_tree_empty = g_tree.empty() ;
@@ -51,9 +44,6 @@ void	CBuild::CheckBeforeSave( u32 stage )
 	R_ASSERT( b_g_XSplit_empty );
 	bool b_IsOGFContainersEmpty = IsOGFContainersEmpty();
 	R_ASSERT( b_IsOGFContainersEmpty );
-	
-	
-	
 }
 
 void	CBuild::TempSave( u32 stage )
@@ -139,8 +129,7 @@ void log_vminfo_new(LPCSTR stage)
 {
 	size_t  w_free, w_reserved, w_committed;
 	vminfo(&w_free, &w_reserved, &w_committed);
-	clMsg(
-		"Stage: %s * [win32]: free[%u MB], reserved[%u MB], committed[%u MB]",
+	clMsg( "Stage: %s * [win32]: free[%u MB], reserved[%u MB], committed[%u MB]",
 		stage,
 		w_free / 1024 / 1024,
 		w_reserved / 1024 / 1024,
@@ -152,6 +141,8 @@ void log_vminfo_new(LPCSTR stage)
  
 IC bool				FaceEqual(Face& F1, Face& F2);
 #include "../XrLCLight/xrMU_Model_Reference.h"
+
+ 
  
 void CBuild::Run(LPCSTR P)
 {
@@ -209,11 +200,10 @@ void CBuild::Run(LPCSTR P)
 
 	log_vminfo_new("Adaptive HT memory_pre: ");
 	
-	if (!CformOnly )
+	if (current_args_data->adptive_ht)
 	{
  	//****************************************** HEMI-Tesselate
-		FPU::m64r();
-		Phase("Adaptive HT...");
+ 		Phase("Adaptive HT...");
 		mem_Compact();
  		xrPhase_AdaptiveHT();
 	}
@@ -224,32 +214,24 @@ void CBuild::Run(LPCSTR P)
 	//should be after normals, so that double-sided faces gets separated
  
 	//****************************************** Building normals
-	FPU::m64r();
-	Phase("Building normals...");
+ 	Phase("Building normals...");
 	mem_Compact();
 	CalcNormals();
 	//SmoothVertColors			(5);
 	log_vminfo_new("Normals Memory: ");
 
-	FPU::m64r					();
-	Phase						("Building collision database...");
-	mem_Compact					();
- 	BuildCForm					();
-	log_vminfo_new("CFORM Data");
-	if (CformOnly)
-		return;
- 
-	//****************************************** GLOBAL-RayCast model
-	FPU::m64r();
-	Phase("Building rcast-CFORM model...");
-
-	log_vminfo_new("rcast-CFORM model memory_pre: ");
-
-	mem_Compact();
- 	Light_prepare();
-	BuildRapid(TRUE);
+	if (current_args_data->cform_export)
+	{
+ 		Phase("Building collision database...");
+		mem_Compact();
+		BuildCForm();
+		log_vminfo_new("CFORM Data");
+		if (CformOnly)
+			return;
+	}
 	
-	log_vminfo_new("rcast-CFORM model momory_after");
+ 
+	//****************************************** GLOBAL-RayCast model 
   
 	//****************************************** GLOBAL-ILLUMINATION
 	if (g_build_options.b_radiosity)			
@@ -287,11 +269,11 @@ void CBuild::Run(LPCSTR P)
   
    	xrPhase_Subdivide			();
     log_vminfo_new("Subdividing geometry");
- 
+
 	// Se7Kills Opacity BUFFERS
  	//****************************************** All lighting + lmaps building and saving
  	
-	if (!current_args_data->test_build)
+	if (current_args_data->LmapsComputation)
 		Light						();
 
 	RunAfterLight				( fs );
@@ -343,7 +325,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		Status			("MU : References...");
 		for (m = 0; m < mu_refs().size(); m++)
 		{
-		//	clMsg("muref ID[%d], size[%d]", m, mu_models().size());
+			StatusNoMSG("References [%d]/[%d]", m, mu_models().size());
 			export_ogf(*mu_refs()[m]);
 		}
 	}

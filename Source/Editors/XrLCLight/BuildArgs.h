@@ -1,6 +1,8 @@
 #pragma once
 //#include "stdafx.h"
 
+ 
+
 struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 {
 	enum LightmapSize
@@ -10,10 +12,13 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 		eLightmap4096 = 2,
 		eLightmap8192 = 3
 	};
+
+	u32				EmbreeGeomType;
+	bool		    useRobust;
+
 	// debuging 
 	bool use_DXT1 = false;
-
-
+ 	 
 	// XRLC ADVANCED SETTINGS
 
 	bool use_embree = 0;			//+
@@ -39,12 +44,14 @@ struct XRLC_LIGHT_API  SpecialArgsXRLCLight
 	float pxpm = 10;				//+
 	int sample = 9; // 1-9			//+
 	int mu_samples = 6; // 1-6		//+
-  
-	char* special_args = 0;
-	
+  	
  	bool run_mu_first = false;
 
 	std::string level_name;
+
+	// Debuging 
+	bool LmapsComputation = true;
+	bool LmapsHemi = false;
 };
 
 

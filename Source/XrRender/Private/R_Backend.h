@@ -65,8 +65,8 @@ private:
 	// Vertices/Indices/etc
 	IDirect3DVertexDeclaration9*	decl;
 
-	ID3DVertexBuffer*			vb;
-	ID3DIndexBuffer*			ib;
+	ID3DVertexBuffer*				vb;
+	ID3DIndexBuffer*				ib;
 	u32								vb_stride;
 
 	// Pixel/Vertex constants

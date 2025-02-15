@@ -103,7 +103,7 @@ void execute	(LPSTR cmd)
   	}
 }
 
-extern XRAI_API ILoggerAI* LoggerCL_xrAI = 0;
+extern ILoggerAI* LoggerCL_xrAI = 0;
 
 void Startup(LPSTR     lpCmdLine)
 {

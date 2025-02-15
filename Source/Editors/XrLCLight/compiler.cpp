@@ -12,10 +12,12 @@
 #include "../XrLCLight/BuildArgs.h"
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
+XRLC_LIGHT_API extern int	LIGHT_Count;
 
-void	xrLightDO()
+void	xrLightDO(u32 Samples)
 {
 	u32	range = gl_data.slots_data.size_z();
+	LIGHT_Count = Samples;
 
 	// Start threads, wait, continue --- perform all the work
 	CThreadManager		Threads;
@@ -36,13 +38,13 @@ void	xrLightDO()
 
 
 
-void xrCompileDO( )
+void xrCompileDO(u32 Samples)
 {
 	Phase		("Loading level...");
 	gl_data.xrLoad	();
 
 	Phase		("Lighting nodes...");
- 	xrLightDO();
+ 	xrLightDO(Samples);
 
 	gl_data.slots_data.Free();
 	

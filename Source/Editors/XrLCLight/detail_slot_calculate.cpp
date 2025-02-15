@@ -187,6 +187,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 			}
 		}
 	}
+	
 	if (0==(flags&LP_dont_sun))
 	{
 		R_Light	*L	= &*(lights.sun.begin()), *E = &*(lights.sun.end());
@@ -221,6 +222,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 			}
 		}
 	}
+
 	if (0==(flags&LP_dont_hemi))
 	{
 		R_Light	*L	= &*lights.hemi.begin(), *E = &*lights.hemi.end();
@@ -256,15 +258,17 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 			}
 		}
 	}
+
+
 }
 
 
 bool detail_slot_process( u32 _x, u32 _z, DetailSlot&	DS )
 {
-		process_pallete( DS );
-		if ( gl_data.slots_data.skip_slot ( _x, _z ) )
-										return false;
-		return true;
+	process_pallete( DS );
+	if ( gl_data.slots_data.skip_slot ( _x, _z ) )
+									return false;
+	return true;
 }
 
 xrCriticalSection cs_DETAIL;

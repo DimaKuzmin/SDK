@@ -6,6 +6,8 @@
 
 #include "ESceneClassList.h"
 #include "SceneSummaryInfo.h"
+#include "functional"
+
 
 #define CHUNK_OBJECT_BODY   0x7777
 //----------------------------------------------------
@@ -55,6 +57,11 @@ class  CCustomObject:private pureDrawUI
     void			AnimationCreateKey	(float t);
     void			AnimationDeleteKey	(float t);
     void			AnimationUpdate		(float t);
+public :
+    // se7kills (Objects Filtration)
+    bool useInRender = false;
+    float distSQ = 0;
+
 public:
 	enum{
     	flSelected_notused			= (1<<0),
@@ -82,6 +89,7 @@ public:
     Flags32			m_RT_Flags;
 public:
 	shared_str		FName;
+ 
 	int 			save_id;
     // orientation
     Fvector 		FPosition;
@@ -109,6 +117,12 @@ public:
     void  	OnMotionCameraViewChange(PropValue* value); 
 public:
     size_t          hash_name = 0;
+    std::hash<char*> objects_hash;
+
+    void            GenHash() 
+    { 
+        hash_name = objects_hash((char*) FName.c_str());
+    }
 
     size_t          GetHash() { return hash_name; };
     void            SetHash(size_t Hash) { hash_name = Hash; };

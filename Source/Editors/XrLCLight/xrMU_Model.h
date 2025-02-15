@@ -2,7 +2,7 @@
 #define XRMU_MODEL_H
 
 #include "mu_model_face.h"
-  
+#include "xrDeflector.h"
 
 //#include "cl_collector.h"
 namespace	CDB
@@ -12,6 +12,7 @@ namespace	CDB
 };
 struct OGF;
 class base_lighting;
+
 
 
 class XRLC_LIGHT_API xrMU_Model
@@ -72,8 +73,12 @@ public:
 	void					calc_lighting		();
 //	void					calc_ogf			();
 //	void					export_geometry		();
+	
+	
 	void					export_cform_rcast	( CDB::CollectorPacked& CL, Fmatrix& xform );
- 
+	void					export_cform_rcast_new	(xr_vector<FaceDataIntel>& faces, Fmatrix& xform);
+	 
+
 	u32						find				( const _vertex *v )const;
 	u32						find				( const _face *v )const;
   

@@ -1333,8 +1333,12 @@ Ivector2 CLevelMain::GetRenderMousePosition() const
 
 void CLevelMain::OnDrawUI()
 {
+    OPTICK_EVENT("CLevelMain OnDrawUI");
     inherited::OnDrawUI();
+     
     UIObjectList::Update();
+
+
     UI_CompilerXR::Update();
     UIDxtConverter::Update();
     UI_TreesReplacer::Update();

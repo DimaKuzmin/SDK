@@ -97,17 +97,26 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 		exact_normalize(vN);
 
 		// multi-sample
-		const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : build_args->mu_samples;
-		for (u32 sample = 0; sample < (u32)n_samples; sample++)
+		
+		if (!build_args->LmapsHemi)
 		{
-			float				a = 0.2f * float(sample) / float(n_samples);
-			Fvector				P, N;
-			N.random_dir(vN, deg2rad(30.f));
-			P.mad(vP, N, a);
-			LightPoint(&DB, MDL, vC, P, N, lights, flags, 0, use_opcode);
+ 			const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : build_args->mu_samples;
+			for (u32 sample = 0; sample < (u32)n_samples; sample++)
+			{
+				float				a = 0.2f * float(sample) / float(n_samples);
+				Fvector				P, N;
+				N.random_dir(vN, deg2rad(30.f));
+				P.mad(vP, N, a);
+				LightPoint(&DB, MDL, vC, P, N, lights, flags, 0, use_opcode);
+			}
+			vC.scale(n_samples);
+			vC._tmp_ = v_trans;
 		}
-		vC.scale(n_samples);
-		vC._tmp_ = v_trans;
+		else
+		{
+			vC.hemi = 1.0f;
+			vC._tmp_ = v_trans;
+		}
 
 		// НЕ безопастно 
 		if (flags & LP_dont_hemi);

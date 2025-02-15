@@ -2,9 +2,7 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#if !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
-#define AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_
-//#pragma once
+#pragma once
 
 #include "xrCDB.h"
 
@@ -14,7 +12,7 @@ extern	XRCDB_API	CStatTimer	*cdb_clBOX;				// total: box query
 extern	XRCDB_API	CStatTimer	*cdb_clFRUSTUM;			// total: frustum query
 #endif
 
-class XRCDB_API xrXRC  
+class XRCDB_API xrXRC_Cdb
 {
 	CDB::COLLIDER	CL;
 public:
@@ -24,13 +22,7 @@ public:
 	}
 	IC void			ray_query		(const CDB::MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range = 10000.f)
 	{
-#ifdef DEBUG
-		cdb_clRAY->Begin();
-#endif
 		CL.ray_query(m_def,r_start,r_dir,r_range);
-#ifdef DEBUG
-		cdb_clRAY->End	();
-#endif
 	}
 	
 	IC void			box_options		(u32 f)	
@@ -39,13 +31,7 @@ public:
 	}
 	IC void			box_query		(const CDB::MODEL *m_def, const Fvector& b_center, const Fvector& b_dim)
 	{
-#ifdef DEBUG
-		cdb_clBOX->Begin();
-#endif
 		CL.box_query(m_def,b_center,b_dim);
-#ifdef DEBUG
-		cdb_clBOX->End	();
-#endif
 	}
 	
 	IC void			frustum_options	(u32 f)
@@ -54,13 +40,7 @@ public:
 	}
 	IC void			frustum_query	(const CDB::MODEL *m_def, const CFrustum& F)
 	{
-#ifdef DEBUG
-		cdb_clFRUSTUM->Begin();
-#endif
 		CL.frustum_query(m_def,F);
-#ifdef DEBUG
-		cdb_clFRUSTUM->End	();
-#endif
 	}
 	
 	IC CDB::RESULT*	r_begin			()	{	return CL.r_begin();		};
@@ -70,9 +50,7 @@ public:
 	IC void			r_clear			()	{	CL.r_clear();				};
 	IC void			r_clear_compact	()	{	CL.r_clear_compact();		};
 	
-	xrXRC();
-	~xrXRC();
+	xrXRC_Cdb();
+	~xrXRC_Cdb();
 };
-XRCDB_API extern xrXRC XRC;
-
-#endif // !defined(AFX_XRXRC_H__9AA25268_621F_4FCA_BD75_AF2E9822B8E3__INCLUDED_)
+XRCDB_API extern xrXRC_Cdb XRC;

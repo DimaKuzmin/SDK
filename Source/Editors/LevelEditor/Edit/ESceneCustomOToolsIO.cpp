@@ -104,10 +104,11 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
 
     u32 count			= ini.r_u32("main", "objects_count");
 
-	SPBItem* pb 		= UI->ProgressStart(count, "Objects Loading ...");
+	// SPBItem* pb 		= UI->ProgressStart(count, "Objects Loading ...");
 
     u32 i				= 0;
     string128			buff;
+   
     CTimer t;
     t.Start();
 
@@ -122,31 +123,21 @@ bool ESceneCustomOTool::LoadLTX(CInifile& ini)
             if (!OnLoadAppendObject(obj))
                 xr_delete(obj);
         }
-        pb->Inc();
+       
+        // if (i%512 == 0)
+        // pb->Inc();
+ 
+        // string128 tmp;
+        // sprintf(tmp, "objects: %d / %d", i, count);
+        // pb->Info(tmp);
 
-        UpdateObjectsHash();
-
-        string128 tmp;
-        sprintf(tmp, "objects: %d / %d", i, count);
-        pb->Info(tmp);
+        // if (i % 1024 == 0)
+        // Msg_IN_FILE("Loading Objects: %d / %d", i, count);
     }
+ 
+    Msg("Loaded Items Size: %d, %u MS", count, t.GetElapsed_ms());
 
-     
-    /*
-    std::thread* th[8];
-    for (int i = 0; i < 8; i++)
-        th[i] = new std::thread(LoadThread, Scene, &ini, pb);
-
-    for (int i = 0; i < 8; i++)
-        th[i]->join();
-
-    Msg("Tool: %d, time: %u", FClassID, t.GetElapsed_ticks());
-
-
-	
-    */
-
-    UI->ProgressEnd(pb);
+    // UI->ProgressEnd(pb);
     return true;
 }
 

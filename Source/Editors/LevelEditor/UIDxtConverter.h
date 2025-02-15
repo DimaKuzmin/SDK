@@ -6,11 +6,44 @@ using namespace jsonxx;
 class UIDxtConverter :  public XrUI
 {
 	static UIDxtConverter* Form_DXT;	
+
+	struct DDS_PIXELFORMAT
+	{
+		uint32_t dwSize;
+		uint32_t dwFlags;
+		uint32_t dwFourCC;
+		uint32_t dwRGBBitCount;
+		uint32_t dwRBitMask;
+		uint32_t dwGBitMask;
+		uint32_t dwBBitMask;
+		uint32_t dwABitMask;
+	};
+
+	struct DDS_HEADER 
+	{
+		uint32_t dwSize;
+		uint32_t dwFlags;
+		uint32_t dwHeight;
+		uint32_t dwWidth;
+		uint32_t dwPitchOrLinearSize;
+		uint32_t dwDepth;
+		uint32_t dwMipMapCount;
+		uint32_t dwReserved1[11];
+		DDS_PIXELFORMAT ddspf;
+		uint32_t dwCaps;
+		uint32_t dwCaps2;
+		uint32_t dwCaps3;
+		uint32_t dwCaps4;
+		uint32_t dwReserved2;
+	};
+
+
 	struct THM
 	{
 		// NAME FILE
 		shared_str name_dds;
 
+		bool has_alpha;
 		STextureParams::ETFormat fmt;
 		Flags32 flags;
 		u32 border_color;
@@ -42,6 +75,91 @@ class UIDxtConverter :  public XrUI
 		// Chunk fade
 		u8 fade_delay;
 
+		enum eFlags
+		{
+			flGenerateMipMaps = (1 << 0),
+			flBinaryAlpha = (1 << 1),
+			flAlphaBorder = (1 << 4),
+			flColorBorder = (1 << 5),
+			flFadeToColor = (1 << 6),
+			flFadeToAlpha = (1 << 7),
+			flDitherColor = (1 << 8),
+			flDitherEachMIPLevel = (1 << 9),
+
+			flDiffuseDetail = (1 << 23),
+			flImplicitLighted = (1 << 24),
+			flHasAlpha = (1 << 25),
+			flBumpDetail = (1 << 26),
+		};
+
+		bool HasImplicit()
+		{
+			return flags.test(flImplicitLighted);
+		}
+
+		bool HasAlpha()
+		{
+			return flags.test(flHasAlpha) || has_alpha;
+		}
+
+		// LPCSTR CvrtFlags()
+		// {
+ 		// 	if (flags.test(flGenerateMipMaps))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 	
+		// 	if (flags.test(flBinaryAlpha))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 	if (flags.test(flAlphaBorder))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 
+		// 	if (flags.test(flColorBorder))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 
+		// 	if (flags.test(flFadeToAlpha))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 
+		// 	if (flags.test(flDitherColor))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 
+		// 	if (flags.test(flDitherEachMIPLevel))
+		// 	{
+		// 		return  "GenerateMipMaps";
+		// 	}
+		// 
+		// 	// 23-26
+		// 
+		// 	if (flags.test(flDiffuseDetail))
+		// 	{
+		// 
+		// 	}
+		// 
+		// 	if (flags.test(flImplicitLighted))
+		// 	{
+		// 
+		// 	}
+		// 
+		// 	if (flags.test(flHasAlpha))
+		// 	{
+		// 
+		// 	}
+		// 
+		// 	if (flags.test(flBumpDetail))
+		// 	{
+		// 
+		// 	}
+		// };
 
 		/*
 			flGenerateMipMaps	= (1<<0),
@@ -57,9 +175,27 @@ class UIDxtConverter :  public XrUI
 			flImplicitLighted	= (1<<24),
 			flHasAlpha			= (1<<25),
 			flBumpDetail		= (1<<26),
-
 		*/
 
+		bool isDXT1()
+		{
+			return fmt == STextureParams::tfDXT1;
+		}
+
+		bool isADXT1()
+		{
+			return fmt == STextureParams::tfADXT1;
+		}
+
+		bool isDXT3()
+		{
+			return fmt == STextureParams::tfDXT3;
+		}
+
+		bool isDXT5()
+		{
+			return fmt == STextureParams::tfDXT5;
+		}
 
 		LPCSTR CvrtFormat()
 		{
@@ -321,45 +457,57 @@ class UIDxtConverter :  public XrUI
 
 		}
 	
-		jsonxx::Object save_json()
+		jsonxx::Object save_json(bool flags_save, u32 DDS_FORMAT)
 		{
 			jsonxx::Object thm_json;
 			thm_json << "fmt" << String(CvrtFormat());
 
-			thm_json << "flags" << Number(flags.get());
-			thm_json << "border_color" << Number(border_color);
+		
 
-			thm_json << "fade_color" << Number(fade_color);
-			thm_json << "fade_amount" << Number(fade_amount);
 			thm_json << "width" << Number(width);
 			thm_json << "height" << Number(height);
-			thm_json << "mip_filter" << Number(mip_filter);
-			
-			thm_json << "flGenerateMipMaps" << Number(flags.test(STextureParams::flGenerateMipMaps));
-			thm_json << "flBinaryAlpha" << Number(flags.test(STextureParams::flBinaryAlpha));
-			thm_json << "flColorBorder" << Number(flags.test(STextureParams::flColorBorder));
-			thm_json << "flFadeToColor" << Number(flags.test(STextureParams::flFadeToColor));
-			thm_json << "flFadeToAlpha" << Number(flags.test(STextureParams::flFadeToAlpha));
-			thm_json << "flDitherColor" << Number(flags.test(STextureParams::flDitherColor));
-			thm_json << "flDitherEachMIPLevel" << Number(flags.test(STextureParams::flDitherEachMIPLevel));
- 			thm_json << "flDiffuseDetail" << Number(flags.test(STextureParams::flDiffuseDetail));
-			thm_json << "flImplicitLighted" << Number(flags.test(STextureParams::flImplicitLighted));
-			thm_json << "flHasAlpha" << Number(flags.test(STextureParams::flHasAlpha));
- 			thm_json << "flBumpDetail" << Number(flags.test(STextureParams::flBumpDetail));
 
-			thm_json << "type" << Number(type);
-			thm_json << "detail_name" << String(detail_name.c_str());
+			if (flags_save)
+			{
+				thm_json << "flags" << Number(flags.get());
+
+				thm_json << "border_color" << Number(border_color);
+
+				thm_json << "fade_color" << Number(fade_color);
+				thm_json << "fade_amount" << Number(fade_amount);
+
+				thm_json << "mip_filter" << Number(mip_filter);
+
+				thm_json << "flGenerateMipMaps" << Number(flags.test(STextureParams::flGenerateMipMaps));
+				thm_json << "flBinaryAlpha" << Number(flags.test(STextureParams::flBinaryAlpha));
+				thm_json << "flColorBorder" << Number(flags.test(STextureParams::flColorBorder));
+				thm_json << "flFadeToColor" << Number(flags.test(STextureParams::flFadeToColor));
+				thm_json << "flFadeToAlpha" << Number(flags.test(STextureParams::flFadeToAlpha));
+				thm_json << "flDitherColor" << Number(flags.test(STextureParams::flDitherColor));
+				thm_json << "flDitherEachMIPLevel" << Number(flags.test(STextureParams::flDitherEachMIPLevel));
+				thm_json << "flDiffuseDetail" << Number(flags.test(STextureParams::flDiffuseDetail));
+				thm_json << "flImplicitLighted" << Number(flags.test(STextureParams::flImplicitLighted));
+				thm_json << "flHasAlpha" << Number(flags.test(STextureParams::flHasAlpha));
+				thm_json << "flBumpDetail" << Number(flags.test(STextureParams::flBumpDetail));
+
+				thm_json << "type" << Number(type);
+
+				thm_json << "material" << Number(material);
+				thm_json << "material_weight" << Number(material_weight);
+
+				thm_json << "bump_virtual_height" << Number(bump_virtual_height);
+				thm_json << "fade_delay" << Number(flags.test(STextureParams::flBumpDetail));
+
+				thm_json << "bump_mode" << Number(bump_mode);
+			}
+			
+			thm_json << "detail_name" << String(detail_name.c_str()); // TERRAINs
 			thm_json << "detail_scale" << Number(detail_scale);
 
-			thm_json << "material" << Number(material);
-			thm_json << "material_weight" << Number(material_weight);
- 
-			thm_json << "bump_virtual_height" << Number(bump_virtual_height);
-			thm_json << "bump_mode" << Number(bump_mode);
 			thm_json << "bump_name" << String(bump_name.c_str());
 	
 			thm_json << "ext_normal_map_name" << String(ext_normal_map_name.c_str());
-			thm_json << "fade_delay" << Number(flags.test(STextureParams::flBumpDetail));
+			thm_json << "DDS_FORMAT" << Number(DDS_FORMAT);
 
 
 			LPCSTR section = name_dds.c_str();

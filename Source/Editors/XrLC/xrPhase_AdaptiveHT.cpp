@@ -179,8 +179,6 @@ void CBuild::xrPhase_AdaptiveHT	()
  		 
 		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t ID)
 		{
-			 
-  
 			base_color_c		vC;
 			vecVertex& verts = lc_global_data()->g_vertices();
 			Vertex* V = verts[ID];
@@ -202,6 +200,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 	//////////////////////////////////////////////////////////////////////////
 	Status				("Gathering lighting information...");
 	u_SmoothVertColors	(5);
+
+	IntelEmbereDetachRelease();
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
@@ -411,10 +411,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 
 void CBuild::u_SmoothVertColors(int count)
 {
-	std::mutex mtx;
-
-
-	for (int iteration=0; iteration<count; ++iteration)
+ 	for (int iteration=0; iteration<count; ++iteration)
 	{
 		Progress( float(iteration/count) );
 
@@ -422,9 +419,7 @@ void CBuild::u_SmoothVertColors(int count)
 		xr_vector<base_color>	colors;
  		colors.resize			(lc_global_data()->g_vertices().size());
 
-		//for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
-		
-		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t IDX)
+ 		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t IDX)
 		{
  			{
 				// Circle
@@ -450,16 +445,11 @@ void CBuild::u_SmoothVertColors(int count)
 				}
 				avg.scale(circle_vec.size());
 
-				// mtx.lock();
-				colors[IDX]._set(avg);
-				// mtx.unlock();
-			}
+ 				colors[IDX]._set(avg);
+ 			}
 		
 		});
-
-
-		
-
+		 
 		// Transfer
 		for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
 			lc_global_data()->g_vertices()[it]->C	= colors[it];

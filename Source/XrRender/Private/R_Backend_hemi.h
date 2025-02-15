@@ -1,5 +1,3 @@
-#ifndef r_backend_hemiH
-#define r_backend_hemiH
 #pragma once
 
 class ECORE_API	R_hemi
@@ -21,4 +19,3 @@ public:
 	void			set_neg_faces		(float negx, float negy, float negz);
 	void			set_material		(float x, float y, float z, float w);
 };
-#endif

@@ -13,8 +13,9 @@ class ESceneCustomOTool: public ESceneToolBase
 	typedef ESceneToolBase inherited;
 protected:
 	ObjectList			m_Objects;
-    ObjectList			m_Objects_to_process;
-    
+     
+    u32 dwUpdateList;
+
 	bool 				OnLoadSelectionAppendObject(CCustomObject* obj);
 	bool 				OnLoadAppendObject		(CCustomObject* obj);
 public:
@@ -79,11 +80,13 @@ public:
     //--------------------------------------------------------------------------
     // object part
     //--------------------------------------------------------------------------
+
+    xr_unordered_map<size_t, CCustomObject*>    objects_hash;
+
     IC ObjectList&		GetObjects				(){return m_Objects;}
     IC int				ObjCount				(){return m_Objects.size();}
 
-    virtual BOOL 		_NotifyObject(CCustomObject* object);
-	virtual BOOL 		_AppendObject			(CCustomObject* object);
+ 	virtual BOOL 		_AppendObject			(CCustomObject* object);
 	virtual BOOL 		_RemoveObject			(CCustomObject* object);
 
     // pick function
@@ -91,15 +94,8 @@ public:
     virtual BOOL 		FrustumPick				(ObjectList& lst, const CFrustum& frustum);
     virtual BOOL 		SpherePick				(ObjectList& lst, const Fvector& center, float radius);
     virtual int 		GetQueryObjects			(ObjectList& lst, int iSel, int iVis, int iLock);
-
-   
-
-    std::hash<std::string> hasher_map;
-    xr_map< size_t, CCustomObject*> objects_by_name;
-   
-    u32 LastHashUpdate = -1;
-    u32 UpdateObjectsHash();
-
+     
+    
     virtual CCustomObject* FindObjectByName		(LPCSTR name, CCustomObject* pass=0);
     virtual CCustomObject* CreateObject			(LPVOID data, LPCSTR name)=0;
 

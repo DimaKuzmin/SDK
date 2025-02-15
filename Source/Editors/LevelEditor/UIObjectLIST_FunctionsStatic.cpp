@@ -200,8 +200,7 @@ void UIObjectList::ExportUsedTextures()
 		{
  			for (auto surface : sobject->m_Surfaces)
 			{
-				//Msg("Surf [%d]: %s", ID, surface->m_Texture.c_str());
-				auto it = std::find_if(surface_textures.begin(), surface_textures.end(), [&](xr_string& s) {
+ 				auto it = std::find_if(surface_textures.begin(), surface_textures.end(), [&](xr_string& s) {
 					return s._Equal(surface->m_Texture.c_str()); 
 					});
 				if (it == surface_textures.end())
@@ -211,7 +210,6 @@ void UIObjectList::ExportUsedTextures()
 					surface_textures.push_back(text);
 				}
 			}
- 
 		}
 	}
 
@@ -220,7 +218,12 @@ void UIObjectList::ExportUsedTextures()
 		{
 
 			ETextureThumbnail* pThmTexture = (ETextureThumbnail*) ImageLib.CreateThumbnail(InFileThm.c_str(), ECustomThumbnail::ETTexture);
-			pThmTexture->Load(InFileThm.c_str(), "");
+			bool isLoaded = pThmTexture->Load(InFileThm.c_str(), 0);
+			if (!isLoaded)
+			{
+				Msg("[Exports] Problem Load File: %s", InFileThm.c_str());
+				return;
+			}
 
 			if (pThmTexture != nullptr)
 			{

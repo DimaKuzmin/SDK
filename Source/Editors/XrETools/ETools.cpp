@@ -5,6 +5,7 @@ auto __vsnprintf = _vsnprintf;
 #pragma warning(disable:4267)
 
 
+
 namespace ETOOLS
 {
 	ETOOLS_API bool   TestRayTriA(const Fvector& C, const Fvector& D, Fvector** p, float& u, float& v, float& range, bool bCull)
@@ -138,7 +139,7 @@ namespace ETOOLS
 		CL->add_face_D					(v0,v1,v2,dummy,u32(-1));
 	}
 
-	ETOOLS_API CDB::COLLIDER*  get_collider	(){return XRC.collider();}
+	ETOOLS_API CDB::COLLIDER*  get_collider	(){return g_XRC.collider(); }
 
 	ETOOLS_API CDB::MODEL*	  create_model_clp(CDB::CollectorPacked* CL)
 	{
@@ -159,32 +160,32 @@ namespace ETOOLS
 	{
 		xr_delete			(M);
 	}
-	ETOOLS_API CDB::RESULT*	  r_begin	()	{	return XRC.r_begin();		};
-	ETOOLS_API CDB::RESULT*	  r_end	()	{	return XRC.r_end();			};
-	ETOOLS_API int	  r_count			()	{	return XRC.r_count();		};
+	ETOOLS_API CDB::RESULT*	  r_begin	()	{	return g_XRC.r_begin();		};
+	ETOOLS_API CDB::RESULT*	  r_end	()	{	return g_XRC.r_end();			};
+	ETOOLS_API int	  r_count			()	{	return g_XRC.r_count();		};
 	ETOOLS_API void   ray_options	(u32 flags)
 	{
-		XRC.ray_options(flags);
+		g_XRC.ray_options(flags);
 	}
 	ETOOLS_API void	  ray_query	(const CDB::MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range)
 	{
-		XRC.ray_query(m_def,r_start,r_dir,r_range);
+		g_XRC.ray_query(m_def,r_start,r_dir,r_range);
 	}
 	ETOOLS_API void	  ray_query_m	(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fvector& r_start,  const Fvector& r_dir, float r_range)
 	{
-		XRC.ray_query(inv_parent,m_def,r_start,r_dir,r_range);
+		g_XRC.ray_query(inv_parent,m_def,r_start,r_dir,r_range);
 	}
 	ETOOLS_API void   box_options	(u32 flags)
 	{
-		XRC.box_options(flags);
+		g_XRC.box_options(flags);
 	}
 	ETOOLS_API void	  box_query	(const CDB::MODEL *m_def, const Fvector& b_center, const Fvector& b_dim)
 	{
-		XRC.box_query(m_def, b_center, b_dim);
+		g_XRC.box_query(m_def, b_center, b_dim);
 	}
 	ETOOLS_API void	  box_query_m	(const Fmatrix& inv_parent, const CDB::MODEL *m_def, const Fbox& src)
 	{
-		XRC.box_query(inv_parent, m_def, src);
+		g_XRC.box_query(inv_parent, m_def, src);
 	}
 }
 

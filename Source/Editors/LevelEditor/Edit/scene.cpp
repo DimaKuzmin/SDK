@@ -137,7 +137,8 @@ void EScene::AppendObject( CCustomObject* object, bool bUndo )
     VERIFY3(mt,"Can't find Object Tools:",GetTool(object->FClassID)->ClassDesc());
     mt->_AppendObject	(object);
     UI->UpdateScene		();
-    if (bUndo){	
+    if (bUndo)
+    {	
         object->Select	(true);
         UndoSave();
     }
@@ -151,8 +152,7 @@ bool EScene::RemoveObject( CCustomObject* object, bool bUndo, bool bDeleting )
     if (mt&&mt->IsEditable())
     {
     	mt->_RemoveObject(object);
-        
- 
+     
         {
             m_ESO_SnapObjects.remove			(object);
 

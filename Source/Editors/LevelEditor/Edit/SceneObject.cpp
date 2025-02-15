@@ -214,11 +214,11 @@ void CSceneObject::BoxQuery(SPickQuery& pinf)
     m_pReference->BoxQuery(_Transform(), _ITransform(), pinf);
 }
 
-bool CSceneObject::BoxPick(const Fbox& box, SBoxPickInfoVec& pinf, int TH)
+bool CSceneObject::BoxPick(const Fbox& box, SBoxPickInfoVec& pinf)
 {
 	if (!m_pReference)
         return false;
-	return m_pReference->BoxPick(this, box, _ITransform(), pinf, TH);
+	return m_pReference->BoxPick(this, box, _ITransform(), pinf);
 }
 
 void CSceneObject::GetFullTransformToWorld( Fmatrix& m )

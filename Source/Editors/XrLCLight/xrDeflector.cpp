@@ -132,6 +132,7 @@ CDeflector::CDeflector()
 	Sphere.R		= 0;
 	bMerged			= FALSE;
 	UVpolys.reserve	(32);
+
 }
 CDeflector::~CDeflector()
 {
@@ -480,7 +481,7 @@ void DeflectorsStats ()
 			DumpDeflctor( i ); 
 }
 
-extern XRLC_LIGHT_API int global_size_map = 1024;
+int global_size_map = 1024;
 
 
 void setLMSIZE(int size)

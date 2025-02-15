@@ -60,8 +60,10 @@ void CHW::CreateD3D	()
 
 	hD3D            			= LoadLibrary(_name);
 	R_ASSERT2	           	 	(hD3D,"Can't find 'd3d9.dll'\nPlease install latest version of DirectX before running this program");
-    typedef IDirect3D9 * WINAPI _Direct3DCreate9(UINT SDKVersion);
-	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*)GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
+    
+	typedef IDirect3D9 * WINAPI _Direct3DCreate9(UINT SDKVersion);
+	
+	_Direct3DCreate9* createD3D	= (_Direct3DCreate9*) GetProcAddress(hD3D,"Direct3DCreate9");	R_ASSERT(createD3D);
     this->pD3D 					= createD3D( D3D_SDK_VERSION );
     R_ASSERT2					(this->pD3D,"Please install DirectX 9.0c");
 }
@@ -137,23 +139,7 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 	BOOL  bWindowed			= TRUE;
 	
 	DevAdapter				= D3DADAPTER_DEFAULT;
-	DevT					= Caps.bForceGPU_REF?D3DDEVTYPE_REF:D3DDEVTYPE_HAL;
-
-#ifndef	MASTER_GOLD
-	// Look for 'NVIDIA NVPerfHUD' adapter
-	// If it is present, override default settings
-	for (UINT Adapter=0;Adapter<pD3D->GetAdapterCount();Adapter++)	{
-		D3DADAPTER_IDENTIFIER9 Identifier;
-		HRESULT Res=pD3D->GetAdapterIdentifier(Adapter,0,&Identifier);
-		if (SUCCEEDED(Res) && (xr_strcmp(Identifier.Description,"NVIDIA PerfHUD")==0))
-		{
-			DevAdapter	=Adapter;
-			DevT		=D3DDEVTYPE_REF;
-			break;
-		}
-	}
-#endif	//	MASTER_GOLD
-
+	DevT					= Caps.bForceGPU_REF ? D3DDEVTYPE_REF : D3DDEVTYPE_HAL;
 
 	// Display the name of video board
 	D3DADAPTER_IDENTIFIER9	adapterID;
@@ -216,11 +202,13 @@ void		CHW::CreateDevice		(HWND m_hWnd, bool move_window)
 		fDepth  = selectDepthStencil(fTarget);
 	}
 
-	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	{
+	if ((D3DFMT_UNKNOWN==fTarget) || (D3DFMT_UNKNOWN==fTarget))	
+	{
 		Msg					("Failed to initialize graphics hardware.\n"
 							 "Please try to restart the game.\n"
 							 "Can not find matching format for back buffer."
 							 );
+
 		FlushLog			();
 		MessageBox			(NULL,"Failed to initialize graphics hardware.\nPlease try to restart the game.","Error!",MB_OK|MB_ICONERROR);
 		TerminateProcess	(GetCurrentProcess(),0);
@@ -328,50 +316,6 @@ u32	CHW::selectPresentInterval	()
 
 u32 CHW::selectGPU ()
 {
-#if RENDER == R_R1
-	BOOL isIntelGMA = FALSE;
-
-	if ( Caps.id_vendor == 0x8086 ) { // Intel
-
-		#define GMA_SL_SIZE 43
-
-		DWORD IntelGMA_SoftList[ GMA_SL_SIZE ] = { 
-			0x2782,0x2582,0x2792,0x2592,0x2772,0x2776,0x27A2,0x27A6,0x27AE,
-			0x2982,0x2983,0x2992,0x2993,0x29A2,0x29A3,0x2972,0x2973,0x2A02,
-			0x2A03,0x2A12,0x2A13,0x29C2,0x29C3,0x29B2,0x29B3,0x29D2,0x29D3,
-
-			0x2A42,0x2A43,0x2E02,0x2E03,0x2E12,0x2E13,0x2E22,0x2E23,0x2E32,
-			0x2E33,0x2E42,0x2E43,0x2E92,0x2E93,0x0042,0x0046
-		};
-
-		for ( int idx = 0 ; idx < GMA_SL_SIZE ; ++idx )
-			if ( IntelGMA_SoftList[ idx ] == Caps.id_device ) {
-				isIntelGMA = TRUE;
-				break;
-			}
-	}
-
-	if ( isIntelGMA )
-		switch ( ps_r1_SoftwareSkinning ) {
-			case 0 : 
-				Msg( "* Enabling software skinning" );
-				ps_r1_SoftwareSkinning = 1;
-				break;
-			case 1 : 
-				Msg( "* Using software skinning" );
-				break;
-			case 2 : 
-				Msg( "* WARNING: Using hardware skinning" );
-				Msg( "*   setting 'r1_software_skinning' to '1' may improve performance" );
-				break;
-	} else
-		if ( ps_r1_SoftwareSkinning == 1 ) {
-				Msg( "* WARNING: Using software skinning" );
-				Msg( "*   setting 'r1_software_skinning' to '0' should improve performance" );
-		}
-
-#endif // RENDER == R_R1
-
 	if ( Caps.bForceGPU_SW ) 
 		return D3DCREATE_SOFTWARE_VERTEXPROCESSING;
 

@@ -457,7 +457,7 @@ void CSector::LoadSectorDef( IReader* F )
         return;
     }
 
-    Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
+    /// Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
     sector_items.push_back(sitem);
 }
 
@@ -477,7 +477,7 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
     if(!o_name)
          ELog.Msg		(mtError,"Sector Item contains not nnamed object - can't load");
     
-	sitem.object= (CSceneObject*) Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
+	sitem.object = (CSceneObject*) Scene->FindObjectByName(o_name,OBJCLASS_SCENEOBJECT);
     if (sitem.object==NULL)
     {
         ELog.Msg		(mtError,"Sector Item contains object '%s' - can't load.\nObject not found.",o_name);
@@ -504,7 +504,7 @@ void CSector::LoadSectorDefLTX( CInifile& ini, LPCSTR sect_name, u32 item_idx )
         return;
     }
 
-    Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
+    // Msg("Sector: %s,  Loaded Item : %s", this->FName.c_str(), sitem.object->FName.c_str());
 
     sector_items.push_back(sitem);
 }

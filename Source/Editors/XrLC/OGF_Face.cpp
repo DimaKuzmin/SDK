@@ -198,12 +198,16 @@ void OGF::Optimize	()
 	// Detect relevant number of UV pairs
 	try 
 	{
+		// se7kills (FIX TODO)
+
 		R_ASSERT			(data.vertices.size());
 		dwRelevantUV		= data.vertices.front().UV.size();
 		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);
 		if (!SH->flags.bOptimizeUV)	
 			return;
-	} catch(...) {
+	} 
+	catch(...)
+	{
 		Msg	("* ERROR: optimize: std-geom : find relevant UV");
 	}
 

@@ -19,75 +19,102 @@ class calculate_normals
 
 	typedef vecFace												vecAdj;
 	typedef typename vecAdj::iterator							vecAdjIt;
-private:	
+private:
 
-typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
+	typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
 
 public:
-static void	calc_normals( vecVertex &vertices, vecFace &faces )
-{
-	
-	u32		Vcount	= vertices.size();
-	float	p_total = 0;
-	float	p_cost  = 1.f/(Vcount);
-
-	// Clear temporary flag
-	Status			("Processing...");
-	float sm_cos	= _cos(deg2rad(g_params().m_sm_angle));
-
-	for (vecFaceIt it = faces.begin(); it!=faces.end(); it++)
+	static void	calc_normals(vecVertex& vertices, vecFace& faces)
 	{
-		(*it)->flags.bSplitted	= true;
-		(*it)->CalcNormal		();
-	}
 
-	// remark:
-	//	we use Face's bSplitted value to indicate that face is processed
-	//  so bSplitted means bUsed
-	for (u32 I=0; I<Vcount; I++)
-	{
-		type_vertex* pTestVertex = vertices[I];
-		for (vecAdjIt AFit = pTestVertex->m_adjacents.begin(); AFit!=pTestVertex->m_adjacents.end(); ++AFit)
+		u32		Vcount = vertices.size();
+		float	p_total = 0;
+		float	p_cost = 1.f / (Vcount);
+
+		// Clear temporary flag
+		Status("Processing Normals ...");
+		float sm_cos = _cos(deg2rad(g_params().m_sm_angle));
+
+		CTimer t;
+		t.Start();
+		for (vecFaceIt it = faces.begin(); it != faces.end(); it++)
 		{
-			type_face*	F					= *AFit;
-			F->flags.bSplitted			= false;
+			(*it)->flags.bSplitted = true;
+			(*it)->CalcNormal();
 		}
-		std::sort( pTestVertex->m_adjacents.begin(), pTestVertex->m_adjacents.end() );
 
-		while ( pTestVertex->m_adjacents.size() )	
+		Msg("Processing Time For Vertexies: %u", t.GetElapsed_ms());
+
+		// remark:
+		//	we use Face's bSplitted value to indicate that face is processed
+		//  so bSplitted means bUsed
+
+		
+		u64 CreateCopy = 0;
+		u64 recurse_tri_params = 0;
+		u64 ASorting = 0;
+		u64 AReplace = 0;
+
+		for (u32 I = 0; I < Vcount; I++)
 		{
-			vecFace new_adj;
-			itterate_adjacents_type::recurse_tri_params p( pTestVertex, new_adj, sm_cos );
-			itterate_adjacents_type::RecurseTri( 0, p );// pTestVertex, new_adj, sm_cos );
-			VERIFY( !new_adj.empty() );
-
-			type_vertex*	pNewVertex			= pTestVertex->CreateCopy_NOADJ( vertices );
-
-			for (u32 a=0; a<new_adj.size(); ++a)
+			// Фигня нагружает 
+			type_vertex* pTestVertex = vertices[I];
+			for (auto& F : pTestVertex->m_adjacents)
 			{
-				type_face* test		= new_adj[a];
-				test->VReplace	( pTestVertex, pNewVertex );
+ 				F->flags.bSplitted = false;
+			}
+			std::sort(pTestVertex->m_adjacents.begin(), pTestVertex->m_adjacents.end());
+			// Конец тестов
+
+
+			while (pTestVertex->m_adjacents.size())
+			{
+				// Сильно грузит нагружает > 30sec 
+				vecFace new_adj;
+				itterate_adjacents_type::recurse_tri_params p(pTestVertex, new_adj, sm_cos);
+				itterate_adjacents_type::RecurseTri(0, p); 
+				// End 
+
+				// 5sec
+				type_vertex* pNewVertex = pTestVertex->CreateCopy_NOADJ(vertices);
+				CreateCopy += t.GetElapsed_ticks(); 
+
+				// 9sec
+				for (u32 a = 0; a < new_adj.size(); ++a)
+				{
+					type_face* test = new_adj[a];
+					test->VReplace(pTestVertex, pNewVertex);
+				}
+
+				pNewVertex->normalFromAdj();
 			}
 
-			pNewVertex->normalFromAdj	();
+			
+
+			Progress(p_total += p_cost);
 		}
-		Progress( p_total+=p_cost );
+		Progress(1.f);
+
+
+		clMsg("Total Time Elapsed: Copy: %llu, AReplace: %llu, ASorting: %llu, recurse_tri: %llu", 
+			CreateCopy  / 10000,
+			AReplace / 10000,
+			ASorting / 10000,
+			recurse_tri_params / 10000);
+
+		// Destroy unused vertices
+
+		isolate_vertices<type_vertex>(FALSE, vertices);
+
+		// Recalculate normals
+		for (vecVertexIt it = vertices.begin(); it != vertices.end(); it++)
+			(*it)->normalFromAdj();
+
+		clMsg("%d vertices was duplicated 'cause of SM groups", vertices.size() - Vcount);
+
+		// Clear temporary flag
+		for (vecFaceIt it = faces.begin(); it != faces.end(); it++)
+			(*it)->flags.bSplitted = false;
 	}
-	Progress		( 1.f );
-
-	// Destroy unused vertices
-
-	isolate_vertices<type_vertex>( FALSE, vertices );
-
-	// Recalculate normals
-	for ( vecVertexIt it=vertices.begin(); it!=vertices.end(); it++ )
-		(*it)->normalFromAdj	();
-
-	clMsg	("%d vertices was duplicated 'cause of SM groups",vertices.size()-Vcount);
-
-	// Clear temporary flag
-	for ( vecFaceIt it = faces.begin(); it!=faces.end(); it++ )
-		(*it)->flags.bSplitted = false;
-}
 };
 #endif //__CALCULATE_NORMALS_H__

@@ -41,8 +41,33 @@ void Embree::TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEm
 	last_index += 3;
 }
 
+void Embree::TriEmbree::SetVertexes_new(FaceDataIntel& data, VertexEmbree* emb_verts, size_t& last_index)
+{
+	point1 = last_index;
+	point2 = last_index + 1;
+	point3 = last_index + 2;
+ 	emb_verts[last_index].Set(data.v1);
+	emb_verts[last_index + 1].Set(data.v2);
+	emb_verts[last_index + 2].Set(data.v3);
+	last_index += 3;
+}
 
-void Embree::SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float range)
+void Embree::TriEmbree::SetVertexes_fast(Fvector* Vs, VertexEmbree* emb_verts, std::atomic<size_t> & last_index)
+{
+	size_t INDEX = last_index.load();
+
+	point1 = INDEX;
+	point2 = INDEX + 1;
+	point3 = INDEX + 2;
+	emb_verts[INDEX].Set(Vs[0]);
+	emb_verts[INDEX + 1].Set(Vs[1]);
+	emb_verts[INDEX + 2].Set(Vs[2]);
+
+ 	last_index.fetch_add(3);
+}
+
+
+void Embree::SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
 	rayhit.dir_x = dir.x;
 	rayhit.dir_y = dir.y;
@@ -50,13 +75,13 @@ void Embree::SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float range)
 	rayhit.org_x = pos.x;
 	rayhit.org_y = pos.y;
 	rayhit.org_z = pos.z;
-	rayhit.tnear = 0.101f;
+	rayhit.tnear = near_;
 	rayhit.tfar = range;
 	rayhit.mask = (unsigned int)(-1);
 	rayhit.flags = 0;
 }
 
-void Embree::SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float range)
+void Embree::SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
 	rayhit.ray.dir_x = dir.x;
 	rayhit.ray.dir_y = dir.y;
@@ -64,7 +89,7 @@ void Embree::SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float range)
 	rayhit.ray.org_x = pos.x;
 	rayhit.ray.org_y = pos.y;
 	rayhit.ray.org_z = pos.z;
-	rayhit.ray.tnear = 0.101f;
+	rayhit.ray.tnear = near_;
 	rayhit.ray.tfar = range;
 	rayhit.ray.mask = (unsigned int)(-1);
 	rayhit.ray.flags = 0;
@@ -96,188 +121,101 @@ void Embree::IntelEmbreeSettings(RTCDevice& device, bool avx, bool sse)
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", device, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
 }  
 
-float EmbreeRayTrace(R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable)
+#include "xrFace.h"
+#include "xrMU_Model_Reference.h"
+IC bool				FaceEqual(Face& F1, Face& F2)
 {
- 	return RaytraceEmbreeProcess( L, P, D, R, skip);
+	// Test for 6 variations
+	if ((F1.v[0] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
+	if ((F1.v[0] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
+	if ((F1.v[2] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
+	if ((F1.v[2] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
+	if ((F1.v[1] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
+	if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
+	return false;
 }
 
-void LightPointEmbree(  base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, void* data_skip)
+
+void Embree::GetGlobalData(bool isTransp, bool isCalculate, std::atomic<size_t>& counts_faces, Embree::VertexEmbree* verts_embree, Embree::TriEmbree* faces_embree, xr_vector<void*>* dummy)
 {
-	Fvector		Ldir, Pnew;
-	Pnew.mad(P, N, 0.01f);
+	auto& Faces = lc_global_data()->g_faces();
 
-	BOOL		bUseFaceDisable = flags & LP_UseFaceDisable;
-	float		MAX_DISTANCE = 1000.0f;
-
-	Face* skip = (Face*) data_skip;
-
-	if (0 == (flags & LP_dont_rgb))
+	struct FaceAttached
 	{
-  		R_Light* L = &*lights.rgb.begin(), * E = &*lights.rgb.end();
-		for (; L != E; L++)
+		Face* faces[36];
+		Face* F;
+		int used_faces;
+	};
+
+	xr_vector<Face*> faces;
+
+	thread_local xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+	std::atomic<size_t> count_verts = 0;
+	for (auto F : Faces)
+	{
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)
+			continue;
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
 		{
-			switch (L->type)
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
 			{
-				case LT_DIRECT:
-				{
-					// Cos
-					Ldir.invert(L->direction);
-					float D = Ldir.dotproduct(N);
-					if (D <= 0) continue;
-
-					// Trace Light
-					float scale = D * L->energy * EmbreeRayTrace( *L, Pnew, Ldir, MAX_DISTANCE, skip, bUseFaceDisable);
-					C.rgb.x += scale * L->diffuse.x;
-					C.rgb.y += scale * L->diffuse.y;
-					C.rgb.z += scale * L->diffuse.z;
-				}
-				break;
-				case LT_POINT:
-				{
-					// Distance
-					float sqD = P.distance_to_sqr(L->position);
-					if (sqD > L->range2) continue;
-
-					// Dir
-					Ldir.sub(L->position, P);
-					Ldir.normalize_safe();
-					float D = Ldir.dotproduct(N);
-					if (D <= 0)			continue;
-
-					// Trace Light
-					float R = _sqrt(sqD);
-					float scale = D * L->energy * EmbreeRayTrace( *L, Pnew, Ldir, R, skip, bUseFaceDisable);
-					float A;
-
-					if (inlc_global_data()->gl_linear())
-					{
-						A = 1 - R / L->range;
-					}
-					else
-					{
-						//	Igor: let A equal 0 at the light boundary
-						A = scale *
-							(
-								1 / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD) -
-								R * L->falloff
-								);
-
-					}
-
-					C.rgb.x += A * L->diffuse.x;
-					C.rgb.y += A * L->diffuse.y;
-					C.rgb.z += A * L->diffuse.z;
-				}
-				break;
-				case LT_SECONDARY:
-				{
-					// Distance
-					float sqD = P.distance_to_sqr(L->position);
-					if (sqD > L->range2) continue;
-
-					// Dir
-					Ldir.sub(L->position, P);
-					Ldir.normalize_safe();
-					float	D = Ldir.dotproduct(N);
-					if (D <= 0) continue;
-					D *= -Ldir.dotproduct(L->direction);
-					if (D <= 0) continue;
-
-					// Jitter + trace light -> monte-carlo method
-					Fvector	Psave = L->position, Pdir;
-					L->position.mad(Pdir.random_dir(L->direction, PI_DIV_4), .05f);
-
-					float R = _sqrt(sqD);
-					float scale = powf(D, 1.f / 8.f) * L->energy * EmbreeRayTrace( *L, Pnew, Ldir, R, skip, bUseFaceDisable);
-					float A = scale * (1 - R / L->range);
-					L->position = Psave;
-
-					C.rgb.x += A * L->diffuse.x;
-					C.rgb.y += A * L->diffuse.y;
-					C.rgb.z += A * L->diffuse.z;
-				}
-				break;
+				adjacent_vec.push_back(V->m_adjacents[adj]);
 			}
+		}
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		// Unique
+		BOOL			bAlready = FALSE;
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F) continue;
+			if (!Test->flags.bProcessed) continue;
+			if (FaceEqual(*F, *Test))
+			{
+				bAlready = TRUE; break;
+			}
+		}
+
+		if (!bAlready)
+		{
+			u32 FaceIndex = counts_faces.load();
+			if (!isCalculate)
+			{
+				F->flags.bProcessed = true;
+				Fvector verts[3];
+				verts[0] = F->v[0]->P; verts[1] = F->v[1]->P; verts[2] = F->v[2]->P;
+				faces_embree[FaceIndex].SetVertexes_fast(verts, verts_embree, count_verts);
+				(*dummy)[FaceIndex] = F;
+			}
+			counts_faces.fetch_add(1);
 		}
 	}
 
-	if (0 == (flags & LP_dont_sun))
+	auto& mu_refs = lc_global_data()->mu_refs();
+	for (auto ref : mu_refs)
 	{
- 		R_Light* L = &*(lights.sun.begin()), * E = &*(lights.sun.end());
-		for (; L != E; L++)
+		xr_vector<FaceDataIntel> temp_buffer;
+		ref->export_cform_rcast_new(temp_buffer);
+
+		for (auto F : temp_buffer)
 		{
-			if (L->type == LT_DIRECT)
+			u32 FaceIndex = counts_faces.load();
+
+			if (!isCalculate)
 			{
-				// Cos
-				Ldir.invert(L->direction);
-				float D = Ldir.dotproduct(N);
-				if (D <= 0) continue;
-
-				// Trace Light
-				float scale = L->energy * EmbreeRayTrace( *L, Pnew, Ldir, MAX_DISTANCE, skip, bUseFaceDisable);
-				C.sun += scale;
+				Fvector verts[3];
+				verts[0] = F.v1; verts[1] = F.v2; verts[2] = F.v3;
+				(*dummy)[FaceIndex] = F.ptr;
+				faces_embree[FaceIndex].SetVertexes_fast(verts, verts_embree, count_verts);
 			}
-			else
-			{
-				// Distance
-				float sqD = P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub(L->position, P);
-				Ldir.normalize_safe();
-				float D = Ldir.dotproduct(N);
-				if (D <= 0)			continue;
-
-				// Trace Light
-				float R = _sqrt(sqD);
-				float scale = D * L->energy * EmbreeRayTrace( *L, Pnew, Ldir, R, skip, bUseFaceDisable);
-				float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
-
-				C.sun += A;
-			}
+			counts_faces.fetch_add(1);
 		}
 	}
 
-	if (0 == (flags & LP_dont_hemi))
-	{
-		R_Light* L = &*lights.hemi.begin(), * E = &*lights.hemi.end();
-		for (; L != E; L++)
-		{
-			if (L->type == LT_DIRECT)
-			{
-				// Cos
-				Ldir.invert(L->direction);
-				float D = Ldir.dotproduct(N);
-				if (D <= 0) continue;
-
-
-				// Trace Light
-				Fvector		PMoved;
-				PMoved.mad(Pnew, Ldir, 0.001f);
-				float scale = L->energy * EmbreeRayTrace( *L, PMoved, Ldir, MAX_DISTANCE, skip, bUseFaceDisable);
-				C.hemi += scale;
-			}
-			else
-			{
-				// Distance
-				float sqD = P.distance_to_sqr(L->position);
-				if (sqD > L->range2) continue;
-
-				// Dir
-				Ldir.sub(L->position, P);
-				Ldir.normalize_safe();
-				float D = Ldir.dotproduct(N);
-				if (D <= 0) continue;
-
-				// Trace Light
-				float R = _sqrt(sqD);
-				float scale = D * L->energy * EmbreeRayTrace( *L, Pnew, Ldir, R, skip, bUseFaceDisable);
-				float A = scale / (L->attenuation0 + L->attenuation1 * R + L->attenuation2 * sqD);
-
-				C.hemi += A;
-			}
-
-		}
-	}
 }

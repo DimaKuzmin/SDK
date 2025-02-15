@@ -14,10 +14,7 @@ enum{
 };
 bool ESceneObjectTool::LoadLTX(CInifile& ini)
 {
-    Msg("Load ESceneObjectTool");
-    Debug.Callstack();
-
-	u32 version 	= ini.r_u32("main", "version");
+ 	u32 version 	= ini.r_u32("main", "version");
     if( version!=OBJECT_TOOLS_VERSION )
     {
             ELog.DlgMsg( mtError, "%s tools: Unsupported version.",ClassDesc());

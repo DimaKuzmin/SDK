@@ -15,38 +15,21 @@ IC BOOL	FaceEqual		(Face* F1, Face* F2)
 	if (F1->lmap_layer  != F2->lmap_layer)		return FALSE;
 	return TRUE;
 }
-
-#include <mutex>
-std::mutex lock;
-
-xr_map<u32, Fbox > bb_bases;
-  
+    
 ICF void CreateBox(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
-	if (bb_bases.find(id) == bb_bases.end())
+	for (u32 it = 0; it < subdiv.size(); it++)
 	{
-		for (u32 it = 0; it < subdiv.size(); it++)
-		{
-			Face* F = subdiv[it];
-			bb_base.modify(F->v[0]->P);
-			bb_base.modify(F->v[1]->P);
-			bb_base.modify(F->v[2]->P);
-			 
-		}
-		lock.lock();
-		bb_bases[id] = bb_base;
-		lock.unlock();
-	}
-	else
-	{
-		bb_base = bb_bases[id];
+		Face* F = subdiv[it];
+		bb_base.modify(F->v[0]->P);
+		bb_base.modify(F->v[1]->P);
+		bb_base.modify(F->v[2]->P);
+
 	}
 }
  
 BOOL	NeedMerge		(vecFace& subdiv, Fbox& bb_base, u32 id)
 {
-
-
 	// 1. Amount of polygons
 	if (subdiv.size()>=u32(3*c_SS_HighVertLimit/4))	return FALSE;
 	  
@@ -88,9 +71,7 @@ IC BOOL ValidateMergeLinearSize( const Fvector & merged, const Fvector & orig1, 
 	else
 		return TRUE;
 }
-
-
-
+ 
 IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u32 f2, const Fbox& bb, float& volume)
 {
 	
@@ -130,37 +111,9 @@ IC BOOL	ValidateMerge	(u32 f1, const Fbox& bb_base, const Fbox& bb_base_orig, u3
 	return TRUE;
 }
  
-// MERGING GEOMETRY FUNCTIONS
-
-ICF void FindBestMergeCandidate(u32* selected ,  float* selected_volume , u32 split , u32 split_size , Fbox* bb_base_orig , Fbox* bb_base )
-{
-	int CUR_ID = *selected;
-
-	
- 	for ( u32 test = split ; test < split_size ; test++ ) 
-	{	
-		if (g_XSplit[test]->empty())
-			continue;
-
-		Fbox bb;
-		float volume;
-		vecFace& TEST = *( g_XSplit[test] );
-		vecFace* subdiv = (g_XSplit[CUR_ID]);
-
- 		if ( ! FaceEqual( subdiv->front() , TEST.front() ) )
-			continue;
- 		if ( ! NeedMerge( TEST , bb, test) )
-			continue;
-		if ( ! ValidateMerge( subdiv->size() , *bb_base , *bb_base_orig , TEST.size() , bb , volume ) )
-			continue;
-		
- 		if ( volume < *selected_volume)
-		{
-			*selected = test;
-			*selected_volume	= volume;			
- 		}
-	}
-}
+ 
+#include <ppl.h>
+ 
 
 struct data_vec
 {
@@ -168,315 +121,347 @@ struct data_vec
 	bool merged = false;
 };
 
-struct data_faces
+auto Validate = [](u32& CurrentProcessedID, u32& FaceIndex, xr_vector<data_vec>& vec, Fbox& bb_base, Fbox& bb_base_orig)
 {
-	xr_vector<data_vec> faces_vec;
+	float	selected_volume = flt_max;
 
-};
-
-xr_map<int, data_faces> thread_faces;
- 
-#include <execution>
-
-// TH, MERGED
- 
-CTimer tGlobalMerge; 
-
-IC void FindBestMergeCandidateTH(bool USE_MT, int ID, u32* selected, float* selected_volume, Fbox* bb_base_orig, Fbox* bb_base, xr_vector<data_vec>::iterator& vec_it)
-{
-	int CUR_ID = *selected;
-	 
-   	float volume;
-
-
-	if (thread_faces[ID].faces_vec.size() > 24000 && USE_MT)
+	u32 SelectedStart = CurrentProcessedID;
+ 	 	
+	for (auto Index = 0; Index < vec.size(); Index++ )
 	{
-		auto it = std::find_if(std::execution::par, thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
-		[&] (data_vec& test)
-		{
-			//if (!g_XSplit[test.face_id])
-			//	return false;
+		auto& test = vec[Index];
 
-		  	//if (g_XSplit[test.face_id]->empty())
-			//	return false;
-
-			if (test.merged)
-				return false;
-
-			Fbox bb;
- 			vecFace& TEST = *(g_XSplit[test.face_id]);
-			vecFace* subdiv = (g_XSplit[CUR_ID]);
- 
- 			if (!FaceEqual(subdiv->front(), TEST.front()))
-				return false;
-
-  			if (!NeedMerge(TEST, bb, test.face_id))
-				return false;
- 
-			if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
-				return false;
-			
-			if (volume < *selected_volume)
-				return true;
- 
-			return false;
-		});
-		
-		if (it != thread_faces[ID].faces_vec.end())
-		{
-			vec_it = it;
-			*selected = (*it).face_id;
-			*selected_volume = volume;
-		}
-	}
-	else 
-	{
-		//for (auto test : thread_faces[ID].faces_vec)
-		auto it = std::find_if(thread_faces[ID].faces_vec.begin(), thread_faces[ID].faces_vec.end(), 
-		[&] (data_vec test)
-		{ 
-			if (test.merged)
-				return false; 		 
-
-			Fbox bb;
-			float volume;
-			vecFace& TEST = *(g_XSplit[test.face_id]);
-			vecFace* subdiv = (g_XSplit[CUR_ID]);
-
- 			if (!FaceEqual(subdiv->front(), TEST.front()))
-				return false;
-
-  			if (!NeedMerge(TEST, bb, test.face_id))
-				return false;
- 
-			if (!ValidateMerge(subdiv->size(), *bb_base, *bb_base_orig, TEST.size(), bb, volume))
-				return false;
-	 			
-			if (volume < *selected_volume)
-				return true;
-
-			return false;
-
-			/* 
- 			if (volume < *selected_volume)
-			{
-			
-				*selected = test.face_id;
-				*selected_volume = volume;						
-				break;
-			}
-			*/
-		});
-
-		if (it != thread_faces[ID].faces_vec.end())
-		{
-			vec_it = it;
-			*selected = (*it).face_id;
-			*selected_volume = volume;
-		}
-	}
-
-}
-
-std::atomic<bool> stopped = false;
-
-ICF void FindWhileMergeNeed(bool USE_MT, int id)
-{ 
- 
-	for (;;)
-	{
-		xr_vector<data_vec>& faces_vect = thread_faces[id].faces_vec;
-
-		lock.lock();
-		if (faces_vect.size() == 0)
-		{
-			lock.unlock();
-			break;
-		}
-
-		auto s = faces_vect.back().face_id;
-		faces_vect.pop_back();		
-		lock.unlock();
- 
-		if (g_XSplit[s]->empty())
+		if (SelectedStart == test.face_id)
 			continue;
 
-		Progress(1.0f / faces_vect.size());
+		if (test.merged)
+			continue;
+		
+		Fbox bb;
+		vecFace& TEST = *(g_XSplit[test.face_id]);
+		vecFace* subdiv = (g_XSplit[SelectedStart]);
 
-		//StatusNoMSG("IDX: %d", faces_vect.size());
+		if (!FaceEqual(subdiv->front(), TEST.front()))
+			continue;
+		if (!NeedMerge(TEST, bb, test.face_id))
+			continue;
 
-		vecFace& subdiv = *(g_XSplit[s]);
-		bool		bb_base_orig_inited = false;
-		Fbox		bb_base_orig;
-		Fbox		bb_base;
- 
-		xr_vector<data_vec>::iterator vec_iter;
-	
-		int IDwhile = 0;
-		while (NeedMerge(subdiv, bb_base, s))
-		{
-			StatusNoMSG("IDX_Works[%d] MERGE: %d TIMESEC: [%d], TRY_FIND: %d", thread_faces.size(), faces_vect.size(), (u32) tGlobalMerge.GetElapsed_sec(), IDwhile);
-			IDwhile++;
- 
+		float value;
+		if (!ValidateMerge(subdiv->size(), bb_base, bb_base_orig, TEST.size(), bb, value))
+			continue;
 
-			//	Save original AABB for later tests
-			if (!bb_base_orig_inited)
-			{
-				bb_base_orig_inited = true;
-				bb_base_orig = bb_base;
-			}
+		if (value > selected_volume)
+			continue;
+   		 
+		FaceIndex = Index;
+		CurrentProcessedID = test.face_id;
+		selected_volume = value;
+		break;
+ 	}
+};
 
-			// **OK**. Let's find the best candidate for merge
-			u32	selected = s;
-			float	selected_volume = flt_max;
+typedef xr_hash_map<int, xr_hash_map<int, xr_vector<data_vec>> > VectorSplited;
 
-			
-			FindBestMergeCandidateTH(USE_MT, id, &selected, &selected_volume, &bb_base_orig, &bb_base, vec_iter);
-			
-			if (selected == s)
-				break;
+typedef xr_hash_map<int, xr_vector<data_vec>> MergingVector;
 
-			// **OK**. Perform merge
-			lock.lock();
-			subdiv.insert(subdiv.begin(), g_XSplit[selected]->begin(), g_XSplit[selected]->end());
-			g_XSplit[selected]->clear_not_free();
- 			bb_bases.erase(s);
-			(*vec_iter).merged = true;  
- 			lock.unlock();
-		}
+void BasicMerge()
+{
+	MergingVector thread_faces;
 
-		// REMOVE MERGED
-		{
-		   	lock.lock();
-			xr_vector<data_vec>& vec = thread_faces[id].faces_vec; 
-			vec.erase(std::remove_if(vec.begin(), vec.end(), [] (data_vec& vec){return vec.merged;}), vec.end()); 
-			lock.unlock();
-		} 
-
-
+	// Generate Materials
+	for (int split = 0; split < g_XSplit.size(); split++)
+	{
+		thread_faces[g_XSplit[split]->front()->dwMaterial].push_back(data_vec{ split });
 	}
+ 
+	CTimer t;
+	t.Start();
+	// se7kills (Возврат на старую версию мерджа геометрии)
+	{
+		int IDX = 0;
+		int Merged = 0;
+		concurrency::parallel_for(size_t(0), size_t(thread_faces.size()), [&](size_t IDX)
+			{
+				auto& mapMAT = thread_faces[IDX];
+
+				IDX++;
+				CTimer t; t.Start();
+				for (auto& Face : thread_faces[IDX])
+				{
+					auto faceID = Face.face_id;
+					if (g_XSplit[faceID]->empty() || Face.merged)
+						continue;
+
+					vecFace& subdiv = *(g_XSplit[faceID]);
+
+
+					bool		bb_base_orig_inited = false;
+					Fbox		bb_base_orig;
+					Fbox		bb_base;
+
+					// int CountTryes = 0;
+
+					while (NeedMerge(subdiv, bb_base, faceID))
+					{
+						//	Save original AABB for later tests
+						if (!bb_base_orig_inited)
+						{
+							bb_base_orig_inited = true;
+							bb_base_orig = bb_base;
+						}
+						u32	CurrentProcessedID = faceID;
+						u32 FaceMaterialID = -1;
+
+						// Merge-validate
+						Validate(
+							CurrentProcessedID,
+							FaceMaterialID,
+							thread_faces[IDX],
+							bb_base, bb_base_orig
+						);
+
+						if (CurrentProcessedID == faceID)
+							break;
+
+						// **OK**. Perform merge
+						subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
+						g_XSplit[CurrentProcessedID]->clear();
+						thread_faces[IDX][FaceMaterialID].merged = true;
+						Merged++;
+					}
+
+					thread_faces[IDX].erase(
+						std::remove_if(
+							thread_faces[IDX].begin(),
+							thread_faces[IDX].end(),
+							[&](data_vec& vec)
+							{ return vec.merged; }
+						),
+						thread_faces[IDX].end()
+					);
+				}
+			});
+	}
+
+	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),
+		[](vecFace* ptr)
+		{
+			if (ptr == nullptr)
+				return true;
+			return ptr->empty();
+		}),
+		g_XSplit.end());
+
+	thread_faces.clear();
+
+	clMsg("Merging OGFs size [%u], time (%u)", g_XSplit.size(), t.GetElapsed_ms() );
 }
 
-// Thread Pools
-xr_vector<int> reserved;
-xr_vector<int> reserved_big_objects;
- 
- 
-#define MAX_BIG_THREADS 2
+VectorSplited SplitMerging()
+{
+	MergingVector thread_faces;
+	// Generate Materials
+	for (int split = 0; split < g_XSplit.size(); split++)
+	{
+		thread_faces[g_XSplit[split]->front()->dwMaterial].push_back(data_vec{ split });
+	}
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
+	// Generate Splits
+	VectorSplited splited_faces;
+	for (auto& HASH : thread_faces)
+	{
+		int ID = 0;
+		if (HASH.second.size() > 4096 * 8)
+		{
+			// std::sort(thread_faces[HASH.first].begin(), thread_faces[HASH.first].end(), [&](data_vec& vec, data_vec& vec2)
+			// 	{
+			// 		Fvector v1_pos = g_XSplit[vec.face_id]->front()->v[0]->P;
+			// 		Fvector v1_pos2 = g_XSplit[vec2.face_id]->front()->v[0]->P;
+			// 
+			// 		Fvector v2_pos = g_XSplit[vec.face_id]->front()->v[1]->P;
+			// 		Fvector v2_pos2 = g_XSplit[vec2.face_id]->front()->v[1]->P;
+			// 
+			// 		Fvector v3_pos = g_XSplit[vec.face_id]->front()->v[2]->P;
+			// 		Fvector v3_pos2 = g_XSplit[vec2.face_id]->front()->v[2]->P;
+			// 
+			// 		if (v1_pos.x < v1_pos2.x && v1_pos.z < v1_pos2.z ||
+			// 			v2_pos.x < v2_pos2.x && v2_pos.z < v2_pos2.z ||
+			// 			v3_pos.x < v3_pos2.x && v3_pos.z < v3_pos2.z)
+			// 			return true;
+			// 
+			// 		return false;
+			// 	});
 
+			int Packed = 0;
+			for (auto& map_ : HASH.second)
+			{
+				splited_faces[HASH.first][ID].push_back(map_);
+
+				Packed++;
+
+				if (Packed > 4096)
+				{
+					Packed = 0;
+					ID++;
+				}
+			}
+
+			Msg("Packed Material[%u] IDS: %u", HASH.first, ID);
+			thread_faces[HASH.first].clear();
+		}
+	}
+
+	thread_faces.clear();
+
+	return splited_faces;
+}
+
+void SplittedMerge(VectorSplited& splited_faces)
+{
+	CTimer t; t.Start();
+	// SPLITTED DATA
+	{
+		int IDx = 0;
+		for (auto& vec_split : splited_faces)
+		{
+			CTimer t;
+			t.Start();
+
+			int Merged = 0;
+ 			int IDX_Vec = 0;
+ 
+			IDx++;
+
+			clMsg("BigFaces Materials: StartProcess progress(%u/%u) Splits(%u)", IDx, splited_faces.size(), vec_split.second.size());
+
+			// for (auto& vec : vec_split.second)
+			
+			concurrency::parallel_for_each(vec_split.second.begin(), vec_split.second.end(), [&](std::pair<int, xr_vector<data_vec>> data )
+			
+				{
+					int IDX_material = vec_split.first;
+					int IDX_curent = data.first;
+
+					IDX_Vec = IDX_curent;
+					for (auto& Face : splited_faces[IDX_material][IDX_curent])
+					{
+						auto faceID = Face.face_id;
+						if (g_XSplit[faceID]->empty() || Face.merged)
+							continue;
+
+						vecFace& subdiv = *(g_XSplit[faceID]);
+
+						bool		bb_base_orig_inited = false;
+						Fbox		bb_base_orig;
+						Fbox		bb_base;
+
+						// int CountTryes = 0;
+
+						while (NeedMerge(subdiv, bb_base, faceID))
+						{
+							//	Save original AABB for later tests
+							if (!bb_base_orig_inited)
+							{
+								bb_base_orig_inited = true;
+								bb_base_orig = bb_base;
+							}
+							u32	CurrentProcessedID = faceID;
+							u32 FaceMaterialID = -1;
+
+							// Merge-validate
+							Validate(
+								CurrentProcessedID,
+								FaceMaterialID,
+								splited_faces[IDX_material][IDX_curent],
+								bb_base, bb_base_orig
+							);
+
+							if (CurrentProcessedID == faceID)
+								break;
+
+							// **OK**. Perform merge
+
+							 
+							subdiv.insert(subdiv.begin(), g_XSplit[CurrentProcessedID]->begin(), g_XSplit[CurrentProcessedID]->end());
+							g_XSplit[CurrentProcessedID]->clear();
+ 							splited_faces[IDX_material][IDX_curent][FaceMaterialID].merged = true;
+							Merged++;
+						}
+
+						splited_faces[IDX_material][IDX_curent].erase(
+							std::remove_if(
+								splited_faces[IDX_material][IDX_curent].begin(),
+								splited_faces[IDX_material][IDX_curent].end(),
+								[&](data_vec& vec)
+								{ return vec.merged; }
+							),
+							splited_faces[IDX_material][IDX_curent].end()
+						);
+					}
+				}
+			);
+			 
+			int MergedOGF = 0;
+			for (auto V : splited_faces[vec_split.first])
+			{
+				MergedOGF += V.second.size();
+			}
+			 
+			clMsg("BigFaces Materials: progress(%u/%u) Splits(%u) OGF_Merged(%u) Merged(%u), time: %u ms", IDx, splited_faces.size(), IDX_Vec, MergedOGF, Merged, t.GetElapsed_ms());
+		}
+
+		splited_faces.clear();
+	}
+
+	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),
+		[](vecFace* ptr)
+		{
+			if (ptr == nullptr)
+				return true;
+			return ptr->empty();
+		}),
+		g_XSplit.end());
+
+	clMsg("(Split) Merging OGFs size [%u], time (%u)", g_XSplit.size(), t.GetElapsed_ms());
+}
+ 
+// Новый метод для расщета Merging Geom (se7kills) 
 
 void CBuild::xrPhase_MergeGeometry()
 {
-	Status("Processing...");
-	validate_splits();
-
-	tGlobalMerge.Start();
-
- 	 
-	CTimer t; 
-	t.Start();
-
- 	{ 
-  		for (int split = 0; split < g_XSplit.size(); split++)
- 			thread_faces[g_XSplit[split]->front()->dwMaterial].faces_vec.push_back(data_vec{split});
+	string128 tmp;
+	sprintf(tmp, "Merge Started... [%d]", g_XSplit.size());
+	Phase(tmp);
  
-  
-		for (auto mat : thread_faces)
-		{
-			if (mat.second.faces_vec.size() < 40000)
-				reserved.push_back(mat.first);
-			else 
-				reserved_big_objects.push_back(mat.first);
-		}
-		// Run Work
-		//FindSelectedMaterialCandidate();
- 
-		{
-			
 
-			std::thread* th = new std::thread[build_args->use_threads];
-			for (auto i = 0; i < build_args->use_threads; i++)
-			{	
-				th[i] =	std::thread([&] ()
-				{
-						u32 last_ms = 0;
-						for (;;)
-						{
-							lock.lock();
-							if (reserved.empty())
-							{
-								lock.unlock();
-								break;
-							}
-		 
- 
-							auto id = reserved.back();
-							clMsg("Merge candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved.size(), last_ms );		
-							Progress( float ( 1 / reserved.size()) );
-							reserved.pop_back();
-							lock.unlock();
-		
-							CTimer t;t.Start();		  
-							FindWhileMergeNeed(false, id);
-							last_ms = t.GetElapsed_ms();
-						}
-				} 
-				);
-			}
+	// SPLIT FOR FASTER MERGING
+	// Сплитим очень большие буфера по 4096 и обрабатываем в MT
+	u16 max_threads = CPU::ID.n_threads;
+  	SplittedMerge(SplitMerging());
+	 
 
-
-			for (auto i = 0; i < build_args->use_threads; i++)
-				th[i].join();
-		
-		}
-
-
-		
-		{
-			std::thread* th = new std::thread[MAX_BIG_THREADS];
-			for (auto i = 0; i < MAX_BIG_THREADS; i++)
-				th[i] = std::thread([&] () 
-			{
-				u32 last_ms = 0;
-				for (;;)
-				{
-					lock.lock();
-					if (reserved_big_objects.empty())
-					{
-						lock.unlock();
-						break;
-					}
- 
-					auto id = reserved_big_objects.back();
-					clMsg("Merge BIG candidates:%d, Reserved: %d, PrevCalc: %u ms", thread_faces[id].faces_vec.size(),  reserved_big_objects.size(), last_ms );		
-					Progress( float ( 1 / reserved_big_objects.size()) );
-					reserved_big_objects.pop_back();
-					lock.unlock();
-		
-					CTimer t;t.Start();
-					FindWhileMergeNeed(true, id);
-					last_ms = t.GetElapsed_ms();
-				}
-			});
-
-			for (auto i = 0; i < MAX_BIG_THREADS; i++)
-				th[i].join();
-		}
-
-		// Clear Data
-		thread_faces.clear();
-		
-		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](vecFace* ptr) { if (ptr == nullptr) return true; return ptr->empty(); }), g_XSplit.end());
-
-	}
- 
+	u32 LastGXSplits = 0;
+	u32 FirstGXSplits = -1;
+	u32 idX = 0;
 	
-	clMsg("%d subdivisions.",g_XSplit.size());
-	validate_splits			();
 
+	// Крутим в while пока нечего будет приклеить
+	while (LastGXSplits != FirstGXSplits)
+	{
+ 		clMsg("Procesing MergeID: %u", idX);
+		FirstGXSplits = g_XSplit.size();
+		// SECONDARY MERGER
+	
+		BasicMerge();
+
+		LastGXSplits = g_XSplit.size();
+		idX++;
+	}
+
+
+ 
+	string128 tmp2;
+	sprintf_s(tmp2, "Merged %u", g_XSplit.size());
+	Phase(tmp2);
+	validate_splits();
 }
-
-

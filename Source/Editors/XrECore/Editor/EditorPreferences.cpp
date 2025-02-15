@@ -144,7 +144,9 @@ void CCustomPreferences::FillProp(PropItemVec& props)
    
     PHelper().CreateFloat   (props, "Scene\\RadiusRender",                  &EDevice.RadiusRender,10.f,100000.f);
     PHelper().CreateU32     (props, "Scene\\RenderObjectsUTime",            &EDevice.RenderReloadObjectsTime, 1, 1000);
-    PHelper().CreateBOOL    (props, "Scene\\Render_Optimize",               &EDevice.RenderOptimize);
+    
+    PHelper().CreateBOOL    (props, "Scene\\RenderOptimize",               &EDevice.RenderOptimize);
+    PHelper().CreateU32     (props, "Scene\\RenderTasks",                  &EDevice.RenderTasks , 1, 16);
 
 
     PHelper().CreateBOOL	(props,"Tools\\Box Pick\\Limited Depth",		&bp_lim_depth);

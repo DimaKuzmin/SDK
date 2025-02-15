@@ -125,6 +125,8 @@ public:
 
 	// Static
 	void BboxSelectedObject();
+	void SelectObjectsInsideBox();
+
 	void POS_ObjectsToLTX();
 	void CopyTempLODforObjects();
 	void SaveSelectedObjects();

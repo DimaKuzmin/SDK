@@ -6,9 +6,11 @@
 #	define XRLC_API __declspec(dllimport)
 #endif
 
+ 
+
 #include <string>
  
-struct XRLC_API  SpecialArgs
+struct XRLC_API SpecialArgs
 {
 	enum LightmapSize
 	{
@@ -16,13 +18,12 @@ struct XRLC_API  SpecialArgs
 		eLightmap2048 = 1,
 		eLightmap4096 = 2,
 		eLightmap8192 = 3
-	};
+	}; 
 
+	unsigned int   EmbreeGeomType;
+	bool		   useRobust;
 	LightmapSize LightmapSize_enum;
-
-	int MaxHitsPerRay;
-	bool test_build = false;
-  
+    
 	// debuging 
 	bool use_DXT1 = false;
 
@@ -50,11 +51,16 @@ struct XRLC_API  SpecialArgs
 	int mu_samples = 6; // 1-6
  
  	bool run_mu_first = false;
-	char* special_args = 0;
- 
 	std::string level_name;
 
 	bool IsDOLighting = false;
+	unsigned int DoSamples = 0;
+
+	// Debuging Functions
+	bool LmapsComputation = true;
+	bool LmapsHemi		  = false;
+	bool adptive_ht    = true;
+	bool cform_export  = true;
 };
 
 XRLC_API void  StartupWorking(SpecialArgs* args);
@@ -74,3 +80,8 @@ public:
 };
 
 extern XRLC_API ILogger* LoggerCL;
+
+
+
+extern XRLC_API bool LoadParrams(SpecialArgs* args);
+extern XRLC_API void SaveParrams(SpecialArgs* args);

@@ -18,12 +18,7 @@
 
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
-xrCriticalSection	task_CS
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(task_C_S))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
-
+xrCriticalSection	task_CS;
 xr_vector<int>		task_pool;
  
  
@@ -194,7 +189,16 @@ void CBuild::RunMuModels()
  
 void CBuild::Light()
 {
-	Msg("QUALYTI: %d, pixel: %d, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
+	Msg("QUALYTI: %d, pixel: %f, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
+
+
+	// Строим модель для Tracing
+	FPU::m64r();
+	Phase("Building rcast-CFORM model...");
+	mem_Compact();
+	Light_prepare();
+	BuildRapid(TRUE);
+
 
 	if (g_params().m_quality != ebqDraft)
 	{

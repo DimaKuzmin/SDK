@@ -41,9 +41,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     OPTICK_START_THREAD("MAIN_THREAD");
 
- 
- 
-  //   OPTICK_CATEGORY("CategoryName", Optick::Category::Scene);
+    //   OPTICK_CATEGORY("CategoryName", Optick::Category::Scene);
 
 
 

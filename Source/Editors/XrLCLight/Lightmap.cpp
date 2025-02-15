@@ -185,7 +185,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
-	clMsg("Compression Base: %d sec", t.GetElapsed_sec());
+	clMsg("Compression Base: %u ms", t.GetElapsed_ms());
 
 	lm_packed.clear_and_free();
 
@@ -210,7 +210,7 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
-	clMsg("Compression Hemi: %d sec", t.GetElapsed_sec());
+	clMsg("Compression Hemi: %u ms", t.GetElapsed_ms());
 
 
 }

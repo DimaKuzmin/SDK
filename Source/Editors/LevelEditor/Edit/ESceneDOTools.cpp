@@ -599,7 +599,7 @@ bool EDetailManager::Export(LPCSTR path)
     xr_string 			do_tex_name = ChangeFileExt(fn,"_details");
     int res				= ImageLib.CreateMergedTexture(
         textures,do_tex_name.c_str(),
-        STextureParams::tfDXT5, 
+        STextureParams::tfDXT5,  // se7kills ONLY DXT 1
         256, 4096, // X max
         256, 4096, // Y max
         offsets, scales,rotated,remap);

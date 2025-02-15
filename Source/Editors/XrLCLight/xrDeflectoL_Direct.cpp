@@ -52,10 +52,16 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		VERIFY(inlc_global_data());
 		VERIFY(inlc_global_data()->RCAST_Model());
 
-		int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
-		
-		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip);
-		
+		if (!build_args->LmapsHemi)
+		{
+			int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
+			LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip);
+		}
+		else
+		{
+			C.hemi += 1.f;
+		}
+
 		C.mul(.5f);
 		lm.surface[_y * lm.width + _x]._set(C);
 		lm.marker[_y * lm.width + _x] = 255;
@@ -126,10 +132,17 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HAS
 							{
 								VERIFY(inlc_global_data());
 								VERIFY(inlc_global_data()->RCAST_Model());
- 									   
-								int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
-								LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
-									
+ 								
+								if (!build_args->LmapsHemi)
+								{
+									int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
+									LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
+								}
+								else
+								{
+									C.hemi += 1.f;
+								}
+							
 								Fcount += 1;
 							}
 							catch (...)

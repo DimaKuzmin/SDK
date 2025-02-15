@@ -26,16 +26,13 @@ private:
 	xrCriticalSection					Lock;
 	CDB::MODEL							Static;
 	Fbox								m_BoundingVolume;
-	xrXRC								xrc;				// MT: dangerous
+	xrXRC_Cdb							xrc;				// MT: dangerous
 	collide::rq_results					r_temp;				// MT: dangerous
 	xr_vector<ISpatial*>				r_spatial;			// MT: dangerous
 public:
 
 #ifdef DEBUG
 	FactoryPtr<IObjectSpaceRender>		*m_pRender;
-	//ref_shader							sh_debug;
-	//clQueryCollision					q_debug;			// MT: dangerous
-	//xr_vector<std::pair<Fsphere,u32> >	dbg_S;				// MT: dangerous
 #endif
 
 private:

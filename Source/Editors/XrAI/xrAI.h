@@ -13,7 +13,7 @@ extern string_path_ai INI_FILE;
 
 #include <string>
 
-struct XRAI_API  SpecialArgsAI
+struct XRAI_API SpecialArgsAI
 {
 	std::string level_name; // OrLevels
 	std::string OutSpawn_Name;
@@ -33,7 +33,7 @@ struct XRAI_API  SpecialArgsAI
 }; 
 
 
-XRAI_API void  StartupWorking_xrAI(SpecialArgsAI* args);
+void XRAI_API  StartupWorking_xrAI(SpecialArgsAI* args);
 
 class XRAI_API ILoggerAI
 {

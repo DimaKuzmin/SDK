@@ -103,6 +103,78 @@ char* GetFormat(u32 fmt)
 }
 #include "SceneObject.h"
 
+xr_vector<xr_string> GetLevelTextures()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SCENEOBJECT));
+	
+	xr_vector<xr_string> surface_textures;
+
+	if (ot)
+	{
+		ObjectList& list = ot->GetObjects();
+		for (auto obj : list)
+		{
+			CSceneObject* sobject = smart_cast<CSceneObject*>(obj);
+			if (sobject)
+			{
+				for (auto surface : sobject->m_Surfaces)
+				{
+					auto it = std::find_if(surface_textures.begin(), surface_textures.end(), [&](xr_string& s)
+					{
+						return s._Equal(surface->m_Texture.c_str());
+					});
+					if (it == surface_textures.end())
+					{
+						xr_string text = surface->m_Texture.c_str();
+						surface_textures.push_back(text);
+					}
+				}
+			}
+		}
+
+	}
+
+	return surface_textures;
+};
+
+xr_vector<xr_string> GetSelectedOSurfacesTextures()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(OBJCLASS_SCENEOBJECT));
+
+	xr_vector<xr_string> surface_textures;
+
+	if (ot)
+	{
+		ObjectList& list = ot->GetObjects();
+
+		for (auto obj : list)
+		{
+			CSceneObject* sobject = smart_cast<CSceneObject*>(obj);
+			if (sobject && sobject->Selected())
+			{
+				for (auto surface : sobject->m_Surfaces)
+				{
+					auto it = std::find_if(surface_textures.begin(), surface_textures.end(), [&](xr_string& s)
+						{
+							return s._Equal(surface->m_Texture.c_str());
+						});
+					if (it == surface_textures.end())
+					{
+						xr_string text = surface->m_Texture.c_str();
+						surface_textures.push_back(text);
+					}
+				}
+			}
+		}
+
+	}
+
+	return surface_textures;
+};
+
+const uint32_t DDS_MAGIC = 0x20534444;
+bool SelectedOnly = false;
+
 void UIDxtConverter::Draw()
 {
 	if (!ImGui::Begin("DxtConverter", &bOpen))	// ImGuiWindowFlags_NoResize
@@ -111,11 +183,172 @@ void UIDxtConverter::Draw()
 		ImGui::End();
 		return;
 	}
+
+	ImGui::Checkbox("SelectedOnly", &SelectedOnly);
+
+	if (ImGui::Button("THM Export (Level For Implicit)"))
+	{
+		string_path p;
+		FS.update_path(p, "$export_folder$", "export_thms_implicit.json");
+
+		IWriter* writer = FS.w_open(p);
+
+		jsonxx::Object file_json;
+		jsonxx::Object array_json; 
+
+		int ID = 0;
+	 
+		for (auto thm : !SelectedOnly ? GetLevelTextures() : GetSelectedOSurfacesTextures())
+		{
+			ID++;
+
+			Msg("Reading Texture : %s", thm.c_str());
+ 
+ 			string128 tmp_name;
+			sprintf(tmp_name, "%s.thm", thm.c_str());
+
+			string128 tmp_dds;
+			sprintf(tmp_dds, "%s.dds", thm.c_str());
+
+			string_path file_dds;
+			FS.update_path(file_dds, "$game_textures$", tmp_dds);
+
+			enum FMT_DDS {
+				dxt1 = 1,
+				dxt3 = 3,
+				dxt5 = 5, 
+				argb = 7,
+
+				bc4_UNORM = 8,
+				bc4_SNORM = 9,
+				bc5_UNORM = 11, 
+				bc5_SNORM = 13, 
+			
+				dx10 = 15,
+				undefined = 0
+			};
+
+			u32 FormatDDS = 0;
+
+			IReader* FDDS = FS.r_open(file_dds);
+			if (FDDS)
+			{
+				uint32_t magic;
+				DDS_HEADER header;
+
+				FDDS->r(&magic, sizeof(magic));
+				
+				if (magic == DDS_MAGIC)
+				{
+					FDDS->r(reinterpret_cast<char*>(&header), sizeof(header));					 
+				}
+
+				if (header.ddspf.dwFourCC == 0x31545844) {
+					FormatDDS = FMT_DDS::dxt1;
+				}
+				else if (header.ddspf.dwFourCC == 0x33545844) {
+					FormatDDS = FMT_DDS::dxt3;
+				}
+				else if (header.ddspf.dwFourCC == 0x35545844)
+				{
+					FormatDDS = FMT_DDS::dxt5;
+				}
+ 				else if (header.ddspf.dwFourCC == 0x55344342) { // BC4U
+					FormatDDS = FMT_DDS::bc4_UNORM;
+				}
+				else if (header.ddspf.dwFourCC == 0x53344342) { // BC4S
+					FormatDDS = FMT_DDS::bc4_SNORM;
+				}
+				else if (header.ddspf.dwFourCC == 0x55354342) { // BC5U
+					FormatDDS = FMT_DDS::bc5_UNORM;
+				}
+				else if (header.ddspf.dwFourCC == 0x53354342) { // BC5S
+					FormatDDS = FMT_DDS::bc5_SNORM;
+				}
+				else if (header.ddspf.dwFourCC == 0x30315844)
+				{  
+					FormatDDS = FMT_DDS::dx10;
+				}
+				else
+					FormatDDS = FMT_DDS::undefined;
+
+				//Msg("Readed DDS Header: Width: %u, Height: %u", header.dwWidth, header.dwHeight);
+
+			}
+			FS.r_close(FDDS);
+
+
+			string_path file_dir;
+			FS.update_path(file_dir, "$game_textures$", tmp_name);
+
+			IReader* F = FS.r_open(file_dir);
+
+			if (F)
+			{
+				THM thm_params;
+				thm_params.ReadFromReader(F, thm.c_str());
+
+				if (thm_params.HasImplicit() || thm_params.HasAlpha())
+				{
+					string128 tmp = "HasImplicit";
+
+					if (thm_params.isDXT1())
+					{
+						strcat(tmp, "_DXT1_ALPHA_DEAD");
+					}
+					else if (thm_params.isADXT1())
+					{
+						strcat(tmp, "_ADXT1LP_AHA_HAS");
+					}
+					else if (thm_params.isDXT3())
+					{
+						strcat(tmp, "_DXT3");
+					}
+					else if (thm_params.isDXT5())
+					{
+						strcat(tmp, "_DXT5");
+					}
+					else
+					{
+						strcat(tmp, thm_params.CvrtFormat());
+					}
+
+					jsonxx::Object* object = 0;
+					if (!array_json.has<jsonxx::Object>(tmp))
+						array_json << tmp << jsonxx::Object();
+					object = &array_json.get<jsonxx::Object>(tmp);
+
+					if (object)
+					{
+						
+						*object << thm.c_str() << thm_params.save_json(true, FormatDDS);
+						
+					}
+				}		
+				else
+				{
+					string128 tmp = "NotUsedImplicit";
+
+					jsonxx::Object* object = 0;
+					if (!array_json.has<jsonxx::Object>(tmp))
+						array_json << tmp << jsonxx::Object();
+					object = &array_json.get<jsonxx::Object>(tmp);
+
+					if (object)
+						*object << thm.c_str() << thm_params.save_json(false, FormatDDS);
+				}
+			}
+
+			FS.r_close(F);
+		}
+
+		writer->w_string(array_json.json().c_str());
+		FS.w_close(writer);
+	}
  
 	if (ImGui::Button("THM Export"))
 	{
-		
-		FS_FileSet fileset;
+ 		FS_FileSet fileset;
 		string_path filepath;
 		FS.update_path(filepath, "$game_textures$", "");
 		FS.file_list(fileset, filepath, FS_ListFiles | FS_ClampExt, "*.thm");
@@ -130,14 +363,12 @@ void UIDxtConverter::Draw()
 
 
 		int ID = 0;
- 
-
-
+  
 		for (auto thm : fileset)
 		{
 			ID++;
 			 
-			Msg("[%d] Save To File: %s", ID, thm.name.c_str());
+			// Msg("[%d] Save To File: %s", ID, thm.name.c_str());
 			string128 tmp_name;
 			sprintf(tmp_name, "%s.thm", thm.name.c_str());
 
@@ -146,36 +377,28 @@ void UIDxtConverter::Draw()
 
 			IReader* F = FS.r_open(file_dir);
 
-
-			string128 tmp;
-			_GetItem(thm.name.c_str(), 0, tmp, '\\');
-			
-			jsonxx::Object* object = 0;
-			if (!array_json.has<jsonxx::Object>(tmp))
-  				array_json << tmp << jsonxx::Object();
-
-			object = &array_json.get<jsonxx::Object>(tmp);
-
 			if (F)
 			{
 				THM thm_params;
 				thm_params.ReadFromReader(F, thm.name.c_str());
-				//thm_params.save_thm(ini_file);
-				if (object)
-					*object << thm.name.c_str() << thm_params.save_json();
 				 
+				string128 tmp;
+				_GetItem(thm.name.c_str(), 0, tmp, '\\');
+ 
+				jsonxx::Object* object = 0;
+				if (!array_json.has<jsonxx::Object>(tmp))
+					array_json << tmp << jsonxx::Object();
+ 				object = &array_json.get<jsonxx::Object>(tmp);
+ 
+				std::string group = thm_params.CvrtFormat();
+				if (object)
+					*object << thm.name.c_str() << thm_params.save_json(true, 0);			 
 			}
-
-		
-
+ 
 			FS.r_close(F);	
 		}
  
 		writer->w_string(array_json.json().c_str());
-
-
-		//ini_file->save_as();
-		//xr_delete(ini_file);
 		FS.w_close(writer);
 	}
 

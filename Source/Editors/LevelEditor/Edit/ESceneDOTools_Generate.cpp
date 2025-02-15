@@ -16,6 +16,11 @@
 #include "../XrECore/Editor/ImageManager.h"
 #include "../XrETools/ETools.h"
 
+
+// THREADING API
+#include <PPL.h>
+
+
 static Fvector down_vec	={0.f,-1.f,0.f};
 static Fvector left_vec	={-1.f,0.f,0.f};
 static Fvector right_vec={1.f,0.f,0.f};
@@ -53,8 +58,10 @@ void EDetailManager::FindClosestIndex(const Fcolor& C, SIndexDistVec& best)
         }
     }
 
-    if (bRes){
-        if (best.size()<4){
+    if (bRes)
+    {
+        if (best.size()<4)
+        {
             bool bFound=false;
             for (u32 k=0; k<best.size(); k++){
                 if (best[k].index==index){
@@ -71,7 +78,9 @@ void EDetailManager::FindClosestIndex(const Fcolor& C, SIndexDistVec& best)
                 best[best.size()-1].dist = dist;
                 best[best.size()-1].index= index;
             }
-        }else{
+        }
+        else
+        {
             int i=-1;
             float dd=flt_max;
             bool bFound=false;
@@ -155,9 +164,7 @@ bool EDetailManager::UpdateHeader(){
 
 #define EPS_L_VAR 0.0012345f
 
-xrCriticalSection csMT;
-
-void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot, int ID)
+void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot)
 {
 	Fbox bbox;
     Frect rect;
@@ -168,9 +175,8 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot, int ID)
     SBoxPickInfoVec pinf;
     ETOOLS::box_options(0);
 
-    //csMT.Enter();
-    bool ray_pick = Scene->BoxPickObjects(bbox,pinf,&m_SnapObjects, ID);
-    //csMT.Leave();
+    // Se7kills : Это падает если в MT вызывать 
+    bool ray_pick = Scene->BoxPickObjects(bbox, pinf, &m_SnapObjects);
 
     if (ray_pick)
     {
@@ -223,84 +229,27 @@ void EDetailManager::UpdateSlotBBox(int sx, int sz, DetailSlot& slot, int ID)
     }
 }
 
-#include <execution> 
-
-xrCriticalSection csMTDT;
-xr_vector<int> mt_work;
-
-void MT_Thread(DetailHeader* dtH, DetailSlot* dtSlots, EDetailManager* manager, SPBItem* pb, int ID)
-{
-    while (true)
-    {
-        csMTDT.Enter();
-
-        if (mt_work.empty())
-        {
-            csMTDT.Leave();
-            break;
-        }
-
-        int z = mt_work.back();
-        mt_work.pop_back();
-
-        csMTDT.Leave();
-
-
-        string32 tmp;
-        sprintf(tmp, "Box Z: %d/%d", z, dtH->size_z);
-        pb->Info(tmp);
-
-        for (u32 x=0; x < dtH->size_x; x++)
-        {
-
-        	DetailSlot* slot = dtSlots+z*dtH->size_x+x;
-        	manager->UpdateSlotBBox	(x,z,*slot, ID);
- 	        pb->Inc();
-         }
-    }
-
-}
-
 bool EDetailManager::UpdateSlots()
 {
 	// clear previous slots
     xr_free				(dtSlots);
     dtSlots				= xr_alloc<DetailSlot>(dtH.size_x*dtH.size_z);
+      
+    Concurrency::SchedulerPolicy policy(1, Concurrency::MaxConcurrency, 16); // Ограничение до 4 потоков
+    Concurrency::CurrentScheduler::Create(policy);
 
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating bounding boxes...");
-
-    /*
-    for (u32 z = 0; z < dtH.size_z; z++)
-        mt_work.push_back(z);
- 
-    std::thread* th[8];
-    for (int i = 0; i < 8; i++)
+    CTimer t;
+    t.Start();
+    concurrency::parallel_for(size_t(0), size_t(dtH.size_z), [&] (size_t z)
     {
-        th[i] = new std::thread(MT_Thread, &dtH, dtSlots, this, pb, i);        
-    }
-
-    for (int i = 0; i < 8; i++)
-        th[i]->join();
-    */
-
- 
-    for (u32 z=0; z<dtH.size_z; z++)
-    {
-        string32 tmp;
-        sprintf(tmp, "Box Z: %d/%d", z, dtH.size_z);
-        pb->Info(tmp);
-        for (u32 x=0; x<dtH.size_x; x++)
+        for (u32 x=0; x< dtH.size_x; x++)
         {
-
-        	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
+         	DetailSlot* slot = dtSlots+z*dtH.size_x+x;
         	UpdateSlotBBox	(x,z,*slot);
- 	        pb->Inc();
-         }
+        }
     }
- 
-
-    UI->ProgressEnd(pb);  
- 
+    );
+    Msg("Building UpdateSlots: %d MS", t.GetElapsed_ms());
 
     m_Selected.resize	(dtH.size_x * dtH.size_z);
 
@@ -319,10 +268,10 @@ void EDetailManager::GetSlotRect(Frect& rect, int sx, int sz){
 void EDetailManager::GetSlotTCRect(Irect& rect, int sx, int sz){
 	Frect R;
 	GetSlotRect			(R,sx,sz);
-	rect.x1 			= m_Base.GetPixelUFromX(R.x1,m_BBox);
-	rect.x2 			= m_Base.GetPixelUFromX(R.x2,m_BBox);
-	rect.y2 			= m_Base.GetPixelVFromZ(R.y1,m_BBox); // v - координата флипнута
-	rect.y1 			= m_Base.GetPixelVFromZ(R.y2,m_BBox);
+	rect.x1 			= m_Base.GetPixelUFromX(R.x1, m_BBox);
+	rect.x2 			= m_Base.GetPixelUFromX(R.x2, m_BBox);
+	rect.y2 			= m_Base.GetPixelVFromZ(R.y1, m_BBox); // v - координата флипнута
+	rect.y1 			= m_Base.GetPixelVFromZ(R.y2, m_BBox);
 }
 
 void EDetailManager::CalcClosestCount(int part, const Fcolor& C, SIndexDistVec& best)
@@ -383,7 +332,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
 
     DetailSlot* slot	= dtSlots+z*dtH.size_x+x;
     Irect		R;
-    GetSlotTCRect(R,x,z);
+    GetSlotTCRect(R, x, z);
 
     SIndexDistVec best;
     // find best color index
@@ -397,7 +346,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
                 if (m_Base.GetColor(clr,u,v)){
                     Fcolor C;
                     C.set(clr);
-                    FindClosestIndex(C,best);
+                    FindClosestIndex(C, best);
                 }
             }
         }
@@ -448,6 +397,7 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
     u32 o_cnt=0;
     for (u32 i=0; i<best.size(); i++)
         o_cnt+=m_ColorIndices[best[i].index].size();
+
     // равномерно заполняем пустые слоты
     if (o_cnt>best.size()){
         while (best.size()<4){
@@ -470,7 +420,8 @@ bool EDetailManager::UpdateSlotObjects(int x, int z)
         U8Vec elem; elem.resize(CI->second.size());
         for (U8It b_it=elem.begin(); b_it!=elem.end(); b_it++)
             *b_it=u8(b_it-elem.begin());
-//        best_rand A(DetailRandom);
+
+
         std::shuffle(elem.begin(),elem.end(), std::random_device());//,A);
         for (auto b_it=elem.begin(); b_it!=elem.end(); b_it++)
         {
@@ -516,24 +467,25 @@ bool EDetailManager::UpdateObjects(bool bUpdateTex, bool bUpdateSelectedOnly)
     U32Vec data_image(dtH.size_z * dtH.size_x);
 
     // update objects
-    SPBItem* pb = UI->ProgressStart(dtH.size_x*dtH.size_z,"Updating objects...");
-    for (u32 z=0; z<dtH.size_z; z++)
-    {
-        for (u32 x=0; x<dtH.size_x; x++)
-        {
-            if (!bUpdateSelectedOnly||(bUpdateSelectedOnly&&m_Selected[z*dtH.size_x+x]))
-	            UpdateSlotObjects(x,z);
-        
-            data_image[z * x] = color_argb(255, 255, 0, 0);
-	        pb->Inc();
-        }
+    Concurrency::SchedulerPolicy policy(1, Concurrency::MaxConcurrency, 16); // Ограничение до 4 потоков
+    Concurrency::CurrentScheduler::Create(policy);
 
-        
-        string32 tmp;
-        sprintf(tmp, "Update Slot Z: %d/%d", z, dtH.size_z);
-        pb->Info(tmp);
+    CTimer t; 
+    t.Start();
+    concurrency::parallel_for(size_t(0), size_t(dtH.size_z), [&](size_t ID) 
+    {
+        u32 z = ID;
+        for (u32 x = 0; x < dtH.size_x; x++)
+        {
+            if (!bUpdateSelectedOnly || (bUpdateSelectedOnly && m_Selected[z * dtH.size_x + x]))
+                UpdateSlotObjects(x, z);
+
+            data_image[z * x] = color_argb(255, 255, 0, 0);
+        }
     }
-    UI->ProgressEnd(pb);
+    );
+    Msg("Building UpdateObjects: %d MS", t.GetElapsed_ms());
+    
     ETextureThumbnail thm("detail_test.dds", false);
     thm.CreateFromData(data_image.data(), dtH.size_x, dtH.size_z);
 

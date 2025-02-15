@@ -12,17 +12,12 @@
 
 using namespace	collide;
 
-
-
 //----------------------------------------------------------------------
 // Class	: CObjectSpace
 // Purpose	: stores space slots
 //----------------------------------------------------------------------
 CObjectSpace::CObjectSpace	( ):
 	xrc()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	,Lock(MUTEX_PROFILE_ID(CObjectSpace::Lock))
-#endif // PROFILE_CRITICAL_SECTIONS
 #ifdef DEBUG
 	,m_pRender(0)
 #endif
@@ -30,8 +25,6 @@ CObjectSpace::CObjectSpace	( ):
 #ifdef DEBUG
 	if( RenderFactory )	
 		m_pRender = CNEW(FactoryPtr<IObjectSpaceRender>)() ;
-
-	//sh_debug.create				("debug\\wireframe","$null");
 #endif
 	m_BoundingVolume.invalidate	();
 }
@@ -39,11 +32,7 @@ CObjectSpace::CObjectSpace	( ):
 CObjectSpace::~CObjectSpace	( )
 {
 	//moved to ~IGameLevel
-//	Sound->set_geometry_occ		(NULL);
-//	Sound->set_handler			(NULL);
-	//
 #ifdef DEBUG
-	//sh_debug.destroy			();
 	CDELETE(m_pRender);
 #endif
 }
@@ -103,9 +92,6 @@ void CObjectSpace::Load	( CDB::build_callback build_callback )
 }
 void	CObjectSpace::		Load				(  LPCSTR path, LPCSTR fname, CDB::build_callback build_callback  )
 {
-#ifdef USE_ARENA_ALLOCATOR
-	Msg( "CObjectSpace::Load, g_collision_allocator.get_allocated_size() - %d", int(g_collision_allocator.get_allocated_size()/1024.0/1024) );
-#endif // #ifdef USE_ARENA_ALLOCATOR
 	IReader *F					= FS.r_open	(path, fname);
 	R_ASSERT					(F);
 	Load( F, build_callback );
@@ -138,8 +124,6 @@ void			CObjectSpace::Create				(  Fvector*	verts, CDB::TRI* tris, const hdrCFORM
 	m_BoundingVolume.set				(H.aabb);
 	g_SpatialSpace->initialize			(m_BoundingVolume);
 	g_SpatialSpacePhysic->initialize	(m_BoundingVolume);
-	//Sound->set_geometry_occ				( &Static );
-	//Sound->set_handler					( _sound_event );
 }
 
 //----------------------------------------------------------------------
@@ -148,34 +132,4 @@ void CObjectSpace::dbgRender()
 {
 	(*m_pRender)->dbgRender();
 }
-/*
-void CObjectSpace::dbgRender()
-{
-	R_ASSERT(bDebug);
-
-	RCache.set_Shader(sh_debug);
-	for (u32 i=0; i<q_debug.boxes.size(); i++)
-	{
-		Fobb&		obb		= q_debug.boxes[i];
-		Fmatrix		X,S,R;
-		obb.xform_get(X);
-		RCache.dbg_DrawOBB(X,obb.m_halfsize,D3DCOLOR_XRGB(255,0,0));
-		S.scale		(obb.m_halfsize);
-		R.mul		(X,S);
-		RCache.dbg_DrawEllipse(R,D3DCOLOR_XRGB(0,0,255));
-	}
-	q_debug.boxes.clear();
-
-	for (i=0; i<dbg_S.size(); i++)
-	{
-		std::pair<Fsphere,u32>& P = dbg_S[i];
-		Fsphere&	S = P.first;
-		Fmatrix		M;
-		M.scale		(S.R,S.R,S.R);
-		M.translate_over(S.P);
-		RCache.dbg_DrawEllipse(M,P.second);
-	}
-	dbg_S.clear();
-}
-*/
 #endif

@@ -1,4 +1,5 @@
 #pragma once
+ 
 
 namespace LauncherNET 
 {
@@ -49,7 +50,7 @@ namespace LauncherNET
 	private: System::Windows::Forms::TextBox^ LevelNameDO;
 
 
-	private: System::Windows::Forms::CheckBox^ checkBox3;
+
 	private: System::Windows::Forms::TabPage^ AI_Tab;
 	private: System::Windows::Forms::GroupBox^ groupBox4;
 	private: System::Windows::Forms::CheckBox^ xrAI_NoSepartor;
@@ -71,13 +72,13 @@ namespace LauncherNET
 	private: System::Windows::Forms::CheckBox^ xrAI_Draft;
 	private: System::Windows::Forms::TabPage^ Geometry_Tab;
 	private: System::Windows::Forms::GroupBox^ groupBox5;
-	private: System::Windows::Forms::CheckBox^ useDXT1;
+	public: System::Windows::Forms::CheckBox^ useDXT1;
 	private: System::Windows::Forms::Label^ label17;
 	private: System::Windows::Forms::CheckBox^ FastLmapsBuilder;
-	private: System::Windows::Forms::RadioButton^ lightmap_8192;
-	private: System::Windows::Forms::RadioButton^ lightmap_4096;
-	private: System::Windows::Forms::RadioButton^ lightmap_2048;
-	private: System::Windows::Forms::RadioButton^ lightmap_1024;
+	public: System::Windows::Forms::RadioButton^ lightmap_8192;
+	public: System::Windows::Forms::RadioButton^ lightmap_4096;
+	public: System::Windows::Forms::RadioButton^ lightmap_2048;
+	public: System::Windows::Forms::RadioButton^ lightmap_1024;
 	public: System::Windows::Forms::ComboBox^ xrLC_JitterSamples;
 	private:
 	private: System::Windows::Forms::Button^ button1;
@@ -87,10 +88,10 @@ namespace LauncherNET
 	private: System::Windows::Forms::Label^ label7;
 	private: System::Windows::Forms::Label^ label6;
 	private: System::Windows::Forms::Label^ label5;
-	private: System::Windows::Forms::TextBox^ LevelName;
-	private: System::Windows::Forms::TextBox^ PXPM;
-	private: System::Windows::Forms::TextBox^ MUSamples;
-	private: System::Windows::Forms::TextBox^ ThreadsCount;
+	public: System::Windows::Forms::TextBox^ LevelName;
+	public: System::Windows::Forms::TextBox^ PXPM;
+	public: System::Windows::Forms::TextBox^ MUSamples;
+	public: System::Windows::Forms::TextBox^ ThreadsCount;
 	private: System::Windows::Forms::Label^ label4;
 	private: System::Windows::Forms::Label^ label3;
 	private: System::Windows::Forms::Label^ label2;
@@ -108,7 +109,7 @@ namespace LauncherNET
 	public: System::Windows::Forms::ListBox^ listBox1;
 	private:
 	private: System::Windows::Forms::TabControl^ TabControl;
-	private: System::Windows::Forms::TextBox^ MaxHitsCount;
+	public: System::Windows::Forms::TextBox^ MaxHitsCount;
 
 
 
@@ -118,6 +119,30 @@ namespace LauncherNET
 
 
 	private: System::Windows::Forms::Label^ label18;
+private: System::Windows::Forms::GroupBox^ groupBox2;
+public: System::Windows::Forms::RadioButton^ RefitGeomEmbree;
+public: System::Windows::Forms::RadioButton^ HighGeomEmbree;
+public: System::Windows::Forms::RadioButton^ MiddleGeomEmbree;
+public: System::Windows::Forms::RadioButton^ LowGeomEmbree;
+public: System::Windows::Forms::CheckBox^ EmbreeRobust;
+private: System::Windows::Forms::Label^ label19;
+private: System::Windows::Forms::TextBox^ DOSamples;
+public: System::Windows::Forms::CheckBox^ LMAPS_HEMI_FAST;
+private:
+
+public: System::Windows::Forms::CheckBox^ cform_export;
+public: System::Windows::Forms::CheckBox^ AdaptiveHT;
+public: System::Windows::Forms::CheckBox^ LmapsComputation;
+private: System::Windows::Forms::Label^ StageInfo;
+public:
+
+public:
+
+
+
+private:
+public:
+
 
 	public:
 
@@ -255,12 +280,13 @@ public:
 		{
 			this->xrDO = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->label19 = (gcnew System::Windows::Forms::Label());
+			this->DOSamples = (gcnew System::Windows::Forms::TextBox());
 			this->label10 = (gcnew System::Windows::Forms::Label());
 			this->ThreadsCount_DO = (gcnew System::Windows::Forms::TextBox());
 			this->DetailsButtonWork = (gcnew System::Windows::Forms::Button());
 			this->label11 = (gcnew System::Windows::Forms::Label());
 			this->LevelNameDO = (gcnew System::Windows::Forms::TextBox());
-			this->checkBox3 = (gcnew System::Windows::Forms::CheckBox());
 			this->AI_Tab = (gcnew System::Windows::Forms::TabPage());
 			this->groupBox4 = (gcnew System::Windows::Forms::GroupBox());
 			this->xrAI_NoSepartor = (gcnew System::Windows::Forms::CheckBox());
@@ -281,6 +307,16 @@ public:
 			this->xrAI_PureCovers = (gcnew System::Windows::Forms::CheckBox());
 			this->xrAI_Draft = (gcnew System::Windows::Forms::CheckBox());
 			this->Geometry_Tab = (gcnew System::Windows::Forms::TabPage());
+			this->LmapsComputation = (gcnew System::Windows::Forms::CheckBox());
+			this->AdaptiveHT = (gcnew System::Windows::Forms::CheckBox());
+			this->cform_export = (gcnew System::Windows::Forms::CheckBox());
+			this->LMAPS_HEMI_FAST = (gcnew System::Windows::Forms::CheckBox());
+			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->EmbreeRobust = (gcnew System::Windows::Forms::CheckBox());
+			this->RefitGeomEmbree = (gcnew System::Windows::Forms::RadioButton());
+			this->HighGeomEmbree = (gcnew System::Windows::Forms::RadioButton());
+			this->MiddleGeomEmbree = (gcnew System::Windows::Forms::RadioButton());
+			this->LowGeomEmbree = (gcnew System::Windows::Forms::RadioButton());
 			this->label18 = (gcnew System::Windows::Forms::Label());
 			this->MaxHitsCount = (gcnew System::Windows::Forms::TextBox());
 			this->groupBox5 = (gcnew System::Windows::Forms::GroupBox());
@@ -316,12 +352,14 @@ public:
 			this->UpdatingListBox = (gcnew System::Windows::Forms::CheckBox());
 			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->TabControl = (gcnew System::Windows::Forms::TabControl());
+			this->StageInfo = (gcnew System::Windows::Forms::Label());
 			this->xrDO->SuspendLayout();
 			this->groupBox1->SuspendLayout();
 			this->AI_Tab->SuspendLayout();
 			this->groupBox4->SuspendLayout();
 			this->groupBox3->SuspendLayout();
 			this->Geometry_Tab->SuspendLayout();
+			this->groupBox2->SuspendLayout();
 			this->groupBox5->SuspendLayout();
 			this->Status_Tab->SuspendLayout();
 			this->TabControl->SuspendLayout();
@@ -333,24 +371,42 @@ public:
 			this->xrDO->Controls->Add(this->groupBox1);
 			this->xrDO->Location = System::Drawing::Point(4, 36);
 			this->xrDO->Name = L"xrDO";
-			this->xrDO->Size = System::Drawing::Size(1430, 782);
+			this->xrDO->Size = System::Drawing::Size(1465, 787);
 			this->xrDO->TabIndex = 3;
 			this->xrDO->Text = L"Настройка Компиляции xrDO";
 			// 
 			// groupBox1
 			// 
+			this->groupBox1->Controls->Add(this->label19);
+			this->groupBox1->Controls->Add(this->DOSamples);
 			this->groupBox1->Controls->Add(this->label10);
 			this->groupBox1->Controls->Add(this->ThreadsCount_DO);
 			this->groupBox1->Controls->Add(this->DetailsButtonWork);
 			this->groupBox1->Controls->Add(this->label11);
 			this->groupBox1->Controls->Add(this->LevelNameDO);
-			this->groupBox1->Controls->Add(this->checkBox3);
 			this->groupBox1->Location = System::Drawing::Point(13, 14);
 			this->groupBox1->Name = L"groupBox1";
-			this->groupBox1->Size = System::Drawing::Size(358, 234);
+			this->groupBox1->Size = System::Drawing::Size(452, 308);
 			this->groupBox1->TabIndex = 1;
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Deatials Lighting";
+			// 
+			// label19
+			// 
+			this->label19->AutoSize = true;
+			this->label19->Location = System::Drawing::Point(10, 166);
+			this->label19->Name = L"label19";
+			this->label19->Size = System::Drawing::Size(169, 27);
+			this->label19->TabIndex = 12;
+			this->label19->Text = L"Кол-во Сэмплов";
+			// 
+			// DOSamples
+			// 
+			this->DOSamples->AccessibleRole = System::Windows::Forms::AccessibleRole::ScrollBar;
+			this->DOSamples->Location = System::Drawing::Point(185, 163);
+			this->DOSamples->Name = L"DOSamples";
+			this->DOSamples->Size = System::Drawing::Size(240, 34);
+			this->DOSamples->TabIndex = 11;
 			// 
 			// label10
 			// 
@@ -363,14 +419,14 @@ public:
 			// 
 			// ThreadsCount_DO
 			// 
-			this->ThreadsCount_DO->Location = System::Drawing::Point(99, 63);
+			this->ThreadsCount_DO->Location = System::Drawing::Point(185, 64);
 			this->ThreadsCount_DO->Name = L"ThreadsCount_DO";
 			this->ThreadsCount_DO->Size = System::Drawing::Size(240, 34);
 			this->ThreadsCount_DO->TabIndex = 9;
 			// 
 			// DetailsButtonWork
 			// 
-			this->DetailsButtonWork->Location = System::Drawing::Point(10, 162);
+			this->DetailsButtonWork->Location = System::Drawing::Point(12, 232);
 			this->DetailsButtonWork->Name = L"DetailsButtonWork";
 			this->DetailsButtonWork->Size = System::Drawing::Size(185, 51);
 			this->DetailsButtonWork->TabIndex = 7;
@@ -381,7 +437,7 @@ public:
 			// label11
 			// 
 			this->label11->AutoSize = true;
-			this->label11->Location = System::Drawing::Point(7, 116);
+			this->label11->Location = System::Drawing::Point(8, 113);
 			this->label11->Name = L"label11";
 			this->label11->Size = System::Drawing::Size(86, 27);
 			this->label11->TabIndex = 6;
@@ -390,20 +446,10 @@ public:
 			// LevelNameDO
 			// 
 			this->LevelNameDO->AccessibleRole = System::Windows::Forms::AccessibleRole::ScrollBar;
-			this->LevelNameDO->Location = System::Drawing::Point(99, 113);
+			this->LevelNameDO->Location = System::Drawing::Point(185, 114);
 			this->LevelNameDO->Name = L"LevelNameDO";
 			this->LevelNameDO->Size = System::Drawing::Size(240, 34);
 			this->LevelNameDO->TabIndex = 2;
-			// 
-			// checkBox3
-			// 
-			this->checkBox3->AutoSize = true;
-			this->checkBox3->Location = System::Drawing::Point(10, 30);
-			this->checkBox3->Name = L"checkBox3";
-			this->checkBox3->Size = System::Drawing::Size(84, 31);
-			this->checkBox3->TabIndex = 0;
-			this->checkBox3->Text = L"Draft";
-			this->checkBox3->UseVisualStyleBackColor = true;
 			// 
 			// AI_Tab
 			// 
@@ -412,7 +458,7 @@ public:
 			this->AI_Tab->Controls->Add(this->groupBox3);
 			this->AI_Tab->Location = System::Drawing::Point(4, 36);
 			this->AI_Tab->Name = L"AI_Tab";
-			this->AI_Tab->Size = System::Drawing::Size(1430, 782);
+			this->AI_Tab->Size = System::Drawing::Size(1465, 787);
 			this->AI_Tab->TabIndex = 2;
 			this->AI_Tab->Text = L"Настройка компиляции xrAI";
 			// 
@@ -596,6 +642,11 @@ public:
 			// Geometry_Tab
 			// 
 			this->Geometry_Tab->BackColor = System::Drawing::SystemColors::WindowFrame;
+			this->Geometry_Tab->Controls->Add(this->LmapsComputation);
+			this->Geometry_Tab->Controls->Add(this->AdaptiveHT);
+			this->Geometry_Tab->Controls->Add(this->cform_export);
+			this->Geometry_Tab->Controls->Add(this->LMAPS_HEMI_FAST);
+			this->Geometry_Tab->Controls->Add(this->groupBox2);
 			this->Geometry_Tab->Controls->Add(this->label18);
 			this->Geometry_Tab->Controls->Add(this->MaxHitsCount);
 			this->Geometry_Tab->Controls->Add(this->groupBox5);
@@ -618,9 +669,126 @@ public:
 			this->Geometry_Tab->Location = System::Drawing::Point(4, 36);
 			this->Geometry_Tab->Name = L"Geometry_Tab";
 			this->Geometry_Tab->Padding = System::Windows::Forms::Padding(3);
-			this->Geometry_Tab->Size = System::Drawing::Size(1430, 782);
+			this->Geometry_Tab->Size = System::Drawing::Size(1465, 787);
 			this->Geometry_Tab->TabIndex = 1;
 			this->Geometry_Tab->Text = L"Настройка Компиляции xrLC";
+			// 
+			// LmapsComputation
+			// 
+			this->LmapsComputation->AutoSize = true;
+			this->LmapsComputation->Checked = true;
+			this->LmapsComputation->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->LmapsComputation->Location = System::Drawing::Point(32, 61);
+			this->LmapsComputation->Name = L"LmapsComputation";
+			this->LmapsComputation->Size = System::Drawing::Size(205, 31);
+			this->LmapsComputation->TabIndex = 36;
+			this->LmapsComputation->Text = L"Lmaps Computation";
+			this->LmapsComputation->UseVisualStyleBackColor = true;
+			// 
+			// AdaptiveHT
+			// 
+			this->AdaptiveHT->AutoSize = true;
+			this->AdaptiveHT->Checked = true;
+			this->AdaptiveHT->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->AdaptiveHT->Location = System::Drawing::Point(32, 98);
+			this->AdaptiveHT->Name = L"AdaptiveHT";
+			this->AdaptiveHT->Size = System::Drawing::Size(207, 31);
+			this->AdaptiveHT->TabIndex = 35;
+			this->AdaptiveHT->Text = L"AdaptiveHT Enable";
+			this->AdaptiveHT->UseVisualStyleBackColor = true;
+			// 
+			// cform_export
+			// 
+			this->cform_export->AutoSize = true;
+			this->cform_export->Checked = true;
+			this->cform_export->CheckState = System::Windows::Forms::CheckState::Checked;
+			this->cform_export->Location = System::Drawing::Point(32, 135);
+			this->cform_export->Name = L"cform_export";
+			this->cform_export->Size = System::Drawing::Size(168, 31);
+			this->cform_export->TabIndex = 34;
+			this->cform_export->Text = L"CFORM Export";
+			this->cform_export->UseVisualStyleBackColor = true;
+			// 
+			// LMAPS_HEMI_FAST
+			// 
+			this->LMAPS_HEMI_FAST->AutoSize = true;
+			this->LMAPS_HEMI_FAST->Location = System::Drawing::Point(32, 24);
+			this->LMAPS_HEMI_FAST->Name = L"LMAPS_HEMI_FAST";
+			this->LMAPS_HEMI_FAST->Size = System::Drawing::Size(184, 31);
+			this->LMAPS_HEMI_FAST->TabIndex = 32;
+			this->LMAPS_HEMI_FAST->Text = L"Lmaps hemi = 1;";
+			this->LMAPS_HEMI_FAST->UseVisualStyleBackColor = true;
+			// 
+			// groupBox2
+			// 
+			this->groupBox2->Controls->Add(this->EmbreeRobust);
+			this->groupBox2->Controls->Add(this->RefitGeomEmbree);
+			this->groupBox2->Controls->Add(this->HighGeomEmbree);
+			this->groupBox2->Controls->Add(this->MiddleGeomEmbree);
+			this->groupBox2->Controls->Add(this->LowGeomEmbree);
+			this->groupBox2->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(204)));
+			this->groupBox2->Location = System::Drawing::Point(33, 461);
+			this->groupBox2->Name = L"groupBox2";
+			this->groupBox2->Size = System::Drawing::Size(532, 195);
+			this->groupBox2->TabIndex = 31;
+			this->groupBox2->TabStop = false;
+			this->groupBox2->Text = L"Embree Settings";
+			// 
+			// EmbreeRobust
+			// 
+			this->EmbreeRobust->AutoSize = true;
+			this->EmbreeRobust->Location = System::Drawing::Point(15, 149);
+			this->EmbreeRobust->Name = L"EmbreeRobust";
+			this->EmbreeRobust->Size = System::Drawing::Size(146, 31);
+			this->EmbreeRobust->TabIndex = 31;
+			this->EmbreeRobust->Text = L"Geom Robust";
+			this->EmbreeRobust->UseVisualStyleBackColor = true;
+			// 
+			// RefitGeomEmbree
+			// 
+			this->RefitGeomEmbree->AutoSize = true;
+			this->RefitGeomEmbree->Checked = true;
+			this->RefitGeomEmbree->Location = System::Drawing::Point(15, 93);
+			this->RefitGeomEmbree->Name = L"RefitGeomEmbree";
+			this->RefitGeomEmbree->Size = System::Drawing::Size(130, 31);
+			this->RefitGeomEmbree->TabIndex = 3;
+			this->RefitGeomEmbree->TabStop = true;
+			this->RefitGeomEmbree->Text = L"Refit Geom";
+			this->RefitGeomEmbree->UseVisualStyleBackColor = true;
+			// 
+			// HighGeomEmbree
+			// 
+			this->HighGeomEmbree->AutoSize = true;
+			this->HighGeomEmbree->Location = System::Drawing::Point(14, 70);
+			this->HighGeomEmbree->Name = L"HighGeomEmbree";
+			this->HighGeomEmbree->Size = System::Drawing::Size(125, 31);
+			this->HighGeomEmbree->TabIndex = 2;
+			this->HighGeomEmbree->TabStop = true;
+			this->HighGeomEmbree->Text = L"High Geom";
+			this->HighGeomEmbree->UseVisualStyleBackColor = true;
+			// 
+			// MiddleGeomEmbree
+			// 
+			this->MiddleGeomEmbree->AutoSize = true;
+			this->MiddleGeomEmbree->Location = System::Drawing::Point(14, 47);
+			this->MiddleGeomEmbree->Name = L"MiddleGeomEmbree";
+			this->MiddleGeomEmbree->Size = System::Drawing::Size(143, 31);
+			this->MiddleGeomEmbree->TabIndex = 1;
+			this->MiddleGeomEmbree->TabStop = true;
+			this->MiddleGeomEmbree->Text = L"Middle Geom";
+			this->MiddleGeomEmbree->UseVisualStyleBackColor = true;
+			// 
+			// LowGeomEmbree
+			// 
+			this->LowGeomEmbree->AutoSize = true;
+			this->LowGeomEmbree->Location = System::Drawing::Point(15, 22);
+			this->LowGeomEmbree->Name = L"LowGeomEmbree";
+			this->LowGeomEmbree->Size = System::Drawing::Size(117, 31);
+			this->LowGeomEmbree->TabIndex = 0;
+			this->LowGeomEmbree->TabStop = true;
+			this->LowGeomEmbree->Text = L"Low Geom";
+			this->LowGeomEmbree->UseVisualStyleBackColor = true;
 			// 
 			// label18
 			// 
@@ -784,7 +952,7 @@ public:
 			this->label8->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label8->ForeColor = System::Drawing::Color::RosyBrown;
-			this->label8->Location = System::Drawing::Point(1058, 335);
+			this->label8->Location = System::Drawing::Point(1051, 335);
 			this->label8->Name = L"label8";
 			this->label8->Size = System::Drawing::Size(41, 27);
 			this->label8->TabIndex = 16;
@@ -796,7 +964,7 @@ public:
 			this->label7->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label7->ForeColor = System::Drawing::Color::RosyBrown;
-			this->label7->Location = System::Drawing::Point(1058, 300);
+			this->label7->Location = System::Drawing::Point(1045, 301);
 			this->label7->Name = L"label7";
 			this->label7->Size = System::Drawing::Size(61, 27);
 			this->label7->TabIndex = 15;
@@ -808,7 +976,7 @@ public:
 			this->label6->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->label6->ForeColor = System::Drawing::Color::RosyBrown;
-			this->label6->Location = System::Drawing::Point(1058, 265);
+			this->label6->Location = System::Drawing::Point(1045, 264);
 			this->label6->Name = L"label6";
 			this->label6->Size = System::Drawing::Size(74, 27);
 			this->label6->TabIndex = 14;
@@ -916,14 +1084,15 @@ public:
 				static_cast<System::Byte>(204)));
 			this->FlagsCompiler->ForeColor = System::Drawing::Color::DarkViolet;
 			this->FlagsCompiler->FormattingEnabled = true;
-			this->FlagsCompiler->Location = System::Drawing::Point(1147, 28);
+			this->FlagsCompiler->Location = System::Drawing::Point(1125, 28);
 			this->FlagsCompiler->Name = L"FlagsCompiler";
-			this->FlagsCompiler->Size = System::Drawing::Size(274, 708);
+			this->FlagsCompiler->Size = System::Drawing::Size(329, 708);
 			this->FlagsCompiler->TabIndex = 0;
 			// 
 			// Status_Tab
 			// 
 			this->Status_Tab->BackColor = System::Drawing::Color::DimGray;
+			this->Status_Tab->Controls->Add(this->StageInfo);
 			this->Status_Tab->Controls->Add(this->MemoryInfo);
 			this->Status_Tab->Controls->Add(this->CurrentProgress);
 			this->Status_Tab->Controls->Add(this->BuildTime);
@@ -936,7 +1105,7 @@ public:
 			this->Status_Tab->Location = System::Drawing::Point(4, 36);
 			this->Status_Tab->Name = L"Status_Tab";
 			this->Status_Tab->Padding = System::Windows::Forms::Padding(3);
-			this->Status_Tab->Size = System::Drawing::Size(1430, 782);
+			this->Status_Tab->Size = System::Drawing::Size(1471, 787);
 			this->Status_Tab->TabIndex = 0;
 			this->Status_Tab->Text = L"Состояние компиляции";
 			// 
@@ -947,11 +1116,10 @@ public:
 			this->MemoryInfo->FlatStyle = System::Windows::Forms::FlatStyle::System;
 			this->MemoryInfo->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic))));
 			this->MemoryInfo->ForeColor = System::Drawing::Color::RosyBrown;
-			this->MemoryInfo->Location = System::Drawing::Point(718, 599);
+			this->MemoryInfo->Location = System::Drawing::Point(714, 632);
 			this->MemoryInfo->Name = L"MemoryInfo";
-			this->MemoryInfo->Size = System::Drawing::Size(284, 53);
+			this->MemoryInfo->Size = System::Drawing::Size(324, 53);
 			this->MemoryInfo->TabIndex = 19;
-			this->MemoryInfo->Text = L"Memory";
 			this->MemoryInfo->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// CurrentProgress
@@ -960,9 +1128,9 @@ public:
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
 			this->CurrentProgress->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(0)), static_cast<System::Int32>(static_cast<System::Byte>(192)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->CurrentProgress->Location = System::Drawing::Point(7, 603);
+			this->CurrentProgress->Location = System::Drawing::Point(6, 579);
 			this->CurrentProgress->Name = L"CurrentProgress";
-			this->CurrentProgress->Size = System::Drawing::Size(705, 49);
+			this->CurrentProgress->Size = System::Drawing::Size(1032, 49);
 			this->CurrentProgress->TabIndex = 18;
 			// 
 			// BuildTime
@@ -973,11 +1141,10 @@ public:
 			this->BuildTime->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 24, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->BuildTime->ForeColor = System::Drawing::Color::RosyBrown;
-			this->BuildTime->Location = System::Drawing::Point(718, 692);
+			this->BuildTime->Location = System::Drawing::Point(714, 698);
 			this->BuildTime->Name = L"BuildTime";
-			this->BuildTime->Size = System::Drawing::Size(284, 77);
+			this->BuildTime->Size = System::Drawing::Size(324, 74);
 			this->BuildTime->TabIndex = 17;
-			this->BuildTime->Text = L"I AM TIMER";
 			this->BuildTime->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// InfoStatus
@@ -988,10 +1155,11 @@ public:
 			this->InfoStatus->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
 				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
 			this->InfoStatus->ForeColor = System::Drawing::Color::RosyBrown;
-			this->InfoStatus->Location = System::Drawing::Point(6, 692);
+			this->InfoStatus->Location = System::Drawing::Point(6, 632);
 			this->InfoStatus->Name = L"InfoStatus";
-			this->InfoStatus->Size = System::Drawing::Size(706, 85);
+			this->InfoStatus->Size = System::Drawing::Size(702, 53);
 			this->InfoStatus->TabIndex = 16;
+			this->InfoStatus->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// InfoPhases
 			// 
@@ -1001,7 +1169,7 @@ public:
 			this->InfoPhases->ForeColor = System::Drawing::Color::Khaki;
 			this->InfoPhases->FormattingEnabled = true;
 			this->InfoPhases->ItemHeight = 21;
-			this->InfoPhases->Location = System::Drawing::Point(1008, 17);
+			this->InfoPhases->Location = System::Drawing::Point(1044, 17);
 			this->InfoPhases->Name = L"InfoPhases";
 			this->InfoPhases->Size = System::Drawing::Size(413, 718);
 			this->InfoPhases->TabIndex = 15;
@@ -1011,7 +1179,7 @@ public:
 			this->UpdatingListBox->AutoSize = true;
 			this->UpdatingListBox->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Italic, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
-			this->UpdatingListBox->Location = System::Drawing::Point(6, 658);
+			this->UpdatingListBox->Location = System::Drawing::Point(1044, 741);
 			this->UpdatingListBox->Name = L"UpdatingListBox";
 			this->UpdatingListBox->Size = System::Drawing::Size(198, 31);
 			this->UpdatingListBox->TabIndex = 3;
@@ -1028,7 +1196,7 @@ public:
 			this->listBox1->ItemHeight = 23;
 			this->listBox1->Location = System::Drawing::Point(6, 17);
 			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(996, 579);
+			this->listBox1->Size = System::Drawing::Size(1032, 556);
 			this->listBox1->TabIndex = 0;
 			// 
 			// TabControl
@@ -1042,19 +1210,35 @@ public:
 			this->TabControl->Location = System::Drawing::Point(12, 12);
 			this->TabControl->Name = L"TabControl";
 			this->TabControl->SelectedIndex = 0;
-			this->TabControl->Size = System::Drawing::Size(1438, 822);
+			this->TabControl->Size = System::Drawing::Size(1479, 827);
 			this->TabControl->TabIndex = 3;
+			// 
+			// StageInfo
+			// 
+			this->StageInfo->BackColor = System::Drawing::Color::Black;
+			this->StageInfo->BorderStyle = System::Windows::Forms::BorderStyle::Fixed3D;
+			this->StageInfo->FlatStyle = System::Windows::Forms::FlatStyle::System;
+			this->StageInfo->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, static_cast<System::Drawing::FontStyle>((System::Drawing::FontStyle::Bold | System::Drawing::FontStyle::Italic)),
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(204)));
+			this->StageInfo->ForeColor = System::Drawing::Color::RosyBrown;
+			this->StageInfo->Location = System::Drawing::Point(6, 698);
+			this->StageInfo->Name = L"StageInfo";
+			this->StageInfo->Size = System::Drawing::Size(702, 74);
+			this->StageInfo->TabIndex = 20;
+			this->StageInfo->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
 			// MyForm
 			// 
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::None;
 			this->BackColor = System::Drawing::SystemColors::ActiveBorder;
 			this->BackgroundImageLayout = System::Windows::Forms::ImageLayout::None;
-			this->ClientSize = System::Drawing::Size(1459, 835);
+			this->ClientSize = System::Drawing::Size(1490, 853);
 			this->Controls->Add(this->TabControl);
 			this->Font = (gcnew System::Drawing::Font(L"Comic Sans MS", 14.25F, System::Drawing::FontStyle::Bold, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(204)));
 			this->ForeColor = System::Drawing::Color::Tomato;
+			this->MaximumSize = System::Drawing::Size(1506, 892);
+			this->MinimumSize = System::Drawing::Size(1506, 892);
 			this->Name = L"MyForm";
 			this->ShowIcon = false;
 			this->Text = L"Продвинутый компилятор Геометрии и Света (Intel)";
@@ -1068,6 +1252,8 @@ public:
 			this->groupBox3->PerformLayout();
 			this->Geometry_Tab->ResumeLayout(false);
 			this->Geometry_Tab->PerformLayout();
+			this->groupBox2->ResumeLayout(false);
+			this->groupBox2->PerformLayout();
 			this->groupBox5->ResumeLayout(false);
 			this->groupBox5->PerformLayout();
 			this->Status_Tab->ResumeLayout(false);
@@ -1151,12 +1337,11 @@ public:
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateTime_form), managedString);
 			//BuildTime->Text = managedString;
 		}
-
- 
- 
+			   
 		// Buttons
 
-		private: System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e);
+		private:
+			System::Void button1_Click_1(System::Object^ sender, System::EventArgs^ e);
 
 		private: System::Void xrAI_SpawnAIMap_Click(System::Object^ sender, System::EventArgs^ e);
 	 
@@ -1180,8 +1365,8 @@ public:
 			System::String^ managedString = gcnew System::String(text); 			
 			this->Invoke(gcnew Action<System::String^>(this, &MyForm::UpdateMemoryInfo), managedString);
   		}
-
-	};
+ 
+};
  
 
 

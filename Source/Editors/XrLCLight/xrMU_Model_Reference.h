@@ -2,10 +2,12 @@
 #define XRMUMODEL_REFERENCE_H
 
 #include "base_color.h"
- 
+#include "xrDeflector.h"
+
 class xrMU_Model;
 namespace CDB { class CollectorPacked; }
  
+
 class XRLC_LIGHT_API xrMU_Reference
 {
 public:
@@ -26,6 +28,8 @@ public:
 
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL);
+
+	void					export_cform_rcast_new  (xr_vector<FaceDataIntel>& faces);
  
 };
 #endif

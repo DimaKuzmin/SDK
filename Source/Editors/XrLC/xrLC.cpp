@@ -158,7 +158,7 @@ void Startup_DO(SpecialArgs* args)
 	CTimer				dwStartupTime;
 	dwStartupTime.Start();
 	 
-	xrCompileDO();
+	xrCompileDO(args->DoSamples);
 
 	// Show statistic
 	char	stats[256];
@@ -193,26 +193,24 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 
 	build_args->no_optimize = args->no_optimize;
 	build_args->no_simplify = args->no_simplify;
-
+		
 	build_args->use_avx = args->use_avx;
 	build_args->use_embree = args->use_embree;
 	build_args->use_sse = args->use_sse;
 
-	build_args->special_args = args->special_args;
-	build_args->level_name = args->level_name;
+ 	build_args->level_name = args->level_name;
 
 	build_args->skip_weld = args->skip_weld;
 
 	build_args->use_DXT1 = args->use_DXT1;
   
-	clMsg("MU IS FIRST: %s", args->run_mu_first ? "true" : "false");
-	build_args->run_mu_first = args->run_mu_first;
- }
+ 	build_args->run_mu_first = args->run_mu_first;
 
+	build_args->EmbreeGeomType = args->EmbreeGeomType;
+	build_args->useRobust = args->useRobust;
 
-
-extern XRLC_LIGHT_API int StageMAXHits;
-
+	build_args->LmapsHemi = args->LmapsHemi;
+}
  
 XRLC_API void StartupWorking(SpecialArgs* args)
 {
@@ -229,13 +227,7 @@ XRLC_API void StartupWorking(SpecialArgs* args)
 	}
 
 	char tmp[256];
-	sprintf(tmp, "c++: SCENE HITS: %d",
-		args->MaxHitsPerRay);
-	clMsg(tmp);
-
-	StageMAXHits = args->MaxHitsPerRay;
-
-	 
+  
 	sprintf(tmp, "c++: SCENE SET: PXPM: %f, SAMPLES: %u, MUSAMPLES: %u, threads: %u, SkipWeld: %u",
 		args->pxpm, args->sample, args->mu_samples, args->use_threads, args->skip_weld);
 	clMsg(tmp);
@@ -253,9 +245,6 @@ XRLC_API void StartupWorking(SpecialArgs* args)
 	clMsg(tmp);
 
 	current_args_data = args;
-
-	Debug._initialize(false);
-	Core._initialize("xrLC");
 
 	switch (args->LightmapSize_enum)
 	{
@@ -288,5 +277,101 @@ XRLC_API void StartupWorking(SpecialArgs* args)
 
 
 	Core._destroy();
+}
+
+void SaveIni(CInifile* save, SpecialArgs* args)
+{
+	save->w_string("launcher", "level_name", args->level_name.c_str());
+
+
+	save->w_bool("launcher", "use_skip_invalid", args->no_invalide_faces);
+	save->w_bool("launcher", "use_robust", args->useRobust);
+	save->w_bool("launcher", "use_DXT1", args->use_DXT1);
+
+	save->w_bool("launcher", "use_embree", args->use_embree);
+	save->w_bool("launcher", "use_avx", args->use_avx);
+	save->w_bool("launcher", "use_sse", args->use_sse);
+
+	save->w_bool("launcher", "no_optimize", args->no_optimize);
+	save->w_bool("launcher", "no_simplify", args->no_simplify);
+	
+	save->w_bool("launcher", "nosun", args->nosun);
+	save->w_bool("launcher", "nohemi", args->nohemi);
+	save->w_bool("launcher", "norgb", args->norgb);
+
+	save->w_bool("launcher", "noise", args->noise);
+	save->w_bool("launcher", "nosmg", args->nosmg);
+	save->w_bool("launcher", "skip_weld", args->skip_weld);
+
+ 	save->w_bool("launcher", "run_mu_first", args->run_mu_first);
+
+
+	save->w_u8("launcher", "EmbreeGeomType", args->EmbreeGeomType);
+  
+	save->w_u8("launcher", "LightmapSize", args->LightmapSize_enum);
+ 
+	save->w_u32("launcher", "threads", args->use_threads);
+	save->w_float("launcher", "pxpm", args->pxpm);
+	save->w_u32("launcher", "sample", args->sample);
+	save->w_u32("launcher", "mu_samples", args->mu_samples); 
+}
+
+void LoadIni(CInifile* load, SpecialArgs* args)
+{
+	args->level_name = load->r_string("launcher", "level_name");
+	
+	load->r_bool("launcher", "use_skip_invalid", args->no_invalide_faces);
+	load->r_bool("launcher", "use_robust", args->useRobust);
+	load->r_bool("launcher", "use_DXT1", args->use_DXT1);
+	load->r_bool("launcher", "use_embree", args->use_embree);
+	load->r_bool("launcher", "use_avx", args->use_avx);
+	load->r_bool("launcher", "use_sse", args->use_sse);
+	load->r_bool("launcher", "no_optimize", args->no_optimize);
+	load->r_bool("launcher", "no_simplify", args->no_simplify);
+	load->r_bool("launcher", "nosun", args->nosun);
+	load->r_bool("launcher", "nohemi", args->nohemi);
+	load->r_bool("launcher", "norgb", args->norgb);
+	load->r_bool("launcher", "noise", args->noise);
+	load->r_bool("launcher", "nosmg", args->nosmg);
+	load->r_bool("launcher", "skip_weld", args->skip_weld);
+	 
+ 	load->r_bool("launcher", "run_mu_first", args->run_mu_first);
+	load->r_u8("launcher", "EmbreeGeomType", (u8&) args->EmbreeGeomType);
+	load->r_u8("launcher", "LightmapSize", (u8&) args->LightmapSize_enum);
+ 
+	load->r_u32("launcher", "threads", (u32&)args->use_threads);
+	load->r_float("launcher", "pxpm", (float&) args->pxpm);
+	load->r_u32("launcher", "sample", (u32&) args->sample);
+	load->r_u32("launcher", "mu_samples", (u32&) args->mu_samples);
+}
+
+bool LoadParrams(SpecialArgs* args)
+{
+ 	Debug._initialize(false);
+	Core._initialize("xrLC");
+
+	string_path fsPath;
+	FS.update_path(fsPath, "$app_data_root$", "compiler_se7.ltx");
+	
+	bool isLoaded = false;
+	CInifile* Reader = xr_new< CInifile >(fsPath, true, true);
+	if (Reader && Reader->section_exist("launcher"))
+	{
+		isLoaded = true;
+		LoadIni(Reader, args);
+	}
+	return isLoaded;
+}
+
+void SaveParrams(SpecialArgs* args)
+{
+	string_path fsPath;
+	FS.update_path(fsPath, "$app_data_root$", "compiler_se7.ltx");
+	CInifile* file = new CInifile(fsPath, false, false);
+	if (file)
+	{
+		SaveIni(file, args);
+	}
+	file->save_as();
 }
  

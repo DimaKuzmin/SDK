@@ -28,10 +28,10 @@ void CBuild::BuildSectors()
 	Status("Building hierrarhy...");
 	for (u32 I=0; I<g_sectors.size(); I++)
 	{
+		clMsg("Sectors Vec(%u) Processing(%u)", g_sectors.size(), I);
 		R_ASSERT(g_sectors[I]);
 		g_sectors[I]->BuildHierrarhy();
 		Progress(float(I)/float(g_sectors.size()));
-		clMsg("Progress %d/%d", I, g_sectors.size());
 	}
 
 	Status("Assigning portals, occluders, glows, lights...");
@@ -82,7 +82,7 @@ void CBuild::BuildSectors()
 void CBuild::SaveSectors(IWriter& fs)
 {
 	CMemoryWriter MFS;
-	Status("Processing...");
+	Status("SaveSectors Processing...");
 
 	// validate & save
 	for (u32 I=0; I<g_sectors.size(); I++)

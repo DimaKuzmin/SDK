@@ -12,7 +12,15 @@
 class  base_lighting;
 class CDeflector;
    
-XRLC_LIGHT_API void IntelEmbereLOAD(CDB::CollectorPacked& packed_cb);
+struct FaceDataIntel
+{
+	Fvector v1, v2, v3;
+	void* ptr;
+};
+
+XRLC_LIGHT_API void IntelEmbereDetachRelease();
+ 
+XRLC_LIGHT_API void IntelEmbereLOAD();
 XRLC_LIGHT_API void IntelEmbereUNLOAD();
  
 class XRLC_LIGHT_API CDeflector 
@@ -28,9 +36,7 @@ public:
 public:
 
 						CDeflector					();
-//public:
-//						CDeflector					(CDeflector** g_defl)	{ CDeflector(); Deflector = this ;}
-						~CDeflector					();
+ 						~CDeflector					();
  
 
 	void	OA_SetNormal		(Fvector &_N )	{ normal.set(_N); normal.normalize(); VERIFY(_valid(normal)); }
@@ -48,6 +54,15 @@ public:
 	void	L_Calculate			( CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false );
 
 	u32		weight				() { return layer.Area(); }	
+
+
+	u64		size_deflector() 
+	{
+		u32 STri	 = UVpolys.capacity() * sizeof(UVtri);
+		u32 SLMLayer = layer.memory_lmap();
+		 
+ 		return sizeof(*this) + STri + SLMLayer;
+	}
 	u16		GetBaseMaterial		() ;
 
 	void	Bounds				(u32 ID, Fbox2& dest)
@@ -73,8 +88,7 @@ public:
 	  	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
 	bool	similar_pos				( const CDeflector &D, float eps =EPS ) const;
-
-	void	GPU_CalculationOLD();
+ 
 };
 
 extern XRLC_LIGHT_API void GPU_Calculation();

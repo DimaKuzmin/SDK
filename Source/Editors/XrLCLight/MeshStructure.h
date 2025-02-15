@@ -152,10 +152,12 @@ virtual		~Tface	();
 		v0.set			(v[0]->P);
 		v1.set			(v[1]->P);
 		v2.set			(v[2]->P);
+		
 		t1.sub			(v1,v0);
 		t2.sub			(v2,v1);
 		dN.crossproduct	(t1,t2);
 		double mag		= dN.magnitude	();
+
 		if (mag<dbl_zero)
 		{
 			Failure		();
@@ -195,6 +197,7 @@ virtual		~Tface	();
 		if (e2>e1 && e2>e3) return e2;
 		return e3;
 	}
+
 	void	CalcCenter	(Fvector &C)
 	{
 		C.set(v[0]->P);
@@ -282,8 +285,8 @@ struct remove_pred
 template<typename typeVertex>
 IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 {
-	if (bProgress)	
-		Status		("Isolating vertices...");
+	//if (bProgress)	
+	//	Status		("Isolating vertices...");
  
 	const u32 verts_old		= vertices.size();
 
@@ -309,8 +312,8 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
 	u32 verts_new		= vertices.size();
 	u32	_count			= verts_old-verts_new;
 	
-	if	(_count)		
-		clMsg	("::compact:: %d verts removed",_count);
+	//if	(_count)		
+	//	clMsg	("::compact:: %d verts removed",_count);
 }
 
 

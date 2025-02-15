@@ -71,22 +71,40 @@ public:
 public:
 	template<class _Other>	
 	struct rebind			{	typedef xalloc<_Other> other;	};
+
 public:
-							pointer					address			(reference _Val) const					{	return (&_Val);	}
-							const_pointer			address			(const_reference _Val) const			{	return (&_Val);	}
-													xalloc			()										{	}
-													xalloc			(const xalloc<T>&)						{	}
-	template<class _Other>							xalloc			(const xalloc<_Other>&)					{	}
-	template<class _Other>	xalloc<T>&				operator=		(const xalloc<_Other>&)					{	return (*this);	}
-							pointer					allocate		(size_type n, const void* p=0) const	{	return xr_alloc<T>((u32)n);	}
-							char*					_charalloc		(size_type n)							{	return (char*)allocate(n); }
-							void					deallocate		(pointer p, size_type n) const			{	xr_free	(p);				}
-							void					deallocate		(void* p, size_type n) const			{	xr_free	(p);				}
-							
-							void					construct(pointer p, const T& _Val) { new(p)T(_Val); }
-							template<typename C>
-							void					destroy(C* p) { p->~C(); }
-							size_type				max_size		() const								{	size_type _Count = (size_type)(-1) / sizeof (T);	return (0 < _Count ? _Count : 1);	}
+	xalloc			()			
+	{	
+	}
+
+	xalloc			(const xalloc<T>&)	
+	{
+	}
+
+	template<class _Other>						
+	xalloc			(const xalloc<_Other>&)			
+	{
+	}
+
+	template<class _Other>	xalloc<T>&	operator=		(const xalloc<_Other>&)					
+	{	
+		return (*this);
+	}
+ 							
+	pointer					allocate		(size_type n, const void* p=0) const	
+	{
+		return xr_alloc<T>((u32)n);
+	}	
+	
+	void					deallocate		(pointer p, size_type n) const			
+	{
+		xr_free	(p);		
+	}
+ 			 
+	size_type				max_size		() const		
+	{	
+		size_type _Count = (size_type)(-1) / sizeof (T);	return (0 < _Count ? _Count : 1);
+	}
 };
 
 struct xr_allocator {
@@ -134,6 +152,24 @@ public:
 		return 		*this;
 	}
 };
+
+// #include <unordered_map>
+
+// template <typename T, typename allocator = xalloc<T> >
+// class xr_unordered_map : public std::unordered_map<T, allocator>
+// {
+// 	xr_vector() : inherited() {}
+// 	xr_vector(size_t _count, const T& _value) : inherited(_count, _value) {}
+// 	
+// 	explicit xr_vector(size_t _count) : inherited(_count) {}
+// 	u32		size() const { return (u32)inherited::size(); }
+// 
+// 	void	clear_and_free() { inherited::clear(); }
+// 	void	clear() { clear_and_free(); }
+// 
+// 	const_reference operator[]	(size_type _Pos) const { { VERIFY2(_Pos < size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str()); } return (*(begin() + _Pos)); }
+// 	reference operator[]		(size_type _Pos) { { VERIFY2(_Pos < size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str()); } return (*(begin() + _Pos)); }
+// };
 
 // vector
 template	<typename T, typename allocator = xalloc<T> >
@@ -225,8 +261,45 @@ protected:
 template	<typename T, typename allocator = xalloc<T> >									class	xr_list 		: public std::list<T,allocator>			{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_set			: public std::set<K,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
 template	<typename K, class P=std::less<K>, typename allocator = xalloc<K> >				class	xr_multiset		: public std::multiset<K,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_map 			: public std::map<K,V,P,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };
-template	<typename K, class V, class P=std::less<K>, typename allocator = xalloc<std::pair<const K,V> > >	class	xr_multimap		: public std::multimap<K,V,P,allocator>	{ public: u32 size() const {return (u32)__super::size(); } };
+
+template	<
+	typename K,
+	class V, 
+	class P=std::less<K>, 
+	typename allocator = xalloc<std::pair<const K,V> > 
+>	
+class	xr_map 			: public std::map<K,V,P,allocator>	
+{ public: u32 size() const {return (u32)__super::size(); } };
+
+template	<
+	typename K, 
+	class V, 
+	class P=std::less<K>, 
+	typename allocator = xalloc<std::pair<const K,V> > 
+>
+class	xr_multimap		: public std::multimap<K,V,P,allocator>	
+{ public: u32 size() const {return (u32)__super::size(); } };
+ 
+ 
+#include <unordered_map>
+
+template <
+	typename Key,
+	class V,
+	class Hash = std::hash<Key>,                  // Хэш-функция
+	class KeyEqual = std::equal_to<Key>,          // Оператор сравнения ключей
+	typename Allocator = xalloc<std::pair<const Key, V> >
+>
+class xr_unordered_map : public std::unordered_map<Key, V, Hash, KeyEqual, Allocator>
+{ 
+public:	
+	u32 size()  
+	{
+		return __super::size();
+	}
+
+};
+ 
 
 #ifdef STLPORT
 	template	<typename V, class _HashFcn=std::hash<V>, class _EqualKey=std::equal_to<V>, typename allocator = xalloc<V> >	class	xr_hash_set		: public std::hash_set<V,_HashFcn,_EqualKey,allocator>		{ public: u32 size() const {return (u32)__super::size(); } };

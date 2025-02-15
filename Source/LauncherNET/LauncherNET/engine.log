@@ -1,0 +1,9 @@
+* Detected CPU:  [], F0/M0/S0, 4204.00 mhz, 37-clk 'rdtsc'
+* CPU features: RDTSC, MMX, SSE
+* CPU threads: 16
+
+Initializing File System...
+$fs_root$ = A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\
+using fs-ltx: A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\fsgame.ltx
+FS: 42320 files cached 0 archives, 0Kb memory used.
+Init FileSystem 0.684302 sec

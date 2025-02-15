@@ -59,7 +59,7 @@ class EDetailManager:
 	IC float			fromSlotX		(int x)		{return (x-dtH.offs_x)*DETAIL_SLOT_SIZE+DETAIL_SLOT_SIZE_2;}
 	IC float			fromSlotZ		(int z)		{return (z-dtH.offs_z)*DETAIL_SLOT_SIZE+DETAIL_SLOT_SIZE_2;}
 public:
-    void				UpdateSlotBBox	(int x, int z, DetailSlot& slot, int ID = 0);
+    void				UpdateSlotBBox	(int x, int z, DetailSlot& slot);
 
 private:
     void				GetSlotRect		(Frect& rect, int sx, int sz);

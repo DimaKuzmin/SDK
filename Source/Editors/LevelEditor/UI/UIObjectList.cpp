@@ -106,6 +106,8 @@ void UIObjectList::Draw()
 
 void UIObjectList::Update()
 {
+	OPTICK_EVENT("UIObjectList OnDrawUI");
+
 	if (Form)
 	{
 		if (!Form->IsClosed())
@@ -143,7 +145,9 @@ void UIObjectList::DrawObjects()
 		if (ot && ((m_cur_cls == OBJCLASS_DUMMY) || (it->first == m_cur_cls)))
 		{
 			if (it->first == OBJCLASS_DUMMY)
-				continue;
+			{
+ 				continue;
+			}
 
 			ObjectList& lst = ot->GetObjects();
 			ImGui::SetNextItemOpen(true, ImGuiCond_FirstUseEver);
@@ -189,6 +193,8 @@ void UIObjectList::DrawObjects()
 				}
 				else
 				{
+					OPTICK_EVENT("OBJECTS DrawObject");
+
 					bool FindSelectedObj = false;
 					for (ObjectIt _F = lst.begin(); _F != lst.end(); ++_F)
 					{
@@ -210,6 +216,8 @@ void UIObjectList::DrawObjects()
 					}
 					if (!FindSelectedObj)
 						m_SelectedObject = nullptr;
+
+					OPTICK_POP();
 
 				}
 				ImGui::TreePop();

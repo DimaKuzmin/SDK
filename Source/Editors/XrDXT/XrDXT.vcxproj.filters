@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Исходные файлы\DDS Writer">
+      <UniqueIdentifier>{caacd396-c630-4c08-9d59-c8f083d44287}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="NormalMapGen.cpp">
@@ -35,6 +38,9 @@
     </ClCompile>
     <ClCompile Include="NVI_Image.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="dds_write.cpp">
+      <Filter>Исходные файлы\DDS Writer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -76,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="NVI_Image.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="dds_write.h">
+      <Filter>Исходные файлы\DDS Writer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

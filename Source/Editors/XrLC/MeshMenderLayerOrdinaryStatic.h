@@ -12,8 +12,6 @@ IC void	set_vertex( MeshMender::Vertex &out_vertex, const Vertex& in_veretex, co
 			cv_vector( out_vertex.normal, in_veretex.N );
 			out_vertex.s		= Ftc.x;
 			out_vertex.t		= Ftc.y;
-			//out_vertex.tangent;
-			//out_vertex.binormal;
 }
 
 

@@ -785,6 +785,7 @@ bool EScene::ReadObjectsLTX(CInifile& ini,  LPCSTR sect_name_parent, LPCSTR sect
     {
     	sprintf				(buff, "%s_%s_%d", sect_name_parent, sect_name_prefix, i);
         CCustomObject* obj	= NULL;
+
         if (ReadObjectLTX(ini, buff, obj))
         {
             LPCSTR obj_name = obj->GetName();
@@ -1051,6 +1052,7 @@ bool EScene::Load(LPCSTR map_name, bool bUndo)
             int cnt 	= F->r_u32();
             if (cnt)
             {
+
                 for (int i=0; i<cnt; ++i)
                 {
                     F->r_stringZ		(buf);

@@ -362,113 +362,105 @@ void TUI::PrepareRedraw()
 extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
-	PrepareRedraw();
-  //  try{
+    {
+        OPTICK_EVENT("PrepareRedraw");
+        PrepareRedraw();
+    }
+      
+    if (u32(RTSize.x * EDevice.m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice.m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
+    {
+        GetRenderWidth() = RTSize.x * EDevice.m_ScreenQuality;
+        GetRenderHeight() = RTSize.y * EDevice.m_ScreenQuality;
+        RT.destroy();
+        ZB.destroy();
+        RT.create("rt_color", RTSize.x * EDevice.m_ScreenQuality, RTSize.y * EDevice.m_ScreenQuality, HW.Caps.fTarget);
+        ZB.create("rt_depth", RTSize.x * EDevice.m_ScreenQuality, RTSize.y * EDevice.m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+        m_Flags.set(flRedraw, TRUE);
+        EDevice.fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
+        EDevice.mProject.build_projection(deg2rad(EDevice.fFOV), EDevice.fASPECT, EDevice.m_Camera.m_Znear, EDevice.m_Camera.m_Zfar);
+        EDevice.m_fNearer = EDevice.mProject._43;
+        
     
-        if (u32(RTSize.x * EDevice.m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice.m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
-        {
-            GetRenderWidth() = RTSize.x * EDevice.m_ScreenQuality;
-            GetRenderHeight() = RTSize.y * EDevice.m_ScreenQuality;
-            RT.destroy();
-            ZB.destroy();
-            RT.create("rt_color", RTSize.x * EDevice.m_ScreenQuality, RTSize.y * EDevice.m_ScreenQuality, HW.Caps.fTarget);
-            ZB.create("rt_depth", RTSize.x * EDevice.m_ScreenQuality, RTSize.y * EDevice.m_ScreenQuality, D3DFORMAT::D3DFMT_D24X8);
+        RCache.set_xform_project(EDevice.mProject);
+        RCache.set_xform_world(Fidentity);
+    }
+
+    if (EDevice.Begin())
+    {
+        if (psDeviceFlags.is(rsRenderRealTime))
             m_Flags.set(flRedraw, TRUE);
-            EDevice.fASPECT = ((float)RTSize.y) / ((float)RTSize.x);
-            EDevice.mProject.build_projection(deg2rad(EDevice.fFOV), EDevice.fASPECT, EDevice.m_Camera.m_Znear, EDevice.m_Camera.m_Zfar);
-            EDevice.m_fNearer = EDevice.mProject._43;
-            
-
-            RCache.set_xform_project(EDevice.mProject);
-            RCache.set_xform_world(Fidentity);
-        }
-
-        if (EDevice.Begin())
+        if (m_Flags.is(flRedraw))
         {
-            if (psDeviceFlags.is(rsRenderRealTime))
-                m_Flags.set(flRedraw, TRUE);
-            if (m_Flags.is(flRedraw))
+             m_Flags.set(flRedraw, FALSE);
+            RCache.set_RT(RT->pRT);
+            RCache.set_ZB(ZB->pRT);
+            EDevice.Statistic->RenderDUMP_RT.Begin();
             {
-               
-                m_Flags.set(flRedraw, FALSE);
-                RCache.set_RT(RT->pRT);
-                RCache.set_ZB(ZB->pRT);
-                EDevice.Statistic->RenderDUMP_RT.Begin();
-                {
-                    CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, EPrefs ? EPrefs->scene_clear_color : 0x0, 1, 0));
+                CHK_DX(HW.pDevice->Clear(0, 0, D3DCLEAR_ZBUFFER | D3DCLEAR_TARGET, EPrefs ? EPrefs->scene_clear_color : 0x0, 1, 0));
+            }
+            EDevice.UpdateView();
+            EDevice.ResetMaterial();
+
+            Tools->RenderEnvironment();
+
+            //. temporary reset filter (      )
+            for (u32 k = 0; k < HW.Caps.raster.dwStages; k++) {
+                if (psDeviceFlags.is(rsFilterLinear)) {
+                    EDevice.SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+                    EDevice.SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+                    EDevice.SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
                 }
-                EDevice.UpdateView();
-                EDevice.ResetMaterial();
-
-                Tools->RenderEnvironment();
-
-                //. temporary reset filter (      )
-                for (u32 k = 0; k < HW.Caps.raster.dwStages; k++) {
-                    if (psDeviceFlags.is(rsFilterLinear)) {
-                        EDevice.SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
-                        EDevice.SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-                        EDevice.SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
-                    }
-                    else {
-                        EDevice.SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
-                        EDevice.SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
-                        EDevice.SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
-                    }
+                else {
+                    EDevice.SetSS(k, D3DSAMP_MAGFILTER, D3DTEXF_POINT);
+                    EDevice.SetSS(k, D3DSAMP_MINFILTER, D3DTEXF_POINT);
+                    EDevice.SetSS(k, D3DSAMP_MIPFILTER, D3DTEXF_POINT);
                 }
-
-                // draw grid
-                if (psDeviceFlags.is(rsDrawGrid)) {
-                    DU_impl.DrawGrid();
-                    DU_impl.DrawPivot(m_Pivot);
-                }
-
-                //try {
-                    Tools->Render();
-                //}
-                //catch (...) {
-                //    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type B]");
-                //}
-
-                // draw selection rect
-                if (m_SelectionRect) 	DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
-
-                // draw axis
-                DU_impl.DrawAxis(EDevice.m_Camera.GetTransform());
-
-
-                EDevice.Statistic->RenderDUMP_RT.End();
-                EDevice.Statistic->Show(EDevice.pSystemFont);
-                EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-                EDevice.pSystemFont->OnRender();
-                EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
-                EDevice.seqRender.Process(rp_Render);
-                RCache.set_RT(HW.pBaseRT);
-                RCache.set_ZB(HW.pBaseZB);
             }
 
-            //try {
-                EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
-                g_bRendering = FALSE;
-                Draw();
-                EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
-                // end draw
-                EDevice.End();
-            //}
-            //catch (...) {
-            //    ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type C]");
-            //}
+            // draw grid
+            if (psDeviceFlags.is(rsDrawGrid))
+            {
+                DU_impl.DrawGrid();
+                DU_impl.DrawPivot(m_Pivot);
+            }
 
+            OPTICK_EVENT("Tools Render");
+            Tools->Render();
+            OPTICK_POP();
+
+
+            // draw selection rect
+            if (m_SelectionRect) 	
+                DU_impl.DrawSelectionRect(m_SelStart, m_SelEnd);
+
+            // draw axis
+            DU_impl.DrawAxis(EDevice.m_Camera.GetTransform());
+
+            EDevice.Statistic->RenderDUMP_RT.End();
+            EDevice.Statistic->Show(EDevice.pSystemFont);
+            EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+            EDevice.pSystemFont->OnRender();
+            EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
+            EDevice.seqRender.Process(rp_Render);
+            RCache.set_RT(HW.pBaseRT);
+            RCache.set_ZB(HW.pBaseZB);
         }
-   // }
-   // catch(...)
-   // {
-   //     // Debug.Callstack();
-   // 	// ELog.DlgMsg(mtError, "Please notify AlexMX!!! Critical error has occured in render routine!!! [Type A]");
-   //     EDevice.End();
-   //   
-   // }
+        EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
+        g_bRendering = FALSE;
+        
+        OPTICK_EVENT("ui main (DRAW)");
+        Draw();
+        OPTICK_POP();
+        
+        EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
+        // end draw
+        EDevice.End();
+     }
 
-	OutInfo();
+    {
+        OPTICK_EVENT("OutInfo");
+        OutInfo();
+    }
 }
 //---------------------------------------------------------------------------
 void TUI::RealResize()
@@ -490,12 +482,20 @@ void TUI::RealRedrawScene()
 void TUI::OnFrame()
 {
 	EDevice.FrameMove	();
+    OPTICK_EVENT("Sound OnFrame");
     SndLib->OnFrame		();
+    OPTICK_POP();
+
+    OPTICK_EVENT("RealUpdateScene OnFrame");
     // tools on frame
     if (m_Flags.is(flUpdateScene)) 
         RealUpdateScene();
 
+    OPTICK_POP();
+
+    OPTICK_EVENT("Tools OnFrame");
     Tools->OnFrame		();
+    OPTICK_POP();
 
 	// show hint
     ShowObjectHint		();

@@ -81,7 +81,10 @@ void UIObjectList::ExportInsideBox()
 			ObjectList& lst = ot->GetObjects();
 			for (auto obj : lst)
 			{
-				if (!use_outside_box && box.contains(obj->GetPosition()) || use_outside_box && !box.contains(obj->GetPosition()))
+				Fbox newB;
+				obj->GetBox(newB);
+
+				if (!use_outside_box && box.contains(newB) || use_outside_box && !box.contains(newB))
 				{
 					string32 buffer = { 0 };
 					sprintf(buffer, "object_%d", i);
@@ -228,7 +231,10 @@ void UIObjectList::RemoveAllInsideBox()
 
 		for (auto obj : lst)
 		{
- 			if ( obj && box.contains(obj->GetPosition()) )
+			Fbox newB;
+			obj->GetBox(newB);
+
+ 			if ( obj && box.contains(newB) )
 			{
 				object_to_destroy.push_back(obj);
 			}
@@ -294,6 +300,37 @@ void UIObjectList::BboxSelectedObject()
 	Msg("Selected BBOX x[%f][%f]", box_all.x1, box_all.x2);
 	Msg("Selected BBOX z[%f][%f]", box_all.z1, box_all.z2);
 	Msg("Selected BBOX y[%f][%f]", box_all.y1, box_all.y2);
+
+
+}
+
+void UIObjectList::SelectObjectsInsideBox()
+{
+	Fbox box;
+	box.min = vec_box_min;
+	box.max = vec_box_max;
+
+ 
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+
+		ObjectList& lst = ot->GetObjects();
+
+		for (auto obj : lst)
+		{
+			Fbox newB;
+			obj->GetBox(newB);
+
+			if (obj && box.contains(newB))
+			{
+				obj->Select(true);
+			}
+		}
+	}
+	 
 
 
 }

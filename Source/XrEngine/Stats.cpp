@@ -172,8 +172,8 @@ void CStats::Show()
 	}
 
 	CGameFont& F = *pFont;
-	float		f_base_size	= 0.01f;
-				F.SetHeightI	(f_base_size);
+	extern float		f_base_size;
+	F.SetHeightI	(f_base_size);
 
 	if (vtune.enabled())	{
 		float sz		= pFont->GetHeight();

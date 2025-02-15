@@ -22,8 +22,7 @@ xrCriticalSection csDeflector;
 #include "xrHardwareLight.h"
 #endif
 extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-extern XRLC_LIGHT_API int StageMAXHits;
-
+ 
 ICF bool CalculateEnergy(Face* skip, base_Face* F, float& energy, float v, float u)
 {
 	if (0 == F || skip == F)
@@ -102,9 +101,6 @@ ICF void FilterIntersection(OpcodeArgs* context)	// Оптимизация поиска пересечен
 		context->HitsCount += 1;
 		context->valid = true;
 	}
-
-	if (context->HitsCount > StageMAXHits) // OPTIMIZING MAX_FROM form_parrams
- 		context->valid = false;
 };
 
 float rayTraceCheck(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip)
@@ -641,7 +637,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,MDL, *L,Pnew,Ldir, MAX_DISTANCE, skip,bUseFaceDisable, use_opcode);
+				float scale	=	L->energy*rayTrace(DB, MDL, *L,Pnew,Ldir, MAX_DISTANCE, skip,bUseFaceDisable, use_opcode);
 				C.sun		+=	scale;
 			} 
 			else 
@@ -680,7 +676,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 
 				// Trace Light
 				Fvector		PMoved;	
-				PMoved.mad(Pnew, Ldir, 0.1f); // Смещение HEMI 
+				PMoved.mad(Pnew, Ldir, 0.001f); // Смещение HEMI 
 
 				float scale = L->energy * rayTrace(DB, MDL, *L, PMoved, Ldir, 1000.f, skip, bUseFaceDisable, use_opcode);
 				C.hemi += scale;

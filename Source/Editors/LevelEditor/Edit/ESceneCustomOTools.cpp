@@ -28,16 +28,10 @@ ObjectList*	ESceneCustomOTool::GetSnapList()
 }
 //----------------------------------------------------
 
-BOOL ESceneCustomOTool::_NotifyObject(CCustomObject* object)
-{
-    m_Objects_to_process.push_back(object);
-    return true;
-}
-
 BOOL ESceneCustomOTool::_AppendObject(CCustomObject* object)
 {
-    m_Objects_to_process.push_back(object);
     m_Objects.push_back(object);
+    objects_hash[object->GetHash()] = object;
     object->FParentTools = this;
     return TRUE;
 }
@@ -46,10 +40,8 @@ BOOL ESceneCustomOTool::_AppendObject(CCustomObject* object)
 BOOL ESceneCustomOTool::_RemoveObject(CCustomObject* object)
 {
     object->OnSceneRemove();
+    objects_hash[object->GetHash()] = nullptr;
 	m_Objects.remove(object);
-
-    
-    // m_Objects_to_process.remove(object);
     return FALSE;
 }
 //----------------------------------------------------
@@ -63,6 +55,10 @@ void ESceneCustomOTool::Clear(bool bInternal)
     	xr_delete(*it);
     }
     m_Objects.clear();
+    
+    for (auto O : objects_hash)
+        O.second = 0;
+    objects_hash.clear();
 }
 
 BOOL  ESceneCustomOTool::AllowMouseStart()
@@ -79,8 +75,6 @@ BOOL  ESceneCustomOTool::AllowMouseStart()
 
 void ESceneCustomOTool::OnFrame()
 {
-    UpdateObjectsHash();
-
 	ObjectList remove_objects;
 	for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)
     {
@@ -299,46 +293,44 @@ int ESceneCustomOTool::GetQueryObjects(ObjectList& lst, int iSel, int iVis, int 
     return count;
 }
 
-//concurrency::task_group mt_task_updates;
-//#include <PPL.h>
-
-std::hash<char*> hasher;
-
-u32 ESceneCustomOTool::UpdateObjectsHash()
-{
-    if (m_Objects_to_process.size() == 0)
-        return 0;
-
-    int Updated = 0;
-     
-    xrCriticalSection csUpdate;
-
-    std::for_each(std::execution::par, m_Objects_to_process.begin(), m_Objects_to_process.end(), [&](CCustomObject* O)
-    {
-        if (O && O->hash_name == 0)
-        {
-            size_t hash = hasher( (char*) O->GetName());
-            O->SetHash(hash);
-            Updated++;
-            objects_by_name[O->hash_name] = O;
-        }  
-    });
-
-    m_Objects_to_process.clear();
-
-    return Updated;
-}
 
 CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* pass)
 {
-    size_t hash = hasher( (char*) name );
-     
-    if (nullptr != objects_by_name[hash])
-        return objects_by_name[hash];
+    std::hash<char*> hasher;
+    size_t hash = hasher((char*)name);
+
+    if (objects_hash[hash] != nullptr && objects_hash[hash] != pass)
+        return objects_hash[hash];
+    
+    if (objects_hash.size() != GetObjects().size())
+    {
+        Msg("Strange Hash Size(%u) != objets(%u) | Tool[%u]", objects_hash.size(), GetObjects().size(), Scene->GetOToolClassID(this) );
+    }
+
+    auto IT = std::find_if(std::execution::par, m_Objects.begin(), m_Objects.end(), [&](CCustomObject* object)
+    {        
+        LPCSTR _name = object->GetName();
+        if (!_name || _name == "" || _name == " ")
+        {
+            object->SetName(Scene->GetOTool(object->FClassID)->ClassName());
+            _name = object->GetName();
+        }
+       
+        if (strlen(name) != strlen(_name))
+            return false;
+
+        if ((pass != object) && (0 == strcmp(_name, name)))
+            return true;
+        else
+            return false;
+    });
+    
+    if (IT != m_Objects.end())
+        return *IT;
   
     return nullptr;
 }
-
+ 
 void setEditable(PropItemVec& items, u32 start_idx, bool bEditableTool, bool bObjectInGroup, bool bObjectInGroupUnique)
 {
 	PropItemIt it 	= items.begin()+start_idx;
@@ -359,10 +351,12 @@ void setEditable(PropItemVec& items, u32 start_idx, bool bEditableTool, bool bOb
 
 void ESceneCustomOTool::FillProp(LPCSTR pref, PropItemVec& items)
 {
+    int Size = 0;
     for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)  
     {
-        if ((*it)->Selected())
+        if ((*it)->Selected() && Size <= 1)
         {
+            Size++;
         	
             u32 cnt = items.size();
             (*it)->FillProp	(PrepareKey(pref,"Items").c_str(), items);

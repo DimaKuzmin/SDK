@@ -175,7 +175,7 @@ int EScene::RaySelect(int flag, ObjClassID classfilter)
 }
 //------------------------------------------------------------------------------
 
-int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* lst, int TH)
+int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* lst)
 {
 	if (lst)
     {
@@ -183,7 +183,7 @@ int EScene::BoxPickObjects(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* l
         {
             CSceneObject* _S = dynamic_cast<CSceneObject*>(*_F); 
             if (_S) 
-                _S->BoxPick(box,pinf, TH);
+                _S->BoxPick(box,pinf);
         }
     }
     return pinf.size();

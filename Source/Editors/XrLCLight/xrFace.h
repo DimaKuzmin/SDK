@@ -1,8 +1,5 @@
 #pragma once
-
-
 #include "../Public/shader_xrlc.h"
-//#include "r_light.h"
 
 #include "tcf.h"
 #include "base_face.h"
@@ -43,10 +40,8 @@ struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
 
-	//Vertex*					v[3];			// vertices
-	Fvector					N;				// face normal
-
-	svector<_TCF,2>			tc;				// TC
+ 	Fvector					N;				// face normal
+ 	svector<_TCF,2>			tc;				// TC
 
 	void*					pDeflector;		// does the face has LM-UV map?
 	CLightmap*				lmap_layer;
@@ -63,10 +58,6 @@ public:
 	virtual ~DataFace(){};
 };
 
-
-//struct Vertex;
-//struct DataVertex;
-//struct Face;
 class Material;
 class Edge;
 
@@ -75,12 +66,7 @@ namespace detail
 {
 	typedef xr_vector<Vertex>::iterator	dummy_compiler_treatment;
 } // namespace detail
-
-
-
-
-
-
+ 
 #include		"xrUVpoint.h"
 #include		"xrFaceInline.h"
 
@@ -88,9 +74,7 @@ namespace detail
 extern XRLC_LIGHT_API bool						g_bUnregister;
 
 #pragma pack(pop)
-
-extern inline XRLC_LIGHT_API xr_vector<Face*> getAFFECTED();
-
+ 
 extern "C" XRLC_LIGHT_API	void start_unwarp_recursion	();
 
 extern "C" XRLC_LIGHT_API	void destroy_vertex			( Vertex* &v, bool unregister );

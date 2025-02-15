@@ -142,14 +142,16 @@ void Phase			(const char *phase_name)
 		xr_sprintf(tbuf, "%s : %s", make_time(phase_total_time / 1000).c_str(), phase);
 		phases_timers.push_back(tbuf);
 
+
 		if (LoggerCL != nullptr)
 		{
 			LoggerCL->updatePhrase(tbuf);
 		}
-
+		 
 		SendMessage(hwPhaseTime, LB_DELETESTRING, SendMessage(hwPhaseTime, LB_GETCOUNT, 0, 0) - 1, 0);
 		SendMessage(hwPhaseTime, LB_ADDSTRING, 0, (LPARAM)tbuf);
 	}
+
 
 	// Start _new phase
 	phase_start_time	= timeGetTime();
@@ -160,8 +162,15 @@ void Phase			(const char *phase_name)
 	SendMessage			( hwPhaseTime,	LB_SETTOPINDEX, SendMessage(hwPhaseTime,LB_GETCOUNT,0,0)-1,0);
 	Progress			(0);
 
+
+	// if (LoggerCL != nullptr)
+	// {
+	// 	LoggerCL->updatePhrase(tbuf);
+	// }
+	// 
+
 	// Release focus
-	Msg("\n* New phase started: %s",phase_name);
+	clMsg("* New phase started: %s",phase_name);
 	csLog.Leave			();
 }
 

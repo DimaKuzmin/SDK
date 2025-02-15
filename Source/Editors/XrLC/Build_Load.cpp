@@ -166,8 +166,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	FS.update_path			(sh_name,"$game_data$","shaders_xrlc.xr");
 	shaders().Load			(sh_name);
 
+	size_t used, free, res;
+	vminfo(&free, &res, &used);
+
+	size_t prev = used;
+
 	Status("Start Loading Project");
-	log_vminfo();
+
+	clMsg("mem start : %u mb", prev / 1024 / 1024);
 
 
 	//*******
@@ -189,8 +195,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		F->close			();
 	}
 
-	log_vminfo();
-
+	vminfo(&free, &res, &used);
+	clMsg("Memory Vertex Loading: %u mb, totalused: %u mb", (used-prev) / 1024 / 1024, used / 1024 / 1024);
+	prev = used;
 
 	//*******
 	Status					("Faces...");
@@ -199,21 +206,21 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		R_ASSERT				(F);
 		u32 f_count			=	F->length()/sizeof(b_face);
 		lc_global_data()->g_faces().reserve			(f_count);
+	
+		
 		for (i=0; i<f_count; i++)
 		{
 			try 
 			{
 				Face*	_F			= lc_global_data()->create_face();
+				
 				b_face	B;
 				F->r				(&B,sizeof(B));
 				R_ASSERT			(B.dwMaterialGame<65536);
 
 				_F->dwMaterial		= u16(B.dwMaterial);
-				_F->dwMaterialGame	= B.dwMaterialGame;
+				_F->dwMaterialGame	= B.dwMaterialGame; 
 
-				
-				
-							
 				// Vertices and adjacement info
 				for (u32 it=0; it<3; ++it)
 				{
@@ -227,6 +234,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				uv1.set				(B.t[0].x,B.t[0].y);
 				uv2.set				(B.t[1].x,B.t[1].y);
 				uv3.set				(B.t[2].x,B.t[2].y);
+
+				// if (i < 100)
+				// {
+				// 	Msg("[%d] UV1: [%f, %f]", i, uv1.x, uv1.y);
+				// 	Msg("[%d] UV2: [%f, %f]", i, uv2.x, uv2.y);
+				// 	Msg("[%d] UV3: [%f, %f]", i, uv3.x, uv3.y);
+				// }
+
 				_F->AddChannel		( uv1, uv2, uv3 );
 			} 
 			catch (...)
@@ -236,6 +251,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			}
 		}
 		Progress			(p_total+=p_cost);
+
+		vminfo(&free, &res, &used);
+		clMsg("Memory Faces Loading: %u mb, total used: %u mb", (used-prev) / 1024 / 1024, used / 1024 / 1024);
+		prev = used;
+
+
 		clMsg				("* %16s: %d","faces",lc_global_data()->g_faces().size());
 		F->close			();
 
@@ -266,7 +287,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}
 	}
 
-	log_vminfo();
+
+	vminfo(&free, &res, &used);
+	clMsg("Memory pre Models Loading: %u mb, total used: %u mb", (used - prev) / 1024 / 1024, used / 1024 / 1024);
+	prev = used;
 
 
 	//*******
@@ -292,7 +316,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		F->close				();
 	}
 
-	log_vminfo();
+ 
+	vminfo(&free, &res, &used);
+	clMsg("Memory Models Loading: %u mb", (used - prev) / 1024 / 1024);
+	prev = used;
 
 
 	//*******
@@ -303,6 +330,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	transfer("glows",		glows,				fs,		EB_Glows);
 	transfer("portals",		portals,			fs,		EB_Portals);
 	transfer("LODs",		lods,				fs,		EB_LOD_models);
+
 
 	// Load lights
 	Status	("Loading lights...");
@@ -404,7 +432,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		transfer("d-lights",	L_dynamic,			fs,		EB_Light_dynamic);
 	}
 
-	log_vminfo();
+	vminfo(&free, &res, &used);
+	clMsg("Memory Lights Loading: %u mb", (used - prev) / 1024 / 1024);
+	prev = used;
 
 
  	string_path path;
@@ -413,6 +443,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	FS.update_path(path, "$logs$", name);
  
 	IWriter* w = FS.w_open(path);
+
+	vminfo(&free, &res, &used);
+	clMsg("Memory (PRE) Textures Loading: %u mb", (used - prev) / 1024 / 1024);
+	prev = used;
 	
 	// process textures
 	Status			("Processing textures...");
@@ -489,8 +523,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						//  ( build_args->use_DXT1 && BT.THM.fmt == STextureParams::tfDXT1) 
-
 						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
 						{
 							string_path name;
@@ -519,7 +551,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							}
 							else
 							{
-								// clMsg("- can't load %s", N);
+								clMsg("* ERROR TEXTURE: %s, IS USED IN LIGHT, BUT CAN'T LOAD !", N);
 								
 								string128 tmp;
 								sprintf(tmp, "Texture Ignoring: %s, fmt: %s", N, GetFormat(BT.THM.fmt));
@@ -557,6 +589,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			textures().push_back	(BT);
 		}
 	}
+
+	vminfo(&free, &res, &used);
+	clMsg("Memory (POST) Textures Loading: %u mb, total: %u mb", (used - prev) / 1024 / 1024, used / 1024 / 1024);
+	prev = used;
 
 	/*-
 	for (int i = 0; i < materials().size(); i++)

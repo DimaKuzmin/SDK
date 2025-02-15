@@ -87,6 +87,8 @@ BOOL SceneBuilder::Compile(bool b_selected_only)
             // fill simple hemi
             simple_hemi.clear	();
 
+            Msg("Start Building HemiSphare !!");
+
             CTimer time__;
             time__.Start();
 	        xrHemisphereBuild	(1,2.f,simple_hemi_callback,&simple_hemi);

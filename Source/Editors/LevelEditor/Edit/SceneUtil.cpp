@@ -13,24 +13,32 @@
 //----------------------------------------------------
 CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 {
-	if(!name)
-    return NULL;
-    
+    if (!name)
+        return NULL;
+
 	CCustomObject* object = 0;
+
     if (classfilter==OBJCLASS_DUMMY)
     {
         for (auto& tool : m_SceneTools)
         {
             ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
-            if (mt&&(0!=(object=mt->FindObjectByName(name))))
-            	return object;
+           
+            if (mt)
+            {
+               object = mt->FindObjectByName(name);
+            }
+           
         }
     }
     else
     {
         ESceneCustomOTool* mt = GetOTool(classfilter); VERIFY(mt);
-        if (mt&&(0!=(object=mt->FindObjectByName(name))))
-            return object;
+      
+        if (mt)
+        {
+             object = mt->FindObjectByName(name);
+        }
     }
 
     return object;
@@ -40,7 +48,8 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 
 CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
-    OPTICK_EVENT("FindObjectByName")     
+    OPTICK_EVENT("FindObjectByName")
+ 
     for (auto& tool : m_SceneTools)
     {   
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
@@ -57,20 +66,39 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object
 }
 
 bool EScene::FindDuplicateName()
-{
-// find duplicate name
-    
+{    
     for (auto& tool : m_SceneTools)
     {
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);
+     
         if (mt)
         {
+            xr_vector<CCustomObject*> objects;
+            xr_unordered_map <size_t, CCustomObject*> names;
             for (auto F : mt->GetObjects())
             {
-                if (mt->FindObjectByName( (F)->GetName(), F))
+                objects.push_back(F);
+                F->GenHash();
+              
+                if (names[F->GetHash()] != nullptr)
+                {
+                    Msg("Finded Dublicate Hash: %llu, NameObject: %s", F->GetHash(), F->GetName());
+                }
+                else 
+                    names[F->GetHash()] = F;
+
+            }
+
+            for (auto F : mt->GetObjects())
+            {
+                if (names[F->GetHash()] && F != names[F->GetHash()])
                 {
                     ELog.DlgMsg(mtError, "Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", F->GetName(), (mt->FClassID), F->RefName(), VPUSH(F->GetPosition()));
                     return true;
+                }
+                else
+                {
+                   // Msg("Check Object No finded Dublicate: %s", names[F->GetHash()]->FName.c_str());
                 }
             }
         }

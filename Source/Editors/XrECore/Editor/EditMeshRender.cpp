@@ -174,7 +174,7 @@ void CEditableMesh::FillRenderBuffer(IntVec& face_lst, int start_face, int num_f
 //----------------------------------------------------
 void CEditableMesh::Render(const Fmatrix& parent, CSurface* S)
 {
-    //OPTICK_EVENT("CEditorMesh::Render")
+    OPTICK_EVENT("CEditorMesh::Render")
 
     if (0==m_RenderBuffers) 
         GenerateRenderBuffers();

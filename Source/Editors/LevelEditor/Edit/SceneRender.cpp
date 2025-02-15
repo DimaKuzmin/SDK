@@ -13,49 +13,50 @@ doug_lea_allocator	g_render_lua_allocator(s_fake_array, s_arena_size, "render:lu
 doug_lea_allocator	g_render_lua_allocator(0, 0, "render:lua");
 #endif // #ifdef USE_ARENA_ALLOCATOR
    
-void  object_Normal_0(EScene::mapObject_Node *N)	 
+void  object_Normal_0(EScene::RenderData *N)	 
 {
-    if (N->val!=nullptr)
-    (N->val)->RenderRoot(0, false);
+    if (N->O!=nullptr)
+        (N->O)->RenderRoot(0, false);
 }
-void  object_Normal_1(EScene::mapObject_Node *N)	
+
+void  object_Normal_1(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(1, false);
+    if (N->O != nullptr)
+       (N->O)->RenderRoot(1, false);
 }
-void  object_Normal_2(EScene::mapObject_Node *N)	 
+void  object_Normal_2(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(2, false);
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(2, false);
 }
-void  object_Normal_3(EScene::mapObject_Node *N)	 
+void  object_Normal_3(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(3, false);
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(3, false);
 }
 
 //------------------------------------------------------------------------------
-void  object_StrictB2F_0(EScene::mapObject_Node *N)
+void  object_StrictB2F_0(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(0, true);
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(0, true);
 }
-void  object_StrictB2F_1(EScene::mapObject_Node *N)
+void  object_StrictB2F_1(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(1, true);
-}
-
-void  object_StrictB2F_2(EScene::mapObject_Node *N)
-{
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(2, true);
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(1, true);
 }
 
-void  object_StrictB2F_3(EScene::mapObject_Node *N)
+void  object_StrictB2F_2(EScene::RenderData *N)
 {
-    if (N->val != nullptr)
-    (N->val)->RenderRoot(3, true);
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(2, true);
+}
+
+void  object_StrictB2F_3(EScene::RenderData *N)
+{
+    if (N->O != nullptr)
+        (N->O)->RenderRoot(3, true);
 }
  
 //------------------------------------------------------------------------------
@@ -93,6 +94,7 @@ DEFINE_MSET_PRED(ESceneToolBase*,SceneMToolsSet,SceneMToolsIt,tools_rp_pred);
 DEFINE_MSET_PRED(ESceneCustomOTool*,SceneOToolsSet,SceneOToolsIt,tools_rp_pred);
 
 #include "ppl.h"
+#include <execution>
 
 void RenderScene(SceneToolsMap& scene, int P, bool B)
 {
@@ -104,73 +106,121 @@ void RenderScene(SceneToolsMap& scene, int P, bool B)
     };
 }
 
-#include <ppl.h>
-xrCriticalSection csEScene;
 concurrency::task_group tasks;
 
 int KeyCalc = 0;
 int KeyRender = 1;
-
-
+ 
+ 
 void EScene::UpdateRenderList(void* List, bool useMT)
 {
+    /*
     // extract and sort object tools
     tasks.wait();
 
-    auto fun = [&]()
+    int idx = KeyCalc;
+    KeyRender = idx;
+    KeyCalc = (idx + 1) % 2;
+ 
+    auto task = [&]()
     {
         SceneOToolsSet object_tools;
- 
+
         OPTICK_FRAME("RenderList Update Thread");
         OPTICK_EVENT("Render Update Render List")
 
-        mapRenderObjects[KeyCalc].clear();
+        auto& map = mapRenderObjects[KeyCalc];
+        map.clear(); // 
 
-        object_tools.clear();
-
-        SceneToolsMapPairIt t_it = m_SceneTools.begin();
-        SceneToolsMapPairIt t_end = m_SceneTools.end();
-        for (; t_it != t_end; t_it++)
-        if (t_it->second)
+        for (auto& T : m_SceneTools)
         {
-            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(t_it->second);
-            if (mt)
-                object_tools.insert(mt);
+            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(T.second);
+            if (mt == nullptr)  continue;
+        
+            auto& Objects = mt->GetObjects();
+
+            // if (EDevice.RenderTasks > 1)
+            // {
+            //     std::for_each(std::execution::par, Objects.begin(), Objects.end(), [&](CCustomObject* O)
+            //     {
+            //         if (O && O->Visible() && O->IsRender())
+            //         {
+            //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
+            //             O->useInRender = true;
+            //             O->distSQ = distSQ;
+            // 
+            // 
+            //         }
+            //         else
+            //         {
+            //             O->useInRender = false;
+            //         }
+            //     });
+            // }
+            // else
+            // {
+            //     for (auto O : Objects)
+            //     {
+            //         if (O && O->Visible() && O->IsRender())
+            //         {
+            //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
+            //             O->useInRender = true;
+            //             O->distSQ = distSQ;
+            //         }
+            //         else
+            //         {
+            //             O->useInRender = false;
+            //         }
+            //     };
+            // }
+             
+            // OPTICK_EVENT("Render Set List")
+            // for (auto O : Objects)
+            // {
+            //     if (O && O->useInRender)
+            //     {
+            //         RenderData data;
+            //         data.distSQ = O->distSQ;
+            //         data.O = O;
+            //         map.push_back(data);
+            //     }
+            // }
         }
 
-        for (auto tool : object_tools)
-        {
-            ObjectList& list_objects = tool->GetObjects();
+        
 
-            for (auto O : list_objects)
-            {
-                if (!O)
-                    return;
-
-                if (O->Visible() && O->IsRender())
-                {
-                    float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
-                    mapRenderObjects[KeyCalc].insertInAnyWay(distSQ, O);
-                }
-            }
-
-        }
+        // std::for_each(std::execution::par, threads_working.begin(), threads_working.end(), [&] (std::vector<CCustomObject*>& objects)
+        // {
+        //     std::vector<RenderData> datavec;
+        //     for (auto O : objects)
+        //     {
+        //         if (O && O->Visible() && O->IsRender())
+        //         {
+        //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
+        // 
+        //             RenderData data;
+        //             data.distSQ = distSQ;
+        //             data.O = O;
+        //             datavec.push_back(data);
+        //         }
+        //     }
+        // 
+        //     csRenderUpdate.Enter();
+        //     map.resize(datavec.size());
+        //     std::copy(datavec.begin(), datavec.end(), map.data());
+        //     csRenderUpdate.Leave();
+        // });
     };
 
-    if (useMT)
-    {
-        tasks.run(fun);
-    }
-    else
-    {
-        fun();
-    }
+    tasks.run(task);
+    */
 };
+
 
 void EScene::RenderClearObjects()
 {
     mapRenderObjects[0].clear();
-    mapRenderObjects[1].clear();
+    // mapRenderObjects[1].clear();
 }
  
  
@@ -178,17 +228,56 @@ void EScene::Render(const Fmatrix& camera)
 {
     if (!valid())
           return;
-     
-    int idx = KeyCalc;
-    KeyRender = idx;
-    KeyCalc   = (idx + 1) % 2;
+
+    auto& map = mapRenderObjects[0]; // KeyRender
     
-    if (EDevice.dwFrame % EDevice.RenderReloadObjectsTime == 0) 
+
+    if (EDevice.dwFrame % EDevice.RenderReloadObjectsTime == 0)
     {
-        UpdateRenderList(0, true);
-    }
+        map.clear();
+
+        OPTICK_EVENT("Render Set List")
+        // UpdateRenderList(0, true);
+
+        xr_vector<CCustomObject*> objects;
+    
+        for (auto& T : Scene->m_SceneTools)
+        {
+            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(T.second);
+            if (mt == nullptr)
+                continue;
      
-    auto& map = mapRenderObjects[KeyRender];
+            auto& Objects = mt->GetObjects();
+
+            std::for_each(std::execution::par, Objects.begin(), Objects.end(), [&](CCustomObject* O)
+            {
+                if (O && O->Visible() && O->IsRender())
+                {
+                    float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
+                    O->useInRender = true;
+                    O->distSQ = distSQ;
+                }
+                else
+                {
+                    if (O != nullptr)
+                        O->useInRender = false;
+                }
+            });
+
+            for (auto O : Objects)
+            {
+                if (O && O->useInRender)
+                {
+                    RenderData data;
+                    data.distSQ = O->distSQ;
+                    data.O = O;
+                    map.push_back(data);
+                }
+            }
+             
+        }       
+    }
+
     if (map.size() == 0)
         return;
 
@@ -263,5 +352,3 @@ void EScene::Render(const Fmatrix& camera)
 
 }
 //------------------------------------------------------------------------------
-
- 

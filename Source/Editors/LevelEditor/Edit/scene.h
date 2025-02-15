@@ -117,10 +117,20 @@ class EScene
 public:
 	typedef	FixedMAP<float,CCustomObject*, render_allocator>	mapObject_D;
 	typedef mapObject_D::TNode	 	    	mapObject_Node;
-	mapObject_D						    	mapRenderObjects[2];
+//	mapObject_D						    	mapRenderObjects[2];
+
+	struct RenderData
+ 	{
+		float distSQ;
+		CCustomObject* O;
+	};
+
+	xr_vector<RenderData> mapRenderObjects[2];
 
 public:
 	st_LevelOptions	m_LevelOp;
+	SceneToolsMap   m_SceneTools;
+
 protected:
 	bool m_Valid;
 	int m_Locked;
@@ -132,7 +142,7 @@ protected:
     // 
 	int m_LastAvailObject;
 
-    SceneToolsMap   m_SceneTools;
+
 
 	xr_deque<UndoItem> m_UndoStack;
 	xr_deque<UndoItem> m_RedoStack;
@@ -148,7 +158,10 @@ protected:
 	void			CreateSceneTools			();
 	void			DestroySceneTools			();
 
-    void 			FindObjectByNameCB			(LPCSTR new_name, bool& res){res=!!FindObjectByName(new_name,(CCustomObject*)0);}
+    void 			FindObjectByNameCB			(LPCSTR new_name, bool& res)
+	{
+		res=!!FindObjectByName( new_name, (CCustomObject*)0);
+	}
 
 	void  	OnBuildControlClick			(ButtonValue* sender, bool& bModif, bool& bSafe);
 	void  	OnRTFlagsChange				(PropValue* sender);
@@ -208,6 +221,7 @@ public:
     int				MultiRenameObjects	();
 
 	IC bool 		valid				()           	{ return m_Valid; }
+	IC void 		SetValid(bool valid) { m_Valid = valid; }
 
 	IC bool 		locked				()          	{ return m_Locked!=0; }
 	IC void 		lock				()            	{ m_Locked++; }
@@ -218,6 +232,15 @@ public:
 	IC u32					ToolCount	()					{ return m_SceneTools.size(); }
 
 	IC ESceneCustomOTool* 	GetOTool	(ObjClassID cat)	{ return dynamic_cast<ESceneCustomOTool*>(GetTool(cat)); }
+	IC ObjClassID	GetOToolClassID	(ESceneCustomOTool* tool)
+	{
+		for (auto mt : m_SceneTools)
+		{
+			if (mt.second == tool)
+				return mt.first;
+		}
+	}
+
 
 	IC SceneToolsMapPairIt 	FirstTool	()					{ return m_SceneTools.begin(); }
 	IC SceneToolsMapPairIt 	LastTool	()					{ return m_SceneTools.end(); }
@@ -258,7 +281,8 @@ public:
 	virtual ObjectList* 	GetSnapList			(bool bIgnoreUse);
 
 	virtual CCustomObject*	RayPickObject 		(float dist, const Fvector& start, const Fvector& dir, ObjClassID classfilter, SRayPickInfo* pinf, ObjectList* from_list);
-	int 			BoxPickObjects		(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* from_list, int TH = 0);
+	
+	int 			BoxPickObjects		(const Fbox& box, SBoxPickInfoVec& pinf, ObjectList* from_list);
     int				RayQuery			(SPickQuery& RQ, const Fvector& start, const Fvector& dir, float dist, u32 flags, ObjectList* snap_list);
     int 			BoxQuery			(SPickQuery& RQ, const Fbox& bb, u32 flags, ObjectList* snap_list);
     int				RayQuery			(SPickQuery& RQ, const Fvector& start, const Fvector& dir, float dist, u32 flags, CDB::MODEL* model);
@@ -283,8 +307,10 @@ public:
 	int 			SpherePick			(const Fvector& center, float radius, ObjClassID classfilter, ObjectList& ol);
 
 	virtual void			GenObjectName		(ObjClassID cls_id, char *buffer, const char* prefix=NULL);
+	
 	virtual CCustomObject* 	FindObjectByName	(LPCSTR name, ObjClassID classfilter);
     virtual CCustomObject* 	FindObjectByName	(LPCSTR name, CCustomObject* pass_object);
+
     bool 			FindDuplicateName   ();
 
 	void 			UndoClear			();

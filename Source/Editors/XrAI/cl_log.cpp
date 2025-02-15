@@ -93,7 +93,7 @@ void Progress		(const float F)
 }
 
 #include "xrAI.h"
-extern XRAI_API ILoggerAI* LoggerCL_xrAI;
+extern ILoggerAI* LoggerCL_xrAI;
 
 void Phase			(const char *phase_name)
 {

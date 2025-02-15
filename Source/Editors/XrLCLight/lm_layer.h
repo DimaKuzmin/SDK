@@ -2,6 +2,7 @@
 
 #include "base_color.h"
 
+#define BORDER 4
 
 struct XRLC_LIGHT_API LightpointRequest
 {
@@ -25,7 +26,7 @@ struct XRLC_LIGHT_API LightpointRequest
 	}
 };
 
-#define BORDER 1
+
 
 class INetReader;
 struct XRLC_LIGHT_API  lm_layer
@@ -37,7 +38,7 @@ struct XRLC_LIGHT_API  lm_layer
 private:
 //	LMODE					mode;	
 public:	  
-	xr_vector<LightpointRequest> SurfaceLightRequests;
+	// xr_vector<LightpointRequest> SurfaceLightRequests;
  
 	void					create			(u32 w, u32 h)
 	{
@@ -49,6 +50,14 @@ public:
 		marker.clear();		
 		marker.assign	(size,0);
 	}
+
+	size_t					memory_lmap()
+	{
+ 		size_t lm_surface = surface.capacity() * sizeof(base_color);
+		size_t lm_marker = marker.capacity() * sizeof(u8);
+	//	size_t lm_hwsurface = SurfaceLightRequests.size() * sizeof(LightpointRequest);
+		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
+	} 
 
 	u32 SizeArea()
 	{
