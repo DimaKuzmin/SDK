@@ -953,11 +953,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
     F.open_chunk			(0);
     F.w_u32					(m_Source->SMotionCount());
     F.close_chunk			();
-
-    
-    
-
-
+     
     int smot 				= 1;
 
     // use global transform
@@ -975,8 +971,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
             Msg("! %s has moveXform flag - but skeleton root has more than one child or has mesh! add special root bone please!", cur_motion->Name() );
         	return false;
         }
-//		if (motion->m_Flags.is(esmStopAtEnd)) Msg("%s - %d",motion->Name(),motion->m_Flags.is(esmStopAtEnd));
-
+ 
         F.open_chunk		(smot);
         F.w_stringZ			(cur_motion->Name());
         F.w_u32				(cur_motion->Length());
@@ -989,6 +984,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
         bm_item* items	 	= xr_alloc<bm_item>(b_lst.size());
         for (u32 itm_idx=0; itm_idx<b_lst.size(); itm_idx++) 
         	items[itm_idx].create(dwLen);
+       
         Fmatrix ro_anchor = Fidentity;
         for (int frame=cur_motion->FrameStart(); frame<=cur_motion->FrameEnd(); ++frame)
         {
@@ -1041,6 +1037,7 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
                 Kt.set				(mat.c);//B->_Offset());
             }
         }
+
         // free temp storage
         for (int itm_idx=0; itm_idx<b_lst.size(); ++itm_idx)
         {
@@ -1155,11 +1152,14 @@ bool CExportSkeleton::ExportMotionKeys(IWriter& F)
         xr_free						(items);
 
         F.close_chunk				();
+
 #ifdef _EDITOR
     	pb->Inc						();
 #endif
     }
     F.close_chunk					();
+
+
 #ifdef _EDITOR
 	UI->ProgressEnd					(pb);
 #endif

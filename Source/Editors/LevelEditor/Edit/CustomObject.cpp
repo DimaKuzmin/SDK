@@ -327,20 +327,8 @@ void CCustomObject::OnSynchronize()
  
 void CCustomObject::SetName(LPCSTR N)
 {
-    shared_str PreName = FName;
-
-    string256 tmp;
-    strcpy(tmp, N);
-    strlwr(tmp);
-    FName = tmp;
- 
-    size_t pre = GetHash();
+    FName = strlwr((char*)N);
     GenHash();
-    if (pre != GetHash())
-    {
-        Msg("New Name: %s, Old Name: %s | hash: %llu | %llu",
-            PreName.c_str(), FName.c_str(), pre, GetHash());
-    }
 }
 
 LPCSTR CCustomObject::GetName() const

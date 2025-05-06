@@ -2,34 +2,42 @@
 #include "UI/UIObjectList.h"
 #include "SceneObject.h"
 
-void UIObjectList::CheckDuplicateNames()
-{
-	xr_vector<LPCSTR> names;
 
+void UIObjectList::FindALL_Duplicate()
+{
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
 
-	ObjectList& list = ot->GetObjects();
-
-	for (auto item : list)
+ 	for (auto F : ot->GetObjects())
 	{
-		if (Scene->FindObjectByName(item->GetName(), item) != 0)
+		if (ot->FindObjectByName(F->GetName(), F) != 0)
 		{
-			string256 name = { 0 };
-			xr_strcat(name, item->GetName());
-			xr_strcat(name, "_");
-			string32 tmp;
+			Msg("Finded Dublicate NameObject: %s", F->GetName());
+		}
+	}	 
+}
 
-			while (Scene->FindObjectByName(item->GetName(), item) != 0)
+
+void UIObjectList::CheckDuplicateNames()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
+ 	for (auto item : ot->GetObjects())
+	{
+ 		if (ot->FindObjectByName(item->GetName(), item) != 0)
+		{
+			u32 IDX = 0;
+ 			string64 test_name;
+			sprintf(test_name, "%s_%d", item->GetName(), IDX);
+ 			while (ot->FindObjectByName(test_name, 0) != 0)
 			{
-				xr_strcat(name, itoa(Random.randI(1, 20), tmp, 10));
-				Msg("Rename Obj %s", name);
-				item->SetName(name);
-			}
+				sprintf(test_name, "%s_%d", item->GetName(), IDX);
+				IDX++;
+ 			}
+
+			Msg("Rename Obj %s to %s", item->GetName(), test_name);
+
+			item->SetName(test_name);
 		}
 	}
-
-	names.clear_and_free();
-
 }
 
 bool sort_list(CCustomObject* obj1, CCustomObject* obj2)

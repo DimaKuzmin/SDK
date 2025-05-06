@@ -405,62 +405,6 @@ bool UIObjectList::CheckForError(CCustomObject* object)
 #include "scene.h"
 #include "ESceneCustomMTools.h"
 
-void UIObjectList::FindALL_Duplicate()
-{
-	Errored_objects.clear();
-						
-	Scene->SetValid(false);
-
-	xr_vector<CCustomObject*> objects;
-	xr_unordered_map <size_t, CCustomObject*> names;
-	std::hash<char*> genarator;
-		 
-	CTimer tms;
-	tms.Start();
-	for (auto MTT : Scene->m_SceneTools)
-	{
-		ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(MTT.second);
-		if (mt)
-		{
-			
-			for (auto F : mt->GetObjects())
-			{
-				objects.push_back(F);
-				size_t hash = genarator( (char*)F->GetName() );
-				if (names[hash] != nullptr)
-					Msg("Finded Dublicate Hash: %llu, NameObject: %s", F->GetHash(), F->GetName());
-				else
-					names[hash] = F;
-			}
-			
-		}
-	}
-	Msg("Generate Hashes: %u ticks, %u ms", tms.GetElapsed_ticks(), tms.GetElapsed_ms());
-
-	tms.Start();
-	for (auto F : objects)
-	{
-		if (names[F->GetHash()] && F != names[F->GetHash()])
-		{
-			Msg("Duplicate object name already exists: '%s', Class: %d, Ref: %s, POS[%f][%f][%f]", F->GetName(), F->FClassID, F->RefName(), VPUSH(F->GetPosition()));
-			Errored_objects.push_back(F->FName);
-		}
-		else
-		{
-			// Msg("Check Object No finded Dublicate: %s", names[F->GetHash()]->FName.c_str());
-		}
-	}
-
-	Msg("Generated Hashes validate: %u ticks, %u ms", tms.GetElapsed_ticks(), tms.GetElapsed_ms());
-
-	for (auto& N : names)
-	{
-		N.second = nullptr;
-	}
-
-	Scene->SetValid(true);
-}
-
  
 
 void UIObjectList::LoadErrorsGraphs()

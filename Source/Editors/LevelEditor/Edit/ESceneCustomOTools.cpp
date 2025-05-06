@@ -298,14 +298,14 @@ CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* p
 {
     std::hash<char*> hasher;
     size_t hash = hasher((char*)name);
-
+    
     if (objects_hash[hash] != nullptr && objects_hash[hash] != pass)
         return objects_hash[hash];
     
-    if (objects_hash.size() != GetObjects().size())
-    {
-        Msg("Strange Hash Size(%u) != objets(%u) | Tool[%u]", objects_hash.size(), GetObjects().size(), Scene->GetOToolClassID(this) );
-    }
+    //if (objects_hash.size() != GetObjects().size())
+    //{
+    //    Msg("Strange Hash Size(%u) != objets(%u) | Tool[%u]", objects_hash.size(), GetObjects().size(), Scene->GetOToolClassID(this) );
+    //}
 
     auto IT = std::find_if(std::execution::par, m_Objects.begin(), m_Objects.end(), [&](CCustomObject* object)
     {        
