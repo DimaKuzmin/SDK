@@ -502,6 +502,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>BearUI.hpp</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>..\..\imgui\</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
