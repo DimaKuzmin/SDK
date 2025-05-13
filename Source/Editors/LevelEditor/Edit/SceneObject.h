@@ -8,6 +8,8 @@
 
 class CSceneObject : public CCustomObject
 {
+	string_path		search_by_name;
+
 	shared_str		m_ReferenceName;
 
 	void 			ReferenceChange			(PropValue* sender);

@@ -314,6 +314,7 @@ void CSceneObject::OnClickClearSurface(ButtonValue*, bool&, bool&)
     Scene->UndoSave();
     ClearSurface();
 }
+ 
 void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
 {
     static shared_str occ_name = "materials\\occ";
@@ -322,30 +323,37 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
     V->OnChangeEvent.bind(this,&CSceneObject::ReferenceChange);
     if (IsDynamic())
 	    inherited::AnimationFillProp(pref,items);
-    SurfaceVec& s_lst = m_Surfaces;
+   
+    //if (search_by_name.size() == 0)
+    //     search_by_name._set("0");
+      
+    //Msg("Fill Prop");
+ 
     {
         shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
-        for (SurfaceIt s_it = s_lst.begin(); s_it != s_lst.end(); s_it++)
+        PHelper().CreateCText(items, PrepareKey(Pref1.c_str(), "Search Surface name"), search_by_name, sizeof(search_by_name) );
+ 
+        for (auto& Surface : m_Surfaces)
         {
-            shared_str Pref2 = PrepareKey(Pref1.c_str(), (*s_it)->_Name()).c_str();
+            shared_str Pref2 = PrepareKey(Pref1.c_str(), Surface->_Name()).c_str();
+            
+          //  Msg("Check: %s, %s", Surface->_Name(), search_by_name);
+
+            if ( Surface->m_GameMtlName != occ_name && strstr( Surface->_Name(), search_by_name )  )
             {
-                if ((*s_it)->m_GameMtlName != occ_name)
-                {
-                    PropValue* V;
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &(*s_it)->m_Texture, smTexture);		
-                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                PropValue* V;
+                V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &Surface->m_Texture, smTexture);
+                V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
                   
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &(*s_it)->m_ShaderName, smEShader);		
-                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
+                V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Shader"), &Surface->m_ShaderName, smEShader);		
+                V->OnChangeEvent.bind(this, &CSceneObject::OnChangeShader);
                   
-                    V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &(*s_it)->m_ShaderXRLCName, smCShader); 
-                    V->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
+                V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Compile"), &Surface->m_ShaderXRLCName, smCShader);
+                V->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface);
                   
-                    auto VA = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &(*s_it)->m_GameMtlName, smGameMaterial); 
-                    VA->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface); 
-                    VA->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
-                }
-               
+                auto VA = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Game Mtl"), &Surface->m_GameMtlName, smGameMaterial);
+                VA->OnChangeEvent.bind(this, &CSceneObject::OnChangeSurface); 
+                VA->OnAfterEditEvent.bind(this, &CSceneObject::AfterEditGameMtl);
             }
         }
         PHelper().CreateButton(items, PrepareKey(Pref1.c_str(),"Action"), "Clear", ButtonValue::flFirstOnly)->OnBtnClickEvent.bind(this, &CSceneObject::OnClickClearSurface);

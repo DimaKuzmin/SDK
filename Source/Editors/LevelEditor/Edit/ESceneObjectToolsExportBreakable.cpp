@@ -94,16 +94,30 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
 	// collect verts&&faces
     {
 	    SPBItem* pb = UI->ProgressStart(m_Objects.size(),"Prepare geometry...");
-        for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++){
+        int ID = 0;
+        for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++, ID++)
+        {
 	        pb->Inc();
+
+            if (ID % 128 == 0)
+            {
+                string128 tmp;
+                sprintf(tmp, "Processed: %u/%u", ID, m_Objects.size());
+                pb->Info(tmp);
+            }
+
             CSceneObject* obj 		= dynamic_cast<CSceneObject*>(*it); VERIFY(obj);
-            if (obj->IsStatic()){
+            if (obj->IsStatic())
+            {
                 CEditableObject *O 	= obj->GetReference();
                 const Fmatrix& T 	= obj->_Transform();
-                for(EditMeshIt M=O->FirstMesh();M!=O->LastMesh();M++)
-                    if (!build_mesh	(T,*M,extractor,SGameMtl::flBreakable,FALSE)){bResult=false;break;}
+                for (EditMeshIt M = O->FirstMesh(); M != O->LastMesh(); M++)
+                {
+                    if (!build_mesh(T, *M, extractor, SGameMtl::flBreakable, FALSE)) { bResult = false; break; }
+                }
             }
         }
+
 	    UI->ProgressEnd(pb);
     }
     if (!extractor->Process())		bResult = false;
