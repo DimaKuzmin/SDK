@@ -1,180 +1,10 @@
-
-
-#include "../xrCore/xrCore.h"
-#include "cl_log.h"
-#include <luabind/luabind.hpp>
 #include "imgui/impl/imgui_impl_sdl3.h"
 #include "imgui/impl/imgui_impl_sdlrenderer3.h"
 
 #include "CompilerIcons.h"
 #include "CompilersUI.h"
 #include "app_info.h"
-
-
-#include <timeapi.h>
-#include <commctrl.h>
-#include "../XrCore/rt_miniacc.h"
-
-#include "../Editors/XrLC/xrLC.h"
-
-#pragma comment(lib, "Luabind.lib")
-#pragma comment(lib, "lua51.lib")
-#pragma comment(lib, "winmm.lib") 
-
-#pragma comment(lib, "d3dx9.lib")
-#pragma comment(lib, "SDL3.lib")
-#pragma comment(lib, "FreeMagic.lib")
-#pragma comment(lib, "BearCore.lib")
-#pragma comment(lib, "BearGraphics.lib")
-
-// Xray
-#pragma comment(lib, "xrCore.lib")
-#pragma comment(lib, "xrCDB.lib")
-
-#pragma comment(lib, "xrLCLight.lib")
-#pragma comment(lib, "xrLC.lib")
-
-#pragma comment(lib, "xrDXT.lib")
-#pragma comment(lib, "xrQSlim.lib")
  
-#pragma warning(disable:4995)
-  
-static LPVOID __cdecl luabind_allocator(
-	luabind::memory_allocation_function_parameter const,
-	void const* const pointer,
-	size_t const size
-)
-{
-	if (!size)
-	{
-		LPVOID	non_const_pointer = const_cast<LPVOID>(pointer);
-		xr_free(non_const_pointer);
-		return	(0);
-	}
-
-	if (!pointer)
-	{
-		return	(Memory.mem_alloc(size, ""));
-	}
-
-	LPVOID non_const_pointer = const_cast<LPVOID>(pointer);
-	return (Memory.mem_realloc(non_const_pointer, size, ""));
-}
-
-void setup_luabind_allocator()
-{
-	luabind::allocator = &luabind_allocator;
-	luabind::allocator_parameter = 0;
-}
-
-
-
-// void StartupAI();
-// void StartupDO();
- 
-void Help(const char* h_str) {
-	MessageBoxA(0, h_str, "Command line options", MB_OK | MB_ICONINFORMATION);
-}
-
-CompilersMode gCompilerMode;
-  
-extern bool ShowMainUI;
-void Startup(LPSTR lpCmdLine)
-{
-	GetIterationData().push_back({ "xrLC" });
-	GetIterationData().push_back({ "xrAI" });
-	GetIterationData().push_back({ "xrDO" });
-
-	u32 dwStartupTime = timeGetTime();
-
-	SetActiveIteration(&(GetIterationData()[0]));
-	u32 dwTimeLC = 0;
-
-	if (gCompilerMode.LC)
-	{
-		GetActiveIteration()->status = InProgress;
-		dwTimeLC = timeGetTime();
-		Phase("xrLC Startup");
-		MainCompilerLC();
-
-		dwTimeLC = (timeGetTime() - dwTimeLC) / 1000;
-
-		GetActiveIteration()->status = Complited;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
-
-	SetActiveIteration(&(GetIterationData()[1]));
-	u32 dwTimeAI = 0;
-	if (gCompilerMode.AI)
-	{
-		GetActiveIteration()->status = InProgress;
-
-		dwTimeAI = timeGetTime();
-		Phase("xrAI Startup");
-
-		setup_luabind_allocator();
- 		// StartupAI();
-		// DestroyFactory();
-		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
-
-		GetActiveIteration()->status = Complited;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
-
-	SetActiveIteration(&(GetIterationData()[2]));
-	u32 dwTimeDO = 0;
-	if (gCompilerMode.DO) {
-		GetActiveIteration()->status = InProgress;
-		dwTimeDO = timeGetTime();
-		Phase("xrDO Startup");
-		// StartupDO();
-		dwTimeDO = (timeGetTime() - dwTimeDO) / 1000;
-
-		GetActiveIteration()->status = Complited;
-		GetActiveIteration()->elapsed_time = dwTimeLC;
-	}
-	else
-	{
-		GetActiveIteration()->status = Skip;
-	}
-
-	// Show statistic
-	string256 stats;
-	extern xr_string make_time(u32 sec);
-	u32 dwEndTime = timeGetTime();
-
-	xr_sprintf(
-		stats,
-		"Time elapsed: %s \r\n xrLC: %s\r\n xrAI: %s\r\n xrDO: %s",
-		make_time((dwEndTime - dwStartupTime) / 1000).c_str(),
-		make_time(dwTimeLC).c_str(),
-		make_time(dwTimeAI).c_str(),
-		make_time(dwTimeDO).c_str()
-	);
-
-	if (!gCompilerMode.Silent)
-	{
-		MessageBoxA(nullptr, stats, "Congratulation!", MB_OK | MB_ICONINFORMATION);
-	}
-
-	extern volatile BOOL bClose;
-
-	// Close log
-	bClose = TRUE;
-	// xrLogger::FlushLog();
-
-	ShowMainUI = true;
-	Sleep(200);
-}
-
 void SDL_Application()
 {
 	if (SDL_Init(SDL_INIT_TIMER) != 0)
@@ -187,7 +17,7 @@ void SDL_Application()
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-	g_AppInfo.Window = SDL_CreateWindow("IXR Level Builder", 1000, 560, window_flags);
+	g_AppInfo.Window = SDL_CreateWindow("X-Ray 1.8 Level Builder", 1000, 560, window_flags);
 	SDL_Renderer* renderer = SDL_CreateRenderer(g_AppInfo.Window, NULL, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
 	SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
@@ -343,30 +173,4 @@ void SDL_Application()
 	SDL_DestroyWindow(g_AppInfo.Window);
 	SDL_Quit();
 
-}
-
-void StartCompile()
-{
-	// Give a LOG-thread a chance to startup
-	//	InitCommonControls();
-	Sleep(150);
-	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
-}
-
-int APIENTRY WinMain
-(
-	HINSTANCE hInstance,
-	HINSTANCE hPrevInstance,
-	LPSTR     lpCmdLine,
-	int       nCmdShow
-)
-{
-	// Initialize debugging
-	Debug._initialize(false);
-	Core._initialize("IX-Ray Compilers");
-
-	InitializeUIData();
-	SDL_Application();
-
-	return 0;
 }

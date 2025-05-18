@@ -10,41 +10,5 @@ extern string_path_ai INI_FILE;
 #else
 #	define XRAI_API __declspec(dllimport)
 #endif
-
-#include <string>
-
-struct XRAI_API SpecialArgsAI
-{
-	std::string level_name; // OrLevels
-	std::string OutSpawn_Name;
-	std::string SpawnActorStart;
-
-	// SELECT COMPILER
-	bool UseSpawnCompiler;
-	int Threads = 0;
-
-	// AI MAP
-	bool Draft;
-	bool PureCovers;
-	bool VerifyAIMap;
-
-	//SPAWN
-	bool NoSeparator; 
-}; 
-
-
-void XRAI_API  StartupWorking_xrAI(SpecialArgsAI* args);
-
-class XRAI_API ILoggerAI
-{
-public:
-	virtual void  updateLog(LPCSTR str) = 0;
-	virtual void  updatePhrase(LPCSTR phrase) = 0;
-	virtual void  updateStatus(LPCSTR status) = 0;
-	virtual void  UpdateProgress(float value) = 0;
-
-	virtual void  UpdateText() = 0;
-	virtual void  UpdateTime(LPCSTR time) = 0;
-};
-
-extern XRAI_API ILoggerAI* LoggerCL_xrAI;
+  
+void StartupAI();

@@ -2,7 +2,7 @@
 #include "xrHemisphere.h"
 #include "build.h"
 
-#include "../xrLCLight/xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
 
@@ -204,7 +204,7 @@ void	CBuild::xrPhase_Radiosity	()
 	// perform all the work
 	u32	setup_old			= task->size	();
 	for (int t=0; t<GI_THREADS; t++)	{
-		gi.start(xr_new<CGI>(t), t);
+		gi.start( xr_new<CGI>(t) );
 		Sleep	(10);
 	}
 	gi.wait					();

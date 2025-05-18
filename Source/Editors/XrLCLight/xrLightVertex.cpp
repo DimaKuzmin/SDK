@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "xrLightVertex.h"
-#include "xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
+
 #include "xrface.h"
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
@@ -161,7 +162,8 @@ void LightVertex	()
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
-		for (u32 thID=0; thID < gCompilerMode.ThreadsNum; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
+		for (u32 thID=0; thID < gCompilerMode.ThreadsNum; thID++)	
+			Threads.start(xr_new<CVertexLightThread>(thID));
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 

@@ -5,6 +5,5 @@
   
 void	wait_mu_base		()
 {
-	run_mu_base();
-	wait_mu_base_thread		();
+	run_mu_base(); 
 }

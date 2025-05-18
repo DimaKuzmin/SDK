@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "b_build_texture.h"
  
-#include "StbImage\stb_image.h"
 /*
 struct b_texture
 {

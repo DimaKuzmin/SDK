@@ -2,10 +2,7 @@
 #include "cl_log.h"
 #include <timeapi.h>
 #include "imgui/imgui.h"
-
-
 #include "app_info.h"
- 
 
 //Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
@@ -312,6 +309,7 @@ void DrawDOConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.DO);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+		ImGui::InputInt("Samples", &gCompilerMode.DO_Samples);
 		ImGui::EndDisabled();
 		//ImGui::EndChild();
 	}

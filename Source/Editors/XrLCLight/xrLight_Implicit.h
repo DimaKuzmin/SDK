@@ -13,34 +13,4 @@ class ImplicitDeflector;
 #include "base_face.h"
  
 
-class ImplicitExecute
-{
-	// Data for this thread
-	int TH_ID;
-
-public:
- 
-	ImplicitExecute(int ID) : TH_ID(ID)
-	{
-	}
-
-	ImplicitExecute() 
-	{
-
-	}
-
-protected:
-	CDB::COLLIDER DB;
- 	
-	u32 Jcount;
-	Fvector2* Jitter;
-	Fvector2 dim;
-	Fvector2 half; 
-	Fvector2 JS;
-public:
-
- 	void		Execute			();
-};
-
-
 #endif

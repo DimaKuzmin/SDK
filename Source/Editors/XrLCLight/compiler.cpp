@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "../../xrEngine/xrlevel.h"
 
-#include "xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
 
 #include "global_calculation_data.h"
 #include "lightthread.h"
@@ -22,7 +22,7 @@ void	xrLightDO(u32 Samples)
 		CThread* T = xr_new<LightThread>( thID );
 		T->thMessages = FALSE;
 		T->thMonitor = FALSE;
-		Threads.start(T, thID);
+		Threads.start(T);
 	}
 	Threads.wait();
 

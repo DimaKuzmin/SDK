@@ -295,9 +295,6 @@
     <ClCompile Include="xrAI.cpp">
       <Filter>Compiler\Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="xrThread.cpp">
-      <Filter>Compiler\Kernel</Filter>
-    </ClCompile>
     <ClCompile Include="cl_collector.cpp">
       <Filter>Compiler\Kernel\Generic\CDB</Filter>
     </ClCompile>
@@ -454,9 +451,6 @@
       <Filter>Compiler\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="xrShaderTypes.h">
-      <Filter>Compiler\Kernel</Filter>
-    </ClInclude>
-    <ClInclude Include="xrThread.h">
       <Filter>Compiler\Kernel</Filter>
     </ClInclude>
     <ClInclude Include="resource.h">

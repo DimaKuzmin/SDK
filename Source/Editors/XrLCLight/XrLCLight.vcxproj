@@ -697,7 +697,6 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_v10|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_v10|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="xrThread.h" />
     <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>
   <ItemGroup>
@@ -797,7 +796,6 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="xrMU_Model_Load.cpp" />
     <ClCompile Include="xrMU_Model_Reference.cpp" />
     <ClCompile Include="xrMU_Model_Reference_Calc_Lighting.cpp" />
-    <ClCompile Include="xrThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

@@ -10,39 +10,17 @@
 #include "game_spawn_constructor.h"
 
 #include "xrCrossTable.h"
-//#include "path_test.h"
 #include "game_graph_builder.h"
 #include <mmsystem.h>
 #include "spawn_patcher.h"
 
 
 extern LPCSTR LEVEL_GRAPH_NAME;
-
 extern void	xrCompiler			(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name);
-extern void logThread			(void *dummy);
+ 
 extern volatile BOOL bClose;
-extern void test_smooth_path	(LPCSTR name);
-extern void test_hierarchy		(LPCSTR name);
-extern void	xrConvertMaps		();
-extern void	test_goap			();
-extern void	smart_cover			(LPCSTR name);
 extern void	verify_level_graph	(LPCSTR name, bool verbose);
-//extern void connectivity_test	(LPCSTR);
-extern void compare_graphs		(LPCSTR level_name);
-extern void test_levels			();
-
-static const char* h_str = 
-	"The following keys are supported / required:\n"
-	"-? or -h   == this help\n"
-	"-f<NAME>   == compile level in gamedata/levels/<NAME>/\n"
-	"-o         == modify build options\n"
-	"-s         == build game spawn data\n"
-	"\n"
-	"NOTE: The last key is required for any functionality\n";
-
-void Help()
-{	MessageBox(0,h_str,"Command line options",MB_OK|MB_ICONINFORMATION); }
-
+   
 string_path_ai INI_FILE;
 
 extern  HWND logWindow;
@@ -50,105 +28,118 @@ extern  HWND logWindow;
 extern LPCSTR GAME_CONFIG;
 
 extern void clear_temp_folder	();
+ 
+#include "factory_api.h"
+SEFactory_Create* create_entity = 0;
+SEFactory_Destroy* destroy_entity = 0;
 
-SpecialArgsAI xrAI_Args;
+static HMODULE hFactory;
 
-void execute	(LPSTR cmd)
+void InitialFactory()
+{
+	LPCSTR g_name = "xrSE_Factory.dll";
+	Msg("Loading DLL: %s", g_name);
+	hFactory = LoadLibraryA(g_name);
+
+	if (0 == hFactory)
+		R_CHK(GetLastError());
+
+	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
+
+#ifdef _M_X64
+	create_entity = (SEFactory_Create*)GetProcAddress(hFactory, "create_entity");	R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*)GetProcAddress(hFactory, "destroy_entity");	R_ASSERT(destroy_entity);
+#else
+	create_entity = (Factory_Create*)GetProcAddress(hFactory, "_create_entity@4");	R_ASSERT(create_entity);
+	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "_destroy_entity@4");	R_ASSERT(destroy_entity);
+#endif
+}
+
+void DestroyFactory()
+{
+	FreeLibrary(hFactory);
+}
+
+void StartupAI	()
 {   
 	// Load project
-	string4096 name;
-	xr_strcpy(name, xrAI_Args.level_name.c_str());
 
-	if (xr_strlen(name))
-		xr_strcat			(name,"\\");
+	InitialFactory();
 
-	string_path			prjName;
-	prjName				[0] = 0;
-	bool				can_use_name = false;
-
- 	Msg("LevelARGS: %s", xrAI_Args.level_name.c_str());
-	Msg("OutARGS: %s", xrAI_Args.OutSpawn_Name.c_str());
-	Msg("StartARGS: %s", xrAI_Args.SpawnActorStart.c_str());
-	
-	if (xr_strlen(name) < sizeof(string_path)) 
+	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		can_use_name	= true;
-		FS.update_path	(prjName,"$game_levels$", name);
-	}
+		if (!Selected)
+			continue;
 
-	FS.update_path		(INI_FILE,"$game_config$", GAME_CONFIG);
+		string4096 name;
+		strcpy(name, Name.data());
 
+		if (xr_strlen(name))
+			xr_strcat(name, "\\");
 
-	if (!xrAI_Args.UseSpawnCompiler) 
-	{
-		R_ASSERT3		(can_use_name,"Too big level name",name);
- 		xrCompiler		(prjName, xrAI_Args.Draft, xrAI_Args.PureCovers, LEVEL_GRAPH_NAME);
+		string_path prjName;
+		prjName[0] = 0;
+		bool can_use_name = false;
 
-		if (strstr(cmd, "-verify"))
+		if (xr_strlen(name) < sizeof(string_path))
+		{
+			can_use_name = true;
+			FS.update_path(prjName, "$game_levels$", name);
+		}
+
+		FS.update_path(INI_FILE, "$game_config$", GAME_CONFIG);
+
+		if (gCompilerMode.AI_BuildLevel)
 		{
 			R_ASSERT3(can_use_name, "Too big level name", name);
-			verify_level_graph(prjName, !strstr(cmd, "-noverbose"));
+
+			char* output = (pstr)LEVEL_GRAPH_NAME;
+
+			xrCompiler(prjName, gCompilerMode.AI_Draft, gCompilerMode.AI_PureCovers, output);
+		}
+
+		if (gCompilerMode.AI_Verify)
+		{
+			R_ASSERT3(can_use_name, "Too big level name", name);
+			verify_level_graph(prjName, gCompilerMode.AI_Verbose);
 		}
 	}
-	else
-	{
- 		if (xr_strlen(name))
-			name[xr_strlen(name) - 1] = 0;
 
-		LPCSTR START_LEVEL = xrAI_Args.SpawnActorStart.c_str();
-		LPCSTR OUTSPAWN = xrAI_Args.OutSpawn_Name.c_str();
+	if (gCompilerMode.AI_BuildSpawn)
+	{
+		xr_string Levels;
+
+		for (auto& [Name, Selected] : gCompilerMode.Files)
+		{
+			if (!Selected)
+				continue;
+
+			if (!Levels.empty())
+				Levels += ",";
+
+			Levels += Name;
+		}
+
+		string512 name = {};
+		strcpy(name, Levels.data());
+		if (xr_strlen(name))
+			name[xr_strlen(name)] = 0;
+
+		xr_string output = gCompilerMode.AI_spawn_name;
+
+		if (output.empty())
+		{
+			output = "new";
+		}
+
+		char* start_level = gCompilerMode.AI_StartActor;
+		if (!xr_strlen(start_level))
+		{
+			start_level = nullptr;
+		}
 
 		clear_temp_folder();
-		CGameSpawnConstructor(name, OUTSPAWN, START_LEVEL, xrAI_Args.NoSeparator);
-  	}
-}
+		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
+	}
 
-extern ILoggerAI* LoggerCL_xrAI = 0;
-
-/*
-void Startup(LPSTR     lpCmdLine)
-{
-	string4096 cmd;
- 
-	xr_strcpy(cmd,lpCmdLine);
-	strlwr(cmd);
-     
-	// Give a LOG-thread a chance to startup
-	InitCommonControls	();
-	Sleep				(150);
-	thread_spawn		(logThread,	"log-update", 1024*1024,0);
-	
-	//while				(!logWindow)
-	//	Sleep		(150);
-	
-	u32					dwStartupTime	= timeGetTime();
-	execute				(cmd);
-	// Show statistic
-	char				stats[256];
-	bClose				= TRUE;
-	FlushLog			();
-	Sleep				(500);
-}
-
-
-#include "factory_api.h"
-
-#include "quadtree.h"
-#include "..\XrSE_Factory\xrSE_Factory_import_export.h"
-
-void buffer_vector_test		();
-
-XRAI_API void  StartupWorking_xrAI(SpecialArgsAI* args)
-{
-	xrAI_Args = *args;
-	Debug._initialize(false);
-	Core._initialize("xrai", 0);
-	XrSE_Factory::initialize();
-
-	Startup("");
-
-
-	XrSE_Factory::destroy();
-	Core._destroy();
 } 
-*/

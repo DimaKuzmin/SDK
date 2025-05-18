@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_video.h>
-#include "../XrCore/xrCore.h"
+#include "../XrCore/xrCore.h"  
 
 
 struct ImFont;
@@ -52,10 +52,12 @@ struct CompilersMode
 	float WeldDistance = 0.005f;
 
 	bool DO_NoSun = false;
+	int  DO_Samples = 7;
 
 	// SPAWN COMPILER
 	bool AI_BuildSpawn = false;
-	char AI_spawn_name[256];
+
+ 	char AI_spawn_name[256];
 	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;
 

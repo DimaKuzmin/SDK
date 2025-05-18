@@ -4,9 +4,6 @@
 
 #include "../Public/shader_xrlc.h"
  
-#define STB_IMAGE_IMPLEMENTATION
-#include "StbImage\stb_image.h"
-
 global_claculation_data	gl_data;
 
 template <class T>

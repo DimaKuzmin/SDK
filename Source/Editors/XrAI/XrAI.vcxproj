@@ -713,7 +713,6 @@
     <ClCompile Include="verify_level_graph.cpp" />
     <ClCompile Include="xrAI.cpp" />
     <ClCompile Include="xrCrossTable.cpp" />
-    <ClCompile Include="xrThread.cpp" />
     <ClCompile Include="xr_graph_merge.cpp" />
     <ClCompile Include="_buildnodes_view.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -904,7 +903,6 @@
     <ClInclude Include="xrAI.h" />
     <ClInclude Include="xrCrossTable.h" />
     <ClInclude Include="xrShaderTypes.h" />
-    <ClInclude Include="xrThread.h" />
     <ClInclude Include="xr_graph_merge.h" />
     <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>

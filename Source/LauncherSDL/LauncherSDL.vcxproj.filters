@@ -20,9 +20,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="xrForms.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="CompilersUI.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -51,6 +48,18 @@
       <Filter>imgui\Launcher</Filter>
     </ClCompile>
     <ClCompile Include="cl_log.cpp">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="SDL_Aplication.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="StartupWindow.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="luabind_allocator.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="xrThread.cpp">
       <Filter>log</Filter>
     </ClCompile>
   </ItemGroup>
@@ -90,6 +99,9 @@
     </ClInclude>
     <ClInclude Include="CompilersUI.h">
       <Filter>Исходные файлы</Filter>
+    </ClInclude>
+    <ClInclude Include="xrThread.h">
+      <Filter>log</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

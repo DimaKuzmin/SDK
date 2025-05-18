@@ -10,7 +10,7 @@
 
 #include "alife_space.h"
 #include "xr_graph_merge.h"
-#include "xrthread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include "graph_abstract.h"
 #include "xrServer_Object_Base.h"
 #include "spawn_constructor_space.h"

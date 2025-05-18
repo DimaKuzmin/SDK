@@ -208,7 +208,10 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_sdl3.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_sdlrenderer3.cpp" />
-    <ClCompile Include="xrForms.cpp" />
+    <ClCompile Include="luabind_allocator.cpp" />
+    <ClCompile Include="SDL_Aplication.cpp" />
+    <ClCompile Include="StartupWindow.cpp" />
+    <ClCompile Include="xrThread.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app_info.h" />
@@ -223,6 +226,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="xrThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

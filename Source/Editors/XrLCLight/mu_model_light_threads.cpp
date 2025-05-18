@@ -10,7 +10,7 @@
 
 #include "mu_model_light.h"
 
-#include "xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include "../../xrcore/xrSyncronize.h"
 
  
@@ -42,37 +42,10 @@ void SetMuModelsLocalCalcLighteningCompleted()
 	mu_models_local_calc_lightening_wait_lock.Leave();
 }
 
-/* OLD GSC
-class CMULight	: public CThread
-{
-	u32			low;
-	u32			high;
-public:
-	CMULight	(u32 ID, u32 _low, u32 _high) : CThread(ID)	{	thMessages	= FALSE; low=_low; high=_high;	}
-
-	virtual void	Execute	()
-	{
-		// Priority
-		SetThreadPriority	(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
-		Sleep				(0);
-
-		// Light references
-		for (u32 m=low; m<high; m++)
-		{
-		
-			inlc_global_data()->mu_refs()[m]->calc_lighting	();
-			thProgress							= (float(m-low)/float(high-low));
-		}
-	}
-};
-*/
 
 #include <atomic>
 
 std::atomic<int> task_id = 0;
- 
-//xr_vector<int>		task_pool_mu;
-
 xrCriticalSection	taskModels;
 
 //SE7KILLS
@@ -175,66 +148,36 @@ public:
 };
 
 #include <execution>
-
-class CMUThread : public CThread
-{
-public:
-	CMUThread	(u32 ID) : CThread(ID)
-	{
-		thMessages	= FALSE;
-	}
-	virtual void	Execute()
-	{
-		// Priority
-		SetThreadPriority	(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
-		Sleep				(0);
-
-		// Light models		
-		task_id = 0;
-	 
-		Phase("LIGHT: Waiting for MU-First CALCMATERIALS threads...");
-	 
-		CThreadManager thread_base;
-		for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
-			thread_base.start(xr_new<CMULightBase>(TH), TH);
-
-		thread_base.wait();
-		 
-		/*
-		for (const auto model : inlc_global_data()->mu_models())
-		{
-			model->calc_materials();
-			model->calc_lighting();
-		}
-		*/
-
-
-		SetMuModelsLocalCalcLighteningCompleted();
-
-		// REFERENSE
-
-		Phase("LIGHT: Waiting for MU-Secondary threads...");
  
-		task_id = 0;
-		
-		CThreadManager			mu_secondary;
-
-		for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
-			mu_secondary.start(xr_new<CMULightRef>(TH), TH);
-
-		mu_secondary.wait(500);
-
-	}
-};
-
-
 void	run_mu_base()
 {
- 	mu_base.start				(xr_new<CMUThread> (0), 0);
-}
+	// Priority
+	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+	Sleep(0);
 
-void	wait_mu_base_thread		()
-{
-	mu_base.wait				(500);
+	// Light models		
+	task_id = 0;
+
+	Phase("LIGHT: Waiting for MU-First CALCMATERIALS threads...");
+
+	CThreadManager thread_base;
+	for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
+		thread_base.start(xr_new<CMULightBase>(TH));
+ 	thread_base.wait();
+
+	SetMuModelsLocalCalcLighteningCompleted();
+
+	// REFERENSE
+
+	Phase("LIGHT: Waiting for MU-Secondary threads...");
+
+	task_id = 0;
+
+	CThreadManager			mu_secondary;
+
+	for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
+		mu_secondary.start(xr_new<CMULightRef>(TH));
+
+	mu_secondary.wait(500);
 }
  

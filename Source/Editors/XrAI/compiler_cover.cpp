@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "compiler.h"
 #include "cl_intersect.h"
-#include "xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include <mmsystem.h>
 
 #include "quadtree.h"
@@ -595,12 +595,9 @@ void compute_non_covers		()
 	}
 }
 
-#include "xrAI.h"
-extern SpecialArgsAI xrAI_Args;
-
 int GetMAXTH()
 {
-	return xrAI_Args.Threads;
+	return gCompilerMode.ThreadsNum;
 }
 
 #define NUM_THREADS	GetMAXTH()

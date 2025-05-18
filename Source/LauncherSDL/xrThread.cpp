@@ -1,4 +1,4 @@
-#include "stdafx.h"
+
 #include "xrThread.h"
 
 void	CThread::startup(void* P)

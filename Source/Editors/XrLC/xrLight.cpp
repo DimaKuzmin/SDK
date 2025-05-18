@@ -2,7 +2,7 @@
 #include "build.h"
 
 #include "../xrLCLight/xrdeflector.h"
-#include "../xrLCLight/xrThread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrLightVertex.h"
 
@@ -82,10 +82,6 @@ public:
   
 void	CBuild::LMapsLocal				()
 {
-	FPU::m64r		();
-		
-	mem_Compact		();
-
  	std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [](const CDeflector* defl, const CDeflector* defl2)
 	{
 		return defl->similar_pos(*defl2, 0.1f);
@@ -102,7 +98,7 @@ void	CBuild::LMapsLocal				()
 		task_pool.push_back(dit);
 
 	for (int L = 0; L < gCompilerMode.ThreadsNum; L++)
-		threads.start(xr_new<CLMThread>(L), L);
+		threads.start(xr_new<CLMThread>(L));
 	threads.wait(500);
 	 
 	clMsg("%f seconds", start_time.GetElapsed_sec());

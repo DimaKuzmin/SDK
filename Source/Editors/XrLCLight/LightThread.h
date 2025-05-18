@@ -1,8 +1,7 @@
 #ifndef __LIGHTTHREAD_H__
 #define __LIGHTTHREAD_H__
 
-
-#include "xrthread.h"
+#include "..\LauncherSDL\xrThread.h"
 #include "detail_slot_calculate.h"
 
 class	LightThread : public CThread
