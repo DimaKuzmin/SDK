@@ -162,6 +162,8 @@ void CBuild::Run(LPCSTR P)
 	H.XRLC_quality = g_params().m_quality;
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
+ 
+	FPU::m64r();
 
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
@@ -175,38 +177,20 @@ void CBuild::Run(LPCSTR P)
 		fs->w_chunk(2, &*L_static().sun.begin(), L_static().sun.size() * sizeof(R_Light));
 		FS.w_close(fs);
 	}
-	 
 
-	//****************************************** Optimizing + checking for T-junctions
-	log_vminfo_new("Loading");
-	
-	FPU::m64r();
 	Phase("Optimizing...");
-	mem_Compact();
- 	PreOptimize();
+  	PreOptimize();
 	CorrectTJunctions();
 	
-  	//****************************************** HEMI-Tesselate
  	Phase("Adaptive HT...");
-	mem_Compact();
- 	xrPhase_AdaptiveHT();
+  	xrPhase_AdaptiveHT();
 
-	//****************************************** Building normals
  	Phase("Building normals...");
-	mem_Compact();
-	CalcNormals();
-	//SmoothVertColors			(5);
-	log_vminfo_new("Normals Memory: ");
-
+ 	CalcNormals();
+  
  	Phase("Building collision database...");
-	mem_Compact();
-	BuildCForm();
+ 	BuildCForm();
  	
-	// Se7Kills Opacity BUFFERS
- 	//****************************************** All lighting + lmaps building and saving
-
-
-
  	Light						();
  	RunAfterLight				( fs );
 }
@@ -214,60 +198,43 @@ void CBuild::Run(LPCSTR P)
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
  	//****************************************** T-Basis
-	{
-		FPU::m64r();
-		Phase("Building tangent-basis...");
-		xrPhase_TangentBasis();
-		mem_Compact();
-	}
-
+ 	Phase("Building tangent-basis...");
+	xrPhase_TangentBasis();
+ 
 	// Tangent Basis To Convert OGF
 	BuildPortals(*fs);
 
 	//****************************************** Convert to OGF
-	FPU::m64r();
-	Phase("Converting to OGFs...");
-	mem_Compact();
-	Flex2OGF();
+ 	Phase("Converting to OGFs...");
+ 	Flex2OGF();
 
 	//****************************************** Export MU-models
-	FPU::m64r					();
-	Phase						("Converting MU-models to OGFs...");
-	mem_Compact					();
+ 	Phase						("Converting MU-models to OGFs...");
+ 	Status			("MU : Models...");
+	for (u32 m=0; m<mu_models().size(); m++)	
 	{
-		u32 m;
-		Status			("MU : Models...");
-		for (m=0; m<mu_models().size(); m++)	
-		{
-			calc_ogf			(*mu_models()[m]);
-			export_geometry		(*mu_models()[m]);
-		}
-
-		Status			("MU : References...");
-		for (m = 0; m < mu_refs().size(); m++)
-		{
-			StatusNoMSG("References [%d]/[%d]", m, mu_models().size());
-			export_ogf(*mu_refs()[m]);
-		}
+		calc_ogf			(*mu_models()[m]);
+		export_geometry		(*mu_models()[m]);
 	}
 
+	Status			("MU : References...");
+	for (u32 m = 0; m < mu_refs().size(); m++)
+	{
+		StatusNoMSG("References [%d]/[%d]", m, mu_models().size());
+		export_ogf(*mu_refs()[m]);
+	}
+ 
 	//****************************************** Destroy RCast-model
-	FPU::m64r		();
-	Phase			("Destroying ray-trace model...");
-	mem_Compact		();
-	lc_global_data()->destroy_rcmodel();
+ 	Phase			("Destroying ray-trace model...");
+ 	lc_global_data()->destroy_rcmodel();
  
 	//****************************************** Build sectors
-	FPU::m64r();
-	Phase("Building sectors...");
-	mem_Compact();
-	BuildSectors();
+ 	Phase("Building sectors...");
+ 	BuildSectors();
 
 	//****************************************** Saving MISC stuff
-	FPU::m64r		();
-	Phase			("Saving...");
-	mem_Compact		();
-	SaveLights		(*fs);
+ 	Phase			("Saving...");
+ 	SaveLights		(*fs);
 
 	fs->open_chunk	(fsL_GLOWS);
 	
@@ -289,8 +256,6 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	SaveSectors		(*fs);
 
 	err_save		();
- 
-	mem_Compact();
 }
 
 void CBuild::err_save	()

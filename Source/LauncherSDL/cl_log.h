@@ -48,3 +48,6 @@ void SetActiveIteration(IterationData* i);
 xr_vector<xr_string>& GetLogVector();
 u32&					 GetPhaseStartTime();
 xr_string make_time(u32 sec);
+
+
+void AditionalData(const char* format, ...);

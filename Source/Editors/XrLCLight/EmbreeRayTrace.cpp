@@ -305,7 +305,7 @@ void EmbreeData::IntelEmbereLOAD()
 	InitializeGeometry(geom_memory, refs_memory);
 
 	size_t BVH = AttachGeometrys(true);
-	clMsg("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
+	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);
 }
 
 void EmbreeData::IntelEmbereUNLOAD()

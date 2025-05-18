@@ -116,7 +116,6 @@ void MainCompilerLC()
 	}
 }
 
-
 /*
 void Startup( )
 {

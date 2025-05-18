@@ -76,8 +76,8 @@ void Progress		(const float F)
 void Phase			(const char *phase_name)
 {
 	csLog.Enter();
-
-	phase_total_time = timeGetTime() - phase_start_time;
+ 	phase_total_time = timeGetTime() - phase_start_time;
+	 
 
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
@@ -86,9 +86,6 @@ void Phase			(const char *phase_name)
 		vminfo(&w_free, &w_reserved, &w_committed);
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
-
-		// if (LoggerCL != nullptr)
-		// 	LoggerCL->updatePhrase(phase_name);
 	}
 
 	ActiveIteration->phases.push_back({ phase_name });
@@ -97,6 +94,10 @@ void Phase			(const char *phase_name)
 	Progress(0);
 
 	Msg("\n* New phase started: %s", phase_name);
+
+ 	Memory.mem_compact();
+	log_vminfo();
+
 	csLog.Leave();
 }
 

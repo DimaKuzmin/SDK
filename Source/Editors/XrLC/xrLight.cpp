@@ -135,57 +135,47 @@ void CBuild::Light()
 
 	// Строим модель для Tracing
  	Phase("Building rcast-CFORM model...");
-	mem_Compact();
-	Light_prepare();
-
-
-	BuildRapid(TRUE);
+ 	Light_prepare();
+ 	BuildRapid(TRUE);
 	 
  
 	//****************************************** Resolve materials
  	Phase("Resolving materials...");
-	mem_Compact();
-	xrPhase_ResolveMaterials();
+ 	xrPhase_ResolveMaterials();
 	IsolateVertices(TRUE);
 
 	//****************************************** UV mapping
  	Phase("Build UV mapping...");
-	mem_Compact();
-	xrPhase_UVmap();
+ 	xrPhase_UVmap();
 	IsolateVertices(TRUE);
 
 	//****************************************** Subdivide geometry
  	Phase("Subdividing geometry...");
-	mem_Compact();
-	xrPhase_Subdivide();
+ 	xrPhase_Subdivide();
 
 	//****************************************** Implicit
 
  	Phase("LIGHT: Implicit...");
-	mem_Compact();
-	ImplicitLighting();
+	EmbreeMain.AttachGeometrys(true);
+ 	ImplicitLighting();
 
 	Phase("LIGHT: LMaps...");
-	mem_Compact();
-	LMaps();
+	EmbreeMain.AttachGeometrys(false);
+ 	LMaps();
 	 
 	//****************************************** Vertex
-	FPU::m64r();
-	Phase("LIGHT: Vertex...");
-	mem_Compact();
-	LightVertex();
+ 	Phase("LIGHT: Vertex...");
+ 	LightVertex();
 
 	//****************************************** Merge LMAPS
- 	FPU::m64r();
-	Phase("LIGHT: Merging lightmaps...");
-	mem_Compact();
-	xrPhase_MergeLM();
+ 	xrPhase_MergeLM();
+  	xrPhase_SaveLmaps();
 
-	FPU::m64r();
-	Phase("Merging geometry...");
-	mem_Compact();
-	xrPhase_MergeGeometry();
+ 	Phase("Merging geometry...");
+ 	xrPhase_MergeGeometry();
  	 
+
+	EmbreeMain.AttachGeometrys(true);
 	// Mu Models Lighting
   	RunMuModels();
     

@@ -216,26 +216,16 @@ void CBuild::xrPhase_UVmap()
 			SP--;
 		}
 	}
-
-	vminfo(&free, &rel, &used);
-	clMsg("xrPhase_UVmap: Ended %u used", size_t(used / 1024 / 1024));
-
-	size_t NewOriginalFaces = 0;
-	for (auto SP : g_XSplit)
-		NewOriginalFaces += SP->size();
-
+  
 	size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);
 	size_t FSize = lc_global_data()->g_faces().size() * sizeof(Face);
-
-
-	clMsg("DF:%umb|Size(%umb)|V(%umb)T(%umb)",
+ 	AditionalData("DF:%umb| V(%umb) T(%umb) SPLIT(%u)",
 		AllocatedDeflectors,
-		(NewOriginalFaces * sizeof(Face*)) / 1024 / 1024,
-		VSize / 1024 / 1024,
-		FSize / 1024 / 1024
+ 		VSize / 1024 / 1024,
+		FSize / 1024 / 1024,
+		g_XSplit.size()
 	);
-
-	Status("UV SPLITS SP[%u]", g_XSplit.size());
+ 
 }
 
 void CBuild::mem_Compact()
