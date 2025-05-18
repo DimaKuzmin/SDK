@@ -56,7 +56,7 @@ void MainCompilerLC()
 		lc_global_data()->b_nohemi_set(gCompilerMode.LC_NoRGB);
 		lc_global_data()->b_nohemi_set(gCompilerMode.LC_NoHemi);
 		lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
-		lc_global_data()->level_path = Name.data();
+
 
 		string256 temp;
 		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
@@ -107,6 +107,10 @@ void MainCompilerLC()
 		// Call for builder
 		string_path lfn;
 		FS.update_path(lfn, _game_levels_, Name.data());
+
+		lc_global_data()->level_path = lfn;
+ 		clMsg("* LEVEL PATH: %s", lfn);
+
 		pBuild->Run(lfn);
 		xr_delete(pBuild);
 	}

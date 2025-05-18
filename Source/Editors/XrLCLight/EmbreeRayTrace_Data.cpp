@@ -10,6 +10,8 @@
 #include "xrMU_Model.h"
 // Для Загрузки Геометрии
 #include "base_face.h"
+
+#include "../XrLC/Build.h"
   
 
 void VertexEmbree::Set(Fvector& vertex)
@@ -275,11 +277,8 @@ void EmbreeData::BuildRcast()
 
 	Status("Save Faces to file level.cform");
 	{
-		string_path				fn;
-		xr_strcat(fn, lc_global_data()->level_path.c_str());
-		xr_strcat(fn, "build.cform");
-
-		IWriter* MFS = FS.w_open(fn);
+		string_path fn;
+  		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
 		xr_vector<b_rc_face>	rc_faces;
 		rc_faces.resize(CPacked.getTS());
 

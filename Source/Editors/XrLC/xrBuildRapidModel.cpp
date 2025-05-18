@@ -220,9 +220,9 @@ void CBuild::SaveForOthers(CDB::CollectorPacked& CL)
 
 	if (size_Rqface + size_TRI + size_VS > 4096)
 	{
-		IWriter* MFS_TRI = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform_tri"));
-		IWriter* MFS_VS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform_vs"));
-		IWriter* MFS_RQ = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform_rq"));
+		IWriter* MFS_TRI = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_tri"));
+		IWriter* MFS_VS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_vs"));
+		IWriter* MFS_RQ = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_rq"));
 
 		//TRI
 		MFS_TRI->open_chunk(0);
@@ -262,7 +262,7 @@ void CBuild::SaveForOthers(CDB::CollectorPacked& CL)
 	}
 	else
 	{
-		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform"));
+		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
 		MFS->open_chunk(0);
 
 		// Header
