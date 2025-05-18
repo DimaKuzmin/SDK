@@ -6,7 +6,7 @@
 #include "os_clipboard.h"
 
 #include <sal.h>
-#include "directx\dxerr.h"
+ 
 
 #pragma warning(push)
 #pragma warning(disable:4995)
@@ -175,7 +175,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 
 	gather_info			(expression, description, argument0, argument1, file, line, function, assertion_info, sizeof(assertion_info) );
 	
-	callstack_mdmp(0);
+	// callstack_mdmp(0);
 
 	if (handler)
 		handler			();
@@ -197,12 +197,12 @@ LPCSTR xrDebug::error2string	(long code)
 	LPCSTR				result	= 0;
 	static	string1024	desc_storage;
 
-	result				= DXGetErrorDescription	(code);
-	if (0==result)
-	{
-		FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
-		result			= desc_storage;
-	}
+	// result				= DXGetErrorDescription	(code);
+	// if (0==result)
+	// {
+	// 	FormatMessage	(FORMAT_MESSAGE_FROM_SYSTEM,0,code,0,desc_storage,sizeof(desc_storage)-1,0);
+	// 	result			= desc_storage;
+	// }
 	return		result	;
 }
 
@@ -279,7 +279,7 @@ void out_of_memory_handler	()
  
 	Debug.fatal				(DEBUG_INFO,"Out of memory. Memory request:unkown K");
 
-	callstack_mdmp(0);
+	// callstack_mdmp(0);
 
 	DEBUG_INVOKE;
 }
@@ -554,53 +554,20 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 {
 	string256				error_message;
 	format_message			(error_message,sizeof(error_message));
-
-	if (!error_after_dialog && !strstr(GetCommandLine(),"-no_call_stack_assert")) 
-	{
-		CONTEXT				save = *pExceptionInfo->ContextRecord;
-		*pExceptionInfo->ContextRecord = save;
-
-		if (shared_str_initialized)
-			Msg				("stack trace:\n");
-
-		if (!IsDebuggerPresent())
-		{
-			os_clipboard::copy_to_clipboard	("stack trace:\r\n\r\n");
-		}
-
-		string4096			buffer;
-	
-
-		if (*error_message) {
-			if (shared_str_initialized)
-				Msg			("\n%s",error_message);
-
-			xr_strcat			(error_message,sizeof(error_message),"\r\n");
-#ifdef DEBUG
-			if (!IsDebuggerPresent())
-				os_clipboard::update_clipboard(buffer);
-#endif // #ifdef DEBUG
-		}
-	}
-
+	 
 	if (shared_str_initialized)
 		FlushLog			();
 
  	save_mini_dump		(pExceptionInfo);
   
 	// DUMP CALLSTACK
-	callstack_mdmp		(pExceptionInfo);
+	// callstack_mdmp		(pExceptionInfo);
+ 	MessageBox(NULL, "Fatal error occured\n\nPress OK to abort program execution", "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
+
+	if (!previous_filter)
+ 		return				(EXCEPTION_CONTINUE_SEARCH);
  
-	MessageBox(NULL, "Fatal error occured\n\nPress OK to abort program execution", "Fatal error", MB_OK | MB_ICONERROR | MB_SYSTEMMODAL);
-	exit(-1);
-
-	if (!previous_filter) 
-	{ 
-		return				(EXCEPTION_CONTINUE_SEARCH) ;
-	}
-
-	previous_filter			(pExceptionInfo);
-
+ 	previous_filter			(pExceptionInfo);
 	return					(EXCEPTION_CONTINUE_SEARCH) ;
 }
 #endif
@@ -750,7 +717,7 @@ void xrDebug::Callstack()
 			ignore_always
 		);
 
-		callstack_mdmp(0);
+		// callstack_mdmp(0);
 	}
 
 	static void pure_call_handler			()
