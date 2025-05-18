@@ -105,6 +105,7 @@ void execute	(LPSTR cmd)
 
 extern ILoggerAI* LoggerCL_xrAI = 0;
 
+/*
 void Startup(LPSTR     lpCmdLine)
 {
 	string4096 cmd;
@@ -124,16 +125,11 @@ void Startup(LPSTR     lpCmdLine)
 	execute				(cmd);
 	// Show statistic
 	char				stats[256];
-	extern				std::string make_time(u32 sec);
-	extern				HWND logWindow;
-	u32					dwEndTime = timeGetTime();
-	xr_sprintf				(stats,"Time elapsed: %s",make_time((dwEndTime-dwStartupTime)/1000).c_str());
-	MessageBox			(logWindow,stats,"Congratulation!",MB_OK|MB_ICONINFORMATION);
-
 	bClose				= TRUE;
 	FlushLog			();
 	Sleep				(500);
 }
+
 
 #include "factory_api.h"
 
@@ -154,27 +150,5 @@ XRAI_API void  StartupWorking_xrAI(SpecialArgsAI* args)
 
 	XrSE_Factory::destroy();
 	Core._destroy();
-}
-
-
-/*
-int APIENTRY WinMain(HINSTANCE hInstance,
-                     HINSTANCE hPrevInstance,
-                     LPSTR     lpCmdLine,
-                     int       nCmdShow)
-{
-	Debug._initialize		(false);
-	Core._initialize		("xrai",0);
-	XrSE_Factory::initialize();
-	buffer_vector_test		();
-
-
-
-	Startup					(lpCmdLine);
-
-	XrSE_Factory::destroy();
-	Core._destroy			();
-
-	return					(0);
-}
+} 
 */

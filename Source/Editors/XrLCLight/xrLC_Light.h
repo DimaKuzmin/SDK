@@ -3,12 +3,15 @@
 #pragma once
 
 #include "../../xrCore/xrCore.h"
+/*
 #ifdef XRLC_LIGHT_EXPORTS
 #	define XRLC_LIGHT_API __declspec(dllexport)
 #else
 #	define XRLC_LIGHT_API __declspec(dllimport)
 #endif
+*/
 
+#	define XRLC_LIGHT_API
 
 #pragma warning(disable:4995)
 #include <commctrl.h>
@@ -32,16 +35,7 @@ static const int	idx2edge	[3][3]  = {
 };
 extern XRLC_LIGHT_API bool g_using_smooth_groups;
 extern XRLC_LIGHT_API bool g_smooth_groups_by_faces;
-
-extern XRLC_LIGHT_API xr_pure_interface  XRLC_LIGHT_API i_lc_log 
-{
-	virtual void clMsg		( LPCSTR msg )			=0;
-	virtual void clLog		( LPCSTR msg )			=0;
-	virtual void Status		( LPCSTR msg )			=0;
-	virtual void StatusNoMsg(LPCSTR msg) = 0;
-	virtual	void Progress	( const float F )		=0;
-	virtual	void Phase		( LPCSTR phase_name )	=0;
-} *lc_log;
+ 
 
 			XRLC_LIGHT_API void	xrCompileDO		 (u32 samples);
 extern "C"	XRLC_LIGHT_API  b_params	&g_params();

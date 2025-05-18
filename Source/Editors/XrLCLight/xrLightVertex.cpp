@@ -150,8 +150,6 @@ public:
 };
  
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 
 void LightVertex	()
 {
@@ -163,7 +161,7 @@ void LightVertex	()
 		CThreadManager		Threads;
 		VLT.init			();
 		CTimer	start_time;	start_time.Start();				
-		for (u32 thID=0; thID < build_args->use_threads; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
+		for (u32 thID=0; thID < gCompilerMode.ThreadsNum; thID++)	Threads.start(xr_new<CVertexLightThread>(thID), thID);
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 

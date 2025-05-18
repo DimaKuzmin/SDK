@@ -105,10 +105,6 @@ void	o_test (int iA, int iB, int count, base_color* A, base_color* B, float& C, 
 	// C=1, D=0;
 	simple_optimize		(_A,_B,C,D);
 }
-
-#include "BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
 xrCriticalSection csMU;
 
 int ID = 0;

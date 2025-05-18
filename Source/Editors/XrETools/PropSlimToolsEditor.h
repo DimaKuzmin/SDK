@@ -43,23 +43,4 @@ extern "C"
 	ETOOLS_API VIPM_Result*	  VIPM_Convert			(u32 max_sliding_window=u32(-1), float error_tolerance=0.1f, u32 optimize_vertex_order=1);
 	ETOOLS_API void			  VIPM_Destroy			();
 };
-
-class Object;
-class MeshPt;
-
-class ETOOLS_API VIPM_MultiTH
-{
-public:
-	Object* g_mt_pObject = 0;
-	ArbitraryList<MeshPt*>	g_mt_ppTempPts = 0;
-	VIPM_Result* g_mt_pResult = 0;
-
-	void			  VIPM_Init	(int th);
-	void			  VIPM_AppendVertex(const Fvector3& pt, const Fvector2& uv);
-	void			  VIPM_AppendFace(u16 v0, u16 v1, u16 v2);
-	VIPM_Result*	  VIPM_Convert(u32 max_sliding_window = u32(-1), float error_tolerance = 0.1f, u32 optimize_vertex_order = 1);
-	void			  VIPM_Destroy();
-
-	ICF void CalcALL(Object* m_pObject, u32 max_sliding_window = u32(-1), float m_fSlidingWindowErrorTolerance = 1.f);
-};
  

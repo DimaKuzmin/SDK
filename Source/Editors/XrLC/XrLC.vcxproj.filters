@@ -7,9 +7,6 @@
     <Filter Include="Kernel\Res">
       <UniqueIdentifier>{dba0b522-6ea2-4c90-b8b6-4da1722f6899}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Kernel\Log">
-      <UniqueIdentifier>{50605d22-c7bd-4a4c-99a1-7509717d6320}</UniqueIdentifier>
-    </Filter>
     <Filter Include="CDB">
       <UniqueIdentifier>{1b048924-e6fc-48c9-9a43-f546baf82da8}</UniqueIdentifier>
     </Filter>
@@ -49,6 +46,9 @@
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\CUDA">
       <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="PropSlim">
+      <UniqueIdentifier>{61fb8056-18e6-4269-91c4-d2ada495d7b2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h">
@@ -59,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Kernel\Res</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_log.h">
-      <Filter>Kernel\Log</Filter>
     </ClInclude>
     <ClInclude Include="cl_intersect.h">
       <Filter>CDB</Filter>
@@ -149,6 +146,24 @@
     <ClInclude Include="xrLC.h">
       <Filter>Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="PropSlim\PropSlimTools.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
+    <ClInclude Include="PropSlim\object.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
+    <ClInclude Include="PropSlim\object_sliding.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
+    <ClInclude Include="PropSlim\mesh.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
+    <ClInclude Include="PropSlim\DLink.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
+    <ClInclude Include="PropSlim\quad.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -156,9 +171,6 @@
     </ClCompile>
     <ClCompile Include="xrLC.cpp">
       <Filter>Kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="cl_log.cpp">
-      <Filter>Kernel\Log</Filter>
     </ClCompile>
     <ClCompile Include="NV_Library\NvTriStrip.cpp">
       <Filter>External\NV_Strips</Filter>
@@ -277,6 +289,15 @@
     <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
     <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClCompile>
+    <ClCompile Include="PropSlim\PropSlimTools.cpp">
+      <Filter>PropSlim</Filter>
+    </ClCompile>
+    <ClCompile Include="PropSlim\object.cpp">
+      <Filter>PropSlim</Filter>
+    </ClCompile>
+    <ClCompile Include="PropSlim\object_sliding.cpp">
+      <Filter>PropSlim</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

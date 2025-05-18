@@ -73,7 +73,7 @@ std::atomic<int> task_id = 0;
  
 //xr_vector<int>		task_pool_mu;
 
-xrCriticalSection	task_CS;
+xrCriticalSection	taskModels;
 
 //SE7KILLS
 class CMULightBase : public CThread
@@ -90,7 +90,7 @@ public:
 
 		for (;;)
 		{
- 			task_CS.Enter();
+			taskModels.Enter();
 			int id = task_id.load();
  
 			if (id < inlc_global_data()->mu_models().size())
@@ -99,7 +99,7 @@ public:
 				model = 0;
 
 			task_id.fetch_add(1);
-			task_CS.Leave();
+			taskModels.Leave();
 
 			if (!model)
  				break;
@@ -140,7 +140,7 @@ public:
  
 		for (;;)
 		{
-  			task_CS.Enter();
+			taskModels.Enter();
 			int id = task_id.load();
  
 			if (id < inlc_global_data()->mu_refs().size())
@@ -151,7 +151,7 @@ public:
 			StatusNoMSG("IDS: %d/%d",id, inlc_global_data()->mu_refs().size());
 
 			task_id.fetch_add(1);
-			task_CS.Leave();
+			taskModels.Leave();
 
 			if (!ref)
  				break;
@@ -175,11 +175,7 @@ public:
 };
 
 #include <execution>
-#include "BuildArgs.h"
 
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
- 
 class CMUThread : public CThread
 {
 public:
@@ -199,7 +195,7 @@ public:
 		Phase("LIGHT: Waiting for MU-First CALCMATERIALS threads...");
 	 
 		CThreadManager thread_base;
-		for (int TH = 0; TH < build_args->use_threads; TH++)
+		for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
 			thread_base.start(xr_new<CMULightBase>(TH), TH);
 
 		thread_base.wait();
@@ -223,7 +219,7 @@ public:
 		
 		CThreadManager			mu_secondary;
 
-		for (int TH = 0; TH < build_args->use_threads; TH++)
+		for (int TH = 0; TH < gCompilerMode.ThreadsNum; TH++)
 			mu_secondary.start(xr_new<CMULightRef>(TH), TH);
 
 		mu_secondary.wait(500);

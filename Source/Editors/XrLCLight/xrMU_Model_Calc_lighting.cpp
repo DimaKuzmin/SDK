@@ -32,10 +32,7 @@ union var
 	var(int _i)	: i(_i)			{ }
 	var(bool _b) : b(_b)		{ }
 };
- 
-#include "BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
- 
+  
 //-----------------------------------------------------------------------
 
 void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform, CDB::MODEL* MDL, base_lighting& lights, u32 flags, bool use_opcode)
@@ -97,10 +94,15 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 		exact_normalize(vN);
 
 		// multi-sample
-		
-		if (!build_args->LmapsHemi)
+ 		const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : gCompilerMode.LC_JSampleMU;
+
+		if (n_samples == 0)
 		{
- 			const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : build_args->mu_samples;
+			vC.hemi = 0.75f;
+			vC._tmp_ = v_trans;
+		}
+		else
+		{
 			for (u32 sample = 0; sample < (u32)n_samples; sample++)
 			{
 				float				a = 0.2f * float(sample) / float(n_samples);
@@ -111,18 +113,13 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 			}
 			vC.scale(n_samples);
 			vC._tmp_ = v_trans;
-		}
-		else
-		{
-			vC.hemi = 1.0f;
-			vC._tmp_ = v_trans;
-		}
+		}	 
 
 		// НЕ безопастно 
 		if (flags & LP_dont_hemi);
-		else					vC.hemi += v_amb;
-
-		V.C._set(vC);
+		else			
+			vC.hemi += v_amb;
+ 		V.C._set(vC);
 
 		// Search
 		const float key = V.P.x;

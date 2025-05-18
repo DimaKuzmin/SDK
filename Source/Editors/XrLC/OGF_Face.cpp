@@ -277,9 +277,7 @@ xrCriticalSection			progressive_cs
 #endif // PROFILE_CRITICAL_SECTIONS
 ;
 
-#include "..\XrETools\PropSlimTools.h"
- 
-
+#include "PropSlim\PropSlimTools.h" 
 void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 {
 	// test
@@ -302,85 +300,78 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 	vecOGF_V	_saved_vertices		=	data.vertices	;
 	vecOGF_F	_saved_faces		=	data.faces		;
 
-	VIPM_MultiTH mt_vipm;
+ 	VIPM_Result* VR = 0; 
+	VIPM_Init();
+	for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
+		VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
+	for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
+		VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
 
+	try
 	{
-		VIPM_Result* VR = 0;
-
- 
-		VIPM_Init();
-		for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
-			VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
-		for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
-			VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
-
- 
-		try
-		{
-			VR = VIPM_Convert(u32(25), 1.f, 1);
-		}
-		catch (...)
-		{
-			progressive_clear();
-			clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
-		}
+		VR = VIPM_Convert(u32(25), 1.f, 1);
+	}
+	catch (...)
+	{
+		progressive_clear();
+		clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
+	}
     
-		if (0==VR)				
-		{
-			progressive_clear	()		;
-			clMsg				("[%d]* mesh simplification failed", MODEL_ID);
-		}
-
-		while (VR && VR->swr_records.size()>0)
-		{
-			// test metric
-			u32		_full	=	data.vertices.size	()		;
-			u32		_remove	=	VR->swr_records.size()	;
-			u32		_simple	=	_full - _remove			;
-			float	_metric	=	float(_remove)/float(_full);
-			
-			if		(_metric<metric_limit ) 
-			{
-				progressive_clear				()		;
-				clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded", MODEL_ID,_full,_simple,VR->indices.size()/3,metric_limit);
-				break									;
-			}
-			else
-			{
-				clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", MODEL_ID, _full,_simple,VR->indices.size()/3,metric_limit);
-			}
-   
-			// OK
-			// Permute vertices
-			for(u32 i=0; i<data.vertices.size(); i++)
-				data.vertices[VR->permute_verts[i]]=_saved_vertices[i];
-
-			// Fill indices
-			data.faces.resize			(VR->indices.size()/3);
-			for (u32 f_idx=0; f_idx<data.faces.size(); f_idx++){
-				data.faces[f_idx].v[0]	= VR->indices[f_idx*3+0];
-				data.faces[f_idx].v[1]	= VR->indices[f_idx*3+1];
-				data.faces[f_idx].v[2]	= VR->indices[f_idx*3+2];
-			}
-			// Fill SWR
-			data.m_SWI.count				= VR->swr_records.size();
-			data.m_SWI.sw				= xr_alloc<FSlideWindow>(data.m_SWI.count);
-			for (u32 swr_idx=0; swr_idx!=data.m_SWI.count; swr_idx++){
-				FSlideWindow& dst	= data.m_SWI.sw[swr_idx];
-				VIPM_SWR& src		= VR->swr_records[swr_idx];
-				dst.num_tris		= src.num_tris;
-				dst.num_verts		= src.num_verts;
-				dst.offset			= src.offset;
-			}
-			
-
-			break	;
-		}
-    
-		// cleanup
- 		VIPM_Destroy();
+	if (0==VR)				
+	{
+		progressive_clear	()		;
+		clMsg				("[%d]* mesh simplification failed", MODEL_ID);
 	}
 
+	while (VR && VR->swr_records.size()>0)
+	{
+		// test metric
+		u32		_full	=	data.vertices.size	()		;
+		u32		_remove	=	VR->swr_records.size()	;
+		u32		_simple	=	_full - _remove			;
+		float	_metric	=	float(_remove)/float(_full);
+			
+		if		(_metric<metric_limit ) 
+		{
+			progressive_clear				()		;
+			clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded", MODEL_ID,_full,_simple,VR->indices.size()/3,metric_limit);
+			break									;
+		}
+		else
+		{
+			clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", MODEL_ID, _full,_simple,VR->indices.size()/3,metric_limit);
+		}
+   
+		// OK
+		// Permute vertices
+		for(u32 i=0; i<data.vertices.size(); i++)
+			data.vertices[VR->permute_verts[i]]=_saved_vertices[i];
+
+		// Fill indices
+		data.faces.resize			(VR->indices.size()/3);
+		for (u32 f_idx=0; f_idx<data.faces.size(); f_idx++){
+			data.faces[f_idx].v[0]	= VR->indices[f_idx*3+0];
+			data.faces[f_idx].v[1]	= VR->indices[f_idx*3+1];
+			data.faces[f_idx].v[2]	= VR->indices[f_idx*3+2];
+		}
+		// Fill SWR
+		data.m_SWI.count				= VR->swr_records.size();
+		data.m_SWI.sw				= xr_alloc<FSlideWindow>(data.m_SWI.count);
+		for (u32 swr_idx=0; swr_idx!=data.m_SWI.count; swr_idx++){
+			FSlideWindow& dst	= data.m_SWI.sw[swr_idx];
+			VIPM_SWR& src		= VR->swr_records[swr_idx];
+			dst.num_tris		= src.num_tris;
+			dst.num_verts		= src.num_verts;
+			dst.offset			= src.offset;
+		}
+			
+
+		break	;
+	}
+    
+	// cleanup
+ 	VIPM_Destroy();
+ 
 	//////////////////////////////////////////////////////////////////////////
 	// FAST-PATH
 	if (progressive_test() && fast_path_data.vertices.size() && fast_path_data.faces.size())

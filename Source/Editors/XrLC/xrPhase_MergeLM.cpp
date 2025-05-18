@@ -12,9 +12,6 @@ class	pred_remove { public: IC bool	operator() (CDeflector* D) { { if (0 == D) r
 extern BOOL _rect_place(L_rect& r, lm_layer* D);
 extern void _InitSurface();
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
 // Surface access
 IC bool	sort_defl_fast(CDeflector* D1, CDeflector* D2)
 {

@@ -11,17 +11,6 @@
 
 class  base_lighting;
 class CDeflector;
-   
-struct FaceDataIntel
-{
-	Fvector v1, v2, v3;
-	void* ptr;
-};
-
-XRLC_LIGHT_API void IntelEmbereDetachRelease();
- 
-XRLC_LIGHT_API void IntelEmbereLOAD();
-XRLC_LIGHT_API void IntelEmbereUNLOAD();
  
 class XRLC_LIGHT_API CDeflector 
 {

@@ -137,7 +137,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -606,7 +606,6 @@
     <ClCompile Include="alife_artefact_order.cpp" />
     <ClCompile Include="buffer_vector.cpp" />
     <ClCompile Include="cl_collector.cpp" />
-    <ClCompile Include="cl_log.cpp" />
     <ClCompile Include="compiler.cpp">
     </ClCompile>
     <ClCompile Include="compiler_build.cpp" />
@@ -796,7 +795,6 @@
     <ClInclude Include="client_id.h" />
     <ClInclude Include="cl_collector.h" />
     <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="cl_log.h" />
     <ClInclude Include="communicate.h" />
     <ClInclude Include="compiler.h" />
     <ClInclude Include="cover_point.h" />

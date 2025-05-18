@@ -91,7 +91,7 @@ Tvertex<DataVertex>::~Tvertex()
 	}
 }
 
-IC Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
+Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 {
 	VERIFY( &vertises_storage == &inlc_global_data()->g_vertices() );
 	Vertex* V	= inlc_global_data()->create_vertex();

@@ -285,8 +285,6 @@ namespace CDB
 	{
 		xr_vector<Fvector>	verts;
 		xr_vector<TRI>		faces;
-		bool UsePacking = false;
-
 		u32				VPack				( const Fvector& V, float eps);
 	public:
 		void			add_face			( const Fvector& v0, const Fvector& v1, const Fvector& v2, u16 material, u16 sector	);
@@ -316,7 +314,12 @@ namespace CDB
 #pragma warning(push)
 #pragma warning(disable:4275)
 
-	const u32 clpMX = 24, clpMY=16, clpMZ=24;
+ 	struct VertexData
+	{
+		u32 PrimID;
+		Fvector vertex;
+	};
+
 	class XRCDB_API CollectorPacked : public non_copyable
 	{
 		typedef xr_vector<u32>		DWORDList;
@@ -324,19 +327,20 @@ namespace CDB
 	
 	private:
 		xr_vector<Fvector>			verts;
-		xr_vector<TRI>		faces;
-		xr_vector<u32>		flags;
+		xr_vector<TRI>				faces;
+		xr_vector<u32>				flags;
 	
+		float HDIM_X = 512;
+		float HDIM_Y = 512;
+		float HDIM_Z = 512;
+
 		Fvector				VMmin, VMscale;
-		DWORDList			VM		[clpMX+1][clpMY+1][clpMZ+1];
-		Fvector				VMeps;
+		Fvector				scale;
+		std::unordered_map<size_t, xr_vector<VertexData> > hashTable;
 
 
 		u32					VPack		( const Fvector& V);
 	public:
-		bool UsePacking = false;
-
-
 		CollectorPacked	(const Fbox &bb, int apx_vertices=5000, int apx_faces=5000);
  
 
@@ -346,12 +350,14 @@ namespace CDB
 
 		xr_vector<Fvector>& getV_Vec()			{ return verts;				}
 		Fvector*			getV()				{ return &*verts.begin();	}
-		size_t				getVS()				{ return verts.size();		}
+ 		size_t				getVS()				{ return verts.size();		}
 		TRI*				getT()				{ return &*faces.begin();	}
-		u32					getfFlags(u32 index){ return flags[index];		}	
-IC		TRI&				getT(u32 index)		{ return faces[index];		}
+ IC		TRI&				getT(u32 index)		{ return faces[index];		}
 		size_t				getTS()				{ return faces.size();		}
+
+		u32					getfFlags(u32 index) { return flags[index]; }
 		void				clear();
+
 	};
 #pragma warning(pop)
 };

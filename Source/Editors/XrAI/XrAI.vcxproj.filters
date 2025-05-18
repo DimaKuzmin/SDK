@@ -298,9 +298,6 @@
     <ClCompile Include="xrThread.cpp">
       <Filter>Compiler\Kernel</Filter>
     </ClCompile>
-    <ClCompile Include="cl_log.cpp">
-      <Filter>Compiler\Kernel\Log</Filter>
-    </ClCompile>
     <ClCompile Include="cl_collector.cpp">
       <Filter>Compiler\Kernel\Generic\CDB</Filter>
     </ClCompile>
@@ -464,9 +461,6 @@
     </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Compiler\Kernel\Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cl_log.h">
-      <Filter>Compiler\Kernel\Log</Filter>
     </ClInclude>
     <ClInclude Include="_d3d_extensions.h">
       <Filter>Compiler\Kernel\Generic</Filter>

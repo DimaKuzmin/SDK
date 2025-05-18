@@ -219,11 +219,10 @@
     <ClInclude Include="EmbreeDataStorage.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
-    <ClInclude Include="BuildArgs.h" />
     <ClInclude Include="LightThread.h">
       <Filter>do_light</Filter>
     </ClInclude>
-    <ClInclude Include="xrLight_Embree.h">
+    <ClInclude Include="EmbreeRayTrace.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
   </ItemGroup>
@@ -372,7 +371,7 @@
     <ClCompile Include="xrHardwareTest.cpp">
       <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
     </ClCompile>
-    <ClCompile Include="xrLight_Embree.cpp">
+    <ClCompile Include="EmbreeRayTrace.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClCompile>
     <ClCompile Include="xrHardwareLight_LMAP.cpp">
@@ -381,16 +380,13 @@
     <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
       <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
     </ClCompile>
-    <ClCompile Include="BuildArgs.cpp">
-      <Filter>kernel</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLight_Embree_LightPoint.cpp">
+    <ClCompile Include="EmbreeRayTrace_Data.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitHW.cpp">
       <Filter>Light\LightImplicit</Filter>
     </ClCompile>
-    <ClCompile Include="xrLight_Embree_Details.cpp">
+    <ClCompile Include="EmbreeRayTrace_Details.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClCompile>
     <ClCompile Include="MeshStaic.cpp">

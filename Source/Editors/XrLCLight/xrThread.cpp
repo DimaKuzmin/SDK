@@ -21,12 +21,6 @@ void	CThread::startup(void* P)
 		clMsg("* THREAD #%d: Task Completed.", T->thID);
 }
 
-
-#include "BuildArgs.h"
-
-
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
- 
 void	CThreadManager::start	(CThread*	T, u32 THID)
 {
  	R_ASSERT(T);

@@ -74,7 +74,7 @@
     <ClInclude Include="platform.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="PropSlimTools.h">
+    <ClInclude Include="PropSlimToolsEditor.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="quad.h">

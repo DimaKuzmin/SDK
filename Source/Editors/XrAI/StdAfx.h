@@ -18,9 +18,10 @@
 #define ENGINE_API
 #define ECORE_API
 #define XR_EPROPS_API
+
+#include "..\LauncherSDL\cl_log.h"
 #include "../../xrcore/clsid.h"
 #include "defines.h"
-#include "cl_log.h"
 #include "../../xrcdb/xrCDB.h"
 #include "_d3d_extensions.h"
 

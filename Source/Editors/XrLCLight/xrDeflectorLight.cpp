@@ -15,13 +15,11 @@ xrCriticalSection csDeflector;
 
 
 #include "EmbreeDataStorage.h"
-#include "BuildArgs.h"
 
 #include "..\XrCDB\xrCDB.h"
 #ifndef DevCPU 
 #include "xrHardwareLight.h"
 #endif
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 ICF bool CalculateEnergy(Face* skip, base_Face* F, float& energy, float v, float u)
 {
@@ -491,36 +489,13 @@ float getLastRP_Scale(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Face* skip
 
 	return scale;
 }
-
-#include "xrLight_Embree.h"
+#include "EmbreeRayTrace.h"
 float rayTrace	(CDB::COLLIDER* DB, CDB::MODEL* MDL, R_Light& L, Fvector& P, Fvector& D, float R, Face* skip, BOOL bUseFaceDisable, bool use_opcode)
 { 	
-	if (build_args->use_embree && !use_opcode)
-		return RaytraceEmbreeProcess(L, P, D, R, skip);
+	if (gCompilerMode.Embree && !use_opcode)
+		return EmbreeMain.RaytraceEmbreeProcess(L, P, D, R, skip);
 
 	return rayTraceCheck(DB, MDL, L, P, D, R, skip);
-	
- 	/*
- 	// 1. Check cached polygon
- 	
- 	float _u, _v, range;
- 	bool res = CDB::TestRayTri(P, D, L.tri, _u, _v, range, false);
- 	if (res)
- 	{
- 		if (range > 0 && range < R) return 0;
- 	}
-  
- 	// 2. Polygon doesn't pick - real database query
- 	DB->ray_query(MDL, P, D, R);
- 	
- 	// 3. Analyze polygons and cache nearest if possible
- 	if (0 == DB->r_count()) 
-  		return 1;
-  	else
-  		return getLastRP_Scale(DB, MDL, L, skip, bUseFaceDisable);
-  	
- 	return 0;
-	*/
 }
 
 IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode)

@@ -223,7 +223,7 @@ struct MESHSTRUCTURE_API Tvertex : public DataVertexType, public vector_item
 //////////////////////////////////////////////////////////////
 				Tvertex();
 virtual			~Tvertex();
-IC Tvertex*		CreateCopy_NOADJ( v_vertices& vertises_storage ) const;
+	Tvertex*		CreateCopy_NOADJ( v_vertices& vertises_storage ) const;
     
 ///////////////////////////////////////////////////////////////
 	v_faces							m_adjacents;

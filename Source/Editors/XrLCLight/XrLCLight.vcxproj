@@ -137,7 +137,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -520,7 +520,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
       <Optimization>MaxSpeed</Optimization>
       <FloatingPointModel>Precise</FloatingPointModel>
-      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
@@ -633,7 +633,6 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClInclude Include="base_color.h" />
     <ClInclude Include="base_face.h" />
     <ClInclude Include="base_lighting.h" />
-    <ClInclude Include="BuildArgs.h" />
     <ClInclude Include="b_build_texture.h" />
     <ClInclude Include="calculate_normals.h" />
     <ClInclude Include="DetailFormat.h" />
@@ -685,7 +684,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClInclude Include="xrLC_GlobalData.h" />
     <ClInclude Include="xrLC_Light.h" />
     <ClInclude Include="xrLightVertex.h" />
-    <ClInclude Include="xrLight_Embree.h" />
+    <ClInclude Include="EmbreeRayTrace.h" />
     <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />
     <ClInclude Include="xrLight_ImplicitRun.h" />
@@ -708,7 +707,6 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="base_color.cpp" />
     <ClCompile Include="base_face.cpp" />
     <ClCompile Include="base_lighting.cpp" />
-    <ClCompile Include="BuildArgs.cpp" />
     <ClCompile Include="b_build_texture.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="detail_slot_calculate.cpp" />
@@ -716,8 +714,8 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="fitter.cpp" />
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
-    <ClCompile Include="xrLight_Embree_Details.cpp" />
-    <ClCompile Include="xrLight_Embree_LightPoint.cpp" />
+    <ClCompile Include="EmbreeRayTrace_Details.cpp" />
+    <ClCompile Include="EmbreeRayTrace_Data.cpp" />
     <ClCompile Include="xrHardwareLight.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
@@ -784,7 +782,7 @@ xcopy /Y "$(SolutionDir)..\SDK\BIN\x64\tbb12.dll" "$(SolutionDir)..\Bin\$(Platfo
     <ClCompile Include="xrLightVertex.cpp" />
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
-    <ClCompile Include="xrLight_Embree.cpp">
+    <ClCompile Include="EmbreeRayTrace.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">false</ExcludedFromBuild>
     </ClCompile>

@@ -12,10 +12,8 @@
 #include "xrface.h"
  
 #include "../../xrcdb/xrcdb.h"
-#include "BuildArgs.h"
 
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
+#include "../../LauncherSDL/CompilersUI.h"
 
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
@@ -25,7 +23,7 @@ DEF_MAP(Implicit,u32,ImplicitDeflector);
 /** MAIN THREAD CALL EXECUTION, SORTING, SAVE**/
 
 #include "ppl.h"
-#include "xrLight_Embree.h"
+#include "EmbreeRayTrace.h"
 
 void PPL_MT()
 {
@@ -92,16 +90,9 @@ void PPL_MT()
 							wN.from_bary(V1->N, V2->N, V3->N, B);
 							wN.normalize();
 
-							if (!build_args->LmapsHemi)
-							{
-								u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
-								LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
-								Fcount++;
-							}
-							else
-							{
-								C.hemi += 1.f;
-							}
+							u32 flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0);
+							LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), flags, F);
+							Fcount++;
 
 							
 						}
@@ -236,7 +227,7 @@ void ImplicitLightingExec(BOOL b_net)
 			string_path				name, out_name;
 			
 			//se7kills rewrite		 
-			sprintf(name, "%s", build_args->level_name.c_str());
+			sprintf(name, "%s",		lc_global_data()->level_path.c_str());
 
 			R_ASSERT				(name[0] && defl.texture);
 			b_BuildTexture& TEX		=	*defl.texture;
@@ -260,7 +251,7 @@ void ImplicitLightingExec(BOOL b_net)
 		Status	("Saving lmap...");
 		{
 			string_path				name, out_name;
- 			sprintf(name, "%s", build_args->level_name.c_str());
+ 			sprintf(name, "%s",		lc_global_data()->level_path.c_str());
 			
 			b_BuildTexture& TEX		=	*defl.texture;
 			strconcat				(sizeof(out_name),out_name,name,"\\",TEX.name,"_lm.dds");

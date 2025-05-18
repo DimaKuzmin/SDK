@@ -115,7 +115,7 @@
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -441,7 +441,7 @@
       <WholeProgramOptimization>false</WholeProgramOptimization>
       <AdditionalIncludeDirectories>.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <ExceptionHandling>Async</ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -532,7 +532,6 @@ xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
     <ClInclude Include="b_globals.h" />
     <ClInclude Include="cform_build.h" />
     <ClInclude Include="cl_intersect.h" />
-    <ClInclude Include="cl_log.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="ELight_def.h" />
     <ClInclude Include="Image.h" />
@@ -547,6 +546,12 @@ xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
     <ClInclude Include="NV_Library\VertexCache.h" />
     <ClInclude Include="OGF_Face.h" />
     <ClInclude Include="progmesh.h" />
+    <ClInclude Include="PropSlim\DLink.h" />
+    <ClInclude Include="PropSlim\mesh.h" />
+    <ClInclude Include="PropSlim\object.h" />
+    <ClInclude Include="PropSlim\object_sliding.h" />
+    <ClInclude Include="PropSlim\PropSlimTools.h" />
+    <ClInclude Include="PropSlim\quad.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="StdAfx.h" />
@@ -565,7 +570,6 @@ xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
     <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
     <ClCompile Include="Build.cpp" />
     <ClCompile Include="Build_Load.cpp" />
-    <ClCompile Include="cl_log.cpp" />
     <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="Image.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -592,6 +596,9 @@ xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
     <ClCompile Include="OGF_Face_Sphere.cpp" />
     <ClCompile Include="OGF_Face_Stripify.cpp" />
     <ClCompile Include="OGF_RemoveIsolatedVerts.cpp" />
+    <ClCompile Include="PropSlim\object.cpp" />
+    <ClCompile Include="PropSlim\object_sliding.cpp" />
+    <ClCompile Include="PropSlim\PropSlimTools.cpp" />
     <ClCompile Include="Sector.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

@@ -6,12 +6,6 @@
 #include "global_calculation_data.h"
 #include "lightthread.h"
  
-
-//#define STD_THREAD 
- 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
 XRLC_LIGHT_API extern int	LIGHT_Count;
 
 void	xrLightDO(u32 Samples)
@@ -23,7 +17,7 @@ void	xrLightDO(u32 Samples)
 	CThreadManager		Threads;
 	CTimer				start_time;
 
-	for (u32 thID = 0; thID < build_args->use_threads; thID++)
+	for (u32 thID = 0; thID < gCompilerMode.ThreadsNum; thID++)
 	{
 		CThread* T = xr_new<LightThread>( thID );
 		T->thMessages = FALSE;

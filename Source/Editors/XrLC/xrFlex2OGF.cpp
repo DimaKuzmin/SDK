@@ -156,9 +156,6 @@ bool ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 #include <thread>
 #include "ppl.h"
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
 void CBuild::Flex2OGF()
 {
 	float p_total	= 0;
@@ -185,7 +182,7 @@ void CBuild::Flex2OGF()
 		std::mutex mtx;
 		concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
 		{
-			if (ID % 8192 == 0)
+			if (ID % 512 == 0)
 				clMsg("Processed MT OGF (%u|%u) ", ID, g_XSplit.size());
 
 			OGF* pOGF = xr_new<OGF>();
@@ -215,7 +212,7 @@ void CBuild::Flex2OGF()
 	{
 		for (size_t ID = (0); ID < g_XSplit.size(); ID++)
 		{
-			if (ID % 8192 == 0)
+			if (ID % 512 == 0)
 				clMsg("Processed (%u|%u) ", ID, g_XSplit.size());
 
 			OGF* pOGF = xr_new<OGF>();

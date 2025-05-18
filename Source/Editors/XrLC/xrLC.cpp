@@ -7,98 +7,158 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "xrLC.h"
 
-//#pragma comment(linker,"/STACK:0x800000,0x400000")
-//#pragma comment(linker,"/HEAP:0x70000000,0x10000000")
-
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
-#define PROTECTED_BUILD
-
-#ifdef PROTECTED_BUILD
-#	define TRIVIAL_ENCRYPTOR_ENCODER
-#	define TRIVIAL_ENCRYPTOR_DECODER
-#	include "../../xrEngine/trivial_encryptor.h"
-#	undef TRIVIAL_ENCRYPTOR_ENCODER
-#	undef TRIVIAL_ENCRYPTOR_DECODER
-#endif // PROTECTED_BUILD
+#include "../XrLCLight/xrDeflector.h"
 
 CBuild*	pBuild		= NULL;
 u32		version		= 0;
 
 extern void logThread(void *dummy);
 extern volatile BOOL bClose;
-  
+CTimer	dwStartupTime;
+ 
+static const char* h_str =
+"The following keys are supported / required:\n"
+"-? or -h	== this help\n"
+"-o			== modify build options\n"
+"-nosun		== disable sun-lighting\n"
+"-skipinvalid\t== skip crash if invalid faces exists\n"
+"-notess	== don`t use tesselate geometry\n"
+"-nosubd	== don`t use subdivide geometry\n"
+"-tex_rgba	== don`t compress lightmap textures\n"
+"-f<NAME>	== compile level in GameData\\Levels\\<NAME>\\\n"
+"\n"
+"NOTE: The last key is required for any functionality\n";
+
+void Help(const char*);
 
 typedef int __cdecl xrOptions(b_params* params, u32 version, bool bRunBuild);
+extern bool g_using_smooth_groups;
 
-CTimer	dwStartupTime;
+extern CompilersMode gCompilerMode;
 
-XRLC_API SpecialArgs* current_args_data = 0;
-
-#include "ppl.h"
-void Startup(SpecialArgs* args)
+void MainCompilerLC()
 {
-	Concurrency::SchedulerPolicy policy(1, Concurrency::MaxConcurrency, build_args->use_threads); // Ограничение до 4 потоков
-
-	// Применяем новый планировщик
-	Concurrency::CurrentScheduler::Create(policy);
-
-	create_global_data();
-  
- 	// Give a LOG-thread a chance to startup
-	//_set_sbh_threshold(1920);
-	InitCommonControls		();
-	thread_spawn			(logThread, "log-update",	1024*1024,0);
-	Sleep					(150);
+	g_build_options.b_radiosity = false; // Более не подерживается
+	g_build_options.b_noise = gCompilerMode.LC_Noise;
+	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
 
 	// Faster FPU 
-	SetPriorityClass		(GetCurrentProcess(),NORMAL_PRIORITY_CLASS);
-	log_vminfo();
-	  
+	SetPriorityClass(GetCurrentProcess(), NORMAL_PRIORITY_CLASS);
+
+	// Load project
+	for (auto& [Name, Selected] : gCompilerMode.Files)
+	{
+		if (!Selected)
+			continue;
+
+		create_global_data();
+
+		lc_global_data()->b_nohemi_set(gCompilerMode.LC_NoRGB);
+		lc_global_data()->b_nohemi_set(gCompilerMode.LC_NoHemi);
+		lc_global_data()->b_nosun_set(gCompilerMode.LC_NoSun);
+		lc_global_data()->level_path = Name.data();
+
+		string256 temp;
+		xr_sprintf(temp, "%s - Levels Compiler", Name.data());
+		// SDL_SetWindowTitle(g_AppInfo.Window, temp);
+
+		string_path prjName;
+		FS.update_path(prjName, "$game_levels$", strconcat(sizeof(prjName), prjName, Name.data(), "\\build.prj"));
+
+		string256 phaseName;
+		Phase(strconcat(sizeof(phaseName), phaseName, "Reading project [", Name.data(), "]..."));
+
+		string256 inf;
+		IReader* F = FS.r_open(prjName);
+		if (NULL == F)
+		{
+			xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", Name.data());
+			clMsg(inf);
+			MessageBoxA(nullptr, inf, "Error!", MB_OK | MB_ICONERROR);
+			return;
+		}
+
+		// Version
+		F->r_chunk(EB_Version, &version);
+		clMsg("version: %d", version);
+		R_ASSERT(XRCL_CURRENT_VERSION == version);
+
+		// Header
+		b_params Params;
+		F->r_chunk(EB_Parameters, &Params);
+
+		// Conversion
+		Phase("Converting data structures...");
+		pBuild = new CBuild();
+		pBuild->Load(Params, *F);
+
+		gCompilerMode.scene_bbox = pBuild->scene_bb;
+
+		if (gCompilerMode.IsOverloadedSettings)
+		{
+			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
+			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
+			g_params().m_weld_distance = gCompilerMode.WeldDistance;
+			setLMSIZE(gCompilerMode.LC_sizeLmaps);
+		}
+
+		FS.r_close(F);
+
+		// Call for builder
+		string_path lfn;
+		FS.update_path(lfn, _game_levels_, Name.data());
+		pBuild->Run(lfn);
+		xr_delete(pBuild);
+	}
+}
+
+
+/*
+void Startup( )
+{
+	create_global_data();
+
 	std::string name = build_args->level_name.c_str();
 
 	// Se7Kills ADD NEW Name Reading
- 	clMsg("LevelName: %s", name);
+	clMsg("LevelName: %s", name);
 
 	extern  HWND logWindow;
 	string256				temp;
-	xr_sprintf				(temp, "%s - Levels Compiler", name.c_str());
-	SetWindowText			(logWindow, temp);
-
- 
+	xr_sprintf(temp, "%s - Levels Compiler", name.c_str());
+	SetWindowText(logWindow, temp);
 
 	string_path				prjName;
-	FS.update_path			(prjName,"$game_levels$", strconcat(sizeof(prjName), prjName, name.c_str(), "\\build.prj"));
-	
+	FS.update_path(prjName, "$game_levels$", strconcat(sizeof(prjName), prjName, name.c_str(), "\\build.prj"));
+
 	string256				phaseName;
-	Phase					(strconcat(sizeof(phaseName), phaseName,"Reading project [", name.c_str(), "]..."));
- 
+	Phase(strconcat(sizeof(phaseName), phaseName, "Reading project [", name.c_str(), "]..."));
+
 	string256 inf;
-	IReader*	F			= FS.r_open(prjName);
-	if (NULL==F)
+	IReader* F = FS.r_open(prjName);
+	if (NULL == F)
 	{
-		xr_sprintf				(inf,"Build failed!\nCan't find level: '%s'",name);
-		clMsg				(inf);
-		MessageBox			(logWindow,inf,"Error!",MB_OK|MB_ICONERROR);
+		xr_sprintf(inf, "Build failed!\nCan't find level: '%s'", name);
+		clMsg(inf);
+		MessageBox(logWindow, inf, "Error!", MB_OK | MB_ICONERROR);
 		return;
 	}
- 
+
 	// Version
-	F->r_chunk			(EB_Version,&version);
-	clMsg				("version: %d",version);
-	R_ASSERT(XRCL_CURRENT_VERSION==version);
+	F->r_chunk(EB_Version, &version);
+	clMsg("version: %d", version);
+	R_ASSERT(XRCL_CURRENT_VERSION == version);
 
 	// Header
 	b_params				Params;
-	F->r_chunk			(EB_Parameters,&Params);
+	F->r_chunk(EB_Parameters, &Params);
 
 	// Conversion
-	Phase					("Converting data structures...");
-	pBuild					= xr_new<CBuild>();
-	pBuild->Load			(Params,*F);
+	Phase("Converting data structures...");
+	pBuild = xr_new<CBuild>();
+	pBuild->Load(Params, *F);
 	 
-	FS.r_close				(F);
+	FS.r_close(F);
 
 	// LOAD BUILD PARAMS
 	g_params().m_lm_jitter_samples = args->sample;
@@ -108,33 +168,30 @@ void Startup(SpecialArgs* args)
 	lc_global_data()->b_nosun_set(args->nosun);
 	lc_global_data()->b_norgb_set(args->norgb);
 	lc_global_data()->b_nohemi_set(args->nohemi);
-	
+
 
 	// Call for builder
 	string_path				lfn;
 	dwStartupTime.Start();
 
-	FS.update_path			(lfn,_game_levels_, name.c_str());
-	pBuild->Run				(lfn);
-	xr_delete				(pBuild);
+	FS.update_path(lfn, _game_levels_, name.c_str());
+	pBuild->Run(lfn);
+
+	xr_delete(pBuild);
 
 	// Show statistic
-	extern	std::string make_time(u32 sec);
-	u32	dwEndTime			= dwStartupTime.GetElapsed_ms();
-	xr_sprintf					(inf,"Time elapsed: %s",make_time(dwEndTime/1000).c_str());
-	clMsg					("Build succesful!\n%s",inf);
+	u32	dwEndTime = dwStartupTime.GetElapsed_ms();
+	xr_sprintf(inf, "Time elapsed: %s", make_time(dwEndTime / 1000).c_str());
+	clMsg("Build succesful!\n%s", inf);
 
 	Status("Построение Уровня Законечено! ");
 
 	// Close log
-	bClose					= TRUE;
-	Sleep					(500);
-
-	Concurrency::CurrentScheduler::Detach();
-
-	current_args_data = nullptr;
+	bClose = TRUE;
 }
 
+XRLC_API SpecialArgs* current_args_data = 0;
+ 
 void Startup_DO(SpecialArgs* args)
 {
 	dwStartupTime.Start();
@@ -162,19 +219,17 @@ void Startup_DO(SpecialArgs* args)
 
 	// Show statistic
 	char	stats[256];
-	extern	std::string make_time(u32 sec);
-	xr_sprintf(stats, "Time elapsed: %s", make_time((dwStartupTime.GetElapsed_ms()) / 1000).c_str());
+ 	xr_sprintf(stats, "Time elapsed: %s", make_time((dwStartupTime.GetElapsed_ms()) / 1000).c_str());
 	clMsg(stats);
 
 	bClose = TRUE;
 	Status("Построение Уровня Законечено! ");
 }
 
+
 #include <ctime>
 #include "../XrLCLight/xrDeflector.h"
-
-
-
+ 
 
 void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 {
@@ -208,6 +263,7 @@ void ReadArgs(SpecialArgsXRLCLight* build_args, SpecialArgs* args)
 
 	build_args->EmbreeGeomType = args->EmbreeGeomType;
 	build_args->useRobust = args->useRobust;
+	build_args->useCompactEmbreeBVH = args->useCompactEmbreeBVH;
 
 	build_args->LmapsHemi = args->LmapsHemi;
 }
@@ -283,7 +339,7 @@ void SaveIni(CInifile* save, SpecialArgs* args)
 {
 	save->w_string("launcher", "level_name", args->level_name.c_str());
 
-
+	save->w_bool("launcher", "use_compacted_bvh", args->useCompactEmbreeBVH);
 	save->w_bool("launcher", "use_skip_invalid", args->no_invalide_faces);
 	save->w_bool("launcher", "use_robust", args->useRobust);
 	save->w_bool("launcher", "use_DXT1", args->use_DXT1);
@@ -320,6 +376,7 @@ void LoadIni(CInifile* load, SpecialArgs* args)
 {
 	args->level_name = load->r_string("launcher", "level_name");
 	
+	load->r_bool("launcher", "use_compacted_bvh");
 	load->r_bool("launcher", "use_skip_invalid", args->no_invalide_faces);
 	load->r_bool("launcher", "use_robust", args->useRobust);
 	load->r_bool("launcher", "use_DXT1", args->use_DXT1);
@@ -374,4 +431,4 @@ void SaveParrams(SpecialArgs* args)
 	}
 	file->save_as();
 }
- 
+*/

@@ -56,7 +56,7 @@ class	XRLC_LIGHT_API xrLC_GlobalData
 private:
 		bool							b_vert_not_register;
 public:
-
+		shared_str						level_path;
 public:
 									xrLC_GlobalData	();//:_RCAST_Model (0), _b_nosun(false),_gl_linear(false){}
 									~xrLC_GlobalData();

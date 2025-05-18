@@ -126,7 +126,7 @@ void GSaveAsSMF					(LPCSTR fname)
 xrCriticalSection csAdaptive;
  
 #include "embree4/rtcore.h"
-#include "../XrLCLight/xrLight_Embree.h"
+#include "../XrLCLight/EmbreeRayTrace.h"
 
 #ifndef DevCPU
 	#include "../XrLCLight/xrHardwareLight.h"
@@ -134,9 +134,6 @@ xrCriticalSection csAdaptive;
 
 
 void SetOpacityRaycastModel();
-
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
 extern void log_vminfo_new(LPCSTR stage);
 
 #include "ppl.h"
@@ -145,17 +142,14 @@ void CBuild::xrPhase_AdaptiveHT	()
 {
 	Status			("Tesselating...");
 	
-	if (!build_args->no_optimize)
-	{
-		for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
-		{		// clear split flag from all faces + calculate normals
-			lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
-			lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
-			lc_global_data()->g_faces()[fit]->CalcNormal			();
-		}
-		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
+ 	for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
+	{		// clear split flag from all faces + calculate normals
+		lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
+		lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
+		lc_global_data()->g_faces()[fit]->CalcNormal			();
 	}
-	 
+	u_Tesselate		(callback_edge_longest,0,0);		// tesselate
+ 	 
 	// Tesselate + calculate
 	Status			("Precalculating...");
 	{
@@ -201,7 +195,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 	Status				("Gathering lighting information...");
 	u_SmoothVertColors	(5);
 
-	IntelEmbereDetachRelease();
+	EmbreeMain.IntelEmbereUNLOAD();
 }
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )

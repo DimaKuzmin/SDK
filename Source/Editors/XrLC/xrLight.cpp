@@ -10,14 +10,10 @@
  
 //#include "../xrLCLight/net_task_manager.h"
 #include "../xrLCLight/mu_model_light.h"
-#include "../XrLCLight/xrLight_Embree.h"
+#include "../XrLCLight/EmbreeRayTrace.h"
 
 #include "../XrLCLight/base_face.h"
-
-#include "../XrLCLight/BuildArgs.h"
-
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
+ 
 xrCriticalSection	task_CS;
 xr_vector<int>		task_pool;
  
@@ -80,8 +76,6 @@ public:
 		}
 	}
 };
-
-void IntelEmbereUNLOAD();
  
 #include "ppl.h"
 #include <atomic>
@@ -107,52 +101,10 @@ void	CBuild::LMapsLocal				()
 	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
 		task_pool.push_back(dit);
 
-	int th = build_args->use_threads;
- 	for (int L = 0; L < th; L++)
+	for (int L = 0; L < gCompilerMode.ThreadsNum; L++)
 		threads.start(xr_new<CLMThread>(L), L);
 	threads.wait(500);
 	 
-
-	// thread_local HASH			H;
-	// thread_local CDB::COLLIDER	DB;
-	// thread_local base_lighting	LightsSelected;
-	// 
-	// u32 Progress = 0;
-	// std::atomic<int> processed;
-	// 
-	// u32 LastProgressBar = 0;
-	// 
-	// u32 MaxSize = lc_global_data()->g_deflectors().size();
-	//    
-	// concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_deflectors().size()), [&](size_t ID)
-	// {
- 	// 	
-	// 	// Get task
- 	// 	CDeflector* D = lc_global_data()->g_deflectors()[ID];
-	// 	  
-	// 	// Perform operation
-	// 	try
-	// 	{
-	// 		D->Light(&DB, &LightsSelected, H);
-	// 	}
-	// 	catch (...)
-	// 	{
-	// 		clMsg("* ERROR: CLMThread::Execute - light");
-	// 	}
-	// 
- 	// 	processed.fetch_add(1);
-	// 	
-	// 	if (LastProgressBar < processed)
-	// 	{
-	// 		StatusNoMSG("Deflectors Ended : %u ", processed.load());
-	// 		LastProgressBar = processed + 4096;
-	// 	}
-	// 	
-	// 	// StatusNoMSG("DEFL[%d]/[%d]", ID, lc_global_data()->g_deflectors().size());
-	// });
-
-
-
 	clMsg("%f seconds", start_time.GetElapsed_sec());
 }
 
@@ -163,25 +115,14 @@ void	CBuild::LMaps					()
 	LMapsLocal();
 }
  
-extern void log_vminfo_new(LPCSTR msg);
-
 void CBuild::RunMuModels()
 {
-
-	//****************************************** Starting MU
- 	{
-		FPU::m64r();
-		Phase("LIGHT: Starting MU...");
-		mem_Compact();
-		Light_prepare();
-		//****************************************** Wait for MU
-		FPU::m64r();
-
-		string128 tmp; sprintf(tmp, "LIGHT: Waiting MU...[%s]", build_args->use_embree ? "intel" : "opcode");
-		Phase(tmp);
-
-		wait_mu_base();
-	}
+ 	//****************************************** Starting MU
+   	mem_Compact();
+	Light_prepare();
+	//****************************************** Wait for MU
+ 	Phase("LIGHT: Waiting MU...");
+ 	wait_mu_base();
 }
 
 
@@ -193,67 +134,63 @@ void CBuild::Light()
 
 
 	// Строим модель для Tracing
-	FPU::m64r();
-	Phase("Building rcast-CFORM model...");
+ 	Phase("Building rcast-CFORM model...");
 	mem_Compact();
 	Light_prepare();
+
+
 	BuildRapid(TRUE);
-
-
-	if (g_params().m_quality != ebqDraft)
-	{
-
-		if (build_args->run_mu_first)
-		{
-			RunMuModels();
-			log_vminfo_new("MU-MODELS Memory");
-		}
-		//****************************************** Implicit
-
- 		{
-			FPU::m64r();
-			string128 tmp; sprintf(tmp, "LIGHT: Implicit...[%s]", build_args->use_embree ? "intel" : "opcode");
-			Phase(tmp);
-			mem_Compact();
-			ImplicitLighting();
-			log_vminfo_new("Implicit Memory");
-		}
-
- 		{
+	 
  
-			string128 tmp; sprintf(tmp, "LIGHT: LMaps...[%s]", build_args->use_embree ? "intel" : "opcode");
-			Phase(tmp);
-			LMaps();
-			log_vminfo_new("LMAPS Memory");
+	//****************************************** Resolve materials
+ 	Phase("Resolving materials...");
+	mem_Compact();
+	xrPhase_ResolveMaterials();
+	IsolateVertices(TRUE);
 
+	//****************************************** UV mapping
+ 	Phase("Build UV mapping...");
+	mem_Compact();
+	xrPhase_UVmap();
+	IsolateVertices(TRUE);
 
-			//****************************************** Vertex
-			FPU::m64r();
-			Phase("LIGHT: Vertex...");
-			mem_Compact();
-			LightVertex();
-			log_vminfo_new("Vertex Light Memory");
+	//****************************************** Subdivide geometry
+ 	Phase("Subdividing geometry...");
+	mem_Compact();
+	xrPhase_Subdivide();
 
-			//****************************************** Merge LMAPS
-			{
-				FPU::m64r();
-				Phase("LIGHT: Merging lightmaps...");
-				mem_Compact();
-				xrPhase_MergeLM();
-				log_vminfo_new("Merge LIGHTMAPS Memory");
-			}
+	//****************************************** Implicit
 
-		}
+ 	Phase("LIGHT: Implicit...");
+	mem_Compact();
+	ImplicitLighting();
 
-		if (!build_args->run_mu_first)
-		{
- 			RunMuModels();
-			log_vminfo_new("MU-MODELS Memory");
-		}
- 	}
-  
-	if (build_args->use_embree)
-		IntelEmbereUNLOAD();
+	Phase("LIGHT: LMaps...");
+	mem_Compact();
+	LMaps();
+	 
+	//****************************************** Vertex
+	FPU::m64r();
+	Phase("LIGHT: Vertex...");
+	mem_Compact();
+	LightVertex();
+
+	//****************************************** Merge LMAPS
+ 	FPU::m64r();
+	Phase("LIGHT: Merging lightmaps...");
+	mem_Compact();
+	xrPhase_MergeLM();
+
+	FPU::m64r();
+	Phase("Merging geometry...");
+	mem_Compact();
+	xrPhase_MergeGeometry();
+ 	 
+	// Mu Models Lighting
+  	RunMuModels();
+    
+	if (gCompilerMode.Embree)
+		EmbreeMain.IntelEmbereUNLOAD();
 }
 
 void CBuild::LightVertex	()

@@ -1,13 +1,14 @@
 #pragma once
 
-#ifdef XRLC_API_EXPORTS
-#	define XRLC_API __declspec(dllexport)
-#else
-#	define XRLC_API __declspec(dllimport)
-#endif
+// #ifdef XRLC_API_EXPORTS
+// #	define XRLC_API __declspec(dllexport)
+// #else
+// #	define XRLC_API __declspec(dllimport)
+// #endif
 
+void MainCompilerLC();
  
-
+/*
 #include <string>
  
 struct XRLC_API SpecialArgs
@@ -22,6 +23,8 @@ struct XRLC_API SpecialArgs
 
 	unsigned int   EmbreeGeomType;
 	bool		   useRobust;
+	bool		   useCompactEmbreeBVH;
+
 	LightmapSize LightmapSize_enum;
     
 	// debuging 
@@ -61,6 +64,7 @@ struct XRLC_API SpecialArgs
 	bool LmapsHemi		  = false;
 	bool adptive_ht    = true;
 	bool cform_export  = true;
+	 
 };
 
 XRLC_API void  StartupWorking(SpecialArgs* args);
@@ -85,3 +89,4 @@ extern XRLC_API ILogger* LoggerCL;
 
 extern XRLC_API bool LoadParrams(SpecialArgs* args);
 extern XRLC_API void SaveParrams(SpecialArgs* args);
+*/

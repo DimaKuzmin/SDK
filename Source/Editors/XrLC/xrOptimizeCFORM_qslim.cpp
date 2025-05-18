@@ -1,32 +1,35 @@
 #include "stdafx.h"
 #include "build.h"
-#include "../XrQSlim/MxStdModel.h"
-#include "../XrQSlim/MxQSlim.h"
-#include "../../xrcdb/xrcdb.h"
-#include "../XrECore/Editor/face_smoth_flags.h"
+// #include "../XrQSlim/MxStdModel.h"
+// #include "../XrQSlim/MxQSlim.h"
+// #include "../../xrcdb/xrcdb.h"
+// #include "../XrECore/Editor/face_smoth_flags.h"
 
+void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
+{
+	IWriter* W = FS.w_open(fname);
+	string256 tmp;
+	// vertices
+	for (u32 v_idx = 0; v_idx < CL.getVS(); v_idx++) {
+		Fvector* v = CL.getV() + v_idx;
+		xr_sprintf(tmp, "v %f %f %f", v->x, v->y, -v->z);
+		W->w_string(tmp);
+	}
+	// transfer faces
+	for (u32 f_idx = 0; f_idx < CL.getTS(); f_idx++) {
+		CDB::TRI& t = CL.getT(f_idx);
+		xr_sprintf(tmp, "f %d %d %d", t.verts[0] + 1, t.verts[2] + 1, t.verts[1] + 1);
+		W->w_string(tmp);
+	}
+	FS.w_close(W);
+}
+
+
+/*
 
 #define MAX_DECIMATE_ERROR 0.0005f
 #define COMPACTNESS_RATIO  0.001f
 
-void SaveAsSMF			(LPCSTR fname, CDB::CollectorPacked& CL)
-{
-	IWriter* W			= FS.w_open(fname);
-	string256 tmp;
-	// vertices
-	for (u32 v_idx=0; v_idx<CL.getVS(); v_idx++){
-		Fvector* v		= CL.getV()+v_idx;
-		xr_sprintf			(tmp,"v %f %f %f",v->x,v->y,-v->z);
-		W->w_string		(tmp);
-	}
-	// transfer faces
-	for (u32 f_idx=0; f_idx<CL.getTS(); f_idx++){
-		CDB::TRI& t		= CL.getT(f_idx);
-		xr_sprintf			(tmp,"f %d %d %d",t.verts[0]+1,t.verts[2]+1,t.verts[1]+1);
-		W->w_string		(tmp);
-	}
-	FS.w_close	(W);
-}
 
 struct face_props	{
 	u16		material;
@@ -60,11 +63,13 @@ bool do_constrain(u32 base_edge_idx, u32 test_edg_idx, face_props& base_fprops, 
 	return (test_fprops.material!=base_fprops.material)||(test_fprops.sector!=base_fprops.sector)
 		|| 	!do_connect_faces_by_faces_edge_flags(base_fprops.flags,test_fprops.flags,base_edge_idx,test_edg_idx);
 }
+*/
 
-DEFINE_VECTOR(face_props,FPVec,FPVecIt);
+// DEFINE_VECTOR(face_props,FPVec,FPVecIt);
 
 void SimplifyCFORM		(CDB::CollectorPacked& CL)
 {
+	/*
 	FPVec FPs;
 
 	u32 base_verts_cnt		= u32(CL.getVS());
@@ -176,5 +181,6 @@ void SimplifyCFORM		(CDB::CollectorPacked& CL)
 
  	xr_delete				(slim);
 	xr_delete				(mdl);
+	*/
 }
 

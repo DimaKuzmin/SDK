@@ -3,7 +3,6 @@
 #include "xrThread.h"
 #include "xrLight_Implicit.h"
 #include "xrlight_implicitdeflector.h"
-#include "BuildArgs.h"
  
 #include "tga.h"
 
@@ -39,15 +38,13 @@ void	ImplicitThread ::	Execute	()
 
 std::atomic<int> curHeight;
  
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
- 
 void RunThread(ImplicitDeflector& defl)
 {
 	curHeight.store(0);
 
 	CThreadManager			tmanager;
  
- 	for (u32 thID = 0; thID < build_args->use_threads; thID++)
+ 	for (u32 thID = 0; thID < gCompilerMode.ThreadsNum; thID++)
 	{
 		ImplicitThread* th = xr_new<ImplicitThread>(thID, &defl);
  		tmanager.start(th, thID);

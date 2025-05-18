@@ -56,75 +56,66 @@ extern u64 MSSphereV2 = 0;
 extern u64 MSSphereV3 = 0;
 extern u64 MSVALIDATION = 0;
 
-void				OGF_Base::CalcBounds	() 
+Fsphere CalculateSphere(xr_vector<Fvector>& V, Fbox& bbox)
 {
-	MSSphereV1 = 0;
-	MSSphereV2 = 0;
-	MSSphereV3 = 0;
-	MSVALIDATION = 0;
-
-	// get geometry
-	thread_local xr_vector<Fvector>		V;
-	V.clear						();
-	V.reserve					(4096);
-	GetGeometry					(V);
-	 
-	R_ASSERT					(V.size() >= 3); 
-
-	// Se7kills 
-	CTimer t; t.Start();
-
-	// 1: calc first variation
-	Fsphere	S1;
-	Fsphere_compute				(S1,&*V.begin(),(u32)V.size());
-	
-	MSSphereV1 += t.GetElapsed_ms(); t.Start();
- 
-	// 2: calc ordinary algorithm (2nd)
 	Fsphere S2;
-	Sphere_Compute(bbox, V, S2);
+	bbox.invalidate();
+	for (auto& I : V)
+		bbox.modify(I);
 
-	MSSphereV2 += t.GetElapsed_ms(); t.Start();
+	bbox.grow(EPS_L);
+	bbox.getsphere(S2.P, S2.R);
 
-	// 3: calc magic-fm
-	Fsphere S3;
-	SphereComputeMagic(V, S3);
-	
-	MSSphereV3 += t.GetElapsed_ms(); t.Start();
-
-	BOOL B1 = SphereValid(V, S1);
-	BOOL B2 = SphereValid(V, S2);
-	BOOL B3 = SphereValid(V, S3);
-
-	MSVALIDATION += t.GetElapsed_ms();
-
-	// select best one
-	if (B1 && (S1.R<S2.R))
+	S2.R = -1;
+	for (auto& I : V)
 	{
-		// miniball or FM
-		if (B3 && (S3.R<S1.R))
-		{
-			// FM wins
-			C.set	(S3.P);
-			R	=	S3.R;
-		} else {
-			// MiniBall wins
-			C.set	(S1.P);
-			R	=	S1.R;
-		}
+		float d = S2.P.distance_to_sqr(I);
+		if (d > S2.R)
+			S2.R = d;
 	}
-	else
+
+	S2.R = _sqrt(_abs(S2.R));
+	return S2;
+}
+
+Fsphere CalculateMagic(xr_vector<Fvector>& V)
+{
+	Mgc::Sphere _S3 = Mgc::MinSphere((u32)V.size(), (const Mgc::Vector3*)&*V.begin());
+
+	Fsphere	S3;
+	S3.P.set(_S3.Center().x, _S3.Center().y, _S3.Center().z);
+	S3.R = _S3.Radius();
+	return S3;
+}
+
+
+void OGF_Base::CalcBounds()
+{
+	// get geometry
+	xr_vector<Fvector> V;
+	V.clear();
+	V.reserve(4096);
+
+	GetGeometry(V);
+
+	//se7kills (Merging Problems Need fix this)	 
+	Fsphere	S2 = CalculateSphere(V, bbox);
+	Fsphere S3 = CalculateMagic(V);
+
+	//BOOL B1 = SphereValid(V, S1);
+	BOOL B2 = SphereValid(V, S2);
+	BOOL B3 = SphereValid(V, S3); // Куда быстрее чем Miniball 
+
+	// base or FM
+	if (B3 && (S3.R < S2.R))
 	{
-		// base or FM
-		if (B3 && (S3.R<S2.R))
-		{
-			// FM wins
-			C.set	(S3.P);
-			R	=	S3.R;
-		} else {
-			// Base wins :)
-			C.set	(S2.P);
-			R	=	S2.R;
-		}
+		// FM wins
+		C.set(S3.P);
+		R = S3.R;
+	}
+	else {
+		// Base wins :)
+		C.set(S2.P);
+		R = S2.R;
 	}
 }

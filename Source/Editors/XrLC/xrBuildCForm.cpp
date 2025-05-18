@@ -49,9 +49,6 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 	}
 }
 extern void SimplifyCFORM		(CDB::CollectorPacked& CL);
-
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
  
 extern void log_vminfo_new(LPCSTR msg);
 void CBuild::BuildCForm	()
@@ -117,10 +114,8 @@ void CBuild::BuildCForm	()
 	// Se7kills OFF xrCDB Packing
 
 	CDB::CollectorPacked CL	(BB,cfVertices->size(),cfFaces->size());
- 	CL.UsePacking = false;
-
-
-	int next_ID = 0;
+ 
+ 	int next_ID = 0;
 	for (vecFaceIt F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{
 		Face*	T = *F;
@@ -163,35 +158,20 @@ void CBuild::BuildCForm	()
 
 
 	// Simplification
-	if (g_params().m_quality!=ebqDraft && !build_args->no_simplify)
-	{	
-		SimplifyCFORM	(CL); 
-	} 
-
-	log_vminfo_new("Simplify CFORM Ended");
+	if (g_params().m_quality!=ebqDraft)
+	 		SimplifyCFORM	(CL); 
+ 	log_vminfo_new("Simplify CFORM Ended");
 
 
 	// bb?
 	BB.invalidate	();
 	for (size_t it = 0; it<CL.getVS(); it++)
 		BB.modify( CL.getV()[it] );
-	string_path		fn;
 
-	// Save Rcast For Optimize Model
-//	log_vminfo_new("Saving CFORM OPCODE");
-
-//	CDB::MODEL* RQ				= xr_new<CDB::MODEL> ();
-//	RQ->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
-//	RQ->build_levelcdb_tree_save(strconcat(sizeof(fn),fn,pBuild->path,"level.cdbtree"));
-//
-//	xr_delete(RQ);
-//	log_vminfo_new("Saving CFORM OPCODE clear");
- 
-
-	// Saving
-
-	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "level.cform"));
 	Status("Saving .cform ...");
+
+	string_path		fn; 
+	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "level.cform"));
  
 	// Header
 	hdrCFORM hdr;

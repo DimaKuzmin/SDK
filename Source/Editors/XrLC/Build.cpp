@@ -19,16 +19,7 @@ void	calc_ogf		( xrMU_Model &	mu_model );
 void	export_geometry	( xrMU_Model &	mu_model );
 
 void	export_ogf		( xrMU_Reference& mu_reference );
-
-
-
-#include "../XrLCLight/BuildArgs.h"
-#include "xrLC.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
-extern  SpecialArgs* current_args_data;
-
-
+ 
 using namespace			std;
 struct OGF_Base;
 SBuildOptions			g_build_options;
@@ -171,7 +162,7 @@ void CBuild::Run(LPCSTR P)
 	H.XRLC_quality = g_params().m_quality;
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
- 
+
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
 
@@ -192,27 +183,14 @@ void CBuild::Run(LPCSTR P)
 	FPU::m64r();
 	Phase("Optimizing...");
 	mem_Compact();
-	if (!build_args->no_optimize)
-		PreOptimize();
+ 	PreOptimize();
 	CorrectTJunctions();
 	
-	log_vminfo_new("Optimize");
+  	//****************************************** HEMI-Tesselate
+ 	Phase("Adaptive HT...");
+	mem_Compact();
+ 	xrPhase_AdaptiveHT();
 
-	log_vminfo_new("Adaptive HT memory_pre: ");
-	
-	if (current_args_data->adptive_ht)
-	{
- 	//****************************************** HEMI-Tesselate
- 		Phase("Adaptive HT...");
-		mem_Compact();
- 		xrPhase_AdaptiveHT();
-	}
-
-	log_vminfo_new("Adaptive HT memory_after: ");
-
-	//****************************************** Collision DB
-	//should be after normals, so that double-sided faces gets separated
- 
 	//****************************************** Building normals
  	Phase("Building normals...");
 	mem_Compact();
@@ -220,78 +198,21 @@ void CBuild::Run(LPCSTR P)
 	//SmoothVertColors			(5);
 	log_vminfo_new("Normals Memory: ");
 
-	if (current_args_data->cform_export)
-	{
- 		Phase("Building collision database...");
-		mem_Compact();
-		BuildCForm();
-		log_vminfo_new("CFORM Data");
-		if (CformOnly)
-			return;
-	}
-	
- 
-	//****************************************** GLOBAL-RayCast model 
-  
-	//****************************************** GLOBAL-ILLUMINATION
-	if (g_build_options.b_radiosity)			
-	{
-		FPU::m64r					();
-		Phase						("Radiosity-Solver...");
-		mem_Compact					();
-		Light_prepare				();
-		xrPhase_Radiosity			();
-	}
-
-	//****************************************** Resolve materials
-	FPU::m64r					();
-	Phase						("Resolving materials...");
- 	mem_Compact					();
-	xrPhase_ResolveMaterials	();
-	IsolateVertices				(TRUE);
-
-	log_vminfo_new("Resolving materials");
-
-	//****************************************** UV mapping
- 	FPU::m64r					();
-	Phase						("Build UV mapping...");
- 	mem_Compact					();
- 	xrPhase_UVmap				();
-	IsolateVertices				(TRUE);
+ 	Phase("Building collision database...");
+	mem_Compact();
+	BuildCForm();
  	
-	log_vminfo_new("Build UV mapping");
-
-
-	//****************************************** Subdivide geometry
-  	FPU::m64r					();
-  	Phase						("Subdividing geometry...");
-   	mem_Compact					();
-  
-   	xrPhase_Subdivide			();
-    log_vminfo_new("Subdividing geometry");
-
 	// Se7Kills Opacity BUFFERS
  	//****************************************** All lighting + lmaps building and saving
- 	
-	if (current_args_data->LmapsComputation)
-		Light						();
 
-	RunAfterLight				( fs );
 
+
+ 	Light						();
+ 	RunAfterLight				( fs );
 }
  
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
- 	//****************************************** Merge geometry
-	FPU::m64r					();
-	Phase						("Merging geometry...");
-	mem_Compact					();
-	xrPhase_MergeGeometry		();
- 	log_vminfo_new("Merging geometry");
-	 
-
-	// Tangent Basis To Convert OGF
-	BuildPortals(*fs);
  	//****************************************** T-Basis
 	{
 		FPU::m64r();
@@ -299,14 +220,15 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		xrPhase_TangentBasis();
 		mem_Compact();
 	}
-	log_vminfo_new("Tangents Memory: ");
+
+	// Tangent Basis To Convert OGF
+	BuildPortals(*fs);
 
 	//****************************************** Convert to OGF
 	FPU::m64r();
 	Phase("Converting to OGFs...");
 	mem_Compact();
 	Flex2OGF();
- 	log_vminfo_new("Converting to OGFs");
 
 	//****************************************** Export MU-models
 	FPU::m64r					();
@@ -317,7 +239,6 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		Status			("MU : Models...");
 		for (m=0; m<mu_models().size(); m++)	
 		{
-		//	clMsg("ID[%d], size[%d]", m, mu_models().size());
 			calc_ogf			(*mu_models()[m]);
 			export_geometry		(*mu_models()[m]);
 		}
@@ -330,21 +251,17 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		}
 	}
 
-	log_vminfo_new("Converting to mu-OGFs");
-
 	//****************************************** Destroy RCast-model
 	FPU::m64r		();
 	Phase			("Destroying ray-trace model...");
 	mem_Compact		();
 	lc_global_data()->destroy_rcmodel();
-	log_vminfo_new("Destroying ray-trace model");
  
 	//****************************************** Build sectors
 	FPU::m64r();
 	Phase("Building sectors...");
 	mem_Compact();
 	BuildSectors();
-	log_vminfo_new("Building sectors");
 
 	//****************************************** Saving MISC stuff
 	FPU::m64r		();

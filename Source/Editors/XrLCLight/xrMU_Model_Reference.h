@@ -2,7 +2,8 @@
 #define XRMUMODEL_REFERENCE_H
 
 #include "base_color.h"
-#include "xrDeflector.h"
+#include "EmbreeRayTrace.h"
+
 
 class xrMU_Model;
 namespace CDB { class CollectorPacked; }

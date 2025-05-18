@@ -16,10 +16,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "StbImage\stb_image.h"
 
-#include "../XrLCLight/BuildArgs.h"
-extern XRLC_LIGHT_API SpecialArgsXRLCLight* build_args;
-
-
 extern u32	version;
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)

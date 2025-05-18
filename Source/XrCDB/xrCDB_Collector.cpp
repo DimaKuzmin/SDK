@@ -1,14 +1,9 @@
 #include "stdafx.h"
-//.#include "../xrCore/xrCore.h"
-#pragma hdrstop
-
 #include "xrCDB.h"
-#include <execution>
-#include <atomic>
+   
+#pragma warning(disable:4995)
 
-#include "tbb/tbb.h"
-
-typedef xr_vector<u32>		DWORDList;
+#include <malloc.h>
 
 namespace CDB
 {
@@ -81,10 +76,7 @@ namespace CDB
 		faces.push_back(T);
 	}
 
-#pragma warning(push)
-#pragma warning(disable:4995)
-#include <malloc.h>
-#pragma warning(pop)
+ 
 
 #pragma pack(push,1)
 	struct edge {
@@ -116,15 +108,9 @@ namespace CDB
 
 	void	Collector::calc_adjacency	(xr_vector<u32>& dest)
 	{
+  		const u32						edge_count = faces.size()*3;
  
-		VERIFY							(faces.size() < 65536);
-		const u32						edge_count = faces.size()*3;
-#ifdef _EDITOR
-		xr_vector<edge> _edges			(edge_count);
-		edge 							*edges = &*_edges.begin();
-#else
 		edge							*edges = (edge*)_alloca(edge_count*sizeof(edge));
-#endif
 		edge							*i = edges;
 		xr_vector<TRI>::const_iterator	B = faces.begin(), I = B;
 		xr_vector<TRI>::const_iterator	E = faces.end();
@@ -214,25 +200,23 @@ namespace CDB
 
 	CollectorPacked::CollectorPacked(const Fbox &bb, int apx_vertices, int apx_faces)
 	{
+		HDIM_X = 1024;
+		HDIM_Y = 1024;
+		HDIM_Z = 1024;
+
 		// Params
-		VMscale.set		(bb.max.x-bb.min.x, bb.max.y-bb.min.y, bb.max.z-bb.min.z);
-		VMmin.set		(bb.min);
-		VMeps.set		(VMscale.x/clpMX/2,VMscale.y/clpMY/2,VMscale.z/clpMZ/2);
-		VMeps.x			= (VMeps.x<EPS_L)?VMeps.x:EPS_L;
-		VMeps.y			= (VMeps.y<EPS_L)?VMeps.y:EPS_L;
-		VMeps.z			= (VMeps.z<EPS_L)?VMeps.z:EPS_L;
+		VMscale.set(bb.max.x - bb.min.x, bb.max.y - bb.min.y, bb.max.z - bb.min.z);
+		VMmin.set(bb.min);
+
+		scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
+		scale.div(VMscale);
+
+		Msg("*** Set Hash Scale for Compacting: {%f, %f, %f}", VPUSH(scale));
 
 		// Preallocate memory
-		verts.reserve	(apx_vertices);
-		faces.reserve	(apx_faces);
-		flags.reserve	(apx_faces);
-		int		_size	= (clpMX+1)*(clpMY+1)*(clpMZ+1);
-		int		_average= (apx_vertices/_size)/2;
-
-		for (int ix=0; ix<clpMX+1; ix++)
-		for (int iy=0; iy<clpMY+1; iy++)
-		for (int iz=0; iz<clpMZ+1; iz++)
-			VM[ix][iy][iz].reserve	(_average);
+		verts.reserve(apx_vertices);
+		faces.reserve(apx_faces);
+		flags.reserve(apx_faces);
 	}
 
 	void	CollectorPacked::add_face(
@@ -283,77 +267,43 @@ namespace CDB
 
 	u32		CollectorPacked::VPack(const Fvector& V)
 	{
-		u32 P = 0xffffffff;
+		u32 ix = iFloor((V.x - VMmin.x) * scale.x);
+		u32 iy = iFloor((V.y - VMmin.y) * scale.y);
+		u32 iz = iFloor((V.z - VMmin.z) * scale.z);
 
-		u32 ix,iy,iz;
-		ix = iFloor(float(V.x-VMmin.x)/VMscale.x*clpMX);
-		iy = iFloor(float(V.y-VMmin.y)/VMscale.y*clpMY);
-		iz = iFloor(float(V.z-VMmin.z)/VMscale.z*clpMZ);
+		// Generate hash key
+		size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
 
- 		clamp(ix,(u32)0,clpMX);	clamp(iy,(u32)0,clpMY);	clamp(iz,(u32)0,clpMZ);
-		 
- 		if (UsePacking)
+		// Search for similar vertices
+		auto itHash = hashTable.find(hashKey);
+		if (itHash != hashTable.end())
 		{
- 			DWORDList* vl = &(VM[ix][iy][iz]);;
- 			
-			for (DWORDIt it = vl->begin(); it != vl->end(); it++)
+			for (auto& v : itHash->second)
 			{
-				if (*it >= verts.size())
-					break;
-
-				if (verts[*it].similar(V))
+				if (v.vertex.similar(V, EPS_L))
 				{
-					P = *it;
-					break;
+					return v.PrimID; // Ќашли похожий используем его индекс
 				}
 			}
 		}
+		u32 P = (u32)verts.size();
+		verts.push_back(V);
 
-		if (0xffffffff==P)
-		{
-			P = verts.size();
-			verts.push_back(V);
+		VertexData data;
+		data.PrimID = P;
+		data.vertex = V;
+		hashTable[hashKey].push_back(data);
 
-			VM[ix][iy][iz].push_back(P);
-
-			u32 ixE,iyE,izE;
-			ixE = iFloor(float(V.x+VMeps.x-VMmin.x)/VMscale.x*clpMX);
-			iyE = iFloor(float(V.y+VMeps.y-VMmin.y)/VMscale.y*clpMY);
-			izE = iFloor(float(V.z+VMeps.z-VMmin.z)/VMscale.z*clpMZ);
-
-			//			R_ASSERT(ixE<=clpMX && iyE<=clpMY && izE<=clpMZ);
-			clamp(ixE,(u32)0,clpMX);	
-			clamp(iyE,(u32)0,clpMY);	
-			clamp(izE,(u32)0,clpMZ);
-
-			if (ixE!=ix)							VM[ixE][iy][iz].push_back	(P);
-			if (iyE!=iy)							VM[ix][iyE][iz].push_back	(P);
-			if (izE!=iz)							VM[ix][iy][izE].push_back	(P);
-			if ((ixE!=ix)&&(iyE!=iy))				VM[ixE][iyE][iz].push_back	(P);
-			if ((ixE!=ix)&&(izE!=iz))				VM[ixE][iy][izE].push_back	(P);
-			if ((iyE!=iy)&&(izE!=iz))				VM[ix][iyE][izE].push_back	(P);
-			if ((ixE!=ix)&&(iyE!=iy)&&(izE!=iz))	VM[ixE][iyE][izE].push_back	(P);
-		}
 		return P;
 	}
 
 	void	CollectorPacked::clear()
 	{
-		size_t used, prev, free;
-		vminfo(&free, &prev, &used);
-		Msg("[CollectorPacked][Pre] Clearing: %u mb", used / 1024 / 1024);
-
-
-		verts.resize(0);
+ 		verts.resize(0);
 		faces.resize(0);
 		flags.resize(0);
 		
-		for (u32 _x=0; _x<=clpMX; _x++)
-		for (u32 _y=0; _y<=clpMY; _y++)
-		for (u32 _z=0; _z<=clpMZ; _z++)
-			VM[_x][_y][_z].resize	(0);
-
-		vminfo(&free, &prev, &used);
-		Msg("[CollectorPacked][Pre] After: %u mb", used / 1024 / 1024);
+		for (auto vec : hashTable)
+			vec.second.clear();
 	}
 };

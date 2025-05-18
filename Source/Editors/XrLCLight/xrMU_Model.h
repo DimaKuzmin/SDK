@@ -2,7 +2,7 @@
 #define XRMU_MODEL_H
 
 #include "mu_model_face.h"
-#include "xrDeflector.h"
+#include "EmbreeRayTrace.h"
 
 //#include "cl_collector.h"
 namespace	CDB
