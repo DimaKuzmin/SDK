@@ -301,11 +301,6 @@ CCustomObject* ESceneCustomOTool::FindObjectByName(LPCSTR name, CCustomObject* p
     
     if (objects_hash[hash] != nullptr && objects_hash[hash] != pass)
         return objects_hash[hash];
-    
-    //if (objects_hash.size() != GetObjects().size())
-    //{
-    //    Msg("Strange Hash Size(%u) != objets(%u) | Tool[%u]", objects_hash.size(), GetObjects().size(), Scene->GetOToolClassID(this) );
-    //}
 
     auto IT = std::find_if(std::execution::par, m_Objects.begin(), m_Objects.end(), [&](CCustomObject* object)
     {        
@@ -354,7 +349,7 @@ void ESceneCustomOTool::FillProp(LPCSTR pref, PropItemVec& items)
     int Size = 0;
     for (ObjectIt it=m_Objects.begin(); it!=m_Objects.end(); it++)  
     {
-        if ((*it)->Selected() && Size <= 1)
+        if ( (*it)->Selected() ) // && Size <= 1
         {
             Size++;
         	

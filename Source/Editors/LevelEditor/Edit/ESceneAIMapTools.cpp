@@ -130,42 +130,10 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
         Plane.build(Pos, Plane.n);
         flags.assign(F.r_u8());
     }
-
-
-    /*
-    {
-        u32 			id;
-        NodePosition 	np;
-
-        F.r(&id, 4);
-        n1 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 4);
-        n2 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 4);
-        n3 = (SAINode*)tools->UnpackLink(id);
-        F.r(&id, 4);
-        n4 = (SAINode*)tools->UnpackLink(id);
-
-        pvDecompress(Plane.n, F.r_u16());
-        F.r(&np, sizeof(np)); 
-        tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
-        Plane.build(Pos, Plane.n);
-        flags.assign(F.r_u8());
-    }
-    */
-    
-  /*  u32 max_32 = 0x00ffffff;
-    
-    if (n1->idx > max_32 && n2->idx > max_32 && n3->idx > max_32 && n4->idx > max_32)
-    {
-        Msg("n1[%d], n2[%d], n3[%d], n4[%d], pos[%f][%f][%f]", n1->idx, n2->idx, n3->idx, n4->idx, VPUSH(Pos));
-    }
- */   
 }
 
 void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
 {
-   
 	u32 			id;
   
     id = n1?(u32)n1->idx:InvalidNode; F.w(&id,4);
@@ -176,22 +144,6 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
     F.w_u16(pvCompress(Plane.n));
     F.w_fvector3(Pos);
     F.w_u8			(flags.get());
- 
-    /*
-    u32 			id;
-    u16 			pl;
-    NodePosition 	np;
-
-    id = n1 ? (u32)n1->idx : InvalidNode_32bit; F.w(&id, 4);
-    id = n2 ? (u32)n2->idx : InvalidNode_32bit; F.w(&id, 4);
-    id = n3 ? (u32)n3->idx : InvalidNode_32bit; F.w(&id, 4);
-    id = n4 ? (u32)n4->idx : InvalidNode_32bit; F.w(&id, 4);
-
-    pl = pvCompress(Plane.n);	 F.w_u16(pl);
-    tools->PackPosition(np, Pos, tools->m_AIBBox, tools->m_Params);
-    F.w(&np, sizeof(np));
-    F.w_u8(flags.get());
-    */
 }
 
 ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
@@ -200,8 +152,8 @@ ESceneAIMapTool::ESceneAIMapTool():ESceneToolBase(OBJCLASS_AIMAP)
     m_Flags.zero();
 
     m_AIBBox.invalidate	();
-//    m_Header.size_y				= m_Header.aabb.max.y-m_Header.aabb.min.y+EPS_L;
-	hash_Initialize();
+
+    hash_Initialize();
     m_VisRadius		= 30.f;
     m_SmoothHeight	= 0.5f;
     m_BrushSize	= 1;
@@ -338,15 +290,6 @@ void ESceneAIMapTool::DenumerateNodes()
 
 }
 
-
-void check_lick(u32 link)
-{
-    if (link > 1024 * 1024 * 4)
-    {
-        Msg("Link: %d", link);
-    }
-}
-
 bool ESceneAIMapTool::LoadStream(IReader& F)
 {
 	inherited::LoadStream	(F);
@@ -394,11 +337,6 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     ids = 0;
     for (auto it = vec.begin(); it != vec.end(); it++, ids++)
     {
-       // check_lick((u32)(*it)->n1);
-       // check_lick((u32)(*it)->n2);
-       // check_lick((u32)(*it)->n3);
-       // check_lick((u32)(*it)->n4);
-
         (*it)->n1 = ((u32)(*it)->n1 >= ch_node) ? 0 : vec[(u32)(*it)->n1];
         (*it)->n2 = ((u32)(*it)->n2 >= ch_node) ? 0 : vec[(u32)(*it)->n2];
         (*it)->n3 = ((u32)(*it)->n3 >= ch_node) ? 0 : vec[(u32)(*it)->n3];
@@ -407,9 +345,6 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 
     for (auto node : vec)
         m_Nodes.push_back(node);
-
-
-	//DenumerateNodes	();
 
     if (F.find_chunk(AIMAP_CHUNK_INTERNAL_DATA))
     {
@@ -449,11 +384,11 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
 { 
     if (F.open_chunk(3))
     {
+        Msg("Saved in Older V3 but iam is downgrade to v2 (POS save) ...");
+
         Fbox ai_box;
         F.r(&ai_box, sizeof(ai_box));
-        
-       // m_AIBBox = ai_box;
-
+   
         u32 size = F.r_u32(); 
         SPBItem* pb = UI->ProgressStart(size, "Loading nodes...");
         
@@ -465,43 +400,22 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
         AINodeVec vec;
         vec.resize(size);
 
-         for (auto it = vec.begin(); it != vec.end(); it++, id++)
+        for (auto it = vec.begin(); it != vec.end(); it++, id++)
         {   
-           Fvector3 pos;
-           F.r_fvector3(pos);
-           pos.add(offset);
-           AddNode(pos, ignore, true, 1);
+            Fvector3 pos;
+            F.r_fvector3(pos);
+            pos.add(offset);
+            AddNode(pos, ignore, true, 1);
 
-           Fvector3 norm;
-           F.r_fvector3(norm);
-           
-           F.r_u8();
-           F.r_u32();
-           F.r_u32();
-           F.r_u32();
-           F.r_u32();
-
-
-           /*
-           u8 flag = F.r_u8();
-             
-           u32 n1, n2, n3, n4;
-           n1 = F.r_u32();
-           n2 = F.r_u32();
-           n3 = F.r_u32();
-           n4 = F.r_u32();
-
-           
-           *it = xr_new<SAINode>();
-           (*it)->Plane.n = norm;
-           (*it)->Pos = pos;
-                      
-           (*it)->n1 = (SAINode*) n1;
-           (*it)->n2 = (SAINode*) n2;
-           (*it)->n3 = (SAINode*) n3;
-           (*it)->n4 = (SAINode*) n4;
-           */
+            Fvector3 norm;
+            F.r_fvector3(norm);
             
+            F.r_u8();
+            F.r_u32();
+            F.r_u32();
+            F.r_u32();
+            F.r_u32();
+                        
            if (id % 25048 == 0)
            {
                pb->Update(id);
@@ -509,42 +423,17 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
            }
         }
           
-        /*
-        for (auto it = vec.begin() ; it != vec.end();it++ )
-        {
-            (*it)->n1 = ((u32)(*it)->n1 >= size) ? 0 : vec[(u32)(*it)->n1];
-            (*it)->n2 = ((u32)(*it)->n2 >= size) ? 0 : vec[(u32)(*it)->n2];
-            (*it)->n3 = ((u32)(*it)->n3 >= size) ? 0 : vec[(u32)(*it)->n3];
-            (*it)->n4 = ((u32)(*it)->n4 >= size) ? 0 : vec[(u32)(*it)->n4];
-        }
-
-        for (auto node : vec)
-        {
-            m_Nodes.push_back(node);
-        }
-        
-        hash_FillFromNodes();
-        */
-
         Scene->unlock();
          
         UI->ProgressEnd(pb);
        
 
         Msg("Box AI min[%f][%f][%f], max[%f][%f][%f]", VPUSH(ai_box.min), VPUSH(ai_box.max));
-
-    
-       
-
         return true;
     }
-     
-
+      
     if (F.open_chunk(2))
     {
-        Msg("!!! OLD VERSION AI EXPORT V2");
-      //  return false;
-
         u32 size = F.r_u32();
 
         AINodeVec vec;
@@ -572,43 +461,14 @@ bool ESceneAIMapTool::LoadStreamOFFSET(IReader& F, Fvector offset, bool ignore)
 
 }
 
-#define ver2
-
 void ESceneAIMapTool::SaveStreamPOS(IWriter& write)
 {
-#ifdef ver2
     write.open_chunk(2);
 
     write.w_u32(m_Nodes.size());
     for (auto node : m_Nodes)
         write.w_fvector3(node->Pos);
     write.close_chunk();
-#else 
-
-    write.open_chunk(3);
-   
-    Fbox ai_box = m_AIBBox;
-
-    write.w(&ai_box,sizeof(ai_box));
-    write.w_u32(m_Nodes.size());
-    
-    EnumerateNodes();
-
-    for (auto node : m_Nodes)
-    {
-       write.w_fvector3(node->Pos);
-       write.w_fvector3(node->Plane.n);   
-       write.w_u8(node->flags.get());
-
-       write.w_u32(!node->n1 ? InvalidNode : node->n1->idx );
-       write.w_u32(!node->n2 ? InvalidNode : node->n2->idx);
-       write.w_u32(!node->n3 ? InvalidNode : node->n3->idx);
-       write.w_u32(!node->n4 ? InvalidNode : node->n4->idx);
-    }
-
-    write.close_chunk();
-#endif
-  //
 }
 
 void ESceneAIMapTool::SelectNode(u32 id)

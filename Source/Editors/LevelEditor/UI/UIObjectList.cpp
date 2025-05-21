@@ -229,8 +229,7 @@ void UIObjectList::DrawObjects()
 
 #include "SpawnPoint.h"
 #include "SceneObject.h"
- 
-#pragma optimize("", off)
+  
 void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
 { 
 	CSpawnPoint* spawn = smart_cast<CSpawnPoint*>(obj);
@@ -316,7 +315,4 @@ void UIObjectList::DrawObject(CCustomObject* obj, const char* name)
  	 }
  
 }
-#pragma optimize("", on)
-
-
-
+ 

@@ -42,7 +42,8 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 
 		CInifile* file = xr_new<CInifile>(temp_fn.c_str(), true, true, true);
 
-		string32 tmp; int i = 0;
+		string32 tmp; 
+		int i = 0;
 		sprintf(tmp, "object_%d", i);
 
 		if (!file)
@@ -53,34 +54,36 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 
 		while (file->section_exist(tmp))
 		{
-			if (file->r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
-			{
-				i++;
-				sprintf(tmp, "object_%d", i);
-				continue;
-			}
+			string128 section_name;
+			xr_strcpy(section_name, tmp);
+			
+			i++;
+			sprintf(tmp, "object_%d", i);
 
+			if (file->r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
+  				continue;
+ 
 			CCustomObject* obj = NULL;
-			bool load = Scene->ReadObjectLTX(*file, tmp, obj);
+			bool load = Scene->ReadObjectLTX(*file, section_name, obj);
 			if (load)
 			{
-				Msg("Load: Sec: %s, Name: %s", tmp, obj->GetName());
+				Msg("Load: Sec: %s, Name: %s", section_name, obj->GetName());
 
-				while (Scene->FindObjectByName(obj->GetName(), obj) != 0)
-				{
-					CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
-					xr_string name;
-					string32 tmp;
-					if (obj_find != nullptr)
-					{
-						name = obj_find->FName.c_str();
-						name += "_";
-						name += itoa(Random.randI(1, 20), tmp, 10);
-						obj_find->SetName(name.c_str());
-					}
-
-				}
-
+ 				// while (Scene->FindObjectByName(obj->GetName(), obj) != 0)
+				// {
+				// 	CCustomObject* obj_find = Scene->FindObjectByName(obj->GetName(), obj);
+				// 	xr_string name;
+				// 	
+				// 	string32 tmp;
+				// 	if (obj_find != nullptr)
+				// 	{
+				// 		name = obj_find->FName.c_str();
+				// 		name += "_";
+				// 		name += itoa(Random.randI(1, 20), tmp, 10);
+				// 		obj_find->SetName(name.c_str());
+				// 	}
+				// }
+  
 				if (!Scene->OnLoadAppendObject(obj))
 					xr_delete(obj);
 
@@ -89,12 +92,9 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 				Fvector3 pos = obj->GetPosition();
 				pos.add(offset);
 				obj->SetPosition(pos);
-
-
 			}
 
-			i++;
-			sprintf(tmp, "object_%d", i);
+			
 		}
 	}
 }
