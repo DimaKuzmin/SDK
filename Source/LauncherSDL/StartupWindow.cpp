@@ -16,7 +16,7 @@ void Help(const char* h_str) {
 CompilersMode gCompilerMode;
 
 extern bool ShowMainUI;
-void Startup(LPSTR lpCmdLine)
+void StartupCompilers()
 {
 	GetIterationData().push_back({ "xrLC" });
 	GetIterationData().push_back({ "xrAI" });
@@ -111,15 +111,18 @@ void Startup(LPSTR lpCmdLine)
 	Sleep(200);
 }
 
+void SDL_Application();
+
+#include <thread>
+
 void StartCompile()
 {
 	// Give a LOG-thread a chance to startup
-	//	InitCommonControls();
-	Sleep(150);
-	thread_spawn(logThread, "log-update", 1024 * 1024, 0);
+ 	Sleep(150);
+ 	std::thread(logThread).detach();
 }
 
-void SDL_Application();
+
 int APIENTRY WinMain
 (
 	HINSTANCE hInstance,
@@ -134,6 +137,5 @@ int APIENTRY WinMain
 
 	InitializeUIData();
 	SDL_Application();
-
 	return 0;
 }

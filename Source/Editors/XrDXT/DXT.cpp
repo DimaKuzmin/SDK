@@ -192,7 +192,6 @@ IC u32 GetPowerOf2Plus1(u32 v)
 
 #include "DirectXTex/DirectXTex.h"
 #pragma comment(lib, "DirectXTex.lib")
-#pragma optimize(off, "")
 
 int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth)
 {
@@ -259,8 +258,6 @@ int DXTCompressImage	(LPCSTR out_name, u8* raw_data, u32 w, u32 h, u32 pitch, ST
  
     return 1;
 }
-
-#pragma optimize(on, "")
 
 extern int DXTCompressBump(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 

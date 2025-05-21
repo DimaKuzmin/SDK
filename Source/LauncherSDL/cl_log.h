@@ -5,9 +5,12 @@ void clMsg			(const char *format, ...);
 void Status			(const char *format, ...);
 void StatusNoMSG	(const char* format, ...);
 void Progress		(const float F);
+
+void ProgressMT		(float F);
+
 void Phase			(const char *phase_name);
 
-void logThread	    (void *dummy);
+void logThread	    ();
   
 enum IterationStatus
 {

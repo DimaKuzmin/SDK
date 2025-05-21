@@ -18,7 +18,7 @@ void	CThread::startup(void* P)
 	T->thCompleted = TRUE;
 
 	if (T->thMessages)
-		clMsg("* THREAD #%d: Task Completed.",T->thID);
+		clMsg("- THREAD #%d: Task Completed.",T->thID);
 }
 
 void	CThreadManager::start	(CThread*	T)
@@ -55,7 +55,8 @@ void	CThreadManager::wait	(u32	sleep_time)
 		{
 			Status	("Performance: %3.1f :%s",sumPerformance,perf);
 		}
-		Progress(sumProgress/float(threads.size()));
+		
+		// Progress(sumProgress/float(threads.size()));
 		if (sumComplete == threads.size())	break;
 	}
 	

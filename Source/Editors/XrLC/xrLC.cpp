@@ -107,7 +107,7 @@ void MainCompilerLC()
 		string_path lfn;
 		FS.update_path(lfn, _game_levels_, Name.data());
 
-		lc_global_data()->level_path = lfn;
+		lc_global_data()->level_path = Name.data();
  		clMsg("* LEVEL PATH: %s", lfn);
 
 		pBuild->Run(lfn);

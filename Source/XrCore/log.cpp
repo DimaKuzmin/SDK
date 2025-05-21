@@ -36,10 +36,21 @@ void ThreadLog()
 
 void FlushLog			()
 {
-	//if (filelog)
-	//	filelog->flush();
 }
 
+void DebugMsg(const char* format, ...)
+{
+	va_list		mark;
+	string2048	buf;
+	va_start(mark, format);
+	int sz = _vsnprintf(buf, sizeof(buf) - 1, format, mark); buf[sizeof(buf) - 1] = 0;
+	va_end(mark);
+	if (sz)
+	{
+		OutputDebugString(buf);
+		OutputDebugString("\n");
+ 	}
+}
 void AddOne				(const char *split) 
 {
 	if(!LogFile)		
@@ -259,10 +270,12 @@ void CreateLog			(BOOL nl)
 
 		filelog_dump_data = FS.w_open(path);
 
-		std::thread* th = new std::thread(ThreadLog);
-		th->detach();
+		
 	}
 	*/
+
+	std::thread* th = new std::thread(ThreadLog);
+	th->detach();
 
 }
 

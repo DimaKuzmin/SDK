@@ -25,7 +25,7 @@ volatile BOOL				bClose				= FALSE;
 
 static char					status	[1024	]	="";
 static char					phase	[1024	]	="";
-static float				progress			= 0.0f;
+
 static u32					phase_start_time	= 0;
 static BOOL					bStatusChange		= FALSE;
 static BOOL					bPhaseChange		= FALSE;
@@ -47,7 +47,7 @@ void Status	(const char *format, ...)
 	va_start			( mark, format );
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
-	Msg					("    | %s",status);
+	Msg					("    | $ %s",status);
 
 	csLog.Leave			();
 }
@@ -64,14 +64,6 @@ void StatusNoMSG(const char* format, ...)
  
 IterationData* ActiveIteration = nullptr;
 
-void Progress		(const float F)
-{
-	// No critical section usage
-	progress		= F;	
-
-	if (ActiveIteration->phases.size() > 0)
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].PhasePersent = F;
-}
  
 void Phase			(const char *phase_name)
 {
@@ -103,16 +95,14 @@ void Phase			(const char *phase_name)
 
 extern CTimer	dwStartupTime;
  
-void logThread(void *dummy)
+void logThread()
 {
-	extern void Startup(LPSTR lpCmdLine);
+	extern void StartupCompilers();
 
 	SetLogCB(MyLogCallback);
 
-	string128 cmd;
-	Startup(cmd);
- 
-	SetLogCB(0);
+	StartupCompilers();
+ 	SetLogCB(0);
 }
  
 void clLog(const char* msg )
@@ -168,13 +158,9 @@ void AditionalData(const char* format, ...)
 	va_list		mark;
 	va_start(mark, format);
 	vsprintf(additional_data, format, mark);
-
-
-	if (ActiveIteration->phases.size() > 0)
-	{
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
-	}
-
+  	if (ActiveIteration->phases.size() > 0)
+ 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
+ 
 	csLog.Leave();
 }
 
@@ -182,6 +168,26 @@ void AditionalData(const char* format, ...)
 u32& GetPhaseStartTime()
 {
 	return phase_start_time;
+}
+
+#include <atomic>
+std::atomic<float> progress = 0.0f;
+void Progress(const float F)
+{
+	progress.store(F);
+
+	// No critical section usage
+ 	if (ActiveIteration->phases.size() > 0)
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].PhasePersent = progress;
+}
+
+void ProgressMT(const float F)
+{
+	// No critical section usage
+	progress.store(F);
+
+	if (ActiveIteration->phases.size() > 0)
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].PhasePersent = progress.load();
 }
 
 

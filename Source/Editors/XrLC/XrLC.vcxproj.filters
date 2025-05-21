@@ -164,6 +164,9 @@
     <ClInclude Include="PropSlim\quad.h">
       <Filter>PropSlim</Filter>
     </ClInclude>
+    <ClInclude Include="xrPhase_MergeLM_Surface.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -298,6 +301,9 @@
     </ClCompile>
     <ClCompile Include="PropSlim\object_sliding.cpp">
       <Filter>PropSlim</Filter>
+    </ClCompile>
+    <ClCompile Include="xrPhase_MergeLM_grid.cpp">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
