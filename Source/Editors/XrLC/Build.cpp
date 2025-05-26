@@ -138,21 +138,11 @@ IC bool				FaceEqual(Face& F1, Face& F2);
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
-#ifdef LOAD_GL_DATA
-	net_light();
-	return;
-#endif
-
 	SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_NORMAL);
-
-	bool CformOnly = false;
-
-#pragma todo("se7kills TODO CFORM BUILD PARAMS ")
-
+ 
   	//****************************************** Open Level
 	strconcat(sizeof(path), path, P, "\\");
-
-	xr_strcpy(LEVEL_PATH, path);
+ 	xr_strcpy(LEVEL_PATH, path);
 
 	string_path					lfn;
 	IWriter* fs = FS.w_open(strconcat(sizeof(lfn), lfn, path, "level."));
@@ -163,8 +153,6 @@ void CBuild::Run(LPCSTR P)
 	fs->w(&H, sizeof(H));
 	fs->close_chunk();
  
-	FPU::m64r();
-
 	//****************************************** Dumb entry in shader-registration
 	RegisterShader("");
 
@@ -182,15 +170,6 @@ void CBuild::Run(LPCSTR P)
   	PreOptimize();
 	CorrectTJunctions();
 	
- 	Phase("Adaptive HT...");
-  	xrPhase_AdaptiveHT();
-
- 	Phase("Building normals...");
- 	CalcNormals();
-  
- 	Phase("Building collision database...");
- 	BuildCForm();
- 	
  	Light						();
  	RunAfterLight				( fs );
 }

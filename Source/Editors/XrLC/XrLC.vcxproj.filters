@@ -165,7 +165,7 @@
       <Filter>PropSlim</Filter>
     </ClInclude>
     <ClInclude Include="xrPhase_MergeLM_Surface.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -290,9 +290,6 @@
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
     </ClCompile>
     <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
-    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
     <ClCompile Include="PropSlim\PropSlimTools.cpp">
       <Filter>PropSlim</Filter>
     </ClCompile>
@@ -305,6 +302,9 @@
     <ClCompile Include="xrPhase_MergeLM_grid.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
+    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">
@@ -313,6 +313,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="xrPhase_MergeLM_Cuda.cu">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+    </None>
+    <None Include="File.cu">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
     </None>
   </ItemGroup>

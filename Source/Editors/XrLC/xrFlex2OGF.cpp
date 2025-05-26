@@ -70,9 +70,7 @@ bool ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 {
 	try 
 	{
-		// Msg_IN_FILE("OGF [%u] faces[%u] material[%u]", MODEL_ID, faces->size(), F->dwMaterial);
-
-		// Common data
+ 		// Common data
 		pOGF->Sector = M->sector;
 		pOGF->material = F->dwMaterial;
 
@@ -97,7 +95,7 @@ bool ConvertOgf(u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOG
 			else
 			{
 				// If lightmaps persist
-				CLightmap* LM = dynamic_cast<CLightmap*> ( F->lmap_layer );
+				CLightmap* LM = F->lmap_layer;
 				if (LM)
 				{
  					string_path	fn;
@@ -167,45 +165,55 @@ void CBuild::Flex2OGF()
 	g_tree.reserve	(4096);
 	Status("Converting to OGF size [%d]", g_XSplit.size());
 
-	int ID = 0;
+	int IDSplit = 0;
 	for (auto& SPLIT : g_XSplit)
 	{
 		if (SPLIT == nullptr)
 		{
-			Msg("Problem In SPLIT: %d", ID);
+			Msg("Problem In SPLIT: %d", IDSplit);
 		}
-		ID++;
+		IDSplit++;
 	}
 	 
 	if (g_XSplit.size() > 256)
 	{
 		std::mutex mtx;
-		concurrency::parallel_for(size_t(0), size_t(g_XSplit.size()), [&](size_t ID)
+		std::atomic<int> current_idx = 0;
+		concurrency::parallel_for(size_t(0), size_t(16), [&](size_t thID)
 		{
-			if (ID % 512 == 0)
-				clMsg("Processed MT OGF (%u|%u) ", ID, g_XSplit.size());
+			while (true)
+			{
+				u32 ID = current_idx.load();
+				current_idx.fetch_add(1);
 
-			OGF* pOGF = xr_new<OGF>();
-			auto& SPLIT = g_XSplit[ID];
-			Face* Face = SPLIT->front();			// first face
-			
-			bool isUSE = true;
-			if (!ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this))
-			{
-				clMsg("! OGF[%u] is Currupted : vertes: %u, tris: %u",
-					ID,
-					pOGF ? pOGF->data.vertices.size() : 0,
-					pOGF ? pOGF->data.faces.size() : 0
-				);
-				isUSE = false;
-			}  
-	
-			if (isUSE)
-			{
-				mtx.lock();
-				g_tree.push_back(pOGF);
-				mtx.unlock();
-			}
+				if (current_idx.load() >= g_XSplit.size())
+					break;
+
+				if (ID % 512 == 0)
+					clMsg("Processed MT OGF (%u|%u) ", ID, g_XSplit.size());
+
+				OGF* pOGF = xr_new<OGF>();
+				auto& SPLIT = g_XSplit[ID];
+				Face* Face = SPLIT->front();			// first face
+
+				bool isUSE = true;
+				if (!ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this))
+				{
+					clMsg("! OGF[%u] is Currupted : vertes: %u, tris: %u",
+						ID,
+						pOGF ? pOGF->data.vertices.size() : 0,
+						pOGF ? pOGF->data.faces.size() : 0
+					);
+					isUSE = false;
+				}
+
+				if (isUSE)
+				{
+					mtx.lock();
+					g_tree.push_back(pOGF);
+					mtx.unlock();
+				}
+			}			
 		});
 	}
 	else

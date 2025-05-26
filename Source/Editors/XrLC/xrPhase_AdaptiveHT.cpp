@@ -43,98 +43,12 @@ int		callback_edge_longest	( const Face* F)
 	}
 	return	max_id;
 }
-/*
-// Iterate on edges - select with maximum error
-int		callback_edge_error		(Face* F)
-{
-	float	max_err				= -1;
-	int		max_id				= -1;
-	for (u32 e=0; e<3; e++)
-	{
-		Vertex					*V1,*V2;
-		F->EdgeVerts			(e,&V1,&V2);
-		float len				= V1->P.distance_to	(V2->P);	// len
-		if (len<aht_min_edge)	continue;
-		if (len>max_err)
-		{
-			max_err = len;
-			max_id	= e;
-		}
-	}
-	if (max_id<0)				return max_id;
-
-	// There should be an edge larger than "min_edge"
-	base_color_c			c1; F->v[0]->C._get(c1);
-	base_color_c			c2; F->v[1]->C._get(c2);
-	base_color_c			c3; F->v[2]->C._get(c3);
-	bool	b1	= fsimilar	(c1.hemi,c2.hemi,aht_min_err);
-	bool	b2	= fsimilar	(c2.hemi,c3.hemi,aht_min_err);
-	bool	b3	= fsimilar	(c3.hemi,c1.hemi,aht_min_err);
-	if (b1 && b2 && b3)		return	-1;		// don't touch flat-shaded triangle
-	else					return	max_id;	// tesselate longest edge
-}
-void	callback_vertex_hemi	(Vertex* V)
-{
-	// calc vertex attributes
-	CDB::COLLIDER			DB;
-	DB.ray_options			(0);
-	base_color_c			vC;
-	LightPoint				(&DB, RCAST_Model, vC, V->P, V->N, pBuild->L_static, LP_dont_rgb+LP_dont_sun,0);
-	V->C._set				(vC);
-}
-int		smfVertex				(Vertex* V)
-{
-	return 1 + (std::lower_bound(g_vertices.begin(),g_vertices.end(),V)-g_vertices.begin());
-}
-
-void GSaveAsSMF					(LPCSTR fname)
-{
-	IWriter* W			= FS.w_open	(fname);
-	string256 			tmp;
-
-	// vertices
-	std::sort			(g_vertices.begin(),g_vertices.end());
-	for (u32 v_idx=0; v_idx<g_vertices.size(); v_idx++){
-		Fvector v		= g_vertices[v_idx]->P;
-		xr_sprintf			(tmp,"v %f %f %f",v.x,v.y,-v.z);
-		W->w_string		(tmp);
-	}
-
-	// transfer faces
-	for (u32 f_idx=0; f_idx<g_faces.size(); f_idx++){
-		Face*	t		= g_faces	[f_idx];
-		xr_sprintf			(tmp,"f %d %d %d",
-			smfVertex(t->v[0]), smfVertex(t->v[2]), smfVertex(t->v[1]) 
-			);
-		W->w_string		(tmp);
-	}
-
-	// colors
-	W->w_string			("bind c vertex");
-	for (u32 v_idx=0; v_idx<g_vertices.size(); v_idx++){
-		base_color_c	c;	g_vertices[v_idx]->C._get(c);
-		float			h	= c.hemi/2.f;
-		xr_sprintf			(tmp,"c %f %f %f",h,h,h);
-		W->w_string		(tmp);
-	}
-	
-	FS.w_close	(W);
-}
-*/
-
 
 xrCriticalSection csAdaptive;
  
 #include "embree4/rtcore.h"
 #include "../XrLCLight/EmbreeRayTrace.h"
-
-#ifndef DevCPU
-	#include "../XrLCLight/xrHardwareLight.h"
-#endif
-
-
-void SetOpacityRaycastModel();
-extern void log_vminfo_new(LPCSTR stage);
+ 
 
 #include "ppl.h"
 
@@ -156,9 +70,8 @@ void CBuild::xrPhase_AdaptiveHT	()
 		mem_Compact					();
  		 
 		// Build model
- 		BuildRapid(FALSE);
-		log_vminfo_new("Builded Rapid Model");
-  
+ 		BuildRapid(FALSE, FALSE);
+   
 		// Prepare LIGHT FOR LIGHTING
  		Status("Precalculating : base hemisphere ...");
 		mem_Compact();
@@ -185,8 +98,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 			Processed.fetch_add(1);
 
-			// if (Processed.load() % 128 == 0)
-			StatusNoMSG("Vertex {%d} {%d}", Processed.load(), lc_global_data()->g_vertices().size());
+ 			ProgressMT (float(Processed.load()) / float(lc_global_data()->g_vertices().size()) );
 		});
  
 	}
@@ -349,43 +261,43 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_vertex* cb_V)
 {
 	// main process
-	FPU::m64r					();
-	Status						("Tesselating...");
-	g_bUnregister				= false;
+		FPU::m64r					();
+		Status						("Tesselating...");
+		g_bUnregister				= false;
 
-	u32		counter_create		= 0;
-	u32		cnt_verts			= lc_global_data()->g_vertices().size();
-	//u32		cnt_faces			= g_faces.size();
+		u32		counter_create		= 0;
+		u32		cnt_verts			= lc_global_data()->g_vertices().size();
+		//u32		cnt_faces			= g_faces.size();
 	
-	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
-	{
-		Face* F					= lc_global_data()->g_faces()[I];
-		if (0==F)				
-			continue;
-		if( !check_and_destroy_splited( I ) )
-			continue;
-
-		Progress				(float(I)/float(lc_global_data()->g_faces().size()));
-		int max_id = -1;
-		if( !do_tesselate_face( *F, cb_E, max_id ) )
-			continue;
-
-		xr_vector<Face*>		adjacent_vec;
-		Vertex					*V1,*V2;
-		CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
-		++counter_create;
-		if (0==(counter_create%10000))	
+		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
 		{
-			for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
-					lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+			Face* F					= lc_global_data()->g_faces()[I];
+			if (0==F)				
+				continue;
+			if( !check_and_destroy_splited( I ) )
+				continue;
 
-			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
-			FlushLog			();
+			Progress				(float(I)/float(lc_global_data()->g_faces().size()));
+			int max_id = -1;
+			if( !do_tesselate_face( *F, cb_E, max_id ) )
+				continue;
+
+			xr_vector<Face*>		adjacent_vec;
+			Vertex					*V1,*V2;
+			CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
+			++counter_create;
+		
+			if (0==(counter_create%100000))	
+			{
+				for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
+					if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
+						lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+
+				Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
+			}
+
+			tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
 		}
-
-		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
-	}
 
 		// Cleanup
 		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
@@ -413,36 +325,39 @@ void CBuild::u_SmoothVertColors(int count)
 		xr_vector<base_color>	colors;
  		colors.resize			(lc_global_data()->g_vertices().size());
 
+		std::atomic<u32> ProgressCalculate = 0;
+
  		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t IDX)
 		{
- 			{
-				// Circle
-				xr_vector<Vertex*>	circle_vec;
-				Vertex* V = lc_global_data()->g_vertices()[IDX];
+ 			// Circle
+			xr_vector<Vertex*>	circle_vec;
+			Vertex* V = lc_global_data()->g_vertices()[IDX];
 
-				for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
-				{
-					Face* F = V->m_adjacents[fit];
-					circle_vec.push_back(F->v[0]);
-					circle_vec.push_back(F->v[1]);
-					circle_vec.push_back(F->v[2]);
-				}
-				std::sort(circle_vec.begin(), circle_vec.end());
-				circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
+			for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
+			{
+				Face* F = V->m_adjacents[fit];
+				circle_vec.push_back(F->v[0]);
+				circle_vec.push_back(F->v[1]);
+				circle_vec.push_back(F->v[2]);
+			}
+			std::sort(circle_vec.begin(), circle_vec.end());
+			circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
 
-				// Average
-				base_color_c		avg, tmp;
-				for (u32 cit = 0; cit < circle_vec.size(); ++cit)
-				{
-					circle_vec[cit]->C._get(tmp);
-					avg.add(tmp);
-				}
-				avg.scale(circle_vec.size());
+			// Average
+			base_color_c		avg, tmp;
+			for (u32 cit = 0; cit < circle_vec.size(); ++cit)
+			{
+				circle_vec[cit]->C._get(tmp);
+				avg.add(tmp);
+			}
+			avg.scale(circle_vec.size());
 
- 				colors[IDX]._set(avg);
- 			}
-		
-		});
+ 			colors[IDX]._set(avg);
+
+			ProgressCalculate.fetch_add(1);
+
+			ProgressMT(float(ProgressCalculate.load()) / lc_global_data()->g_vertices().size());
+ 		});
 		 
 		// Transfer
 		for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)

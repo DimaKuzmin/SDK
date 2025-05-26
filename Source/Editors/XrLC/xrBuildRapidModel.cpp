@@ -83,7 +83,7 @@ size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Li
 xrCriticalSection csRapidModel;
 
 
-void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
+void CBuild::BuildRapid(BOOL bSaveForOtherCompilers, BOOL useMU)
 {
 	lc_global_data()->destroy_rcmodel();
 
@@ -92,7 +92,7 @@ void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
 
 	if (gCompilerMode.Embree)
 	{
-		EmbreeMain.IntelEmbereLOAD();
+		EmbreeMain.IntelEmbereLOAD(useMU);
 
 		if (bSaveForOtherCompilers)
 			EmbreeMain.BuildRcast();

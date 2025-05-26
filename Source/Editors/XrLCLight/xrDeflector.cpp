@@ -32,20 +32,20 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 	R_ASSERT(ds_x>=(ss_x+px));
 	R_ASSERT(ds_y>=(ss_y+py));
 	for (u32 y=0; y<ss_y; y++)
-		for (u32 x=0; x<ss_x; x++)
-		{
-			u32 dx = px+x;
-			u32 dy = py+y;
-			base_color	sc = src.surface[y*ss_x+x];
-			u8			sm = src.marker [y*ss_x+x];
-			if (sm>=aREF) {
-				dst.surface	[dy*ds_x+dx] = sc;
-				dst.marker	[dy*ds_x+dx] = sm;
-			}
+	for (u32 x=0; x<ss_x; x++)
+	{
+		u32 dx = px+x;
+		u32 dy = py+y;
+		base_color	sc = src.surface[y*ss_x+x];
+		u8			sm = src.marker [y*ss_x+x];
+		if (sm>=aREF) {
+			dst.surface	[dy*ds_x+dx] = sc;
+			dst.marker	[dy*ds_x+dx] = sm;
 		}
+	}
 }
 
-void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
+void blit			(lm_layer& dst, u32 LmapsSizeX, u32 LmapsSizeY, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	//R_ASSERT(ds_x>=(ss_x+px));
 	//R_ASSERT(ds_y>=(ss_y+py));
@@ -60,8 +60,8 @@ void blit			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_
 			u8			sm = src.marker[y * ss_x + x];
 			if (sm >= aREF)
 			{
-				dst.surface[dy * ds_x + dx] = sc;
-				dst.marker[dy * ds_x + dx] = sm;
+				dst.surface[dy * LmapsSizeX + dx] = sc;
+				dst.marker[dy * LmapsSizeY + dx] = sm;
 			}
 		}
 	}

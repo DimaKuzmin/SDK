@@ -424,6 +424,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3dx9.lib;Winmm.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
     <ClCompile>
@@ -451,6 +455,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>d3dx9.lib;Winmm.lib;Comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PreBuildEvent>
+      <Command>nvcc -gencode arch=compute_75,code=sm_75 -std=c++14  -c $(ProjectDir)xrPhase_MergeLM_Cuda.cu -o $(IntermediateOutputPath)..\LauncherSDL\xrPhase_MergeLM_Cuda.obj --machine 64 --compile -cudart static -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MD "</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevAVX_V11|x64'">
     <ClCompile>
@@ -672,6 +679,7 @@ xcopy /Y /I  "$(SolutionDir)..\SDK\Bin\tbb12.dll"  "$(OutDir)"</Command>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="File.cu" />
     <None Include="xrPhase_MergeLM_Cuda.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

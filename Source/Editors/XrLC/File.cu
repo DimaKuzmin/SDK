@@ -17,6 +17,10 @@ typedef unsigned char u8;
 #include <stdio.h>
 #include <stdarg.h>
 
+#define LOG_SIZE 64*1024
+#define LOG_STRLEN 64
+__device__ char log_buffer[LOG_SIZE][LOG_STRLEN];
+
 __global__ void checkAlphaKernel(
 	const u8* surface_tbb, const u8* lightmap,
 	u32 SurfaceGrid,
@@ -37,7 +41,11 @@ __global__ void checkAlphaKernel(
 	const u8* S = lightmap + y * SizeX + x;
 
 	if (*P && (*S >= alpha_ref))
+	{
 		atomicExch(result_flag, 1);
+	}
+
+  	snprintf(log_buffer[idx], 128, "TID:%d X: %u, Y: %u", idx, x, y);
 }
 
 extern "C" cudaError_t cuda_place(u32 SurfaceGrid, u32 RectX, u32 RectY, u32 SizeX, u32 SizeY, u8* surface, u8* lightmap, bool& isFineded)
@@ -70,7 +78,16 @@ extern "C" cudaError_t cuda_place(u32 SurfaceGrid, u32 RectX, u32 RectY, u32 Siz
 	// Проверка результата
 	bool is_valid = (h_result == 0);
 	cudaFree(cuda_result);
-	  
+
+	char host_log[LOG_SIZE][LOG_STRLEN];
+	cudaMemcpyFromSymbol(&host_log, log_buffer, sizeof(host_log));
+
+	for (int i = 0; i < LOG_SIZE; ++i)
+	{
+		if (host_log[i][0]) // если не пусто
+			OutputDebugStringA(host_log[i]);
+	}
+
 	isFineded = is_valid;
 	return cudaDeviceSynchronize();
 }

@@ -12,7 +12,44 @@
 #include "base_face.h"
 
 #include "../XrLC/Build.h"
-  
+
+#include "ppl.h"
+
+
+void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
+{
+	rayhit.dir_x = dir.x;
+	rayhit.dir_y = dir.y;
+	rayhit.dir_z = dir.z;
+	rayhit.org_x = pos.x;
+	rayhit.org_y = pos.y;
+	rayhit.org_z = pos.z;
+	rayhit.tnear = near_;
+	rayhit.tfar = range;
+	rayhit.mask = (unsigned int)(-1);
+	rayhit.flags = 0;
+}
+
+void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
+{
+	rayhit.ray.dir_x = dir.x;
+	rayhit.ray.dir_y = dir.y;
+	rayhit.ray.dir_z = dir.z;
+	rayhit.ray.org_x = pos.x;
+	rayhit.ray.org_y = pos.y;
+	rayhit.ray.org_z = pos.z;
+	rayhit.ray.tnear = near_;
+	rayhit.ray.tfar = range;
+	rayhit.ray.mask = (unsigned int)(-1);
+	rayhit.ray.flags = 0;
+
+	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
+	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
+
+	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
+	rayhit.hit.instPrimID[0] = RTC_INVALID_GEOMETRY_ID;
+}
+
 
 void VertexEmbree::Set(Fvector& vertex)
 {
@@ -49,40 +86,6 @@ void TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* em
 	last_index += 3;
 }
 
-void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
-{
-	rayhit.dir_x = dir.x;
-	rayhit.dir_y = dir.y;
-	rayhit.dir_z = dir.z;
-	rayhit.org_x = pos.x;
-	rayhit.org_y = pos.y;
-	rayhit.org_z = pos.z;
-	rayhit.tnear = near_;
-	rayhit.tfar = range;
-	rayhit.mask = (unsigned int)(-1);
-	rayhit.flags = 0;
-}
-
-void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
-{
-	rayhit.ray.dir_x = dir.x;
-	rayhit.ray.dir_y = dir.y;
-	rayhit.ray.dir_z = dir.z;
-	rayhit.ray.org_x = pos.x;
-	rayhit.ray.org_y = pos.y;
-	rayhit.ray.org_z = pos.z;
-	rayhit.ray.tnear = near_;
-	rayhit.ray.tfar = range;
-	rayhit.ray.mask = (unsigned int)(-1);
-	rayhit.ray.flags = 0;
-
-	rayhit.hit.geomID = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.primID = RTC_INVALID_GEOMETRY_ID;
-
-	rayhit.hit.instID[0] = RTC_INVALID_GEOMETRY_ID;
-	rayhit.hit.instPrimID[0] = RTC_INVALID_GEOMETRY_ID;
-}
-
 // OFF PACKED PROCESSING
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
 {
@@ -103,7 +106,7 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 }
 
 extern size_t GetMemory();
-void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
+void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem, bool ConstructMU)
 {
 	static_geom.ClearAll();
 	static_geom_transp.ClearAll();
@@ -114,7 +117,7 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 
 	size_t s = GetMemory();
 
-	Status("Converting faces...");
+	Status("(Embree) Converting faces...");
 	for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
 		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
 
@@ -160,8 +163,15 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 			}
 		}
 
+
 		if (!bAlready)
 		{
+			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+			b_texture& T = inlc_global_data()->textures()[M.surfidx];
+
+			if (T.pSurface.Empty() || !T.bHasAlpha)
+				F->flags.bOpaque = true; 
+
 			F->flags.bProcessed = true;
 			if (F->flags.bOpaque)
 			{
@@ -179,29 +189,65 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem)
 
 	s = GetMemory();
 	IDProgress = 0;
-	for (auto ref : lc_global_data()->mu_refs())
-	{
-		Progress(float(IDProgress) / float(lc_global_data()->g_faces().size()));
-		IDProgress++;
 
-		xr_vector<FaceDataIntel> temp_buffer;
-		ref->export_cform_rcast_new(temp_buffer);
-		for (auto pF : temp_buffer)
+	if (ConstructMU)
+	{
+ 		Status("Captures MU-Refs Models...");
+		// refID, refs
+		xr_map<int, xr_vector<xrMU_Reference*> > models;
+		int IDXModel = 0;
+		for (auto mdl : lc_global_data()->mu_models())
 		{
-			Face* F = (Face*)pF.ptr;
-			if (F->flags.bOpaque)
-				murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
-			else
-				murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+			for (auto ref : lc_global_data()->mu_refs())
+			{
+				if (ref->model == mdl)
+					models[IDXModel].push_back(ref);
+			}
+
+			IDXModel++;
 		}
 
+
+		Status("Captures Faces MU-Refs...");
+		IDProgress = 0;
+ 
+		xrCriticalSection mtx_lock;
+		concurrency::parallel_for(size_t(0), size_t(models.size()), [&](size_t INDEX)
+		{
+			for (auto model : models[INDEX])
+			{
+				xr_vector<FaceDataIntel> temp_buffer;
+				model->export_cform_rcast_new(temp_buffer);
+
+				mtx_lock.Enter();
+				for (auto pF : temp_buffer)
+				{
+					Face* F = (Face*)pF.ptr;
+					b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+					b_texture& T = inlc_global_data()->textures()[M.surfidx];
+					if (T.pSurface.Empty() || !T.bHasAlpha)
+						F->flags.bOpaque = true;
+
+					if (F->flags.bOpaque)
+						// static_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+						murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+					else
+						// static_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+						murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
+ 				}
+				mtx_lock.Leave();
+			}
+		});
 	}
+	
 	murefs_mem = GetMemory() - s;
 	MU_size = murefs_mem;
 }
 
+
 void EmbreeData::BuildRcast()
 {
+	Phase("Build Rcast Model (build.cform)");
 	Status("Converting faces...");
 	for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
 		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
@@ -259,23 +305,58 @@ void EmbreeData::BuildRcast()
 	}
 
 
+	Status("Captures MU-Refs Models...");
+	// refID, refs
+	xr_map<int, xr_vector<xrMU_Reference*> > models;
+	int IDXModel = 0;
+	for (auto mdl : lc_global_data()->mu_models())
+	{
+		for (auto ref : lc_global_data()->mu_refs())
+		{
+			if (ref->model == mdl)
+				models[IDXModel].push_back(ref);
+		}
+
+		IDXModel++;
+	}
+ 
+
 	Status("Captures Faces MU-Refs...");
 	IDProgress = 0;
-	for (auto ref : lc_global_data()->mu_refs())
+	xrCriticalSection mtx_lock;
+	concurrency::parallel_for(size_t(0), size_t(models.size()), [&](size_t INDEX)
 	{
-		Progress( float(IDProgress) / float( lc_global_data()->mu_refs().size() ) );
-		IDProgress++;
-
-		xr_vector<FaceDataIntel> temp_buffer;
-		ref->export_cform_rcast_new(temp_buffer);
-		for (auto pF : temp_buffer)
+ 		for (auto model : models[INDEX])
 		{
-			Face* F = (Face*)pF.ptr;
-			CPacked.add_face_D(pF.v1, pF.v2, pF.v3, F, 0);
+			xr_vector<FaceDataIntel> temp_buffer;
+			model->export_cform_rcast_new(temp_buffer);
+			
+			mtx_lock.Enter();
+			for (auto pF : temp_buffer)
+			{
+				Face* F = (Face*)pF.ptr;
+				CPacked.add_face_D(pF.v1, pF.v2, pF.v3, F, 0);
+			}
+			mtx_lock.Leave();
 		}
-	}
+	});
+	 
 
-	Status("Save Faces to file level.cform");
+ 	// for (auto ref : lc_global_data()->mu_refs())
+	// {
+	// 	Progress(float(IDProgress) / float(lc_global_data()->mu_refs().size()));
+	// 	IDProgress++;
+	// 
+	// 	xr_vector<FaceDataIntel> temp_buffer;
+	// 	ref->export_cform_rcast_new(temp_buffer);
+	// 	for (auto pF : temp_buffer)
+	// 	{
+	// 		Face* F = (Face*)pF.ptr;
+	// 		CPacked.add_face_D(pF.v1, pF.v2, pF.v3, F, 0);
+	// 	}
+	// }
+ 
+	Status("Save Faces to file build.cform");
 	{
 		string_path fn;
   		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
@@ -309,6 +390,9 @@ void EmbreeData::BuildRcast()
 
 		MFS->w(&hdr, sizeof(hdr));
 
+		Msg("$(Memory) VERTEXS: %u", ((u32)CPacked.getVS() * sizeof(Fvector))  / 1024 / 1024);
+		Msg("$(Memory) TRIANGLE: %u", ((u32)CPacked.getTS() * sizeof(CDB::TRI)) / 1024 / 1024);
+
 		// Data
 		MFS->w(CPacked.getV(), (u32)CPacked.getVS() * sizeof(Fvector));
 		MFS->w(CPacked.getT(), (u32)CPacked.getTS() * sizeof(CDB::TRI));
@@ -318,6 +402,9 @@ void EmbreeData::BuildRcast()
 		MFS->open_chunk(1);
 		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
 		MFS->close_chunk();
+
+		Msg("$(Memory) RCFACE: %u", ((u32)rc_faces.size() * sizeof(b_rc_face)) / 1024 / 1024);
+
 
 		FS.w_close(MFS);
 	}

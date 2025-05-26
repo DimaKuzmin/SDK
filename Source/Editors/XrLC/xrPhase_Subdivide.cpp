@@ -36,7 +36,7 @@ void CBuild::xrPhase_Subdivide()
 
 	for (int X=0; X<int(g_XSplit.size()); X++)
 	{
-	//	StatusNoMSG("Progress: %d / %d", X, g_XSplit.size());
+		AditionalData("Progress: %d / %d", X, g_XSplit.size());
 		if (g_XSplit[X]->empty()) 
 		{
 			xr_delete		(g_XSplit[X]);
@@ -67,23 +67,28 @@ void CBuild::xrPhase_Subdivide()
 		size.sub(bb.max,bb.min);
 		
 		BOOL	bSplit	= FALSE;
-		if  	(size.x>c_SS_maxsize)					bSplit	= TRUE;
-		if		(size.y>c_SS_maxsize)					bSplit	= TRUE;
-		if		(size.z>c_SS_maxsize)					bSplit	= TRUE;
-		if(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	bSplit	= TRUE;
+		if  	(size.x>c_SS_maxsize)
+			bSplit	= TRUE;
+		if		(size.y>c_SS_maxsize)	
+			bSplit	= TRUE;
+		if		(size.z>c_SS_maxsize)	
+			bSplit	= TRUE;
+		if(int(g_XSplit[X]->size()) > c_SS_HighVertLimit)	
+			bSplit	= TRUE;
 		
 		CDeflector*	defl_base	= (CDeflector*)g_XSplit[X]->front()->pDeflector;
 		
 		if		(!bSplit && defl_base)	
 		{
-			if (defl_base->layer.width  >=	(getLMSIZE() -2*BORDER))	
+			if (defl_base->layer.width  >=	(1024 - 2*BORDER))	
 				bSplit	= TRUE;
-			if (defl_base->layer.height >=	(getLMSIZE() -2*BORDER))
+			if (defl_base->layer.height >=	(1024 - 2*BORDER))
 				bSplit	= TRUE;
 		}
 
 		// perform subdivide if needed
-		if (!bSplit)	continue;
+		if (!bSplit)	
+			continue;
 		
 		// select longest BBox edge
 		int		box_edge			= -1;	

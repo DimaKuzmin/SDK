@@ -5,6 +5,7 @@
 #include "base_face.h"
 
 #include "MeshStructure.h"
+#include <memory>
  
 #pragma pack(push,4)
 
@@ -51,7 +52,7 @@ public:
 
 	BOOL		RenderEqualTo		( Face *F );
 
-	void		AddChannel			( Fvector2 &p1, Fvector2 &p2, Fvector2 &p3 ); 
+	void		AddChannel			( Fvector2 p1, Fvector2 p2, Fvector2 p3 ); 
 	BOOL		hasImplicitLighting	();
 
 	DataFace(){};

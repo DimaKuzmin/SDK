@@ -96,7 +96,7 @@ ICF void FilterRaytraceDetails(const struct RTCFilterFunctionNArguments* args)
 
 	args->valid[0] = 0;
 }
-
+ 
 float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 {
 	RayQueryContext data_hits;
@@ -104,18 +104,18 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 	data_hits.skip = 0;
 	data_hits.energy = 1.0f;
 
-	RTCRayHit rayhit;
+	RTCRay rayhit;
 	SetRay1(rayhit, P, N, 0.f, range);
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
 
-	RTCIntersectArguments args;
-	rtcInitIntersectArguments(&args);
+	RTCOccludedArguments args;
+	rtcInitOccludedArguments(&args);
 
 	data_hits.context = context;
 	args.context = &data_hits.context;
-	rtcIntersect1(IntelSceneDetails, &rayhit, &args);
+	rtcOccluded1(IntelSceneDetails, &rayhit, &args);
 
 	return data_hits.energy;
 }

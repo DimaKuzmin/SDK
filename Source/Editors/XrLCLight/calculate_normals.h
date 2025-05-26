@@ -32,18 +32,18 @@ public:
 		float	p_cost = 1.f / (Vcount);
 
 		// Clear temporary flag
-		Status("Processing Normals ...");
+		// Status("Processing Normals ...");
 		float sm_cos = _cos(deg2rad(g_params().m_sm_angle));
 
-		CTimer t;
-		t.Start();
+		// CTimer t;
+		// t.Start();
 		for (vecFaceIt it = faces.begin(); it != faces.end(); it++)
 		{
 			(*it)->flags.bSplitted = true;
 			(*it)->CalcNormal();
 		}
 
-		Msg("Processing Time For Vertexies: %u", t.GetElapsed_ms());
+		// Msg("Processing Time For Vertexies: %u", t.GetElapsed_ms());
 
 		// remark:
 		//	we use Face's bSplitted value to indicate that face is processed
@@ -77,8 +77,7 @@ public:
 
 				// 5sec
 				type_vertex* pNewVertex = pTestVertex->CreateCopy_NOADJ(vertices);
-				CreateCopy += t.GetElapsed_ticks(); 
-
+ 
 				// 9sec
 				for (u32 a = 0; a < new_adj.size(); ++a)
 				{
@@ -96,11 +95,11 @@ public:
 		Progress(1.f);
 
 
-		clMsg("Total Time Elapsed: Copy: %llu, AReplace: %llu, ASorting: %llu, recurse_tri: %llu", 
-			CreateCopy  / 10000,
-			AReplace / 10000,
-			ASorting / 10000,
-			recurse_tri_params / 10000);
+		// clMsg("Total Time Elapsed: Copy: %llu, AReplace: %llu, ASorting: %llu, recurse_tri: %llu", 
+		// 	CreateCopy  / 10000,
+		// 	AReplace / 10000,
+		// 	ASorting / 10000,
+		// 	recurse_tri_params / 10000);
 
 		// Destroy unused vertices
 
@@ -110,7 +109,7 @@ public:
 		for (vecVertexIt it = vertices.begin(); it != vertices.end(); it++)
 			(*it)->normalFromAdj();
 
-		clMsg("%d vertices was duplicated 'cause of SM groups", vertices.size() - Vcount);
+		// clMsg("%d vertices was duplicated 'cause of SM groups", vertices.size() - Vcount);
 
 		// Clear temporary flag
 		for (vecFaceIt it = faces.begin(); it != faces.end(); it++)

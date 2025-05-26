@@ -20,6 +20,8 @@ extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data
 CLightmap::CLightmap()
 {
 	strcpy ( lm_texture.name, "");
+	if (lm.surface.empty())
+		lm.create(getLMSIZE(), getLMSIZE());
 }
 
 CLightmap::~CLightmap()
@@ -29,38 +31,32 @@ CLightmap::~CLightmap()
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
-	// Allocate 512x512 texture if needed
-	
- 	if (lm.surface.empty())	
-		lm.create(getLMSIZE(), getLMSIZE());
-
-	// Addressing
-	xr_vector<UVtri>	tris;
-	D->RemapUV			(tris,b_u+BORDER,b_v+BORDER,s_u-2*BORDER,s_v-2*BORDER, getLMSIZE(), getLMSIZE(),bRotated);
-	
+  	xr_vector<UVtri>	tris;
+	D->RemapUV(tris, b_u + BORDER, b_v + BORDER, s_u - 2 * BORDER, s_v - 2 * BORDER, getLMSIZE(), getLMSIZE(), bRotated);
+ 
 	// Capture faces and setup their coords
-	for (UVIt T=tris.begin(); T!=tris.end(); T++)
+	for (auto& T : tris)
 	{
-		UVtri&	P			= *T;
-		Face	*F			= P.owner;
-		F->lmap_layer		= this;
-		F->AddChannel		(P.uv[0], P.uv[1], P.uv[2]);
+ 		Face* F			= dynamic_cast<Face*>(T.owner);
+		F->lmap_layer	= this;
+		F->AddChannel(T.uv[0], T.uv[1], T.uv[2]);
 	}
-	
+
 	// Perform BLIT
-	lm_layer&	L		=	D->layer;
-	if (!bRotated) 
+	lm_layer& L = D->layer;
+	if (!bRotated)
 	{
-		u32 real_H	= (L.height	+ 2*BORDER);
-		u32 real_W	= (L.width	+ 2*BORDER);
-		blit	(lm, getLMSIZE(), getLMSIZE(),L,real_W,real_H,b_u,b_v,254-BORDER);
-	} 
+		u32 real_H = (L.height + 2 * BORDER);
+		u32 real_W = (L.width + 2 * BORDER);
+  		blit(lm, getLMSIZE(), getLMSIZE(), L, real_W, real_H, b_u, b_v, 254 - BORDER);
+	}
 	else
 	{
-		u32 real_H	= (L.height	+ 2*BORDER);
-		u32 real_W	= (L.width	+ 2*BORDER);
-		blit_r	(lm, getLMSIZE(), getLMSIZE(), L, real_W,real_H,b_u,b_v,254-BORDER);
+		u32 real_H = (L.height + 2 * BORDER);
+		u32 real_W = (L.width + 2 * BORDER);
+		blit_r(lm, getLMSIZE(), getLMSIZE(), L, real_W, real_H, b_u, b_v, 254 - BORDER);
 	}
+ 
 }
 
 //////////////////////////////////////////////////////////////////////

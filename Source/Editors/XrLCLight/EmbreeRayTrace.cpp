@@ -34,114 +34,123 @@ XRLC_LIGHT_API EmbreeData EmbreeMain;
 // Сильно ускоряет Но не нужно сильно завышать вообще 0.01f желаетельно 
 // Влияет на яркость на выходе (если близко к 0 будет занулятся)
 // можно и 0.10f Было раньше так
-float EmbreeEnergyMAX = 0.01f;
+float EmbreeEnergyMAX = 0.035f;
 
 struct RayQueryContext
 {
 	RTCRayQueryContext context;
 	Fvector B;
-
-	Face* skip = 0;
+	
+	Face* face;
+ 	Face* skip	  = 0;
 	R_Light* Light = 0;
 	float energy = 1.0f;
 	u32 Hits = 0;
+
+	// Texture Coord U
+	int tU;
+	// Texture Coord V
+	int tV;
+
+	// Barycentric UV
+	Fvector2 uv;
 };
+ 
+static float opacityLUT[256] = { 0 };
+static float decayLUT[32] = {0};
+
+void InitOpacityLUT() 
+{
+	for (int i = 0; i < 256; ++i) 
+	{
+		float a = i / 255.f;
+		opacityLUT[i] = 1.f - _sqr(a);
+	}
+
+	for (int i = 0; i < 32; ++i)
+		decayLUT[i] = powf(0.5f, i);
+}
 
 // Сделать потом переключалку
-bool CalculateEnergy(Face* F, Fvector& B, float& energy, float u, float v)
+bool CalculateEnergy(RayQueryContext*ctxt, float& u, float& v)
 {
 	// Перемещаем начало луча немного дальше пересечения
-	b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
- 	if (!T.bHasAlpha)
-		return false;
-
-	if (T.pSurface.Empty())
-	{
-		T.bHasAlpha = false;
-		return false;
-	}
+	b_material& M = inlc_global_data()->materials()[ctxt->face->dwMaterial];
+	b_texture&  T = inlc_global_data()->textures()[M.surfidx];
 
 	// barycentric coords
 	// note: W,U,V order
-	B.set(1.0f - u - v, u, v);
+	ctxt->B.set(1.0f - u - v, u, v);
 
 	//// calc UV
-	Fvector2* cuv = F->getTC0();
-	Fvector2	uv;
-	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
-	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
-	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
+	Fvector2*	cuv = ctxt->face->getTC0();
+  	ctxt->uv.x = cuv[0].x * ctxt->B.x + cuv[1].x * ctxt->B.y + cuv[2].x * ctxt->B.z;
+	ctxt->uv.y = cuv[0].y * ctxt->B.x + cuv[1].y * ctxt->B.y + cuv[2].y * ctxt->B.z; 
+	
+	// Без floor быстрее и работает хорошо
+	ctxt->tU = int(ctxt->uv.x * T.dwWidth + 0.5f);
+	ctxt->tV = int(ctxt->uv.y * T.dwHeight + 0.5f);
+	ctxt->tU = (ctxt->tU % T.dwWidth + T.dwWidth) % T.dwWidth;
+	ctxt->tV = (ctxt->tV % T.dwHeight + T.dwHeight) % T.dwHeight;
+ 
+	// Прозрачность
+	u32* surface	 = static_cast<u32*>(*T.pSurface);
+	u32 opacity		 = color_get_A(surface[ctxt->tV * T.dwWidth + ctxt->tU]);
+	// Используем заранее посчитаные данные 
+   	// Дополнение Контекста
 
-	u32* surface = static_cast<u32*>(*T.pSurface);
-	u32 pixel = surface[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
-
-	// Дополнение Контекста
-	energy *= opac;
-	if (energy < EmbreeEnergyMAX)
-		return false;
-
-	return true;
+	float opac = opacityLUT[opacity];
+	ctxt->energy *= opac;
+ 	// Отымаем енергию чтобы быстрее выйти
+	if (ctxt->Hits > 1)  
+ 		ctxt->energy *= decayLUT[ctxt->Hits];
+ 
+	return ctxt->energy > EmbreeEnergyMAX;
 }
 
 void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-
-	Face* F = hit->geomID == 0 ? EmbreeMain.static_geom.dummy[hit->primID] : hit->geomID == 1 ? EmbreeMain.murefs_geom.dummy[hit->primID] : nullptr;
-	if (F == ctxt->skip)
+ 
+	Face* F =  hit->geomID == 0 ?  EmbreeMain.static_geom.dummy[hit->primID] : EmbreeMain.murefs_geom.dummy[hit->primID];
+ 	if (F == ctxt->skip)
 	{
-		args->valid[0] = 0;
+ 		args->valid[0] = 0;
 		return;
 	}
-	ctxt->energy = 0;
-	args->valid[0] = -1; // Приехали
+	ctxt->energy = 0; // Отсеили 
 }
 
 void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 {
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
-	RTCHit* hit = (RTCHit*)args->hit;
-
+	RayQueryContext* ctxt	= (RayQueryContext*)args->context;
+	RTCHit* hit				= (RTCHit*)args->hit;
+ 
 	// Собрать все
-	Face* F = nullptr;
-
-	if (hit->geomID == 2)
-		F = EmbreeMain.static_geom_transp.dummy[hit->primID];
-	else
-		F = EmbreeMain.murefs_geom_transp.dummy[hit->primID];
-
-	if (!CalculateEnergy(F, ctxt->B, ctxt->energy, hit->u, hit->v) && F != ctxt->skip)
+	Face* F = hit->geomID == 2 ? EmbreeMain.static_geom_transp.dummy[hit->primID] : EmbreeMain.murefs_geom_transp.dummy[hit->primID];
+ 	
+	ctxt->Hits++;
+	ctxt->face = F;
+  	if (!CalculateEnergy(ctxt, hit->u, hit->v))
 	{
-		ctxt->energy = 0;
-		args->valid[0] = -1;
+		ctxt->energy = 0; // Отсеили 
 		return;
 	}
 
-	// ctxt->Hits++;
-	// if (ctxt->Hits > 16)
-	// 	return;
-
-	args->valid[0] = 0;
+	if (ctxt->Hits < 4)
+		args->valid[0] = 0;	// Продолжаем
 }
 
 float EmbreeData::RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
 {
-	// Структура для RayTracing
+ 	// Структура для RayTracing
 	RayQueryContext data_hits;
 	data_hits.Light = &L;
 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
 	data_hits.Hits = 0;
 
-	// se7kills : 07.02.2025 0.001 виноват BORDER 1 был поставил 4 
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.001f, range);
 
@@ -168,8 +177,6 @@ size_t GetMemory()
 	return used;
 }
 
-
-
 void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTransp, TriangleContainer& geom_buffer)
 {
 	geom = rtcNewGeometry(device, RTC_GEOMETRY_TYPE_TRIANGLE);
@@ -185,17 +192,19 @@ void LoadGeomBuffer(RTCGeometry& geom, RTCBuildQuality& quality, bool FilterTran
 	geom_buffer.hashTable.clear();
 
 	rtcCommitGeometry(geom);
-}
+} 
 
-void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem)
+void EmbreeData::InitializeGeometry(size_t& geom_static_mem, size_t& geom_murefs_mem, bool useMU)
 {
+	useMU = true;
+
 	// Конструктор модели
-	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem);
+	EmbreeData::GetGlobalData(geom_static_mem, geom_murefs_mem, useMU);
 
 	LoadGeomBuffer(IntelGeometryNormal, scene_quality, false, static_geom);
-	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
-
 	LoadGeomBuffer(IntelGeometryTransp, scene_quality, true, static_geom_transp);
+  
+	LoadGeomBuffer(IntelGeometryMuModels, scene_quality, false, murefs_geom);
 	LoadGeomBuffer(IntelGeometryMuModelsTransp, scene_quality, true, murefs_geom_transp);
 
 }
@@ -210,14 +219,19 @@ size_t EmbreeData::AttachGeometrys(bool addMU)
 	isAttached = true;
 	rtcAttachGeometryByID(IntelScene, IntelGeometryNormal, 0);
 	rtcAttachGeometryByID(IntelScene, IntelGeometryTransp, 2);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
-	rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
 
-	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
-	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
+	if (murefs_geom.faces().size() > 0 && addMU)
+	{
+		rtcAttachGeometryByID(IntelScene, IntelGeometryMuModels, 1);
+ 		rtcAttachGeometryByID(IntelScene, IntelGeometryMuModelsTransp, 3);
+	} 
+
 	size_t start = GetMemory();
 	rtcCommitScene(IntelScene);
 	BVH_size = GetMemory() - start;
+
+	Msg("Static MODELS Transp : %u, Opacue: %u", static_geom_transp.faces_v.size(), static_geom.faces_v.size());
+	Msg("MU MODELS Transp : %u, Opacue: %u", murefs_geom_transp.faces_v.size(), murefs_geom.faces_v.size());
 
 	return (GetMemory() - start);
 }
@@ -255,9 +269,11 @@ void EmbreeData::IntializeDevice()
 	bool avx_test = true; 
 	bool sse	  = true; 
 
+	InitOpacityLUT();
+
 	const char* config = "";
 	if (avx_test)
-		config = "threads=16,isa=avx,verbose=0";
+		config = "threads=16,isa=avx2,verbose=0";
 	else if (sse)
 		config = "threads=16,isa=sse4.2,verbose=0";
 	else
@@ -283,7 +299,7 @@ void EmbreeData::IntializeDevice()
 	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", device, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
 }
 
-void EmbreeData::IntelEmbereLOAD()
+void EmbreeData::IntelEmbereLOAD(bool useMU)
 {
 	if (!isInitialized)
 	{
@@ -302,7 +318,7 @@ void EmbreeData::IntelEmbereLOAD()
 
 	// LOADING NORMAL GEOM
 	size_t geom_memory, refs_memory;
-	InitializeGeometry(geom_memory, refs_memory);
+	InitializeGeometry(geom_memory, refs_memory, useMU);
 
 	size_t BVH = AttachGeometrys(true);
 	AditionalData("ST: %umb | MU: %umb | BVH: %u mb", geom_memory / 1024 / 1024, refs_memory / 1024 / 1024, BVH / 1024 / 1024);

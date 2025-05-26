@@ -53,7 +53,7 @@ void CBuild::PreOptimize()
         if (it >= (int)lc_global_data()->g_vertices().size())
             break;
 
-        if (it % 25600 == 0)
+        if (it % 1000000 == 0)
         {
             clMsg("%u vertex removed. Size:  %u/%u", Vremoved, it, lc_global_data()->g_vertices().size());
 

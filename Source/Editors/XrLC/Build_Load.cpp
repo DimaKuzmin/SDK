@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#pragma optimize( "", off )
+ 
 #include "elight_def.h"
 
 

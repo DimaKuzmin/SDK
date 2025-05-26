@@ -512,7 +512,7 @@ using SplitMap = std::unordered_map<SplitKey, SplitValue>;
 SplitKey CalcSplitKey(const vecFace* split)
 {
 	auto& face = split->front();
-	return { face->lmap_layer, face->tc.size(), face->dwMaterial };
+	return { face->lmap_layer, face->tc.size(), face->dwMaterial};
 }
 
 struct SplitInfo

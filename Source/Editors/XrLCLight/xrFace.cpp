@@ -102,8 +102,6 @@ Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
 }
  
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
- 
-
 template<>
 Tface<DataVertex>::Tface()
 {
@@ -116,6 +114,7 @@ Tface<DataVertex>::Tface()
 		inlc_global_data()->g_faces().push_back		(this);
 	}
 	sm_group				= u32(-1);
+	
 	lmap_layer				= NULL;
 }
 
@@ -140,25 +139,23 @@ Tface<DataVertex>::~Tface()
 
 	lmap_layer				= NULL;
 }
-
-//#define VPUSH(a) ((a).x), ((a).y), ((a).z)
-
+ 
 template<>
 void Face::	Failure		()
 {
 	dwInvalidFaces			++;
 
-	clMsg		("* ERROR: Invalid face. (A=%f,e0=%f,e1=%f,e2=%f)",
-		CalcArea(),
-		v[0]->P.distance_to(v[1]->P),
-		v[0]->P.distance_to(v[2]->P),
-		v[1]->P.distance_to(v[2]->P)
-		);
-	clMsg		("*        v0[%f,%f,%f], v1[%f,%f,%f], v2[%f,%f,%f]",
-		VPUSH(v[0]->P),
-		VPUSH(v[1]->P),
-		VPUSH(v[2]->P)
-		);
+	// clMsg		("* ERROR: Invalid face. (A=%f,e0=%f,e1=%f,e2=%f)",
+	// 	CalcArea(),
+	// 	v[0]->P.distance_to(v[1]->P),
+	// 	v[0]->P.distance_to(v[2]->P),
+	// 	v[1]->P.distance_to(v[2]->P)
+	// 	);
+	// clMsg		("*        v0[%f,%f,%f], v1[%f,%f,%f], v2[%f,%f,%f]",
+	// 	VPUSH(v[0]->P),
+	// 	VPUSH(v[1]->P),
+	// 	VPUSH(v[2]->P)
+	// 	);
 	inlc_global_data()->err_invalid().w_fvector3	(v[0]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[1]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[2]->P);
@@ -193,6 +190,7 @@ void start_unwarp_recursion()
  
 void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces )
 {
+	/* 
 	if (pDeflector)					return;
 	if (!D->OA_Place(this))		    return;
 	
@@ -205,6 +203,36 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces )
 		affected		+= 1;
 		(*it)->OA_Unwarp(D, faces);
 	}
+	*/
+
+	xr_stack<Face*> st;
+
+	Face* f = this;
+	while (true)
+	{
+		for (int i = 0; i < 3; ++i)
+		{
+			for (auto it : f->v[i]->m_adjacents)
+			{
+				if (it->pDeflector)
+					continue;
+
+				if (!D->OA_Place(it))
+					continue;
+
+				affected++;
+				st.push(it);
+				faces.push_back(it);
+			}
+		}
+
+		if (!st.empty())
+		{
+			f = st.top();
+			st.pop();
+		}
+		else break;
+	}
 }
 
 
@@ -216,7 +244,7 @@ BOOL	DataFace::RenderEqualTo	(Face *F)
 
 
 
-void	DataFace::AddChannel	(Fvector2 &p1, Fvector2 &p2, Fvector2 &p3) 
+void	DataFace::AddChannel	(Fvector2 p1, Fvector2 p2, Fvector2 p3) 
 {
 	_TCF	TC;
 	TC.uv[0] = p1;	TC.uv[1] = p2;	TC.uv[2] = p3;

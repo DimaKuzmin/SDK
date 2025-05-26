@@ -5,30 +5,6 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrFace.h"
 
-
-
-extern bool CheckInfinity_FBOX(Fbox& box)
-{
-	constexpr float inf = std::numeric_limits<float>::infinity();
-
-	if (box.min.x == -inf || box.min.x == inf)
-		return true;
-	if (box.min.y == -inf || box.min.y == inf)
-		return true;
-	if (box.min.z == -inf || box.min.z == inf)
-		return true;
-
-	if (box.max.x == -inf || box.max.x == inf)
-		return true;
-	if (box.max.y == -inf || box.max.y == inf)
-		return true;
-	if (box.max.z == -inf || box.max.z == inf)
-		return true;
-
-
-	return false;
-}
-
 void Detach(vecFace* S)
 {
 	map_v2v			verts;
@@ -76,12 +52,6 @@ bool sort_faces(Face* face, Face* face2)
 		return true;
 	return false;
 }
-
-#include <thread>
-#include <algorithm>
-#include <execution>
-
-extern bool CheckInfinity_FBOX(Fbox& bbox);
 
 void CBuild::xrPhase_UVmap()
 {
@@ -132,8 +102,6 @@ void CBuild::xrPhase_UVmap()
 					msF = FACE;
 
 					CDeflector* D = new CDeflector();
-
-
 					lc_global_data()->g_deflectors().push_back(D);
 					// Start recursion from this face
 					start_unwarp_recursion();
@@ -191,7 +159,7 @@ void CBuild::xrPhase_UVmap()
 		size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);
 		size_t FSize = lc_global_data()->g_faces().size() * sizeof(Face);
 
-		clMsg("SP[%u], xsp: %u| V: %u, F: %u", SP, g_XSplit.size(),
+		AditionalData("SP[%u], xsp: %u| V: %u, F: %u", SP, g_XSplit.size(),
 			VSize / 1024 / 1024, FSize / 1024 / 1024);
 	}
 
@@ -216,16 +184,26 @@ void CBuild::xrPhase_UVmap()
 			SP--;
 		}
 	}
-  
+
+	vminfo(&free, &rel, &used);
+	clMsg("xrPhase_UVmap: Ended %u used", size_t(used / 1024 / 1024));
+
+	size_t NewOriginalFaces = 0;
+	for (auto SP : g_XSplit)
+		NewOriginalFaces += SP->size();
+
 	size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);
 	size_t FSize = lc_global_data()->g_faces().size() * sizeof(Face);
- 	AditionalData("DF:%umb| V(%umb) T(%umb) SPLIT(%u)",
+
+
+	AditionalData("DF:%umb|Size(%umb)|V(%umb)T(%umb)",
 		AllocatedDeflectors,
- 		VSize / 1024 / 1024,
-		FSize / 1024 / 1024,
-		g_XSplit.size()
+		(NewOriginalFaces * sizeof(Face*)) / 1024 / 1024,
+		VSize / 1024 / 1024,
+		FSize / 1024 / 1024
 	);
- 
+
+	Status("UV SPLITS SP[%u]", g_XSplit.size());
 }
 
 void CBuild::mem_Compact()

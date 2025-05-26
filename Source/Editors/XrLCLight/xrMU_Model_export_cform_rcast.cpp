@@ -4,12 +4,6 @@
 
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
-
-  
- 
-//extern xr_vector<b_material>* materials_globaldata = 0;
-//extern Shader_xrLC_LIB* shaders_globaldata = 0;
-
  
 void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix& xform)
 {
@@ -41,8 +35,10 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 		for (u32 ait = 0; ait < adjacent.size(); ait++)
 		{
 			_face* Test = adjacent[ait];
-			if (Test == F)				continue;
-			if (!Test->flags.bProcessed)continue;
+			if (Test == F)				
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
 			if (F->isEqual(*Test))
 			{
 				bAlready = TRUE;
@@ -65,8 +61,6 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 			data.v3 = P[2];
 			data.ptr = F;
 			faces.push_back(data);
-
-			//CL.add_face_D(P[0], P[1], P[2], F, F->sm_group);//
 		}
 	}
 }

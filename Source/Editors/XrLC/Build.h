@@ -98,7 +98,7 @@ public:
 
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
-	void	BuildRapid				(BOOL bSave);
+	void	BuildRapid				(BOOL bSave, BOOL useMU);
 	void	BuildCollectionDB		(CDB::CollectorPacked& CL);
  
 	void	SaveForOthers			(CDB::CollectorPacked& CL);
@@ -121,6 +121,8 @@ public:
 	void	LightVertex				();
 	
 	void	xrPhase_MergeLM			();
+	void	xrPhase_MergeLM_fast	();
+
   	void	xrPhase_SaveLmaps();
 
 	void	xrPhase_MergeGeometry	();

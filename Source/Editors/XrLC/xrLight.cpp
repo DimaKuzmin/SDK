@@ -13,12 +13,14 @@
 #include "../XrLCLight/EmbreeRayTrace.h"
 
 #include "../XrLCLight/base_face.h"
- 
-xrCriticalSection	task_CS;
-xr_vector<int>		task_pool;
- 
- 
-class CLMThread		: public CThread
+#include <atomic>
+#include "ppl.h" 
+
+xrCriticalSection csEnterMUThread;
+u32 atomic_u32 = 0;
+
+
+class CLMThread : public CThread
 {
 private:
 	HASH			H;
@@ -26,49 +28,36 @@ private:
 	base_lighting	LightsSelected;
 
 public:
-	CLMThread	(u32 ID) : CThread(ID)
+	CLMThread(u32 ID) : CThread(ID)
 	{
- 		thMessages	= TRUE;
+		thMessages = TRUE;
 	}
 
 	virtual void	Execute()
 	{
- 
-		CDeflector* D	= 0;
- 
-		for (;;) 
+
+		CDeflector* D = 0;
+
+		for (;;)
 		{
 			// Get task
-			task_CS.Enter		();
-			
-			thProgress			= 1.f - float(task_pool.size())/float(lc_global_data()->g_deflectors().size());
-		
-			if (task_pool.empty())	
+			csEnterMUThread.Enter();
+ 			if (atomic_u32 >= lc_global_data()->g_deflectors().size()) 
 			{
-				task_CS.Leave		();
-				return;
+				csEnterMUThread.Leave();
+				break;
 			}
 
-			D					= lc_global_data()->g_deflectors()[task_pool.back()];
+			D = lc_global_data()->g_deflectors()[atomic_u32];
+ 			AditionalData("Index [%d]/[%d], w[%d], h[%d]", atomic_u32, lc_global_data()->g_deflectors().size(), D->layer.width, D->layer.height );
+ 			atomic_u32++;
+			csEnterMUThread.Leave();
 
-			 
-			int IDX = lc_global_data()->g_deflectors().size() - task_pool.size();
-			if (IDX % 512 == 0)
- 			StatusNoMSG("DEFL[%d]/[%d], layer w[%d], h[%d]", 
-				lc_global_data()->g_deflectors().size() - task_pool.size(), 
-				lc_global_data()->g_deflectors().size(),
-				D->layer.width, D->layer.height
-			);
-			 
-			
-			task_pool.pop_back	();
-			task_CS.Leave		();
- 
 			// Perform operation
-			try 
+			try
 			{
-				D->Light	(&DB,&LightsSelected,H);
-			} 
+				D->Light(&DB, &LightsSelected, H);
+			}
 			catch (...)
 			{
 				clMsg("* ERROR: CLMThread::Execute - light");
@@ -76,33 +65,28 @@ public:
 		}
 	}
 };
- 
-#include "ppl.h"
-#include <atomic>
-  
-void	CBuild::LMapsLocal				()
+
+void	CBuild::LMapsLocal()
 {
- 	std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [](const CDeflector* defl, const CDeflector* defl2)
-	{
-		return defl->similar_pos(*defl2, 0.1f);
-	});
-	 
+//	std::sort(lc_global_data()->g_deflectors().begin(), lc_global_data()->g_deflectors().end(), [](const CDeflector* defl, const CDeflector* defl2)
+//	{
+//		return defl->similar_pos(*defl2, 0.1f);
+//	});
+
 	CTimer	start_time;
 	start_time.Start();
 
 	// Main process (4 threads) (-th MAX_THREADS)
 	Status("Lighting...");
- 
+	atomic_u32 = 0;
 	CThreadManager	threads;
-	for (u32 dit = 0; dit < lc_global_data()->g_deflectors().size(); dit++)
-		task_pool.push_back(dit);
-
 	for (int L = 0; L < gCompilerMode.ThreadsNum; L++)
 		threads.start(xr_new<CLMThread>(L));
 	threads.wait(500);
-	 
+
 	clMsg("%f seconds", start_time.GetElapsed_sec());
 }
+
 
 void	CBuild::LMaps					()
 {
@@ -121,20 +105,30 @@ void CBuild::RunMuModels()
  	wait_mu_base();
 }
 
+// #define FAST_RAYTRACE
 
-#include "xrLC.h"
- 
 void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %f, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
+	
+#ifndef FAST_RAYTRACE
+	Phase("Adaptive HT...");
+	xrPhase_AdaptiveHT();
+#endif
 
+	Phase("Building normals...");
+	CalcNormals();
 
+#ifndef FAST_RAYTRACE
+	Phase("Building collision database...");
+	BuildCForm();
+#endif
+	 
 	// Строим модель для Tracing
  	Phase("Building rcast-CFORM model...");
  	Light_prepare();
- 	BuildRapid(TRUE);
-	 
- 
+ 	BuildRapid(TRUE, TRUE);
+	  
 	//****************************************** Resolve materials
  	Phase("Resolving materials...");
  	xrPhase_ResolveMaterials();
@@ -150,10 +144,10 @@ void CBuild::Light()
  	xrPhase_Subdivide();
 
 	//****************************************** Implicit
-
- 	Phase("LIGHT: Implicit...");
-	EmbreeMain.AttachGeometrys(true);
- 	ImplicitLighting();
+ 
+ 	// Phase("LIGHT: Implicit...");
+	// EmbreeMain.AttachGeometrys(true);
+ 	// ImplicitLighting();
 
 	Phase("LIGHT: LMaps...");
 	EmbreeMain.AttachGeometrys(false);
@@ -162,7 +156,7 @@ void CBuild::Light()
 	//****************************************** Vertex
  	Phase("LIGHT: Vertex...");
  	LightVertex();
-
+ 
 	//****************************************** Merge LMAPS
  	xrPhase_MergeLM();
   	xrPhase_SaveLmaps();

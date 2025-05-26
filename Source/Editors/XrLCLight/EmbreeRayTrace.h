@@ -50,10 +50,7 @@ struct TriEmbree
 	}
 };
 
-// ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
-void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
-void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
-
+ 
 struct TriangleContainer
 {
 	// HASH MAP VertexInumerate
@@ -86,6 +83,9 @@ struct TriangleContainer
 	void ClearAll();
 };
 
+void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
+void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
+
 // Vertex, Tri Buffers
 class XRLC_LIGHT_API EmbreeData
 {
@@ -103,7 +103,7 @@ public:
 	TriangleContainer			murefs_geom;
 	TriangleContainer			murefs_geom_transp;
 
-	void GetGlobalData(size_t& static_mem, size_t& murefs_mem);
+	void GetGlobalData(size_t& static_mem, size_t& murefs_mem, bool ConstructMU);
 	void BuildRcast();
 
 
@@ -112,13 +112,13 @@ public:
 	void RemoveGeometry(bool isDealloc);
 	
 	float RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip);
-	void InitializeGeometry(size_t& geom_static, size_t& geom_murefs);
+	void InitializeGeometry(size_t& geom_static, size_t& geom_murefs, bool useMU);
 
 	bool isAttached = false;
 	size_t AttachGeometrys(bool addMU);
 
 	void IntializeDevice();
-	void IntelEmbereLOAD();
+	void IntelEmbereLOAD(bool useMU);
 	void IntelEmbereUNLOAD();
 };
 

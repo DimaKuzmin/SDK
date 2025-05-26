@@ -859,6 +859,8 @@ BOOL	compress_RMS		(lm_layer& lm, u32 rms, u32& w, u32& h)
 	return FALSE;
 }
  
+#pragma optimize("", off)
+
 void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H)
 {
 	// Geometrical bounds
@@ -983,3 +985,5 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H
 	}	
  
 }
+
+#pragma optimize("", on)
