@@ -44,19 +44,46 @@ void CTextureDescrMngr::LoadTHM(LPCSTR initial)
 		
 		FS.update_path		(fn, initial, (*It).name.c_str());
 		IReader* F			= FS.r_open(fn);
-		xr_strcpy			(fn,(*It).name.c_str());
-		fix_texture_thm_name(fn);
+		Msg("Loading: %s", fn);
 
-		R_ASSERT			(F->find_chunk(THM_CHUNK_TYPE));
-		F->r_u32			();
-		tp.Clear			();
-		  
-		// Msg("Loading: %s", fn);
-		tp.Load				(*F);
+		shared_str InitialPath = fn;
+
+		xr_strcpy			(fn, (*It).name.c_str());
+		fix_texture_thm_name(fn);
+  
+		// Opening
+		bool FoundedChunk = !!F->find_chunk(THM_CHUNK_TYPE);
+		R_ASSERT2(FoundedChunk, "Not found chunk THM_CHUNK_TYPE");
+ 		u32 ThmType = F->r_u32();
+		tp.Clear();
+		bool NeedSave = tp.Load(*F);
+		FS.r_close(F);
+
+		// Strange Chunks
+#ifdef _EDITOR
+		if (NeedSave)
+		{
+			Msg("Finded Incorect Thm Resave: %s", InitialPath.c_str());
+			IWriter* W = FS.w_open(InitialPath.c_str());
+
+			W->open_chunk(THM_CHUNK_VERSION);
+			W->w_u16(0x0012);
+			W->close_chunk();
+
+			W->open_chunk(THM_CHUNK_TYPE);
+			W->w_u32(ThmType);
+			W->close_chunk();
+
+			tp.Save(*W);
+			FS.w_close(W);
+		}
+#endif
+
 		FS.r_close			(F);
-		if (STextureParams::ttImage		== tp.type ||
-			STextureParams::ttTerrain	== tp.type ||
-			STextureParams::ttNormalMap	== tp.type	)
+
+
+
+		if (STextureParams::ttImage		== tp.type || STextureParams::ttTerrain	== tp.type || STextureParams::ttNormalMap	== tp.type	)
 		{
 			texture_desc&	desc	= m_texture_details[fn];
 			cl_dt_scaler*&	dts		= m_detail_scalers[fn];

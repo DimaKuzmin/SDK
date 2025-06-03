@@ -42,7 +42,9 @@ struct CompilersMode
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 
-	int LC_sizeLmaps = 1024 * 4;
+	bool  LC_lmaps_alternative = false;
+	int   LC_sizeLmaps = 1024 * 4;
+	float LC_lmaps_max_pixels = 0.95f;
 
 	bool IsOverloadedSettings = false;
 	int LC_JSampleMU = 6;

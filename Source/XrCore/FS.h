@@ -132,27 +132,8 @@ public:
 // Read
 //------------------------------------------------------------------------------------
 
-// Uncomment following line to try other implementations in FS_impl.h
-//#define TESTING_IREADER
-
-#ifdef TESTING_IREADER
-struct IReaderBase_Test;
-
-struct XRCORE_API IReaderTestPolicy
-{
-	IReaderBase_Test*	m_test;
-	IReaderTestPolicy() { m_test = NULL; }
-	~IReaderTestPolicy(); // defined in FS.cpp
-};
-#endif // TESTING_IREADER
-
 template <typename implementation_type>
 class IReaderBase
-
-#ifdef TESTING_IREADER
-	: public IReaderTestPolicy // inheriting
-#endif //TESTING_IREADER
-
 {
 public:
 	IC				IReaderBase	() : m_last_pos (0) {}
@@ -163,6 +144,12 @@ public:
 
 	IC BOOL			eof			()	const		{return impl().elapsed()<=0;	};
 	IC BOOL			eof_chunk	()	const { return impl().elapsed() <= 8; };
+
+	IC BOOL			eof_read	(size_t byte)	const { return impl().elapsed() < byte; };
+	IC u32			eof_size()
+	{
+		return impl().elapsed();
+	}
 	
 	IC void			r			(void *p,int cnt) {impl().r(p,cnt);}
 
@@ -212,7 +199,7 @@ public:
 	// Set file pointer to start of chunk data (0 for root chunk)
 	IC	void		rewind		()			{	impl().seek(0); }
 
-	u32 			find_chunk  (u32 ID, BOOL* bCompressed);
+	u32 			find_chunk  (u32 ID, bool* bCompressed);
 	
 	IC	BOOL		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
@@ -233,11 +220,11 @@ public:
 		} else return FALSE;
 	}
 
-private:
-	u32					m_last_pos;
+ 	u32					m_last_pos;
 };
 
-class XRCORE_API IReader : public IReaderBase<IReader> {
+class XRCORE_API IReader : public IReaderBase<IReader> 
+{
 protected:
 	char *			data	;
 	u32				Pos		;
@@ -245,7 +232,7 @@ protected:
 	u32				iterpos	;
 
 public:
-	IC				IReader			()
+	IC				IReader			() 
 	{
 		Pos			= 0;
 	}
@@ -300,8 +287,8 @@ public:
 	// iterators
 	IReader*		open_chunk_iterator		(u32& ID, IReader* previous=NULL);	// NULL=first
 
-	u32 			find_chunk	(u32 ID, BOOL* bCompressed = 0);
-
+	u32 			find_chunk	(u32 ID, bool* bCompressed = 0);
+ 
 private:
 	typedef IReaderBase<IReader>	inherited;
 };

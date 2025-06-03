@@ -120,7 +120,7 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 	return data_hits.energy;
 }
 
-
+#pragma optimize("", off)
 void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Size)
 {
 	// NORMAL GEOM
@@ -130,6 +130,22 @@ void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Siz
 	rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
 	rtcSetGeometryIntersectFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
 
+
+	TriangleContainer container;
+
+	for (auto i = 0; i < TS_Size; i++)
+	{
+		CDB::TRI& F =  CDB_tris[i];
+		Fvector p1 = CDB_verts[CDB_tris[i].verts[0]];
+		Fvector p2 = CDB_verts[CDB_tris[i].verts[1]];
+		Fvector p3 = CDB_verts[CDB_tris[i].verts[2]];
+		container.AddFace(F.pointer, p1, p2, p3);
+	}
+
+	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, container.vertex().data(), 0, sizeof(VertexEmbree), container.vertex().size());
+	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, container.faces().data(), 0, sizeof(TriEmbree), container.faces().size());
+	 
+	/* 
 	xr_vector<CDB::TRI*> Opacue;
 
 	for (auto i = 0; i < TS_Size; i++)
@@ -146,16 +162,17 @@ void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Siz
 	{
 		trianglesNormal[i].SetVertexes(*Opacue[i], CDB_verts, verticesNormal, VertexIndexer);
 	}
+	*/
 
 	rtcCommitGeometry(IntelGeometryDetails);
 	LastGeometryDetailsID = rtcAttachGeometry(IntelSceneDetails, IntelGeometryDetails);
-	Opacue.clear();
+	// Opacue.clear();
 
 	rtcCommitScene(IntelSceneDetails);
 
 	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Normal) By ID: %d", LastGeometryDetailsID);
 }
-
+#pragma optimize("", on)
 
 void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 {

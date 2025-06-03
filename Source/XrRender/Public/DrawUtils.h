@@ -7,6 +7,11 @@
 //----------------------------------------------------
 // Utilities
 //----------------------------------------------------
+
+#ifndef ECORE_API 
+#define ECORE_API
+#endif 
+
 class ECORE_API CDUInterface
 {
 public:

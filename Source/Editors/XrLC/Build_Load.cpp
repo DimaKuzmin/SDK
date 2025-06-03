@@ -519,7 +519,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || g_build_options.b_radiosity )
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || BT.THM.fmt == STextureParams::tfDXT1) // ֱוח אכüפû עמזו הוכאול
 						{
 							string_path name;
 							
@@ -565,7 +565,8 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 							string128 tmp;
 							sprintf(tmp, "DXT1 (NO HAS ALPHA) Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
 							w->w_string(tmp);
- 							// clMsg("(Disabled Loading DXT1) - not for Lighting: %s, DXT: %s", N, GetFormat( BT.THM.fmt ) );
+ 							// clMsg("! ignoring texture: %s | Alpha: %u | impl_light: %u",
+							// 	N, BT.bHasAlpha, BT.THM.flags.test(STextureParams::flImplicitLighted));
 							
 							BT.dwWidth = 1024;
 							BT.dwHeight = 1024;

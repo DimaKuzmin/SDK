@@ -3,11 +3,9 @@
 #pragma once
 
 #include "memory_monitor.h"
-
-#ifdef USE_MEMORY_MONITOR
+ 
 #	define DEBUG_MEMORY_NAME
-#endif // USE_MEMORY_MONITOR
-
+ 
 #ifndef M_BORLAND
 #	if 0//def DEBUG
 #		define DEBUG_MEMORY_MANAGER

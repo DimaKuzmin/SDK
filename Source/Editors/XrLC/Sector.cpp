@@ -44,8 +44,8 @@ void CSector::BuildHierrarhy()
 	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
 	delimiter *= 2;
 
-	clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
-		VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
+	// clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
+	// 	VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
 
 	int		iLevel = 2;
 	float	SizeLimit = c_SS_maxsize / 4.f;

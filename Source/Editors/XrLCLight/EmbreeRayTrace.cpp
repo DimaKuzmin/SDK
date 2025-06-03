@@ -68,11 +68,11 @@ void InitOpacityLUT()
 	}
 
 	for (int i = 0; i < 32; ++i)
-		decayLUT[i] = powf(0.5f, i);
+		decayLUT[i] = powf(0.95f, i);
 }
 
 // Сделать потом переключалку
-bool CalculateEnergy(RayQueryContext*ctxt, float& u, float& v)
+bool CalculateEnergy(RayQueryContext*ctxt, RTCHit* hit)
 {
 	// Перемещаем начало луча немного дальше пересечения
 	b_material& M = inlc_global_data()->materials()[ctxt->face->dwMaterial];
@@ -80,7 +80,7 @@ bool CalculateEnergy(RayQueryContext*ctxt, float& u, float& v)
 
 	// barycentric coords
 	// note: W,U,V order
-	ctxt->B.set(1.0f - u - v, u, v);
+	ctxt->B.set(1.0f - hit->u - hit->v, hit->u, hit->v);
 
 	//// calc UV
 	Fvector2*	cuv = ctxt->face->getTC0();
@@ -101,25 +101,13 @@ bool CalculateEnergy(RayQueryContext*ctxt, float& u, float& v)
 
 	float opac = opacityLUT[opacity];
 	ctxt->energy *= opac;
+	ctxt->Hits++;
+
  	// Отымаем енергию чтобы быстрее выйти
 	if (ctxt->Hits > 1)  
  		ctxt->energy *= decayLUT[ctxt->Hits];
  
 	return ctxt->energy > EmbreeEnergyMAX;
-}
-
-void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
-{
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
-	RTCHit* hit = (RTCHit*)args->hit;
- 
-	Face* F =  hit->geomID == 0 ?  EmbreeMain.static_geom.dummy[hit->primID] : EmbreeMain.murefs_geom.dummy[hit->primID];
- 	if (F == ctxt->skip)
-	{
- 		args->valid[0] = 0;
-		return;
-	}
-	ctxt->energy = 0; // Отсеили 
 }
 
 void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
@@ -130,17 +118,28 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	// Собрать все
 	Face* F = hit->geomID == 2 ? EmbreeMain.static_geom_transp.dummy[hit->primID] : EmbreeMain.murefs_geom_transp.dummy[hit->primID];
  	
-	ctxt->Hits++;
 	ctxt->face = F;
-  	if (!CalculateEnergy(ctxt, hit->u, hit->v))
-	{
-		ctxt->energy = 0; // Отсеили 
-		return;
-	}
-
-	if (ctxt->Hits < 4)
+  	if (F != ctxt->skip && !CalculateEnergy(ctxt, hit))
+ 		ctxt->energy = 0; // Отсеили 
+ 	else 
 		args->valid[0] = 0;	// Продолжаем
 }
+
+
+void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
+{
+	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	RTCHit* hit = (RTCHit*)args->hit;
+
+	Face* F = hit->geomID == 0 ? EmbreeMain.static_geom.dummy[hit->primID] : EmbreeMain.murefs_geom.dummy[hit->primID];
+	if (F == ctxt->skip)
+	{
+		args->valid[0] = 0;
+		return;
+	}
+	ctxt->energy = 0; // Отсеили 
+}
+
 
 float EmbreeData::RaytraceEmbreeProcess(R_Light& L, Fvector& P, Fvector& N, float range, void* skip)
 {

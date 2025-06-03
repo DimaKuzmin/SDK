@@ -28,7 +28,7 @@ void CBuild::BuildSectors()
 	Status("Building hierrarhy...");
 	for (u32 I=0; I<g_sectors.size(); I++)
 	{
-		clMsg("Sectors Vec(%u) Processing(%u)", g_sectors.size(), I);
+		// clMsg("Sectors Vec(%u) Processing(%u)", g_sectors.size(), I);
 		R_ASSERT(g_sectors[I]);
 		g_sectors[I]->BuildHierrarhy();
 		Progress(float(I)/float(g_sectors.size()));

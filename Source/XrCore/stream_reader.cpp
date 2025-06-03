@@ -109,7 +109,7 @@ void CStreamReader::r						(void *_buffer, u32 buffer_size)
 
 CStreamReader *CStreamReader::open_chunk	(const u32 &chunk_id)
 {
-	BOOL						compressed;
+	bool						compressed;
 	u32							size = find_chunk(chunk_id,&compressed);
 	if (!size)
 		return					(0);
@@ -121,7 +121,7 @@ CStreamReader *CStreamReader::open_chunk	(const u32 &chunk_id)
 }
 
 #include "FS_impl.h"
-u32 CStreamReader::find_chunk				(u32 ID, BOOL* bCompressed)
+u32 CStreamReader::find_chunk				(u32 ID, bool* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
 }

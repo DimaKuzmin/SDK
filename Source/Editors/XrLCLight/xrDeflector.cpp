@@ -47,8 +47,19 @@ void lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF)
 
 void blit			(lm_layer& dst, u32 LmapsSizeX, u32 LmapsSizeY, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
-	//R_ASSERT(ds_x>=(ss_x+px));
-	//R_ASSERT(ds_y>=(ss_y+py));
+	u32		ds_x = dst.width;
+	u32		ds_y = dst.height;
+  
+	if (ds_x < (ss_x + px))
+		clMsg("SS_X: %u | PX: %u", ss_x, px);
+	if (ds_y < (ss_y + py))
+		clMsg("SS_Y: %u | PY: %u", ss_x, py);
+
+
+	R_ASSERT(ds_x>=(ss_x+px));
+	R_ASSERT(ds_y>=(ss_y+py));
+
+
 	try
 	{
 		for (u32 y = 0; y < ss_y; y++)

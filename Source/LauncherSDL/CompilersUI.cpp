@@ -264,7 +264,17 @@ void DrawLCConfig()
 		// ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 		// ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
  
-		
+
+		ImGui::Separator();
+		// Lmaps Settings
+		ImGui::SetNextItemWidth(100);
+		if (ImGui::Combo("DDS", &item_current_selected, items, 4))
+			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
+
+		ImGui::Checkbox("Lmaps FAST", &gCompilerMode.LC_lmaps_alternative);
+		ImGui::BeginDisabled(gCompilerMode.LC_lmaps_alternative);
+		ImGui::InputFloat("PosX max", &gCompilerMode.LC_lmaps_max_pixels);
+		ImGui::EndDisabled();
  
 		ImGui::Separator();
 		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
@@ -272,11 +282,6 @@ void DrawLCConfig()
 		if (true)
 		{
 			ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
-
-			ImGui::SetNextItemWidth(100);
-			if (ImGui::Combo("lmaps", &item_current_selected, items, 4))
-				gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
-
 			ImGui::SetNextItemWidth(100);
 			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
 			ImGui::SetNextItemWidth(100);

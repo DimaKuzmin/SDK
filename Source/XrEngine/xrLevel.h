@@ -1,9 +1,4 @@
-#ifndef xrLevelH
-#define xrLevelH
-
 #pragma once
-
-
 
 struct xrGUID {
 	u64	g[2];
@@ -304,4 +299,3 @@ const u32 MAX_NODE_BIT_COUNT = 31;
 const u32 XRAI_CURRENT_VERSION = 10;
 const u32 MAX_NODE_BIT_COUNT = 24;
 #endif
-#endif // xrLevelH

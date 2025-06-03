@@ -391,11 +391,16 @@ void EmbreeData::BuildRcast()
 		MFS->w(&hdr, sizeof(hdr));
 
 		Msg("$(Memory) VERTEXS: %u", ((u32)CPacked.getVS() * sizeof(Fvector))  / 1024 / 1024);
-		Msg("$(Memory) TRIANGLE: %u", ((u32)CPacked.getTS() * sizeof(CDB::TRI)) / 1024 / 1024);
+		Msg("$(Memory) TRIANGLE: %u", ((u32)CPacked.getTS() * sizeof(CDB::TRI::Size())) / 1024 / 1024);
+		Msg("$(Memory) RCFACE: %u", ((u32)rc_faces.size() * sizeof(b_rc_face)) / 1024 / 1024);
 
 		// Data
 		MFS->w(CPacked.getV(), (u32)CPacked.getVS() * sizeof(Fvector));
-		MFS->w(CPacked.getT(), (u32)CPacked.getTS() * sizeof(CDB::TRI));
+		//MFS->w(CPacked.getT(), (u32)CPacked.getTS() * CDB::TRI::Size());
+		for (auto IDX = 0; IDX < CPacked.getTS(); IDX++)
+		{
+			MFS->w(& CPacked.getT()[IDX], CDB::TRI::Size());
+		}
 
 		MFS->close_chunk();
 
@@ -403,7 +408,6 @@ void EmbreeData::BuildRcast()
 		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
 		MFS->close_chunk();
 
-		Msg("$(Memory) RCFACE: %u", ((u32)rc_faces.size() * sizeof(b_rc_face)) / 1024 / 1024);
 
 
 		FS.w_close(MFS);

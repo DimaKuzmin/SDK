@@ -5,7 +5,7 @@
 
 #include <timeapi.h>
 #include "../Editors/XrLC/xrLC.h"
-// #include "../Editors/XrAI/xrAI.h"
+#include "../Editors/XrAI/xrAI.h"
 
 void setup_luabind_allocator();
 
@@ -54,7 +54,7 @@ void StartupCompilers()
 		Phase("xrAI Startup");
 
 		setup_luabind_allocator();
-		// StartupAI();
+		StartupAI();
  
 		dwTimeAI = (timeGetTime() - dwTimeAI) / 1000;
 
@@ -122,6 +122,50 @@ void StartCompile()
  	std::thread(logThread).detach();
 }
 
+#include "../Editors/XrAI/xrAI.h"
+
+#define AI_COMPILER
+
+#include "../Editors/XrAI/xr_graph_merge.h"
+#include "../Editors/XrAI/game_spawn_constructor.h"
+#include "../Editors/XrAI/xrCrossTable.h"
+#include "../Editors/XrAI/game_graph_builder.h"
+#include "../Editors/XrAI/spawn_patcher.h"
+
+#include "../Editors/XrAI/factory_api.h"
+  
+
+extern SEFactory_Create* create_entity = 0;
+extern SEFactory_Destroy* destroy_entity = 0;
+
+static HMODULE hFactory;
+
+void InitialFactory() {
+	LPCSTR g_name = "xrSE_Factory.dll";
+	Msg("Loading DLL: %s", g_name);
+	hFactory = LoadLibraryA(g_name);
+
+	if (0 == hFactory)
+		R_CHK(GetLastError());
+
+	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
+
+#ifdef _M_X64
+	create_entity = (SEFactory_Create*) GetProcAddress(hFactory, "create_entity");	
+	R_ASSERT(create_entity);
+	destroy_entity = (SEFactory_Destroy*) GetProcAddress(hFactory, "destroy_entity");
+	R_ASSERT(destroy_entity);
+#else
+	create_entity = (Factory_Create*)GetProcAddress(hFactory, "_create_entity@4");	R_ASSERT(create_entity);
+	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "_destroy_entity@4");	R_ASSERT(destroy_entity);
+#endif
+}
+
+void DestroyFactory() {
+	FreeLibrary(hFactory);
+}
+
+
 
 int APIENTRY WinMain
 (
@@ -133,7 +177,10 @@ int APIENTRY WinMain
 {
 	// Initialize debugging
 	Debug._initialize(false);
+
 	Core._initialize("X-Ray 1.8 Compilers");
+	InitialFactory();
+
 
 	InitializeUIData();
 	SDL_Application();

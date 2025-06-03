@@ -24,105 +24,64 @@ typedef xr_vector<CCoverPoint*>	COVERS;
 // -------------------------------- Ray pick
 typedef Fvector	RayCache[3];
 
-/*
-IC bool RayPick(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float r, RayCache& C)
-{
-	// 1. Check cached polygon
-	float _u,_v,range;
-	if (CDB::TestRayTri(P,D,&C[0],_u,_v,range,true)) 
-	{
-		if (range>0 && range<r) return true;
-	}
-
-	// 2. Polygon doesn't pick - real database query
-	try { DB->ray_query	(&Level,P,D,r); } catch (...) { Msg("* ERROR: Failed to trace ray"); }
-	if (0==DB->r_count()) {
-		return false;
-	} else {
-		// cache polygon
-		CDB::RESULT&	rp	= *DB->r_begin();
-//		CDB::TRI&		T	= 
-			Level.get_tris()[rp.id];
-		C[0].set		(rp.verts[0]);
-		C[1].set		(rp.verts[1]);
-		C[2].set		(rp.verts[2]);
-		return true;
-	}
-}
-*/
-
 float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C)
 {
 	u32	tris_count		= DB->r_count();
 	float	scale		= 1.f;
 	Fvector B;
 
-	//	X_TRY 
+	for (u32 I=0; I<tris_count; I++)
 	{
-		for (u32 I=0; I<tris_count; I++)
-		{
-			CDB::RESULT& rpinf = DB->r_begin()[I];
-		
-//			Access to texture
-//			CDB::TRI& clT								=   Level.get_tris()	[rpinf.id];
+		CDB::RESULT& rpinf = DB->r_begin()[I];
+ 		b_rc_face& F								= g_rc_faces		[rpinf.id];
 
-			b_rc_face& F								= g_rc_faces		[rpinf.id];
+		if (F.dwMaterial >= g_materials.size())
+			Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
 
-			if (F.dwMaterial >= g_materials.size())
-				Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
+		b_material& M	= g_materials				[F.dwMaterial];
+		b_texture&	T	= (*g_textures)				[M.surfidx];
+		Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
+		if (M.shader_xrlc>=LIB.size())
+			return		0;		//. hack
 
-			b_material& M	= g_materials				[F.dwMaterial];
-			b_texture&	T	= (*g_textures)				[M.surfidx];
-			Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
-			if (M.shader_xrlc>=LIB.size())
-				return		0;		//. hack
+		Shader_xrLC& SH	= LIB						[M.shader_xrlc];
+		if (!SH.flags.bLIGHT_CastShadow)			continue;
 
-			Shader_xrLC& SH	= LIB						[M.shader_xrlc];
-			if (!SH.flags.bLIGHT_CastShadow)			continue;
-
-			if (T.pSurface.Empty())	
-				T.bHasAlpha = FALSE;
+		if (T.pSurface.Empty())	
+			T.bHasAlpha = FALSE;
 			
-			if (!T.bHasAlpha)
-			{
-				// Opaque poly - cache it
-				C[0].set	(rpinf.verts[0]);
-				C[1].set	(rpinf.verts[1]);
-				C[2].set	(rpinf.verts[2]);
-				return		0;
-			}
-
-			// barycentric coords
-			// note: W,U,V order
-			B.set	(1.0f - rpinf.u - rpinf.v,rpinf.u,rpinf.v);
-
-			// calc UV
-			Fvector2*	cuv = F.t;
-			Fvector2	uv;
-			uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-			uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-			int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-			int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-			U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
-			V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-
-			u32 pixel		=((u32*)*T.pSurface)[V * T.dwWidth + U];
-			u32 pixel_a		= color_get_A(pixel);
-			float opac		= 1.f - float(pixel_a)/255.f;
-			scale			*= opac;
+		if (!T.bHasAlpha)
+		{
+			// Opaque poly - cache it
+			C[0].set	(rpinf.verts[0]);
+			C[1].set	(rpinf.verts[1]);
+			C[2].set	(rpinf.verts[2]);
+			return		0;
 		}
-	} 
-	//	X_CATCH
-	//	{
-	//		clMsg("* ERROR: getLastRP_Scale");
-	//	}
 
+		// barycentric coords
+		// note: W,U,V order
+		B.set	(1.0f - rpinf.u - rpinf.v,rpinf.u,rpinf.v);
+
+		// calc UV
+		Fvector2*	cuv = F.t;
+		Fvector2	uv;
+		uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
+		uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
+
+		int U = iFloor(uv.x*float(T.dwWidth) + .5f);
+		int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
+		U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
+		V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
+
+		u32 pixel		=((u32*)*T.pSurface)[V * T.dwWidth + U];
+		u32 pixel_a		= color_get_A(pixel);
+		float opac		= 1.f - float(pixel_a)/255.f;
+		scale			*= opac;
+	}
 	return scale;
 }
-
-
-
+ 
 IC int	calcSphereSector(Fvector& dir)
 {
 	Fvector2			flat;
@@ -313,7 +272,10 @@ public:
 			csAI.Leave();
 
 			// initialize process
+		
 			thProgress	= float(N)/float(IDS_THREADS);
+
+			ProgressMT(thProgress);
 			vertex&		BaseNode = g_nodes[N];
 
 			if (!g_cover_nodes[N])

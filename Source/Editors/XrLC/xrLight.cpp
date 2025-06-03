@@ -145,9 +145,9 @@ void CBuild::Light()
 
 	//****************************************** Implicit
  
- 	// Phase("LIGHT: Implicit...");
-	// EmbreeMain.AttachGeometrys(true);
- 	// ImplicitLighting();
+ 	Phase("LIGHT: Implicit...");
+	EmbreeMain.AttachGeometrys(true);
+ 	ImplicitLighting();
 
 	Phase("LIGHT: LMaps...");
 	EmbreeMain.AttachGeometrys(false);

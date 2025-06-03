@@ -63,11 +63,6 @@ void CEditableMesh::RayQuery(SPickQuery& pinf)
 	ETOOLS::ray_query	(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
 	for (int r=0; r<ETOOLS::r_count(); r++)
 		pinf.append		(ETOOLS::r_begin()+r,m_Parent,this);
-/*
-	XRC.ray_query	(m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
-    for (int r=0; r<XRC.r_count(); r++)
-        pinf.append	(XRC.r_begin()+r,m_Parent,this);
-//*/
 }
 
 void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf)
@@ -76,11 +71,6 @@ void CEditableMesh::RayQuery(const Fmatrix& parent, const Fmatrix& inv_parent, S
     ETOOLS::ray_query_m	(inv_parent, m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
 	for (int r=0; r<ETOOLS::r_count(); r++)
 		pinf.append_mtx(parent,ETOOLS::r_begin()+r,m_Parent,this);
-/*
-	XRC.ray_query	(inv_parent, m_CFModel, pinf.m_Start, pinf.m_Direction, pinf.m_Dist);
-    for (int r=0; r<XRC.r_count(); r++)
-        pinf.append_mtx(parent,XRC.r_begin()+r,m_Parent,this);*/
-//
 }
 
 void CEditableMesh::BoxQuery(const Fmatrix& parent, const Fmatrix& inv_parent, SPickQuery& pinf)
@@ -95,17 +85,20 @@ static const float _sqrt_flt_max = _sqrt(flt_max*0.5f);
 
 bool CEditableMesh::RayPick(float& distance, const Fvector& start, const Fvector& direction, const Fmatrix& inv_parent, SRayPickInfo* pinf)
 {
-	if (!m_Flags.is(flVisible)) return false;
+	if (!m_Flags.is(flVisible))
+        return false;
 
-    if (!m_CFModel) GenerateCFModel();
-//.	float m_r 		= pinf?pinf->inf.range+EPS_L:UI->ZFar();// (bugs: не всегда выбирает) //S ????
-
+    if (!m_CFModel)
+        GenerateCFModel();
+ 
 	ETOOLS::ray_options	(CDB::OPT_ONLYNEAREST | CDB::OPT_CULL);
 	ETOOLS::ray_query_m	(inv_parent, m_CFModel, start, direction, _sqrt_flt_max);
 
-    if (ETOOLS::r_count()){
+    if (ETOOLS::r_count())
+    {
 		CDB::RESULT* I	= ETOOLS::r_begin	();
-		if (I->range<distance) {
+		if (I->range<distance)
+        {
 	        if (pinf){
             	pinf->SetRESULT	(m_CFModel,I);
     	        pinf->e_obj 	= m_Parent;

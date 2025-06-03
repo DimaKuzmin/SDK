@@ -43,11 +43,14 @@
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Model">
       <UniqueIdentifier>{012a8f47-9b2d-4d7f-8a66-1e2280614004}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\CUDA">
-      <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PropSlim">
       <UniqueIdentifier>{61fb8056-18e6-4269-91c4-d2ada495d7b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM">
+      <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA">
+      <UniqueIdentifier>{fd5d1f46-5621-4064-a503-b2aafb302165}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -126,9 +129,6 @@
     <ClInclude Include="Sector.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClInclude>
-    <ClInclude Include="xrPhase_MergeLM_Rect.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
     <ClInclude Include="ArbitraryList.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
     </ClInclude>
@@ -165,7 +165,13 @@
       <Filter>PropSlim</Filter>
     </ClInclude>
     <ClInclude Include="xrPhase_MergeLM_Surface.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_rect_pack.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    </ClInclude>
+    <ClInclude Include="xrPhase_MergeLM_Rect.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -224,9 +230,6 @@
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_MergeGeometry.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
-    <ClCompile Include="xrPhase_MergeLM.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
     <ClCompile Include="xrPhase_ResolveMaterials.cpp">
@@ -299,11 +302,14 @@
     <ClCompile Include="PropSlim\object_sliding.cpp">
       <Filter>PropSlim</Filter>
     </ClCompile>
-    <ClCompile Include="xrPhase_MergeLM_grid.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
     <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    </ClCompile>
+    <ClCompile Include="xrPhase_MergeLM.cpp">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    </ClCompile>
+    <ClCompile Include="xrPhase_MergeLM_grid.cpp">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -313,10 +319,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="xrPhase_MergeLM_Cuda.cu">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
-    </None>
-    <None Include="File.cu">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\CUDA</Filter>
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA</Filter>
     </None>
   </ItemGroup>
 </Project>

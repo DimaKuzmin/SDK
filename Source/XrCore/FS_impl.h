@@ -10,61 +10,7 @@
 //#define FIND_CHUNK_STD
 //#define FIND_CHUNK_VEC
 //#define FIND_CHUNK_MAP
-
-// Uncomment to log time of find_chunk (search 
-//#define FIND_CHUNK_BENCHMARK_ENABLE
-
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-
-struct find_chunk_counter
-{
-	CTimer timer;
-
-	u64 ticks;
-	u32 calls;
-
-	find_chunk_counter()
-	{
-		ticks = 0;
-		calls = 0;
-	}
-
-	void flush ()
-	{
-		float secs = (float)ticks / CPU::qpc_freq;
-		Msg("find_chunk sec: %f", secs);
-	}
-};
-
-#ifdef INCLUDE_FROM_ENGINE
-extern __declspec(dllimport) find_chunk_counter g_find_chunk_counter;
-#else //INCLUDE_FROM_ENGINE
-extern __declspec(dllexport) find_chunk_counter g_find_chunk_counter;
-#endif //INCLUDE_FROM_ENGINE
-
-extern bool g_initialize_cpu_called;
-
-struct find_chunk_auto_timer
-{
-	find_chunk_auto_timer() 
-	{
-		if ( g_initialize_cpu_called )
-		{
-			g_find_chunk_counter.timer.Start();
-		}
-	}
-
-	~find_chunk_auto_timer() 
-	{
-		if ( g_initialize_cpu_called )
-		{
-			g_find_chunk_counter.ticks += g_find_chunk_counter.timer.GetElapsed_ticks();
-		}
-	}
-};
-
-#endif // FIND_CHUNK_BENCHMARK_ENABLE
-
+  
 #ifdef FIND_CHUNK_STD
 
 struct IReaderBase_Test {
@@ -74,14 +20,11 @@ struct IReaderBase_Test {
 template <typename T>
 IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)	
 {
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-	find_chunk_auto_timer timer;
-#endif // FIND_CHUNK_BENCHMARK_ENABLE
-
 	u32	dwSize,dwType;
 
 	rewind();
-	while (!eof()) {
+	while (!eof()) 
+	{
 		dwType = r_u32();
 		dwSize = r_u32();
 		if ((dwType&(~CFS_CompressMark)) == ID) {
@@ -104,12 +47,8 @@ struct IReaderBase_Test {};
 #pragma warning (disable:4701)
 
 template <typename T>
-IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)	
+IC	u32 IReaderBase<T>::find_chunk	(u32 ID, bool* bCompressed)	
 {
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-	find_chunk_auto_timer timer;
-#endif // FIND_CHUNK_BENCHMARK_ENABLE
-
 	u32	dwSize, dwType;
 
 	bool success = false;
@@ -129,11 +68,12 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 	if ( !success )
 	{
 		rewind();
-		while (!eof_chunk())
+		while (!eof_chunk() )
 		{
 			dwType = r_u32();
 			dwSize = r_u32();
-			if ( (dwType & (~CFS_CompressMark)) == ID )
+	
+ 			if ( (dwType & (~CFS_CompressMark)) == ID )
 			{
 				success = true;
 				break;
@@ -152,7 +92,8 @@ IC	u32 IReaderBase<T>::find_chunk	(u32 ID, BOOL* bCompressed)
 	}
 
 	VERIFY ((u32)impl().tell() + dwSize <= (u32)impl().length());
-	if (bCompressed) *bCompressed = dwType & CFS_CompressMark;
+	if (bCompressed) 
+		*bCompressed = dwType & CFS_CompressMark;
 
 	const u32 dwPos = impl().tell();
 	if ( dwPos + dwSize < (u32)impl().length() )

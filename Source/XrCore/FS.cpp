@@ -327,7 +327,7 @@ void	IWriter::w_printf(const char* format, ...)
 // base stream
 IReader*	IReader::open_chunk(u32 ID)
 {
-	BOOL	bCompressed;
+	bool	bCompressed;
 
 	u32	dwSize = find_chunk(ID,&bCompressed);
 	if (dwSize!=0) {
@@ -360,7 +360,7 @@ IReaderTestPolicy::~IReaderTestPolicy()
 find_chunk_counter g_find_chunk_counter;
 #endif // FIND_CHUNK_BENCHMARK_ENABLE
 
-u32 IReader::find_chunk						(u32 ID, BOOL* bCompressed)
+u32 IReader::find_chunk						(u32 ID, bool* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
 }
@@ -395,11 +395,12 @@ IReader*	IReader::open_chunk_iterator	(u32& ID, IReader* _prev)
 
 void	IReader::r	(void *p, u32 cnt)
 {
-	VERIFY			(Pos+cnt<=Size);
+//	R_ASSERT			(Pos+cnt<=Size);
 	 
 	CopyMemory		(p,pointer(),cnt);
 	advance			(cnt);
 
+	/*
 #ifdef DEBUG
 	BOOL	bShow		= FALSE		;
 	if (dynamic_cast<CFileReader*>(this))			bShow = TRUE;
@@ -409,6 +410,7 @@ void	IReader::r	(void *p, u32 cnt)
   		FS.dwOpenCounter	++		;
 	}
 #endif
+	*/
 };
 
 IC BOOL			is_term		(char a) { return (a==13)||(a==10); };

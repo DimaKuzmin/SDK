@@ -6,13 +6,15 @@
 //	Description : GUID generator
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef guid_generatorH
-#define guid_generatorH
 #pragma once
 
 #include "../../xrEngine/xrLevel.h"
 
+#ifndef ENGINE_API 
+#define ENGINE_API
+#endif 
+
 ENGINE_API extern xrGUID generate_guid();
 ENGINE_API extern LPCSTR generate_guid(const xrGUID &guid, LPSTR buffer, const u32 &buffer_size);
 
-#endif //guid_generatorH
+ 

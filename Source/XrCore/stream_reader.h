@@ -51,16 +51,9 @@ public:
 			void			advance				(const int &offset);
 			void			r					(void *buffer, u32 buffer_size);
 			CStreamReader	*open_chunk			(const u32 &chunk_id);
-			u32				find_chunk			(u32 ID, BOOL* bCompressed = 0);
-//.			CStreamReader*open_chunk_iterator(const u32 &chunk_id, CStreamReader *previous = 0);	// 0 means first
-
-public:
-//.			void			r_string			(char *dest, u32 tgt_sz);
-//.			void			r_string			(xr_string& dest);
-//.			void			skip_stringZ		();
-//.			void			r_stringZ			(char *dest, u32 tgt_sz);
+			u32				find_chunk			(u32 ID, bool* bCompressed = 0);
 			void			r_stringZ			(shared_str& dest);
-//.			void			r_stringZ			(xr_string& dest);
+
 private:
 	typedef IReaderBase<CStreamReader>			inherited;
 };

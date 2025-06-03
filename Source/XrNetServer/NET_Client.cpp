@@ -372,9 +372,8 @@ BOOL IPureClient::Connect	(LPCSTR options)
 if(!psNET_direct_connect)
 {
 	//
-		string256						server_name = "";
-//	xr_strcpy							(server_name,options);
-	if (strchr(options, '/'))
+	string256						server_name = "";
+ 	if (strchr(options, '/'))
 		strncpy_s(server_name,options, strchr(options, '/')-options);
 	if (strchr(server_name,'/'))	*strchr(server_name,'/') = 0;
 
@@ -388,25 +387,25 @@ if(!psNET_direct_connect)
 			xr_strcpy(password_str, PSW);
 	}
 
-		string64				user_name_str = "";
-		if (strstr(options, "name="))
-		{
-			const char* NM = strstr(options, "name=") + 5;
-			if (strchr(NM, '/')) 
-				strncpy_s(user_name_str, NM, strchr(NM, '/') - NM);
-			else
-				xr_strcpy(user_name_str, NM);
-		}
+	string64				user_name_str = "";
+	if (strstr(options, "name="))
+	{
+		const char* NM = strstr(options, "name=") + 5;
+		if (strchr(NM, '/')) 
+			strncpy_s(user_name_str, NM, strchr(NM, '/') - NM);
+		else
+			xr_strcpy(user_name_str, NM);
+	}
 
-		string64				user_pass = "";
-		if (strstr(options, "pass="))
-		{
-			const char* UP = strstr(options, "pass=") + 5;
-			if (strchr(UP, '/')) 
-				strncpy_s(user_pass, UP, strchr(UP, '/') - UP);
-			else
-				xr_strcpy(user_pass, UP);
-		}
+	string64				user_pass = "";
+	if (strstr(options, "pass="))
+	{
+		const char* UP = strstr(options, "pass=") + 5;
+		if (strchr(UP, '/')) 
+			strncpy_s(user_pass, UP, strchr(UP, '/') - UP);
+		else
+			xr_strcpy(user_pass, UP);
+	}
 	
 	int				psSV_Port	= START_PORT_LAN_SV;
 	if (strstr(options, "port="))

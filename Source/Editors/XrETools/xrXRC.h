@@ -9,9 +9,11 @@
 #pragma todo("Add Optick Profiler")
  
 
+
 class ENGINE_API xrXRC_Editor
 {
 	CDB::COLLIDER	CL;
+
 public:
 	IC CDB::COLLIDER* collider		(){return &CL;}
 	IC void			ray_options		(DWORD f)

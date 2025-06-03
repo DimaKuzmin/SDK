@@ -6,9 +6,8 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/Lightmap.h"
 
-#define OFFSET_POS 1
- 
-
+#define OFFSET_POS 2
+  
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
 	// Process 	

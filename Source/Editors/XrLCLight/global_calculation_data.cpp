@@ -56,8 +56,7 @@ void global_claculation_data::xrLoad()
 		R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 		
 		Fvector*	verts	= (Fvector*) fs->pointer();
-
-
+ 
 		xr_vector< CDB::TRI > tris(H.facecount);
 		{
 			u8* tris_pointer = (u8*)(verts + H.vertcount);
@@ -66,7 +65,6 @@ void global_claculation_data::xrLoad()
 				memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
 				tris_pointer += CDB::TRI::Size();
 			}
-
 		}
 		
 		// Create CFORM MODEL
