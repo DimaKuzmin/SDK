@@ -16,6 +16,7 @@
 #include "ui_leveltools.h"
 
 #include <thread>
+#include <ppl.h>
 
 CPortalUtils PortalUtils;
 #define EPS_P 0.001f
@@ -261,86 +262,7 @@ DEFINE_VECTOR(sEdge, sEdgeVec, sEdgeIt);
 DEFINE_VECTOR(sPortal, sPortalVec, sPortalIt);
 
 
-
-void MT_PORTAL_EXPORT(int th, sPortalVec portals, sVertVec verts, sEdgeVec edges, int start, int end)
-{
-    int ps = portals.size();
-
-    SPBItem* pb = UI->ProgressStart(ps, "Compute portals...");
-
-    int curr = start;
-    CTimer t; 
-
-    for (int id = start; id != end; ++id, ++curr)
-    {       
-        sPortal* p_it = &portals[id];
-
-       // pb->Update(curr);
-
-        string128 text = { 0 };
-        printf(text, "TH[%u] portal %u of %u, ms[%d]", &th, &curr, &ps, t.GetElapsed_ms());
-        Msg("TH[%d] portal %d of %d, ms[%d]", th, curr, ps, t.GetElapsed_ms());
-        t.Start();
-        //pb->Info(text);
-        string64 info = { 0 };
-        sprintf(info, "portal: %d/%d", curr, ps);
-        pb->Info(info);
-
-        if (p_it->e.size() > 1)
-        {
-             // build vert-list
-            xr_vector<int>	vlist;
-            xr_deque<int>& elist = p_it->e;
-            vlist.reserve(elist.size() * 2);
-
-            for (xr_deque<int>::iterator e = elist.begin(); e != elist.end(); e++)
-            {
-                vlist.push_back(edges[*e].v[0]);
-                vlist.push_back(edges[*e].v[1]);
-            }
-
-            IntIt end = std::unique(vlist.begin(), vlist.end());
-            vlist.erase(end, vlist.end());
-     
-            // append portal
-            string256 namebuffer = {0};
-            sprintf(namebuffer, "portal_%d", id);
- 
-            CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
-    
-            for (u32 i = 0; i < vlist.size(); i++)
-                _O->Vertices().push_back(verts[vlist[i]]);
- 
-            _O->SetSectors(p_it->s[0], p_it->s[1]);
-            _O->Update();    
-
-            if (_O->Valid()) 
-            {
-                Scene->AppendObject(_O, false);
-            }
-            else 
-            {
-                xr_delete(_O);
-                ELog.Msg(mtError, "Can't simplify Portal :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
-            }   
-
-
-        }
-        else
-            if (p_it->e.size() == 0) {
-                ELog.Msg(mtError, "Can't create Portal from 0 edge :(\nPlease check geometry.\n'%s'<->'%s'\n", p_it->s[0]->GetName(), p_it->s[1]->GetName());
-            }
-            else {
-                Fvector& v0 = verts[edges[p_it->e[0]].v[0]];
-                Fvector& v1 = verts[edges[p_it->e[0]].v[1]];
-                ELog.Msg(mtError, "Can't create Portal from one edge :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
-                Tools->m_DebugDraw.AppendLine(v0, v1);
-            }
-
-    }
-
-    UI->ProgressEnd(pb);
-}
+xrCriticalSection csPortals;
 
 #include <execution>
  
@@ -610,20 +532,93 @@ public:
     void export_portals()
     {
     	Tools->ClearDebugDraw();
-          
-        //std::thread* th = new std::thread[8];
 
-        //int split = portals.size() / 8;
+        int IndexCurrent = 0;
+       
+        SPBItem* pb = UI->ProgressStart(portals.size(), "Creating Portals...");
 
-        MT_PORTAL_EXPORT(0, portals, verts, edges, 0, portals.size());
+        auto ProcessPortals = [&]()
+        {
+            for (;;) // int id = 0; id != portals.size(); ++id
+            {
+                csPortals.Enter();
+                int id = IndexCurrent;
+                IndexCurrent++;
+                csPortals.Leave();
+
+                if (IndexCurrent > portals.size())
+                    break;
+
+                sPortal* p_it = &portals[id];
+                if (p_it->e.size() > 1)
+                {
+                    // build vert-list
+                    xr_vector<int>	vlist;
+                    xr_deque<int>& elist = p_it->e;
+                    vlist.reserve(elist.size() * 2);
+
+                    for (xr_deque<int>::iterator e = elist.begin(); e != elist.end(); e++)
+                    {
+                        vlist.push_back(edges[*e].v[0]);
+                        vlist.push_back(edges[*e].v[1]);
+                    }
+
+                    IntIt end = std::unique(vlist.begin(), vlist.end());
+                    vlist.erase(end, vlist.end());
+
+                    // append portal
+                    string256 namebuffer = { 0 };
+                    sprintf(namebuffer, "portal_%d", id);
+
+                    string128 tmp;
+                    sprintf(tmp, "Create Portal : %u | %u", id, portals.size());
+                    Msg(tmp);
+                    pb->Info(tmp);
+
+                    CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
+
+                    for (u32 i = 0; i < vlist.size(); i++)
+                        _O->Vertices().push_back(verts[vlist[i]]);
+
+                    _O->SetSectors(p_it->s[0], p_it->s[1]);
+                    _O->Update();
+
+                    if (_O->Valid())
+                    {
+                        csPortals.Enter();
+                        Scene->AppendObject(_O, false);
+                        csPortals.Leave();
+                    }
+                    else
+                    {
+                        xr_delete(_O);
+                        ELog.Msg(mtError, "Can't simplify Portal :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+                    }
+                }
+                else
+                    if (p_it->e.size() == 0) {
+                        ELog.Msg(mtError, "Can't create Portal from 0 edge :(\nPlease check geometry.\n'%s'<->'%s'\n", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+                    }
+                    else
+                    {
+                        Fvector& v0 = verts[edges[p_it->e[0]].v[0]];
+                        Fvector& v1 = verts[edges[p_it->e[0]].v[1]];
+                        ELog.Msg(mtError, "Can't create Portal from one edge :(\nPlease check geometry.\n'%s'<->'%s'", p_it->s[0]->GetName(), p_it->s[1]->GetName());
+                        Tools->m_DebugDraw.AppendLine(v0, v1);
+                    }
+
+            }
+        };
+
+        concurrency::parallel_for(size_t(0), size_t(16), [&](size_t THREAD)
+            {
+                ProcessPortals();
+            }
+        );
         
-        /*
-        for (int i = 0; i < 8; i++)
-            th[i] = std::thread(MT_PORTAL_EXPORT, i, portals, verts, edges, i * split, ( i + 1 * split) );
-        for (int i = 0; i < 8; i++)
-            th[i].join();
-        */
 
+
+        UI->ProgressEnd(pb);
 
     }
 };        

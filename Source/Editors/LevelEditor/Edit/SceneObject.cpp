@@ -331,7 +331,7 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
  
     {
         shared_str Pref1 = PrepareKey(pref, "Surfaces").c_str();
-        PHelper().CreateCText(items, PrepareKey(Pref1.c_str(), "Search Surface name"), search_by_name, sizeof(search_by_name) );
+     //   PHelper().CreateCText(items, PrepareKey(Pref1.c_str(), "Search Surface name"), search_by_name, sizeof(search_by_name) );
  
         for (auto& Surface : m_Surfaces)
         {
@@ -339,7 +339,7 @@ void CSceneObject::FillProp(LPCSTR pref, PropItemVec& items)
             
           //  Msg("Check: %s, %s", Surface->_Name(), search_by_name);
 
-            if ( Surface->m_GameMtlName != occ_name && strstr( Surface->_Name(), search_by_name )  )
+            if ( Surface->m_GameMtlName != occ_name   ) // && strstr( Surface->_Name(), search_by_name )
             {
                 PropValue* V;
                 V = PHelper().CreateChoose(items, PrepareKey(Pref2.c_str(), "Texture"), &Surface->m_Texture, smTexture);

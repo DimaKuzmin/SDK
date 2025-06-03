@@ -154,8 +154,8 @@ bool CPortal::Update(bool bLoadMode){
 	Fbox box;
     GetBox(box);
     box.getsphere(m_Center,m_Radius);
-// check normal
-//------------------------------------------------------------------------------
+    // check normal
+    //------------------------------------------------------------------------------
     m_Normal.set(0,0,0);
 
     R_ASSERT(!m_Vertices.empty());

@@ -176,7 +176,7 @@ void UIObjectList::UpdateUIObjectList()
 
 		ImGui::Text("Feature: ");
 		ImGui::Checkbox("MultiplySelect", &MultiplySelect);
-		ImGui::Checkbox("ShowError", &use_errored);
+	//	ImGui::Checkbox("ShowError", &use_errored);
 		ImGui::Checkbox("Use Distances", &use_distance);
 		if (use_distance)
 			ImGui::InputInt("Distance", &DistanceObjects, 1, 100);
@@ -217,9 +217,16 @@ void UIObjectList::UpdateUIObjectList()
 
 			if (ImGui::Button("rename (selected)", ImVec2(-1, 0)))
 				RenameSelectedObjects();
+
+			if (ImGui::Button("rename by prefix (selected)", ImVec2(-1, 0)))
+				RenameSelectedObjectsPrefix();
  
-			if (ImGui::Button("Rename All (group#_No)", ImVec2(-1, 0) ) )
+			if (ImGui::Button("Rename All (group#_No)", ImVec2(-1, 0) ) && LTools->CurrentClassID() != OBJCLASS_SPAWNPOINT)
 				RenameALLObjectsToObject();
+
+			if (ImGui::Button("Rename All (spawn#_No)", ImVec2(-1, 0)) && LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
+				RenameALLObjectsToSpawns();
+
 
 			if (ImGui::Button("To Log All (only dup)", ImVec2(-1, 0)))
 				FindALL_Duplicate();
@@ -238,8 +245,7 @@ void UIObjectList::UpdateUIObjectList()
 						Msg("%s", obj->GetName());
 				}
 			}
-
-			ImGui::InputInt("MaxName (In Search)", &_sizetext, 1, 10);
+			 
 			ImGui::Separator();
  		}
  
@@ -361,7 +367,7 @@ u32 OldDeviceTime = 0;
 
 bool UIObjectList::CheckForError(CCustomObject* object)
 {
-	if (use_errored)
+	/*if (use_errored)
 	{
 
 		if (OldDeviceTime < EDevice.dwTimeGlobal)
@@ -392,14 +398,9 @@ bool UIObjectList::CheckForError(CCustomObject* object)
 		if (finditem)
 			return true;
 	}
-	else
-	{
-		if (object->FName.size() <= _sizetext)
-			return true;
-	}
-
-
-	return false;
+   	*/		
+	
+	return true;
 }
 
 #include "scene.h"
@@ -433,9 +434,6 @@ void UIObjectList::LoadErrorsGraphs()
  
 bool UIObjectList::CheckNameForType(CCustomObject* obj)
 {
-	if (!CheckForError(obj))
-		return false;
- 
 	if (LTools->CurrentClassID() == OBJCLASS_SPAWNPOINT)
 	{
 		if (IgnoreCombatCovers)

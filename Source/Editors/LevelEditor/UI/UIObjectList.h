@@ -39,14 +39,12 @@ public:
 	bool MultiplySelect = false;
 
 	// DISTANCE IN OBJECT LIST ITEMS
-
-	int DistanceObjects = 0;
+ 	int DistanceObjects = 0;
 	bool use_prefix_refname = false;
 
 	bool use_errored = false;
 	bool use_distance = false;
-	int _sizetext = 64;
-
+ 
 	UIObjectList();
 	virtual ~UIObjectList();
 	virtual void Draw();
@@ -167,7 +165,10 @@ private:
 public:
 	void FindALL_Duplicate();
 	void CheckDuplicateNames();
+
+	void RenameALLObjectsToSpawns();
 	void RenameALLObjectsToObject();
+	void RenameSelectedObjectsPrefix();
 	void RenameSelectedObjects();
 
 private:

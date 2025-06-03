@@ -49,89 +49,107 @@ bool sort_list(CCustomObject* obj1, CCustomObject* obj2)
 	return false;
 };
 
+void UIObjectList::RenameALLObjectsToSpawns()
+{
+	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID())); //it
+
+	if (ot->FClassID == OBJCLASS_SPAWNPOINT)   
+	{
+		int id = 1;
+		xr_map<LPCSTR, u16> map_names_ref;
+
+		ObjectList list = ot->GetObjects();
+		for (auto item : list)
+		{
+			if (item->Selected())
+			{
+				string256 name_new = { 0 };
+				sprintf(name_new, "%s_%4d", item->GetName(), id);
+ 				item->SetName(name_new);
+				id++;
+			}			
+		}
+
+		list.sort(sort_list);
+	}
+
+}
+
 void UIObjectList::RenameALLObjectsToObject()
 {
-	//for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+ 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID())); //it
+
+	if (ot->FClassID == OBJCLASS_LIGHT ||
+		ot->FClassID == OBJCLASS_GLOW ||
+		ot->FClassID == OBJCLASS_SECTOR ||
+		ot->FClassID == OBJCLASS_PORTAL ||
+		ot->FClassID == OBJCLASS_PS
+		)
 	{
-		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID())); //it
+		ObjectList list = ot->GetObjects();
+		string256 name_prefix = { 0 }, tmp;
+		xr_string tool_class;
 
-		if (ot->FClassID == OBJCLASS_LIGHT ||
-			ot->FClassID == OBJCLASS_GLOW ||
-			ot->FClassID == OBJCLASS_SECTOR ||
-			ot->FClassID == OBJCLASS_PORTAL ||
-			ot->FClassID == OBJCLASS_PS
-			)
+		if (ot->FClassID == OBJCLASS_LIGHT)
+			tool_class = "light";
+		else if (ot->FClassID == OBJCLASS_GLOW)
+			tool_class = "glow";
+		else if (ot->FClassID == OBJCLASS_SECTOR)
+			tool_class = "sector";
+		else if (ot->FClassID == OBJCLASS_PORTAL)
+			tool_class = "portal";
+		else if (ot->FClassID == OBJCLASS_PS)
+			tool_class = "ps";
+
+		int id = 1;
+
+		for (auto item : list)
 		{
-			ObjectList list = ot->GetObjects();
 			string256 name_prefix = { 0 }, tmp;
-			xr_string tool_class;
+			xr_strcat(name_prefix, tool_class.c_str());
+			xr_strcat(name_prefix, "_");
+			xr_strcat(name_prefix, itoa(id, tmp, 10));
 
-			if (ot->FClassID == OBJCLASS_LIGHT)
-				tool_class = "light";
-			else if (ot->FClassID == OBJCLASS_GLOW)
-				tool_class = "glow";
-			else if (ot->FClassID == OBJCLASS_SECTOR)
-				tool_class = "sector";
-			else if (ot->FClassID == OBJCLASS_PORTAL)
-				tool_class = "portal";
-			else if (ot->FClassID == OBJCLASS_PS)
-				tool_class = "ps";
+			item->SetName(name_prefix);
+			id++;
+		}
+	}
 
-			int id = 1;
 
-			for (auto item : list)
+	if (ot->FClassID == OBJCLASS_SCENEOBJECT)  
+	{
+		int id = 1;
+ 		xr_map<LPCSTR, u16> map_names_ref;
+
+		ObjectList list = ot->GetObjects();
+		for (auto item : list)
+		{
+			string256 prefix = { 0 };
+			if (item->RefName())
 			{
-				string256 name_prefix = { 0 }, tmp;
-				xr_strcat(name_prefix, tool_class.c_str());
-				xr_strcat(name_prefix, "_");
-				xr_strcat(name_prefix, itoa(id, tmp, 10));
-
-				item->SetName(name_prefix);
+				map_names_ref[item->RefName()] += 1;
+				id = map_names_ref[item->RefName()];
+				xr_strcat(prefix, item->RefName());
+			}
+			else
+			{
+				xr_strcat(prefix, ot->FClassID == OBJCLASS_SPAWNPOINT ? "spawn_no_ref" : "static_no_ref");
 				id++;
 			}
+
+			string256 name_new = { 0 }, tmp;
+			xr_strcat(name_new, prefix);
+			xr_strcat(name_new, "_");
+			xr_strcat(name_new, itoa(id, tmp, 10));
+
+			item->SetName(name_new);
 		}
 
-
-		if (ot->FClassID == OBJCLASS_SCENEOBJECT)  // ot->FClassID == OBJCLASS_SPAWNPOINT 
-		{
-			int id = 1;
-
-			xr_map<LPCSTR, u16> map_names_ref;
-
-			ObjectList list = ot->GetObjects();
-			for (auto item : list)
-			{
-				//	Msg("Name %s", item->RefName());
-
-				string256 prefix = { 0 };
-				if (item->RefName())
-				{
-					map_names_ref[item->RefName()] += 1;
-					id = map_names_ref[item->RefName()];
-					xr_strcat(prefix, item->RefName());
-				}
-				else
-				{
-					xr_strcat(prefix, ot->FClassID == OBJCLASS_SPAWNPOINT ? "spawn_no_ref" : "static_no_ref");
-					id++;
-				}
-
-				string256 name_new = { 0 }, tmp;
-				xr_strcat(name_new, prefix);
-				xr_strcat(name_new, "_");
-				xr_strcat(name_new, itoa(id, tmp, 10));
-
-				item->SetName(name_new);
-			}
-
-			list.sort(sort_list);
-		}
-
-
+		list.sort(sort_list);
 	}
 }
 
-void UIObjectList::RenameSelectedObjects()
+void UIObjectList::RenameSelectedObjectsPrefix()
 {
 	ESceneCustomOTool* base = Scene->GetOTool(LTools->CurrentClassID());
 	int i = 0;
@@ -140,15 +158,25 @@ void UIObjectList::RenameSelectedObjects()
 		if (item->Selected())
 		{
 			string256 name;
+			sprintf(name, "%s_%4d", &rename_prefix_name, i);
+ 			item->SetName(name);
 
-			//if (use_prefix_refname)
-			//{
-			//	CSceneObject* scene = smart_cast<CSceneObject*>(item);
-			//	if (scene)
-			//		sprintf(name, "%s_%s_%d", scene->RefName(), &rename_prefix_name, i);
-			//}
-			//else
-			sprintf(name, "%s_%d", &rename_prefix_name, i);
+			i++;
+		}
+	}
+}
+
+void UIObjectList::RenameSelectedObjects()
+{
+	ESceneCustomOTool* base = Scene->GetOTool(LTools->CurrentClassID());
+	
+	int i = 0;
+	for (auto item : base->GetObjects())
+	{
+		if (item->Selected())
+		{
+			string256 name;
+			sprintf(name, "%s_%4d", item->GetName(), i);
 
 			item->SetName(name);
 
