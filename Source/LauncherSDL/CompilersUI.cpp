@@ -297,11 +297,6 @@ void DrawLCConfig()
 			ImGui::EndDisabled();
 		}
 		
-		
-
-
-		ImGui::SetNextItemWidth(100);
-		ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
 		ImGui::EndDisabled();
 		//ImGui::EndChild();
 	}
@@ -374,6 +369,9 @@ void DrawCompilerConfig()
 	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
 
+
+	ImGui::SetNextItemWidth(100);
+	ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
 	// ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
 
 	// ImGui::Checkbox("Skip RayTrace(test)", &gCompilerMode.SkipRaytracing);
