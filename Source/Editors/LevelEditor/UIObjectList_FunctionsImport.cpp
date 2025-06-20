@@ -60,6 +60,9 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 			i++;
 			sprintf(tmp, "object_%d", i);
 
+			if (!file->section_exist(section_name))
+				break;
+
 			if (file->r_u32(tmp, "clsid") == (OBJCLASS_PORTAL | OBJCLASS_GROUP))
   				continue;
  
@@ -93,8 +96,6 @@ void UIObjectList::ImportObjects(Fvector offset, bool use_path, xr_string path)
 				pos.add(offset);
 				obj->SetPosition(pos);
 			}
-
-			
 		}
 	}
 }
@@ -134,8 +135,7 @@ void UIObjectList::ImportMultiply()
 	if (ImGui::Button("LoadFromOffsets", ImVec2(-1, 0)))
 		LoadFromMultiply();
 }
-
-
+ 
 void UIObjectList::UndoLoad()
 {
 	if (loaded > 0)
