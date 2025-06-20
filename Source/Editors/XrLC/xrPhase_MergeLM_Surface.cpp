@@ -4,7 +4,7 @@
 #include <cuda_runtime.h>
 #include <ppl.h>
  
-// #define USE_ACCELARATED
+#define USE_ACCELARATED
  
 
 const	u32		alpha_ref = 254 - BORDER;

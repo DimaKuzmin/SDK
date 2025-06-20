@@ -679,4 +679,5 @@ void CBuild::xrPhase_MergeGeometry()
 	validate_splits();
 
 	clMsg("Splits Merged [%u]", g_XSplit.size());
+	AditionalData("Splits Merged [%u]", g_XSplit.size());
 }

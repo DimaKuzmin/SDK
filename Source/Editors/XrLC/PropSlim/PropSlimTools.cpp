@@ -5,11 +5,7 @@
 
 #pragma warning(disable:4018)
 
-static Object*					g_pObject						= 0;
-static ArbitraryList<MeshPt*>	g_ppTempPts						= 0;
-static VIPM_Result* g_pResult									= 0;
-
-void			  VIPM_Init			()
+void VIMP_Processor::VIPM_Init			()
 {
 //.	OutputDebugString("VIPM_INIT-------------------\n");
 	R_ASSERT2	(0==g_pObject,"VIPM already in use!");
@@ -19,7 +15,7 @@ void			  VIPM_Init			()
 	g_pObject->iCurSlidingWindowLevel	= 0;
 }
 
-void			  VIPM_AppendVertex	(const Fvector3& p, const Fvector2& uv)
+void VIMP_Processor::VIPM_AppendVertex	(const Fvector3& p, const Fvector2& uv)
 {
 	MeshPt* pt			= xr_new<MeshPt>	(&g_pObject->CurPtRoot);
 	g_ppTempPts.push_back(pt);
@@ -29,12 +25,12 @@ void			  VIPM_AppendVertex	(const Fvector3& p, const Fvector2& uv)
 	pt->mypt.dwIndex	= g_ppTempPts.size()-1;
 }
 
-void			  VIPM_AppendFace		(u16 v0, u16 v1, u16 v2)
+void VIMP_Processor::VIPM_AppendFace		(u16 v0, u16 v1, u16 v2)
 {
 	xr_new<MeshTri>(g_ppTempPts[v0],g_ppTempPts[v1],g_ppTempPts[v2], &g_pObject->CurTriRoot, &g_pObject->CurEdgeRoot );
 }
 
-void CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window=u32(-1), float m_fSlidingWindowErrorTolerance=1.f)
+void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window, float m_fSlidingWindowErrorTolerance)
 {
 	m_pObject->BinEdgeCollapse();
 	while (true)
@@ -126,10 +122,9 @@ void CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window=u32(-1), fl
 	}
 }
 
-VIPM_Result*	  VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
+VIPM_Result* VIMP_Processor::VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
 {	
-	
-	g_pObject->Initialize	();
+ 	g_pObject->Initialize	();
 	if (!g_pObject->Valid())
 		return NULL;
 
@@ -141,10 +136,9 @@ VIPM_Result*	  VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32
 		return NULL;
 }
 
-void			  VIPM_Destroy		()
+void VIMP_Processor::VIPM_Destroy		()
 {
-//.	OutputDebugString	("VIPM_DESTROY-------------------\n");
-	xr_delete			(g_pResult);
+ 	xr_delete			(g_pResult);
 	xr_delete			(g_pObject);
 	g_ppTempPts.resize	(0);
 }		 

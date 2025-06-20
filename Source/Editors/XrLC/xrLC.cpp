@@ -37,6 +37,9 @@ extern CompilersMode gCompilerMode;
 
 void MainCompilerLC()
 {
+	OPTICK_APP("xrLC");
+
+
 	g_build_options.b_radiosity = false; // Более не подерживается
 	g_build_options.b_noise = gCompilerMode.LC_Noise;
 	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;
@@ -98,8 +101,9 @@ void MainCompilerLC()
 			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
 			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
 			g_params().m_weld_distance = gCompilerMode.WeldDistance;
-			setLMSIZE(gCompilerMode.LC_sizeLmaps);
 		}
+		
+		setLMSIZE(gCompilerMode.LC_sizeLmaps);
 
 		FS.r_close(F);
 

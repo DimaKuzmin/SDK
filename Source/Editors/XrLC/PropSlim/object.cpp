@@ -507,38 +507,4 @@ float Object::FindCollapseError ( MeshPt *pptBinned, MeshEdge *pedgeCollapse, lo
 	pack_to_vector(pos,pptKept->mypt.vPos,pptKept->mypt.fU,pptKept->mypt.fV);
 
 	return (float)qSum.evaluate(pos);
-/*
-	static MeshPt *pptLast;
-	static Quad3 qLast;
-
-	if ( pptBinned == NULL ){
-		// You can call it like this to flush the cache.
-		pptLast = NULL;
-		return 0.0f;
-	}
-
-
-	MeshPt *pptKept = pedgeCollapse->OtherPt ( pptBinned );
-	VERIFY ( pptKept != NULL );
-
-
-	Quad3 qSum;
-	if ( bTryToCacheResult && ( pptLast == pptBinned ) ){
-		qSum = qLast;
-	}else{
-		// Find the sum of the QEMs of the tris that will be binned.
-		for ( MeshTri *ptri = pptBinned->FirstTri(); ptri != NULL; ptri = pptBinned->NextTri() )
-			qSum += Quad3 ( ptri->pPt1->mypt.vPos, ptri->pPt2->mypt.vPos, ptri->pPt3->mypt.vPos );
-
-		if ( bTryToCacheResult ){
-			qLast = qSum;
-			pptLast = pptBinned;
-		}else{
-			pptLast = NULL;
-		}
-	}
-
-	// And find the error once the collapse has happened.
-	return qSum.FindError ( pptKept->mypt.vPos );
-*/
 }

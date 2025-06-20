@@ -519,7 +519,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  
 					if (!bLOD)
 					{
-						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) || BT.THM.fmt == STextureParams::tfDXT1) // ֱוח אכüפû עמזו הוכאול
+						bool isAvaildDXT1 = BT.THM.fmt == STextureParams::tfDXT1 && gCompilerMode.LC_Dxt1Avail;
+
+						if (BT.bHasAlpha || BT.THM.flags.test(STextureParams::flImplicitLighted) ) // ֱוח אכüפû עמזו הוכאול
 						{
 							string_path name;
 							

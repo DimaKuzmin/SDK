@@ -7,6 +7,14 @@ class ISE_Abstract;
 #include <dbghelp.h>
 #pragma comment(lib, "DbgHelp.lib")
 
+#include "..\XrSE_Factory\xrSE_Factory_import_export.h"
+extern "C"
+{
+    FACTORY_API	ISE_Abstract* __stdcall create_entity(LPCSTR section);
+    FACTORY_API	void		__stdcall destroy_entity(ISE_Abstract*& abstract);
+    FACTORY_API void		__stdcall initialize_factory();
+    FACTORY_API void		__stdcall destroy_factory();
+};
 
 BOOL InitializeSymbolHandler()
 {
@@ -27,13 +35,13 @@ BOOL InitializeSymbolHandler()
     }
 }
  
-#include "..\XrSE_Factory\xrSE_Factory_import_export.h"
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
    bool isIntialized = InitializeSymbolHandler();
 
     if(!IsDebuggerPresent())
-        Debug._initialize(false);
+        Debug._initialize(false);  
 
     OPTICK_APP("Level Editor");
 
@@ -42,13 +50,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     OPTICK_START_THREAD("MAIN_THREAD");
 
     //   OPTICK_CATEGORY("CategoryName", Optick::Category::Scene);
-
-
-
     Msg("CMD START: %s", pCmdLine);
     
     Core._initialize("Actor", ELogCallback, 1, "fs.ltx", true);
-    XrSE_Factory::initialize();
+    initialize_factory();
 
     Tools = xr_new<CLevelTool>();
     LTools = (CLevelTool*)Tools;
@@ -70,9 +75,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     {
     }
 
-     
+    destroy_factory();
+
     xr_delete(MainForm);
-    XrSE_Factory::destroy();
-    Core._destroy();
+     Core._destroy();
     return 0;
 }

@@ -28,7 +28,8 @@ extern CSE_Abstract *F_entity_Create	(LPCSTR section);
 extern CScriptPropertiesListHelper	*g_property_list_helper;
 void setup_luabind_allocator();
 
-extern "C" {
+extern "C"
+{
 	FACTORY_API	ISE_Abstract* __stdcall create_entity(LPCSTR section)
 	{
 		return					(F_entity_Create(section));
@@ -40,25 +41,25 @@ extern "C" {
 		F_entity_Destroy(object);
 		abstract = 0;
 	}
-};
 
-BOOL APIENTRY DllMain(HANDLE module_handle, DWORD call_reason, LPVOID reserved)
-{
-	switch (call_reason) {
-	case DLL_PROCESS_ATTACH:
+	FACTORY_API void		__stdcall initialize_factory()
 	{
-		string_path					SYSTEM_LTX;
-		FS.update_path(SYSTEM_LTX, "$game_config$", "system.ltx");
-		pSettings = xr_new<CInifile>(SYSTEM_LTX);
+		// Core._initialize("LevelEditor", 0, 1, "fs.ltx", true);
 
+		if (pSettings == nullptr)
+		{
+			string_path					SYSTEM_LTX;
+			FS.update_path(SYSTEM_LTX, "$game_config$", "system.ltx");
+			pSettings = xr_new<CInifile>(SYSTEM_LTX);
+		}
 		setup_luabind_allocator();
 
 		CCharacterInfo::InitInternal();
 		CSpecificCharacter::InitInternal();
-		break;
-	}
+	};
 
-	case DLL_PROCESS_DETACH: {
+	FACTORY_API void		__stdcall destroy_factory()
+	{
 		CCharacterInfo::DeleteSharedData();
 		CCharacterInfo::DeleteIdToIndexData();
 		CSpecificCharacter::DeleteSharedData();
@@ -66,13 +67,27 @@ BOOL APIENTRY DllMain(HANDLE module_handle, DWORD call_reason, LPVOID reserved)
 
 
 		xr_delete(g_object_factory);
-		CInifile** s = (CInifile**)(&pSettings);
-		xr_delete(*s);
+	 
 		xr_delete(g_property_list_helper);
 		xr_delete(g_ai_space);
 		xr_delete(g_object_factory);
-		break;
-	}
+	};
+
+};
+
+BOOL APIENTRY DllMain(HANDLE module_handle, DWORD call_reason, LPVOID reserved)
+{
+	switch (call_reason) 
+	{
+		case DLL_PROCESS_ATTACH:
+		{
+ 			break;
+		}
+
+		case DLL_PROCESS_DETACH: 
+		{
+ 			break;
+		}
 	}
 	return				(TRUE);
 }

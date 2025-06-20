@@ -52,9 +52,13 @@ void DebugMsg(const char* format, ...)
  	}
 }
 void AddOne				(const char *split) 
-{
+{	
+	//exec CallBack
+	if (LogExecCB && LogCB)
+		LogCB(split);
+
 	if(!LogFile)		
-						return;
+		return;
 
 	logCS.Enter			();
 
@@ -62,24 +66,11 @@ void AddOne				(const char *split)
 	OutputDebugString	(split);
 	OutputDebugString	("\n");
 #endif
-
-//	DUMP_PHASE;
-	{
-		shared_str			temp = shared_str(split);
-//		DUMP_PHASE;
-		LogFile->push_back	(temp);
-	}
-
-	//exec CallBack
-	if (LogExecCB&&LogCB)
-		LogCB(split);
-
-	if (filelog)
+  	shared_str			temp = shared_str(split);
+	LogFile->push_back	(temp);
+ 	if (filelog)
 		filelog->w_string(split);
-
-	//FlushLog();
-
-	logCS.Leave				();
+	logCS.Leave();
 }
 
 void AddOne_fast(const char* split)

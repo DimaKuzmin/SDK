@@ -25,7 +25,7 @@ struct VertexEmbree
 
 	bool Simular(Self& v)
 	{
-		return _abs(x - v.x) < EPS_L && _abs(y - v.y) < EPS_L && _abs(z - v.z) < EPS_L;
+		return _abs(x - v.x) < EPS_S && _abs(y - v.y) < EPS_S && _abs(z - v.z) < EPS_S;
 	}
 };
 

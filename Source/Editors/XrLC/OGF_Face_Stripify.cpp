@@ -59,32 +59,12 @@ void xrStripify		(xr_vector<u16> &indices, xr_vector<u16> &perturb, int iCacheSi
 
 void OGF::Stripify		()
 {
-	if (progressive_test())	return;			// Mesh already progressive - don't stripify it
+	if (progressive_test())	
+		return;			// Mesh already progressive - don't stripify it
 
 	// fast verts
 	if (fast_path_data.vertices.size() && fast_path_data.faces.size())
-		/*
-	try {
-		xr_vector<u16>	indices,permute;
-
-		// Stripify
-		u16* F			= (u16*)&*x_faces.begin(); 
-		indices.assign	(F,F+(x_faces.size()*3)	);
-		permute.resize	(x_vertices.size()		);
-		xrStripify		(indices,permute,c_vCacheSize,0);
-
-		// Copy faces
-		CopyMemory		(&*x_faces.begin(),&*indices.begin(),(u32)indices.size()*sizeof(u16));
-
-		// Permute vertices
-		vec_XV temp_list = x_vertices;
-		for(u32 i=0; i<temp_list.size(); i++)
-			x_vertices[i]=temp_list[permute[i]];
-	} catch (...)	{
-		clMsg		("ERROR: [fast-vert] Stripifying failed. Dump below.");
-		DumpFaces	();
-		*/
-	{
+ 	{
 		// alternative stripification - faces
 		{
 			DWORD*		remap	= xr_alloc<DWORD>		(fast_path_data.faces.size());
@@ -108,7 +88,8 @@ void OGF::Stripify		()
 	}
 
 	// normal verts
-	try {
+	try
+	{
 		xr_vector<u16>	indices,permute;
 		
 		// Stripify
@@ -116,6 +97,8 @@ void OGF::Stripify		()
 		indices.assign	(F,F+(data.faces.size()*3));
 		permute.resize	(data.vertices.size());
 		xrStripify		(indices,permute,c_vCacheSize,0);
+
+		// Msg("xrStripify: faces: %u verts: %u| new faces: %u, verts: %u", data.faces.size(), data.vertices.size(), indices.size(), permute.size());
 		
 		// Copy faces
 		CopyMemory		(&*data.faces.begin(),&*indices.begin(),(u32)indices.size()*sizeof(u16));
@@ -124,7 +107,9 @@ void OGF::Stripify		()
 		vecOGF_V temp_list = data.vertices;
 		for(u32 i=0; i<temp_list.size(); i++)
 			data.vertices[i]=temp_list[permute[i]];
-	} catch (...)	{
+	} 
+	catch (...)
+	{
 		clMsg		("ERROR: [slow-vert] Stripifying failed. Dump below.");
 		DumpFaces	();
 	}

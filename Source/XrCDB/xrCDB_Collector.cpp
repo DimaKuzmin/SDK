@@ -280,7 +280,7 @@ namespace CDB
 		{
 			for (auto& v : itHash->second)
 			{
-				if (v.vertex.similar(V, EPS_L))
+				if (v.vertex.similar(V, EPS_S))
 				{
 					return v.PrimID; // Ќашли похожий используем его индекс
 				}

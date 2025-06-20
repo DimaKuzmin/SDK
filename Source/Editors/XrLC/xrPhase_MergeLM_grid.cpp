@@ -219,6 +219,7 @@ void CBuild::xrPhase_MergeLM()
 			calculate_maps(true);
 		});
  		
+		// calculate_maps(true);
 		clMsg("ProccLmap: %u | Merged: %u", lc_global_data()->lightmaps().size(), MergedSize);
 
  

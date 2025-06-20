@@ -6,7 +6,7 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/Lightmap.h"
 
-#define OFFSET_POS 2
+#define OFFSET_POS 4
   
 void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 {
@@ -19,11 +19,9 @@ void MergeLmap(vecDefl& Layer, CLightmap* lmap, int& MERGED)
 
 	for (int it = 0; it < Layer.size(); it++)
 	{
-		// if (0 == (it % 1024))
-			AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
+ 		AditionalData("Process Y[%u] [%d]...Merged{%d}", _Y, it, MERGED);
 
-		if (_Y > getLMSIZE() - 32)
-			break;
+		if (_Y > getLMSIZE() - 32) break;
 
 		lm_layer& L = Layer[it]->layer;
 

@@ -42,24 +42,20 @@ xr_string make_time	(u32 sec)
   
 void Status	(const char *format, ...)
 {
-	csLog.Enter			();
-	va_list				mark;
+ 	va_list				mark;
 	va_start			( mark, format );
 	vsprintf			( status, format, mark );
 	bStatusChange		= TRUE;
 	Msg					("    | $ %s",status);
-
-	csLog.Leave			();
+ 
 }
 
 void StatusNoMSG(const char* format, ...)
 {
-	csLog.Enter();
-	va_list				mark;
+ 	va_list				mark;
 	va_start(mark, format);
 	vsprintf(status, format, mark);
 	bStatusChange = TRUE;
- 	csLog.Leave();
 }
  
 IterationData* ActiveIteration = nullptr;
@@ -67,8 +63,7 @@ IterationData* ActiveIteration = nullptr;
  
 void Phase			(const char *phase_name)
 {
-	csLog.Enter();
- 	phase_total_time = timeGetTime() - phase_start_time;
+  	phase_total_time = timeGetTime() - phase_start_time;
 	 
 
 	// Start _new phase
@@ -89,8 +84,6 @@ void Phase			(const char *phase_name)
 
  	Memory.mem_compact();
 	log_vminfo();
-
-	csLog.Leave();
 }
 
 extern CTimer	dwStartupTime;
@@ -107,12 +100,8 @@ void logThread()
  
 void clLog(const char* msg )
 {
-	csLog.Enter		();
-	Log				(msg);
- 	csLog.Leave();
+ 	Log				(msg);
 }
-
-
 
 void clMsg( const char *format, ...)
 {
@@ -120,8 +109,7 @@ void clMsg( const char *format, ...)
 	char buf	[4*256];
 	va_start	( mark, format );
 	vsprintf	( buf, format, mark );
-
-
+ 
 	string1024		_out_;
 	strconcat		(sizeof(_out_),_out_,"    |    | ", buf );
 	clLog			(_out_);
@@ -153,14 +141,13 @@ void SetActiveIteration(IterationData* i)
 
 void AditionalData(const char* format, ...)
 {
-	csLog.Enter();
-
 	va_list		mark;
 	va_start(mark, format);
 	vsprintf(additional_data, format, mark);
-  	if (ActiveIteration->phases.size() > 0)
- 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
- 
+	
+	csLog.Enter();
+	if (ActiveIteration->phases.size() > 0)
+		ActiveIteration->phases[ActiveIteration->phases.size() - 1].AdditionalData = additional_data;
 	csLog.Leave();
 }
 

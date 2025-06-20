@@ -252,6 +252,8 @@ void DrawLCConfig()
 		ImGui::Separator();
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
+
+		ImGui::Checkbox("DXT1 Availd Lighting", &gCompilerMode.LC_Dxt1Avail);
  		ImGui::Checkbox("No Hemi", &gCompilerMode.LC_NoHemi);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::Checkbox("No RGB", &gCompilerMode.LC_NoRGB);

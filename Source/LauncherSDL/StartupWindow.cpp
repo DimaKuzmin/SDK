@@ -138,6 +138,15 @@ void StartCompile()
 extern SEFactory_Create* create_entity = 0;
 extern SEFactory_Destroy* destroy_entity = 0;
 
+#include "../Editors/XrSE_Factory/xrSE_Factory_import_export.h"
+extern "C"
+{
+	//FACTORY_API	ISE_Abstract* __stdcall create_entity(LPCSTR section);
+	//FACTORY_API	void		__stdcall destroy_entity(ISE_Abstract*& abstract);
+	FACTORY_API void		__stdcall initialize_factory();
+	FACTORY_API void		__stdcall destroy_factory();
+};
+
 static HMODULE hFactory;
 
 void InitialFactory() {
@@ -150,6 +159,8 @@ void InitialFactory() {
 
 	R_ASSERT2(hFactory, "Factory DLL raised exception during loading or there is no factory DLL at all");
 
+	create_entity = (SEFactory_Create*) create_entity;
+ 
 #ifdef _M_X64
 	create_entity = (SEFactory_Create*) GetProcAddress(hFactory, "create_entity");	
 	R_ASSERT(create_entity);
@@ -159,13 +170,14 @@ void InitialFactory() {
 	create_entity = (Factory_Create*)GetProcAddress(hFactory, "_create_entity@4");	R_ASSERT(create_entity);
 	destroy_entity = (Factory_Destroy*)GetProcAddress(hFactory, "_destroy_entity@4");	R_ASSERT(destroy_entity);
 #endif
+ 
 }
 
 void DestroyFactory() {
 	FreeLibrary(hFactory);
 }
 
-
+#pragma comment(lib, "XrSE_Factory.lib")
 
 int APIENTRY WinMain
 (
@@ -179,10 +191,13 @@ int APIENTRY WinMain
 	Debug._initialize(false);
 
 	Core._initialize("X-Ray 1.8 Compilers");
+
+	initialize_factory();
 	InitialFactory();
 
 
 	InitializeUIData();
 	SDL_Application();
+	destroy_factory();
 	return 0;
 }

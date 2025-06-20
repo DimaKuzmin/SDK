@@ -125,7 +125,6 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 		args->valid[0] = 0;	// Продолжаем
 }
 
-
 void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;

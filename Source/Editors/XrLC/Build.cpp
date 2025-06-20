@@ -167,7 +167,7 @@ void CBuild::Run(LPCSTR P)
 	}
 
 	Phase("Optimizing...");
-  	PreOptimize();
+  	// PreOptimize();
 	CorrectTJunctions();
 	
  	Light						();

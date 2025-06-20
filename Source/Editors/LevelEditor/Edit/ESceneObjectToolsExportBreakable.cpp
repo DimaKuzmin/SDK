@@ -1,23 +1,40 @@
 #include "stdafx.h"
 #pragma hdrstop
 
+ 
 #include "ESceneObjectTools.h"
 #include "../XrECore/Editor/EditObject.h"
 #include "../XrECore/Editor/EditMesh.h"
 #include "SceneObject.h"
 #include "scene.h"
 #include "../XrECore/Editor/ExportSkeleton.h"
-//.#include "clsid_game.h"
+// 
 #include "../XrECore/Editor/ui_main.h"
 #include "ui_leveltools.h"
 #include "../XrECore/Editor/GeometryCollector.h"
-
-#include "../../xrServerEntities/xrServer_Objects_Abstract.h"
+// 
 #include "ESceneSpawnTools.h"
 #include "GeometryPartExtractor.h"
 #include "ResourceManager.h"
+ 
+#include "../../xrServerEntities/xrServer_Objects_Abstract.h"
+
+#pragma comment(lib, "XrSE_Factory.lib")
 
 static bool s_draw_dbg = false;
+
+
+extern "C"
+{
+    FACTORY_API	ISE_Abstract* __stdcall create_entity(LPCSTR section);
+
+    FACTORY_API	void		__stdcall destroy_entity(ISE_Abstract*& abstract);
+
+    FACTORY_API void		__stdcall initialize_factory();
+
+    FACTORY_API void		__stdcall destroy_factory();
+};
+
 
 //----------------------------------------------------
 IC bool build_mesh(const Fmatrix& parent, CEditableMesh* mesh, CGeomPartExtractor* extractor, u32 game_mtl_mask, BOOL ignore_shader)
@@ -142,7 +159,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
                 // export spawn object
                 {
                     xr_string entity_ref		= "breakable_object";
-                    ISE_Abstract*	m_Data		= XrSE_Factory::create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
+                    ISE_Abstract*	m_Data		= create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
                     CSE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
                     // set params
                     m_Data->set_name			(entity_ref.c_str());
@@ -166,7 +183,7 @@ bool ESceneObjectTool::ExportBreakableObjects(SExportStreams* F)
                     F->spawn.stream.open_chunk	(F->spawn.chunk++);
                     F->spawn.stream.w			(Packet.B.data,Packet.B.count);
                     F->spawn.stream.close_chunk	();
-                    XrSE_Factory::destroy_entity				(m_Data);
+                    destroy_entity				(m_Data);
                 }
             }else{
             	ELog.Msg(mtError,"Can't export invalid part #%d",p_it-parts.begin());
@@ -287,7 +304,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                 // export spawn object
                 {
                     xr_string entity_ref		= "climable_object";
-                    ISE_Abstract*	m_Data		= XrSE_Factory::create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
+                    ISE_Abstract*	m_Data		= create_entity(entity_ref.c_str()); 	VERIFY(m_Data);
                     ISE_Shape* m_Shape			= m_Data->shape();                      VERIFY(m_Shape);
 //					CSE_Visual* m_Visual		= m_Data->visual();	VERIFY(m_Visual);
                     // set params
@@ -332,7 +349,7 @@ bool ESceneObjectTool::ExportClimableObjects(SExportStreams* F)
                         }
                         size++;
                     }
-                    XrSE_Factory::destroy_entity				(m_Data);
+                    destroy_entity				(m_Data);
                 }
             }
             else

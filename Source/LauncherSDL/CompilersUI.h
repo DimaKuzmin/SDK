@@ -30,6 +30,7 @@ struct CompilersMode
 	bool DO = false;
 	bool LC = false;
 
+	bool LC_Dxt1Avail = false;
   	bool LC_NoSun = false;
 	bool LC_NoHemi = false;
 	bool LC_NoRGB = false;

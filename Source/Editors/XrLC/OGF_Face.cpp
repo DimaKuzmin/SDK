@@ -145,55 +145,6 @@ void OGF::Optimize	()
 {
 	// Real optimization
 	//////////////////////////////////////////////////////////////////////////
-	// x-vertices
-	try
-	{
-		if (fast_path_data.vertices.size() && fast_path_data.faces.size())
-		{
-			/*
-			try 
-			{
-				VERIFY	(fast_path_data.vertices.size()	<= data.vertices.size()	);
-				VERIFY	(fast_path_data.faces.size()		== data.faces.size()		);
-			} 
-			catch(...) 
-			{
-				Msg	("* ERROR: optimize: x-geom : verify: failed");
-			}
-			*/
-
-			// Optimize texture coordinates
-			/*
-			Fvector2 Tdelta;
-			try {
-				// 1. Calc bounds
-				Fvector2 Tmin,Tmax;
-				Tmin.set(flt_max,flt_max);
-				Tmax.set(flt_min,flt_min);
-				for (u32 j=0; j<x_vertices.size(); j++)			{
-					x_vertex& V = x_vertices[j];
-					//Tmin.min	(V.UV);
-					//Tmax.max	(V.UV);
-				}
-				Tdelta.x = floorf((Tmax.x-Tmin.x)/2+Tmin.x);
-				Tdelta.y = floorf((Tmax.y-Tmin.y)/2+Tmin.y);
-			} catch(...) {
-				Msg	("* ERROR: optimize: x-geom : bounds: failed");
-			}
-
-			// 2. Recalc UV mapping
-			try {
-				for (u32 i=0; i<x_vertices.size(); i++)
-					x_vertices[i].UV.sub	(Tdelta);
-			} catch(...) {
-				Msg	("* ERROR: optimize: x-geom : recalc : failed");
-			}
-			*/
-		}
-	} catch(...) {
-		Msg	("* ERROR: optimize: x-geom : failed");
-	}
-
 	//////////////////////////////////////////////////////////////////////////
 	// Detect relevant number of UV pairs
 	try 
@@ -210,18 +161,6 @@ void OGF::Optimize	()
 	{
 		Msg	("* ERROR: optimize: std-geom : find relevant UV");
 	}
-
-	// Build p-rep
-	/*
-	typedef xr_vector<u32>	flist	;
-	xr_vector<flist>		prep	;	prep.resize(vertices.size());
-	for (u32 fit=0; fit<faces.size(); fit++)	{
-		OGF_Face&	F		= faces	[fit];
-		prep[F.v[0]].push_back		(fit);
-		prep[F.v[1]].push_back		(fit);
-		prep[F.v[2]].push_back		(fit);
-	}
-	*/
 
 	// Optimize texture coordinates
 	xr_vector<bool>	vmarker;	vmarker.assign	(data.vertices.size(),false);
@@ -269,77 +208,73 @@ void OGF::Optimize	()
 }
 
 
-
 // Make Progressive
-xrCriticalSection			progressive_cs
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(progressive_cs))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+#include "PropSlim/PropSlimTools.h"
+thread_local VIMP_Processor VIMP_PROCESSOR;
 
-#include "PropSlim\PropSlimTools.h" 
-void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
+
+
+void OGF::MakeProgressive	(int ThreadID, int MODEL_ID, float metric_limit)
 {
+
+	OPTICK_EVENT("MakeProgressive")
 	// test
 	// there is no-sense to simplify small models
 	// for batch size 50,100,200 - we are CPU-limited anyway even on nv30
 	// for nv40 and up the better guess will probably be around 500
-	if (data.faces.size() < c_PM_FaceLimit * 4)		return;	
-	
-	//if (data.faces.size() > 4096)				return;  //se7kills
-	//≈—À» ¡ŒÀ≈≈ 4096 ÚÓ Ó˜ÂÌ¸ ‰ÓÎ„Ó.
 
-//. AlexMX added for draft build mode
-	if (g_params().m_quality==ebqDraft)		return		;
+	if (data.faces.size() < c_PM_FaceLimit * 4)		return;	
+ 	if (g_params().m_quality == ebqDraft)			return;
 	
-	if (g_build_options.b_noise)
-		return;
- 
+	if (gCompilerMode.LC_Noise)						return;
+
 	//////////////////////////////////////////////////////////////////////////
 	// NORMAL
 	vecOGF_V	_saved_vertices		=	data.vertices	;
 	vecOGF_F	_saved_faces		=	data.faces		;
 
  	VIPM_Result* VR = 0; 
-	VIPM_Init();
+	VIMP_PROCESSOR.VIPM_Init();
 	for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
-		VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
+		VIMP_PROCESSOR.VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
 	for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
-		VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
+		VIMP_PROCESSOR.VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
 
+	CTimer t;
 	try
 	{
-		VR = VIPM_Convert(u32(25), 1.f, 1);
+		t.Start();
+		VR = VIMP_PROCESSOR.VIPM_Convert(u32(25), 1.f, 1);
 	}
 	catch (...)
 	{
 		progressive_clear();
-		clMsg("[%d] * mesh simplification failed: access violation", MODEL_ID);
+		clMsg("[%u] * mesh simplification failed: access violation", MODEL_ID);
 	}
     
 	if (0==VR)				
 	{
 		progressive_clear	()		;
-		clMsg				("[%d]* mesh simplification failed", MODEL_ID);
+		clMsg				("[%u]* mesh simplification failed", MODEL_ID);
 	}
 
 	while (VR && VR->swr_records.size()>0)
 	{
 		// test metric
 		u32		_full	=	data.vertices.size	()		;
-		u32		_remove	=	VR->swr_records.size()	;
+ 		u32		_remove	=	VR->swr_records.size()	;
 		u32		_simple	=	_full - _remove			;
 		float	_metric	=	float(_remove)/float(_full);
 			
-		if		(_metric<metric_limit ) 
+		if (_metric<metric_limit ) 
 		{
-			progressive_clear				()		;
-			clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded", MODEL_ID,_full,_simple,VR->indices.size()/3,metric_limit);
+			progressive_clear();
+			clMsg	("ThreadID[%u] [%u] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-discarded | %u ms", ThreadID, MODEL_ID, _full, _simple, VR->indices.size()/3,metric_limit, t.GetElapsed_ms());
 			break									;
 		}
 		else
 		{
-			clMsg	("[%d] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted", MODEL_ID, _full,_simple,VR->indices.size()/3,metric_limit);
+			clMsg	("ThreadID[%u] [%u] * mesh simplified from [%4dv] to [%4dv], nf[%4d] ==> em[%0.2f]-accepted  | %u ms", ThreadID, MODEL_ID, _full, _simple, VR->indices.size()/3,metric_limit, t.GetElapsed_ms());
 		}
    
 		// OK
@@ -355,8 +290,8 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 			data.faces[f_idx].v[2]	= VR->indices[f_idx*3+2];
 		}
 		// Fill SWR
-		data.m_SWI.count				= VR->swr_records.size();
-		data.m_SWI.sw				= xr_alloc<FSlideWindow>(data.m_SWI.count);
+		data.m_SWI.count		= VR->swr_records.size();
+		data.m_SWI.sw			= xr_alloc<FSlideWindow>(data.m_SWI.count);
 		for (u32 swr_idx=0; swr_idx!=data.m_SWI.count; swr_idx++){
 			FSlideWindow& dst	= data.m_SWI.sw[swr_idx];
 			VIPM_SWR& src		= VR->swr_records[swr_idx];
@@ -370,26 +305,26 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 	}
     
 	// cleanup
- 	VIPM_Destroy();
+	VIMP_PROCESSOR.VIPM_Destroy();
  
 	//////////////////////////////////////////////////////////////////////////
 	// FAST-PATH
 	if (progressive_test() && fast_path_data.vertices.size() && fast_path_data.faces.size())
 	{
  		// prepare progressive geom
-		VIPM_Result* VR = 0;
-
- 
-		VIPM_Init();
+		VIMP_PROCESSOR.VIPM_Init();
 		Fvector2				zero; zero.set(0, 0);
-		for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
-		for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
+		for (u32 v_idx = 0; v_idx < fast_path_data.vertices.size(); v_idx++)	
+			VIMP_PROCESSOR.VIPM_AppendVertex(fast_path_data.vertices[v_idx].P, zero);
+		for (u32 f_idx = 0; f_idx < fast_path_data.faces.size(); f_idx++)	
+			VIMP_PROCESSOR.VIPM_AppendFace(fast_path_data.faces[f_idx].v[0], fast_path_data.faces[f_idx].v[1], fast_path_data.faces[f_idx].v[2]);
 
-
+		VIPM_Result* VR = 0;
+		 
 		try
 		{
-			VR = VIPM_Convert(u32(25), 1.f, 1);
-		}
+ 			VR = VIMP_PROCESSOR.VIPM_Convert(u32(25), 1.f, 1);
+ 		}
 		catch (...)
 		{
 			data.faces = _saved_faces;
@@ -403,22 +338,18 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 			data.faces				= _saved_faces		;
 			data.vertices			= _saved_vertices	;
 			progressive_clear	()		;
-			clMsg				("[%d] * X-mesh simplification failed", MODEL_ID);
+			clMsg				("ThreadID[%u] [%d] * X-mesh simplification failed", ThreadID, MODEL_ID);
 		} 
 		else
 		{
-			// Convert
-			/*
-			VIPM_Result*	VR		= VIPM_Convert		(u32(25),1.f,1);
-			VERIFY			(VR->swr_records.size()>0)	;
-			*/
-
 			// test metric
 			u32		_full	=	data.vertices.size	()		;
+			u32		_faces_old = data.faces.size();
+
 			u32		_remove	=	VR->swr_records.size()	;
 			u32		_simple	=	_full - _remove			;
 			float	_metric	=	float(_remove)/float(_full);
-			clMsg	("[%d] X mesh simplified from [%4dv] to [%4dv], nf[%4d]", MODEL_ID,_full,_simple,VR ? VR->indices.size()/3 : 0);
+			clMsg	("ThreadID[%u] [%d] X mesh simplified from [%4dv] to [%4dv], nf[%4d] : %u ms", ThreadID, MODEL_ID, _full, _faces_old, _simple, VR ? VR->indices.size()/3 : 0, t.GetElapsed_ms());
 
 			// OK
 			vec_XV					vertices_saved;
@@ -449,9 +380,8 @@ void OGF::MakeProgressive	(int MODEL_ID, float metric_limit)
 		}
  
 		// cleanup
- 		VIPM_Destroy();
+		VIMP_PROCESSOR.VIPM_Destroy();
 	}
- 
 }
 
 void OGF_Base::Save	(IWriter &fs)

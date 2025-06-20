@@ -1,5 +1,6 @@
 #pragma once
 #include "ArbitraryList.h"
+#include "object.h"
 
 #pragma pack(push,1)
 struct VIPM_SWR
@@ -23,12 +24,19 @@ struct VIPM_Result
 	}
 };
 
-extern "C" 
+class VIMP_Processor
 {
-	void			  VIPM_Init			();
-	void			  VIPM_AppendVertex	(const Fvector3& pt, const Fvector2& uv);
-	void			  VIPM_AppendFace		(u16 v0, u16 v1, u16 v2);
-	VIPM_Result*	  VIPM_Convert			(u32 max_sliding_window=u32(-1), float error_tolerance=0.1f, u32 optimize_vertex_order=1);
-	void			  VIPM_Destroy			();
+	Object* g_pObject = 0;
+	ArbitraryList<MeshPt*>	g_ppTempPts = 0;
+	VIPM_Result* g_pResult = 0;
+public:
+	void			  VIPM_Init();
+	void			  VIPM_AppendVertex(const Fvector3& pt, const Fvector2& uv);
+	void			  VIPM_AppendFace(u16 v0, u16 v1, u16 v2);
+	void			  CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window = u32(-1), float m_fSlidingWindowErrorTolerance = 1);
+	
+	VIPM_Result*	  VIPM_Convert(u32 max_sliding_window = u32(-1), float error_tolerance = 0.1f, u32 optimize_vertex_order = 1);
+	void			  VIPM_Destroy();
 };
+
  
