@@ -120,7 +120,6 @@ CStreamReader *CStreamReader::open_chunk	(const u32 &chunk_id)
 	return						(result);
 }
 
-#include "FS_impl.h"
 u32 CStreamReader::find_chunk				(u32 ID, bool* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);
