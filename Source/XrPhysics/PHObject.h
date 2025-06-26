@@ -23,7 +23,7 @@ class CPHObject :
 #ifdef DEBUG
 	friend struct SPHObjDBGDraw;
 #endif
-	DECLARE_PHLIST_ITEM(CPHObject)
+	// DECLARE_PHLIST_ITEM(CPHObject)
 
 			Flags8	m_flags;
 

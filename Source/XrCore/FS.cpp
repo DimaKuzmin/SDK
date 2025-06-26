@@ -346,20 +346,7 @@ void	IReader::close()
 	auto p = (IReader*)this;
 	xr_delete(p); 
 }
-
-#include "FS_impl.h"
-
-#ifdef TESTING_IREADER
-IReaderTestPolicy::~IReaderTestPolicy()
-{
-	xr_delete(m_test);
-};
-#endif // TESTING_IREADER
-
-#ifdef FIND_CHUNK_BENCHMARK_ENABLE
-find_chunk_counter g_find_chunk_counter;
-#endif // FIND_CHUNK_BENCHMARK_ENABLE
-
+ 
 u32 IReader::find_chunk						(u32 ID, bool* bCompressed)
 {
 	return inherited::find_chunk(ID, bCompressed);

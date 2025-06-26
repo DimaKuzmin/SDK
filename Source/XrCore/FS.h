@@ -199,7 +199,67 @@ public:
 	// Set file pointer to start of chunk data (0 for root chunk)
 	IC	void		rewind		()			{	impl().seek(0); }
 
-	u32 			find_chunk  (u32 ID, bool* bCompressed);
+	IC	u32 find_chunk(u32 ID, bool* bCompressed)
+	{
+		u32	dwSize, dwType;
+
+		bool success = false;
+
+		if (m_last_pos != 0)
+		{
+			impl().seek(m_last_pos);
+			dwType = r_u32();
+			dwSize = r_u32();
+
+			if ((dwType & (~CFS_CompressMark)) == ID)
+			{
+				success = true;
+			}
+		}
+
+		if (!success)
+		{
+			rewind();
+			while (!eof_chunk())
+			{
+				dwType = r_u32();
+				dwSize = r_u32();
+
+				if ((dwType & (~CFS_CompressMark)) == ID)
+				{
+					success = true;
+					break;
+				}
+				else
+				{
+					impl().advance(dwSize);
+				}
+			}
+
+			if (!success)
+			{
+				m_last_pos = 0;
+				return 0;
+			}
+		}
+
+		VERIFY((u32)impl().tell() + dwSize <= (u32)impl().length());
+		if (bCompressed)
+			*bCompressed = dwType & CFS_CompressMark;
+
+		const u32 dwPos = impl().tell();
+		if (dwPos + dwSize < (u32)impl().length())
+		{
+			m_last_pos = dwPos + dwSize;
+		}
+		else
+		{
+			m_last_pos = 0;
+		}
+
+		return dwSize;
+	}
+
 	
 	IC	BOOL		r_chunk		(u32 ID, void *dest)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
@@ -212,7 +272,7 @@ public:
 	
 	IC	BOOL		r_chunk_safe(u32 ID, void *dest, u32 dest_size)	// чтение XR Chunk'ов (4b-ID,4b-size,??b-data)
 	{
-		u32	dwSize = ((implementation_type*)this)->find_chunk(ID);
+		u32	dwSize = ((implementation_type*)this) -> find_chunk(ID);
 		if (dwSize!=0) {
 			R_ASSERT(dwSize==dest_size);
 			r(dest,dwSize);

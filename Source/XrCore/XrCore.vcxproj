@@ -409,7 +409,6 @@
     <ClInclude Include="FixedSet.h" />
     <ClInclude Include="FixedVector.h" />
     <ClInclude Include="FS.h" />
-    <ClInclude Include="FS_impl.h" />
     <ClInclude Include="FS_internal.h" />
     <ClInclude Include="FTimer.h" />
     <ClInclude Include="ILocatorAPI.h" />

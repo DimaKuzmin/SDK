@@ -402,9 +402,6 @@
     <ClInclude Include="FS.h">
       <Filter>FS</Filter>
     </ClInclude>
-    <ClInclude Include="FS_impl.h">
-      <Filter>FS</Filter>
-    </ClInclude>
     <ClInclude Include="FS_internal.h">
       <Filter>FS</Filter>
     </ClInclude>
