@@ -242,11 +242,11 @@
     <Filter Include="INI">
       <UniqueIdentifier>{504b380a-8407-4a2d-a46f-7c2462e365e6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Compiler\ai_map_new">
+      <UniqueIdentifier>{d6981298-cd2b-41a8-943f-aa2b985b7837}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="_buildnodes_view.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
     <ClCompile Include="compiler.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
@@ -260,21 +260,6 @@
       <Filter>Compiler</Filter>
     </ClCompile>
     <ClCompile Include="compiler_light.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_link.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_load.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_merge.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_palettize_covers.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_save.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
     <ClCompile Include="compiler_smooth.cpp">
@@ -393,6 +378,15 @@
     </ClCompile>
     <ClCompile Include="..\LevelEditor\iniStreamImpl.cpp">
       <Filter>INI</Filter>
+    </ClCompile>
+    <ClCompile Include="compiler_load_sdk.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClCompile>
+    <ClCompile Include="compiler_load.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClCompile>
+    <ClCompile Include="compiler_save.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
