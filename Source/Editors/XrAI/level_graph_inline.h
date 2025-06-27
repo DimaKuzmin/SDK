@@ -7,7 +7,7 @@
 ////////////////////////////////////////////////////////////////////////////
 
 #pragma once
-
+ 
 IC	CLevelGraph::const_vertex_iterator CLevelGraph::begin	() const
 {
 	return				(m_nodes);
@@ -23,17 +23,15 @@ IC const CLevelGraph::CHeader &CLevelGraph::header	() const
 	return				(*m_header);
 }
 
+
 ICF bool CLevelGraph::valid_vertex_id	(u32 id) const
 {
 	bool				b = id < header().vertex_count();
-	return				(b);
+ 	return				(b);
 }
 
 ICF	CLevelGraph::CVertex	*CLevelGraph::vertex(const u32 vertex_id) const
 {
-	if (!valid_vertex_id(vertex_id))
-		Msg("NO VALID [%u]", vertex_id);
-	//VERIFY				(valid_vertex_id(vertex_id));
 	return				(m_nodes + vertex_id);
 }
 
@@ -287,7 +285,7 @@ ICF const xrGUID &CLevelGraph::CHeader::guid() const
 
 ICF u32	CLevelGraph::CVertex::link(int index) const
 {
-	return				(NodeCompressed::link(u8(index)));
+	return				(link_value[index]);
 }
 
 ICF u16	CLevelGraph::CVertex::high_cover(u8 index) const
@@ -302,12 +300,12 @@ ICF u16	CLevelGraph::CVertex::low_cover(u8 index) const
 
 ICF u16	CLevelGraph::CVertex::plane() const
 {
-	return				(NodeCompressed::plane);
+	return				(plane_value);
 }
 
 ICF const CLevelGraph::CPosition &CLevelGraph::CVertex::position() const
 {
-	return				(p);
+	return				(position_value);
 }
 
 ICF bool CLevelGraph::CVertex::operator<	(const CLevelGraph::CVertex &vertex) const

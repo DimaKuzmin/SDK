@@ -12,47 +12,85 @@
 
 LPCSTR LEVEL_GRAPH_NAME = "level.ai";
 
-#ifdef AI_COMPILER
+extern u32 XRAI_CURRENT_VERSION = 10;
+
 CLevelGraph::CLevelGraph		(LPCSTR filename)
-#else
-CLevelGraph::CLevelGraph		()
-#endif
 {
-#ifndef AI_COMPILER
-#ifdef DEBUG
-	sh_debug.create				("debug\\ai_nodes","$null");
-#endif
-	string_path					file_name;
-	FS.update_path				(file_name,"$level$",LEVEL_GRAPH_NAME);
-#else
 	string256					file_name;
 	strconcat					(sizeof(file_name), file_name, filename, LEVEL_GRAPH_NAME);
-#endif
 	m_reader					= FS.r_open	(file_name);
 
 	// m_header & data
-	m_header					= (CHeader*)m_reader->pointer();
-	R_ASSERT					(header().version() == XRAI_CURRENT_VERSION);
+	m_header					= (CHeader*) m_reader->pointer();
+//	R_ASSERT					(header().version() == XRAI_CURRENT_VERSION);
 	m_reader->advance			(sizeof(CHeader));
-	m_nodes						= (CVertex*)m_reader->pointer();
+
+
+	Msg("Loaded Vertices Removed");
+	// loaded_vertices.clear();
+	
+	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
+
+
+
+	if (header().version() == 10)
+	{
+		Phase("Ai Map v10 Loading to Cache");
+		u32 MaxBits = u32((1 << MAX_NODE_BIT_COUNT_v10) - 1);
+		NodeCompressed* nodes = (NodeCompressed*) m_reader->pointer();
+		int Index = 0;
+  		for (auto B = nodes; B < nodes + header().vertex_count(); B++, Index++)
+		{
+			CVertex& V = m_nodes[Index];
+			V.position_value.XZ_value = B->p.xz();
+			V.position_value.Y_value = B->p.y();
+ 			V.plane_value = B->plane;
+			V.high = B->high;
+			V.low = B->low;
+ 			V.link_value[0] = B->link(0);
+			V.link_value[1] = B->link(1);
+			V.link_value[2] = B->link(2);
+			V.link_value[3] = B->link(3);
+ 		}
+	}
+	else
+	{
+		Phase("Ai Map v11 Loading to Cache");
+
+		u32 MaxBits = u32((1 << MAX_NODE_BIT_COUNT) - 1);
+		NodeCompressed11* nodes = (NodeCompressed11*)m_reader->pointer();
+		int Index = 0;
+		for (auto B = nodes; B < nodes + header().vertex_count(); B++, Index++)
+		{
+			CVertex& V = m_nodes[Index];
+			V.position_value.XZ_value = B->p.xz();
+			V.position_value.Y_value = B->p.y();
+			V.plane_value = B->plane;
+			V.high = B->high;
+			V.low = B->low;
+			V.link_value[0] = B->link(0);
+			V.link_value[1] = B->link(1);
+			V.link_value[2] = B->link(2);
+			V.link_value[3] = B->link(3);
+ 		}
+	}
+
+	XRAI_CURRENT_VERSION = header().version();
+
+
 	m_row_length				= iFloor((header().box().max.z - header().box().min.z)/header().cell_size() + EPS_L + 1.5f);
 	m_column_length				= iFloor((header().box().max.x - header().box().min.x)/header().cell_size() + EPS_L + 1.5f);
 	m_access_mask.assign		(header().vertex_count(),true);
 	unpack_xz					(vertex_position(header().box().max),m_max_x,m_max_z);
 
-#ifdef DEBUG
-#	ifndef AI_COMPILER
-		m_current_level_id		= -1;
-		m_current_actual		= false;
-		m_current_center		= Fvector().set(flt_max,flt_max,flt_max);
-		m_current_radius		= Fvector().set(flt_max,flt_max,flt_max);
-#	endif
-#endif
+	Msg("Nodes Size: %u | Version Map : %u", m_header->vertex_count(), m_header->version());
 }
 
 CLevelGraph::~CLevelGraph		()
 {
-	FS.r_close					(m_reader);
+	FS.r_close(m_reader);
+
+	xr_free(m_nodes);
 }
 
 u32	CLevelGraph::vertex		(const Fvector &position) const
@@ -77,19 +115,14 @@ u32	CLevelGraph::vertex		(const Fvector &position) const
 u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 {
 	START_PROFILE("Level_Graph::find vertex")
-#ifndef AI_COMPILER
-	Device.Statistic->AI_Node.Begin	();
-#endif
-
 	u32						id;
 
-	if (valid_vertex_position(position)) {
+	if (valid_vertex_position(position))
+	{
 		// so, our position is inside the level graph bounding box
-		if (valid_vertex_id(current_node_id) && inside(vertex(current_node_id),position)) {
+		if (valid_vertex_id(current_node_id) && inside(vertex(current_node_id),position))
+		{
 			// so, our node corresponds to the position
-#ifndef AI_COMPILER
-			Device.Statistic->AI_Node.End();
-#endif
 			return				(current_node_id);
 		}
 
@@ -126,23 +159,19 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 					}
 				}
 			}
-			if (ok) {
-#ifndef AI_COMPILER
-				Device.Statistic->AI_Node.End();
-#endif
+			if (ok) 
+			{
 				return			(_vertex_id);
 			}
 		}
 	}
 
-	if (!valid_vertex_id(current_node_id)) {
+	if (!valid_vertex_id(current_node_id)) 
+	{
 		// so, we do not have a correct current node
 		// performing very slow full search
 		id					= vertex(position);
 		VERIFY				(valid_vertex_id(id));
-#ifndef AI_COMPILER
-		Device.Statistic->AI_Node.End();
-#endif
 		return				(id);
 	}
 
@@ -172,9 +201,6 @@ u32 CLevelGraph::vertex		(u32 current_node_id, const Fvector& position) const
 		}
 	}
 
-#ifndef AI_COMPILER
-	Device.Statistic->AI_Node.End();
-#endif
 	return					(best_vertex_id);
 
 	STOP_PROFILE
@@ -185,8 +211,17 @@ u32	CLevelGraph::vertex_id				(const Fvector &position) const
 	CPosition			_vertex_position = vertex_position(position);
 	CVertex				*B = m_nodes;
 	CVertex				*E = m_nodes + header().vertex_count();
-	CVertex				*I = std::lower_bound	(B,E,_vertex_position.xz());
-	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
+
+	CVertex* I =
+	std::lower_bound(B, E, _vertex_position.xz(),
+		[&](const CVertex& lhs, u32 xz)
+		{
+			return xz > lhs.position_value.xz();
+		}
+	);
+
+ 
+ 	if ((I == E) || ((*I).position().xz() != _vertex_position.xz()))
 		return			(u32(-1));
 
 	u32					best_vertex_id = u32(I - B);

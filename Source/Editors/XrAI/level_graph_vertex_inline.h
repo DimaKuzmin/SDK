@@ -354,7 +354,7 @@ IC void CLevelGraph::contour(CLevelGraph::SContour &_contour, u32 vertex_id) con
 
 IC void CLevelGraph::contour(CLevelGraph::SContour &_contour, const CLevelGraph::CVertex *vertex) const
 {
-	Fvector					vertex_position = this->vertex_position	(vertex->p);
+	Fvector					vertex_position = this->vertex_position	(vertex->position());
 
 	// decompress plane
 	Fplane					plane;	
