@@ -58,8 +58,10 @@ struct CompilersMode
 	int  DO_Samples = 7;
 
 	// SPAWN COMPILER
-	bool AI_BuildSpawn = false;
+	bool AI_BuildSpawn			= false;
+	bool AI_Map_NoLimits		= false;
 
+	
  	char AI_spawn_name[256];
 	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;

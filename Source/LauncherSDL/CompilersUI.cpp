@@ -336,6 +336,7 @@ void DrawAIConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.AI_BuildLevel);
 
+		ImGui::Checkbox("AI-Map V11", &gCompilerMode.AI_Map_NoLimits);
 		ImGui::Checkbox("Draft AI-Map", &gCompilerMode.AI_Draft);
 		ImGui::Checkbox("Pure Covers", &gCompilerMode.AI_PureCovers);
 		ImGui::Checkbox("Verify", &gCompilerMode.AI_Verify);
