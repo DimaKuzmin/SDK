@@ -8,62 +8,7 @@ IC BYTE	compress(float c, int max_value)
 	clamp(cover,0,max_value);
 	return BYTE(cover);
 }
-
-struct CNodeCompressed {
-	IC	void	compress_node(NodeCompressed& Dest, vertex& Src);
-};
-
-IC void	CNodeCompressed::compress_node(NodeCompressed& Dest, vertex& Src)
-{
-	Dest.light	(15);//compress(Src.LightLevel,15));
-	for	(u8 L=0; L<4; ++L)
-		Dest.link(L,Src.n[L]);
-//	for	(u32 L=0; L<4; ++L)
-//		if ((Src.n[L] < g_nodes.size()) && (Dest.link(L) != Src.n[L])) {
-//			Dest.link(L,Src.n[L]);
-//			Dest.link(L);
-//		}
-}
-
-void	Compress	(NodeCompressed& Dest, vertex& Src, hdrNODES& H)
-{
-	// Compress plane (normal)
-	Dest.plane	= pvCompress	(Src.Plane.n);
-	
-	// Compress position
-	CNodePositionCompressor(Dest.p,Src.Pos,H);
-//	CompressPos	(Dest.p1,Src.P1,H);
-	
-	// Sector
-	// R_ASSERT(Src.sector<=255);
-	// Dest.sector = BYTE(Src.sector);
-
-	// Light & Cover
-	CNodeCompressed().compress_node(Dest,Src);
-//	Dest.cover[0]	= CompressCover(Src.cover[0]);
-//	Dest.cover[1]	= CompressCover(Src.cover[1]);
-//	Dest.cover[2]	= CompressCover(Src.cover[2]);
-//	Dest.cover[3]	= CompressCover(Src.cover[3]);
-	Dest.high.cover0= compress(Src.high_cover[0],15);
-	Dest.high.cover1= compress(Src.high_cover[1],15);
-	Dest.high.cover2= compress(Src.high_cover[2],15);
-	Dest.high.cover3= compress(Src.high_cover[3],15);
-	Dest.low.cover0	= compress(Src.low_cover[0],15);
-	Dest.low.cover1	= compress(Src.low_cover[1],15);
-	Dest.low.cover2	= compress(Src.low_cover[2],15);
-	Dest.low.cover3	= compress(Src.low_cover[3],15);
-//	Msg				("[%.3f -> %d][%.3f -> %d][%.3f -> %d][%.3f -> %d]",
-//		Src.cover[0],Dest.cover0,
-//		Src.cover[1],Dest.cover1,
-//		Src.cover[2],Dest.cover2,
-//		Src.cover[3],Dest.cover3
-//		);
-
-	// Compress links
-//	R_ASSERT	(Src.neighbours.size()<64);
-//	Dest.links	= BYTE(Src.neighbours.size());
-}
-
+ 
 float	CalculateHeight(Fbox& BB)
 {
 	// All nodes
@@ -78,15 +23,22 @@ float	CalculateHeight(Fbox& BB)
 }
 
 xr_vector<NodeCompressed>	compressed_nodes;
+xr_vector<NodeCompressed11>	compressed_nodes_v11;
+ 
 
-class CNodeRenumberer {
+// Enumarate Nodes
+
+/* 
+template<typename NodePacked>
+class CNodeRenumberer 
+{
 	IC	bool operator=	(const CNodeRenumberer&)
 	{
 	}
 
 	struct SSortNodesPredicate {
 
-		IC	bool	operator()			(const NodeCompressed &vertex0, const NodeCompressed &vertex1) const
+		IC	bool	operator()			(const NodePacked&vertex0, const NodePacked&vertex1) const
 		{
 			return		(vertex0.p.xz() < vertex1.p.xz());
 		}
@@ -98,13 +50,13 @@ class CNodeRenumberer {
 		}
 	};
 
-	xr_vector<NodeCompressed>	&m_nodes;
+	xr_vector<NodePacked>	&m_nodes;
 	xr_vector<u32>				&m_sorted;
 	xr_vector<u32>				&m_renumbering;
 
 public:
 					CNodeRenumberer(
-						xr_vector<NodeCompressed>	&nodes, 
+						xr_vector<NodePacked>	&nodes,
 						xr_vector<u32>				&sorted,
 						xr_vector<u32>				&renumbering
 					) :
@@ -136,6 +88,124 @@ public:
 		std::stable_sort	(m_nodes.begin(),m_nodes.end(),SSortNodesPredicate());
 	}
 };
+*/
+
+// c++ 17 Style
+template<typename NodePacked>
+class CNodeRenumberer 
+{
+public:
+	CNodeRenumberer( xr_vector<NodePacked>& nodes, xr_vector<u32>& sorted, xr_vector<u32>& renumbering ) :
+		m_nodes(nodes),
+		m_sorted(sorted),
+		m_renumbering(renumbering)
+	{
+		const std::size_t N = m_nodes.size();
+		m_sorted.resize(N);
+		m_renumbering.resize(N);
+
+		// Инициализация индексов
+		for (std::size_t i = 0; i < N; ++i)
+			m_sorted[i] = static_cast<u32>(i);
+
+		// Сортировка по координате xz
+		std::stable_sort(m_sorted.begin(), m_sorted.end(), SSortNodesPredicate{ m_nodes });
+
+		// Построение таблицы перенумерации
+		for (std::size_t i = 0; i < N; ++i)
+			m_renumbering[m_sorted[i]] = static_cast<u32>(i);
+
+		// Обновление ссылок
+		for (std::size_t i = 0; i < N; ++i) 
+		{
+			for (u8 j = 0; j < 4; ++j) {
+				u32 vertex_id = m_nodes[i].link(j);
+				if (vertex_id < N)
+					m_nodes[i].link(j, m_renumbering[vertex_id]);
+			}
+		}
+
+		// Переставить сами узлы в отсортированный порядок
+		std::stable_sort(m_nodes.begin(), m_nodes.end(), SSortNodesPredicate{});
+	}
+
+	// Копирование запрещено
+	CNodeRenumberer(const CNodeRenumberer&) = delete;
+	CNodeRenumberer& operator=(const CNodeRenumberer&) = delete;
+
+private:
+	struct SSortNodesPredicate 
+	{
+		const xr_vector<NodePacked>* nodes_ptr = nullptr;
+
+		// Сравнение по координате xz для самих узлов
+		bool operator()(const NodePacked& a, const NodePacked& b) const {
+			return a.p.xz() < b.p.xz();
+		}
+
+		// Сравнение по координате xz по id
+		bool operator()(u32 id0, u32 id1) const {
+			return (*nodes_ptr)[id0].p.xz() < (*nodes_ptr)[id1].p.xz();
+		}
+
+		// Позволяет использовать структуру и для узлов, и для индексов
+		SSortNodesPredicate() = default;
+		SSortNodesPredicate(const xr_vector<NodePacked>& nodes) : nodes_ptr(&nodes) {}
+	};
+
+	xr_vector<NodePacked>& m_nodes;
+	xr_vector<u32>& m_sorted;
+	xr_vector<u32>& m_renumbering;
+};
+
+// Pack nodes
+
+template <typename T>
+void CNodePositionCompressor(T& Pdest, Fvector& Psrc, hdrNODES& H)
+{
+	float sp = 1 / g_params.fPatchSize;
+	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
+
+	int pxz = iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
+	int py = iFloor(65535.f * (Psrc.y - H.aabb.min.y) / (H.size_y) + EPS_L);
+
+	if (pxz > u32(1 << MAX_NODE_BIT_COUNT))
+	{
+		xrADD_ERRORED_NODE(pxz);
+	}
+
+	//VERIFY	(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
+	Pdest.xz(pxz);
+	clamp(py, 0, 65535);
+	Pdest.y(u16(py));
+}
+
+
+template<typename T>
+void	CompressNodeNew(T& Dest, vertex& Src, hdrNODES& H)
+{
+	// Compress plane (normal)
+	Dest.plane = pvCompress(Src.Plane.n);
+
+	// Compress position
+	CNodePositionCompressor(Dest.p, Src.Pos, H);
+
+	// Light & Cover
+	Dest.light(15);
+	for (u8 L = 0; L < 4; ++L)
+		Dest.link(L, Src.n[L]);
+
+	Dest.high.cover0 = compress(Src.high_cover[0], 15);
+	Dest.high.cover1 = compress(Src.high_cover[1], 15);
+	Dest.high.cover2 = compress(Src.high_cover[2], 15);
+	Dest.high.cover3 = compress(Src.high_cover[3], 15);
+	Dest.low.cover0 = compress(Src.low_cover[0], 15);
+	Dest.low.cover1 = compress(Src.low_cover[1], 15);
+	Dest.low.cover2 = compress(Src.low_cover[2], 15);
+	Dest.low.cover3 = compress(Src.low_cover[3], 15);
+}
+
+
 
 int errored_nodes = 0;
 int E_MAX_PXZ = 0;
@@ -153,89 +223,65 @@ void xrSaveNodes(LPCSTR N, LPCSTR out_name)
 
 	// Header
 	Status			("Saving header...");
+	
+	int AIMapVersion = gCompilerMode.AI_Map_NoLimits ? 11 : 10; 	
+	
 	hdrNODES		H;
-	H.version		= XRAI_CURRENT_VERSION;
+	H.version		= AIMapVersion;
 	H.count			= g_nodes.size();
 	H.size			= g_params.fPatchSize;
 	H.size_y		= CalculateHeight(H.aabb);
 	H.guid			= generate_guid();
 	fs->w			(&H,sizeof(H));
-	
-//	fs->w_u32		(g_covers_palette.size());
-//	for (u32 j=0; j<g_covers_palette.size(); ++j)
-//		fs->w		(&g_covers_palette[j],sizeof(g_covers_palette[j]));
 
 	// All nodes
 	Status			("Saving nodes...");
-	int count = 0;
-	int MAX_PX = 0;
-
-	int MAX_X = 0;
-	int MAX_Y = 0;
-	int MAX_Z = 0;
-	int ROW_SIZE = 0;
-
-	Msg("Min[%f][%f][%f]", H.aabb.min.x, H.aabb.min.y, H.aabb.min.z);
-	Msg("Max[%f][%f][%f]", H.aabb.max.x, H.aabb.max.y, H.aabb.max.z);
- 
-	string_path path;
-	FS.update_path(path, "$app_data_root$", "logs\\xrAI_NodesSave_Errors.log");
-		
-	IWriter* w = FS.w_open(path);
-
-	for (u32 i=0; i<g_nodes.size(); ++i) 
+  	for (u32 i = 0; i < g_nodes.size(); ++i)
 	{
-		vertex			&N	= g_nodes[i];
-		NodeCompressed	NC;
-		Compress		(NC,N,H);
-		compressed_nodes.push_back(NC);
-
-		if (NC.p.y() > MAX_Y)
+		vertex& N = g_nodes[i];
+		if (gCompilerMode.AI_Map_NoLimits)
 		{
-			Fvector Psrc = N.Pos;
-			MAX_Y = NC.p.y();
+			NodeCompressed11	NC;
+			CompressNodeNew(NC, N, H);
+			compressed_nodes_v11.push_back(NC);
 		}
-	  
-		if (NC.p.xz() > MAX_PX)
+		else
 		{
-			MAX_PX = NC.p.xz();
-
-			float sp = 1 / g_params.fPatchSize;
-			int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
-
-			Fvector Psrc = N.Pos;
-			int iFloorPosX =  ( (Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f );
-			int iFloorPosZ = iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
-			MAX_X = iFloorPosX;
-			MAX_Z = iFloorPosZ;
-
-			ROW_SIZE = row_length;
+			NodeCompressed	NC;
+			CompressNodeNew(NC, N, H);
+			compressed_nodes.push_back(NC);
 		}
-	}
-
-	FS.w_close(w);
- 
+ 	}
+	 
 	int n_e = errored_nodes;
  
-	clMsg("nodes Size[%u], memory[%u] KB, count_error: %u", 
-		compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed),
-		count
-	);
-
-	clMsg(" MAXPXZ[%u], MAX_X[%u], MAX_Z[%u], MAX_Y[%u] ROW[%u]",
-		MAX_PX, MAX_X, MAX_Z, MAX_Y, ROW_SIZE
-		);
-
-	clMsg("--- [SE7KILLS] VersionOf AiMAP: %d", XRAI_CURRENT_VERSION);
+	clMsg("nodes Size[%u], memory[%u] KB, count_error: %u",  compressed_nodes.size(), (compressed_nodes.size() / 1024) * sizeof(NodeCompressed), g_nodes.size() );
+	clMsg("--- [SE7KILLS] VersionOf AiMAP: %d", AIMapVersion);
  
 	xr_vector<u32>	sorted;
 	xr_vector<u32>	renumbering;
-	CNodeRenumberer	A(compressed_nodes,sorted,renumbering);
-	for (u32 i=0; i < g_nodes.size(); ++i) 
+	
+	if (gCompilerMode.AI_Map_NoLimits)
 	{
-		fs->w			(&compressed_nodes[i],sizeof(NodeCompressed));
-		Progress		(float(i)/float(g_nodes.size()));
+		CNodeRenumberer data (compressed_nodes_v11, sorted, renumbering);
+
+		// Write Packed
+		for (u32 i = 0; i < g_nodes.size(); ++i)
+		{
+			fs->w(&compressed_nodes_v11[i], sizeof(NodeCompressed11));
+			Progress(float(i) / float(g_nodes.size()));
+		}
 	}
+	else
+	{
+		CNodeRenumberer	A(compressed_nodes, sorted, renumbering);
+		for (u32 i = 0; i < g_nodes.size(); ++i)
+		{
+			fs->w(&compressed_nodes[i], sizeof(NodeCompressed));
+			Progress(float(i) / float(g_nodes.size()));
+		}
+	}
+
 	// Stats
 	u32	SizeTotal	= fs->tell();
 	Msg				("%dK saved",SizeTotal/1024);

@@ -51,17 +51,7 @@ struct vertex					// definition of "patch" or "node"
 };
 
 DEF_VECTOR(DWORDs,u32);
-//struct NodeMerged
-//{
-//	DWORDs		neighbours;	// list of neighbours
-//	DWORDs		contains;	// while merging - contains list of elementar nodes
-//	Fplane		plane;
-//	Fvector		P;			// min
-//	WORD		sector;
-//	BYTE		light;
-//	float		cover[4];
-//};
-
+ 
 #include "level_graph.h"
 
 void	Compress	(CLevelGraph::CVertex& Dest, vertex& Src);
@@ -85,7 +75,8 @@ struct R_Light
 	Fvector			tri[3];				// Cached triangle for ray-testing
 };
 
-struct SCover {
+struct SCoverAI
+{
 	u8				cover[4];
 };
 
@@ -97,7 +88,7 @@ DEF_VECTOR(Lights,R_Light		);
 
 // data
 extern	Nodes				g_nodes;
-extern	xr_vector<SCover>	g_covers_palette;
+extern	xr_vector<SCoverAI>	g_covers_palette;
 extern	Lights				g_lights;
 extern	SAIParams			g_params;
 extern	CDB::MODEL			Level;
@@ -166,37 +157,5 @@ const float	sim_angle		= 20.f;
 const float	sim_dist		= 0.15f;
 const int	sim_light		= 32;
 const float	sim_cover		= 48;
-
-struct CNodePositionCompressor 
-{
-	IC				CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H);
-};
-
-
-IC CNodePositionCompressor::CNodePositionCompressor(NodePosition& Pdest, Fvector& Psrc, hdrNODES& H)
-{
-	float sp = 1/g_params.fPatchSize;
-	int row_length = iFloor((H.aabb.max.z - H.aabb.min.z) / H.size + EPS_L + 1.5f);
-
-	int pxz	= iFloor((Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f) * row_length + iFloor((Psrc.z - H.aabb.min.z) * sp   + EPS_L + .5f);
-	int py	= iFloor(65535.f*(Psrc.y-H.aabb.min.y)/(H.size_y)+EPS_L);
-	
-	//int iFloorPosX =  ( (Psrc.x - H.aabb.min.x) * sp + EPS_L + .5f );
-	//int iFloorPosZ = iFloor((Psrc.z - H.aabb.min.z) * sp + EPS_L + .5f);
-
-	//if (pxz > (u32) 1 << 24)
-	//Msg("IFloorPosX: %u * ROW, IFloorPosZ: %u, ROW: %u, IFLOOR_PosX_ROW: %u", iFloorPosX, iFloorPosZ, row_length, iFloorPosX * row_length);
  
-	//	Msg("g_params.fPatchSize: %f, H.size: %f", g_params.fPatchSize, H.size);
-
-	if (pxz > u32 ( 1 << MAX_NODE_BIT_COUNT) )	   
-	{ 
- 		xrADD_ERRORED_NODE(pxz);
-	}
-
-	//VERIFY	(pxz < (1 << MAX_NODE_BIT_COUNT) - 1);
-	Pdest.xz(pxz);
-	clamp	(py,0,     65535);	
-	Pdest.y			(u16(py));
-}
-
+void compiler_load_sdk_nodes(LPCSTR name);

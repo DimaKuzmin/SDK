@@ -10,7 +10,7 @@ CDB::COLLIDER		XRC;
 
 
 Nodes				g_nodes;
-xr_vector<SCover>	g_covers_palette;
+xr_vector<SCoverAI>	g_covers_palette;
 
 Lights				g_lights;
 SAIParams			g_params;
