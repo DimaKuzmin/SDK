@@ -4,14 +4,16 @@
 #include "ESceneAIMapTools_Export.h"
 #include "ESceneAIMapTools.h"
 
-void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const NodePosition& Psrc, Fbox& bb, SAIParams& params)
+// SDK FIX
+  
+void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const SNodePositionOld& Psrc, Fbox& bb, SAIParams& params)
 {
     Pdest.x = float(Psrc.x)*params.fPatchSize;
     Pdest.y = (float(Psrc.y)/65535)*(bb.max.y-bb.min.y) + bb.min.y;
     Pdest.z = float(Psrc.z)*params.fPatchSize;
 }
 
-void ESceneAIMapTool::PackPosition(NodePosition& Dest, Fvector& Src, Fbox& bb, SAIParams& params)
+void ESceneAIMapTool::PackPosition(SNodePositionOld& Dest, Fvector& Src, Fbox& bb, SAIParams& params)
 {
 	float sp = 1/params.fPatchSize;
 	int px,py,pz;
@@ -60,34 +62,17 @@ bool ESceneAIMapTool::Export(LPCSTR path)
         {
             u32 			id;
             u16 			pl;
-            NodePosition 	np;
-#ifndef _USE_NODE_POSITION_11
-            id = (*it)->n1 ? (u32)(*it)->n1->idx : InvalidNode_32bit;
-            if (InvalidNode_32bit < id)
-                Msg("CheckNode1: %d", id);
-            F->w(&id, 3);
-            id = (*it)->n2 ? (u32)(*it)->n2->idx : InvalidNode_32bit;
-            if (InvalidNode_32bit < id)
-                Msg("CheckNode2: %d", id);
-            F->w(&id, 3);
-            id = (*it)->n3 ? (u32)(*it)->n3->idx : InvalidNode_32bit;
-            if (InvalidNode_32bit < id)
-                Msg("CheckNode3: %d", id);
-            F->w(&id, 3);
-            id = (*it)->n4 ? (u32)(*it)->n4->idx : InvalidNode_32bit;
-            if (InvalidNode_32bit < id)
-                Msg("CheckNode4: %d", id);
-            F->w(&id, 3);
-#else 
-            id = (*it)->n1?(u32)(*it)->n1->idx: InvalidNode_64bit;
+            SNodePositionOld 	np;
+ 
+            id = (*it)->n1 ? (u32)(*it)->n1->idx : InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n2?(u32)(*it)->n2->idx: InvalidNode_64bit;
+            id = (*it)->n2 ? (u32)(*it)->n2->idx : InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n3?(u32)(*it)->n3->idx: InvalidNode_64bit;
+            id = (*it)->n3 ? (u32)(*it)->n3->idx : InvalidNode_64bit;
             F->w_u32(id);
-            id = (*it)->n4?(u32)(*it)->n4->idx: InvalidNode_64bit;
+            id = (*it)->n4 ? (u32)(*it)->n4->idx : InvalidNode_64bit;
             F->w_u32(id);
-#endif
+ 
             pl = pvCompress ((*it)->Plane.n);	 				
             F->w_u16(pl);
             PackPosition	(np,(*it)->Pos,bb,m_Params); 	
@@ -100,17 +85,4 @@ bool ESceneAIMapTool::Export(LPCSTR path)
     }
 	return false;
 }
-
-/*
-	u32 			id;
-    u16 			pl;
-	NodePosition 	np;
-    F.r				(&id,3); 			n1 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n2 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n3 = (SAINode*)tools->UnpackLink(id);
-    F.r				(&id,3); 			n4 = (SAINode*)tools->UnpackLink(id);
-	pl				= F.r_u16(); 		pvDecompress(Plane.n,pl);
-    F.r				(&np,sizeof(np)); 	tools->UnpackPosition(Pos,np,tools->m_BBox,tools->m_Params);
-	Plane.build		(Pos,Plane.n);
-*/
-  
+ 

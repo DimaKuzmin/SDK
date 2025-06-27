@@ -12,8 +12,8 @@
 class ESceneAIMapTool;
 struct SAINode;
 
-const u32 InvalidNode		= u32 ( (1 << 32) - 1);
-const u32 InvalidNode_32bit = u32 ( (1 << 23) - 1);
+// const u32 InvalidNode		= u32 ( (1 << 32) - 1);
+// const u32 InvalidNode_32bit = u32 ( (1 << 23) - 1);
 const u32 InvalidNode_64bit = u32 ( (1 << 31) - 1);
 
 #pragma pack(push,1)
@@ -122,9 +122,9 @@ protected:
 	SAINode* 			GetNode					(Fvector vAt, bool bIgnoreConstraints);
 	void				UpdateLinks				(SAINode* N, bool bIgnoreConstraints);
 
-	void 				UnpackPosition			(Fvector& Pdest, const NodePosition& Psrc, Fbox& bb, SAIParams& params);
+	void 				UnpackPosition			(Fvector& Pdest, const SNodePositionOld& Psrc, Fbox& bb, SAIParams& params);
 	u32 				UnpackLink				(u32& L);
-	void				PackPosition			(NodePosition& Dest, Fvector& Src, Fbox& bb, SAIParams& params);
+	void				PackPosition			(SNodePositionOld& Dest, Fvector& Src, Fbox& bb, SAIParams& params);
 
     void				EnumerateNodes			();
     void				DenumerateNodes			();

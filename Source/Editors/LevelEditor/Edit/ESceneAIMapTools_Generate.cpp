@@ -1153,10 +1153,10 @@ void ESceneAIMapTool::SmoothNodes()
             if (vNorm.y<0) vNorm.invert();
             // create _new node
             SAINode* NEW 	= xr_new<SAINode>(N);
-            NEW->n1 		= (SAINode*)(N.n1?N.n1->idx:InvalidNode);
-            NEW->n2 		= (SAINode*)(N.n2?N.n2->idx:InvalidNode);
-            NEW->n3 		= (SAINode*)(N.n3?N.n3->idx:InvalidNode);
-            NEW->n4 		= (SAINode*)(N.n4?N.n4->idx:InvalidNode);
+            NEW->n1 		= (SAINode*)(N.n1?N.n1->idx: InvalidNode_64bit);
+            NEW->n2 		= (SAINode*)(N.n2?N.n2->idx: InvalidNode_64bit);
+            NEW->n3 		= (SAINode*)(N.n3?N.n3->idx: InvalidNode_64bit);
+            NEW->n4 		= (SAINode*)(N.n4?N.n4->idx: InvalidNode_64bit);
             NEW->Plane.build(vOffs,vNorm);
             D.set			(0,1,0);
             N.Plane.intersectRayPoint(N.Pos,D,NEW->Pos);	// "project" position
@@ -1164,10 +1164,10 @@ void ESceneAIMapTool::SmoothNodes()
         }else{
             // create _new node
             SAINode* NEW 	= xr_new<SAINode>(N);
-            NEW->n1 		= (SAINode*)(N.n1?N.n1->idx:InvalidNode);
-            NEW->n2 		= (SAINode*)(N.n2?N.n2->idx:InvalidNode);
-            NEW->n3 		= (SAINode*)(N.n3?N.n3->idx:InvalidNode);
-            NEW->n4 		= (SAINode*)(N.n4?N.n4->idx:InvalidNode);
+            NEW->n1 		= (SAINode*)(N.n1?N.n1->idx: InvalidNode_64bit);
+            NEW->n2 		= (SAINode*)(N.n2?N.n2->idx: InvalidNode_64bit);
+            NEW->n3 		= (SAINode*)(N.n3?N.n3->idx: InvalidNode_64bit);
+            NEW->n4 		= (SAINode*)(N.n4?N.n4->idx: InvalidNode_64bit);
             smoothed.push_back	(NEW);
         }
 

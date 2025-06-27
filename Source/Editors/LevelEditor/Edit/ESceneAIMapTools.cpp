@@ -103,13 +103,17 @@ void SAINode::LoadStream(IReader& F, ESceneAIMapTool* tools)
     {
         u32 			id;
         u16 			pl;
-        NodePosition 	np;
+       
+        SNodePositionOld 	np;
         F.r(&id, 3); 			n1 = (SAINode*)tools->UnpackLink(id);
         F.r(&id, 3); 			n2 = (SAINode*)tools->UnpackLink(id);
         F.r(&id, 3); 			n3 = (SAINode*)tools->UnpackLink(id);
         F.r(&id, 3); 			n4 = (SAINode*)tools->UnpackLink(id);
-        pl = F.r_u16(); 		pvDecompress(Plane.n, pl);
-        F.r(&np, sizeof(np)); 	tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
+        pl = F.r_u16(); 	
+        pvDecompress(Plane.n, pl);
+        F.r(&np, sizeof(np)); 
+        
+        tools->UnpackPosition(Pos, np, tools->m_AIBBox, tools->m_Params);
         Plane.build(Pos, Plane.n);
         flags.assign(F.r_u8());
     }
@@ -136,10 +140,10 @@ void SAINode::SaveStream(IWriter& F, ESceneAIMapTool* tools)
 {
 	u32 			id;
   
-    id = n1?(u32)n1->idx:InvalidNode; F.w(&id,4);
-    id = n2?(u32)n2->idx:InvalidNode; F.w(&id,4);
-    id = n3?(u32)n3->idx:InvalidNode; F.w(&id,4);
-    id = n4?(u32)n4->idx:InvalidNode; F.w(&id,4);
+    id = n1?(u32)n1->idx: InvalidNode_64bit; F.w(&id,4);
+    id = n2?(u32)n2->idx: InvalidNode_64bit; F.w(&id,4);
+    id = n3?(u32)n3->idx: InvalidNode_64bit; F.w(&id,4);
+    id = n4?(u32)n4->idx: InvalidNode_64bit; F.w(&id,4);
    
     F.w_u16(pvCompress(Plane.n));
     F.w_fvector3(Pos);
@@ -240,53 +244,32 @@ void ESceneAIMapTool::EnumerateNodes()
 void ESceneAIMapTool::DenumerateNodes()
 {
 	u32 cnt=m_Nodes.size();
-
-    if (ai_version == AIMAP_VERSION_2)
-        for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
+ 
+    for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
+    {
+        if (!
+                 
+                (((u32)(*it)->n1 < cnt) || ((u32)(*it)->n1 == InvalidNode_64bit)) &&
+                (((u32)(*it)->n2 < cnt) || ((u32)(*it)->n2 == InvalidNode_64bit)) &&
+                (((u32)(*it)->n3 < cnt) || ((u32)(*it)->n3 == InvalidNode_64bit)) &&
+                (((u32)(*it)->n4 < cnt) || ((u32)(*it)->n4 == InvalidNode_64bit))
+                
+        )
         {
-            if (!((((u32)(*it)->n1 < cnt) || ((u32)(*it)->n1 == InvalidNode_32bit)) &&
-                 (((u32)(*it)->n2 < cnt) || ((u32)(*it)->n2 == InvalidNode_32bit)) &&
-                 (((u32)(*it)->n3 < cnt) || ((u32)(*it)->n3 == InvalidNode_32bit)) &&
-                 (((u32)(*it)->n4 < cnt) || ((u32)(*it)->n4 == InvalidNode_32bit))
-                ))
-            {
-                ELog.Msg(mtError, "Node: has wrong link [%3.2f, %3.2f, %3.2f], {%d,%d,%d,%d}", VPUSH((*it)->Pos), (*it)->n1, (*it)->n2, (*it)->n3, (*it)->n4);
-                (*it)->n1 = 0;
-                (*it)->n2 = 0;
-                (*it)->n3 = 0;
-                (*it)->n4 = 0;
-                continue;
-            }
-
-            (*it)->n1 = ((u32)(*it)->n1 == InvalidNode_32bit) ? 0 : m_Nodes[(u32)(*it)->n1];
-            (*it)->n2 = ((u32)(*it)->n2 == InvalidNode_32bit) ? 0 : m_Nodes[(u32)(*it)->n2];
-            (*it)->n3 = ((u32)(*it)->n3 == InvalidNode_32bit) ? 0 : m_Nodes[(u32)(*it)->n3];
-            (*it)->n4 = ((u32)(*it)->n4 == InvalidNode_32bit) ? 0 : m_Nodes[(u32)(*it)->n4];
-
+            ELog.Msg(mtError, "Node: has wrong link [%3.2f, %3.2f, %3.2f], {%d,%d,%d,%d}", VPUSH((*it)->Pos), (*it)->n1, (*it)->n2, (*it)->n3, (*it)->n4);
+            (*it)->n1 = 0;
+            (*it)->n2 = 0;
+            (*it)->n3 = 0;
+            (*it)->n4 = 0;
+            continue;
         }
-    else
-        for (AINodeIt it = m_Nodes.begin(); it != m_Nodes.end(); it++)
-        {
-            if (!((((u32)(*it)->n1 < cnt) || ((u32)(*it)->n1 == InvalidNode)) &&
-                (((u32)(*it)->n2 < cnt) || ((u32)(*it)->n2 == InvalidNode)) &&
-                (((u32)(*it)->n3 < cnt) || ((u32)(*it)->n3 == InvalidNode)) &&
-                (((u32)(*it)->n4 < cnt) || ((u32)(*it)->n4 == InvalidNode))
-                ))
-            {
-                ELog.Msg(mtError, "Node: has wrong link [%3.2f, %3.2f, %3.2f], {%d,%d,%d,%d}", VPUSH((*it)->Pos), (*it)->n1, (*it)->n2, (*it)->n3, (*it)->n4);
-                (*it)->n1 = 0;
-                (*it)->n2 = 0;
-                (*it)->n3 = 0;
-                (*it)->n4 = 0;
-                continue;
-            }
 
-            (*it)->n1 = ((u32)(*it)->n1 == InvalidNode) ? 0 : m_Nodes[(u32)(*it)->n1];
-            (*it)->n2 = ((u32)(*it)->n2 == InvalidNode) ? 0 : m_Nodes[(u32)(*it)->n2];
-            (*it)->n3 = ((u32)(*it)->n3 == InvalidNode) ? 0 : m_Nodes[(u32)(*it)->n3];
-            (*it)->n4 = ((u32)(*it)->n4 == InvalidNode) ? 0 : m_Nodes[(u32)(*it)->n4];
+        (*it)->n1 = ((u32)(*it)->n1 == InvalidNode_64bit) ? 0 : m_Nodes[(u32)(*it)->n1];
+        (*it)->n2 = ((u32)(*it)->n2 == InvalidNode_64bit) ? 0 : m_Nodes[(u32)(*it)->n2];
+        (*it)->n3 = ((u32)(*it)->n3 == InvalidNode_64bit) ? 0 : m_Nodes[(u32)(*it)->n3];
+        (*it)->n4 = ((u32)(*it)->n4 == InvalidNode_64bit) ? 0 : m_Nodes[(u32)(*it)->n4];
 
-        }
+    }
 
 }
 
@@ -328,12 +311,10 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     	(*it)->LoadStream	(F,this);
     }
 
-#ifdef _USE_NODE_POSITION_11
-    u32 ch_node = version == AIMAP_VERSION ? InvalidNode_64bit : InvalidNode_32bit;
-#else 
-    u32 ch_node = InvalidNode_32bit;
-#endif
 
+    int InvalidNode_32bit = u32(1 << 23) - 1;
+    u32 ch_node = version > 0x0002 ? InvalidNode_64bit : InvalidNode_32bit;
+ 
     ids = 0;
     for (auto it = vec.begin(); it != vec.end(); it++, ids++)
     {
