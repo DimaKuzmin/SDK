@@ -63,11 +63,11 @@ public:
 #ifdef AI_COMPILER
 	typedef CVertexAllocatorFixed<2 * 1024 * 1024>				CVertexAllocator;
 #else
-#ifdef _USE_NODE_POSITION_11
+// #ifdef _USE_NODE_POSITION_11
 	typedef CVertexAllocatorFixed<(8 * 64) * 1024>				CVertexAllocator;		  // Se7Kills Add 8  --AI_FIX
-#else
-	typedef CVertexAllocatorFixed<64 * 1024>				CVertexAllocator;
-#endif
+//#else
+//	typedef CVertexAllocatorFixed<64 * 1024>				CVertexAllocator;
+//#endif
 	typedef CVertexAllocatorFixed<8 * 1024>					CSolverVertexAllocator;
 	typedef CVertexAllocatorFixed<1024>						CStringVertexAllocator;
 #endif // AI_COMPILER

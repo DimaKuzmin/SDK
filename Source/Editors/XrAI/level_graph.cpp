@@ -215,9 +215,7 @@ u32	CLevelGraph::vertex_id				(const Fvector &position) const
 	CVertex* I =
 	std::lower_bound(B, E, _vertex_position.xz(),
 		[&](const CVertex& lhs, u32 xz)
-		{
-			return xz > lhs.position_value.xz();
-		}
+		{ return xz > lhs.position_value.xz();}
 	);
 
  

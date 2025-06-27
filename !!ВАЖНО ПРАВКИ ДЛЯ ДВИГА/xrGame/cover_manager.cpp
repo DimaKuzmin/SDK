@@ -88,11 +88,11 @@ void CCoverManager::compute_static_cover	()
 	xr_delete				(m_covers);
 	
 	// Se7kills AI_FIX
-#ifdef _USE_NODE_POSITION_11
+//#ifdef _USE_NODE_POSITION_11
 	m_covers				= xr_new<CPointQuadTree>(ai().level_graph().header().box(),ai().level_graph().header().cell_size()*.5f,32*65536,8*65536);
-#else
-	m_covers = xr_new<CPointQuadTree>(ai().level_graph().header().box(), ai().level_graph().header().cell_size() * .5f, 8 * 65536, 4 * 65536);
-#endif
+// #else
+// 	m_covers = xr_new<CPointQuadTree>(ai().level_graph().header().box(), ai().level_graph().header().cell_size() * .5f, 8 * 65536, 4 * 65536);
+// #endif
 
 	m_temp.resize			(ai().level_graph().header().vertex_count());
 
