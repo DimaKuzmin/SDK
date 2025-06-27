@@ -4,7 +4,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IntDir>$(SolutionDir)..\Intermediate\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
-    <OutDir>A:\SDKGAMEDATA\X-Ray_CoP_SDK\editors\Bin\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>A:\SDK\Bin\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
