@@ -41,8 +41,7 @@ void SurfacePlacePerpixel::_InitSurface_tbb()
 bool SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
 {
 	csLMMerge.Enter();
-
-	// Для Многопотока нужно убедиться что точно не занято
+ 	// Для Многопотока нужно убедиться что точно не занято
 	
 	bool isCanRegister = Place_Perpixel_tbb(R, D);
  	if (isCanRegister)
@@ -88,32 +87,6 @@ bool SurfacePlacePerpixel::Place_Perpixel_tbb(L_rect& R, lm_layer* D)
 		BYTE* P = surface_tbb + (y + R.a.y) * SurfaceGrid + R.a.x;
 		u8* S = lm + y * s_x;
 
-#ifdef USE_ACCELARATED 
-		if (s_x > 32) // accelerated AVX2
-		{
-			int step = 32;
-			for (x = 0; x < s_x - step; x += step, P += step, S += step)
-			{
-				__m256i mm_reg_s = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(S));
-				__m256i mm_reg_p = _mm256_loadu_si256(reinterpret_cast<const __m256i*>(P));
-
-				__m256i mm_max = _mm256_max_epu8(mm_reg_s, mm256_alpha_ref);
-				__m256i mm_cmp = _mm256_cmpeq_epi8(mm_max, mm256_alpha_ref);
-				__m256i mm_andn = _mm256_andnot_si256(mm_cmp, mm_reg_p);
-				__m256i mm_sad = _mm256_sad_epu8(mm_andn, mm256_zero); // AVX2 не имеет _mm256_sad_epu8, будет объяснение ниже
-
-
-				// Здесь нужно суммировать содержимое mm_sad
-				__m128i sum_lo = _mm256_castsi256_si128(mm_sad);         // нижние 128 бит
-				__m128i sum_hi = _mm256_extracti128_si256(mm_sad, 1);    // верхние 128 бит
-				__m128i sum = _mm_add_epi64(sum_lo, sum_hi);
-
-				// Проверка суммы
-				if (_mm_extract_epi64(sum, 0) != 0 || _mm_extract_epi64(sum, 1) != 0)
-					return false;
-			}
-		}
-#endif 
   		// destination scan-line
  		for (; x < s_x; x++, P++, S++)
 		{

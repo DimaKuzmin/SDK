@@ -111,18 +111,14 @@ void CBuild::Light()
 {
 	Msg("QUALYTI: %d, pixel: %f, jitter: %d", g_params().m_quality, g_params().m_lm_pixels_per_meter, g_params().m_lm_jitter_samples);
 	
-#ifndef FAST_RAYTRACE
 	Phase("Adaptive HT...");
 	xrPhase_AdaptiveHT();
-#endif
 
 	Phase("Building normals...");
 	CalcNormals();
 
-#ifndef FAST_RAYTRACE
 	Phase("Building collision database...");
 	BuildCForm();
-#endif
 	 
 	// Строим модель для Tracing
  	Phase("Building rcast-CFORM model...");
@@ -150,7 +146,7 @@ void CBuild::Light()
  	ImplicitLighting();
 
 	Phase("LIGHT: LMaps...");
-	EmbreeMain.AttachGeometrys(false);
+	EmbreeMain.AttachGeometrys(true);
  	LMaps();
 	 
 	//****************************************** Vertex

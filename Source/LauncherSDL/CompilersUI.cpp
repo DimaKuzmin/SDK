@@ -3,12 +3,15 @@
 #include <timeapi.h>
 #include "imgui/imgui.h"
 #include "app_info.h"
+#include <Psapi.h>
 
 //Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
 
 bool ShowMainUI = true;
 extern CompilersMode gCompilerMode;
+
+extern size_t GetHeapMemory(bool now);
 
 void InitializeUIData()
 {
@@ -263,7 +266,7 @@ void DrawLCConfig()
 		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
 
-		// ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
+		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 		// ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
  
 
@@ -367,6 +370,9 @@ void DrawAIConfig()
 
 void DrawCompilerConfig()
 {
+  	ImGui::Checkbox("AVX mode", &gCompilerMode.use_avx);
+	ImGui::Checkbox("SSE4.2 mode", &gCompilerMode.use_sse42);
+
 	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
 	ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
 	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
@@ -482,9 +488,6 @@ extern void DumpData();
 
 void RenderCompilerUI(int X, int Y)
 {
-	size_t  w_free, w_reserved, w_committed;
-	vminfo(&w_free, &w_reserved, &w_committed);
-
  	static bool autoScroll = true;
 	static bool hideLogSection = false;
 	static bool ResizeMaximal = true;
@@ -697,8 +700,9 @@ void RenderCompilerUI(int X, int Y)
 		{
 			if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
 				autoScroll = !autoScroll;
- 			ImGui::SameLine();
- 			ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", w_committed / 1024 / 1024);
+ 			
+			ImGui::SameLine();
+ 			ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
  			ImGui::SameLine();
  			ImGui::Checkbox("ShowMain", &ShowMainUI);
 		}

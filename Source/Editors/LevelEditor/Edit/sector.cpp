@@ -687,23 +687,34 @@ bool CSector::Validate(bool bMsg)
 
     // verify shader compatibility
 	bool bRenderableFound	= false;    
-
+    bool bErrors = false;
     for (SItemIt it=sector_items.begin();it!=sector_items.end();it++)
     {
         for (SurfFacesPairIt sf_it=it->mesh->m_SurfFaces.begin(); sf_it!=it->mesh->m_SurfFaces.end(); sf_it++)
         {
             CSurface* surf 		= sf_it->first;
             Shader_xrLC* c_sh	= EDevice.ShaderXRLC.Get(surf->_ShaderXRLCName());
-            if (c_sh->flags.bRendering)	bRenderableFound = true;
+
+            if (!c_sh)
+            {
+                Msg("*ERROR: Object: [%s] | shader [%s] is no finded in shader_xrlc.xr", it->mesh->Name(), surf->_ShaderXRLCName());
+                bErrors = true;
+                continue;
+            }
+            if (c_sh->flags.bRendering)	
+                bRenderableFound = true;
         }
 	}
 
+    if (bErrors)
+        return false;
 
-    if (!bRenderableFound){
-        if (bMsg) 	ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
+    if (!bRenderableFound)
+    {
+        if (bMsg) 
+            ELog.Msg(mtError,"*ERROR: Sector: '%s' - can't find any renderable face!", GetName());
     	bRes 		= false;
 	}        
- 
-
+  
    	return bRes;
 }

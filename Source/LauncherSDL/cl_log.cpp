@@ -3,6 +3,8 @@
 #include <mmsystem.h>
 #include <CommCtrl.h>
 #include "cl_log.h"
+#include <Psapi.h>
+#pragma comment(lib, "Psapi.lib")
  
 // extern ILogger* LoggerCL = 0;
 
@@ -60,7 +62,27 @@ void StatusNoMSG(const char* format, ...)
  
 IterationData* ActiveIteration = nullptr;
 
- 
+extern size_t;
+
+size_t last_update_memory = 0;
+CTimer tMemory;
+size_t GetHeapMemory(bool now = false)
+{
+	// Не слишком часто обновляться
+	if (tMemory.GetElapsed_ms() < 500 && now == true)
+	{
+		return last_update_memory;
+	}
+
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	{
+		tMemory.Start();
+		last_update_memory = pmc.PrivateUsage;
+		return pmc.PrivateUsage;
+	}
+};
+
 void Phase			(const char *phase_name)
 {
   	phase_total_time = timeGetTime() - phase_start_time;
@@ -69,9 +91,7 @@ void Phase			(const char *phase_name)
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
 	{
-		size_t  w_free, w_reserved, w_committed;
-		vminfo(&w_free, &w_reserved, &w_committed);
-		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = w_committed;
+  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory(true);
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
 	}
 

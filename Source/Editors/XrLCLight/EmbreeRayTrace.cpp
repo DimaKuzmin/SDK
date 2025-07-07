@@ -264,8 +264,8 @@ void errors_embree(void* userPtr, enum RTCError code, const char* str)
 
 void EmbreeData::IntializeDevice()
 {
-	bool avx_test = true; 
-	bool sse	  = true; 
+	bool avx_test = gCompilerMode.use_avx; 
+	bool sse	  = !gCompilerMode.use_sse42;
 
 	InitOpacityLUT();
 

@@ -11,8 +11,12 @@ struct _counter
 	u32	dwCount;
 };
 
+
 #include <mutex>
 #include <execution>
+#include <ppl.h>
+#include <concurrent_vector.h>
+
 std::mutex g_XSplit_mutex;
 
 void	CBuild::xrPhase_ResolveMaterials()
@@ -20,75 +24,62 @@ void	CBuild::xrPhase_ResolveMaterials()
 	// Count number of materials
 	CTimer t; t.Start();
 	Status		("Calculating materials/subdivs... [%f]", t.GetElapsed_sec());
-	xr_vector<_counter>	counts;
+	// xr_vector<_counter>	counts;
+	
+	concurrency::concurrent_vector<_counter> counts_mt_safe;
 	{
-		counts.reserve		(256);
-
-
-		//for (vecFaceIt F_it=lc_global_data()->g_faces().begin(); F_it!=lc_global_data()->g_faces().end(); F_it++)
-		
-		std::for_each(std::execution::par, lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&] (Face* F)
+		counts_mt_safe.reserve		(256);
+ 		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_faces().size()), [&](size_t Index)
+		{
+			BOOL	bCreate = TRUE;
+			auto F = lc_global_data()->g_faces()[Index];
+			for (u32 I = 0; I < counts_mt_safe.size(); I++)
 			{
-				// Face* F = *F_it;
-				BOOL	bCreate = TRUE;
-
-				for (u32 I = 0; I < counts.size(); I++)
+				if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
 				{
-					if (F->dwMaterial == counts[I].dwMaterial)
-					{
-						std::lock_guard<std::mutex> lock(g_XSplit_mutex);
-						counts[I].dwCount += 1;
-						bCreate = FALSE;
-						return;
- 					}
-				}
-
-				if (bCreate)
-				{
- 					_counter	C;
-					C.dwMaterial = F->dwMaterial;
-					C.dwCount = 1;
-
-					std::lock_guard<std::mutex> lock(g_XSplit_mutex);
-					counts.push_back(C);
-				}
-  				//Progress(float(F_it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
+					counts_mt_safe[I].dwCount += 1;
+					bCreate = FALSE;
+					return;
+ 				}
 			}
-		);
-		
+
+			if (bCreate)
+			{
+ 				_counter	C;
+				C.dwMaterial = F->dwMaterial;
+				C.dwCount = 1;
+ 				counts_mt_safe.push_back(C);
+			}
+
+		});
 	}
 	
 	Status				("Perfroming subdivisions... [%f]", t.GetElapsed_sec());
 	{
-		g_XSplit.reserve(64*1024);
-		g_XSplit.resize	(counts.size());
-	
-		for (u32 I=0; I<counts.size(); I++) 
-		{
-			g_XSplit[I] = xr_new<vecFace> ();
-			g_XSplit[I]->reserve	(counts[I].dwCount);
-		}
-		
-		//for (vecFaceIt F_it=lc_global_data()->g_faces().begin(); F_it!=lc_global_data()->g_faces().end(); F_it++)
-		
-		std::for_each(std::execution::par, lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(),
-			[&](Face* F)
-			{
-				// Face*	F							= *F_it;
-				if (!F->Shader().flags.bRendering)
-					return;		// continue;
+		concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> g_Xsplits_def;
+		g_Xsplits_def.reserve(64 * 1024);
+		g_Xsplits_def.resize(counts_mt_safe.size());
 
-				for (u32 I = 0; I < counts.size(); I++)
+		concurrency::parallel_for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+			{
+				if (!F->Shader().flags.bRendering) return;
+
+				for (u32 I = 0; I < counts_mt_safe.size(); I++)
 				{
-					if (F->dwMaterial == counts[I].dwMaterial)
+					if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
 					{
-						std::lock_guard<std::mutex> lock(g_XSplit_mutex);
-						g_XSplit[I]->push_back(F);
+						g_Xsplits_def[I].push_back(F);
 					}
 				}
-
-				//	Progress(float(F_it-lc_global_data()->g_faces().begin())/float(lc_global_data()->g_faces().size()));
 			});
+ 
+
+		g_XSplit.reserve(64 * 1024);
+		g_XSplit.resize(counts_mt_safe.size());
+		for (auto i = 0; i < g_XSplit.size(); i++)
+		{
+			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
+		}
 	}
 
 	Status				("Removing empty subdivs... [%f]", t.GetElapsed_sec());

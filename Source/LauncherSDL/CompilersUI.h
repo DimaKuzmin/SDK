@@ -26,6 +26,9 @@ struct CompilersMode
 	bool ClearTemp = false;
 	bool SkipTHM = false;
 
+	bool use_avx = false;
+	bool use_sse42 = false;
+
 	bool AI = false;
 	bool DO = false;
 	bool LC = false;

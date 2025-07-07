@@ -62,7 +62,9 @@ void CBuild::xrPhase_AdaptiveHT	()
 		lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
 		lc_global_data()->g_faces()[fit]->CalcNormal			();
 	}
-	u_Tesselate		(callback_edge_longest,0,0);		// tesselate
+
+	if (gCompilerMode.LC_Tess)
+		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
  	 
 	// Tesselate + calculate
 	Status			("Precalculating...");
@@ -261,56 +263,57 @@ void	tessalate_faces( xr_vector<Face*> & faces, Vertex* V1, Vertex* V2,  tesscb_
 void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_vertex* cb_V)
 {
 	// main process
-		FPU::m64r					();
-		Status						("Tesselating...");
-		g_bUnregister				= false;
+ 	Status						("Tesselating...");
+	g_bUnregister				= false;
 
-		u32		counter_create		= 0;
-		u32		cnt_verts			= lc_global_data()->g_vertices().size();
-		//u32		cnt_faces			= g_faces.size();
-	
-		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
-		{
-			Face* F					= lc_global_data()->g_faces()[I];
-			if (0==F)				
-				continue;
-			if( !check_and_destroy_splited( I ) )
-				continue;
-
-			Progress				(float(I)/float(lc_global_data()->g_faces().size()));
-			int max_id = -1;
-			if( !do_tesselate_face( *F, cb_E, max_id ) )
-				continue;
-
-			xr_vector<Face*>		adjacent_vec;
-			Vertex					*V1,*V2;
-			CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
-			++counter_create;
+	u32		counter_create		= 0;
+	u32		cnt_verts			= lc_global_data()->g_vertices().size();
+ 	for (u32 I=0; I < lc_global_data()->g_faces().size(); ++I)
+	{
+		Face* F					= lc_global_data()->g_faces()[I];
+		if (0==F)								continue;
+		if( !check_and_destroy_splited( I ) )	continue;
 		
-			if (0==(counter_create%100000))	
-			{
-				for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-					if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())	
-						lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+		Progress				(float(I)/float(lc_global_data()->g_faces().size()));
+		int max_id = -1;
+		if( !do_tesselate_face( *F, cb_E, max_id ) ) continue;
 
-				Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
+		xr_vector<Face*>		adjacent_vec;
+		Vertex					*V1,*V2;
+		CollectProblematicFaces( *F, max_id, adjacent_vec, &V1, &V2 );
+		++counter_create;
+	
+		if (0==(counter_create%10000))	
+		{
+			Msg("Created Vertexs : %u", counter_create);
+			for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
+			{
+				R_ASSERT(lc_global_data()->g_vertices()[I]);
+				if (!lc_global_data()->g_vertices()[I])
+					continue;
+
+				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())
+					lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[I]);
 			}
 
-			tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
+			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
 		}
 
-		// Cleanup
-		for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
-			if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
-				lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
+		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
+	}
 
-		for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
-			if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())				
-				lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+	// Cleanup
+	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
+		if (0!=lc_global_data()->g_faces()[I] && lc_global_data()->g_faces()[I]->flags.bSplitted)	
+			lc_global_data()->destroy_face	(lc_global_data()->g_faces()[I]);
 
-		lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
-		lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
-		g_bUnregister		= true;
+	for (u32 I=0; I<lc_global_data()->g_vertices().size(); ++I)	
+		if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())				
+			lc_global_data()->destroy_vertex	(lc_global_data()->g_vertices()[I]);
+
+	lc_global_data()->g_faces().erase		(std::remove(lc_global_data()->g_faces().begin(),lc_global_data()->g_faces().end(),(Face*)0),lc_global_data()->g_faces().end());
+	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
+	g_bUnregister		= true;
 }
 
 #include "PPL.h"

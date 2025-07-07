@@ -168,7 +168,7 @@ void CBuild::xrPhase_MergeLM()
  		std::atomic<u32> Errors = 0;
 		
 		// Calculate Rects
- 		auto calculate_maps = [&](bool useMT)
+ 		auto calculate_maps = [&]()
 		{
 			while (true)
 			{
@@ -216,7 +216,7 @@ void CBuild::xrPhase_MergeLM()
 		placer_perpixel._InitSurface_tbb();
   		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t thread_id)
 		{
-			calculate_maps(true);
+			calculate_maps();
 		});
  		
 		// calculate_maps(true);
