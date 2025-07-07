@@ -5,56 +5,41 @@ using std::swap;
 #pragma warning(disable: 4996)
 
 #define M_DONTDEFERCLEAR_EXT
- 
- 
 template <class T>
-class	xalloc	{
+class	xalloc {
 public:
 	typedef	size_t		size_type;
 	typedef ptrdiff_t	difference_type;
-	typedef T*			pointer;
-	typedef const T*	const_pointer;
-	typedef T&			reference;
-	typedef const T&	const_reference;
+	typedef T* pointer;
+	typedef const T* const_pointer;
+	typedef T& reference;
+	typedef const T& const_reference;
 	typedef T			value_type;
 
 public:
-	template<class _Other>	
-	struct rebind			{	typedef xalloc<_Other> other;	};
-
+	template<class _Other>
+	struct rebind { typedef xalloc<_Other> other; };
 public:
-	xalloc			()			
-	{	
+	pointer					address(reference _Val) const { return (&_Val); }
+	const_pointer			address(const_reference _Val) const { return (&_Val); }
+	xalloc() = default;
+	xalloc(const xalloc<T>&) = default;
+	template<class _Other>							xalloc(const xalloc<_Other>&) {}
+	template<class _Other>	xalloc<T>& operator=		(const xalloc<_Other>&) { return (*this); }
+	pointer					allocate(size_type n, const void* p = 0) const { return xr_alloc<T>((u32)n); }
+	char* _charalloc(size_type n) { return (char*)allocate(n); }
+	void					deallocate(pointer p, size_type n) const { xr_free(p); }
+	void					deallocate(void* p, size_type n) const { xr_free(p); }
+	//void					construct		(pointer p, const T& _Val)				{	::new(p) T(_Val);	}
+
+	template <typename... Args>
+	static void construct(pointer* ptr, Args&&... args)
+	{
+		new (ptr) T(std::forward<Args>(args)...);
 	}
 
-	xalloc			(const xalloc<T>&)	
-	{
-	}
-
-	template<class _Other>						
-	xalloc			(const xalloc<_Other>&)			
-	{
-	}
-
-	template<class _Other>	xalloc<T>&	operator=		(const xalloc<_Other>&)					
-	{	
-		return (*this);
-	}
- 							
-	pointer					allocate		(size_type n, const void* p=0) const	
-	{
-		return xr_alloc<T>((u32)n);
-	}	
-	
-	void					deallocate		(pointer p, size_type n) const			
-	{
-		xr_free	(p);		
-	}
- 			 
-	size_type				max_size		() const		
-	{	
-		size_type _Count = (size_type)(-1) / sizeof (T);	return (0 < _Count ? _Count : 1);
-	}
+	void					destroy(pointer p) { p->~T(); }
+	size_type				max_size() const { size_type _Count = (size_type)(-1) / sizeof(T);	return _Count; }
 };
 
 struct xr_allocator {
@@ -63,18 +48,18 @@ struct xr_allocator {
 		typedef xalloc<T>	result;
 	};
 
-	static	void	*alloc		(const u32 &n)	{	return xr_malloc((u32)n);	}
+	static	void* alloc(const u32 n) { return xr_malloc((u32)n); }
 	template <typename T>
-	static	void	dealloc		(T *&p)			{	xr_free(p);					}
+	static	void	dealloc(T*& p) { xr_free(p); }
 };
 
-template<class _Ty,	class _Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (true);							}
-template<class _Ty, class _Other>	inline	bool operator!=(const xalloc<_Ty>&, const xalloc<_Other>&)		{	return (false);							}
+template<class _Ty, class _Other>	inline	bool operator==(const xalloc<_Ty>&, const xalloc<_Other>&) { return (true); }
+template<class _Ty, class _Other>	inline	bool operator!=(const xalloc<_Ty>&, const xalloc<_Other>&) { return (false); }
 
 namespace std
 {
-	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>&	__stl_alloc_rebind(xalloc<_Tp1>& __a, const _Tp2*)	{	return (xalloc<_Tp2>&)(__a);	}
-	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>	__stl_alloc_create(xalloc<_Tp1>&, const _Tp2*)		{	return xalloc<_Tp2>();			}
+	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>& __stl_alloc_rebind(xalloc<_Tp1>& __a, const _Tp2*) { return (xalloc<_Tp2>&)(__a); }
+	template<class _Tp1, class _Tp2>	inline	xalloc<_Tp2>	__stl_alloc_create(xalloc<_Tp1>&, const _Tp2*) { return xalloc<_Tp2>(); }
 };
 
 // string(char)
@@ -136,62 +121,34 @@ public:
 // 	explicit xr_vector(size_t _count) : inherited(_count) {}
 // 	u32		size() const { return (u32)inherited::size(); }
 // 
-// 	void	clear_and_free() { inherited::clear(); }
-// 	void	clear() { clear_and_free(); }
+// 	void	clear() { inherited::clear(); }
+// 	void	clear() { clear(); }
 // 
 // 	const_reference operator[]	(size_type _Pos) const { { VERIFY2(_Pos < size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str()); } return (*(begin() + _Pos)); }
 // 	reference operator[]		(size_type _Pos) { { VERIFY2(_Pos < size(), make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str()); } return (*(begin() + _Pos)); }
 // };
 
 // vector
-template	<typename T, typename allocator = xalloc<T> >
-class xr_vector : public std::vector<T, allocator> {
-private:
-	typedef std::vector<T,allocator>	inherited;
+template <typename T, typename allocator = xalloc<T> >
+using xr_vector = std::vector<T, allocator>;
 
-public:
-	typedef allocator					allocator_type;
+template <typename K, typename V>
+using xr_pair = std::pair<K, V>;
 
-public:
-			xr_vector			()									: inherited	()					{}
-			xr_vector			(size_t _count, const T& _value)	: inherited	(_count,_value)		{}
-	explicit xr_vector			(size_t _count)						: inherited (_count)			{}
-	u32		size				() const							{ return (u32)inherited::size();} 
+template<typename... Args>
+using xr_tuple = std::tuple<Args...>;
 
-	void	clear_and_free		()									{ inherited::clear();			}
-	void	clear_not_free		()									{ erase(begin(),end());			}
-	void	clear_and_reserve	()									{ if ( capacity() <= (size()+size()/4) ) clear_not_free(); else { u32 old=size(); clear_and_free(); reserve(old); } }
-
-#ifdef M_DONTDEFERCLEAR_EXT
-	void	clear				()									{ clear_and_free	();			}
-#else
-	void	clear				()									{ clear_not_free	();			}
-#endif
-
-	const_reference operator[]	(size_type _Pos) const				{ {VERIFY2(_Pos<size(),make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(begin() + _Pos)); }
-	reference operator[]		(size_type _Pos)					{ {VERIFY2(_Pos<size(),make_string("index is out of range: index requested[%d], size of container[%d]", _Pos, size()).c_str());} return (*(begin() + _Pos)); }
-};
-
-// vector<bool>
-template <>
-class xr_vector<bool,xalloc<bool> >	: public std::vector<bool,xalloc<bool> > {
-private:
-	typedef std::vector<bool,xalloc<bool> > inherited;
-
-public: 
-	u32		size				() const							{ return (u32)inherited::size();} 
-	void	clear				()									{ erase(begin(),end());			} 
-};
-
-template <typename allocator>
-class xr_vector<bool,allocator>	: public std::vector<bool,allocator> {
-private:
-	typedef std::vector<bool,allocator> inherited;
-
-public: 
-	u32		size				() const							{ return (u32)inherited::size();} 
-	void	clear				()									{ erase(begin(),end());			} 
-};
+template <typename T>
+void clear_and_reserve(xr_vector<T>& vector_object) {
+	if (vector_object.capacity() <= (vector_object.size() + vector_object.size() / 4)) {
+		vector_object.resize(0);
+	}
+	else {
+		u32 old = (u32)vector_object.size();
+		vector_object.clear();
+		vector_object.reserve(old);
+	}
+}
 
 // deque
 template <typename T, typename allocator = xalloc<T> >

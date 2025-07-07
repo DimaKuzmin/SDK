@@ -145,7 +145,7 @@ void UIObjectList::UndoLoad()
 			obj->DeleteThis();
 			Scene->RemoveObject(obj, false, true);
 		}
-		objects_loaded[loaded].clear_and_free();
+		objects_loaded[loaded].clear();
 		loaded -= 1;
 	}
 

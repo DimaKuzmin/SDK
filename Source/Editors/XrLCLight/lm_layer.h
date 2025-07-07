@@ -67,8 +67,8 @@ public:
 	void					destroy			()
 	{
 		width=height		= 0;
-		surface.clear_and_free				();
-		marker.clear_and_free				();
+		surface.clear				();
+		marker.clear();
 	}
 
 	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }

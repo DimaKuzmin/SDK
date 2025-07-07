@@ -164,7 +164,7 @@ XRCORE_API void _dump_open_files(int mode)
 		}
 	}
 	if(bShow)
-		Log("----total count=",g_open_files.size());
+		Msg("----total count= %u", g_open_files.size());
 }
 
 CLocatorAPI::CLocatorAPI()
@@ -595,9 +595,7 @@ bool CLocatorAPI::Recurse		(const char* path)
 	_finddata_t*buffer = (_finddata_t*) _malloca(count*sizeof(_finddata_t));
 	std::copy		(&*rec_files.begin(), &*rec_files.begin() + count, buffer);
 
-//.	std::copy		(&*rec_files.begin(),&*rec_files.end(),buffer);
-
-	rec_files.clear_not_free();
+	rec_files.clear();
 	std::sort		(buffer, buffer + count, pred_str_ff);
 	for (_finddata_t*I = buffer, *E = buffer + count; I != E; ++I)
 		ProcessOne	(path,I);

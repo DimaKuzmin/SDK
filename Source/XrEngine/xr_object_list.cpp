@@ -182,7 +182,7 @@ void CObjectList::clear_crow_vec(Objects& o)
 //		Msg				("[%d][0x%08x]IAmNotACrowAnyMore (clear_crow_vec)", Device.dwFrame, dynamic_cast<void*>(o[_it]));
 		o[_it]->IAmNotACrowAnyMore();
 	}
-	o.clear_not_free();
+	o.clear();
 }
 
 void CObjectList::Update		(bool bForce)

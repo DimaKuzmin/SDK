@@ -224,5 +224,5 @@ void CBuild::Flex2OGF()
 		};
 	}
 	 
-	g_XSplit.clear_and_free();
+	g_XSplit.clear();
 }

@@ -181,7 +181,7 @@ void CLightmap::Save( LPCSTR path )
 	}
 	clMsg("Compression Base: %u ms", t.GetElapsed_ms());
 
-	lm_packed.clear_and_free();
+	lm_packed.clear();
 
 	Status			("Compression hemi..."); //.
 	t.Start();

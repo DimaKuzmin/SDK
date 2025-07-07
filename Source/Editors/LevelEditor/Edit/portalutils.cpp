@@ -169,6 +169,9 @@ bool CPortalUtils::Validate(bool bMsg)
 {
     Fbox box;
     bool bResult 	= false;
+
+    R_ASSERT(Scene);
+
 	if (Scene->GetBox(box,OBJCLASS_SCENEOBJECT))
     {
 	    bResult 	= true;
@@ -189,10 +192,24 @@ bool CPortalUtils::Validate(bool bMsg)
         xr_delete	(sector_def);
 
         // verify sectors
-        ObjectList& s_lst=Scene->ListObj(OBJCLASS_SECTOR);
-        for(ObjectIt _F=s_lst.begin(); _F!=s_lst.end(); _F++)
-        if (!((CSector*)(*_F))->Validate(bMsg)) 
-            bResult = false;
+        ObjectList& s_lst = Scene->ListObj(OBJCLASS_SECTOR);
+        for (auto Object : s_lst)
+        {
+            CSector* sector = dynamic_cast<CSector*>(Object);
+
+            if (!sector)
+            {
+                Msg("Sector is nullptr !!!");
+                bResult = false;
+                break;
+            }
+
+            if (!sector->Validate(bMsg))
+            {
+                bResult = false;
+                break;
+            }
+        }
     }
     else
     {

@@ -264,5 +264,5 @@ RESULT& COLLIDER::r_add	()
 
 void COLLIDER::r_free	()
 {
-	rd.clear_and_free	();
+	rd.clear();
 }

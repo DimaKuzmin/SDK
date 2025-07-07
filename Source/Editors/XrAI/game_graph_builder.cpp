@@ -271,7 +271,7 @@ void CGameGraphBuilder::fill_distances		(const float &start, const float &amount
 
 void CGameGraphBuilder::fill_distances_part(const float start, const float end)
 {
-	m_distances.clear_and_free();
+	m_distances.clear();
 
 	m_distances.resize(start);
 
