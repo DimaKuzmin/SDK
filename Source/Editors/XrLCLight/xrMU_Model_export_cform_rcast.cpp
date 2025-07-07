@@ -5,7 +5,7 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
  
-void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix& xform)
+void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>* faces, Fmatrix& xform)
 {
 	for (u32 fit = 0; fit < m_faces.size(); fit++)
 		m_faces[fit]->flags.bProcessed = false;
@@ -60,7 +60,7 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 			data.v2 = P[1];
 			data.v3 = P[2];
 			data.ptr = F;
-			faces.push_back(data);
+			faces->push_back(data);
 		}
 	}
 }

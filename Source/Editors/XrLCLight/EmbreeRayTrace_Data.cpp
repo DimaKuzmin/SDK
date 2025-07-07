@@ -217,7 +217,7 @@ void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem, bool Cons
 			for (auto model : models[INDEX])
 			{
 				xr_vector<FaceDataIntel> temp_buffer;
-				model->export_cform_rcast_new(temp_buffer);
+				model->export_cform_rcast_new(&temp_buffer);
 
 				mtx_lock.Enter();
 				for (auto pF : temp_buffer)
@@ -329,7 +329,7 @@ void EmbreeData::BuildRcast()
  		for (auto model : models[INDEX])
 		{
 			xr_vector<FaceDataIntel> temp_buffer;
-			model->export_cform_rcast_new(temp_buffer);
+			model->export_cform_rcast_new(&temp_buffer);
 			
 			mtx_lock.Enter();
 			for (auto pF : temp_buffer)
@@ -340,8 +340,7 @@ void EmbreeData::BuildRcast()
 			mtx_lock.Leave();
 		}
 	});
-	 
-
+	  
  	// for (auto ref : lc_global_data()->mu_refs())
 	// {
 	// 	Progress(float(IDProgress) / float(lc_global_data()->mu_refs().size()));

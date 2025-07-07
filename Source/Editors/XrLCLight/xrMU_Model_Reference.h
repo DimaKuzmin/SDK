@@ -4,7 +4,7 @@
 #include "base_color.h"
 #include "EmbreeRayTrace.h"
 
-
+struct FaceDataIntel;
 class xrMU_Model;
 namespace CDB { class CollectorPacked; }
  
@@ -30,7 +30,7 @@ public:
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL);
 
-	void					export_cform_rcast_new  (xr_vector<FaceDataIntel>& faces);
+	void					export_cform_rcast_new  (xr_vector<FaceDataIntel>* faces);
  
 };
 #endif
