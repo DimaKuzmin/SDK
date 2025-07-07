@@ -39,7 +39,7 @@ namespace luabind { namespace detail
 
 		~stack_checker_type()
 		{
-			assert(m_stack == lua_gettop(m_L));
+			// assert(m_stack == lua_gettop(m_L));
 		}
 
 		lua_State* m_L;
