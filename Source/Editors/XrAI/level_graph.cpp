@@ -22,17 +22,13 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 
 	// m_header & data
 	m_header					= (CHeader*) m_reader->pointer();
-//	R_ASSERT					(header().version() == XRAI_CURRENT_VERSION);
-	m_reader->advance			(sizeof(CHeader));
+ 	m_reader->advance			(sizeof(CHeader));
 
 
 	Msg("Loaded Vertices Removed");
 	// loaded_vertices.clear();
 	
 	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
-
-
-
 	if (header().version() == 10)
 	{
 		Phase("Ai Map v10 Loading to Cache");

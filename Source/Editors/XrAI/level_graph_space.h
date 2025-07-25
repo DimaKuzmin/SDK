@@ -29,7 +29,6 @@ namespace LevelGraph {
 	public:
 		ICF	void xz(u32 value) { XZ_value = value; }
 		ICF	void y(u16 value) { Y_value = value; }
-
 	 
 		ICF	u32	x(u32 row) const
 		{
@@ -56,8 +55,6 @@ namespace LevelGraph {
 
 	class CVertex
 	{
-
-
 		SCover				high;
 		SCover				low;
 
