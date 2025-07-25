@@ -168,6 +168,7 @@ void CBuild::xrPhase_MergeLM()
  		std::atomic<u32> Errors = 0;
 		
 		// Calculate Rects
+		u64 LastUpdated = 0;
  		auto calculate_maps = [&]()
 		{
 			while (true)
@@ -175,6 +176,11 @@ void CBuild::xrPhase_MergeLM()
 				csMergeLM.Enter();
 				u32 it = CurrentIndex;
 				CurrentIndex += 1;
+				if (LastUpdated < CurrentIndex)
+				{
+					LastUpdated = CurrentIndex + 1000;
+					placer_perpixel.RecalculateY();
+				}
 				csMergeLM.Leave();
 				 
 				if (it >= merge_count || Errors.load() > 10000)	break;
@@ -191,8 +197,8 @@ void CBuild::xrPhase_MergeLM()
 				rS.b.set(SizeX, SizeY);
 				rS.iArea = L.Area();
 				rT = rS;
-
-				AditionalData("IT:%u/%u | merged:%u | errors: %u", it, merge_count, MergedSize, Errors.load());
+				
+				AditionalData("INDEX: %u/%u | FILL : %u\%", it, merge_count, placer_perpixel.FilledPercent);
 	 
 				if ( placer_perpixel.rect_place_full(rT, &L, SizeX, SizeY) )
 				{

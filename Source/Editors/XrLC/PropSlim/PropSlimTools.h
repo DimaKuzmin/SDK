@@ -1,6 +1,7 @@
 #pragma once
-#include "ArbitraryList.h"
+
 #include "object.h"
+#include "ArbitraryList.h"
 
 #pragma pack(push,1)
 struct VIPM_SWR
@@ -29,6 +30,7 @@ class VIMP_Processor
 	Object* g_pObject = 0;
 	ArbitraryList<MeshPt*>	g_ppTempPts = 0;
 	VIPM_Result* g_pResult = 0;
+
 public:
 	void			  VIPM_Init();
 	void			  VIPM_AppendVertex(const Fvector3& pt, const Fvector2& uv);

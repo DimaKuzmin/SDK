@@ -173,6 +173,9 @@
     <ClInclude Include="xrPhase_MergeLM_Rect.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClInclude>
+    <ClInclude Include="QMath.h">
+      <Filter>PropSlim</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">

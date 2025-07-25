@@ -1,4 +1,4 @@
-/* Copyright (C) Tom Forsyth, 2001. 
+/* Copyright (C) Tom Forsyth, 2001.
  * All rights reserved worldwide.
  *
  * This software is provided "as is" without express or implied
@@ -10,9 +10,9 @@
 #ifndef objectH
 #define objectH
 
-//#include "quad.h"
+#include "QMath.h"
 
-// Incremented by the draw routs. Display + zero whenever you want.
+ // Incremented by the draw routs. Display + zero whenever you want.
 extern int g_iMaxNumTrisDrawn;
 
 
@@ -35,7 +35,7 @@ struct MyPt
 	DWORD		dwNewIndex;
 
 	// Temporary data.
-	MeshPt*		pTempPt;			// Temporary data.
+	MeshPt* pTempPt;			// Temporary data.
 };
 
 struct MyEdge
@@ -49,7 +49,7 @@ struct MyTri
 	int			iSlidingWindowLevel;// Which sliding window level this tri belongs to.
 
 	DWORD		dwNewIndex;
-	MeshTri*	pOriginalTri;
+	MeshTri* pOriginalTri;
 };
 
 
@@ -59,43 +59,42 @@ struct MyTri
 #define MESHPT_APP_DEFINED		MyPt	mypt;
 
 
-#include "../../xrcore/xrCore.h"
+#include "../../xrCore/xrCore.h"
 
 #include "mesh.h"
-#include "..\XrQSlim\MxQMetric.h"
 
 struct GeneralTriInfo
 {
-	MeshPt		*ppt[3];
+	MeshPt* ppt[3];
 };
 
 struct GeneralCollapseInfo
 {
-	DlinkDefine(GeneralCollapseInfo,List);
-	
+	DlinkDefine(GeneralCollapseInfo, List);
+
 	ArbitraryList<GeneralTriInfo>		TriOriginal;
 	ArbitraryList<GeneralTriInfo>		TriCollapsed;
 
 	int			iSlidingWindowLevel;					// Which sliding window level the binned tris will belong to.
 	ArbitraryList<GeneralTriInfo>		TriNextLevel;	// On collapses that change levels, lists the tris that were on the next level.
 
-	MeshPt		*pptBin;
-	MeshPt		*pptKeep;
+	MeshPt* pptBin;
+	MeshPt* pptKeep;
 
 	float		fError;					// Error of this collapse.
 	int			iNumTris;				// Number of tris after this collapse has been made.
 
-	DlinkMethods(GeneralCollapseInfo,List);
+	DlinkMethods(GeneralCollapseInfo, List);
 
 	GeneralCollapseInfo()
 	{
 		ListInit();
 	}
 
-	GeneralCollapseInfo ( GeneralCollapseInfo *pPrev )
+	GeneralCollapseInfo(GeneralCollapseInfo* pPrev)
 	{
 		ListInit();
-		ListAddAfter ( pPrev );
+		ListAddAfter(pPrev);
 	}
 
 	~GeneralCollapseInfo()
@@ -118,7 +117,7 @@ struct Object
 	// pNextCollapse points to the _next_ collapse to do.
 	// pNextCollapse->ListNext() is the collapse that's just been done.
 	// &CollapseRoot = no more collapses to do.
-	GeneralCollapseInfo		*pNextCollapse;
+	GeneralCollapseInfo* pNextCollapse;
 
 	int			iFullNumTris;		// How many tris with no collapses.
 	int			iFullNumPts;		// How many pts with no collapses.
@@ -127,46 +126,46 @@ struct Object
 
 	int			iCurSlidingWindowLevel;
 
-	void		compute_face_quadric		(MeshTri* tri, MxQuadric& Q);
-public:	
-				Object						();
+	void		compute_face_quadric(MeshTri* tri, MxQuadric& Q);
+public:
+	Object();
 
-				~Object						();
+	~Object();
 
-	void		Initialize					( void );
+	void		Initialize(void);
 
 	// Check that this is sensible.
-	void		CheckObject					( void );
+	void		CheckObject(void);
 
 	// Bins all the current data.
-	void		BinCurrentObject			( void );
+	void		BinCurrentObject(void);
 
 	// Creates and performs a collapse of pptBinned to pptKept.
 	// Make sure they actually share an edge!
 	// Make sure the object is fully collapsed already.
-	void		CreateEdgeCollapse			( MeshPt *pptBinned, MeshPt *pptKept );
+	void		CreateEdgeCollapse(MeshPt* pptBinned, MeshPt* pptKept);
 
 	// Bin the last collapse.
 	// Returns TRUE if these was a last collapse to do.
-	long		BinEdgeCollapse				( void );
+	long		BinEdgeCollapse(void);
 
 	// Returns TRUE if a collapse was undone.
-	long		UndoCollapse				( void );
+	long		UndoCollapse(void);
 
 	// Returns TRUE if a collapse was done.
-	long		DoCollapse					( void );
-	
-	void		SetNewLevel					( int iLevel );
+	long		DoCollapse(void);
 
-	long		CollapseAllowedForLevel		( MeshPt *pptBinned, int iLevel );
+	void		SetNewLevel(int iLevel);
+
+	long		CollapseAllowedForLevel(MeshPt* pptBinned, int iLevel);
 
 	// Return the error from this edge collapse.
 	// Set bTryToCacheResult=TRUE if you can pass pptBinned in multiple times.
 	// Make sure you call this with bTryToCacheResult=FALSE if any data changes,
 	//	or you'll confuse the poor thing.
-	float		FindCollapseError			( MeshPt *pptBinned, MeshEdge *pedgeCollapse, long bTryToCacheResult = FALSE );
+	float		FindCollapseError(MeshPt* pptBinned, MeshEdge* pedgeCollapse, long bTryToCacheResult = FALSE);
 
-	bool		Valid						( void );
+	bool		Valid(void);
 };
 
 #endif // objectH

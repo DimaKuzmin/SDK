@@ -9,18 +9,24 @@ class lm_layer;
 
 class SurfacePlacePerpixel
 {
+	
 	u8*	 surface_tbb;
 	u16* occupied_y = nullptr;
   
 	// Initialization
-	
-	u32 MAXPixelsCompression;
+ 	u32 MAXPixelsCompression;
+
+	// Filled size
 	u32 StartYMin = 0;
+	u32 FilledSize = 0;
+
 	u32 SurfaceGrid = 0;
 	xrCriticalSection csLMMerge;
 	// Rendering of rect
 	
 public:
+	u32 FilledPercent = 0;
+
 	void RecalculateY();
 	void _InitSurface_tbb();
 	bool _rect_register_tbb(L_rect& R, lm_layer* D);

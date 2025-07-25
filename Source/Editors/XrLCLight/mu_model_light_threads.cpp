@@ -121,7 +121,7 @@ public:
 			else
 				ref = 0;
 
-			StatusNoMSG("IDS: %d/%d",id, inlc_global_data()->mu_refs().size());
+			AditionalData("IDS: %d/%d", id, inlc_global_data()->mu_refs().size());
 
 			task_id.fetch_add(1);
 			taskModels.Leave();
@@ -135,6 +135,7 @@ public:
 				//t.Start();
 				ref->calc_lighting();
 				// clMsg("MuRefModel: %s, time: %d", ref->model->m_name.c_str(), t.GetElapsed_ms());
+				ProgressMT(id / inlc_global_data()->mu_refs().size());
 			}
 			catch (...)
 			{

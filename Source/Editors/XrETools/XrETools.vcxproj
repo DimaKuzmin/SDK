@@ -53,6 +53,7 @@
     <ClInclude Include="object_sliding.h" />
     <ClInclude Include="platform.h" />
     <ClInclude Include="PropSlimToolsEditor.h" />
+    <ClInclude Include="QMath.h" />
     <ClInclude Include="quad.h" />
     <ClInclude Include="resample.h" />
     <ClInclude Include="StdAfx.h" />

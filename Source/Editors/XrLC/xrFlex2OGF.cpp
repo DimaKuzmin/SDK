@@ -134,11 +134,23 @@ bool ConvertOgf(u32 THID, u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M
 	if (! pOGF->data.vertices.size())
  		return false;
 	
+	CTimer t; t.Start();
+	u32 OptimizeMS = 0;
+	u32 CalcBoundsMs = 0;
+	u32 MakeProgressiveMS = 0;
+	u32 StripifyMS = 0;
+
  	pOGF->Optimize();
+	OptimizeMS += t.GetElapsed_ms(); t.Start();
  	pOGF->CalcBounds();
-    pOGF->MakeProgressive(THID, MODEL_ID, c_PM_MetricLimit_static);
+	CalcBoundsMs += t.GetElapsed_ms(); t.Start();
+    pOGF->MakeProgressive(c_PM_MetricLimit_static);
+	MakeProgressiveMS += t.GetElapsed_ms(); t.Start();
   	pOGF->Stripify();
- 
+	StripifyMS += t.GetElapsed_ms(); t.Start();
+
+	clMsg("Waiting [%u]: [%u][%u][%u][%u]", MODEL_ID, OptimizeMS, CalcBoundsMs, MakeProgressiveMS, StripifyMS);
+
 	return true;
 };
  
@@ -175,8 +187,7 @@ void CBuild::Flex2OGF()
 	{
 		static xrCriticalSection mtx;
 		std::atomic<int> current_idx = 0;
-		OPTICK_START_CAPTURE();
-
+ 
 		concurrency::parallel_for(size_t(0), size_t(16), [&](size_t thID)
 		{
 			std::wstring name = L"ThreadID : " + std::to_wstring(thID);
@@ -186,10 +197,9 @@ void CBuild::Flex2OGF()
 			{
 				u32 ID = current_idx.load();
 				current_idx.fetch_add(1);
- 				if (current_idx.load() >= g_XSplit.size()) break;
+ 				if (current_idx.load() >= g_XSplit.size())  break;
 
-				if (ID % 512 == 0)
-  					AditionalData("Processed MT OGF (%u|%u) delVert: %u", ID, g_XSplit.size());
+   				AditionalData("Processed MT OGF (%u|%u) delVert: %u", ID, g_XSplit.size());
  				 
 				OGF* pOGF = xr_new<OGF>();
 				auto& SPLIT = g_XSplit[ID];
@@ -203,10 +213,7 @@ void CBuild::Flex2OGF()
 				mtx.Leave();
 			}	
 		});
-
-		OPTICK_STOP_CAPTURE();
-		OPTICK_SAVE_CAPTURE("xrLC_makeProgressive");
-	}
+ 	}
 	else
 	{
 		int Removed = 0;

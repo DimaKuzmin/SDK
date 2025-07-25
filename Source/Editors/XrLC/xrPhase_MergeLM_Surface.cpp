@@ -16,15 +16,21 @@ SurfacePlacePerpixel placer_perpixel;
 // Surfaces
 void SurfacePlacePerpixel::RecalculateY()
 {
-	for (int _Y = 0; _Y < SurfaceGrid; _Y++)
+	u32 _Y = 0;
+	while (occupied_y[_Y] > SurfaceGrid * MAXPixelsCompression)
 	{
-		if (occupied_y[_Y] > MAXPixelsCompression)
-			continue;
-		StartYMin = _Y;
-		break;
+		_Y++;
 	}
+	StartYMin = _Y;
 
+ 	// Calcualte FilledData
+	u32 total_occupied = 0;
+	for (u32 y = 0; y < SurfaceGrid; ++y)
+		total_occupied += occupied_y[y];
+	FilledSize = total_occupied;
+	FilledPercent = u32(float(float(total_occupied) / float(SurfaceGrid * SurfaceGrid)) * 100.0f);
 }
+
 void SurfacePlacePerpixel::_InitSurface_tbb()
 {
 	SurfaceGrid = getLMSIZE();
@@ -36,6 +42,8 @@ void SurfacePlacePerpixel::_InitSurface_tbb()
 	FillMemory(occupied_y, SurfaceGrid, 0);
 
 	StartYMin = 0;
+	FilledSize = 0;
+	FilledPercent = 0;
 }
  
 bool SurfacePlacePerpixel::_rect_register_tbb(L_rect& R, lm_layer* D)
@@ -106,14 +114,14 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D, u32 SizeX, u3
  	// Current Y Pos
 	for (int _Y = 0; _Y < SurfaceGrid - SizeY; _Y++)
 	{
-		if (occupied_y[_Y] > MAXPixelsCompression)
-			continue;
+		if (SurfaceGrid - occupied_y[_Y] < SizeX)    continue;
+ 		if (occupied_y[_Y] > MAXPixelsCompression) 	 continue;
 
 		L_rect R;
 		BYTE* temp_surf = surface_tbb + _Y * SurfaceGrid;
 		for (int _X = 0; _X < SurfaceGrid - SizeX; _X++)
 		{
-			if (_X + SizeX >= SurfaceGrid) break;
+ 			if (_X + SizeX >= SurfaceGrid) break;
 
 			R.init(_X, _Y, _X + SizeX, _Y + SizeY);	
 			if (Place_Perpixel_tbb(R, D)) // Предварительный поиск

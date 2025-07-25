@@ -157,7 +157,7 @@ struct OGF : public OGF_Base
 
 	void				Optimize			();
 	void				CalculateTB			();
-	void				MakeProgressive		(int ThreadID, int MODEL_ID, float metric_limit);
+	void				MakeProgressive		(float metric_limit);
 	void				Stripify			();
 	void				DumpFaces			();
 

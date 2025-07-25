@@ -50,8 +50,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 				C.dwCount = 1;
  				counts_mt_safe.push_back(C);
 			}
-
-		});
+ 		});
 	}
 	
 	Status				("Perfroming subdivisions... [%f]", t.GetElapsed_sec());

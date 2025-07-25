@@ -5,8 +5,8 @@
 #include "StdAfx.h"
 #include "Build.h"
 #include "Sector.h"
-#include "OGF_Face.h" 
-#include "ppl.h"
+#include "OGF_Face.h"
+#include <execution>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -21,7 +21,7 @@ CSector::~CSector()
 {
 
 }
- 
+
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
@@ -44,9 +44,6 @@ void CSector::BuildHierrarhy()
 	delimiter = _max(scene_size.x, _max(scene_size.y, scene_size.z));
 	delimiter *= 2;
 
-	// clMsg("Scene Fbox min{%.2f,%.2f,%.2f}, max{%.2f,%.2f,%.2f}, Delimiter: %.3f",
-	// 	VPUSH(scene_bb.min), VPUSH(scene_bb.max), delimiter);
-
 	int		iLevel = 2;
 	float	SizeLimit = c_SS_maxsize / 4.f;
 	if (SizeLimit < 4.f)			SizeLimit = 4.f;
@@ -55,14 +52,7 @@ void CSector::BuildHierrarhy()
 	if (delimiter <= SizeLimit)
 		delimiter *= 2;
 
-
 	int ProgressID = 0;
-
-	u64 ticks_find = 0;
-	u64 ticks_bounds = 0;
-	u64 count_finded = 0;
-
-
 	struct GridKey
 	{
 		int x, y;
@@ -71,13 +61,15 @@ void CSector::BuildHierrarhy()
 
 		struct Hash
 		{
-			std::size_t operator()(const GridKey& k) const {
+			std::size_t operator()(const GridKey& k) const
+			{
 				return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
 			}
 		};
 	};
 
-	struct OGF_Data {
+	struct OGF_Data
+	{
 		OGF_Base* node;
 		u32 ID;
 		int cellX;
@@ -85,41 +77,57 @@ void CSector::BuildHierrarhy()
 		GridKey key;
 	};
 
+	// Фикс гиганской сцены когда ловим Inf 64k макс  
+	if (delimiter > 64 * 1024)
+		delimiter = 64 * 1024;
 
-	// Фикс гиганской сцены когда ловим Inf 256k макс  
-	if (delimiter > 256 * 1024)
-		delimiter = 256 * 1024;
-
-
+	CTimer tGlobalCalculateBounds;
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
 		ProgressID = 0;
 		int iSize = (int)g_tree.size();
-		xr_vector<OGF_Data> data;
 
+		u32 GridSize = SizeLimit;
+		xr_vector<OGF_Data> data;
 		std::unordered_map<GridKey, xr_vector<OGF_Data>, GridKey::Hash> grid_map;
 
-		u32 IDx = 0;
-
-		u32 ChunkSize = 128;
-		for (auto O : g_tree)
+		bool use_zero = SizeLimit <= float(delimiter / 1.25);
+		for (u32 oID = 0; oID < g_tree.size(); oID++)
 		{
-			if (!O->bConnected && O->Sector == SelfID)
+			if (use_zero)
 			{
-				int cell_x = static_cast<int>(std::floor(O->bbox.min.x / ChunkSize));
-				int cell_z = static_cast<int>(std::floor(O->bbox.min.z / ChunkSize));
-				GridKey key = { cell_x, cell_z };
-				OGF_Data OData = { O, IDx, cell_x, cell_z, key };
-				data.push_back(OData);
-				grid_map[key].push_back(OData);
+				auto O = g_tree[oID];
+				if (!O->bConnected && O->Sector == SelfID)
+				{
+					GridKey key = { 0, 0 };
+					OGF_Data OData = { O, oID, 0, 0, key };
+					data.push_back(OData);
+					grid_map[key].push_back(OData);
+				}
 			}
-			IDx++;
+			else
+			{
+				auto O = g_tree[oID];
+				if (!O->bConnected && O->Sector == SelfID)
+				{
+					Fvector Center;
+					O->bbox.getcenter(Center);
+					int cell_x = static_cast<int>(std::floor(Center.x / GridSize));
+					int cell_z = static_cast<int>(std::floor(Center.z / GridSize));
+					GridKey key = { cell_x, cell_z };
+					OGF_Data OData = { O, oID, cell_x, cell_z, key };
+					data.push_back(OData);
+					grid_map[key].push_back(OData);
+				}
+			}
 		}
 
+		u64 count_connected = 0;
 		for (auto& Ogf : data)
 		{
 			Progress(float(ProgressID) / float(data.size()));
 			ProgressID++;
+			AditionalData("Sz: %.0f iter: %u | conn: %u/%u", SizeLimit, count_connected, ProgressID, data.size());
 
 			int I = Ogf.ID;
 			if (g_tree[I]->bConnected)
@@ -128,12 +136,11 @@ void CSector::BuildHierrarhy()
 			OGF_Node* pNode = new OGF_Node(iLevel, u16(SelfID));
 			pNode->AddChield(I);
 
-			bool use_grid = SizeLimit <= ChunkSize ? true : false;
 			GridKey selected_grid = Ogf.key;
 
 			for (;;)
 			{
-				auto Validate = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
+				auto ValidateMerging = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 					{
 						// Size
 						Fbox	merge;
@@ -151,45 +158,24 @@ void CSector::BuildHierrarhy()
 						return TRUE;
 					};
 
-				std::atomic<int>	best_id = -1;
-				std::atomic<float>	best_volume = flt_max;
-				if (use_grid)
+				int		best_id = -1;
+				float	best_volume = flt_max;
+
+				for (auto& FOgf : grid_map[selected_grid])
 				{
-					for (auto& FOgf : grid_map[selected_grid])
+					OGF_Base* candidate = g_tree[FOgf.ID];
+					if (candidate->bConnected || candidate->Sector != SelfID)
+						continue;
+
+					float V;
+					if (ValidateMerging(pNode->bbox, candidate->bbox, V, SizeLimit))
 					{
-						OGF_Base* candidate = g_tree[FOgf.ID];
-						if (candidate->bConnected || candidate->Sector != SelfID)
-							continue;
-						float V;
-						if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
+						if (V < best_volume)
 						{
-							if (V < best_volume.load())
-							{
-								best_volume.store(V);
-								best_id.store(FOgf.ID);
-							}
+							best_volume = V;
+							best_id = FOgf.ID;
 						}
 					}
-				}
-				else
-				{
-					concurrency::parallel_for(
-						size_t(0), size_t(data.size()), [&](size_t dID)
-						{
-							OGF_Base* candidate = data[dID].node;
-							if (candidate->bConnected || candidate->Sector != SelfID)
-								return;
-							float V;
-							if (Validate(pNode->bbox, candidate->bbox, V, SizeLimit))
-							{
-								if (V < best_volume.load())
-								{
-									best_volume.store(V);
-									best_id.store(data[dID].ID);
-								}
-							}
-						}
-					);
 				}
 
 				// Analyze
@@ -197,7 +183,7 @@ void CSector::BuildHierrarhy()
 					break;
 
 				pNode->AddChield(best_id);
-				count_finded += 1;
+				count_connected += 1;
 			}
 
 			if (pNode->chields.size() > 1)
@@ -232,9 +218,8 @@ void CSector::BuildHierrarhy()
 			TreeRoot = g_tree[I];
 		}
 	}
-	if (0 == TreeRoot) {
+	if (0 == TreeRoot)
 		clMsg("Can't build hierrarhy for sector #%d", SelfID);
-	}
 }
 
 void CSector::Validate()

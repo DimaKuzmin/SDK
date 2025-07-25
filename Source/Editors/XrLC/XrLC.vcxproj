@@ -201,6 +201,7 @@
     <ClInclude Include="PropSlim\object_sliding.h" />
     <ClInclude Include="PropSlim\PropSlimTools.h" />
     <ClInclude Include="PropSlim\quad.h" />
+    <ClInclude Include="QMath.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="stb_rect_pack.h" />
@@ -299,9 +300,6 @@
     </ProjectReference>
     <ProjectReference Include="..\XrLCLight\XrLCLight.vcxproj">
       <Project>{a81b25a8-d576-4b25-ac1e-1e6390832395}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\XrQSlim\XrQSlim.vcxproj">
-      <Project>{f4cd3b2b-16e4-47ef-80a9-b7d20dfc3713}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
