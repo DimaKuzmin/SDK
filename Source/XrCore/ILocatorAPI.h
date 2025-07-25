@@ -46,6 +46,9 @@ public:
 	virtual void 						file_delete(LPCSTR path, LPCSTR nm) = 0;
 	virtual void 						file_delete(LPCSTR full_path) { file_delete(0, full_path); }
 	virtual void 						file_copy(LPCSTR src, LPCSTR dest) = 0;
+	virtual bool 						file_copy_has(LPCSTR src, LPCSTR dest) = 0;
+
+
 	virtual void 						file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite = true) = 0;
 	virtual int							file_length(LPCSTR src) = 0;
 
@@ -62,8 +65,8 @@ public:
 	virtual void						r_close(CStreamReader*& fs);
 	virtual				 CStreamReader* rs_open(LPCSTR initial, LPCSTR N);
 
-	virtual xr_vector<LPSTR>* file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
-	virtual xr_vector<LPSTR>* file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
+	virtual xr_vector<LPSTR>*			file_list_open(LPCSTR initial, LPCSTR folder, u32 flags = FS_ListFiles);
+	virtual xr_vector<LPSTR>*			file_list_open(LPCSTR path, u32 flags = FS_ListFiles);
 	virtual void						file_list_close(xr_vector<LPSTR>*& lst);
 
 

@@ -1531,6 +1531,25 @@ void CLocatorAPI::file_copy(LPCSTR src, LPCSTR dest)
 	}
 }
 
+bool CLocatorAPI::file_copy_has(LPCSTR src, LPCSTR dest)
+{
+	if (exist(src))
+	{
+		IReader* S = r_open(src);
+		if (S) {
+			IWriter* D = w_open(dest);
+			if (D) {
+				D->w(S->pointer(), S->length());
+				w_close(D);
+			}
+			r_close(S);
+		}
+		return true;
+	}
+	else
+		return false;
+}
+
 void CLocatorAPI::file_rename(LPCSTR src, LPCSTR dest, bool bOwerwrite)
 {
 	files_it	S		= file_find_it(src);

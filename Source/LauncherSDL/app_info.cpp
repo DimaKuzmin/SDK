@@ -20,7 +20,6 @@
  
 
 #pragma comment(lib, "xrDXT.lib")
-#pragma comment(lib, "xrQSlim.lib")
  
 CAppInfo g_AppInfo;
 
