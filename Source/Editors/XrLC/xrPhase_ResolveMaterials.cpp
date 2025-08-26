@@ -11,97 +11,88 @@ struct _counter
 	u32	dwCount;
 };
 
-
-#include <mutex>
-#include <execution>
 #include <ppl.h>
 #include <concurrent_vector.h>
 
-std::mutex g_XSplit_mutex;
-
 void	CBuild::xrPhase_ResolveMaterials()
 {
+	CTimer  tProcecss; tProcecss.Start();
+
 	// Count number of materials
-	CTimer t; t.Start();
-	Status		("Calculating materials/subdivs... [%f]", t.GetElapsed_sec());
-	// xr_vector<_counter>	counts;
-	
-	concurrency::concurrent_vector<_counter> counts_mt_safe;
-	{
-		counts_mt_safe.reserve		(256);
- 		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_faces().size()), [&](size_t Index)
-		{
-			BOOL	bCreate = TRUE;
-			auto F = lc_global_data()->g_faces()[Index];
-			for (u32 I = 0; I < counts_mt_safe.size(); I++)
-			{
-				if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
-				{
-					counts_mt_safe[I].dwCount += 1;
-					bCreate = FALSE;
-					return;
- 				}
-			}
+	// Calculating materials
+	auto& faces = lc_global_data()->g_faces();
+	std::unordered_map<u16, size_t> matToIndex;
 
-			if (bCreate)
-			{
- 				_counter	C;
-				C.dwMaterial = F->dwMaterial;
-				C.dwCount = 1;
- 				counts_mt_safe.push_back(C);
-			}
- 		});
+	// Локальные хранилища для потоков -> потом сведём в общий map
+	concurrency::combinable<std::unordered_map<u16, u32>> localCounts;
+
+	Concurrency::parallel_for_each(faces.begin(), faces.end(), [&](Face* F)
+	{
+		localCounts.local()[F->dwMaterial] += 1;
+	});
+
+	// Слияние локальных карт в глобальную
+	std::unordered_map<u16, u32> globalCounts;
+	localCounts.combine_each([&](const std::unordered_map<u16, u32>& lm)
+		{
+			for (const auto& kv : lm)
+				globalCounts[kv.first] += kv.second;
+		});
+
+
+	// ======================================================
+	// 2) Вектор счётчиков + карта material -> index (SC)
+	// ======================================================
+	xr_vector<_counter> count;
+	count.reserve(globalCounts.size());
+	matToIndex.reserve(globalCounts.size());
+
+	size_t idx = 0;
+	for (const auto& kv : globalCounts)
+	{
+		const u16 mat = kv.first;
+		const u32 cnt = kv.second;
+		count.push_back(_counter{ mat, cnt });
+		matToIndex[mat] = idx++;
 	}
-	
-	Status				("Perfroming subdivisions... [%f]", t.GetElapsed_sec());
-	{
-		concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> g_Xsplits_def;
-		g_Xsplits_def.reserve(64 * 1024);
-		g_Xsplits_def.resize(counts_mt_safe.size());
 
-		concurrency::parallel_for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
-			{
-				if (!F->Shader().flags.bRendering) return;
-
-				for (u32 I = 0; I < counts_mt_safe.size(); I++)
-				{
-					if (F->dwMaterial == counts_mt_safe[I].dwMaterial)
-					{
-						g_Xsplits_def[I].push_back(F);
-					}
-				}
-			});
- 
-
-		g_XSplit.reserve(64 * 1024);
-		g_XSplit.resize(counts_mt_safe.size());
-		for (auto i = 0; i < g_XSplit.size(); i++)
+	// Performing Subdivs
+	concurrency::concurrent_vector<concurrency::concurrent_vector<Face*>> bins;
+	bins.reserve(count.size());
+	bins.resize(count.size());
+	concurrency::parallel_for_each(faces.begin(), faces.end(), [&](Face* F)
 		{
-			g_XSplit[i] = new vecFace( g_Xsplits_def[i].begin(), g_Xsplits_def[i].end() );
+			if (!F->Shader().flags.bRendering) return;
+
+			auto it = matToIndex.find(F->dwMaterial);
+			if (it != matToIndex.end())
+			{
+				bins[it->second].push_back(F);
+			}
+		});
+
+	// Переносим в итоговый g_XSplit
+	g_XSplit.reserve(count.size());
+	g_XSplit.resize(count.size());
+
+	for (size_t i = 0; i < g_XSplit.size(); ++i)
+	{
+		// vecFace имеет конструктор от итераторов
+		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
+	}
+
+	// Старый код
+	{
+		for (int SP = 0; SP<int(g_XSplit.size()); SP++)
+		{
+			if (g_XSplit[SP]->empty())
+				xr_delete(g_XSplit[SP]);
 		}
+		g_XSplit.erase(std::remove(g_XSplit.begin(), g_XSplit.end(), (vecFace*)NULL), g_XSplit.end());
 	}
 
-	Status				("Removing empty subdivs... [%f]", t.GetElapsed_sec());
-	{
-		for (int SP = 0; SP<int(g_XSplit.size()); SP++) 
-		if (g_XSplit[SP]->empty())
-			xr_delete(g_XSplit[SP]);
-		g_XSplit.erase(std::remove(g_XSplit.begin(),g_XSplit.end(), (vecFace*) NULL), g_XSplit.end());
-	}
-	
-	Status("Detaching subdivs... [%f]", t.GetElapsed_sec());
-	{
-		//for (u32 it = 0; it < g_XSplit.size(); it++)
-		//	Detach(g_XSplit[it]);
-			
-		std::for_each( g_XSplit.begin(), g_XSplit.end(),
-			[&](vecFace* F)
-			{
-				Detach(F);
-			}
-		);
-	}
+	for (auto F : g_XSplit)
+		Detach(F);
 
-
-	clMsg				("%d subdivisions. total[%f]", g_XSplit.size(), t.GetElapsed_sec());
+	clMsg("Material %u subdivisions. %u ms", g_XSplit.size(), tProcecss.GetElapsed_ms());
 }

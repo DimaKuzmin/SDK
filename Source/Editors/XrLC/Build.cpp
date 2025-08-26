@@ -5,16 +5,11 @@
 #include "stdafx.h"
 
 #include "build.h"
-
 #include "../xrLCLight/xrMU_Model.h"
-
-
-
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
 #include "../xrLCLight/mu_model_light.h"
  
-//#include "../xrLCLight/lcnet_task_manager.h"
 void	calc_ogf		( xrMU_Model &	mu_model );
 void	export_geometry	( xrMU_Model &	mu_model );
 
@@ -104,18 +99,8 @@ void CBuild::Light_prepare()
 	for (u32 m=0; m<mu_models().size(); m++)	
 		mu_models()[m]->calc_faceopacity();
 }
-
-#ifdef LOAD_GL_DATA
-void net_light ();
-#endif
-
  
 extern string_path LEVEL_PATH = "";
-
-#include "..\XrLCLight\xrHardwareLight.h"
-
-
-
 void log_vminfo_new(LPCSTR stage)
 {
 	size_t  w_free, w_reserved, w_committed;
@@ -133,8 +118,6 @@ void log_vminfo_new(LPCSTR stage)
 IC bool				FaceEqual(Face& F1, Face& F2);
 #include "../XrLCLight/xrMU_Model_Reference.h"
 
- 
- 
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();

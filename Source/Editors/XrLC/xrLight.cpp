@@ -123,7 +123,7 @@ void CBuild::Light()
 	// Строим модель для Tracing
  	Phase("Building rcast-CFORM model...");
  	Light_prepare();
- 	BuildRapid(TRUE, TRUE);
+ 	BuildRapid(TRUE);
 	  
 	//****************************************** Resolve materials
  	Phase("Resolving materials...");
@@ -142,11 +142,9 @@ void CBuild::Light()
 	//****************************************** Implicit
  
  	Phase("LIGHT: Implicit...");
-	EmbreeMain.AttachGeometrys(true);
  	ImplicitLighting();
 
 	Phase("LIGHT: LMaps...");
-	EmbreeMain.AttachGeometrys(true);
  	LMaps();
 	 
 	//****************************************** Vertex
@@ -160,8 +158,6 @@ void CBuild::Light()
  	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
  	 
-
-	EmbreeMain.AttachGeometrys(true);
 	// Mu Models Lighting
   	RunMuModels();
     

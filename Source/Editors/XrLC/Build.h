@@ -1,27 +1,18 @@
 // Build.h: interface for the CBuild class.
 //
 //////////////////////////////////////////////////////////////////////
-
-#if !defined(AFX_BUILD_H__C7D43EBA_1C15_4FF4_A3ED_E89F6D759F58__INCLUDED_)
-#define AFX_BUILD_H__C7D43EBA_1C15_4FF4_A3ED_E89F6D759F58__INCLUDED_
 #pragma once
 
-//#include "../../editors/LevelEditor/Engine/communicate.h"
-
 #include "../../xrcore/fs.h"
-//.#include "../../xrEngine/xrLevel.h"
-
 #include "../Public/shader_xrlc.h"
-//#include "xrMU_Model.h"
+
+#include "../xrLCLight/b_build_texture.h"
+#include "../xrLCLight/xrfacedefs.h"
+#include "../../xrcdb/xrcdb.h"
 
 struct		 STextureParams;
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);
 
-//#include "../xrLCLight/xrLC_GlobalData.h"
-//#include "../xrLCLight/xrface.h"
-#include "../xrLCLight/b_build_texture.h"
-#include "../xrLCLight/xrfacedefs.h"
-#include "../../xrcdb/xrcdb.h"
 
 class xrLC_GlobalData;
 class xrMU_Model;
@@ -76,11 +67,6 @@ public:
 	void	TestMergeGeom(IWriter* writer);
 	void	ExportRayCastModel(IWriter* writer);
 
-	// void	ExportDeflectors();
-
-	// void RunCollideFormNEW();
-
-
 	void	Run						(LPCSTR path);
  
 	void	RunAfterLight			( IWriter* fs	);
@@ -98,7 +84,7 @@ public:
 
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
-	void	BuildRapid				(BOOL bSave, BOOL useMU);
+	void	BuildRapid				(BOOL bSave);
 	void	BuildCollectionDB		(CDB::CollectorPacked& CL);
  
 	void	SaveForOthers			(CDB::CollectorPacked& CL);
@@ -148,5 +134,3 @@ public:
 
 extern CBuild*		pBuild;			;
 extern vec2Face		g_XSplit		;
-
-#endif // !defined(AFX_BUILD_H__C7D43EBA_1C15_4FF4_A3ED_E89F6D759F58__INCLUDED_)

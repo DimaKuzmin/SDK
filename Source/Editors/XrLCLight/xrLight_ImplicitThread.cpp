@@ -130,7 +130,7 @@ public:
 
 
 			if (V % 64 == 0 || V == defl.Height())
- 				clMsg("$ CurV: %d, Sec[%.0f]", V, t.GetElapsed_sec());
+ 				AditionalData("$ CurV: %d, Sec[%.0f]", V, t.GetElapsed_sec());
 
 			float progress = float(float(V) / float(defl.Height()));
  			ProgressMT(progress);

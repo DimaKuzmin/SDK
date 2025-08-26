@@ -72,7 +72,7 @@ void CBuild::xrPhase_AdaptiveHT	()
 		mem_Compact					();
  		 
 		// Build model
- 		BuildRapid(FALSE, FALSE);
+ 		BuildRapid(FALSE);
    
 		// Prepare LIGHT FOR LIGHTING
  		Status("Precalculating : base hemisphere ...");
