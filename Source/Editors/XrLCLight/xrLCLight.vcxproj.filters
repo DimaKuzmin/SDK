@@ -51,20 +51,8 @@
     <Filter Include="RayTracing\EmbreeLib">
       <UniqueIdentifier>{1ca33de4-acd0-4360-b03d-706b4b4ee8be}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RayTracing\Hardware %28OPTICx%29 %28OLD%29">
-      <UniqueIdentifier>{418c9bc0-cfa1-4103-85f4-b0f901fde28e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware">
-      <UniqueIdentifier>{dd12f59c-10a9-4b02-a736-28fba4419f24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RayTracing\Hardware %28OPTICx%29 %28OLD%29\base_lighting">
+    <Filter Include="RayTracing\base_lighting">
       <UniqueIdentifier>{0855af4f-c4de-4e7c-b110-78baa227bfa8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code">
-      <UniqueIdentifier>{1078e1d6-564d-4052-9cb6-450d4da0ea40}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="RayTracing\RadeonRays">
-      <UniqueIdentifier>{db9526bc-7482-43a8-ba66-73d65428e477}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -196,22 +184,13 @@
     </ClInclude>
     <ClInclude Include="..\Shader_xrLC.h" />
     <ClInclude Include="R_light.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\base_lighting</Filter>
+      <Filter>RayTracing\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="base_lighting.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\base_lighting</Filter>
+      <Filter>RayTracing\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="light_point.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\base_lighting</Filter>
-    </ClInclude>
-    <ClInclude Include="xrHardwareLight.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
-    </ClInclude>
-    <ClInclude Include="xrRayDefinition.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
-    </ClInclude>
-    <ClInclude Include="DeviceBuffer.h">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
+      <Filter>RayTracing\base_lighting</Filter>
     </ClInclude>
     <ClInclude Include="EmbreeDataStorage.h">
       <Filter>RayTracing\EmbreeLib</Filter>
@@ -220,6 +199,9 @@
       <Filter>do_light</Filter>
     </ClInclude>
     <ClInclude Include="EmbreeRayTrace.h">
+      <Filter>RayTracing\EmbreeLib</Filter>
+    </ClInclude>
+    <ClInclude Include="EmbreeGeomBuilder.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
   </ItemGroup>
@@ -357,22 +339,10 @@
       <Filter>kernel</Filter>
     </ClCompile>
     <ClCompile Include="base_lighting.cpp">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\base_lighting</Filter>
-    </ClCompile>
-    <ClCompile Include="xrHardwareLight.cpp">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
-    </ClCompile>
-    <ClCompile Include="xrHardwareTest.cpp">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
+      <Filter>RayTracing\base_lighting</Filter>
     </ClCompile>
     <ClCompile Include="EmbreeRayTrace.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
-    </ClCompile>
-    <ClCompile Include="xrHardwareLight_LMAP.cpp">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
-    </ClCompile>
-    <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware_code</Filter>
     </ClCompile>
     <ClCompile Include="EmbreeRayTrace_Data.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
@@ -386,16 +356,11 @@
     <ClCompile Include="MeshStaic.cpp">
       <Filter>Light\Mesh</Filter>
     </ClCompile>
+    <ClCompile Include="EmbreeGeomBuilder.cpp">
+      <Filter>RayTracing\EmbreeLib</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="LightPoint.cu">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware</Filter>
-    </None>
-    <None Include="LightPoint_Refactored.cu">
-      <Filter>RayTracing\Hardware %28OPTICx%29 %28OLD%29\Hardware</Filter>
-    </None>
   </ItemGroup>
 </Project>

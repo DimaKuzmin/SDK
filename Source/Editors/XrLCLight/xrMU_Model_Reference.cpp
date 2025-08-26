@@ -91,7 +91,7 @@ void xrMU_Reference::export_cform_rcast(CDB::CollectorPacked& CL)
 	model->export_cform_rcast(CL,xform);
 }
 
-void xrMU_Reference::export_cform_rcast_new(xr_vector<FaceDataIntel>* faces)
+void xrMU_Reference::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces)
 {
 	model->export_cform_rcast_new(faces, xform);
 }

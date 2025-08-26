@@ -179,17 +179,12 @@
     <ClInclude Include="calculate_normals.h" />
     <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="detail_slot_calculate.h" />
-    <ClInclude Include="DeviceBuffer.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="EmbreeDataStorage.h" />
+    <ClInclude Include="EmbreeGeomBuilder.h" />
     <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="fitter.h" />
     <ClInclude Include="global_calculation_data.h" />
     <ClInclude Include="global_slots_data.h" />
-    <ClInclude Include="xrHardwareLight.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="hash2D.h" />
     <ClInclude Include="itterate_adjacents_static.h" />
     <ClInclude Include="Lightmap.h" />
@@ -224,9 +219,6 @@
     <ClInclude Include="xrLight_ImplicitRun.h" />
     <ClInclude Include="xrMU_Model.h" />
     <ClInclude Include="xrMU_Model_Reference.h" />
-    <ClInclude Include="xrRayDefinition.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>
   <ItemGroup>
@@ -239,15 +231,13 @@
     <ClCompile Include="b_build_texture.cpp" />
     <ClCompile Include="compiler.cpp" />
     <ClCompile Include="detail_slot_calculate.cpp" />
+    <ClCompile Include="EmbreeGeomBuilder.cpp" />
     <ClCompile Include="ETextureParams.cpp" />
     <ClCompile Include="fitter.cpp" />
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
     <ClCompile Include="EmbreeRayTrace_Details.cpp" />
     <ClCompile Include="EmbreeRayTrace_Data.cpp" />
-    <ClCompile Include="xrHardwareLight.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Lightmap.cpp" />
     <ClCompile Include="LightThread.cpp" />
     <ClCompile Include="lm_layer.cpp" />
@@ -269,15 +259,6 @@
     <ClCompile Include="xrDeflector.cpp" />
     <ClCompile Include="xrDeflectorLight.cpp" />
     <ClCompile Include="xrFace.cpp" />
-    <ClCompile Include="xrHardwareLight_LMAP.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="xrHardwareLight_OptitxOnly.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="xrHardwareTest.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="xrImage_Filter.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
     <ClCompile Include="xrLC_GlobalData.cpp" />
@@ -322,10 +303,6 @@
     <ProjectReference Include="..\XrDXT\XrDXT.vcxproj">
       <Project>{7c119635-1963-4547-b345-cb7ed7eb2ee4}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="LightPoint.cu" />
-    <None Include="LightPoint_Refactored.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
