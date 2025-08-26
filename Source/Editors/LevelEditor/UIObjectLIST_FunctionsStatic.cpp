@@ -124,51 +124,6 @@ void UIObjectList::SaveSelectedObjects()
 	}
 }
 
-void SaveFileDDS(xr_string& path, xr_string& to, char* prefix)
-{
-	xr_string pstr = path;
-	pstr += prefix;
-	pstr += ".dds";
-
-	xr_string pexp = to;
-	pexp += prefix;
-	pexp += ".dds";
-
-	if (FS.exist(pstr.c_str()))
-	{
-		FS.file_copy(pstr.c_str(), pexp.c_str());
-		// Msg("From: %s, to Save: %s", pstr.c_str(), pexp.c_str());
-	}
-	else
-	{
-		Msg("Can't Extract: %s", pstr.c_str());
-	}
-}
-
-void SaveFileTHM(xr_string& path, xr_string& to, char* prefix)
-{
-	xr_string pstr = path;
-	pstr += prefix;
-	pstr += ".thm";
-
-	xr_string pexp = to;
-	pexp += prefix;
-	pexp += ".thm";
-
-
-	if (FS.exist(pstr.c_str()))
-	{
-		FS.file_copy(pstr.c_str(), pexp.c_str());
-		// Msg("Save: %s", pexp.c_str());
-	}
-	else
-	{
-		Msg("Can't Extract: %s", pstr.c_str());
-	}
-
-}
-
-
 void ConstuctPath(xr_string& surface, xr_string& path_in, xr_string& path_out)
 {
 	string_path path, exportPath;
@@ -181,7 +136,6 @@ void ConstuctPath(xr_string& surface, xr_string& path_in, xr_string& path_out)
 	path_out = exportPath;
 	path_out += "textures\\";
 	path_out += surface.c_str();
-
 }
 
 void UIObjectList::ExportUsedTextures()
@@ -206,75 +160,58 @@ void UIObjectList::ExportUsedTextures()
 				if (it == surface_textures.end())
 				{
 					xr_string text = surface->m_Texture.c_str();
-					
-					surface_textures.push_back(text);
+ 					surface_textures.push_back(text);
 				}
 			}
 		}
 	}
 
 
-	auto ParseBumpFromTexture = [&](xr_string& InFileThm, xr_string& game_textures, xr_string& out_folder)
-		{
+	auto CopyFileTo1 = [&](xr_string& path, xr_string& to, char* format, bool& AnyExported)
+	{
+		xr_string pstr = path + format;
+		xr_string pexp = to + format;
+		FS.file_copy_has(pstr.c_str(), pexp.c_str());
+	};
 
-			ETextureThumbnail* pThmTexture = (ETextureThumbnail*) ImageLib.CreateThumbnail(InFileThm.c_str(), ECustomThumbnail::ETTexture);
+	auto CopyFileTo2 = [&](xr_string& game_textures, xr_string& out_folder, shared_str& Temp, char* format)
+	{
+		xr_string BumpTextureIn = game_textures + *Temp + format;
+		xr_string BumpTextureOut = out_folder + "\\" + *Temp + format;
+		FS.file_copy_has(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+	};
+	 
+	auto ParseBumpFromTexture = [&](xr_string& InFileThm, xr_string& game_textures, xr_string& out_folder, bool& AnyExported)
+		{
+ 			ETextureThumbnail* pThmTexture = (ETextureThumbnail*) ImageLib.CreateThumbnail(InFileThm.c_str(), ECustomThumbnail::ETTexture);
 			bool isLoaded = pThmTexture->Load(InFileThm.c_str(), 0);
 			if (!isLoaded)
 			{
-				Msg("[Exports] Problem Load File: %s", InFileThm.c_str());
-				return;
+				Msg("[Exports] Problem Load File: %s", InFileThm.c_str());				return;
 			}
 
 			if (pThmTexture != nullptr)
 			{
 				shared_str Temp = *pThmTexture->_Format().bump_name;
 				shared_str Detail_Map = *pThmTexture->_Format().detail_name;
- 
-
 				if (Temp.size() > 0)
 				{
-					{
-						xr_string BumpTextureIn = game_textures + *Temp + ".dds";
-						xr_string BumpTextureOut = out_folder + "\\" + *Temp + ".dds";
-						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+ 					CopyFileTo2(game_textures, out_folder, Temp, ".dds");
+					CopyFileTo2(game_textures, out_folder, Temp, "#.dds");
+					CopyFileTo2(game_textures, out_folder, Temp, ".thm");
+					CopyFileTo2(game_textures, out_folder, Temp, "#.thm");
 
-						xr_string BumpTextureIn2 = game_textures + *Temp + "#.dds";
-						xr_string BumpTextureOut2 = out_folder + "\\" + *Temp + "#.dds";
-						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
-					}
-
-					{
-						xr_string BumpTextureIn = game_textures + *Temp + ".thm";
-						xr_string BumpTextureOut = out_folder + "\\" + *Temp + ".thm";
-						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
-
-						xr_string BumpTextureIn2 = game_textures + *Temp + "#.thm";
-						xr_string BumpTextureOut2 = out_folder + "\\" + *Temp + "#.thm";
-						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
-					}
+					AnyExported = true;
 				}
 
 				if (Detail_Map.size() > 0)
 				{
-					{
-						xr_string BumpTextureIn = game_textures + *Detail_Map + ".dds";
-						xr_string BumpTextureOut = out_folder + "\\" + *Detail_Map + ".dds";
-						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
+					CopyFileTo2(game_textures, out_folder, Detail_Map, ".dds");
+					CopyFileTo2(game_textures, out_folder, Detail_Map, "#.dds");
+					CopyFileTo2(game_textures, out_folder, Detail_Map, ".thm");
+					CopyFileTo2(game_textures, out_folder, Detail_Map, "#.thm");
 
-						xr_string BumpTextureIn2 = game_textures + *Detail_Map + "#.dds";
-						xr_string BumpTextureOut2 = out_folder + "\\" + *Detail_Map + "#.dds";
-						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
-					}
-
-					{
-						xr_string BumpTextureIn = game_textures + *Detail_Map + ".thm";
-						xr_string BumpTextureOut = out_folder + "\\" + *Detail_Map + ".thm";
-						FS.file_copy(BumpTextureIn.c_str(), BumpTextureOut.c_str());
-
-						xr_string BumpTextureIn2 = game_textures + *Detail_Map + "#.thm";
-						xr_string BumpTextureOut2 = out_folder + "\\" + *Detail_Map + "#.thm";
-						FS.file_copy(BumpTextureIn2.c_str(), BumpTextureOut2.c_str());
-					}
+					AnyExported = true;
 				}
 			}
 		};
@@ -300,24 +237,14 @@ void UIObjectList::ExportUsedTextures()
 		xr_string path_in, path_to;
  		ConstuctPath(surface, path_in, path_to);
 
-		// DDS
-		SaveFileDDS(path_in, path_to, "");
-		// THM
-		SaveFileTHM(path_in, path_to, "");
+		bool AnyExported = false;
+ 		CopyFileTo1(path_in, path_to, ".dds", AnyExported);
+ 		CopyFileTo1(path_in, path_to, ".thm", AnyExported);
+		ParseBumpFromTexture(surface, game_textures, game_export, AnyExported);
 
-		ParseBumpFromTexture(surface, game_textures, game_export);
-	
+		if (!AnyExported)
+			Msg("Cannot Find files for : %s", surface.c_str());
 
- 		// // BUMP
-		// SaveFileDDS(path_in, path_to, "_bump");
- 		// // BUMP#
-		// SaveFileDDS(path_in, path_to, "_bump#");
-		
-		// // BUMP
-		// SaveFileTHM(path_in, path_to, "_bump");
-		// // BUMP#
-		// SaveFileTHM(path_in, path_to, "_bump#");
-		
 		ID++;
 	}
 }
