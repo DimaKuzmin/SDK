@@ -2,11 +2,10 @@
 //
 //////////////////////////////////////////////////////////////////////
 
-#include "StdAfx.h"
-#include "Build.h"
+#include "stdafx.h"
+#include "build.h"
 #include "Sector.h"
 #include "OGF_Face.h"
-#include <execution>
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -22,6 +21,22 @@ CSector::~CSector()
 
 }
 
+IC BOOL	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
+{
+	// Size
+	Fbox	merge;	merge.merge(bb_base, bb);
+	Fvector sz;		merge.getsize(sz);	sz.add(EPS_L);
+	if (sz.x > SLimit)		return FALSE;	// Don't exceed limits (4/3 GEOM)
+	if (sz.y > SLimit)		return FALSE;
+	if (sz.z > SLimit)		return FALSE;
+
+	// Volume
+	volume = merge.getvolume();
+
+	// OK
+	return TRUE;
+}
+
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
@@ -31,12 +46,8 @@ void CSector::BuildHierrarhy()
 	// calc scene BB
 	Fbox& scene_bb = pBuild->scene_bb;
 	scene_bb.invalidate();
-
-	for (OGF_Base* Tree : g_tree)
-	{
-		Fbox& BoxBB = Tree->bbox;
-		scene_bb.merge(BoxBB);
-	}
+	for (int I = 0; I < s32(g_tree.size()); I++)
+		scene_bb.merge(g_tree[I]->bbox);
 	scene_bb.grow(EPS_L);
 
 	// 
@@ -47,169 +58,64 @@ void CSector::BuildHierrarhy()
 	int		iLevel = 2;
 	float	SizeLimit = c_SS_maxsize / 4.f;
 	if (SizeLimit < 4.f)			SizeLimit = 4.f;
+	if (delimiter <= SizeLimit)	delimiter *= 2;		// just very small level
 
-	// just very small level
-	if (delimiter <= SizeLimit)
-		delimiter *= 2;
-
-	int ProgressID = 0;
-	struct GridKey
-	{
-		int x, y;
-
-		bool operator==(const GridKey& other) const { return x == other.x && y == other.y; }
-
-		struct Hash
-		{
-			std::size_t operator()(const GridKey& k) const
-			{
-				return std::hash<int>()(k.x) ^ (std::hash<int>()(k.y) << 1);
-			}
-		};
-	};
-
-	struct OGF_Data
-	{
-		OGF_Base* node;
-		u32 ID;
-		int cellX;
-		int cellZ;
-		GridKey key;
-	};
-
-	// Фикс гиганской сцены когда ловим Inf 64k макс  
-	if (delimiter > 64 * 1024)
-		delimiter = 64 * 1024;
-
-	CTimer tGlobalCalculateBounds;
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
-		ProgressID = 0;
-		int iSize = (int)g_tree.size();
+		int iSize = g_tree.size();
 
-		u32 GridSize = SizeLimit;
-		xr_vector<OGF_Data> data;
-		std::unordered_map<GridKey, xr_vector<OGF_Data>, GridKey::Hash> grid_map;
-
-		bool use_zero = SizeLimit <= float(delimiter / 1.25);
-		for (u32 oID = 0; oID < g_tree.size(); oID++)
+		for (int I = 0; I < iSize; I++)
 		{
-			if (use_zero)
-			{
-				auto O = g_tree[oID];
-				if (!O->bConnected && O->Sector == SelfID)
-				{
-					GridKey key = { 0, 0 };
-					OGF_Data OData = { O, oID, 0, 0, key };
-					data.push_back(OData);
-					grid_map[key].push_back(OData);
-				}
-			}
-			else
-			{
-				auto O = g_tree[oID];
-				if (!O->bConnected && O->Sector == SelfID)
-				{
-					Fvector Center;
-					O->bbox.getcenter(Center);
-					int cell_x = static_cast<int>(std::floor(Center.x / GridSize));
-					int cell_z = static_cast<int>(std::floor(Center.z / GridSize));
-					GridKey key = { cell_x, cell_z };
-					OGF_Data OData = { O, oID, cell_x, cell_z, key };
-					data.push_back(OData);
-					grid_map[key].push_back(OData);
-				}
-			}
-		}
+			if (g_tree[I]->bConnected)		 continue;
+			if (g_tree[I]->Sector != SelfID) continue;
 
-		u64 count_connected = 0;
-		for (auto& Ogf : data)
-		{
-			Progress(float(ProgressID) / float(data.size()));
-			ProgressID++;
-			AditionalData("Sz: %.0f iter: %u | conn: %u/%u", SizeLimit, count_connected, ProgressID, data.size());
-
-			int I = Ogf.ID;
-			if (g_tree[I]->bConnected)
-				continue;
-
-			OGF_Node* pNode = new OGF_Node(iLevel, u16(SelfID));
+			OGF_Node* pNode = xr_new<OGF_Node>(iLevel, u16(SelfID));
 			pNode->AddChield(I);
 
-			GridKey selected_grid = Ogf.key;
-
+			// Find best object to connect with
 			for (;;)
 			{
-				auto ValidateMerging = [&](Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
-					{
-						// Size
-						Fbox	merge;
-						merge.merge(bb_base, bb);
-
-						Fvector sz;
-						merge.getsize(sz);
-						sz.add(EPS_L);
-
-						if (sz.x > SLimit || sz.y > SLimit || sz.z > SLimit)
-							return FALSE;
-
-						// Volume
-						volume = merge.getvolume();
-						return TRUE;
-					};
-
+				// Find best object to connect with
 				int		best_id = -1;
 				float	best_volume = flt_max;
 
-				for (auto& FOgf : grid_map[selected_grid])
+				for (int J = 0; J < iSize; J++)
 				{
-					OGF_Base* candidate = g_tree[FOgf.ID];
-					if (candidate->bConnected || candidate->Sector != SelfID)
-						continue;
+					OGF_Base* candidate = g_tree[J];
+					if (candidate->bConnected)			continue;
+					if (candidate->Sector != SelfID)	continue;
 
 					float V;
-					if (ValidateMerging(pNode->bbox, candidate->bbox, V, SizeLimit))
+					if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
 					{
-						if (V < best_volume)
-						{
+						if (V < best_volume) {
 							best_volume = V;
-							best_id = FOgf.ID;
+							best_id = J;
 						}
 					}
 				}
 
 				// Analyze
-				if (best_id < 0)
-					break;
-
+				if (best_id < 0)		break;
 				pNode->AddChield(best_id);
-				count_connected += 1;
 			}
 
-			if (pNode->chields.size() > 1)
-			{
+			if (pNode->chields.size() > 1) {
 				pNode->CalcBounds();
 				g_tree.push_back(pNode);
 				bAnyNode = TRUE;
 			}
-			else
-			{
+			else {
 				g_tree[I]->bConnected = false;
 				xr_delete(pNode);
 			}
 		}
 
-		if (iSize != (int)g_tree.size())
-			iLevel++;
+		if (iSize != (int)g_tree.size()) iLevel++;
 	}
-
 	TreeRoot = 0;
-	if (bAnyNode)
-	{
-		TreeRoot = g_tree.back();
-	}
-	else
-	{
+	if (bAnyNode) TreeRoot = g_tree.back();
+	else {
 		for (u32 I = 0; I < g_tree.size(); I++)
 		{
 			if (g_tree[I]->bConnected)		 continue;
@@ -218,8 +124,9 @@ void CSector::BuildHierrarhy()
 			TreeRoot = g_tree[I];
 		}
 	}
-	if (0 == TreeRoot)
+	if (0 == TreeRoot) {
 		clMsg("Can't build hierrarhy for sector #%d", SelfID);
+	}
 }
 
 void CSector::Validate()
@@ -239,5 +146,5 @@ void CSector::Save(IWriter& fs)
 	fs.w_chunk(fsP_Root, &ID, sizeof(u32));
 
 	// Portals
-	fs.w_chunk(fsP_Portals, &*Portals.begin(), (u32)Portals.size() * sizeof(u16));
+	fs.w_chunk(fsP_Portals, &*Portals.begin(), Portals.size() * sizeof(u16));
 }
