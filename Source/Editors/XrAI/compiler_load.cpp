@@ -1,10 +1,10 @@
 #include "stdafx.h"
 #include "compiler.h"
-//.#include "communicate.h"
 #include "levelgamedef.h"
 #include "level_graph.h"
 #include "AIMapExport.h"
-
+ 
+#include "EmbreeRayTracing.h"
 //-----------------------------------------------------------------
 template <class T>
 void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
@@ -23,7 +23,6 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
  
 inline bool Surface_Detect(string_path& F, LPSTR N)
 {
-	
 	FS.update_path(F, "$game_textures$", strconcat(sizeof(F), F, N, ".dds"));
 	FILE* file = fopen(F, "rb");
 	if (file)
@@ -39,31 +38,20 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 
 void filter_embree_function(const struct RTCFilterFunctionNArguments* args) 
 {
- 
-	RayQuaryStructure* ctxt = (RayQuaryStructure*) args->context;
+ 	RayQuaryStructure* ctxt = (RayQuaryStructure*) args->context;
  
 	RTCHit* hit = (RTCHit*) args->hit;
 	RTCRay* ray = (RTCRay*) args->ray;
-
-
-
 	args->valid[0] = 0;
 	
-	if (!ctxt)
-		return;
-
-	ctxt->count++;
+	if (!ctxt)		return;
 
 	b_rc_face& F								= g_rc_faces		[hit->primID];
-
-	if (F.dwMaterial >= g_materials.size())
-		Msg					("[%d] -> [%d]",F.dwMaterial, g_materials.size());
-
 	b_material& M	= g_materials				[F.dwMaterial];
 	b_texture&	T	= (*g_textures)				[M.surfidx];
 	Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
 		
-	if (M.shader_xrlc>=LIB.size())
+	if (M.shader_xrlc >=LIB.size())			// Hack 0
 	{
 		ctxt->energy = 0;
 		args->valid[0] = -1; 
@@ -78,15 +66,11 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 		return;
 	}
 
-	if (T.pSurface.Empty())	
-		T.bHasAlpha = FALSE;
-			
-	if (!T.bHasAlpha)
+	if (T.pSurface.Empty())
+ 		T.bHasAlpha = FALSE;
+
+ 	if (!T.bHasAlpha)
 	{
-		// Opaque poly - cache it
-		//C[0].set	(rpinf.verts[0]);
-		//C[1].set	(rpinf.verts[1]);
-		//C[2].set	(rpinf.verts[2]);
 		args->valid[0] = -1; 
 		ctxt->energy = 0;
 		return;
@@ -107,26 +91,12 @@ void filter_embree_function(const struct RTCFilterFunctionNArguments* args)
 	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
 	U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
 	V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
-
-	if (*T.pSurface != nullptr)
-	{
- 		u32 pixel = ((u32*)*T.pSurface)[V * T.dwWidth + U];
-
-		if ((&pixel) == nullptr)
-			clMsg("Pixel is nullptr: V: %d, U: %d", V, U);
-
-		u32 pixel_a = color_get_A(pixel);
-		float opac = 1.f - float(pixel_a) / 255.f;
-
-		if (ctxt == nullptr)
-			clMsg("CTXT == nullptr");
-
-		ctxt->energy *= opac;
-	}
-	else
-	{
-		clMsg("Texture Is Error: %s", T.name);
-	}
+ 
+ 	u32 pixel = ((u32*)*T.pSurface)[V * T.dwWidth + U];
+	u32 pixel_a = color_get_A(pixel);
+	float opac = 1.f - float(pixel_a) / 255.f;
+	ctxt->energy *= opac;
+	
 }
 
 #include "cl_intersect.h"
@@ -136,63 +106,32 @@ typedef Fvector	RayCache[3];
 float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C);
 
 
+SceneEmbreeAI			 SceneEmbreeInterface;
 
-SceneEmbree			 SceneEmbreeInterface;
 
-
+// RayTracing
 float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
 {
 	R_ASSERT	(DB);
 
 	// 1. Check cached polygon
+	RTCRayHit rayhit;
+	rayhit.ray.tfar = R;
+	rayhit.ray.tnear = 0;
 
-	if (!SceneEmbreeInterface.InitedDevice)
-	{
-		 
-		float _u,_v,range;
-		bool res = CDB::TestRayTri(P,D,C,_u,_v,range,false);
-		if (res) 
-		{
-			if (range>0 && range<R) return 0;
-		}
-		 
+	rayhit.ray.org_x = P.x;
+	rayhit.ray.org_y = P.y;
+	rayhit.ray.org_z = P.z;
 
-		// 2. Polygon doesn't pick - real database query
-		DB->ray_query(&Level, P, D, R);
+	rayhit.ray.dir_x = D.x;
+	rayhit.ray.dir_y = D.y;
+	rayhit.ray.dir_z = D.z;
 
-		// 3. Analyze polygons and cache nearest if possible
-		if (0 == DB->r_count()) {
-			return 1;
-		}
-		else
-		{
-			return getLastRP_Scale(DB, C);
-		}
-	}
-	else
-	{
-		RTCRayHit rayhit;
-		rayhit.ray.tfar = R;
-		rayhit.ray.tnear = 0;
+	RayQuaryStructure data;
+	data.energy = 1;
 
-		rayhit.ray.org_x = P.x;
-		rayhit.ray.org_y = P.y;
-		rayhit.ray.org_z = P.z;
-
-		rayhit.ray.dir_x = D.x;
-		rayhit.ray.dir_y = D.y;
-		rayhit.ray.dir_z = D.z;
-
-		RayQuaryStructure data;
-		data.energy = 1;
-
-		SceneEmbreeInterface.RayTrace(&rayhit, &data, &filter_embree_function, false);
-
-		if (data.count == 0)
-			return 1;
-
-		return data.energy;
-	}
+	SceneEmbreeInterface.RayTrace(&rayhit, &data, false);
+	return data.energy;
 }
 
 
@@ -229,7 +168,7 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				fs->r				(&H,sizeof(hdrCFORM));
 				R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
 
-				Fvector*	verts	= (Fvector*)fs->pointer();
+				Fvector*	verts	= (Fvector*) fs->pointer();
 						 
 				xr_vector< CDB::TRI> tris(H.facecount);
 				u8* tris_pointer = (u8*)(verts + H.vertcount);
@@ -242,8 +181,15 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				if ( true )
 				{
  					CTimer t; t.Start();
-					SceneEmbreeInterface.InitGeometry(tris.data(), H.facecount, verts, H.vertcount, &filter_embree_function);
-					Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
+					for (auto VID =0; VID < H.vertcount; VID++)
+ 						SceneEmbreeInterface.build_data.build_verts.push_back(verts[VID]);
+					for (auto TRI : tris)
+						SceneEmbreeInterface.build_data.build_faces.push_back(TRI);
+					SceneEmbreeInterface.build_data.build_fcnt = H.facecount;
+					SceneEmbreeInterface.build_data.build_vcnt = H.vertcount;
+
+					SceneEmbreeInterface.InitializeEmbree(&filter_embree_function);
+					Msg("Loading Embree Geom: %d ms", t.GetElapsed_ms());
 				}
 				else
 				{
@@ -286,28 +232,22 @@ void xrLoad(LPCSTR name, bool draft_mode)
 
 					if (fs_vs && fs_vs->find_chunk(0))
 					{
-						Msg("Read VB");
-						for (auto i = 0;i < H.vertcount;i++)	
+ 						for (auto i = 0;i < H.vertcount;i++)	
 							fs_vs->r(&verts[i], sizeof(Fvector));
-						Msg("End VB size: %d", verts.size());
-					}
+ 					}
 										
 					xr_vector< CDB::TRI> tris(H.facecount); 
 					if (fs_tri && fs_tri->find_chunk(1))
 					{		
-						Msg("Read IB");
- 						for (u32 i = 0; i < H.facecount; i++)
+  						for (u32 i = 0; i < H.facecount; i++)
 							fs_tri->r(&tris[i], CDB::TRI::Size());
- 						Msg("End IB Size: %d", tris.size());
-					}
+ 					}
 
 					if (fs_rq && fs_rq->find_chunk(0))
 					{
-						Msg("Read RQ");
-						g_rc_faces.resize	(H.facecount);
+ 						g_rc_faces.resize	(H.facecount);
   						fs_rq->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));		
-						Msg("End RQ size: %d", g_rc_faces.size());
-					}
+ 					}
 
 					FS.r_close(fs_rq);
 					FS.r_close(fs_tri);
@@ -332,32 +272,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 						g_rc_faces.size() * sizeof(b_rc_face) / 1024 / 1024 
 					);
 
-					Msg("RayQast Init");
- 				    
-					if ( true )
-					{
-						CTimer t; t.Start();
-						SceneEmbreeInterface.InitGeometry(tris.data(), H.facecount, verts.data(), H.vertcount, &filter_embree_function);
-						Msg("Loading Embree Geom: %d", t.GetElapsed_ms());
-					}
-					else
-					{
-						CTimer t; t.Start();
-
-						Level.build(verts.data(), H.vertcount, tris.data(), H.facecount);
-						Level.syncronize();
-					
-						//Msg("* Level CFORM: %dK", Level.memory() / 1024);
-
-						Msg("Loading Opcode Geom: %d", t.GetElapsed_ms());
-					}
-
-
-		
+ 					SceneEmbreeInterface.InitializeGeometryNew(& filter_embree_function);
 					LevelBB.set			(H.aabb);
-					
-					Msg("RayQ Model End");
-
 				}
 				else 
 				{

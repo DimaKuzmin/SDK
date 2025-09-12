@@ -217,7 +217,7 @@ public:
 			Dir.div		(range);
 			
 			// raytrace
-			int			sector		=	calcSphereSector(Dir);
+			int			sector		 =	calcSphereSector(Dir);
 			c_total		[sector]	+=	1.f;
 			c_passed	[sector]	+=	rayTrace (&DB, TestPos, Dir, range, cache[ID].C);  
 		}
@@ -269,6 +269,9 @@ public:
 			}
 			int N = CurrentPos;
 			CurrentPos++;
+
+
+			AditionalData("Node : %u/%u", N, IDS_THREADS);
 			csAI.Leave();
 
 			// initialize process

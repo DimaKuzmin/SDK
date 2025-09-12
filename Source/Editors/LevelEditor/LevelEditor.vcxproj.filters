@@ -547,6 +547,9 @@
     <ClCompile Include="jsonxx\jsonxx.cc">
       <Filter>jsoncpp</Filter>
     </ClCompile>
+    <ClCompile Include="ESceneAIMap_Validator.cpp">
+      <Filter>MAIN TOOLS\ETools\TOOLS\AI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Edit\SoundManager_LE.h">

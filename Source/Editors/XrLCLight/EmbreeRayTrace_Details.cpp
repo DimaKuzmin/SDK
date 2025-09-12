@@ -1,35 +1,21 @@
 ﻿#include "stdafx.h"
 #include "EmbreeRayTrace.h"
 
-#include "../xrCDB/xrCDB.h"
+#include "../XrCDB/xrCDB.h"
+#include "global_calculation_data.h"
+#include "xrLC_GlobalData.h"
+#include "EmbreeGeomBuilder.h"
 
 // INTEL DATA STRUCTURE
 int LastGeometryDetailsID = RTC_INVALID_GEOMETRY_ID;
 
 RTCDevice DeviceDetails;
 RTCScene IntelSceneDetails;
-RTCGeometry IntelGeometryDetails = 0;
-
-#include "global_calculation_data.h"
-#include "xrLC_GlobalData.h"
+RTCGeometry IntelGeometryOpacue = 0;
 extern global_claculation_data	gl_data;
 
-ICF b_rc_face* GetGeomBuff(int GeomID, int Prim)
+bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 {
-	if (GeomID == 0 && Prim != RTC_INVALID_GEOMETRY_ID)
-		return &gl_data.g_rc_faces[Prim];
-	else
-		return nullptr;
-}
-
-bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u, float v)
-{
-	if (gl_data.g_rc_faces.size() < PrimID)
-	{
-		Msg("PrimitiveID: %u > Maximal Buffer: %u", PrimID, gl_data.g_rc_faces.size());
-		return false;
-	}
-
 	auto& F = gl_data.g_rc_faces[PrimID];
 	b_material& M = gl_data.g_materials[F.dwMaterial];
 	b_texture& T = gl_data.g_textures[M.surfidx];
@@ -37,7 +23,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 	if (!T.bHasAlpha)
 		return false;
 
-	if (T.pSurface.Empty())
+	if (*T.pSurface == nullptr)
 	{
 		T.bHasAlpha = false;
 		return false;
@@ -59,6 +45,7 @@ bool CalculateEnergy(int GeomID, int PrimID, Fvector& B, float& energy, float u,
 
 	u32* surface = static_cast<u32*>(*T.pSurface);
 	u32 pixel = surface[V * T.dwWidth + U];
+
 	u32 pixel_a = color_get_A(pixel);
 	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
 
@@ -81,22 +68,23 @@ struct RayQueryContext
 	float energy = 1.0f;
 };
 
-ICF void FilterRaytraceDetails(const struct RTCFilterFunctionNArguments* args)
+ICF void FilterRaytraceD(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-	if (!CalculateEnergy(hit->geomID, hit->primID, ctxt->B, ctxt->energy, hit->u, hit->v))
+	if (!CalculateEnergy(hit->primID, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
-		ray->tfar = -std::numeric_limits<float>::infinity();
 		ctxt->energy = 0;
+		args->valid[0] = -1; // Остановится
 		return;
 	}
 
-	args->valid[0] = 0;
+	args->valid[0] = 0;		 // Продолжить
 }
- 
+
+
 float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 {
 	RayQueryContext data_hits;
@@ -104,78 +92,54 @@ float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range)
 	data_hits.skip = 0;
 	data_hits.energy = 1.0f;
 
-	RTCRay rayhit;
+	RTCRayHit rayhit;
 	SetRay1(rayhit, P, N, 0.f, range);
 
 	RTCRayQueryContext context;
 	rtcInitRayQueryContext(&context);
 
-	RTCOccludedArguments args;
-	rtcInitOccludedArguments(&args);
+	RTCIntersectArguments args;
+	rtcInitIntersectArguments(&args);
 
 	data_hits.context = context;
 	args.context = &data_hits.context;
-	rtcOccluded1(IntelSceneDetails, &rayhit, &args);
+	rtcIntersect1(IntelSceneDetails, &rayhit, &args);
 
 	return data_hits.energy;
 }
 
-#pragma optimize("", off)
-void InitializeGeometryAttach(Fvector* CDB_verts, CDB::TRI* CDB_tris, u32 TS_Size)
+void LoadGeomBuffer(RTCGeometry& geom, TriangleContainer& geom_buffer)
 {
-	// NORMAL GEOM
-	IntelGeometryDetails = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
-	rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_LOW);
+	geom = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
+	rtcSetGeometryBuildQuality(geom, RTC_BUILD_QUALITY_LOW);
+	rtcSetGeometryOccludedFilterFunction(geom, &FilterRaytraceD);
 
-	rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
-	rtcSetGeometryIntersectFilterFunction(IntelGeometryDetails, &FilterRaytraceDetails);
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
+	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
 
+	rtcCommitGeometry(geom);
+};
 
-	TriangleContainer container;
+void  EmbreeData::ConsturctGeometry()
+{
+	// se7kills Rewrite
+	EmbreeData::BuildRaytraceModel_2();
 
-	for (auto i = 0; i < TS_Size; i++)
-	{
-		CDB::TRI& F =  CDB_tris[i];
-		Fvector p1 = CDB_verts[CDB_tris[i].verts[0]];
-		Fvector p2 = CDB_verts[CDB_tris[i].verts[1]];
-		Fvector p3 = CDB_verts[CDB_tris[i].verts[2]];
-		container.AddFace(F.pointer, p1, p2, p3);
-	}
-
-	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, container.vertex().data(), 0, sizeof(VertexEmbree), container.vertex().size());
-	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, container.faces().data(), 0, sizeof(TriEmbree), container.faces().size());
-	 
-	/* 
-	xr_vector<CDB::TRI*> Opacue;
-
-	for (auto i = 0; i < TS_Size; i++)
-	{
-		Opacue.push_back(&CDB_tris[i]);
-	}
-
-	VertexEmbree* verticesNormal = (VertexEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, sizeof(VertexEmbree), Opacue.size() * 3);
-	TriEmbree* trianglesNormal = (TriEmbree*)rtcSetNewGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, sizeof(TriEmbree), Opacue.size());
-
-	size_t VertexIndexer = 0;
-
-	for (auto i = 0; i < Opacue.size(); i++)
-	{
-		trianglesNormal[i].SetVertexes(*Opacue[i], CDB_verts, verticesNormal, VertexIndexer);
-	}
-	*/
-
-	rtcCommitGeometry(IntelGeometryDetails);
-	LastGeometryDetailsID = rtcAttachGeometry(IntelSceneDetails, IntelGeometryDetails);
-	// Opacue.clear();
-
+	CTimer t; t.Start();
+	LoadGeomBuffer(IntelGeometryOpacue, static_geom);
+	rtcAttachGeometryByID(IntelSceneDetails, IntelGeometryOpacue, 0);
 	rtcCommitScene(IntelSceneDetails);
 
-	clMsg("[Intel Embree] Attached Geometry: IntelGeometry(Normal) By ID: %d", LastGeometryDetailsID);
+	clMsg("$[Embree] Loading To Scene geometry : %u ms", t.GetElapsed_ms());
 }
-#pragma optimize("", on)
 
-void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
+
+void EmbreeData::InitEmbreeDetails()
 {
+	Phase("Loading Embree");
+
+	CTimer t; t.Start();
+
 	bool avx_test = true;
 	bool sse = false;
 
@@ -193,30 +157,19 @@ void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI)
 	sprintf(phase, "Intilized Intel Embree (Details Raytracer) %s - %s", RTC_VERSION_STRING, avx_test ? "avx" : sse ? "sse" : "default");
 	Status(phase);
 
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_RAY_MASK_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED", DeviceDetails, RTC_DEVICE_PROPERTY_BACKFACE_CULLING_ENABLED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY4_SUPPORTED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY8_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED", DeviceDetails, RTC_DEVICE_PROPERTY_NATIVE_RAY16_SUPPORTED);
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED", DeviceDetails, RTC_DEVICE_PROPERTY_IGNORE_INVALID_RAYS_ENABLED);
-
-	GetEmbreeDeviceProperty("RTC_DEVICE_PROPERTY_TASKING_SYSTEM", DeviceDetails, RTC_DEVICE_PROPERTY_TASKING_SYSTEM);
-
 	// Scene
 	IntelSceneDetails = rtcNewScene(DeviceDetails);
 	rtcSetSceneFlags(IntelSceneDetails, RTCSceneFlags::RTC_SCENE_FLAG_NONE);
 
-	InitializeGeometryAttach(Vertexes, tris, sizeTRI);
+	ConsturctGeometry();
+
+	clMsg("$[Embree] Level is Loaded : %u ms", t.GetElapsed_ms());
 }
 
 void IntelEmbereDetailsUNLOAD()
 {
-	if (LastGeometryDetailsID != RTC_INVALID_GEOMETRY_ID)
-	{
-		rtcDetachGeometry(IntelSceneDetails, LastGeometryDetailsID);
-		rtcReleaseGeometry(IntelGeometryDetails);
-	}
+	rtcDetachGeometry(IntelSceneDetails, 0);
+	rtcReleaseGeometry(IntelGeometryOpacue);
 
 	rtcReleaseScene(IntelSceneDetails);
 	rtcReleaseDevice(DeviceDetails);

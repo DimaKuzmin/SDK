@@ -1,20 +1,20 @@
 #include "stdafx.h"
 #include "xrDeflector.h"
+#include "EmbreeRayTrace.h"
+
 #include "R_light.h"
 #include "light_point.h"
 #include "base_lighting.h"
 #include "xrLC_GlobalData.h"
 
-#include "EmbreeRayTrace.h"
 #include "xrMU_Model_Reference.h"
 #include "xrMU_Model.h"
-// Для Загрузки Геометрии
+
 #include "base_face.h"
 
-#include "../XrLC/Build.h"
-
-#include "ppl.h"
-
+// Для Загрузки Геометрии
+ 
+extern CompilersMode gCompilerMode;
 
 void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range)
 {
@@ -50,42 +50,6 @@ void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float r
 	rayhit.hit.instPrimID[0] = RTC_INVALID_GEOMETRY_ID;
 }
 
-
-void VertexEmbree::Set(Fvector& vertex)
-{
-	x = vertex.x;
-	y = vertex.y;
-	z = vertex.z;
-}
-
-Fvector VertexEmbree::Get()
-{
-	Fvector vertex;
-	x = vertex.x;
-	y = vertex.y;
-	z = vertex.z;
-	return vertex;
-}
-
-void TriEmbree::SetVertexes(CDB::TRI& triangle, Fvector* verts, VertexEmbree* emb_verts, size_t& last_index)
-{
-	point1 = last_index;
-	point2 = last_index + 1;
-	point3 = last_index + 2;
-
-
-	int v1 = triangle.verts[0];
-	int v2 = triangle.verts[1];
-	int v3 = triangle.verts[2];
-
-
-	emb_verts[last_index].Set(verts[v1]);
-	emb_verts[last_index + 1].Set(verts[v2]);
-	emb_verts[last_index + 2].Set(verts[v3]);
-
-	last_index += 3;
-}
-
 // OFF PACKED PROCESSING
 void GetEmbreeDeviceProperty(LPCSTR msg, RTCDevice& device, RTCDeviceProperty prop)
 {
@@ -105,387 +69,182 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 	return false;
 }
 
-extern size_t GetMemory();
-void EmbreeData::GetGlobalData(size_t& static_mem, size_t& murefs_mem, bool ConstructMU)
+void EmbreeData::BuildRaytraceModel()
 {
 	static_geom.ClearAll();
 	static_geom_transp.ClearAll();
-	murefs_geom.ClearAll();
-	murefs_geom_transp.ClearAll();
 
-	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
+	CTimer t; t.Start();
 
-	size_t s = GetMemory();
-
-	Status("(Embree) Converting faces...");
-	for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
-		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
-
-	int IDProgress = 0;
+ 	Status("[RcastModel] Capturing Faces...");
 	for (auto F : lc_global_data()->g_faces())
 	{
-		Progress(float(IDProgress) / float(lc_global_data()->g_faces().size()));
-		IDProgress++;
-
 		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
+		if (!SH.flags.bLIGHT_CastShadow)	continue;
 
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		// Collect
-		adjacent_vec.clear();
-		for (int vit = 0; vit < 3; ++vit)
+		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
+		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+		if (F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha)
+			static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+		else
+			static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+	}
+
+
+	for (auto ref : lc_global_data()->mu_refs())
+	{
+		xr_vector<FaceDataIntel> temp_buffer;
+		ref->export_cform_rcast_new(temp_buffer);
+		for (auto& FaceIntel : temp_buffer)
 		{
-			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
-
-		// Unique
-		BOOL			bAlready = FALSE;
-
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
-		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)
-				continue;
-			if (!Test->flags.bProcessed)
-				continue;
-			if (FaceEqual__(*F, *Test))
-			{
-				bAlready = TRUE;
-				break;
-			}
-		}
-
-
-		if (!bAlready)
-		{
+			Face* F = (Face*)FaceIntel.ptr;
 			b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 			b_texture& T = inlc_global_data()->textures()[M.surfidx];
-
-			if (T.pSurface.Empty() || !T.bHasAlpha)
-				F->flags.bOpaque = true; 
-
-			F->flags.bProcessed = true;
-			if (F->flags.bOpaque)
-			{
-				static_geom.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-			}
+			if (F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha)
+				static_geom.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 			else
-			{
-				static_geom_transp.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-			}
-		}
-	}
-
-	static_mem = GetMemory() - s;
-	Static_size = static_mem;
-
-	s = GetMemory();
-	IDProgress = 0;
-
-	if (ConstructMU)
-	{
- 		Status("Captures MU-Refs Models...");
-		// refID, refs
-		xr_map<int, xr_vector<xrMU_Reference*> > models;
-		int IDXModel = 0;
-		for (auto mdl : lc_global_data()->mu_models())
-		{
-			for (auto ref : lc_global_data()->mu_refs())
-			{
-				if (ref->model == mdl)
-					models[IDXModel].push_back(ref);
-			}
-
-			IDXModel++;
+				static_geom_transp.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
 		}
 
-
-		Status("Captures Faces MU-Refs...");
-		IDProgress = 0;
- 
-		xrCriticalSection mtx_lock;
-		concurrency::parallel_for(size_t(0), size_t(models.size()), [&](size_t INDEX)
-		{
-			for (auto model : models[INDEX])
-			{
-				xr_vector<FaceDataIntel> temp_buffer;
-				model->export_cform_rcast_new(&temp_buffer);
-
-				mtx_lock.Enter();
-				for (auto pF : temp_buffer)
-				{
-					Face* F = (Face*)pF.ptr;
-					b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-					b_texture& T = inlc_global_data()->textures()[M.surfidx];
-					if (T.pSurface.Empty() || !T.bHasAlpha)
-						F->flags.bOpaque = true;
-
-					if (F->flags.bOpaque)
-						// static_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
-						murefs_geom.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
-					else
-						// static_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
-						murefs_geom_transp.AddFace(pF.ptr, pF.v1, pF.v2, pF.v3);
- 				}
-				mtx_lock.Leave();
-			}
-		});
 	}
-	
-	murefs_mem = GetMemory() - s;
-	MU_size = murefs_mem;
+	clMsg("[RcastModel] Capturing Faces [%u ms] | Faces : %u | %u ", t.GetElapsed_ms(), static_geom.raw_faces.size(), static_geom_transp.raw_faces.size());
+
+	static_geom.RemoveDublicates();
+	static_geom_transp.RemoveDublicates();
+
+
+	static_geom.RemoveDublicatesFaces();
+	static_geom_transp.RemoveDublicatesFaces();
 }
 
+#include "global_calculation_data.h"
+#include "xrLC_GlobalData.h"
+extern global_claculation_data	gl_data;
 
-void EmbreeData::BuildRcast()
+void EmbreeData::BuildRaytraceModel_2()
 {
-	Phase("Build Rcast Model (build.cform)");
-	Status("Converting faces...");
-	for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
-		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
+	CTimer t; t.Start();
+	// Тут уже будет отфильтровано 
+	static_geom.ClearAll();
+	static_geom.verts_v.swap(build_data.build_verts);
+	static_geom.faces_v.resize(build_data.build_fcnt);
+	static_geom.dummy.resize(build_data.build_fcnt);
 
- 	CDB::CollectorPacked CPacked (gCompilerMode.scene_bbox, (int)lc_global_data()->g_vertices().size(), (int)lc_global_data()->g_faces().size());
-	xr_vector<Face*>			adjacent_vec(6 * 2 * 3);
-
-	Status("Captures Faces...");
-	int IDProgress = 0;
-	for (auto F : lc_global_data()->g_faces())
+	for (auto Fid = 0; Fid < build_data.build_faces.size(); Fid++)
 	{
-		Progress(float ( IDProgress ) / float (lc_global_data()->g_faces().size()) );
-		IDProgress++;
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)
-			continue;
+		auto& FCDB = build_data.build_faces[Fid];
+		auto& F = gl_data.g_rc_faces[Fid];
 
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		// Collect
-		adjacent_vec.clear();
-		for (int vit = 0; vit < 3; ++vit)
-		{
-			Vertex* V = F->v[vit];
-			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-			{
-				adjacent_vec.push_back(V->m_adjacents[adj]);
-			}
-		}
-
-		std::sort(adjacent_vec.begin(), adjacent_vec.end());
-		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
-
-		// Unique
-		BOOL			bAlready = FALSE;
-
-		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
-		{
-			Face* Test = adjacent_vec[ait];
-			if (Test == F)
-				continue;
-			if (!Test->flags.bProcessed)
-				continue;
-			if (FaceEqual__(*F, *Test))
-			{
-				bAlready = TRUE;
-				break;
-			}
-		}
-
-		if (!bAlready)
-		{
-			F->flags.bProcessed = true;
-			CPacked.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, 0);
-		}
+		static_geom.faces_v[Fid].point1 = FCDB.verts[0];
+		static_geom.faces_v[Fid].point2 = FCDB.verts[1];
+		static_geom.faces_v[Fid].point3 = FCDB.verts[2];
 	}
 
+	// Чистим вектора
+	build_data.build_faces.clear();
+	build_data.build_faces.shrink_to_fit();
+	build_data.build_fcnt = 0;
+	build_data.build_vcnt = 0;
 
-	Status("Captures MU-Refs Models...");
-	// refID, refs
-	xr_map<int, xr_vector<xrMU_Reference*> > models;
-	int IDXModel = 0;
-	for (auto mdl : lc_global_data()->mu_models())
-	{
-		for (auto ref : lc_global_data()->mu_refs())
-		{
-			if (ref->model == mdl)
-				models[IDXModel].push_back(ref);
-		}
-
-		IDXModel++;
-	}
- 
-
-	Status("Captures Faces MU-Refs...");
-	IDProgress = 0;
-	xrCriticalSection mtx_lock;
-	concurrency::parallel_for(size_t(0), size_t(models.size()), [&](size_t INDEX)
-	{
- 		for (auto model : models[INDEX])
-		{
-			xr_vector<FaceDataIntel> temp_buffer;
-			model->export_cform_rcast_new(&temp_buffer);
-			
-			mtx_lock.Enter();
-			for (auto pF : temp_buffer)
-			{
-				Face* F = (Face*)pF.ptr;
-				CPacked.add_face_D(pF.v1, pF.v2, pF.v3, F, 0);
-			}
-			mtx_lock.Leave();
-		}
-	});
-	  
- 	// for (auto ref : lc_global_data()->mu_refs())
-	// {
-	// 	Progress(float(IDProgress) / float(lc_global_data()->mu_refs().size()));
-	// 	IDProgress++;
-	// 
-	// 	xr_vector<FaceDataIntel> temp_buffer;
-	// 	ref->export_cform_rcast_new(temp_buffer);
-	// 	for (auto pF : temp_buffer)
-	// 	{
-	// 		Face* F = (Face*)pF.ptr;
-	// 		CPacked.add_face_D(pF.v1, pF.v2, pF.v3, F, 0);
-	// 	}
-	// }
- 
-	Status("Save Faces to file build.cform");
-	{
-		string_path fn;
-  		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
-		xr_vector<b_rc_face>	rc_faces;
-		rc_faces.resize(CPacked.getTS());
-
-		// Prepare faces
-		CDB::TRI* tris = CPacked.getT();
-		for (u32 k = 0; k < CPacked.getTS(); k++)
-		{
-			CDB::TRI& T = CPacked.getT(k);
-			base_Face* F = (base_Face*)(T.pointer);
- 
-			b_rc_face& cf = rc_faces[k];
-			cf.dwMaterial = F->dwMaterial;
-			cf.dwMaterialGame = F->dwMaterialGame;
-
-			Fvector2* cuv = F->getTC0();
-			cf.t[0].set(cuv[0]);
-			cf.t[1].set(cuv[1]);
-			cf.t[2].set(cuv[2]);
-		}
-		MFS->open_chunk(0);
-
-		// Header
-		hdrCFORM hdr;
-		hdr.version = CFORM_CURRENT_VERSION;
-		hdr.vertcount = (u32)CPacked.getVS();
-		hdr.facecount = (u32)CPacked.getTS();
-		hdr.aabb = gCompilerMode.scene_bbox;
-
-		MFS->w(&hdr, sizeof(hdr));
-
-		Msg("$(Memory) VERTEXS: %u", ((u32)CPacked.getVS() * sizeof(Fvector))  / 1024 / 1024);
-		Msg("$(Memory) TRIANGLE: %u", ((u32)CPacked.getTS() * sizeof(CDB::TRI::Size())) / 1024 / 1024);
-		Msg("$(Memory) RCFACE: %u", ((u32)rc_faces.size() * sizeof(b_rc_face)) / 1024 / 1024);
-
-		// Data
-		MFS->w(CPacked.getV(), (u32)CPacked.getVS() * sizeof(Fvector));
-		//MFS->w(CPacked.getT(), (u32)CPacked.getTS() * CDB::TRI::Size());
-		for (auto IDX = 0; IDX < CPacked.getTS(); IDX++)
-		{
-			MFS->w(& CPacked.getT()[IDX], CDB::TRI::Size());
-		}
-
-		MFS->close_chunk();
-
-		MFS->open_chunk(1);
-		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-		MFS->close_chunk();
-
-
-
-		FS.w_close(MFS);
-	}
+	clMsg("$[Embree] Loading Geometry Time: %u ms", t.GetElapsed_ms());
 }
-
-
 
 #include "../xrLC/Build.h"
 
 extern CBuild* pBuild;
 
-u32 TriangleContainer::find_or_add(Fvector& V)
+void EmbreeData::BuildRcast()
 {
-	VertexEmbree new_vertex;
-	new_vertex.Set(V);
+	Status("Start Export Build.cform");
+ 
+	TriangleContainer container;
 
-	u32 ix = iFloor(V.x);
-	u32 iy = iFloor(V.y);
-	u32 iz = iFloor(V.z);
-
-	// Generate hash key
-	size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
-	auto itHash = hashTable.find(hashKey);
-	if (itHash != hashTable.end())
+	CTimer t;	t.Start();
+	Status("[RcastModel] Capturing Faces...");
+	for (auto F : lc_global_data()->g_faces())
 	{
-		Vertex* parsed = nullptr;
-		for (auto& vertex : itHash->second)
-		{
-			if (vertex.V.Simular(new_vertex))
-				return vertex.vertID; // Нашли похожую вершину
-		}
+		const Shader_xrLC& SH = F->Shader();
+		if (!SH.flags.bLIGHT_CastShadow)	continue;
+		container.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
 	}
 
-	verts_v.push_back(new_vertex);
 
-	u32 VertexID = verts_v.size() - 1;
+	for (auto ref : lc_global_data()->mu_refs())
+	{
+		xr_vector<FaceDataIntel> temp_buffer;
+		ref->export_cform_rcast_new(temp_buffer);
+		for (auto& FaceIntel : temp_buffer)
+		{
+			Face* F = (Face*)FaceIntel.ptr;
+			container.AddFace(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
+		}
+	}
+	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
-	Compare data;
-	data.V = verts_v.back();
-	data.vertID = VertexID;
-	hashTable[hashKey].push_back(data);
-	return VertexID;
+	container.RemoveDublicates();
+	container.RemoveDublicatesFaces();
+
+
+	t.Start();
+
+	string_path				fn;
+	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform"));
+	xr_vector<b_rc_face>	rc_faces;
+	rc_faces.resize(container.faces_cnt());
+
+	// Prepare faces
+	for (u32 k = 0; k < container.faces_cnt(); k++)
+	{
+		base_Face* F = container.dummy[k];
+
+		b_rc_face& cf = rc_faces[k];
+		cf.dwMaterial = F->dwMaterial;
+		cf.dwMaterialGame = F->dwMaterialGame;
+
+		Fvector2* cuv = F->getTC0();
+		cf.t[0].set(cuv[0]);
+		cf.t[1].set(cuv[1]);
+		cf.t[2].set(cuv[2]);
+	}
+	MFS->open_chunk(0);
+
+	// Header
+	hdrCFORM hdr;
+	hdr.version = CFORM_CURRENT_VERSION;
+	hdr.vertcount = (u32)container.vertex_cnt();
+	hdr.facecount = (u32)container.faces_cnt();
+	hdr.aabb = pBuild->scene_bb;
+
+	MFS->w(&hdr, sizeof(hdr));
+
+	// Data
+	for (auto Vert : container.vertex())
+	{
+		MFS->w(&Vert, sizeof(Vert));
+	}
+
+	for (auto T : container.faces())
+	{
+		auto TRI = T.Get();
+		MFS->w(&TRI, sizeof(TRI));
+	}
+
+	MFS->close_chunk();
+
+	MFS->open_chunk(1);
+	MFS->w(&*rc_faces.begin(), size_t(rc_faces.size() * sizeof(b_rc_face)));
+	MFS->close_chunk();
+
+	size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
+	size_t vertex_mem = container.vertex_cnt() * sizeof(Fvector);
+	size_t faces_mem = container.faces_cnt() * sizeof(CDB::TRI);
+	Msg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
+	Msg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
+	Msg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
+	Msg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
+
+	FS.w_close(MFS);
+
+	Status("Ended Saving Faces: [%u ms]", t.GetElapsed_ms());
 }
 
-#define CompactingVertexes
-void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
-{
-	int IDX = vertex().size();
-
-	VertexEmbree vert1, vert2, vert3;
-	vert1.Set(v1), vert2.Set(v2), vert3.Set(v3);
-
-	TriEmbree triangle;
-
-#ifdef CompactingVertexes
-	triangle.point1 = find_or_add(v1);
-	triangle.point2 = find_or_add(v2);
-	triangle.point3 = find_or_add(v3);
-#else 
-	triangle.point1 = IDX;
-	triangle.point2 = IDX + 1;
-	triangle.point3 = IDX + 2;
-	vertex().push_back(vert1);
-	vertex().push_back(vert2);
-	vertex().push_back(vert3);
-#endif
-
-	faces().push_back(triangle);
-	dummy.push_back((Face*)F);
-}
-
-void TriangleContainer::ClearAll()
-{
-	hashTable.clear();
-	dummy.clear();
-	faces_v.clear();
-	verts_v.clear();
-
-	faces_v.shrink_to_fit();
-	verts_v.shrink_to_fit();
-}

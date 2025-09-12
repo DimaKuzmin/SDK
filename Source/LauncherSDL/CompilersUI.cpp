@@ -40,15 +40,13 @@ void RenderMainUI()
  	Uint32 flags = SDL_GetWindowFlags(g_AppInfo.Window);
 	bool is_minimized = (flags & SDL_WINDOW_MINIMIZED) != 0;
 
-	if (is_minimized)
-		return;
+	if (is_minimized)		return;
 
 	int Size[2] = {};
 	SDL_GetWindowSize(g_AppInfo.Window, &Size[0], &Size[1]);
 	ImGui::SetNextWindowPos({ 0, 0 });
 	ImGui::SetNextWindowSize({ (float)Size[0], (float)Size[1] });
-
-
+	 
 	if (!ShowMainUI)
 	{
 		RenderCompilerUI(Size[0], Size[1]);
@@ -62,9 +60,6 @@ void RenderMainUI()
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
-
-		//ImGui::Text("Levels:");
-
 		ImVec2 ListBoxSize = { float(Size[0] - 20), float(Size[1] - 75) };
 		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
@@ -169,74 +164,6 @@ void RenderMainUI()
 	}
 
 	ImGui::End();
-
-	/*
-		Якорный переход просчитывается по порядку.
-			Первый yButton будет связан с первым yRow
-
-		yButton - может иметь любое название.
-	*/
-
-	// для включения
-	//    \/
-	if (false && ImGui::Begin("DemoWindow##dw02", 0, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoCollapse))
-	{
-		///////////////////////////////////////////////
-#define yButton(text) ++yStep; if (ImGui::Button(text)) colClick = yStep;
-#define yRow()   ++yStep; ImGui::TableNextRow(); ImGui::TableNextColumn(); if (yStep == colClick) { ImGui::SetScrollHereY(0.0f); colClick = 0; }
-///////////////////////////////////////////////
-
-		ImVec2 winSize = ImGui::GetWindowSize();
-		//
-		int yStep = 0;
-		int colClick = 0;
-
-		ImGui::BeginGroup();
-		yButton("Compiler");
-		yButton("xrLC");
-		yButton("xrAI");
-		yButton("xrDO");
-		ImGui::EndGroup();
-
-		ImGui::SameLine();
-
-		yStep = 0;
-		ImVec2 ListBoxSize = { -1, -1 };
-		if (ImGui::BeginTable("##DemoContent", 1, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
-		{
-			ImGui::TableSetupColumn("c1");
-
-			yRow();
-
-			ImGui::Text("Compiler");
-			ImGui::Separator();
-			DrawCompilerConfig();
-
-			yRow();
-
-			ImGui::Text("xrLC");
-			ImGui::Separator();
-			DrawLCConfig();
-
-			yRow();
-
-			ImGui::Text("xrAI");
-			ImGui::Separator();
-			DrawAIConfig();
-
-			yRow();
-
-			ImGui::Text("xrDO");
-			ImGui::Separator();
-			DrawDOConfig();
-
-			//Заглушка
-			ImGui::Dummy({ 0,winSize.y - 123 });
-
-			ImGui::EndTable();
-		}
-		ImGui::End();
-	}
 }
 
 int item_current_selected = 2;
@@ -660,7 +587,6 @@ void RenderCompilerUI(int X, int Y)
 
 			const char* buttonText = (hideLogSection) ? "+" : "-";
 			ImVec2 textSize = ImGui::CalcTextSize(buttonText);
-
 			ImVec2 buttonSize = ImVec2(textSize.x + ImGui::GetStyle().FramePadding.x * 2, textSize.y + ImGui::GetStyle().FramePadding.y * 2);
 
 			auto ZSize = ImGui::GetContentRegionAvail();

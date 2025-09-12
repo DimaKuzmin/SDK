@@ -3,6 +3,7 @@
 #include "global_calculation_data.h"
 
 #include "../Public/shader_xrlc.h"
+#include "EmbreeRayTrace.h"
  
 global_claculation_data	gl_data;
 
@@ -36,8 +37,6 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 }
 
 // INTEL SELECTION
-extern  void InitEmbreeDetails(Fvector* Vertexes, CDB::TRI* tris, u32 sizeTRI);
-
 void global_claculation_data::xrLoad()
 {
 	string_path					N;
@@ -66,20 +65,37 @@ void global_claculation_data::xrLoad()
 				tris_pointer += CDB::TRI::Size();
 			}
 		}
-		
+ 		// Embree Loader
+		EmbreeMain.build_data.build_fcnt = H.facecount;
+		EmbreeMain.build_data.build_vcnt = H.vertcount;
+		EmbreeMain.build_data.build_verts.clear();
+		EmbreeMain.build_data.build_verts.resize(H.vertcount);
+		EmbreeMain.build_data.build_faces.clear();
+		EmbreeMain.build_data.build_faces.resize(H.facecount);
+
+		for (u32 Vid = 0; Vid < H.vertcount; Vid++)
+			EmbreeMain.build_data.build_verts[Vid] = verts[Vid];
+		for (u32 Tid = 0; Tid < H.facecount; Tid++)
+			EmbreeMain.build_data.build_faces[Tid] = tris[Tid];
+		Phase("Loading RCast CDB...");
+				
 		// Create CFORM MODEL
 		clMsg("Raytrace Model: verts: %u, triangle: %u", H.vertcount, tris.size());
-		InitEmbreeDetails(verts, tris.data(), tris.size());
-
 		RCAST_Model.build	( verts, H.vertcount, tris.data(), H.facecount );
-		// Msg("* Level CFORM: %dK", RCAST_Model.memory()/1024 );
 
+		// Rcast Faces
 		g_rc_faces.resize	(H.facecount);
 		R_ASSERT(fs->find_chunk(1));
 		fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));
 
 		LevelBB.set			(H.aabb);
 	}
+
+
+	// Initialize Embree Details
+	EmbreeMain.InitEmbreeDetails();
+
+
 	
 	{
 		slots_data.Load( );

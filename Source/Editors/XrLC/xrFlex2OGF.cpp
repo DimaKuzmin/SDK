@@ -133,23 +133,11 @@ bool ConvertOgf(u32 THID, u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M
 
 	if (! pOGF->data.vertices.size())
  		return false;
-	
-	CTimer t; t.Start();
-	u32 OptimizeMS = 0;
-	u32 CalcBoundsMs = 0;
-	u32 MakeProgressiveMS = 0;
-	u32 StripifyMS = 0;
 
  	pOGF->Optimize();
-	OptimizeMS += t.GetElapsed_ms(); t.Start();
  	pOGF->CalcBounds();
-	CalcBoundsMs += t.GetElapsed_ms(); t.Start();
     pOGF->MakeProgressive(c_PM_MetricLimit_static);
-	MakeProgressiveMS += t.GetElapsed_ms(); t.Start();
   	pOGF->Stripify();
-	StripifyMS += t.GetElapsed_ms(); t.Start();
-
-	clMsg("Waiting [%u]: [%u][%u][%u][%u]", MODEL_ID, OptimizeMS, CalcBoundsMs, MakeProgressiveMS, StripifyMS);
 
 	return true;
 };

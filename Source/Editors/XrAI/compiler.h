@@ -1,9 +1,6 @@
 #pragma once
-
-
 #include "../../xrcdb/xrCDB.h"
-#include "../../XrCDB/xrCDB_Embree.h"
-
+ 
 #include "../../xrEngine/xrLevel.h"
 #include "AIMapExport.h"
 #include "Shader_xrLC.h"

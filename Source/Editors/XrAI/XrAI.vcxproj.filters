@@ -388,6 +388,9 @@
     <ClCompile Include="compiler_save.cpp">
       <Filter>Compiler\ai_map_new</Filter>
     </ClCompile>
+    <ClCompile Include="EmbreeRayTracing.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIMapExport.h">
@@ -908,6 +911,9 @@
     </ClInclude>
     <ClInclude Include="..\LevelEditor\iniStreamImpl.h">
       <Filter>INI</Filter>
+    </ClInclude>
+    <ClInclude Include="EmbreeRayTracing.h">
+      <Filter>Compiler\ai_map_new</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

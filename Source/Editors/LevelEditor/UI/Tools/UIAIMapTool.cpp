@@ -45,6 +45,11 @@ void UIAIMapTool::Draw()
 			{
 				tool->CreateCFModel();
 			}
+
+			if (ImGui::Button("Remove Invalid Nodes", ImVec2(-1, 0)))
+			{
+				tool->CleanupInvalidNodes();
+			}
 		}
 
 		ImGui::Separator();

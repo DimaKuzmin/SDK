@@ -124,6 +124,7 @@
     <ClCompile Include="compiler_save.cpp">
     </ClCompile>
     <ClCompile Include="compiler_smooth.cpp" />
+    <ClCompile Include="EmbreeRayTracing.cpp" />
     <ClCompile Include="game_graph_builder.cpp" />
     <ClCompile Include="game_spawn_constructor.cpp" />
     <ClCompile Include="guid_generator.cpp">
@@ -232,6 +233,7 @@
     <ClInclude Include="dijkstra_inline.h" />
     <ClInclude Include="edge_path.h" />
     <ClInclude Include="edge_path_inline.h" />
+    <ClInclude Include="EmbreeRayTracing.h" />
     <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="factory_api.h" />
     <ClInclude Include="FTimer.h" />

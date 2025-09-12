@@ -7,8 +7,7 @@
 
 void VIMP_Processor::VIPM_Init			()
 {
-//.	OutputDebugString("VIPM_INIT-------------------\n");
-	R_ASSERT2	(0==g_pObject,"VIPM already in use!");
+ 	R_ASSERT2	(0==g_pObject,"VIPM already in use!");
 	g_pObject							= xr_new<Object>();
 	g_pResult							= xr_new<VIPM_Result>();
 	g_pObject->iNumCollapses			= 0;
@@ -32,21 +31,11 @@ void VIMP_Processor::VIPM_AppendFace		(u16 v0, u16 v1, u16 v2)
  
 void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_window, float m_fSlidingWindowErrorTolerance)
 {
-	CTimer t; t.Start();
-	
+ 	
 	m_pObject->BinEdgeCollapse();
-	// Msg("BinEdgeCollapse: %u ms", t.GetElapsed_ms());
-	u32 BigEdgeCollapse = t.GetElapsed_ms();
-
-	int IndexIterator = 0;
-	u32 FindColapses = 0;
-	u32 FindListNext = 0;
-	u32 CreateEdgeCollapse = 0;
-
+ 
 	while (true)
 	{
-		IndexIterator++;
-
 		// Find the best collapse you can.
 		// (how expensive is this? Ohhhh yes).
 		float		fBestError = 1.0e10f;
@@ -62,14 +51,8 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		float		fAverage = 0.0f;
 		int			iAvCount = 0;
 
-		t.Start();
-		// Flush the cache, just in case.
+ 		// Flush the cache, just in case.
 		m_pObject->FindCollapseError(NULL, NULL, FALSE);
-
-		FindColapses += t.GetElapsed_ms(); t.Start();
-
-		// Msg("Try[%u], FindCollapseError: %u ms", IndexIterator, t.GetElapsed_ms());
-
 		for (ppt = m_pObject->CurPtRoot.ListNext(); ppt != NULL; ppt = ppt->ListNext())
 		{
 			if (0 == ppt->FirstEdge())	continue;
@@ -113,10 +96,6 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 				}
 			}
 		}
-
-		// Msg("Try [%u], ListNext(): %u ms", IndexIterator, t.GetElapsed_ms());
-		FindListNext += t.GetElapsed_ms(); t.Start();
-
 		fAverage /= (float)iAvCount;
 
 		// Tweak up the NewLevel errors by a factor.
@@ -140,17 +119,9 @@ void VIMP_Processor::CalculateAllCollapses(Object* m_pObject, u32 max_sliding_wi
 		else
 			break;
 
-
-		// Msg("Try[%u], CreateEdgeCollapse: %u ms", IndexIterator, t.GetElapsed_ms());
-		CreateEdgeCollapse += t.GetElapsed_ms(); t.Start();
-
-
 		// max sliding window
 		if (m_pObject->iCurSlidingWindowLevel > max_sliding_window) break;
 	}
-
-	Msg("INDEX [%u] | Collapses: %u | FindColapses : %u | FindListNext: %u | CreateEdgeCollapse : %u",
-		IndexIterator, BigEdgeCollapse, FindColapses, FindListNext, CreateEdgeCollapse);
 }
 
 VIPM_Result* VIMP_Processor::VIPM_Convert		(u32 max_sliding_window, float error_tolerance, u32 optimize_vertex_order)
@@ -158,20 +129,11 @@ VIPM_Result* VIMP_Processor::VIPM_Convert		(u32 max_sliding_window, float error_
  	g_pObject->Initialize	();
 	if (!g_pObject->Valid())
 		return NULL;
-	CTimer t; t.Start();
 
-
- 	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
-	if (t.GetElapsed_ms() > 3)
-		Msg("CalculateALL Colapses : %u ms", t.GetElapsed_ms());
-
-	t.Start();
+	CalculateAllCollapses	(g_pObject,max_sliding_window,error_tolerance);
 	bool isRet = CalculateSW(g_pObject, g_pResult, optimize_vertex_order);
-	if (t.GetElapsed_ms() > 3)
-		Msg("CalculateSW  : %u ms", t.GetElapsed_ms());
-
-
- 	if (isRet)
+ 
+	if (isRet)
  		return g_pResult;
 	else				
 		return NULL;

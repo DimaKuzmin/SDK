@@ -241,14 +241,11 @@ void OGF::MakeProgressive(float metric_limit)
 	{
 		// prepare progressive geom
 		make_progressive_vimp.VIPM_Init();
-		//clMsg("--- append v start .");
-		for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
+ 		for (u32 v_idx = 0; v_idx < data.vertices.size(); v_idx++)
 			make_progressive_vimp.VIPM_AppendVertex(data.vertices[v_idx].P, data.vertices[v_idx].UV[0]);
-		//clMsg("--- append f start .");
-		for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
+ 		for (u32 f_idx = 0; f_idx < data.faces.size(); f_idx++)
 			make_progressive_vimp.VIPM_AppendFace(data.faces[f_idx].v[0], data.faces[f_idx].v[1], data.faces[f_idx].v[2]);
-		//clMsg("--- append end.");
-
+ 
 		// Convert
 		VIPM_Result* VR = 0;
 		try {
