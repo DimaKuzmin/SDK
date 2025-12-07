@@ -31,11 +31,7 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 {
 	geom.destroy();
     mesh.clear	();
-
-
-	//U32Vec vec(4096 * 4096);
-
-	for (ObjectIt it=lst.begin(); it!=lst.end(); it++)
+  	for (ObjectIt it=lst.begin(); it!=lst.end(); it++)
 	{
     	CSceneObject*	 S = (CSceneObject*)(*it);
     	CEditableObject* O = S->GetReference(); VERIFY(O);
@@ -44,13 +40,8 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
         mesh.reserve	(mesh.size()+S->GetFaceCount()*3);
         for (EditMeshIt m_it=O->FirstMesh(); m_it!=O->LastMesh(); m_it++)
 		{
-	
-
-
 	        for (u32 f_id=0; f_id!=(*m_it)->GetFCount(); f_id++)
 			{
-				//CSurface* surface = (*m_it)->GetSurfaceByFaceID(f_id);
-				//surface->_ShaderName();
             	FVF::V v;
                 for (int k=0; k<3; k++)
 				{
@@ -59,8 +50,6 @@ void CCustom2DProjector::CreateRMFromObjects(const Fbox& box, ObjectList& lst)
 					v.t.y = GetVFromZ(v.p.z,box);
                     mesh.push_back(v);
                 }
-
-			
             }
         }
 

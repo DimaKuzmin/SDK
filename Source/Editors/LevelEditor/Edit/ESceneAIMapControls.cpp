@@ -141,18 +141,15 @@ TUI_ControlAIMapNodeSelect::TUI_ControlAIMapNodeSelect(int st, int act, ESceneTo
 }
 bool  TUI_ControlAIMapNodeSelect::Start(TShiftState Shift)
 {
-    //Msg("StartL: %u", Shift);
-    return SelectStart(Shift);
+     return SelectStart(Shift);
 }
 
 void  TUI_ControlAIMapNodeSelect::Move(TShiftState Shift)
 {
-   // Msg("Move: %u", Shift);
-    SelectProcess(Shift);
+     SelectProcess(Shift);
 }
 bool  TUI_ControlAIMapNodeSelect::End(TShiftState Shift)
 {
-    //Msg("Start: %u", Shift);
-    return SelectEnd(Shift);
+     return SelectEnd(Shift);
 }
 

@@ -63,27 +63,6 @@ bool UIMainForm::Frame()
 
 void UIMainForm::DrawContextMenu()
 {
-    if (ImGui::BeginMenu("OptickCapture"))
-    {
-        if (ImGui::MenuItem("OptickStartCapture"))
-        {
-            OPTICK_START_CAPTURE();
-        }
-        if (ImGui::MenuItem("OptickSaveCapture"))
-        {
-            OPTICK_STOP_CAPTURE();
-            try 
-            {
-                OPTICK_SAVE_CAPTURE("Optick_data.opt");
-            }
-            catch (...)
-            {
-
-            }
-        }
-        ImGui::EndMenu();
-    }
-
     if (ImGui::BeginMenu("Edit"))
     {
         if (ImGui::MenuItem("Copy"))

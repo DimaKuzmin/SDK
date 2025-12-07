@@ -45,17 +45,6 @@ struct RayQueryContext
 	float energy = 1.0f;
 };
 
-// Предвычисленный LUT для прозрачности
-alignas(64) static float opacityLUT[256];
-struct OpacityInit {
-	OpacityInit() {
-		for (int i = 0; i < 256; i++) {
-			float a = float(i) / 255.f;
-			opacityLUT[i] = 1.f - a * a; // 1 - (a^2)
-		}
-	}
-} initOpacity;
-
 // Сделать потом переключалку
 bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 {

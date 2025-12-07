@@ -123,6 +123,7 @@
     <ClCompile Include="Edit\UI_LevelTools.cpp" />
     <ClCompile Include="Edit\WayPoint.cpp" />
     <ClCompile Include="ESceneAIMap_Validator.cpp" />
+    <ClCompile Include="ESceneDOTools_Saving.cpp" />
     <ClCompile Include="iniStreamImpl.cpp" />
     <ClCompile Include="jsonxx\jsonxx.cc" />
     <ClCompile Include="LEPhysics.cpp" />

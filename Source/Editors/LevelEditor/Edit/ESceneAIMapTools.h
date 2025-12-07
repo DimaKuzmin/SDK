@@ -249,6 +249,12 @@ public:
     void 				SmoothNodes				();
 	void 				ResetNodes				();
     void				SelectNodesByLink		(int link);
+   
+    
+    // AI MAP VALIDATE
+    void                RemoveNodeImmediate(SAINode* Node);
+    bool                IsNodeValidForCleanup(SAINode* Node) const;
+    int                 CleanupInvalidNodes();
 };
 #endif // ESceneAIMapToolsH
 

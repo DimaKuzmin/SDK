@@ -37,9 +37,6 @@ extern CompilersMode gCompilerMode;
 
 void MainCompilerLC()
 {
-	OPTICK_APP("xrLC");
-
-
 	g_build_options.b_radiosity = false; // Более не подерживается
 	g_build_options.b_noise = gCompilerMode.LC_Noise;
 	g_using_smooth_groups = !gCompilerMode.LC_NoSMG;

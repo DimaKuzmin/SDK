@@ -106,8 +106,6 @@ void UIObjectList::Draw()
 
 void UIObjectList::Update()
 {
-	OPTICK_EVENT("UIObjectList OnDrawUI");
-
 	if (Form)
 	{
 		if (!Form->IsClosed())
@@ -193,8 +191,6 @@ void UIObjectList::DrawObjects()
 				}
 				else
 				{
-					OPTICK_EVENT("OBJECTS DrawObject");
-
 					bool FindSelectedObj = false;
 					for (ObjectIt _F = lst.begin(); _F != lst.end(); ++_F)
 					{
@@ -216,9 +212,6 @@ void UIObjectList::DrawObjects()
 					}
 					if (!FindSelectedObj)
 						m_SelectedObject = nullptr;
-
-					OPTICK_POP();
-
 				}
 				ImGui::TreePop();
 			}

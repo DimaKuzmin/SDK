@@ -48,8 +48,6 @@ CCustomObject* EScene::FindObjectByName( LPCSTR name, ObjClassID classfilter )
 
 CCustomObject* EScene::FindObjectByName( LPCSTR name, CCustomObject* pass_object )
 {
-    OPTICK_EVENT("FindObjectByName")
- 
     for (auto& tool : m_SceneTools)
     {   
         ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(tool.second);

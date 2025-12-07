@@ -506,10 +506,6 @@ void UIPropertiesForm::DrawEditText()
 							}
 						}
 					}
-					else
-					{
-						//R_ASSERT(false);
-					}
 				}
 			}
 		}
@@ -563,11 +559,6 @@ void UIPropertiesForm::DrawEditText()
 								Modified();
 							}
 						}
-					}
-					else
-					{
-
-						//R_ASSERT(false);
 					}
 				}
 			}
@@ -661,65 +652,14 @@ void UIPropertiesForm::DrawEditGameType()
 			for (auto i = 0; i < 9; i++)
 			{
 				bool cheked = m_EditGameTypeChooser.MatchType(mapModes_GAMEID[i]);
-				//m_EditGameTypeChooser.MatchType(eGameIDSingle);
 				if (ImGui::Checkbox(mapModes[i], &cheked))
 				{
 					m_EditGameTypeChooser.m_GameType.set(mapModes_GAMEID[i], cheked);
- 					//Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
 				}
 			}
-
-			/*
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDSingle);
-				//m_EditGameTypeChooser.MatchType(eGameIDSingle);
-				if (ImGui::Checkbox("Single", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDSingle, cheked);
- 					Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-				}
-			    
-			}
-
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDDeathmatch);
-				if (ImGui::Checkbox("DM", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDDeathmatch, cheked);
- 					Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDTeamDeathmatch);;
-				if (ImGui::Checkbox("TDM", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDTeamDeathmatch, cheked);
-					Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDArtefactHunt);;
-				if (ImGui::Checkbox("ArtefactHunt", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDArtefactHunt, cheked);
-					Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-				}
-			}
-			{
-				bool cheked = m_EditGameTypeChooser.MatchType(eGameIDCaptureTheArtefact);;
-				if (ImGui::Checkbox("CTA", &cheked))
-				{
-					m_EditGameTypeChooser.m_GameType.set(eGameIDCaptureTheArtefact, cheked);
-					Msg("m_GameType: %d", m_EditGameTypeChooser.m_GameType.flags);
-				}
-			}
-
-			*/
- 
 			ImGui::EndGroup(); ImGui::SameLine();
 		}
-
-		
+ 		
 		{
 			ImGui::BeginGroup();
 			if (ImGui::Button("Ok", ImVec2(ImGui::GetFrameHeight() * 6, 0)))

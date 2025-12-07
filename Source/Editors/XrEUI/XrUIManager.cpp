@@ -146,20 +146,13 @@ void XrUIManager::Push(XrUI* ui, bool need_deleted)
 	ui->Flags.set(!need_deleted, XrUI::F_NoDelete);
 }
 
-#include <optick/optick.h>
-#pragma comment(lib, "OptickCore.lib")
-
 void XrUIManager::Draw()
 {  
-    OPTICK_EVENT("Imgui New Frame");
     ImGui_ImplDX9_NewFrame();
     ImGui_ImplWin32_NewFrame();
     ImGui::NewFrame();
-    OPTICK_POP();
-
+ 
     {
-        OPTICK_EVENT("Imgui SetNextWindowPos");
-
         ImGuiViewport* viewport = ImGui::GetMainViewport();
         ImGui::SetNextWindowPos( ImVec2(viewport->Pos.x, viewport->Pos.y+ UIToolBarSize));
         ImGui::SetNextWindowSize( ImVec2(viewport->Size.x, viewport->Size.y- UIToolBarSize));
@@ -184,26 +177,18 @@ void XrUIManager::Draw()
         ImGui::DockSpace(dockMain);
         ImGui::End();
         ImGui::PopStyleVar(4);
-      
-        OPTICK_POP();
     }
 
-    OPTICK_EVENT("UI Array Draw");
 	for (XrUI* ui : m_UIArray)
 	{
 		ui->Draw();
 	}
-    OPTICK_POP();
-
-    OPTICK_EVENT("On Draw UI");
+     
     OnDrawUI();
-    OPTICK_POP();
 
-    OPTICK_EVENT("Imgui End Frame");
     ImGui::EndFrame();
     ImGui::Render();
     ImGui_ImplDX9_RenderDrawData(ImGui::GetDrawData());
-    OPTICK_POP();
     
     for (size_t i = m_UIArray.size(); i > 0; i--)
 	{

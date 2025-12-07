@@ -87,7 +87,6 @@ IC void CBackend::set_Matrices			(SMatrixList*	_M)
 
 IC void CBackend::set_Element			(ShaderElement* S, u32	pass)
 {
-	OPTICK_EVENT("set_Element");
 	SPass&	P		= *(S->passes[pass]);
 	set_States		(P.state);
 	set_PS			(P.ps);

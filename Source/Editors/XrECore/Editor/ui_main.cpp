@@ -362,10 +362,7 @@ void TUI::PrepareRedraw()
 extern ENGINE_API BOOL g_bRendering;
 void TUI::Redraw()
 {
-    {
-        OPTICK_EVENT("PrepareRedraw");
-        PrepareRedraw();
-    }
+    PrepareRedraw();
       
     if (u32(RTSize.x * EDevice.m_ScreenQuality) != RT->dwWidth || u32(RTSize.y * EDevice.m_ScreenQuality) != RT->dwHeight|| !RT->pSurface)
     {
@@ -424,10 +421,8 @@ void TUI::Redraw()
                 DU_impl.DrawPivot(m_Pivot);
             }
 
-            OPTICK_EVENT("Tools Render");
             Tools->Render();
-            OPTICK_POP();
-
+ 
 
             // draw selection rect
             if (m_SelectionRect) 	
@@ -448,19 +443,14 @@ void TUI::Redraw()
         EDevice.SetRS(D3DRS_FILLMODE, D3DFILL_SOLID);
         g_bRendering = FALSE;
         
-        OPTICK_EVENT("ui main (DRAW)");
         Draw();
-        OPTICK_POP();
-        
+         
         EDevice.SetRS(D3DRS_FILLMODE, EDevice.dwFillMode);
         // end draw
         EDevice.End();
      }
 
-    {
-        OPTICK_EVENT("OutInfo");
-        OutInfo();
-    }
+     OutInfo();
 }
 //---------------------------------------------------------------------------
 void TUI::RealResize()
@@ -482,22 +472,13 @@ void TUI::RealRedrawScene()
 void TUI::OnFrame()
 {
 	EDevice.FrameMove	();
-    OPTICK_EVENT("Sound OnFrame");
     SndLib->OnFrame		();
-    OPTICK_POP();
-
-    OPTICK_EVENT("RealUpdateScene OnFrame");
     // tools on frame
     if (m_Flags.is(flUpdateScene)) 
         RealUpdateScene();
-
-    OPTICK_POP();
-
-    OPTICK_EVENT("Tools OnFrame");
     Tools->OnFrame		();
-    OPTICK_POP();
 
-	// show hint
+    // show hint
     ShowObjectHint		();
 	ResetBreak			();
  
@@ -506,10 +487,6 @@ void TUI::OnFrame()
 }
 bool TUI::Idle()         
 {
-    OPTICK_FRAME("Main Thread");
-
-    OPTICK_EVENT("MAIN::Idle");
-
     MSG msg;
     do
     {
@@ -531,20 +508,12 @@ bool TUI::Idle()
     if (m_Flags.is(flResetUI))
         RealResetUI();
 
- 
-    OPTICK_EVENT("__Input__Onframe__");
     pInput->OnFrame();
     Sleep(1);
-    OPTICK_POP();
-
-    OPTICK_EVENT("__OnFrame__");
     OnFrame			();
-    OPTICK_POP();
-    
-    OPTICK_EVENT("__RedrawScene__");
+
     if ( !m_Flags.is(flNeedQuit) && !m_AppClosed)  //m_bAppActive &&
         RealRedrawScene();
-    OPTICK_POP();
 
     // test quit
     if (m_Flags.is(flNeedQuit))

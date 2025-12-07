@@ -254,8 +254,7 @@ public:
 	void 			RenderSky			(const Fmatrix& camera);
 
 	u32				LastUpdateRender = 0;
-	void			UpdateRenderList	(void* object_tools, bool useMT);
-	void			RenderClearObjects();
+ 	void			RenderClearObjects();
 
 
 	void 			Render              (const Fmatrix& camera);

@@ -42,15 +42,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
     if(!IsDebuggerPresent())
         Debug._initialize(false);  
-
-    OPTICK_APP("Level Editor");
-
-    OPTICK_STOP_CAPTURE();
-
-    OPTICK_START_THREAD("MAIN_THREAD");
-
-    //   OPTICK_CATEGORY("CategoryName", Optick::Category::Scene);
-    Msg("CMD START: %s", pCmdLine);
     
     Core._initialize("Actor", ELogCallback, 1, "fs.ltx", true);
     initialize_factory();
@@ -74,10 +65,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     while (MainForm->Frame())
     {
     }
-
-    destroy_factory();
-
     xr_delete(MainForm);
-     Core._destroy();
+    destroy_factory();
+    Core._destroy();
     return 0;
 }

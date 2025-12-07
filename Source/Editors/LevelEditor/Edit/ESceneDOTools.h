@@ -28,11 +28,21 @@ DEFINE_MAP			(u32,DOVec,ColorIndexMap,ColorIndexPairIt);
 #define DETAIL_SLOT_SIZE_2 	DETAIL_SLOT_SIZE*0.5f
 #define DETAIL_SLOT_RADIUS	DETAIL_SLOT_SIZE*0.7071f
 
-class EDetailManager:
-	public CDetailManager,
-    public ESceneToolBase
-//	,public pureDeviceCreate,
-//	public pureDeviceDestroy
+enum {
+    DETMGR_CHUNK_VERSION = 0x1000ul,
+    DETMGR_CHUNK_HEADER = 0x0000ul,
+    DETMGR_CHUNK_OBJECTS = 0x0001ul,
+    DETMGR_CHUNK_SLOTS = 0x0002ul,
+    DETMGR_CHUNK_BBOX = 0x1001ul,
+    DETMGR_CHUNK_BASE_TEXTURE = 0x1002ul,
+    DETMGR_CHUNK_COLOR_INDEX = 0x1003ul,
+    DETMGR_CHUNK_SNAP_OBJECTS = 0x1004ul,
+    DETMGR_CHUNK_DENSITY = 0x1005ul,
+    DETMGR_CHUNK_FLAGS = 0x1006ul,
+};
+
+
+class EDetailManager:	public CDetailManager,    public ESceneToolBase
 {
 	friend class TfrmDOShuffle;
 	typedef ESceneToolBase inherited;

@@ -105,140 +105,21 @@ void RenderScene(SceneToolsMap& scene, int P, bool B)
         tool.second->OnRenderRoot(P, B);
     };
 }
-
-concurrency::task_group tasks;
-
-int KeyCalc = 0;
-int KeyRender = 1;
  
- 
-void EScene::UpdateRenderList(void* List, bool useMT)
-{
-    /*
-    // extract and sort object tools
-    tasks.wait();
-
-    int idx = KeyCalc;
-    KeyRender = idx;
-    KeyCalc = (idx + 1) % 2;
- 
-    auto task = [&]()
-    {
-        SceneOToolsSet object_tools;
-
-        OPTICK_FRAME("RenderList Update Thread");
-        OPTICK_EVENT("Render Update Render List")
-
-        auto& map = mapRenderObjects[KeyCalc];
-        map.clear(); // 
-
-        for (auto& T : m_SceneTools)
-        {
-            ESceneCustomOTool* mt = dynamic_cast<ESceneCustomOTool*>(T.second);
-            if (mt == nullptr)  continue;
-        
-            auto& Objects = mt->GetObjects();
-
-            // if (EDevice.RenderTasks > 1)
-            // {
-            //     std::for_each(std::execution::par, Objects.begin(), Objects.end(), [&](CCustomObject* O)
-            //     {
-            //         if (O && O->Visible() && O->IsRender())
-            //         {
-            //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
-            //             O->useInRender = true;
-            //             O->distSQ = distSQ;
-            // 
-            // 
-            //         }
-            //         else
-            //         {
-            //             O->useInRender = false;
-            //         }
-            //     });
-            // }
-            // else
-            // {
-            //     for (auto O : Objects)
-            //     {
-            //         if (O && O->Visible() && O->IsRender())
-            //         {
-            //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
-            //             O->useInRender = true;
-            //             O->distSQ = distSQ;
-            //         }
-            //         else
-            //         {
-            //             O->useInRender = false;
-            //         }
-            //     };
-            // }
-             
-            // OPTICK_EVENT("Render Set List")
-            // for (auto O : Objects)
-            // {
-            //     if (O && O->useInRender)
-            //     {
-            //         RenderData data;
-            //         data.distSQ = O->distSQ;
-            //         data.O = O;
-            //         map.push_back(data);
-            //     }
-            // }
-        }
-
-        
-
-        // std::for_each(std::execution::par, threads_working.begin(), threads_working.end(), [&] (std::vector<CCustomObject*>& objects)
-        // {
-        //     std::vector<RenderData> datavec;
-        //     for (auto O : objects)
-        //     {
-        //         if (O && O->Visible() && O->IsRender())
-        //         {
-        //             float distSQ = EDevice.vCameraPosition.distance_to_sqr(O->GetPosition());
-        // 
-        //             RenderData data;
-        //             data.distSQ = distSQ;
-        //             data.O = O;
-        //             datavec.push_back(data);
-        //         }
-        //     }
-        // 
-        //     csRenderUpdate.Enter();
-        //     map.resize(datavec.size());
-        //     std::copy(datavec.begin(), datavec.end(), map.data());
-        //     csRenderUpdate.Leave();
-        // });
-    };
-
-    tasks.run(task);
-    */
-};
-
-
 void EScene::RenderClearObjects()
 {
     mapRenderObjects[0].clear();
-    // mapRenderObjects[1].clear();
 }
  
  
 void EScene::Render(const Fmatrix& camera)
 {
-    if (!valid())
-          return;
+    if (!valid())          return;
 
     auto& map = mapRenderObjects[0]; // KeyRender
-    
-
     if (EDevice.dwFrame % EDevice.RenderReloadObjectsTime == 0)
     {
         map.clear();
-
-        OPTICK_EVENT("Render Set List")
-        // UpdateRenderList(0, true);
-
         xr_vector<CCustomObject*> objects;
     
         for (auto& T : Scene->m_SceneTools)
@@ -282,7 +163,6 @@ void EScene::Render(const Fmatrix& camera)
         return;
 
     {
-        OPTICK_EVENT("Render Traverse") 
         if (m_SceneTools.empty())
             return;
 
