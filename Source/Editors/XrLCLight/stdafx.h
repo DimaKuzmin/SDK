@@ -4,14 +4,10 @@
 //
  
 #pragma once
-  
 
 #pragma warning (disable:4661)
 #include "xrLC_Light.h"
 #include "../../LauncherSDL/CompilersUI.h"
 #include "../../LauncherSDL/cl_log.h"
-
-#ifdef DEBUG
-#define CL_NET_LOG
-#endif
+#include "../XrCore/log.h"
  

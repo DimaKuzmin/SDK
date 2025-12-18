@@ -1,16 +1,10 @@
 ﻿#include "stdafx.h"
-//#include "build.h"
-//#include "std_classes.h"
-
 #include "..\LauncherSDL\xrThread.h"
 #include "xrdeflector.h"
 #include "xrlc_globaldata.h"
 #include "light_point.h"
 #include "xrface.h"
-
-#include "EmbreeDataStorage.h"
 #include "xrLight_Implicit.h"
-
 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
@@ -62,8 +56,116 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
   	 
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
 {
- 	R_ASSERT	(DB);
-	R_ASSERT	(LightsSelected);
+	// Convert lights to local form
+	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
+
+ 	// Calculate and fill borders
+	lm_layer& lm = layer;
+ 	auto LNewCalculate = [&]()
+	{
+		// UV & HASH
+		RemapUV(0, 0, lm.width, lm.height, lm.width, lm.height, FALSE);
+
+		// Calculate
+		lm.create(lm.width, lm.height);
+		L_Direct(DB, LightsSelected);
+	};
+
+
+	// for (u32 ref = 254; ref > 0; ref--)
+	// 	if (!ApplyBorders(layer, ref))
+	// 		break;
+
+	// Compression
+	if (compress_Zero(layer, rms_zero)) return;		// already with borders
+ 
+	u32	w, h;
+	if (compress_RMS(layer, rms_shrink, w, h))
+	{
+		// Reacalculate lightmap at lower resolution
+		layer.create(w, h);
+		LNewCalculate();
+	}
+
+	if (layer.width == 1)
+	{
+		// Horizontal ZERO - vertical line
+		lm_layer		T;
+		T.create(2 * BORDER, layer.height + 2 * BORDER);
+
+		// Transfer
+		for (u32 y = 0; y < T.height; y++)
+		{
+			int			py = int(y) - BORDER;
+			clamp(py, 0, int(layer.height - 1));
+			base_color	C = layer.surface[py];
+			T.surface[y * 2 + 0] = C;
+			T.marker[y * 2 + 0] = 255;
+			T.surface[y * 2 + 1] = C;
+			T.marker[y * 2 + 1] = 255;
+		}
+
+		// Exchange
+		T.width = 0;
+		T.height = layer.height;
+		layer = T;
+	}
+	else if (layer.height == 1)
+	{
+		// Vertical ZERO - horizontal line
+		lm_layer		T;
+		T.create(layer.width + 2 * BORDER, 2 * BORDER);
+
+		// Transfer
+		for (u32 x = 0; x < T.width; x++)
+		{
+			int			px = int(x) - BORDER;
+			clamp(px, 0, int(layer.width - 1));
+			base_color	C = layer.surface[px];
+			T.surface[0 * T.width + x] = C;
+			T.marker[0 * T.width + x] = 255;
+			T.surface[1 * T.width + x] = C;
+			T.marker[1 * T.width + x] = 255;
+		}
+
+		// Exchange
+		T.width = layer.width;
+		T.height = 0;
+		layer = T;
+	}
+	else
+	{
+		// Generic blit
+		lm_layer		lm_old = layer;
+		lm_layer		lm_new;
+		lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
+		lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
+		layer = lm_new;
+
+		// ApplyBorders(layer, 254);
+		// ApplyBorders(layer, 253);
+		// ApplyBorders(layer, 252);
+		// ApplyBorders(layer, 251);
+		// for (u32 ref = 250; ref > 0; ref--) if (!ApplyBorders(layer, ref)) break;
+
+		layer.width = lm_old.width;
+		layer.height = lm_old.height;
+	}
+
+}
+
+#include "uv_grid.h"
+thread_local UVGridLazy<UVtri> uv_grid;  	 
+void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
+{
+	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+		{
+			wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
+			wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
+			exact_normalize(wN);
+			wN.add(F->N);
+			exact_normalize(wN);
+		};
 
 	lm_layer&	lm = layer;
 
