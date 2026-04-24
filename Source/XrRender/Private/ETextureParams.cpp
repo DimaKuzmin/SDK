@@ -166,24 +166,25 @@ bool STextureParams::Load(IReader& F)
     width		= F.r_u32();
     height		= F.r_u32();
  
-    if (F.find_chunk(THM_CHUNK_TEXTURE_TYPE))
+    bool IncorrectChunk = false;
+
+    if (FindAndValidateChunk(F, THM_CHUNK_TEXTURE_TYPE, IncorrectChunk))
     {
         type	= (ETType)F.r_u32();
     }
 
-    if (F.find_chunk(THM_CHUNK_DETAIL_EXT))
+    if (FindAndValidateChunk(F, THM_CHUNK_DETAIL_EXT, IncorrectChunk)) 
     {
         F.r_stringZ(detail_name);
         detail_scale = F.r_float();
     }
 
-    if (F.find_chunk(THM_CHUNK_MATERIAL))
+    if (FindAndValidateChunk(F, THM_CHUNK_MATERIAL, IncorrectChunk))
     {
     	material		= (ETMaterial)F.r_u32		();
 	    material_weight = F.r_float	();
     }
   
-    bool IncorrectChunk = false;
     if (FindAndValidateChunk(F, THM_CHUNK_BUMP, IncorrectChunk))
     {
         bump_virtual_height = F.r_float();

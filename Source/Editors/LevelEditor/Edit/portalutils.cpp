@@ -587,11 +587,6 @@ public:
                     string256 namebuffer = { 0 };
                     sprintf(namebuffer, "portal_%d", id);
 
-                    string128 tmp;
-                    sprintf(tmp, "Create Portal : %u | %u", id, portals.size());
-                    Msg(tmp);
-                    pb->Info(tmp);
-
                     CPortal* _O = xr_new<CPortal>((LPVOID)0, namebuffer);
 
                     for (u32 i = 0; i < vlist.size(); i++)
@@ -651,20 +646,10 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors)
 
 
     //1. xform + weld
-    SPBItem* pb = UI->ProgressStart(sectors.size(), "xForm + weld portals...");
-    int i = 0; //ii = 0;
-
-    CTimer t;
-    t.Start();
     UI->SetStatus("xform + weld...");
-   
-    CTimer tfun;
-
-    for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++, i++)
+    for (ObjectIt s_it=sectors.begin(); s_it!=sectors.end(); s_it++)
     {
-        CSector* S=(CSector*)(*s_it);
-   
-        tfun.Start();
+        CSector* S = (CSector*)(*s_it);
         int id = 0;
 
         xrCriticalSection csForEach;
@@ -684,7 +669,6 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors)
             //Msg("Process: %d", id);
             string128 info;
             sprintf(info, "ID: %d,  Sector Size: %d", id, S->sector_items.size());
-            pb->Info(info);
             id++;
             csForEach.Leave();
 
@@ -704,17 +688,7 @@ int CPortalUtils::CalculateSelectedPortals(ObjectList& sectors)
             }
         }
         );
-        
-
-              
-        string128 info;
-        sprintf(info, "ID: %d, Time: %u ms elapsed, Sector Size: %d", i, tfun.GetElapsed_ms(), S->sector_items.size());
-        pb->Info(info);
-         //  pb->Update(i);
-
     }
-    UI->ProgressEnd(pb);
-    Msg("[Portal] Timer: Weld: %u", t.GetElapsed_ms());
 
     //2. update pervertex adjacency
     UI->SetStatus("updating per-vertex adjacency...");

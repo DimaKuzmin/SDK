@@ -612,28 +612,24 @@ struct delete_sel_node_pred
 
 void ESceneAIMapTool::RemoveSelection()
 {
-    switch (LTools->GetSubTarget()){
-    case estAIMapNode:{
-    	if (m_Nodes.size()==(u32)SelectionCount(true)){
-        	Clear	(true);
-        }else{
-        	SPBItem* pb = UI->ProgressStart(3,"Removing nodes...");
-        	// remove link to sel nodes
-	        pb->Inc("erasing nodes");
-            // remove sel nodes
-           	AINodeIt result		= std::remove_if(m_Nodes.begin(), m_Nodes.end(), delete_sel_node_pred());
-            
-            if (result != m_Nodes.end())
-            {
-                m_Nodes.erase(result, m_Nodes.end());
-                pb->Inc("updating hash");
-                hash_Clear();
-                hash_FillFromNodes();
-                pb->Inc("end");
-                UI->ProgressEnd(pb);
-            }
-        }
-    }break;
+    switch (LTools->GetSubTarget())
+    {
+         case estAIMapNode:
+         {
+         	if (m_Nodes.size()==(u32)SelectionCount(true)){
+             	Clear	(true);
+             }
+             else
+             {
+                AINodeIt result		= std::remove_if(m_Nodes.begin(), m_Nodes.end(), delete_sel_node_pred());
+                 if (result != m_Nodes.end())
+                 {
+                     m_Nodes.erase(result, m_Nodes.end());
+                     hash_Clear();
+                     hash_FillFromNodes();
+                 }
+             }
+         }break;
     }
     UpdateHLSelected	();
     UI->RedrawScene		();
