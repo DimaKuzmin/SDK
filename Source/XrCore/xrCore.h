@@ -269,6 +269,7 @@ DEFINE_VECTOR	(xr_rtoken,RTokenVec,RTokenVecIt);
 #include "log.h"
 #include "xr_trims.h"
 #include "xr_ini.h"
+#include "xr_path.h"
 
 #include "ILocatorAPI.h"
 #include "ELocatorAPI.h"

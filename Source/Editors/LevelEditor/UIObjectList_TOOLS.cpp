@@ -11,14 +11,10 @@
 
 #include "SceneObject.h"
 #include "SpawnPoint.h"
-#include "CustomObject.h"
 #include "WayPoint.h"
  
 #include "../xrServerEntities/xrServer_Objects_Alife_Smartcovers.h"
-#include "SpawnPoint.h"
- 
 
-extern float RenderRadius;
 void UIObjectList::UpdateDefaultMeny()
 {
 	if (LTools->CurrentClassID() == OBJCLASS_AIMAP)
@@ -33,28 +29,21 @@ void UIObjectList::UpdateDefaultMeny()
 
 		ImGui::Checkbox("ignore_construction_on_load", &ai_ignore_stractures);
 
-		if (ImGui::Button("select map file", ImVec2(-1, 0)))
-			SelectAIMAPFile();
-
 		if (ImGui::Button("load map", ImVec2(-1, 0)))
 		{
 			ESceneToolBase* tool = Scene->GetTool(OBJCLASS_AIMAP);
 			ESceneAIMapTool* tool_ai = smart_cast<ESceneAIMapTool*>(tool);
-			tool_ai->CreateCFModel();
-			LoadAiMAP();
+			if (tool_ai != nullptr)
+			{
+				tool_ai->CreateCFModel();
+				LoadAIMap();
+			}			
 		}
 
 		if (ImGui::Button("export map", ImVec2(-1, 0)))
 			ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str());
 
 		/*
-		if (ImGui::Button("set offset terrain", ImVec2(-1, 0)))
-			SetTerrainOffsetForAI();
-
-		if (ImGui::Button("move to offsets", ImVec2(-1, 0)))
-			ModifyAIMAPFiles(vec_offset);			
-		
-
 		
 		if (ImGui::Button("merge", ImVec2(-1, 0)))
 			MergeAIMAP(merge_ai_map_size);
@@ -74,18 +63,7 @@ void UIObjectList::UpdateDefaultMeny()
 
 			}
 		}
-
 		*/
-
-		if (ImGui::Button("merge_ini", ImVec2(-1, 0)))
-		{
-			xr_string path;
-			if (EFS.GetOpenName(EDevice.m_hWnd, _import_, path))
-			{
-				CInifile* file = new CInifile(path.c_str(), true);
-				MergeAI_FromINI(file);
-			}
-		}
 
 		ImGui::Separator();
 	}
@@ -105,9 +83,6 @@ void UIObjectList::UpdateDefaultMeny()
 		ImGui::Checkbox("use_global_pos", &use_global_position);
 		if (ImGui::Button("save object", ImVec2(-1, 0)))
 			SaveSelectedObjects();
-
-		if (ImGui::Button("pos_objects_save_ltx", ImVec2(-1, 0) ))
-			POS_ObjectsToLTX();
 
 		ImportMultiply();
 
@@ -357,56 +332,6 @@ const char* fireboll[] = { "fireboll", "fireboll_acidic", "fireboll_electric" };
 const char* fild_zones[] = { "field_acidic", "field_psychic", "field_radioactive", "field_thermal" };
 const char* mine_zones[] = { "mine_acidic", "mine_electric", "mine_gravitational", "mine_thermal" };
 const char* use_items[] = { "antirad", "bandage", "conserva", "drug_", "energy_drink", "harmonica_a", "guitar_a", "kolbase", "vodka", "medkit", "wpn_", "outfit" };
-
-#include "ELight.h"
-
-xr_vector<CCustomObject*> objects_failed;
-u32 OldDeviceTime = 0;
-
-
-
-bool UIObjectList::CheckForError(CCustomObject* object)
-{
-	/*if (use_errored)
-	{
-
-		if (OldDeviceTime < EDevice.dwTimeGlobal)
-		{
-			OldDeviceTime = EDevice.dwTimeGlobal + 2000;
-			
-			for (auto item : Errored_objects)
-			{
-				if (object->FName.equal(item.c_str()))
-				{
-					objects_failed.push_back(object);
-				}
-			};
-			
-		}
- 
-		bool finditem = false;
-		
-		for (auto item : objects_failed)
-		{
-			if (item == object)
-			{
-				finditem = true;
-				return false;
-			}
-		}
- 
-		if (finditem)
-			return true;
-	}
-   	*/		
-	
-	return true;
-}
-
-#include "scene.h"
-#include "ESceneCustomMTools.h"
-
- 
 
 void UIObjectList::LoadErrorsGraphs()
 {

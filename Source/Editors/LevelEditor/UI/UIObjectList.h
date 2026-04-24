@@ -97,8 +97,6 @@ public:
 	void ListBoxForTypes();
 
 	bool CheckNameForType(CCustomObject* object);
-	bool CheckForError(CCustomObject* object);
-
 
 	void FindObjectSector(u16 id);
 
@@ -125,8 +123,7 @@ public:
 	void BboxSelectedObject();
 	void SelectObjectsInsideBox();
 
-	void POS_ObjectsToLTX();
-	void CopyTempLODforObjects();
+ 	void CopyTempLODforObjects();
 	void SaveSelectedObjects();
 	void ExportUsedTextures();
 	void ExportUsedObjects();
@@ -143,20 +140,13 @@ public:
 
 	// AI MAP
 private:
-	xr_string last_fileaimap;
 	bool ai_ignore_stractures = false;
 	xr_map<int, Fvector3> merge_offsets;
-
 public:
-	void ExportAIMap(Fbox* box, LPCSTR name);
-	bool LoadAiMAP();
-	void SelectAIMAPFile();
-	void ModifyAIMAPFiles(Fvector pos);
-	void MergeAIMAP(u32 file);
-	void MergeAI_FromINI(CInifile* file);
-	void SetTerrainOffsetForAI();
-
-
+	bool LoadAIMap();							// Загружаем
+	void ExportAIMap(Fbox* box, LPCSTR name);	// Экспортим
+ 	void MergeAIMAP(u32 file);
+ 
 	// Rename 
 private:
 	string128 rename_prefix_name = {0};

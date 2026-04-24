@@ -265,6 +265,7 @@
     <ClCompile Include="Win_Callstack.cpp">
       <Filter>Debug core</Filter>
     </ClCompile>
+    <ClCompile Include="xr_path.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FTimer.h">
@@ -562,6 +563,7 @@
     <ClInclude Include="Config.h">
       <Filter>Kernel</Filter>
     </ClInclude>
+    <ClInclude Include="xr_path.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="FileSystem.h">

@@ -4,6 +4,54 @@
 #include <ESceneAIMapTools.h>
 #include "SceneObject.h"
 
+// Указываем Листы для движения 
+void UIObjectList::SetListToMove()
+{
+	Fbox box;
+	box.min = vec_box_min;
+	box.max = vec_box_max;
+
+	objects_to_move.clear();
+
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+
+		ObjectList& lst = ot->GetObjects();
+
+		for (auto obj : lst)
+		{
+			if (obj && box.contains(obj->GetPosition()))
+			{
+				objects_to_move[obj] = obj->GetPosition();
+			}
+		}
+	}
+}
+
+void UIObjectList::AddSelectedToMove()
+{
+	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
+	{
+		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
+		if (!ot)
+			continue;
+
+		ObjectList& lst = ot->GetObjects();
+
+		for (auto obj : lst)
+		{
+			if (obj->Selected())
+			{
+				objects_to_move[obj] = obj->GetPosition();
+			}
+		}
+	}
+}
+
+// Export в директорию 
 
 bool UIObjectList::ExportDir(xr_string& dir)
 {
@@ -101,52 +149,6 @@ void UIObjectList::ExportInsideBox()
 	}
 }
 
-void UIObjectList::SetListToMove()
-{
-	Fbox box;
-	box.min = vec_box_min;
-	box.max = vec_box_max;
-
-	objects_to_move.clear();
-
-	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
-	{
-		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
-		if (!ot)
-			continue;
-		 
-		ObjectList& lst = ot->GetObjects();
-
-		for (auto obj : lst)
-		{
-			if (obj && box.contains(obj->GetPosition()))
-			{
-				objects_to_move[obj] = obj->GetPosition();
-			}
-		}
-	}
-}
-
-void UIObjectList::AddSelectedToMove()
-{
-	for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
-	{
-		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
-		if (!ot)
-			continue;
-
-		ObjectList& lst = ot->GetObjects();
-
-		for (auto obj : lst)
-		{
-			if (obj->Selected())
-			{
-				objects_to_move[obj] = obj->GetPosition();
-			}
-		}
-	}
-}
- 
 void UIObjectList::ExportAllObjects()
 {
 	if (Scene->m_LevelOp.m_FNLevelPath.size() == 0)
@@ -200,8 +202,7 @@ void UIObjectList::ExportAllObjects()
 					xr_strcat(str, itoa(i, tmp, 10));
 					Scene->SaveObjectLTX(obj, str, *file);//obj->SaveLTX(*file, str);
 					i += 1;
-					//Msg("ID: %d", i);
-				}
+  				}
 			}
 		}
 		file->save_as(name);
@@ -210,9 +211,7 @@ void UIObjectList::ExportAllObjects()
 	ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str());
 }
 
-
-
-// CLEARING (MAYBY NEW FILE)
+// Чистит все в указаном BBox
 void UIObjectList::RemoveAllInsideBox()
 {
 	Fbox box;
@@ -254,8 +253,8 @@ void UIObjectList::RemoveAllInsideBox()
 	}
 
 }
-
  
+// Выборка 
 void UIObjectList::BboxSelectedObject()
 {
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));

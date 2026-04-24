@@ -1,46 +1,10 @@
 #include "stdafx.h"
 #include "UI/UIObjectList.h"
 #include "SceneObject.h"
- 
 #include "../../XrECore/Editor/Library.h"
 #include "../XrECore/Editor/EThumbnail.h"
 
-void UIObjectList::POS_ObjectsToLTX()
-{
-	xr_string file;
-	if (EFS.GetSaveName(_import_, file))
-	{
-		CInifile* ini_file = xr_new<CInifile>(file.c_str(), false, false, false);
-
-		ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
-
-		ObjectList& list = ot->GetObjects();
-
-		for (auto item : list)
-		{
-			if (!item->Selected())
-				continue;
-
-			Fbox box;
-			item->GetBox(box);
-
-			Fvector center;
-			box.getcenter(center);
-
-			ini_file->w_fvector3(item->GetName(), "position", item->GetPosition());
- 			ini_file->w_fvector3(item->GetName(), "box_min", box.min);
-			ini_file->w_fvector3(item->GetName(), "box_max", box.max);
- 			ini_file->w_fvector3(item->GetName(), "box_center", center);
-
-			CSceneObject* object = smart_cast<CSceneObject*>(item);
-			if (object)
-				ini_file->w_fvector3(item->GetName(), "ref_pos", object->m_pReference->ObjectXFORM().c);
-		}
-
-		ini_file->save_as(file.c_str());
-	}
-}
-
+// Экспортим позиции в LTX
 void UIObjectList::CopyTempLODforObjects()
 {
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
@@ -89,7 +53,6 @@ void UIObjectList::CopyTempLODforObjects()
 	}
 } 
 
-
 void UIObjectList::SaveSelectedObjects()
 {
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
@@ -124,24 +87,10 @@ void UIObjectList::SaveSelectedObjects()
 	}
 }
 
-void ConstuctPath(xr_string& surface, xr_string& path_in, xr_string& path_out)
-{
-	string_path path, exportPath;
-	FS.update_path(path, _game_textures_, "");
-	FS.update_path(exportPath, _export_, "");
- 
-	path_in = path;
-	path_in += surface.c_str();
-
-	path_out = exportPath;
-	path_out += "textures\\";
-	path_out += surface.c_str();
-}
+// Экспортим текстуры 
 
 void UIObjectList::ExportUsedTextures()
 {
-	Msg("ExportUsedTextures");
-
 	ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(Scene->GetTool(LTools->CurrentClassID()));
 	ObjectList& list = ot->GetObjects();
 
@@ -227,6 +176,19 @@ void UIObjectList::ExportUsedTextures()
 			path_out += "textures\\";
 		};
 
+	auto ConstuctPath = [&](xr_string& surface, xr_string& path_in, xr_string& path_out)
+		{
+			string_path path, exportPath;
+			FS.update_path(path, _game_textures_, "");
+			FS.update_path(exportPath, _export_, "");
+
+			path_in = path;
+			path_in += surface.c_str();
+
+			path_out = exportPath;
+			path_out += "textures\\";
+			path_out += surface.c_str();
+		};
 
 	int ID = 0;
 	for (auto surface : surface_textures)
@@ -248,7 +210,6 @@ void UIObjectList::ExportUsedTextures()
 		ID++;
 	}
 }
-
 
 void UIObjectList::ExportUsedObjects()
 {
