@@ -8,10 +8,7 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../xrLCLight/xrface.h"
 #include "../XrLCLight/xrDeflector.h"
-
-#include "../XrLCLight/EmbreeRayTrace.h"
-//.#include "communicate.h"
-
+ 
 CDB::MODEL* RCAST_Model = 0;
 
 IC bool				FaceEqual(Face& F1, Face& F2)
@@ -40,70 +37,16 @@ void SaveUVM(LPCSTR fname, xr_vector<b_rc_face>& vm)
 	FS.w_close(W);
 }
 
-size_t GetMemoryRequiredForLoadLevel(CDB::MODEL* RaycastModel, base_lighting& Lightings, xr_vector<b_BuildTexture>& Textures)
-{
-	size_t VertexDataSize = RaycastModel->get_verts_count() * sizeof(12);
-	size_t TrisIndexSize = RaycastModel->get_tris_count() * sizeof(12);
-	size_t TrisAdditionalDataSize = RaycastModel->get_tris_count() * sizeof(32);
-
-	size_t OptixMeshDataOverhead = VertexDataSize + TrisIndexSize;
-
-	size_t TextureMemorySize = 0;
-	for (const b_BuildTexture& Texture : Textures)
-	{
-		size_t TextureSize = (Texture.dwHeight * Texture.dwWidth) * sizeof(u32);
-		TextureSize += sizeof(24);
-		TextureMemorySize += TextureSize;
-	}
-
-
-	size_t LightingInfoSize = (Lightings.rgb.size() + Lightings.sun.size() + Lightings.hemi.size()) * sizeof(R_Light);
-	size_t TotalMemorySize = VertexDataSize + TrisIndexSize + TrisAdditionalDataSize + OptixMeshDataOverhead + TextureMemorySize + LightingInfoSize;
-
-	clMsg(" [xrHardwareLight]: Vertex data size: %llu MB, Tris index size: %llu MB", VertexDataSize / 1024 / 1024, TrisIndexSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Tris Additional Data: %llu MB", TrisAdditionalDataSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: OptiX overhead: %llu MB", OptixMeshDataOverhead / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Overall texture memory: %llu MB", TextureMemorySize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: Lighting: %llu MB", LightingInfoSize / 1024 / 1024);
-	clMsg(" [xrHardwareLight]: TOTAL: %llu MB", TotalMemorySize / 1024 / 1024);
-
-	return TotalMemorySize;
-}
-
-#include "../../xrcdb/xrcdb.h"
-
-#include <execution>
-
-#include "tbb/tbb.h"
-#include <atomic>
-#include <ppl.h>
-#include <concurrent_vector.h>
-
-
-xrCriticalSection csRapidModel;
-
-
 void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
 {
 	lc_global_data()->destroy_rcmodel();
 
 	// "Building tree..
 	Status("Building search tree...");
-
-	if (gCompilerMode.Embree)
-	{
-		EmbreeMain.IntelEmbereLOAD();
-
-		if (bSaveForOtherCompilers)
-			EmbreeMain.BuildRcast();
-	}
-	else
-	{
-		CDB::CollectorPacked CL(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
-		BuildCollectionDB(CL);
-		if (bSaveForOtherCompilers)
-			SaveForOthers(CL);
-	}
+ 	CDB::CollectorPacked CL(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
+	BuildCollectionDB(CL);
+ 	if (bSaveForOtherCompilers)
+		SaveForOthers(CL);
 }
 
 void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
@@ -117,53 +60,53 @@ void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
 	adjacent_vec.reserve(6 * 2 * 3);
 
 	std::for_each(lc_global_data()->g_faces().begin(), lc_global_data()->g_faces().end(), [&](Face* F)
+	{
+		const Shader_xrLC& SH = F->Shader();
+
+		if (!SH.flags.bLIGHT_CastShadow)
+			return;
+
+		b_material& M = lc_global_data()->materials()[F->dwMaterial];
+
+		// Collect
+		adjacent_vec.clear();
+		for (int vit = 0; vit < 3; ++vit)
 		{
-			const Shader_xrLC& SH = F->Shader();
-
-			if (!SH.flags.bLIGHT_CastShadow)
-				return;
-
-			b_material& M = lc_global_data()->materials()[F->dwMaterial];
-
-			// Collect
-			adjacent_vec.clear();
-			for (int vit = 0; vit < 3; ++vit)
+			Vertex* V = F->v[vit];
+			for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
 			{
-				Vertex* V = F->v[vit];
-				for (u32 adj = 0; adj < V->m_adjacents.size(); adj++)
-				{
-					adjacent_vec.push_back(V->m_adjacents[adj]);
-				}
+				adjacent_vec.push_back(V->m_adjacents[adj]);
 			}
+		}
 
-			std::sort(adjacent_vec.begin(), adjacent_vec.end());
-			adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
+		std::sort(adjacent_vec.begin(), adjacent_vec.end());
+		adjacent_vec.erase(std::unique(adjacent_vec.begin(), adjacent_vec.end()), adjacent_vec.end());
 
-			// Unique
-			BOOL			bAlready = FALSE;
+		// Unique
+		BOOL			bAlready = FALSE;
 
-			for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		for (u32 ait = 0; ait < adjacent_vec.size(); ++ait)
+		{
+			Face* Test = adjacent_vec[ait];
+			if (Test == F)
+				continue;
+			if (!Test->flags.bProcessed)
+				continue;
+			if (FaceEqual(*F, *Test))
 			{
-				Face* Test = adjacent_vec[ait];
-				if (Test == F)
-					continue;
-				if (!Test->flags.bProcessed)
-					continue;
-				if (FaceEqual(*F, *Test))
-				{
-					bAlready = TRUE;
-					break;
-				}
+				bAlready = TRUE;
+				break;
 			}
+		}
 
-			//
-			if (!bAlready)
-			{
-				F->flags.bProcessed = true;
-				CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
-			}
+		//
+		if (!bAlready)
+		{
+			F->flags.bProcessed = true;
+			CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
+		}
 
-		});
+	});
 
 	Status("Models...");
 	std::for_each(mu_refs().begin(), mu_refs().end(), [&](xrMU_Reference* ref) // std::execution::par, 
@@ -191,38 +134,23 @@ void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
 	FS.w_close(W);
 }
 
-
 void CBuild::SaveForOthers(CDB::CollectorPacked& CL)
 {
-	 
-
 	// save source SMF
 	string_path				filename;
 
 	bool keep_temp_files = !!strstr(Core.Params, "-keep_temp_files");
-
-	if (g_params().m_quality != ebqDraft && keep_temp_files)
+ 	if (g_params().m_quality != ebqDraft && keep_temp_files)
 	{
 		SaveAsSMF(strconcat(sizeof(filename), filename, pBuild->path, "build_cform_source.smf"), CL);
 	}
 
 	// Saving for AI/DO usage
-
 	Status("Saving...");
 	string_path				fn;
 
 	xr_vector<b_rc_face>	rc_faces;
 	rc_faces.resize(CL.getTS());
-
-	size_t rqface = (rc_faces.size() * sizeof(b_rc_face));
-	size_t tri = (CL.getTS() * CDB::TRI::Size());
-	size_t VS = (CL.getVS() * sizeof(Fvector));
-
-	size_t size_Rqface = rqface / 1024 / 1024;
-	size_t size_TRI = tri / 1024 / 1024;
-	size_t size_VS = VS / 1024 / 1024;
-
-	Status("Size: VS: %llu, TRI: %llu, RC_Faces: %llu", size_VS, size_TRI, size_Rqface);
 
 	// Prepare faces
 	for (u32 k = 0; k < CL.getTS(); k++)
@@ -238,76 +166,31 @@ void CBuild::SaveForOthers(CDB::CollectorPacked& CL)
 		cf.t[2].set(cuv[2]);
 	}
 
-	if (size_Rqface + size_TRI + size_VS > 4096)
-	{
-		IWriter* MFS_TRI = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_tri"));
-		IWriter* MFS_VS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_vs"));
-		IWriter* MFS_RQ = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform_rq"));
+	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
+	MFS->open_chunk(0);
 
-		//TRI
-		MFS_TRI->open_chunk(0);
+	// Header
+	hdrCFORM hdr;
+	hdr.version = CFORM_CURRENT_VERSION;
+	hdr.vertcount = (u32)CL.getVS();
+	hdr.facecount = (u32)CL.getTS();
+	hdr.aabb = scene_bb;
+	MFS->w(&hdr, sizeof(hdr));
 
-		// Header
-		hdrCFORM hdr;
-		hdr.version = CFORM_CURRENT_VERSION;
-		hdr.vertcount = (u32)CL.getVS();
-		hdr.facecount = (u32)CL.getTS();
-		hdr.aabb = scene_bb;
-		MFS_TRI->w(&hdr, sizeof(hdr));
+	Status("Size: TRI: %llu, VS: %llu, RQ_Face: %llu", CL.getTS(), CL.getVS(), rc_faces.size());
 
-		MFS_TRI->close_chunk();
+	// Data
+	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
 
-		MFS_TRI->open_chunk(1);
-		for (size_t i = 0; i < CL.getTS(); i++)
-			MFS_TRI->w(&CL.getT()[i], CDB::TRI::Size());
-		MFS_TRI->close_chunk();
+	for (size_t i = 0; i < CL.getTS(); i++)
+		MFS->w(&CL.getT()[i], CDB::TRI::Size());
 
-		FS.w_close(MFS_TRI);
+	MFS->close_chunk();
 
-		// VS
-		MFS_VS->open_chunk(0);
-		MFS_VS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
-		MFS_VS->close_chunk();
+	MFS->open_chunk(1);
 
-		FS.w_close(MFS_VS);
+	MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
+	MFS->close_chunk();
 
-
-		// RQ
-		MFS_RQ->open_chunk(0);
-
-		MFS_RQ->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-		MFS_RQ->close_chunk();
-
-		FS.w_close(MFS_RQ);
-	}
-	else
-	{
-		IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
-		MFS->open_chunk(0);
-
-		// Header
-		hdrCFORM hdr;
-		hdr.version = CFORM_CURRENT_VERSION;
-		hdr.vertcount = (u32)CL.getVS();
-		hdr.facecount = (u32)CL.getTS();
-		hdr.aabb = scene_bb;
-		MFS->w(&hdr, sizeof(hdr));
-
-		Status("Size: TRI: %llu, VS: %llu, RQ_Face: %llu", CL.getTS(), CL.getVS(), rc_faces.size());
-
-		// Data
-		MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
-
-		for (size_t i = 0; i < CL.getTS(); i++)
-			MFS->w(&CL.getT()[i], CDB::TRI::Size());
-
-		MFS->close_chunk();
-
-		MFS->open_chunk(1);
-
-		MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-		MFS->close_chunk();
-
-		FS.w_close(MFS);
-	}
+	FS.w_close(MFS);
 }

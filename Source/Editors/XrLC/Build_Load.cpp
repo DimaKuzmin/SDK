@@ -98,22 +98,6 @@ void CopyTextureToBuildPC(LPCSTR N)
 	}
 }
 
-void CBuild::CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w)
-{
-	string128 tmp;
-	sprintf(tmp, "Cant Load THM %s, BT Parrams[%d, %d, hasAlpha: %d, pSurface: %p]", N, BT.dwWidth, BT.dwHeight, BT.bHasAlpha, *BT.pSurface);
-
-	clMsg(tmp);
-	w->w_string(tmp);	 
-
-	BT.dwWidth = 1024;
-	BT.dwHeight = 1024;
-	BT.bHasAlpha = FALSE;
-	BT.THM.SetHasSurface(FALSE);
-	BT.pSurface.Clear();
-}
-
-
 char* ETFormatNAMES[] =
 {
 	"tfDXT1",
@@ -147,11 +131,7 @@ char* GetFormat(u32 fmt)
 void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 {
 	IReader&	fs	= const_cast<IReader&>(_in_FS);
-	// HANDLE		hLargeHeap	= HeapCreate(0,64*1024*1024,0);
-	// clMsg		("* <LargeHeap> handle: %X",hLargeHeap);
-
-	u32				i			= 0;
-
+ 
 	float			p_total		= 0;
 	float			p_cost		= 1.f/3.f;
 	
@@ -162,16 +142,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	FS.update_path			(sh_name,"$game_data$","shaders_xrlc.xr");
 	shaders().Load			(sh_name);
 
-	size_t used, free, res;
-	vminfo(&free, &res, &used);
-
-	size_t prev = used;
-
 	Status("Start Loading Project");
-
-	clMsg("mem start : %u mb", prev / 1024 / 1024);
-
-
 	//*******
 	Status					("Vertices...");
 	{
@@ -179,7 +150,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		u32 v_count			=	F->length()/sizeof(b_vertex);
 		lc_global_data()->g_vertices().reserve		(3*v_count/2);
 		scene_bb.invalidate		();
-		for (i=0; i<v_count; i++)
+		for (int i=0; i<v_count; i++)
 		{
 			Vertex*	pV			= lc_global_data()->create_vertex();
 			F->r_fvector3		(pV->P);
@@ -191,10 +162,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		F->close			();
 	}
 
-	vminfo(&free, &res, &used);
-	clMsg("Memory Vertex Loading: %u mb, totalused: %u mb", (used-prev) / 1024 / 1024, used / 1024 / 1024);
-	prev = used;
-
 	//*******
 	Status					("Faces...");
 	{
@@ -203,8 +170,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		u32 f_count			=	F->length()/sizeof(b_face);
 		lc_global_data()->g_faces().reserve			(f_count);
 	
-		
-		for (i=0; i<f_count; i++)
+		for (int i=0; i < f_count; i++)
 		{
 			try 
 			{
@@ -248,11 +214,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}
 		Progress			(p_total+=p_cost);
 
-		vminfo(&free, &res, &used);
-		clMsg("Memory Faces Loading: %u mb, total used: %u mb", (used-prev) / 1024 / 1024, used / 1024 / 1024);
-		prev = used;
-
-
 		clMsg				("* %16s: %d","faces",lc_global_data()->g_faces().size());
 		F->close			();
 
@@ -283,12 +244,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}
 	}
 
-
-	vminfo(&free, &res, &used);
-	clMsg("Memory pre Models Loading: %u mb, total used: %u mb", (used - prev) / 1024 / 1024, used / 1024 / 1024);
-	prev = used;
-
-
 	//*******
 	Status	("Models and References");
 	F = fs.open_chunk		(EB_MU_models);
@@ -311,12 +266,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		}		
 		F->close				();
 	}
-
- 
-	vminfo(&free, &res, &used);
-	clMsg("Memory Models Loading: %u mb", (used - prev) / 1024 / 1024);
-	prev = used;
-
 
 	//*******
 	Status	("Other transfer...");
@@ -358,7 +307,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			F = fs.open_chunk	(EB_Light_static);
 			b_light_static		temp;
 			u32 cnt				= F->length()/sizeof(temp);
-			for	(i=0; i<cnt; i++)
+			for	(int i=0; i<cnt; i++)
 			{
 				R_Light		RL;
 				F->r		(&temp, sizeof(temp));
@@ -428,22 +377,12 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		transfer("d-lights",	L_dynamic,			fs,		EB_Light_dynamic);
 	}
 
-	vminfo(&free, &res, &used);
-	clMsg("Memory Lights Loading: %u mb", (used - prev) / 1024 / 1024);
-	prev = used;
-
-
  	string_path path;
 	string128 name = {0};
 	sprintf(name, "%s", "xrlc_error_textures.dump");
 	FS.update_path(path, "$logs$", name);
  
-	IWriter* w = FS.w_open(path);
-
-	vminfo(&free, &res, &used);
-	clMsg("Memory (PRE) Textures Loading: %u mb", (used - prev) / 1024 / 1024);
-	prev = used;
-	
+	IWriter* wTextures = FS.w_open(path);
 	// process textures
 	Status			("Processing textures...");
 	{
@@ -486,8 +425,14 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				 
 				if (!THM)
 				{
-					CopyTexture(N, BT, w);
-				}
+					clMsg("! Cant Load Texture: %s", N);
+
+					BT.dwWidth = 1024;
+					BT.dwHeight = 1024;
+					BT.bHasAlpha = FALSE;
+					BT.THM.SetHasSurface(FALSE);
+					BT.pSurface.Clear();
+ 				}
 				else
 				{
 					R_ASSERT2(THM, th_name);
@@ -495,8 +440,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 					// version
 					u32 version = 0;
 					R_ASSERT2(THM->r_chunk(THM_CHUNK_VERSION, &version), th_name);
-					// if( version!=THM_CURRENT_VERSION )	FATAL	("Unsupported version of THM file.");
-
+ 
 					// analyze thumbnail information
 					R_ASSERT2(THM->find_chunk(THM_CHUNK_TEXTUREPARAM), th_name);
 					THM->r(&BT.THM.fmt, sizeof(STextureParams::ETFormat));
@@ -541,7 +485,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 									sprintf(msg, "! THM doesn't correspond to the texture: %dx%d -> %dx%d, texture: %s",
 										BT.dwWidth, BT.dwHeight, BT.pSurface.GetSize().x, BT.pSurface.GetSize().y, N);
 									clMsg(msg);
-									w->w_string(msg);
+									wTextures->w_string(msg);
 
 									BT.dwWidth = BT.THM.width = BT.pSurface.GetSize().x;
 									BT.dwHeight = BT.THM.height = BT.pSurface.GetSize().y;
@@ -553,7 +497,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 								
 								string128 tmp;
 								sprintf(tmp, "Texture Ignoring: %s, fmt: %s", N, GetFormat(BT.THM.fmt));
-								w->w_string(tmp);
+								wTextures->w_string(tmp);
 								
 								BT.dwWidth = 1024;
 								BT.dwHeight = 1024;
@@ -566,7 +510,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 						{
 							string128 tmp;
 							sprintf(tmp, "DXT1 (NO HAS ALPHA) Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
-							w->w_string(tmp);
+							wTextures->w_string(tmp);
  							// clMsg("! ignoring texture: %s | Alpha: %u | impl_light: %u",
 							// 	N, BT.bHasAlpha, BT.THM.flags.test(STextureParams::flImplicitLighted));
 							
@@ -588,23 +532,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 			textures().push_back	(BT);
 		}
 	}
-
-	vminfo(&free, &res, &used);
-	clMsg("Memory (POST) Textures Loading: %u mb, total: %u mb", (used - prev) / 1024 / 1024, used / 1024 / 1024);
-	prev = used;
-
-	/*-
-	for (int i = 0; i < materials().size(); i++)
-	{
-		auto name = textures()[materials()[i].surfidx].name; 
-		auto shader = shaders().Get(materials()[i].shader);
-		Msg("MateriaL[%d]: texture: %s, shader: %s, shflags C[%d]CS[%d]V[%d]R[%d] ", i, name, shader->Name, 
-			shader->m_Flags.test(shader->flCollision), 
-			shader->m_Flags.test(shader->flLIGHT_CastShadow), 
-			shader->m_Flags.test(shader->flLIGHT_Vertex),
-			shader->m_Flags.test(shader->flRendering));
-	}
-	*/
+	FS.w_close(wTextures);
 
 	// post-process materials
 	Status	("Post-process materials...");
@@ -615,24 +543,6 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 	// Parameter block
 	CopyMemory(&g_params(), &Params, sizeof(b_params));
 
-
-	// sizeof(b_rc_face)
-
-	clMsg("sm_angle: %f", g_params().m_sm_angle);
-	clMsg("jitter: %u", g_params().m_lm_jitter_samples);
-	clMsg("pixel_per_meter: % f", g_params().m_lm_pixels_per_meter);
-	clMsg("m_lm_rms: %u", g_params().m_lm_rms);
-	clMsg("m_lm_rms_zero: %u", g_params().m_lm_rms_zero);
-	clMsg("m_quality: %u", g_params().m_quality);
-	clMsg("weld distance: %f", g_params().m_weld_distance);
-
-
-	FS.w_close(w);
-
-	log_vminfo();
-
-	// 
-	clMsg	("* sizes: V(%d),F(%d)",sizeof(Vertex),sizeof(Face));
 }
 
 

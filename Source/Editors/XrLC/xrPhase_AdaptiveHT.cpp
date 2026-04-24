@@ -1,21 +1,16 @@
 #include "stdafx.h"
 #include "build.h"
+#include "../../xrcdb/xrcdb.h"
 
+#include "../XrECore/Editor/face_smoth_flags.h"
+#include "../xrLCLight/xrface.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/light_point.h"
 #include "../xrLCLight/xrdeflector.h"
-#include "../xrLCLight/xrface.h"
-
-
-
-#include "../../xrcdb/xrcdb.h"
-#include "../XrECore/Editor/face_smoth_flags.h"
-#include "..\LauncherSDL\xrThread.h"
+#include "../XrLCLight/cuda/xrDeflectorLight_Packed.h"
+#include <ppl.h>
 
 const	float	aht_max_edge	= c_SS_maxsize/2.5f;	// 2.0f;			// 2 m
-//const	float	aht_min_edge	= .2f;					// 20 cm
-//const	float	aht_min_err		= 16.f/255.f;			// ~10% error
-
 bool	is_CCW	(int _1, int _2)
 {
 	if (0==_1 && 1==_2)	return true;
@@ -45,18 +40,10 @@ int		callback_edge_longest	( const Face* F)
 }
 
 xrCriticalSection csAdaptive;
- 
-#include "embree4/rtcore.h"
-#include "../XrLCLight/EmbreeRayTrace.h"
- 
-
-#include "ppl.h"
-
-void CBuild::xrPhase_AdaptiveHT	()
+void CBuild::xrPhase_AdaptiveHT_tesselate	()
 {
 	Status			("Tesselating...");
-	
- 	for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
+  	for (u32 fit=0; fit<lc_global_data()->g_faces().size(); fit++)	
 	{		// clear split flag from all faces + calculate normals
 		lc_global_data()->g_faces()[fit]->flags.bSplitted		= false;
 		lc_global_data()->g_faces()[fit]->flags.bLocked			= true;
@@ -65,28 +52,21 @@ void CBuild::xrPhase_AdaptiveHT	()
 
 	if (gCompilerMode.LC_Tess)
 		u_Tesselate		(callback_edge_longest,0,0);		// tesselate
- 	 
-	// Tesselate + calculate
-	Status			("Precalculating...");
-	{
-		mem_Compact					();
- 		 
-		// Build model
- 		BuildRapid(FALSE);
-   
-		// Prepare LIGHT FOR LIGHTING
- 		Status("Precalculating : base hemisphere ...");
-		mem_Compact();
-		Light_prepare();
+}
 
-		Status("Start AdaptiveHT");	
-  
+
+void CBuild::xrPhase_AdaptiveHT_calculate()
+{
+	// Tesselate + calculate
+
+	if (!gCompilerMode.CUDA)
+	{
+		// Prepare LIGHT FOR LIGHTING
+		Status("Precalculating : base hemisphere ...");
 		thread_local CDB::COLLIDER	DB;
 		DB.ray_options(0);
-
 		std::atomic<int> Processed;
- 		 
-		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t ID)
+ 		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t ID)
 		{
 			base_color_c		vC;
 			vecVertex& verts = lc_global_data()->g_vertices();
@@ -99,18 +79,45 @@ void CBuild::xrPhase_AdaptiveHT	()
 			V->C._set(vC);
 
 			Processed.fetch_add(1);
-
- 			ProgressMT (float(Processed.load()) / float(lc_global_data()->g_vertices().size()) );
+ 			ProgressMT(float(Processed.load()) / float(lc_global_data()->g_vertices().size()));
 		});
- 
-	}
- 
-	//////////////////////////////////////////////////////////////////////////
-	Status				("Gathering lighting information...");
-	u_SmoothVertColors	(5);
 
-	EmbreeMain.IntelEmbereUNLOAD();
+		//////////////////////////////////////////////////////////////////////////
+		Status("Gathering lighting information...");
+		u_SmoothVertColors(5);
+	}
+	else
+	{
+		clMsg("Start Processing AdaptiveHT : MEMORY: %u mb", GetHeapMemory() / 1024 / 1024);
+
+		GPUTaskinSystem.RestartALL();
+		GPUTaskinSystem.ColorsMapType = eCommon;
+		GPUTaskinSystem.current_flags = LP_dont_rgb + LP_dont_sun;
+
+		for (size_t VertexID = 0; VertexID < lc_global_data()->g_vertices().size(); VertexID++)
+		{
+			// 1: VertexID, 2: SampleID
+			auto& V = lc_global_data()->g_vertices()[VertexID];
+			V->normalFromAdj();
+			GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(VertexID, 0), nullptr, V->P, V->N, 0);
+
+			AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
+		}
+
+		GPUTaskinSystem.LightPointPacked_run_tasks();
+
+		for (auto& TASK : GPUTaskinSystem.task_colors)
+		{
+			u32 U = GPUTaskinSystem.GetU(TASK.first);
+			auto& C = TASK.second;
+			C.mul(0.5f);
+			lc_global_data()->g_vertices()[U]->C._set(C);
+		}
+
+		GPUTaskinSystem.RestartALL();
+	}
 }
+
 
 void CollectProblematicFaces(const Face &F, int max_id, xr_vector<Face*> & reult, Vertex** V1, Vertex** V2 )
 {
@@ -285,8 +292,7 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 	
 		if (0==(counter_create%10000))	
 		{
-			Msg("Created Vertexs : %u", counter_create);
-			for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
+ 			for (u32 I = 0; I < lc_global_data()->g_vertices().size(); ++I)
 			{
 				R_ASSERT(lc_global_data()->g_vertices()[I]);
 				if (!lc_global_data()->g_vertices()[I])
@@ -295,12 +301,13 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 				if (lc_global_data()->g_vertices()[I]->m_adjacents.empty())
 					lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[I]);
 			}
-
-			Status				("Working: %d verts created, %d(now) / %d(was) ...",counter_create, lc_global_data()->g_vertices().size(), cnt_verts);
 		}
 
 		tessalate_faces( adjacent_vec, V1, V2, cb_F, cb_V  );
 	}
+
+	Msg("[Tessalated] Totaly added vertex : %u", counter_create);
+
 
 	// Cleanup
 	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)	
@@ -315,8 +322,6 @@ void CBuild::u_Tesselate(tesscb_estimator* cb_E, tesscb_face* cb_F, tesscb_verte
 	lc_global_data()->g_vertices().erase	(std::remove(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),(Vertex*)0),lc_global_data()->g_vertices().end());
 	g_bUnregister		= true;
 }
-
-#include "PPL.h"
 
 void CBuild::u_SmoothVertColors(int count)
 {

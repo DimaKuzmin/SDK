@@ -3,7 +3,7 @@
 #include "global_calculation_data.h"
 
 #include "../Public/shader_xrlc.h"
-#include "EmbreeRayTrace.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
  
 global_claculation_data	gl_data;
 

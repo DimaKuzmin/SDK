@@ -1,0 +1,50 @@
+#pragma once
+
+#include "../R_light.h"
+#include "../base_lighting.h"
+#include "../xrFace.h"
+
+//#include "Vector3HW.h"          // se7kills: HW Data Structure
+#include <optix.h>
+#include <optix_stubs.h>
+#include <cuda_runtime.h>
+
+struct OptixMeshBuffers
+{
+    // Blas Model
+    CUdeviceptr blasBuffer = 0;
+    OptixTraversableHandle blasHandle = 0;
+
+    // Tlas Model
+    CUdeviceptr tlasBuffer = 0;
+    OptixTraversableHandle tlasHandle = 0;
+};
+
+struct RayRecvestIndex;
+
+namespace XRay::RayTrace::CUDA
+{
+    // Отдельный инициализвтор
+    void InitializeLights();
+
+    // Загрузить Faces
+    void InitializeFaces(xr_vector<Face*>& Faces);
+
+    // Загрузить Альфу Текстур
+    void InitializeTexturesAlpha();
+
+    // Builder Scene
+    bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
+
+    // RayTracing
+    void InitializeRayTracing();
+    void CleanupRayTracing();
+
+    // Ray Trace Call
+    void RayTraceInitialize(u8 CurrentFlags);
+
+    void RayTraceAddRay(RayRecvestIndex& ray, size_t index);
+    void RayTraceRun();
+
+    xr_vector<base_color_c>& RayTraceResult();
+}

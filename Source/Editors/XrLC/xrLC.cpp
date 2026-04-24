@@ -100,8 +100,6 @@ void MainCompilerLC()
 			g_params().m_weld_distance = gCompilerMode.WeldDistance;
 		}
 		
-		setLMSIZE(gCompilerMode.LC_sizeLmaps);
-
 		FS.r_close(F);
 
 		// Call for builder

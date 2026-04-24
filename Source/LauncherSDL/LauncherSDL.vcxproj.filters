@@ -62,6 +62,9 @@
     <ClCompile Include="xrThread.cpp">
       <Filter>log</Filter>
     </ClCompile>
+    <ClCompile Include="ImGUI_Style.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="imgui\imconfig.h">
@@ -102,6 +105,9 @@
     </ClInclude>
     <ClInclude Include="xrThread.h">
       <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="ImGUI_Style.h">
+      <Filter>Исходные файлы</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

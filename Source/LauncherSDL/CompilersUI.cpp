@@ -4,13 +4,12 @@
 #include "imgui/imgui.h"
 #include "app_info.h"
 #include <Psapi.h>
+#include "ImGUI_Style.h"
 
 //Ex: 25, 200, 50, 255 -> 0.0980392, 0.784314, 0.196078, 1
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
 
-bool ShowMainUI = true;
 extern CompilersMode gCompilerMode;
-
 extern size_t GetHeapMemory(bool now);
 
 void InitializeUIData()
@@ -35,6 +34,7 @@ void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
 
+bool ShowMainUI = true;
 void RenderMainUI()
 {
  	Uint32 flags = SDL_GetWindowFlags(g_AppInfo.Window);
@@ -189,15 +189,14 @@ void DrawLCConfig()
 		ImGui::Checkbox("No RGB", &gCompilerMode.LC_NoRGB);
 		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
 		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
+		
 		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
 		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
 		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
-
 		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
-		// ImGui::Checkbox("Skip Subdivide", &gCompilerMode.LC_NoSubdivide);
- 
-
+		ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
 		ImGui::Separator();
+
 		// Lmaps Settings
 		ImGui::SetNextItemWidth(100);
 		if (ImGui::Combo("DDS", &item_current_selected, items, 4))
@@ -293,27 +292,51 @@ void DrawAIConfig()
 	}
 }
 
- 
-
 void DrawCompilerConfig()
 {
-  	ImGui::Checkbox("AVX mode", &gCompilerMode.use_avx);
-	ImGui::Checkbox("SSE4.2 mode", &gCompilerMode.use_sse42);
-
 	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-	ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
+
+	ImGui::PushID("LightPreset");
+
+	{
+		static int RadioID = -1;
+		if (RadioID < 0)
+		{
+			RadioID = 0;
+			RadioID += 1 * (int)gCompilerMode.Embree;
+			RadioID += 2 * (int)gCompilerMode.CUDA;
+		}
+ 		ImGui::RadioButton("Use OPCODE", &RadioID, 0);
+		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+ 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
+ 
+		switch (RadioID)
+		{
+			case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = false; break;
+			case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
+			case 2: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
+			default: break;
+		}
+	}
+	ImGui::PopID();
+	ImGui::Separator();
+
+	ImGui::BeginDisabled(!gCompilerMode.Embree);
+	ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
 	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::Checkbox("Embree AVX2 mode", &gCompilerMode.use_avx2);
 
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
-	// ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
-
-	// ImGui::Checkbox("Skip RayTrace(test)", &gCompilerMode.SkipRaytracing);
-	// ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
- 	ImGui::Checkbox("ShowMain", &ShowMainUI);
 }
+
+
+// Update State Console
 
 void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
 {
@@ -409,9 +432,161 @@ const ImVec4 getLogColor(const char& c)
 	default: return ImVec4(RGBAColor(230, 230, 230, 255));
 	}
 }
+ 
+// call this with your NVML buffer
+void DrawPurpleGpuGraph(const float* values, int count, float maxValue = 100.0f)
+{
+ 	ImVec2 size = ImVec2(520, 110);
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImDrawList* draw = ImGui::GetWindowDrawList();
 
+	// background (dark)
+	draw->AddRectFilled(
+		p,
+		ImVec2(p.x + size.x, p.y + size.y),
+		IM_COL32(18, 12, 30, 255)
+	);
 
-extern void DumpData();
+	// grid
+	for (int i = 0; i <= 4; i++)
+	{
+		float y = p.y + (size.y / 4.0f) * i;
+		draw->AddLine(
+			ImVec2(p.x, y),
+			ImVec2(p.x + size.x, y),
+			IM_COL32(80, 40, 120, 80)
+		);
+	}
+
+	if (count > 1)
+	{
+		float step = size.x / (float)(count - 1);
+
+		// ---- FILL (purple glow under graph)
+		for (int i = 1; i < count; i++)
+		{
+			float v0 = values[i - 1] / maxValue;
+			float v1 = values[i] / maxValue;
+
+			ImVec2 a = ImVec2(p.x + step * (i - 1), p.y + size.y);
+			ImVec2 b = ImVec2(p.x + step * (i - 1), p.y + size.y - v0 * size.y);
+			ImVec2 c = ImVec2(p.x + step * i, p.y + size.y - v1 * size.y);
+			ImVec2 d = ImVec2(p.x + step * i, p.y + size.y);
+
+			draw->AddQuadFilled(
+				a, b, c, d,
+				IM_COL32(140, 60, 220, 40)
+			);
+		}
+
+		// ---- GLOW LINE (outer)
+		for (int i = 1; i < count; i++)
+		{
+			float v0 = values[i - 1] / maxValue;
+			float v1 = values[i] / maxValue;
+
+			ImVec2 a = ImVec2(
+				p.x + step * (i - 1),
+				p.y + size.y - v0 * size.y
+			);
+
+			ImVec2 b = ImVec2(
+				p.x + step * i,
+				p.y + size.y - v1 * size.y
+			);
+
+			draw->AddLine(
+				a, b,
+				IM_COL32(180, 80, 255, 60),
+				4.0f
+			);
+		}
+
+		// ---- CORE LINE (sharp purple)
+		for (int i = 1; i < count; i++)
+		{
+			float v0 = values[i - 1] / maxValue;
+			float v1 = values[i] / maxValue;
+
+			ImVec2 a = ImVec2(
+				p.x + step * (i - 1),
+				p.y + size.y - v0 * size.y
+			);
+
+			ImVec2 b = ImVec2(
+				p.x + step * i,
+				p.y + size.y - v1 * size.y
+			);
+
+			draw->AddLine(
+				a, b,
+				IM_COL32(200, 120, 255, 255),
+				2.0f
+			);
+		}
+	}
+
+	ImGui::Dummy(size);
+}
+
+void DrawGpuGraph(const float* values, int count, float maxValue = 100.0f)
+{
+	if (count == 0)return;
+
+// 	ImGui::Begin("GPU Monitor");
+ 
+	ImVec2 size = ImVec2(500, 100);
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImDrawList* draw = ImGui::GetWindowDrawList();
+
+	// background
+	draw->AddRectFilled(p, ImVec2(p.x + size.x, p.y + size.y), IM_COL32(20, 20, 20, 255));
+	
+	// grid
+	for (int i = 0; i < 5; i++)
+	{
+		float y = p.y + (size.y / 4) * i;
+		draw->AddLine(ImVec2(p.x, y), ImVec2(p.x + size.x, y), IM_COL32(50, 50, 50, 120));
+ 	}
+
+	// graph line
+	float step = size.x / (float)(count - 1);
+
+	for (int i = 1; i < count; i++)
+	{
+		float v0 = values[i - 1] / maxValue;
+		float v1 = values[i] / maxValue;
+
+		ImVec2 a = ImVec2(
+			p.x + step * (i - 1),
+			p.y + size.y - (v0 * size.y)
+		);
+
+		ImVec2 b = ImVec2(
+			p.x + step * i,
+			p.y + size.y - (v1 * size.y)
+		);
+
+		draw->AddLine(a, b, IM_COL32(0, 200, 255, 255), 2.0f);
+	}
+
+	// fill (like MSI Afterburner)
+	for (int i = 1; i < count; i++)
+	{
+		float v0 = values[i - 1] / maxValue;
+		float v1 = values[i] / maxValue;
+
+		ImVec2 a = ImVec2(p.x + step * (i - 1), p.y + size.y);
+		ImVec2 b = ImVec2(p.x + step * (i - 1), p.y + size.y - (v0 * size.y));
+		ImVec2 c = ImVec2(p.x + step * i, p.y + size.y - (v1 * size.y));
+		ImVec2 d = ImVec2(p.x + step * i, p.y + size.y);
+
+		draw->AddQuadFilled(a, b, c, d, IM_COL32(0, 120, 255, 40));
+	}
+
+	ImGui::Dummy(size);
+//	ImGui::End();
+}
 
 void RenderCompilerUI(int X, int Y)
 {
@@ -440,24 +615,21 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::Separator();
 
 			ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-			if (X != 1400 || Y != 925)
-				SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
+			if (X != 1280 || Y != 768)
+			 	SDL_SetWindowSize(g_AppInfo.Window, 1280, 768);
 
-			int MAX_TRABS = 10;
-			// Table
-			if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+ 			// Table
+			if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+				
 				ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 				ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
-				ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 350.f);
 				ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-				ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-				ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
-
-				if (ResizeMaximal)
-					ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
+				ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+				ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+ 				ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 60.f);
+				ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+  				ImGui::TableSetupColumn("Information", ImGuiTableColumnFlags_WidthFixed, 350.0f);
 
 				ImGui::TableHeadersRow();
 
@@ -488,12 +660,11 @@ void RenderCompilerUI(int X, int Y)
 					ImGui::TableSetColumnIndex(3);
 					ImGui::Text("%0.f", row.Persent * 100);
 
-					ImGui::TableSetColumnIndex(6);
-					ImGui::Text("%d", row.warnings);
+					// ImGui::TableSetColumnIndex(6);
+					// ImGui::Text("%d", row.warnings);
+					
 					// Status text
-					ImGui::TableSetColumnIndex(7);
-
-
+					ImGui::TableSetColumnIndex(6);
 					ImGui::TextColored(rowStatusColor, rowStatus.c_str());
 
 					for (auto& phase : row.phases)
@@ -554,19 +725,16 @@ void RenderCompilerUI(int X, int Y)
 						if (phase.status != Complited)
 							ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
 
-						ImGui::TableSetColumnIndex(7);
+						ImGui::TableSetColumnIndex(6);
 
 						ImGui::TextColored(statusColor, status.c_str());
 
-						ImGui::TableSetColumnIndex(8);
+						ImGui::TableSetColumnIndex(7);
 						ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
 
-						if (ResizeMaximal)
-						{
-							ImGui::TableSetColumnIndex(9);
-							ImGui::Text("%s", phase.AdditionalData.c_str());
-						}
-					}
+ 						ImGui::TableSetColumnIndex(8);
+						ImGui::Text("%s", phase.AdditionalData.c_str());
+ 					}
 				}
 
 				if (autoScroll)
@@ -596,31 +764,73 @@ void RenderCompilerUI(int X, int Y)
 			if (ImGui::Button(buttonText))
 				hideLogSection = !hideLogSection;
 
-			if (!hideLogSection && ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
+			if (!hideLogSection)
 			{
-				ImGuiListClipper clipper;
-				clipper.Begin(GetLogVector().size());
-
-				while (clipper.Step())
+ 				if (ImGui::BeginChild("LogSection", ImVec2(windowSize.x, windowSize.y - topHeight - (buttonSize.y * 2) - 30), true))
 				{
-					for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+					extern void CudaUsage(unsigned int& UsageCuda, unsigned int& UsageMemory);
+					extern  void CudaStatisticThread();
+					extern	xr_vector<float> get_cuda_usage();
+					extern  xr_vector<float> get_mem_usage();
+
+ 					static bool isGpuStarted = false;
+ 					if (!isGpuStarted)
 					{
-						auto& line = GetLogVector()[i];
-						ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
+						isGpuStarted = true;
+						CudaStatisticThread();
 					}
+					
+					int Size = windowSize.x / 4;
+					if (ImGui::BeginChild("LogWindow", ImVec2(Size*3, 0)))
+					{
+						ImGuiListClipper clipper;
+						clipper.Begin(GetLogVector().size());
+						while (clipper.Step())
+						{
+							for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; ++i)
+							{
+								auto& line = GetLogVector()[i];
+								ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
+							}
+						}
+						ImGui::EndChild();
+					}
+
+					ImGui::SameLine();
+
+					if (ImGui::BeginChild("GpuUsage", ImVec2(Size, 0)))
+					{
+ 						unsigned int UsageCuda = 0, UsageMemory = 0;
+						CudaUsage(UsageCuda, UsageMemory);
+
+						ImGui::Text("Gpu Usage: %u", UsageCuda);
+						auto& data = get_cuda_usage();
+   						DrawGpuGraph(data.data(), data.size(), 100.0f);
+
+						ImGui::Separator();
+
+
+						ImGui::Text("Gpu Memory Usage: %u", UsageMemory);
+						auto& data_mem = get_mem_usage();
+						DrawGpuGraph(data_mem.data(), data_mem.size(), 100.0f);
+  						ImGui::EndChild();
+					}
+
+
+					// if (autoScroll)
+					// 	ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
+					ImGui::EndChild();
 				}
-
-
+				
 				if (autoScroll)
 					ImGui::SetScrollY(ImGui::GetScrollMaxY());
-
-				ImGui::EndChild();
 			}
 
 			ImGui::Separator();
 		}
 		 
-		
+	
 		// draw bottom buttons
 		if (true)
 		{
@@ -628,10 +838,18 @@ void RenderCompilerUI(int X, int Y)
 				autoScroll = !autoScroll;
  			
 			ImGui::SameLine();
- 			ImGui::TextColored(ImVec4{ 0, 0.9, 0, 1 }, "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
+ 			ImGui::TextColored(getLogColor('*'), "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
  			ImGui::SameLine();
- 			ImGui::Checkbox("ShowMain", &ShowMainUI);
-		}
+			if (ImGui::Button("SwitchTheme"))
+			{
+				if (CIMStyle.isRedTheme)
+					CIMStyle.BlackTheme();
+				else
+					CIMStyle.RedTheme();
+			}
+ 		}
+
+	
 		
 		ImGui::End();
 	}	

@@ -3,7 +3,6 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-//#include "build.h"
 #include "Lightmap.h"
 #include "xrDeflector.h"
 #include "xrDXTC.h"
@@ -21,7 +20,7 @@ CLightmap::CLightmap()
 {
 	strcpy ( lm_texture.name, "");
 	if (lm.surface.empty())
-		lm.create(getLMSIZE(), getLMSIZE());
+		lm.create(gCompilerMode.LC_sizeLmaps, gCompilerMode.LC_sizeLmaps);
 }
 
 CLightmap::~CLightmap()
@@ -32,7 +31,7 @@ CLightmap::~CLightmap()
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
   	xr_vector<UVtri>	tris;
-	D->RemapUV(tris, b_u + BORDER, b_v + BORDER, s_u - 2 * BORDER, s_v - 2 * BORDER, getLMSIZE(), getLMSIZE(), bRotated);
+	D->RemapUV(tris, b_u + BORDER, b_v + BORDER, s_u - 2 * BORDER, s_v - 2 * BORDER, lm.width, lm.height, bRotated);
  
 	// Capture faces and setup their coords
 	for (auto& T : tris)
@@ -48,13 +47,13 @@ void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOO
 	{
 		u32 real_H = (L.height + 2 * BORDER);
 		u32 real_W = (L.width + 2 * BORDER);
-  		blit(lm, getLMSIZE(), getLMSIZE(), L, real_W, real_H, b_u, b_v, 254 - BORDER);
+  		blit(lm, lm.width, lm.height, L, real_W, real_H, b_u, b_v, 254 - BORDER);
 	}
 	else
 	{
 		u32 real_H = (L.height + 2 * BORDER);
 		u32 real_W = (L.width + 2 * BORDER);
-		blit_r(lm, getLMSIZE(), getLMSIZE(), L, real_W, real_H, b_u, b_v, 254 - BORDER);
+		blit_r(lm, lm.width, lm.height, L, real_W, real_H, b_u, b_v, 254 - BORDER);
 	}
  
 }
@@ -111,20 +110,18 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
         }
     }
 }
-
-#include <thread>
-
+ 
 void CLightmap::Save( LPCSTR path )
 {
 	static int		lmapNameID = 0; ++lmapNameID;
  
  	// Borders correction
 	Status			("Borders...");
-	for (u32 _y=0; _y< getLMSIZE(); _y++)
+	for (u32 _y=0; _y< lm.width; _y++)
 	{
-		for (u32 _x=0; _x< getLMSIZE(); _x++)
+		for (u32 _x=0; _x< lm.height; _x++)
 		{
-			u32	offset	= _y* getLMSIZE() +_x;
+			u32	offset	= _y * lm.width +_x;
 			if (offset < lm.marker.size())
 			{
 				if (lm.marker[offset] >= (254 - BORDER))
@@ -135,16 +132,17 @@ void CLightmap::Save( LPCSTR path )
 		}
 	}
 
-	CTimer t; t.Start();
-	Status("Apply Borders...");
-	int p = 0;
-	for (u32 ref=254; ref>(254-16); ref--) 
-	{
-		p++;
-		ApplyBorders	(lm,ref);
- 		Progress		( float (p / 16 ) );
-	}
-	clMsg("Borders: %d sec", t.GetElapsed_sec());
+	// CTimer t; t.Start();
+	// Status("Apply Borders...");
+	// 
+	// int p = 0;
+	// for (u32 ref=254; ref>(254-16); ref--) 
+	// {
+	// 	p++;
+	// 	ApplyBorders	(lm,ref);
+ 	// 	Progress		( float (p / 16 ) );
+	// }
+	// clMsg("Borders: %d sec", t.GetElapsed_sec());
 
 	Progress			(1.f);
  
@@ -161,12 +159,14 @@ void CLightmap::Save( LPCSTR path )
 	lm.destroy					();
 	
 	// Saving			(DXT5.dds)
+	CTimer tStats; tStats.Start();
+
 	Status			("Compression base...");
-	t.Start();
-	{
+ 	{
 		string_path				FN;
 		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
 		xr_sprintf					(FN,"%s%s_1.dds",	path,lm_texture.name);
+		
 		BYTE*	raw_data		= LPBYTE(&*lm_packed.begin());
 		u32	w					= lm_texture.dwWidth;//lm.width;
 		u32	h					= lm_texture.dwHeight;//lm.height;
@@ -179,13 +179,10 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
-	clMsg("Compression Base: %u ms", t.GetElapsed_ms());
-
-	lm_packed.clear();
+ 	lm_packed.clear();
 
 	Status			("Compression hemi..."); //.
-	t.Start();
-	{
+ 	{
 
 
 		u32 w					= lm_texture.dwWidth;//lm.width;
@@ -204,8 +201,14 @@ void CLightmap::Save( LPCSTR path )
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
-	clMsg("Compression Hemi: %u ms", t.GetElapsed_ms());
+ 
+	// Утечка закрыта
+	lm_packed.clear();
+	hemi_packed.clear();
 
+	lm_packed.shrink_to_fit();
+	hemi_packed.shrink_to_fit();
 
+	Msg("Saving DDS: %u ms", tStats.GetElapsed_ms());
 }
  

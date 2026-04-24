@@ -35,28 +35,26 @@ struct XRLC_LIGHT_API  lm_layer
 	u32						height;
 	xr_vector<base_color>	surface;
 	xr_vector<u8>			marker;
-private:
-//	LMODE					mode;	
+	xr_vector<u8>			samples;
+
 public:	  
-	// xr_vector<LightpointRequest> SurfaceLightRequests;
  
 	void					create			(u32 w, u32 h)
 	{
 		width				= w;
 		height				= h;
+
 		u32		size		= w*h;
-		surface.clear();	
-		surface.resize	(size);
-		marker.clear();		
-		marker.assign	(size,0);
+		surface.clear();	surface.resize	(size);
+		marker.clear();		marker.assign	(size, 0);
+		samples.clear();	samples.assign	(size, 0);
 	}
 
 	size_t					memory_lmap()
 	{
  		size_t lm_surface = surface.capacity() * sizeof(base_color);
 		size_t lm_marker = marker.capacity() * sizeof(u8);
-	//	size_t lm_hwsurface = SurfaceLightRequests.size() * sizeof(LightpointRequest);
-		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
+ 		return lm_surface + lm_marker + sizeof(*this); // + Собственный размер
 	} 
 
 	u32 SizeArea()
@@ -69,7 +67,25 @@ public:
 		width=height		= 0;
 		surface.clear				();
 		marker.clear();
+		samples.clear();
+
+ 		surface.shrink_to_fit();
+		marker.shrink_to_fit();
+		samples.shrink_to_fit();
 	}
+	 
+	void					clear_memory()
+	{
+		width = height = 0;
+		surface.clear();
+		marker.clear();
+		samples.clear();
+
+		surface.shrink_to_fit();
+		marker.shrink_to_fit();
+		samples.shrink_to_fit();
+	}
+
 
 	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);

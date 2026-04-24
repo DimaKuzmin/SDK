@@ -20,19 +20,21 @@ struct CompilersMode
 
 	bool SkipRaytracing = false;
 	bool Silent = false;
-	bool Embree = true;
+	bool Embree = false;
+	bool CUDA   = true;
+
 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
 	bool ClearTemp = false;
 	bool SkipTHM = false;
 
-	bool use_avx = false;
-	bool use_sse42 = false;
-
+	bool use_avx2 = false;
+ 
 	bool AI = false;
 	bool DO = false;
 	bool LC = false;
 
+	bool LC_Cforms = false;
 	bool LC_Dxt1Avail = false;
   	bool LC_NoSun = false;
 	bool LC_NoHemi = false;
@@ -46,7 +48,7 @@ struct CompilersMode
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 
-	bool  LC_lmaps_alternative = false;
+	bool  LC_lmaps_alternative = true;
 	int   LC_sizeLmaps = 1024 * 4;
 	float LC_lmaps_max_pixels = 0.95f;
 

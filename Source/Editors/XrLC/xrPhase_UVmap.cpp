@@ -39,13 +39,6 @@ void Detach(vecFace* S)
 	verts.clear();
 }
 
-extern int orig_size = 0;
-
-bool find_AFFECTED(Face* face)
-{
-	return face->pDeflector != NULL;
-}
-
 bool sort_faces(Face* face, Face* face2)
 {
 	if (face->CalcArea() > face2->CalcArea())
@@ -142,18 +135,10 @@ void CBuild::xrPhase_UVmap()
 					g_XSplit[SP]->erase(rIT, g_XSplit[SP]->end());
 					g_XSplit[SP]->shrink_to_fit();
 				}
-
-				// u32 CapacityNew = g_XSplit[SP]->capacity();
-				// 
-				// if (CapacityNew != CapacityOrig)
-				// 	Msg("Capacity: %u, new : %u", CapacityOrig, CapacityNew);
 			}
 
 			// Cancel infine loop (while)
-			if (msF == nullptr)
-			{
-				break;
-			}
+			if (msF == nullptr)		break;
 		}
 
 		size_t VSize = lc_global_data()->g_vertices().size() * sizeof(Vertex);

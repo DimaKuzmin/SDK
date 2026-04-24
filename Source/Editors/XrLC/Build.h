@@ -17,7 +17,8 @@ extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data
 class xrLC_GlobalData;
 class xrMU_Model;
 class xrMU_Reference;
- 
+class CDeflector;
+
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();
 //////////////////////////////////////////////////////////////////////////
 // tesselator callbacks
@@ -30,6 +31,11 @@ typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 
 class  base_lighting;
 class  INetReader;
+
+#include <psapi.h>
+
+size_t GetHeapMemory();
+
 //////////////////////////////////////////////////////////////////////////
 class CBuild  
 {
@@ -61,7 +67,7 @@ public:
 	void	mem_Compact				();
 	void	mem_CompactSubdivs		();
 public:
-	void	CopyTexture(LPCSTR N, b_BuildTexture& BT, IWriter* w);
+	void	CopyTexture(LPCSTR N, IWriter* w);
 	void	Load					(const b_params& P, const IReader&  fs);
 
 	void	TestMergeGeom(IWriter* writer);
@@ -74,7 +80,9 @@ public:
 	void	PreOptimize				();
 	void	CorrectTJunctions		();
 
-	void	xrPhase_AdaptiveHT		();
+	void	xrPhase_AdaptiveHT_tesselate();
+	void	xrPhase_AdaptiveHT_calculate();
+
 	void	u_Tesselate				(tesscb_estimator* E, tesscb_face* F, tesscb_vertex* V);
 	void	u_SmoothVertColors		(int count);
 
@@ -98,19 +106,15 @@ public:
 	void	ImplicitLighting		();
 	void	Light_prepare			();
 	
-	void	RunMuModels();
 	void	Light					();
 
-	void	LMapsLocal				();
 	void	LMaps					();
-	//void	Light_R2				();
-	void	LightVertex				();
+	void	ProcessLMAPS_CPU();
+
+
+ 	void	LightVertex				();
 	
-	void	xrPhase_MergeLM			();
-	void	xrPhase_MergeLM_fast	();
-
-  	void	xrPhase_SaveLmaps();
-
+	void	xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors);
 	void	xrPhase_MergeGeometry	();
 
 	void	Flex2OGF				();

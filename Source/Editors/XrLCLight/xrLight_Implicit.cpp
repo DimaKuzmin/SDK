@@ -73,10 +73,16 @@ void ImplicitLightingExec(BOOL b_net)
 		cl_globs.Initialize( defl );
  		
 		//se7kills PPL Style MT
- 		// PPL_MT();
+		if (gCompilerMode.CUDA)
+		{
+			extern void RunImplicitCuda();
+			RunImplicitCuda();
+		}
+		else
+		{
+			RunImplicitMultithread(defl);
+		}
 
-		RunImplicitMultithread(defl);
-						  
 		defl.faces.clear();
 
 		// Expand
@@ -106,8 +112,7 @@ void ImplicitLightingExec(BOOL b_net)
 		xr_vector<u32>				packed;
 		defl.lmap.Pack				(packed);
 		defl.Deallocate				();
-		
-		
+ 		
 		// base
 		Status	("Saving base...");
 		{

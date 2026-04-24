@@ -9,6 +9,9 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
 #include "../xrLCLight/mu_model_light.h"
+#include "../XrLCLight/xrDeflector.h"
+#include "../XrLCLight/xrMU_Model_Reference.h"
+#include "../XrLCLight/cuda/xrDeflectorLight_Packed.h"
  
 void	calc_ogf		( xrMU_Model &	mu_model );
 void	export_geometry	( xrMU_Model &	mu_model );
@@ -35,15 +38,24 @@ void	CBuild::CheckBeforeSave( u32 stage )
 void	CBuild::TempSave( u32 stage )
 {
 	CheckBeforeSave( stage );
-
 }
+
+size_t GetHeapMemory()
+{
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
+	{
+		return pmc.PrivateUsage;
+	}
+
+	return 0;
+}
+
 
 //////////////////////////////////////////////////////////////////////
 
 CBuild::CBuild()
 {
-	
-
 }
 
 CBuild::~CBuild()
@@ -113,11 +125,7 @@ void log_vminfo_new(LPCSTR stage)
 	);
 }
  
-#include "../XrLCLight/xrDeflector.h"
- 
 IC bool				FaceEqual(Face& F1, Face& F2);
-#include "../XrLCLight/xrMU_Model_Reference.h"
-
 void CBuild::Run(LPCSTR P)
 {
 	lc_global_data()->initialize();
@@ -152,7 +160,33 @@ void CBuild::Run(LPCSTR P)
 	Phase("Optimizing...");
   	PreOptimize();
 	CorrectTJunctions();
+  	xrPhase_AdaptiveHT_tesselate();
+
+	Phase("Building normals...");
+	CalcNormals();
+
+	Phase("Building collision database...");
 	
+	if (gCompilerMode.LC_Cforms)
+	{
+		BuildCForm();
+		EmbreeMain.BuildRcast();
+	}
+
+	Light_prepare();
+	if (gCompilerMode.CUDA || gCompilerMode.Embree)
+		InitializeEmbreeDevice();
+ 
+ 	if (gCompilerMode.CUDA)
+ 		GPUTaskinSystem.InitializeGPU();
+	else if (gCompilerMode.Embree)
+ 		EmbreeMain.InitializeGeometry();
+	else  
+  		BuildRapid(false);
+ 
+	xrPhase_AdaptiveHT_calculate();
+
+	// Просщитывем освещение 
  	Light						();
  	RunAfterLight				( fs );
 }

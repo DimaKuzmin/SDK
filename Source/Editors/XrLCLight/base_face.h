@@ -19,8 +19,8 @@ public:
 		u16					bProcessed			:		1;
 		u16					bOpaque				:		1;	// For ray-tracing speedup
 		u16					bLocked				:		1;	// For tesselation
-		//u16					bEmbreeSkip			:		1;
-		u16					bShadowSkip			:		1;
+ 		u16					bShadowSkip			:		1;
+		u16					bWater				:		1;
 	}					
 	flags;
 

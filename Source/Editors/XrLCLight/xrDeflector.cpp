@@ -1,14 +1,12 @@
 #include "stdafx.h"
-//#include "resource.h"
-//#include "build.h"
 #include "xrdeflector.h"
 #include "xrIsect.h"
 #include "xrlc_globaldata.h"
 
 #include "math.h"
 #include "xrface.h"
- 
 
+typedef xr_vector<UVtri>::iterator UVIt;
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_x+px));
@@ -49,16 +47,8 @@ void blit			(lm_layer& dst, u32 LmapsSizeX, u32 LmapsSizeY, lm_layer& src,	u32 s
 {
 	u32		ds_x = dst.width;
 	u32		ds_y = dst.height;
-  
-	if (ds_x < (ss_x + px))
-		clMsg("SS_X: %u | PX: %u", ss_x, px);
-	if (ds_y < (ss_y + py))
-		clMsg("SS_Y: %u | PY: %u", ss_x, py);
-
-
 	R_ASSERT(ds_x>=(ss_x+px));
 	R_ASSERT(ds_y>=(ss_y+py));
-
 
 	try
 	{
@@ -85,12 +75,8 @@ void blit			(lm_layer& dst, u32 LmapsSizeX, u32 LmapsSizeY, lm_layer& src,	u32 s
 void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	R_ASSERT(ds_x>=(ss_y+px));
-	if (ds_y < ss_x + py)
-	{
-		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
-	}
-	
 	R_ASSERT(ds_y>=(ss_x+py));
+
 	for (u32 y=0; y<ss_y; y++)
 		for (u32 x=0; x<ss_x; x++)
 		{
@@ -105,12 +91,8 @@ void blit_r	(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px
 void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
 {
 	// R_ASSERT(ds_x>=(ss_y+px));
-	if (ds_y < ss_x + py)
-	{
-		clMsg("ds_y: %d, ss_x = %d, py = %d", ds_y, ss_x, py);
-	}
-	
 	// R_ASSERT(ds_y>=(ss_x+py));
+
 	for (u32 y=0; y<ss_y; y++)
 	for (u32 x=0; x<ss_x; x++)
 	{
@@ -126,9 +108,6 @@ void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_
 }
 
 //-------------------------------------
-
-//CDeflector*				Deflector = 0;
-
 IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
 {
 	Fvector B;
@@ -151,8 +130,7 @@ CDeflector::~CDeflector()
 
 void CDeflector::OA_Export()
 {
-	if (UVpolys.empty())
-		return;
+	if (UVpolys.empty())	return;
 
 	// Correct normal
 	//  (semi-proportional to pixel density)
@@ -180,8 +158,6 @@ void CDeflector::OA_Export()
 	else
 	{
 		clMsg("* ERROR: Internal precision error in CDeflector::OA_Export");
-
-		
 		Face& fc = * UVpolys.front().owner;
 		int matterial = fc.dwMaterial;
 		int mm = fc.dwMaterialGame;
@@ -189,40 +165,10 @@ void CDeflector::OA_Export()
 		int surfaceID = lc_global_data()->materials()[matterial].surfidx;
 		int shaderID = lc_global_data()->materials()[matterial].shader;
 		int shaderIDGAME = lc_global_data()->materials()[mm].shader;
-
-		//Fvector pos;
-		//g_XSplit[SP]->front()->CalcCenter(pos);
-
 		auto shader = lc_global_data()->shaders().Get(shaderID);
 		auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
 
 		auto texture = lc_global_data()->textures()[surfaceID];
-		clMsg("*		Face:  mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s",  matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
-
-		/*
-		for (UVIt it = UVpolys.begin(); it != UVpolys.end(); it++)
-		{
-			Face& fc = *((*it).owner);
-			int matterial = fc.dwMaterial;
-			int mm = fc.dwMaterialGame;
-
-			int surfaceID = lc_global_data()->materials()[matterial].surfidx;
-			int shaderID = lc_global_data()->materials()[matterial].shader;
-			int shaderIDGAME = lc_global_data()->materials()[mm].shader;
-
-			//Fvector pos;
-			//g_XSplit[SP]->front()->CalcCenter(pos);
-
-			auto shader = lc_global_data()->shaders().Get(shaderID);
-			auto shaderGame = lc_global_data()->shaders().Get(shaderIDGAME);
-
-			auto texture = lc_global_data()->textures()[surfaceID];
-
-			//clMsg("*		Face: mat: %d, surfaceID: %d, shaderID: %d, texture: %s, shader: %s, shaderGame: %s",  matterial, surfaceID, shaderID, texture.name, shader->Name, shaderGame->Name);
-			//clMsg("Position: {%f, %f, %f}", VPUSH(pos) );
-		}
-		*/
-
 
 		for (UVIt it = UVpolys.begin(); it!=UVpolys.end(); it++)
 		{
@@ -237,6 +183,7 @@ void CDeflector::OA_Export()
 			inlc_global_data()->err_tjunction().w_fvector3(fc.v[0]->P);
 		}
 	}
+
 	density			/= fcount;
 	
 	// Orbitrary Oriented Ortho - Projection
@@ -274,7 +221,10 @@ void CDeflector::OA_Export()
 	VERIFY(inlc_global_data());
 	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2*BORDER);
 	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2*BORDER);
-	layer.create	(dwWidth,dwHeight);
+	// layer.create	(dwWidth,dwHeight); Убрал алокацию при разверитке (для больших локаций пиздец)
+	
+	layer.width = dwWidth;
+	layer.height = dwHeight;
 }
 
 BOOL CDeflector::OA_Place	(Face *owner)
@@ -379,37 +329,6 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 	UVpolys			= tris_new;
 }
 
-
-void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
-{
-	try 
-	{
-		lm_layer&		lm	= layer;
-
-		// UV & HASH
-		RemapUV			(0,0,lm.width,lm.height,lm.width,lm.height,FALSE);
-		Fbox2			bounds;
-		Bounds_Summary	(bounds);
-		H.initialize	(bounds,(u32)UVpolys.size());
-		for (u32 fid=0; fid<UVpolys.size(); fid++)
-		{
-			UVtri* T	= &(UVpolys[fid]);
-			Bounds		(fid,bounds);
-			H.add		(bounds,T);
-		}
-
-		// Calculate
-		R_ASSERT		(lm.width	<= (getLMSIZE() -2 * BORDER));
-		R_ASSERT		(lm.height	<= (getLMSIZE() -2 * BORDER));
-		lm.create		(lm.width,lm.height);
-		L_Direct		(DB, LightsSelected, H, use_cpu);
-	} 
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::L_Calculate");
-	}
-}
-
 u16	CDeflector:: GetBaseMaterial		() 
 {
 	return UVpolys.front().owner->dwMaterial;	
@@ -466,35 +385,9 @@ bool CDeflector::similar_pos(const CDeflector& D, float eps) const
 	return true;
 	
 	//return Sphere.P.magnitude() < D.Sphere.P.magnitude();
-}
-
-void DumpDeflctor( u32 id )
-{
-	VERIFY( inlc_global_data()->g_deflectors().size()>id );
-	const CDeflector &D = *inlc_global_data()->g_deflectors()[id];
-	clMsg( "deflector id: %d - faces num: %d ", id, D.UVpolys.size() );
-	
-
-}
-
-void DumpDeflctor( const CDeflector &D )
-{
-	clMsg( "lightmap size: %d ", D.layer.width * D.layer.height );
-	clMsg( "lightmap width/height : %d/%d", D.layer.width, D.layer.height  );
-	clMsg( "deflector - faces num: %d ", D.UVpolys.size() );
-}
-
-void DeflectorsStats ()
-{
-	u32 size =  inlc_global_data()->g_deflectors().size();
-	clMsg( "num deflectors: %d", size);
-	for( u32 i = 0; i <size ; i++ )
-			DumpDeflctor( i ); 
-}
+} 
 
 int global_size_map = 1024;
-
-
 void setLMSIZE(int size)
 {
 	global_size_map = size;

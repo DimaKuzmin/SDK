@@ -1,12 +1,12 @@
 #include "stdafx.h"
+#include "../xrCDB/xrCDB.h"
 #include "EmbreeGeomBuilder.h"
-#include "../XrCDB/xrCDB.h"
 #include "xrFace.h"
 
 #include <execution>
 #include <array>
 
-void TriangleContainer::RemoveDublicates()
+void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_msg)
 {
     size_t VertexStart = verts_v.size();
 
@@ -19,7 +19,7 @@ void TriangleContainer::RemoveDublicates()
 
     if (raw_faces.empty())
     {
-        clMsg("! Raw Faces : %u size", raw_faces.size());
+        clMsg("$Raw Faces : %u size", raw_faces.size());
         return;
     }
 
@@ -74,15 +74,6 @@ void TriangleContainer::RemoveDublicates()
     faces_v.clear();                         dummy.clear();
     faces_v.reserve(raw_faces.size());       dummy.reserve(raw_faces.size());
 
-    // Material Data
-
-    bool cform_has = cform_data.size();
-    if (cform_has)
-    {
-        cform_data.clear();
-        cform_data.reserve(raw_faces.size());
-    }
-
     for (size_t i = 0; i < raw_faces.size(); ++i)
     {
         Triangle tri;
@@ -93,14 +84,6 @@ void TriangleContainer::RemoveDublicates()
 
         auto Face = raw_faces[i].F;
         dummy.push_back(Face);
-
-        if (cform_has)
-        {
-            CFormTriangle data;
-            data.MaterialID = raw_faces[i].material;
-            data.Sector = raw_faces[i].Sector;;
-            cform_data.push_back(data);
-        }
     }
 
     //----------------------
@@ -109,19 +92,15 @@ void TriangleContainer::RemoveDublicates()
     raw_faces.clear();
     raw_faces.shrink_to_fit();
 
-    clMsg("$ Remove Dublicates: %u ms | Vertex Now: CAP: %u| SIZE: %u | Vertex Pre : %u",
-        tStats.GetElapsed_ms(),
-        verts_v.capacity(), verts_v.size(),
-        VertexStart);
+    if (enable_msg)
+        Msg("$ Geometry %s Remove Dublicate Vertex : from %u to %u", isTransparent ? "Transparent" : "Opacue", VertexStart, verts_v.size());
 }
 
-
-void TriangleContainer::RemoveDublicatesFaces()
+void TriangleContainer::RemoveDublicatesFaces(bool isTransparent, bool enable_msg)
 {
     if (faces_v.empty())        return;
 
-    CTimer t;
-    t.Start();
+    CTimer t; t.Start();
 
     // 1. Убираем дубликаты треугольников через сортировку
     xr_vector<IndexedTri> temp;
@@ -162,43 +141,10 @@ void TriangleContainer::RemoveDublicatesFaces()
     faces_v.swap(new_faces);
     dummy.swap(new_dummy);
 
-
-    clMsg("$ Triangles : Compacted From %u to (CAP: %u | SIZE: %u) | %u ms", pFaces, faces_v.capacity(), faces_v.size(), t.GetElapsed_ms());
-}
-
-
-size_t TriangleContainer::AddVertex(Fvector& V)
-{
-    verts_v.push_back(V);
-    return verts_v.size();
-}
-
-void TriangleContainer::AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3)
-{
-    Triangle triangle;
-    triangle.point1 = AddVertex(v1);
-    triangle.point2 = AddVertex(v2);
-    triangle.point3 = AddVertex(v3);
-    faces().push_back(triangle);
-    dummy.push_back((Face*)F);
-
-    AddFaceRaw((Face*)F, v1, v2, v3);
-}
-
-void TriangleContainer::AddFaceMaterial(void* F, Fvector& v1, Fvector& v2, Fvector& v3, u16 MaterialID, u16 SectorID)
-{
-    Triangle triangle;
-    triangle.point1 = AddVertex(v1);
-    triangle.point2 = AddVertex(v2);
-    triangle.point3 = AddVertex(v3);
-    faces().push_back(triangle);
-
-    CFormTriangle data;
-    data.MaterialID = MaterialID;
-    data.Sector = SectorID;
-    cform_data.push_back(data);
-
-    AddFaceRawMaterial((Face*)F, v1, v2, v3, MaterialID, SectorID);
+    if (enable_msg)
+        Msg("$ Geometry %s Remove Dublicate Triangles : from %u to %u",
+            isTransparent ? "Transparent" : "Opacue",
+            pFaces, faces_v.size());
 }
 
 void TriangleContainer::ClearAll()

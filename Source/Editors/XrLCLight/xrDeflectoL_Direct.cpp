@@ -53,8 +53,12 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		lm.marker[_y * lm.width + _x] = 255;
 	}
 }
-  	 
-void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
+
+extern bool compress_Zero(lm_layer& lm, u32 rms);
+extern bool compress_RMS(lm_layer& lm, u32 rms, u32& w, u32& h);
+
+
+void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
 	// Convert lights to local form
 	LightsSelected->select(inlc_global_data()->L_static(), Sphere.P, Sphere.R);
@@ -184,6 +188,14 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 	
 	// Lighting itself
 	DB->ray_options	(0);
+
+	Fbox2 bounds;
+	Bounds_Summary(bounds);
+
+	// 🔹 вычисляем AABB для каждого треугольника и нормализуем UV
+	for (auto& T : UVpolys)
+		T.computeAABB(bounds);
+	uv_grid.reset();
 	
 	for (u32 V=0; V<lm.height; V++)
 	{
@@ -191,57 +203,32 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		{
  			u32				Fcount	= 0;
 			base_color_c	C;
-			
-			try 
+
+			for (u32 J=0; J<Jcount; J++) 
 			{
-				for (u32 J=0; J<Jcount; J++) 
+				// LUMEL space
+				Fvector2 P;
+				P.x = float(U)/dim.x + half.x + Jitter[J].x * JS.x;
+				P.y = float(V)/dim.y + half.y + Jitter[J].y * JS.y;
+					
+				auto& list_uv = uv_grid.query(P.x, P.y, UVpolys);
+					
+				// World space
+				Fvector		wP,wN,B;
+				for (auto& UVTri : list_uv)
 				{
-					// LUMEL space
-					Fvector2 P;
-					P.x = float(U)/dim.x + half.x + Jitter[J].x * JS.x;
-					P.y = float(V)/dim.y + half.y + Jitter[J].y * JS.y;
-					
-					xr_vector<UVtri*>&	space	= H.query(P.x,P.y);
-					
-					// World space
-					Fvector		wP,wN,B;
-					for (UVtri** it=&*space.begin(); it!=&*space.end(); it++)
+					if (UVTri->isInside(P,B) )
 					{
-						if ((*it)->isInside(P,B) )
-						{
-							// We found triangle and have barycentric coords
-							Face	*F	= (*it)->owner;
-							Vertex	*V1 = F->v[0];
-							Vertex	*V2 = F->v[1];
-							Vertex	*V3 = F->v[2];
-							wP.from_bary(V1->P,V2->P,V3->P,B);
- 								
-							// NORMAL
- 							wN.from_bary(V1->N,V2->N,V3->N,B);
-							exact_normalize	(wN); 
-							wN.add		(F->N);		
-							exact_normalize	(wN);
- 
- 							try
-							{	 
-								int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
-								LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, F);
-								Fcount += 1;
-							}
-							catch (...)
-							{
-								clMsg("* ERROR (CDB). Recovered. ");
-							}
-  
-							break;
-						}
+						// We found triangle and have barycentric coords
+ 						FromBarry(UVTri->owner, wP, wN, B);
+
+						int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
+						LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, UVTri->owner);
+						Fcount += 1;
+ 						break;
 					}
-				} 
+				}
 			} 
-			catch (...) 
-			{
-				clMsg("* ERROR (Light). Recovered. ");
-			}
 
 			if (Fcount)
 			{
@@ -255,11 +242,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 				lm.surface[V * lm.width + U]._set(C);	 
 				lm.marker[V * lm.width + U] = 0;
 			}
-
-
 		}
-
-
 	}										     
  
 	// *** Render Edges

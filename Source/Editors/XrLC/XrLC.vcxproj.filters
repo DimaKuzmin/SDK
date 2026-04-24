@@ -25,32 +25,29 @@
     <Filter Include="External\NV_Mender2002\NV_Basis">
       <UniqueIdentifier>{94dc8dc0-c6dc-4fbd-b40d-b5a96acfb350}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a">
-      <UniqueIdentifier>{01d9c3f8-4397-4924-b920-2120ef046d90}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\XRAY">
-      <UniqueIdentifier>{957e4dc5-9e76-42a5-8100-8578f2c50460}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal">
-      <UniqueIdentifier>{abbe1427-5407-45cb-82c5-10e7b2f33f72}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa">
-      <UniqueIdentifier>{97d35f24-37ca-42da-b9c4-335605dd10d4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader">
-      <UniqueIdentifier>{b9bb765a-a07b-468c-a200-0562891e8224}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Model">
-      <UniqueIdentifier>{012a8f47-9b2d-4d7f-8a66-1e2280614004}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PropSlim">
       <UniqueIdentifier>{61fb8056-18e6-4269-91c4-d2ada495d7b2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM">
-      <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a">
+      <UniqueIdentifier>{7591a493-16ad-4b4e-b7ed-e3a558a8a0d6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA">
-      <UniqueIdentifier>{fd5d1f46-5621-4064-a503-b2aafb302165}</UniqueIdentifier>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\XRAY">
+      <UniqueIdentifier>{76177848-876f-4fdf-bc6f-066e863dc5d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal">
+      <UniqueIdentifier>{97a60e23-1780-41d0-b31b-bfa0366e8f3a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa">
+      <UniqueIdentifier>{631ed328-83cc-4738-880a-9e190c4ee0ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader">
+      <UniqueIdentifier>{5ee8d1d4-2258-4149-b9a8-a06e1a4fb99e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\Model">
+      <UniqueIdentifier>{35ab387b-468c-417a-a36e-ce6f613e28a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM">
+      <UniqueIdentifier>{79e8b817-9c58-4a23-b6de-a9987350a9f4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,33 +111,6 @@
     <ClInclude Include="NvMender2002\nv_mathdecl.h">
       <Filter>External\NV_Mender2002\NV_Basis</Filter>
     </ClInclude>
-    <ClInclude Include="_rect.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="Build.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="cform_build.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="ELight_def.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="Sector.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClInclude>
-    <ClInclude Include="ArbitraryList.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
-    </ClInclude>
-    <ClInclude Include="OGF_Face.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
-    </ClInclude>
-    <ClInclude Include="vbm.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal</Filter>
-    </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader</Filter>
-    </ClInclude>
     <ClInclude Include="xrGameMaterials.h" />
     <ClInclude Include="..\Public\Shader_xrLC.h" />
     <ClInclude Include="xrLC.h">
@@ -164,17 +134,41 @@
     <ClInclude Include="PropSlim\quad.h">
       <Filter>PropSlim</Filter>
     </ClInclude>
-    <ClInclude Include="xrPhase_MergeLM_Surface.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    <ClInclude Include="QMath.h">
+      <Filter>PropSlim</Filter>
     </ClInclude>
-    <ClInclude Include="stb_rect_pack.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
+    <ClInclude Include="Build.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="cform_build.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="ELight_def.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="Sector.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="_rect.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
+    </ClInclude>
+    <ClInclude Include="ArbitraryList.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
+    </ClInclude>
+    <ClInclude Include="OGF_Face.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\XRAY</Filter>
+    </ClInclude>
+    <ClInclude Include="vbm.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Internal\Targa\ILoader</Filter>
     </ClInclude>
     <ClInclude Include="xrPhase_MergeLM_Rect.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClInclude>
-    <ClInclude Include="QMath.h">
-      <Filter>PropSlim</Filter>
+    <ClInclude Include="xrPhase_MergeLM_Surface.h">
+      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -198,6 +192,16 @@
     </ClCompile>
     <ClCompile Include="NvMender2002\nv_algebra.cpp">
       <Filter>External\NV_Mender2002\NV_Basis</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
+    <ClCompile Include="PropSlim\PropSlimTools.cpp">
+      <Filter>PropSlim</Filter>
+    </ClCompile>
+    <ClCompile Include="PropSlim\object.cpp">
+      <Filter>PropSlim</Filter>
+    </ClCompile>
+    <ClCompile Include="PropSlim\object_sliding.cpp">
+      <Filter>PropSlim</Filter>
     </ClCompile>
     <ClCompile Include="Build.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
@@ -295,23 +299,10 @@
     <ClCompile Include="xrMU_Model_export_OGF.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\Model</Filter>
     </ClCompile>
-    <ClCompile Include="..\Public\NVMeshMenderTwo.cpp" />
-    <ClCompile Include="PropSlim\PropSlimTools.cpp">
-      <Filter>PropSlim</Filter>
-    </ClCompile>
-    <ClCompile Include="PropSlim\object.cpp">
-      <Filter>PropSlim</Filter>
-    </ClCompile>
-    <ClCompile Include="PropSlim\object_sliding.cpp">
-      <Filter>PropSlim</Filter>
-    </ClCompile>
-    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
-    </ClCompile>
     <ClCompile Include="xrPhase_MergeLM.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClCompile>
-    <ClCompile Include="xrPhase_MergeLM_grid.cpp">
+    <ClCompile Include="xrPhase_MergeLM_Surface.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClCompile>
   </ItemGroup>
@@ -319,10 +310,5 @@
     <ResourceCompile Include="resource.rc">
       <Filter>Kernel\Res</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="xrPhase_MergeLM_Cuda.cu">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA</Filter>
-    </None>
   </ItemGroup>
 </Project>

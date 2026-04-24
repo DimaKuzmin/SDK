@@ -54,6 +54,12 @@
     <Filter Include="RayTracing\base_lighting">
       <UniqueIdentifier>{0855af4f-c4de-4e7c-b110-78baa227bfa8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="RayTracing\Cuda">
+      <UniqueIdentifier>{448592b5-2f4c-4f15-a9d9-b623b941fe69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RayTracing\Cuda\Packed Deflectors">
+      <UniqueIdentifier>{bdb26ca2-9ffc-4afd-96ec-d194d6a6523a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -90,9 +96,6 @@
       <Filter>Light\models</Filter>
     </ClInclude>
     <ClInclude Include="mu_model_light.h">
-      <Filter>Light\models\mu_light</Filter>
-    </ClInclude>
-    <ClInclude Include="mu_model_light_threads.h">
       <Filter>Light\models\mu_light</Filter>
     </ClInclude>
     <ClInclude Include="xrLight_Implicit.h">
@@ -192,16 +195,32 @@
     <ClInclude Include="light_point.h">
       <Filter>RayTracing\base_lighting</Filter>
     </ClInclude>
-    <ClInclude Include="EmbreeDataStorage.h">
-      <Filter>RayTracing\EmbreeLib</Filter>
-    </ClInclude>
     <ClInclude Include="LightThread.h">
       <Filter>do_light</Filter>
     </ClInclude>
-    <ClInclude Include="EmbreeRayTrace.h">
+    <ClInclude Include="cuda\Vector3HW.cuh">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\CUDAGeometryBuilder.h">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\CUDAContext.h">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\CUDARayCast.h">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\xrDeflectorLight_Packed.h">
+      <Filter>RayTracing\Cuda\Packed Deflectors</Filter>
+    </ClInclude>
+    <ClInclude Include="cuda\IntelliSense.cuh">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClInclude>
+    <ClInclude Include="uv_grid.h" />
+    <ClInclude Include="embree_raytracing\EmbreeRayTrace.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
-    <ClInclude Include="EmbreeGeomBuilder.h">
+    <ClInclude Include="embree_raytracing\EmbreeGeomBuilder.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
   </ItemGroup>
@@ -243,9 +262,6 @@
       <Filter>Light\models</Filter>
     </ClCompile>
     <ClCompile Include="mu_model_light.cpp">
-      <Filter>Light\models\mu_light</Filter>
-    </ClCompile>
-    <ClCompile Include="mu_model_light_threads.cpp">
       <Filter>Light\models\mu_light</Filter>
     </ClCompile>
     <ClCompile Include="xrMU_Model_Calc_lighting.cpp">
@@ -341,26 +357,49 @@
     <ClCompile Include="base_lighting.cpp">
       <Filter>RayTracing\base_lighting</Filter>
     </ClCompile>
-    <ClCompile Include="EmbreeRayTrace.cpp">
-      <Filter>RayTracing\EmbreeLib</Filter>
-    </ClCompile>
-    <ClCompile Include="EmbreeRayTrace_Data.cpp">
-      <Filter>RayTracing\EmbreeLib</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLight_ImplicitHW.cpp">
-      <Filter>Light\LightImplicit</Filter>
-    </ClCompile>
-    <ClCompile Include="EmbreeRayTrace_Details.cpp">
-      <Filter>RayTracing\EmbreeLib</Filter>
-    </ClCompile>
     <ClCompile Include="MeshStaic.cpp">
       <Filter>Light\Mesh</Filter>
     </ClCompile>
-    <ClCompile Include="EmbreeGeomBuilder.cpp">
+    <ClCompile Include="cuda\CUDAContext.cpp">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\CUDAGeometryBuilder.cpp">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\CUDARayCast.cpp">
+      <Filter>RayTracing\Cuda</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\xrDeflectorLight_Packed.cpp">
+      <Filter>RayTracing\Cuda\Packed Deflectors</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\xrLight_Implicit_Cuda.cpp">
+      <Filter>RayTracing\Cuda\Packed Deflectors</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\xrDeflectorLight_Cuda.cpp">
+      <Filter>RayTracing\Cuda\Packed Deflectors</Filter>
+    </ClCompile>
+    <ClCompile Include="xrDeflector_ApplyBorders.cpp">
+      <Filter>Light\xrDeflector</Filter>
+    </ClCompile>
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace_Details.cpp">
       <Filter>RayTracing\EmbreeLib</Filter>
+    </ClCompile>
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace_Data.cpp">
+      <Filter>RayTracing\EmbreeLib</Filter>
+    </ClCompile>
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace.cpp">
+      <Filter>RayTracing\EmbreeLib</Filter>
+    </ClCompile>
+    <ClCompile Include="embree_raytracing\EmbreeGeomBuilder.cpp">
+      <Filter>RayTracing\EmbreeLib</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\CUDAStatistic.cpp">
+      <Filter>RayTracing\Cuda</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <CudaCompile Include="cuda\CuTrace.cu">
+      <Filter>RayTracing\Cuda</Filter>
+    </CudaCompile>
   </ItemGroup>
 </Project>

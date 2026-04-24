@@ -176,18 +176,17 @@ void CBuild::Flex2OGF()
 		static xrCriticalSection mtx;
 		std::atomic<int> current_idx = 0;
  
-		concurrency::parallel_for(size_t(0), size_t(16), [&](size_t thID)
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t thID)
 		{
 			std::wstring name = L"ThreadID : " + std::to_wstring(thID);
-
-			SetThreadDescription(GetCurrentThread(), name.c_str());
+ 			SetThreadDescription(GetCurrentThread(), name.c_str());
 			while (true)
 			{
 				u32 ID = current_idx.load();
 				current_idx.fetch_add(1);
  				if (current_idx.load() >= g_XSplit.size())  break;
 
-   				AditionalData("Processed MT OGF (%u|%u) delVert: %u", ID, g_XSplit.size());
+   				AditionalData("Processed MT OGF (%u|%u)", ID, g_XSplit.size());
  				 
 				OGF* pOGF = xr_new<OGF>();
 				auto& SPLIT = g_XSplit[ID];

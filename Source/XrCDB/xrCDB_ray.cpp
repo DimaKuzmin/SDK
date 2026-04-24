@@ -192,11 +192,7 @@ public:
 	COLLIDER* dest;
 	MODEL* MDL;
 	TRI* tris;
- 
-	bool UseIntersectionFilter = false;
-	bool			continue_work = true;
-	OpcodeContext*	ctxt = 0;
-  
+   
 	Fvector* verts;
  	ray_t			ray;
 	float			rRange;
@@ -234,9 +230,6 @@ public:
 			if (_abs(D.z) > flt_eps) {}
 			else ray.inv_dir.z = 0;
 		}
-
-		if (ctxt)
-  			UseIntersectionFilter = ctxt->filterIntersect != nullptr;
  	}
 
 	// fpu
@@ -359,19 +352,6 @@ public:
 		}
 		else 
 		{
-			if (UseIntersectionFilter)
-			{	
- 				// OpcodeArgs  data;
-				ctxt->result->hit_struct.u = u;
-				ctxt->result->hit_struct.v = v;
-				ctxt->result->hit_struct.prim = prim;
-				ctxt->result->hit_struct.dist = r;
-		
-				ctxt->filterIntersect(ctxt->result);
- 				continue_work = ctxt->result->valid;
- 				return;
-			}
-
  			RESULT& R = dest->r_add();
 			R.id = prim;
 			R.range = r;
@@ -381,14 +361,10 @@ public:
 			R.verts[1] = verts[tris[prim].verts[1]];
 			R.verts[2] = verts[tris[prim].verts[2]];
 			R.dummy = tris[prim].dummy;		 
- 
 		}
 	}
 	void			_stab(const AABBNoLeafNode* node)
 	{
-		if (!continue_work)
-			return;
-
 		// Should help
 		_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
@@ -426,29 +402,9 @@ public:
 	}
 };
 	
-ICF void CDB::COLLIDER::rayTrace1(OpcodeContext* context)
-{
-	MODEL* MDL = const_cast<MODEL*>( (MODEL*) context->result->MDL);
-
-	MDL->syncronize();
- 
-	// Get nodes
-	const AABBNoLeafTree* T = (const AABBNoLeafTree*)MDL->tree->GetTree();
-	const AABBNoLeafNode* N = T->GetNodes();
-	r_clear();
-	 
-	ray_collider<true, false, false, false>	RC;
-	RC.ctxt = context;
-	RC._init(this, MDL, context->r_start, context->r_dir, context->r_range);
- 	RC._stab(N);
-}
- 
-
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
 	MODEL* MDL = const_cast<MODEL*>(m_def);
-
-
 	m_def->syncronize();
  
 	// Get nodes

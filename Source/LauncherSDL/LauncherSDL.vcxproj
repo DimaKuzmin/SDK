@@ -81,6 +81,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\lib\x64\;C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v13.1\extras\CUPTI\lib64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -94,6 +95,7 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_sdl3.cpp" />
     <ClCompile Include="imgui\impl\imgui_impl_sdlrenderer3.cpp" />
+    <ClCompile Include="ImGUI_Style.cpp" />
     <ClCompile Include="luabind_allocator.cpp" />
     <ClCompile Include="SDL_Aplication.cpp" />
     <ClCompile Include="StartupWindow.cpp" />
@@ -112,6 +114,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
+    <ClInclude Include="ImGUI_Style.h" />
     <ClInclude Include="xrThread.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

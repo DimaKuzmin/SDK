@@ -1,7 +1,7 @@
 #pragma once
-#include "../../xrCDB/xrCDB.h"
-#include "xrFace.h"
 
+#include "../XrCDB/xrCDB.h"
+#include "xrFace.h"
 
 struct Triangle
 {
@@ -24,13 +24,6 @@ struct Triangle
 	}
 };
 
-struct CFormTriangle
-{
-	u16 MaterialID;
-	u16 Sector;
-};
-
-
 struct IndexedTri
 {
 	uint32_t i1, i2, i3;
@@ -38,7 +31,7 @@ struct IndexedTri
 
 	IndexedTri(const Triangle& tri, uint32_t idx) : originalIndex(idx)
 	{
-		// нормализуем порядок вершин (сортировка трёх чисел)
+		// нормализуем пор€док вершин (сортировка трЄх чисел)
 		i1 = tri.point1;
 		i2 = tri.point2;
 		i3 = tri.point3;
@@ -61,13 +54,11 @@ struct IndexedTri
 	}
 };
 
-class TriangleContainer
+struct TriangleContainer
 {
-public:
 	xr_vector<Fvector>				verts_v;
 	xr_vector<Triangle>				faces_v;
 
-	xr_vector<CFormTriangle>		cform_data;
 	xr_vector<Face*>				dummy;
 
 	xr_vector<Fvector>& vertex() { return verts_v; }
@@ -76,23 +67,7 @@ public:
 	u32 faces_cnt() { return faces_v.size(); }
 
 	// Add Faces
-	size_t AddVertex(Fvector& V);
-	void AddFace(void* F, Fvector& v1, Fvector& v2, Fvector& v3);
-	void AddFaceMaterial(void* F, Fvector& v1, Fvector& v2, Fvector& v3, u16 Material, u16 SectorID);
-
 	void ClearAll();
-
-	CDB::TRI GetCDBMaterial(u32 IndexTriangle)
-	{
-		CDB::TRI tri;
-		tri.verts[0] = faces_v[IndexTriangle].point1;
-		tri.verts[1] = faces_v[IndexTriangle].point2;
-		tri.verts[2] = faces_v[IndexTriangle].point3;
-
-		tri.material = cform_data[IndexTriangle].MaterialID;
-		tri.sector = cform_data[IndexTriangle].Sector;
-		return tri;
-	}
 
 	// Removeing Dublicates
 	struct IndexedVertex
@@ -117,12 +92,6 @@ public:
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
 
-	void AddFaceRawMaterial(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3, u16 MaterialID, u16 SectorID)
-	{
-		raw_faces.push_back({ {v1, v2, v3}, F, MaterialID, SectorID });
-	};
-
-
-	void RemoveDublicates();
-	void RemoveDublicatesFaces();
+	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
+	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
 };

@@ -204,7 +204,6 @@
     <ClInclude Include="QMath.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sector.h" />
-    <ClInclude Include="stb_rect_pack.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="std_classes.h" />
     <ClInclude Include="vbm.h" />
@@ -225,9 +224,9 @@
     <ClCompile Include="fmesh.cpp" />
     <ClCompile Include="Image.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="NvMender2002\NVMeshMender.cpp" />
     <ClCompile Include="NvMender2002\nv_algebra.cpp" />
@@ -264,7 +263,6 @@
     <ClCompile Include="xrPhase_GI.cpp" />
     <ClCompile Include="xrPhase_MergeGeometry.cpp" />
     <ClCompile Include="xrPhase_MergeLM.cpp" />
-    <ClCompile Include="xrPhase_MergeLM_grid.cpp" />
     <ClCompile Include="xrPhase_MergeLM_Surface.cpp" />
     <ClCompile Include="xrPhase_ResolveMaterials.cpp" />
     <ClCompile Include="xrPhase_Subdivide.cpp" />
@@ -301,9 +299,6 @@
     <ProjectReference Include="..\XrLCLight\XrLCLight.vcxproj">
       <Project>{a81b25a8-d576-4b25-ac1e-1e6390832395}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="xrPhase_MergeLM_Cuda.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

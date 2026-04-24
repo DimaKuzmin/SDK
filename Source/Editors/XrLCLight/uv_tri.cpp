@@ -14,9 +14,6 @@ bool	UVtri::similar	( const UVtri &uv, float eps/*eps = EPS*/ ) const
 #include "uv_grid.h"
 void UVtri::computeAABB(const Fbox2& bounds)
 {
-    R_ASSERT(bounds.min.x != bounds.max.x);
-    R_ASSERT(bounds.min.y != bounds.max.y);
-
     // 🔥 AABB в UV
     Fvector2 uv_min;
     Fvector2 uv_max;

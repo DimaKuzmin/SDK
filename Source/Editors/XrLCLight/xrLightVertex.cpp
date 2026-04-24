@@ -151,6 +151,7 @@ public:
 };
  
 
+#include "cuda/xrDeflectorLight_Packed.h"
 
 void LightVertex	()
 {
@@ -158,6 +159,8 @@ void LightVertex	()
 
 	// Start threads, wait, continue --- perform all the work
 	Status				("Calculating...");
+
+	if (!gCompilerMode.CUDA)
  	{
 		CThreadManager		Threads;
 		VLT.init			();
@@ -167,6 +170,50 @@ void LightVertex	()
 		Threads.wait		();
 		clMsg				("%f seconds",start_time.GetElapsed_sec());
 	} 
+	else
+	{
+		int INDEX = 0;
+		GPUTaskinSystem.RestartALL();
+		GPUTaskinSystem.ColorsMapType = eCommon;
+
+		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_dont_hemi;
+		GPUTaskinSystem.current_flags = flags;
+
+		xr_vector<float> v_transparency;
+		v_transparency.resize(lc_global_data()->g_vertices().size());
+		for (auto V : lc_global_data()->g_vertices())
+		{
+			float		v_trans = 0.f;
+
+			if (GetTranslucency(V, v_trans))
+			{
+				GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(INDEX, 0), nullptr, V->P, V->N, 0);
+			}
+
+			v_transparency[INDEX] = v_trans;
+			INDEX++;
+		}
+
+		GPUTaskinSystem.LightPointPacked_run_tasks();
+
+		for (auto& C : GPUTaskinSystem.task_colors)
+		{
+			int INDEX = GPUTaskinSystem.GetU(C.first);
+			auto& V = lc_global_data()->g_vertices()[INDEX];
+			auto& vC = C.second;
+			float Transparency = v_transparency[INDEX];
+
+			base_color_c old;
+			V->C._get(old);
+
+			vC._tmp_ = Transparency;
+			vC.mul(.5f);
+			vC.hemi = old.hemi;
+			V->C._set(vC);
+
+			g_trans_register(V);
+		}
+	}
 	 
 	// Process all groups
 	Status				("Transluenting...");
