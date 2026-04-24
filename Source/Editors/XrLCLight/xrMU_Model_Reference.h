@@ -2,7 +2,10 @@
 #define XRMUMODEL_REFERENCE_H
 
 #include "base_color.h"
-#include "EmbreeRayTrace.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
+
+#include <ppl.h> 
+#include <concurrent_unordered_map.h>
 
 struct FaceDataIntel;
 class xrMU_Model;
@@ -32,5 +35,13 @@ public:
 
 	void					export_cform_rcast_new  (xr_vector<FaceDataIntel>& faces);
  
+	// Cuda Code: 
+	concurrency::concurrent_unordered_map<size_t, base_color_c> colors_cuda;
+
+	void calc_lighting_cuda_1();
+	void calc_lighting_cuda_2();
+	void calc_lighting_cuda_3();
+
+
 };
 #endif

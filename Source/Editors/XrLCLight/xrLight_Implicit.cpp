@@ -73,10 +73,16 @@ void ImplicitLightingExec(BOOL b_net)
 		cl_globs.Initialize( defl );
  		
 		//se7kills PPL Style MT
- 		// PPL_MT();
+		if (gCompilerMode.CUDA)
+		{
+			extern void RunImplicitCuda();
+			RunImplicitCuda();
+		}
+		else
+		{
+			RunImplicitMultithread(defl);
+		}
 
-		RunImplicitMultithread(defl);
-						  
 		defl.faces.clear();
 
 		// Expand

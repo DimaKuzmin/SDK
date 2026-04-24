@@ -8,9 +8,11 @@
  
 #include "xrdeflectordefs.h"
 #include "R_light.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
 
 class  base_lighting;
 class CDeflector;
+
  
 class XRLC_LIGHT_API CDeflector 
 {
@@ -36,11 +38,10 @@ public:
 	void	GetRect				(Fvector2 &min, Fvector2 &max);
 	u32		GetFaceCount()		{ return (u32)UVpolys.size();	};
 		
-	void	Light				( CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H	);
+	void	Light				( CDB::COLLIDER* DB, base_lighting* LightsSelected );
  								 
-	void	L_Direct			( CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false);
-	void	L_Direct_Edge		( CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
-	void	L_Calculate			( CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H , bool use_cpu = false );
+	void	L_Direct_Edge		(CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip);
+	void	L_Direct			( CDB::COLLIDER* DB, base_lighting* LightsSelected);
 
 	u32		weight				() { return layer.Area(); }	
 
@@ -77,11 +78,24 @@ public:
 	  	
 	bool	similar				( const CDeflector &D, float eps =EPS ) const;
 	bool	similar_pos				( const CDeflector &D, float eps =EPS ) const;
- 
-};
 
-extern XRLC_LIGHT_API void GPU_Calculation();
- 
+	// GPU CODE:
+	// Stage 1
+	void LightGPU();
+	void L_DirectGPU();
+
+	// cuda recvest color reciver
+	u32 ProcessedUVColors;
+	bool ApplyColors();
+	void ApplyColor(size_t INDEX, base_color_c& C);
+
+	// Stage 2
+	void ApplyExpandBordersGPU();
+
+
+	// Clearing Memory
+	void DealocateMemory() { layer.clear_memory(); };
+};
 
 typedef xr_vector<UVtri>::iterator UVIt;
 
@@ -92,7 +106,9 @@ extern void		blit_r			(u32* dest,		u32 ds_x, u32 ds_y, u32* src,		u32 ss_x, u32 
 extern XRLC_LIGHT_API void		blit_r			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip, bool use_opcode = false);
+extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
+extern XRLC_LIGHT_API void		LightPoint_Embree(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
+
 
 extern XRLC_LIGHT_API BOOL		ApplyBorders	(lm_layer &lm, u32 ref);
 extern XRLC_LIGHT_API void		DumpDeflctor	( u32 id );

@@ -49,9 +49,6 @@
     <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM">
       <UniqueIdentifier>{a2705ae8-f0ed-4f13-be17-8a21e3fb0eef}</UniqueIdentifier>
     </Filter>
-    <Filter Include="%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA">
-      <UniqueIdentifier>{fd5d1f46-5621-4064-a503-b2aafb302165}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="defines.h">
@@ -165,9 +162,6 @@
       <Filter>PropSlim</Filter>
     </ClInclude>
     <ClInclude Include="xrPhase_MergeLM_Surface.h">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
-    </ClInclude>
-    <ClInclude Include="stb_rect_pack.h">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM</Filter>
     </ClInclude>
     <ClInclude Include="xrPhase_MergeLM_Rect.h">
@@ -319,10 +313,5 @@
     <ResourceCompile Include="resource.rc">
       <Filter>Kernel\Res</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="xrPhase_MergeLM_Cuda.cu">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a\MergeLM\CUDA</Filter>
-    </None>
   </ItemGroup>
 </Project>

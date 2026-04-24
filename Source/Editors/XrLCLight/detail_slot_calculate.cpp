@@ -11,6 +11,7 @@
 #include "base_lighting.h"
 #include "global_calculation_data.h"
 #include "../Public/shader_xrlc.h"
+#include "embree_raytracing/EmbreeRayTrace.h"
 
 enum
 {
@@ -29,21 +30,21 @@ float	color_intensity	(Fcolor& c)
 }
 
 
-class base_color
+class base_color_new
 {
 public:
 	Fvector					rgb;		// - all static lighting
 	float					hemi;		// - hemisphere
 	float					sun;		// - sun
 	float					_tmp_;		// ???
-	base_color()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
+	base_color_new()			{ rgb.set(0,0,0); hemi=0; sun=0; _tmp_=0;	}
 
 	void					mul			(float s)									{	rgb.mul(s);	hemi*=s; sun*=s;				};
 	void					add			(float s)									{	rgb.add(s);	hemi+=s; sun+=s;				};
-	void					add			(base_color& s)								{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
+	void					add			(base_color_new& s)								{	rgb.add(s.rgb);	hemi+=s.hemi; sun+=s.sun;	};
 	void					scale		(int samples)								{	mul	(1.f/float(samples));					};
-	void					max			(base_color& s)								{ 	rgb.max(s.rgb); hemi=_max(hemi,s.hemi); sun=_max(sun,s.sun); };
-	void					lerp		(base_color& A, base_color& B, float s)		{ 	rgb.lerp(A.rgb,B.rgb,s); float is=1-s;  hemi=is*A.hemi+s*B.hemi; sun=is*A.sun+s*B.sun; };
+	void					max			(base_color_new& s)								{ 	rgb.max(s.rgb); hemi=_max(hemi,s.hemi); sun=_max(sun,s.sun); };
+	void					lerp		(base_color_new& A, base_color_new& B, float s)		{ 	rgb.lerp(A.rgb,B.rgb,s); float is=1-s;  hemi=is*A.hemi+s*B.hemi; sun=is*A.sun+s*B.sun; };
 };
 
 
@@ -112,39 +113,14 @@ float getLastRP_Scale(CDB::COLLIDER* DB, R_Light& L)//, Face* skip)
 
  	return scale;
 }
-
-extern float RaytraceEmbreeDetails(R_Light& L, Fvector& P, Fvector& N, float range);
-
-float rayTrace	(CDB::COLLIDER* DB, R_Light& L, Fvector& P, Fvector& D, float R)  
+ 
+float rayTrace	( Fvector& P, Fvector& D, float R )  
 {
-	return RaytraceEmbreeDetails(L, P, D, R);
-
-//	R_ASSERT	(DB);
-//
-//	// 1. Check cached polygon
-//	float _u,_v,range;
-//	bool res = CDB::TestRayTri(P,D,L.tri,_u,_v,range,false);
-//	if (res) {
-//		if (range>0 && range<R) return 0;
-//	}
-//
-//	// 2. Polygon doesn't pick - real database query
-//	DB->ray_query	(&gl_data.RCAST_Model,P,D,R);
-//
-//	// 3. Analyze polygons and cache nearest if possible
-//	if (0==DB->r_count()) 
-//	{
-//		return 1;
-//	} 
-//	else
-//	{
-//		return getLastRP_Scale(DB,L);//,skip);
-//	}
-//	return 0;
+	return EmbreeMain.RaytraceEmbreeDetails(P, D, R);
 }
 
 
-void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
+void LightPoint(CDB::COLLIDER* DB, base_color_new &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags)
 {
 	Fvector		Ldir,Pnew;
 	Pnew.mad	(P,N,0.01f);
@@ -161,11 +137,14 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,1000.f);
+				float scale	=	D*L->energy * rayTrace( Pnew, Ldir, 1000.f);
+
 				C.rgb.x		+=	scale * L->diffuse.x; 
 				C.rgb.y		+=	scale * L->diffuse.y;
 				C.rgb.z		+=	scale * L->diffuse.z;
-			} else {
+			}
+			else 
+			{
 				// Distance
 				float sqD	=	P.distance_to_sqr	(L->position);
 				if (sqD > L->range2) continue;
@@ -178,7 +157,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 
 				// Trace Light
 				float R		= _sqrt(sqD);
-				float scale = D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
+				float scale = D*L->energy*rayTrace( Pnew, Ldir, R);
 				float A		= scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.rgb.x += A * L->diffuse.x;
@@ -200,7 +179,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 				if( D <=0 ) continue;
 
 				// Trace Light
-				float scale	=	L->energy*rayTrace(DB,*L,Pnew,Ldir,1000.f);
+				float scale	=	L->energy*rayTrace( Pnew, Ldir, 1000.f);
 				C.sun		+=	scale;
 			} else {
 				// Distance
@@ -215,7 +194,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
+				float scale =	D*L->energy*rayTrace( Pnew, Ldir, R);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.sun		+=	A;
@@ -236,7 +215,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 
 				// Trace Light
 				Fvector		PMoved;	PMoved.mad	(Pnew,Ldir,0.001f);
-				float scale	=	L->energy*rayTrace(DB,*L,PMoved,Ldir,1000.f);
+				float scale	=	L->energy*rayTrace( PMoved, Ldir, 1000.f);
 				C.hemi		+=	scale;
 			} else {
 				// Distance
@@ -251,7 +230,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 
 				// Trace Light
 				float R		=	_sqrt(sqD);
-				float scale =	D*L->energy*rayTrace(DB,*L,Pnew,Ldir,R);
+				float scale =	D*L->energy*rayTrace( Pnew, Ldir, R);
 				float A		=	scale / (L->attenuation0 + L->attenuation1*R + L->attenuation2*sqD);
 
 				C.hemi		+=	A;
@@ -261,8 +240,7 @@ void LightPoint(CDB::COLLIDER* DB, base_color &C, Fvector &P, Fvector &N, base_l
 
 
 }
-
-
+ 
 bool detail_slot_process( u32 _x, u32 _z, DetailSlot&	DS )
 {
 	process_pallete( DS );
@@ -302,7 +280,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS, DWORDVec& box_result
 	Selected.select		( gl_data.g_lights, S.P, S.R );
 
 	// lighting itself
-	base_color		amount;
+	base_color_new		amount;
 	u32				count	= 0;
 	float coeff		= DETAIL_SLOT_SIZE_2/float(LIGHT_Count);
 	FPU::m64r		();

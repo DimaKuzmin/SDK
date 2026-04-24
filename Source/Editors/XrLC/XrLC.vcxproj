@@ -204,7 +204,6 @@
     <ClInclude Include="QMath.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="Sector.h" />
-    <ClInclude Include="stb_rect_pack.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="std_classes.h" />
     <ClInclude Include="vbm.h" />
@@ -301,9 +300,6 @@
     <ProjectReference Include="..\XrLCLight\XrLCLight.vcxproj">
       <Project>{a81b25a8-d576-4b25-ac1e-1e6390832395}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="xrPhase_MergeLM_Cuda.cu" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

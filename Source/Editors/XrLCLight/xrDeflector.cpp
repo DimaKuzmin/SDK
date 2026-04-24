@@ -379,37 +379,6 @@ void CDeflector::RemapUV(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_
 	UVpolys			= tris_new;
 }
 
-
-void CDeflector::L_Calculate(CDB::COLLIDER* DB, base_lighting* LightsSelected, HASH& H, bool use_cpu)
-{
-	try 
-	{
-		lm_layer&		lm	= layer;
-
-		// UV & HASH
-		RemapUV			(0,0,lm.width,lm.height,lm.width,lm.height,FALSE);
-		Fbox2			bounds;
-		Bounds_Summary	(bounds);
-		H.initialize	(bounds,(u32)UVpolys.size());
-		for (u32 fid=0; fid<UVpolys.size(); fid++)
-		{
-			UVtri* T	= &(UVpolys[fid]);
-			Bounds		(fid,bounds);
-			H.add		(bounds,T);
-		}
-
-		// Calculate
-		R_ASSERT		(lm.width	<= (getLMSIZE() -2 * BORDER));
-		R_ASSERT		(lm.height	<= (getLMSIZE() -2 * BORDER));
-		lm.create		(lm.width,lm.height);
-		L_Direct		(DB, LightsSelected, H, use_cpu);
-	} 
-	catch (...)
-	{
-		clMsg("* ERROR: CDeflector::L_Calculate");
-	}
-}
-
 u16	CDeflector:: GetBaseMaterial		() 
 {
 	return UVpolys.front().owner->dwMaterial;	

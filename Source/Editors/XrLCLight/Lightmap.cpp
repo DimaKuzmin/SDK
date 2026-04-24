@@ -167,6 +167,7 @@ void CLightmap::Save( LPCSTR path )
 		string_path				FN;
 		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
 		xr_sprintf					(FN,"%s%s_1.dds",	path,lm_texture.name);
+		
 		BYTE*	raw_data		= LPBYTE(&*lm_packed.begin());
 		u32	w					= lm_texture.dwWidth;//lm.width;
 		u32	h					= lm_texture.dwHeight;//lm.height;
@@ -207,5 +208,11 @@ void CLightmap::Save( LPCSTR path )
 	clMsg("Compression Hemi: %u ms", t.GetElapsed_ms());
 
 
+	// Утечка закрыта
+	lm_packed.clear();
+	hemi_packed.clear();
+
+	lm_packed.shrink_to_fit();
+	hemi_packed.shrink_to_fit();
 }
  

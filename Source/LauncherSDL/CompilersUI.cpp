@@ -297,22 +297,46 @@ void DrawAIConfig()
 
 void DrawCompilerConfig()
 {
-  	ImGui::Checkbox("AVX mode", &gCompilerMode.use_avx);
-	ImGui::Checkbox("SSE4.2 mode", &gCompilerMode.use_sse42);
-
 	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
-	ImGui::Checkbox("Use IntelEmbree", &gCompilerMode.Embree);
+
+	ImGui::PushID("LightPreset");
+
+	{
+		static int RadioID = -1;
+		if (RadioID < 0)
+		{
+			RadioID = 0;
+			RadioID += 1 * (int)gCompilerMode.Embree;
+			RadioID += 2 * (int)gCompilerMode.CUDA;
+		}
+ 		ImGui::RadioButton("Use OPCODE", &RadioID, 0);
+		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
+ 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
+ 
+		switch (RadioID)
+		{
+			case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = false; break;
+			case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
+			case 2: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
+			default: break;
+		}
+	}
+	ImGui::PopID();
+	ImGui::Separator();
+
+	ImGui::BeginDisabled(!gCompilerMode.Embree);
+	ImGui::TextColored(ImVec4(RGBAColor(0, 255, 0, 255)), "(This Only For Build BVH)");
 	ImGui::Checkbox("Embree Compacted", &gCompilerMode.EmbreeBVHCompact);
 	ImGui::Checkbox("Embree Robust", &gCompilerMode.EmbreeBVHRobust);
+	ImGui::Checkbox("Embree AVX2 mode", &gCompilerMode.use_avx2);
 
+	ImGui::EndDisabled();
+
+	ImGui::Separator();
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
-	// ImGui::Checkbox("Clear temp files", &gCompilerMode.ClearTemp);
-
-	// ImGui::Checkbox("Skip RayTrace(test)", &gCompilerMode.SkipRaytracing);
-	// ImGui::Checkbox("Skip THM", &gCompilerMode.SkipTHM);
- 	ImGui::Checkbox("ShowMain", &ShowMainUI);
+   	ImGui::Checkbox("ShowMain", &ShowMainUI);
 }
 
 void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, char& icon)
@@ -440,24 +464,21 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::Separator();
 
 			ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-			if (X != 1400 || Y != 925)
-				SDL_SetWindowSize(g_AppInfo.Window, 1400, 925);
+			if (X != 1280 || Y != 768)
+			 	SDL_SetWindowSize(g_AppInfo.Window, 1280, 768);
 
-			int MAX_TRABS = 10;
-			// Table
-			if (ImGui::BeginTable("IterationsTable", MAX_TRABS, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+ 			// Table
+			if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {
+				
 				ImGui::TableSetupColumn(" ", ImGuiTableColumnFlags_WidthFixed, 15.0f);
 				ImGui::TableSetupColumn("Task", ImGuiTableColumnFlags_WidthFixed, 15.f);
-				ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthStretch);
+				ImGui::TableSetupColumn("Phase", ImGuiTableColumnFlags_WidthFixed, 350.f);
 				ImGui::TableSetupColumn("Phase %", ImGuiTableColumnFlags_WidthFixed, 50.f);
-				ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Warnings", ImGuiTableColumnFlags_WidthFixed, 80.0f);
-				ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 100.f);
-				ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.f);
-
-				if (ResizeMaximal)
-					ImGui::TableSetupColumn("Status Description", ImGuiTableColumnFlags_WidthFixed, 300.f);
+				ImGui::TableSetupColumn("Elapsed Time", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+				ImGui::TableSetupColumn("Remain Time", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+ 				ImGui::TableSetupColumn("Status", ImGuiTableColumnFlags_WidthFixed, 60.f);
+				ImGui::TableSetupColumn("Memory", ImGuiTableColumnFlags_WidthFixed, 100.0f);
+  				ImGui::TableSetupColumn("Information", ImGuiTableColumnFlags_WidthFixed, 350.0f);
 
 				ImGui::TableHeadersRow();
 
@@ -488,12 +509,11 @@ void RenderCompilerUI(int X, int Y)
 					ImGui::TableSetColumnIndex(3);
 					ImGui::Text("%0.f", row.Persent * 100);
 
-					ImGui::TableSetColumnIndex(6);
-					ImGui::Text("%d", row.warnings);
+					// ImGui::TableSetColumnIndex(6);
+					// ImGui::Text("%d", row.warnings);
+					
 					// Status text
-					ImGui::TableSetColumnIndex(7);
-
-
+					ImGui::TableSetColumnIndex(6);
 					ImGui::TextColored(rowStatusColor, rowStatus.c_str());
 
 					for (auto& phase : row.phases)
@@ -554,19 +574,16 @@ void RenderCompilerUI(int X, int Y)
 						if (phase.status != Complited)
 							ImGui::TextColored(phaseTextCol, "%s", (phase.remain_time == 0 ? "Calculating..." : make_time(phase.remain_time).c_str()));
 
-						ImGui::TableSetColumnIndex(7);
+						ImGui::TableSetColumnIndex(6);
 
 						ImGui::TextColored(statusColor, status.c_str());
 
-						ImGui::TableSetColumnIndex(8);
+						ImGui::TableSetColumnIndex(7);
 						ImGui::Text("%u MB", u32(size_t(phase.used_memory / 1024 / 1024)));
 
-						if (ResizeMaximal)
-						{
-							ImGui::TableSetColumnIndex(9);
-							ImGui::Text("%s", phase.AdditionalData.c_str());
-						}
-					}
+ 						ImGui::TableSetColumnIndex(8);
+						ImGui::Text("%s", phase.AdditionalData.c_str());
+ 					}
 				}
 
 				if (autoScroll)

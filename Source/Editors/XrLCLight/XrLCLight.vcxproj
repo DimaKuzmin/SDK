@@ -1,20 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="DevCPU_V11|Win32">
-      <Configuration>DevCPU_V11</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="DevCPU_V11|x64">
       <Configuration>DevCPU_V11</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
@@ -26,27 +14,6 @@
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>MultiByte</CharacterSet>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -59,90 +26,14 @@
   </ImportGroup>
   <ImportGroup Label="Shared">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Default.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Default.props" />
-  </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="..\..\Default.props" />
-  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="..\..\Default.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;DEBUG;_WINDOWS;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>StreamingSIMDExtensions</EnableEnhancedInstructionSet>
-      <Optimization>MaxSpeed</Optimization>
-      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <OmitFramePointers>false</OmitFramePointers>
-      <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
-      <FloatingPointModel>Fast</FloatingPointModel>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>XRLC_LIGHT_EXPORTS;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">
     <ClCompile>
       <PrecompiledHeader>
@@ -153,6 +44,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ExceptionHandling>Sync</ExceptionHandling>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
+      <AdditionalIncludeDirectories>C:\ProgramData\NVIDIA Corporation\OptiX SDK 9.0.0\include\;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -161,13 +53,13 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>nvcc.exe -ptx $(ProjectDir)\cuda\CuTrace.cu -o $(OutDir)\CuTrace.ptx -Xcompiler /MD "-I\"C:/ProgramData/NVIDIA Corporation/OptiX SDK 9.0.0/include\"" "-I\"C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.1/include\"" --gpu-architecture=compute_75 --gpu-code=sm_75</Command>
     </PreBuildEvent>
     <PostBuildEvent>
       <Command>
       </Command>
     </PostBuildEvent>
+    <CudaCompile />
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Shader_xrLC.h" />
@@ -177,10 +69,16 @@
     <ClInclude Include="base_lighting.h" />
     <ClInclude Include="b_build_texture.h" />
     <ClInclude Include="calculate_normals.h" />
+    <ClInclude Include="cuda\CUDAContext.h" />
+    <ClInclude Include="cuda\CUDAGeometryBuilder.h" />
+    <ClInclude Include="cuda\CUDARayCast.h" />
+    <ClInclude Include="cuda\IntelliSense.cuh" />
+    <ClInclude Include="cuda\Vector3HW.cuh" />
+    <ClInclude Include="cuda\xrDeflectorLight_Packed.h" />
     <ClInclude Include="DetailFormat.h" />
     <ClInclude Include="detail_slot_calculate.h" />
-    <ClInclude Include="EmbreeDataStorage.h" />
-    <ClInclude Include="EmbreeGeomBuilder.h" />
+    <ClInclude Include="embree_raytracing\EmbreeGeomBuilder.h" />
+    <ClInclude Include="embree_raytracing\EmbreeRayTrace.h" />
     <ClInclude Include="ETextureParams.h" />
     <ClInclude Include="fitter.h" />
     <ClInclude Include="global_calculation_data.h" />
@@ -195,12 +93,12 @@
     <ClInclude Include="mu_model_face.h" />
     <ClInclude Include="mu_model_face_defs.h" />
     <ClInclude Include="mu_model_light.h" />
-    <ClInclude Include="mu_model_light_threads.h" />
     <ClInclude Include="recalculation.h" />
     <ClInclude Include="R_light.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tcf.h" />
     <ClInclude Include="tga.h" />
+    <ClInclude Include="uv_grid.h" />
     <ClInclude Include="uv_tri.h" />
     <ClInclude Include="vector_clear.h" />
     <ClInclude Include="xrDeflector.h" />
@@ -213,7 +111,6 @@
     <ClInclude Include="xrLC_GlobalData.h" />
     <ClInclude Include="xrLC_Light.h" />
     <ClInclude Include="xrLightVertex.h" />
-    <ClInclude Include="EmbreeRayTrace.h" />
     <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />
     <ClInclude Include="xrLight_ImplicitRun.h" />
@@ -230,26 +127,29 @@
     <ClCompile Include="base_lighting.cpp" />
     <ClCompile Include="b_build_texture.cpp" />
     <ClCompile Include="compiler.cpp" />
+    <ClCompile Include="cuda\CUDAContext.cpp" />
+    <ClCompile Include="cuda\CUDAGeometryBuilder.cpp" />
+    <ClCompile Include="cuda\CUDARayCast.cpp" />
+    <ClCompile Include="cuda\xrDeflectorLight_Packed.cpp" />
+    <ClCompile Include="cuda\xrDeflector_Cuda.cpp" />
+    <ClCompile Include="cuda\xrLight_Implicit_Cuda.cpp" />
     <ClCompile Include="detail_slot_calculate.cpp" />
-    <ClCompile Include="EmbreeGeomBuilder.cpp" />
+    <ClCompile Include="embree_raytracing\EmbreeGeomBuilder.cpp" />
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace.cpp" />
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace_Data.cpp" />
+    <ClCompile Include="embree_raytracing\EmbreeRayTrace_Details.cpp" />
     <ClCompile Include="ETextureParams.cpp" />
     <ClCompile Include="fitter.cpp" />
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
-    <ClCompile Include="EmbreeRayTrace_Details.cpp" />
-    <ClCompile Include="EmbreeRayTrace_Data.cpp" />
     <ClCompile Include="Lightmap.cpp" />
     <ClCompile Include="LightThread.cpp" />
     <ClCompile Include="lm_layer.cpp" />
     <ClCompile Include="MeshStaic.cpp" />
     <ClCompile Include="mu_model_face.cpp" />
     <ClCompile Include="mu_model_light.cpp" />
-    <ClCompile Include="mu_model_light_threads.cpp" />
     <ClCompile Include="recalculation.cpp" />
     <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|Win32'">Create</PrecompiledHeader>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="tcf.cpp" />
@@ -258,6 +158,7 @@
     <ClCompile Include="xrDeflectoL_Direct.cpp" />
     <ClCompile Include="xrDeflector.cpp" />
     <ClCompile Include="xrDeflectorLight.cpp" />
+    <ClCompile Include="xrDeflector_ApplyBorders.cpp" />
     <ClCompile Include="xrFace.cpp" />
     <ClCompile Include="xrImage_Filter.cpp" />
     <ClCompile Include="xrImage_Resampler.cpp" />
@@ -266,10 +167,6 @@
     <ClCompile Include="xrLightVertex.cpp" />
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
-    <ClCompile Include="EmbreeRayTrace.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="xrLight_ImplicitHW.cpp" />
     <ClCompile Include="xrLight_ImplicitThread.cpp" />
     <ClCompile Include="xrMU_Model.cpp" />
     <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />
@@ -282,29 +179,40 @@
     <ClCompile Include="xrMU_Model_Reference_Calc_Lighting.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <CudaCompile Include="cuda\CuTrace.cu">
+      <InterleaveSourceInPTX Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</InterleaveSourceInPTX>
+      <FileType>Document</FileType>
+      <UseHostInclude Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</UseHostInclude>
+      <Include Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">C:\ProgramData\NVIDIA Corporation\OptiX SDK 9.0.0\Include\</Include>
+      <Keep Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</Keep>
+      <NvccCompilation Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">ptx</NvccCompilation>
+      <CompileOut Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">C:\SDK\Bin\$(Platform)\$(Configuration)\%(Filename).ptx</CompileOut>
+    </CudaCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\BearBundle\BearGraphics\Platform\Desktop\BearGraphics.vcxproj">
-      <Project>{3b75536d-008d-4495-9fe8-c7ae79ac6898}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\BearBundle\External\zlib\zlib.vcxproj">
-      <Project>{86d28925-9f85-43ec-980e-e99d7ff2501c}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\XrCDB\XrCDB.vcxproj">
-      <Project>{7e263157-2fc0-42d7-a676-dd6049bb60f5}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\XrCore\XrCore.vcxproj">
-      <Project>{da642d7c-4fff-43dc-98f8-3f96caf1e4ba}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\FreeMagic\FreeMagic.vcxproj">
-      <Project>{dcc5b76d-be13-4d1f-be14-75d0fa678340}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\XrDXT\XrDXT.vcxproj">
-      <Project>{7c119635-1963-4547-b345-cb7ed7eb2ee4}</Project>
-    </ProjectReference>
-  </ItemGroup>
+  <ImportGroup Label="ExtensionSettings">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 13.1.props" />
+  </ImportGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>cudart_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+    <CudaCompile>
+      <TargetMachinePlatform>64</TargetMachinePlatform>
+    </CudaCompile>
+  </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 13.1.targets" />
   </ImportGroup>
 </Project>

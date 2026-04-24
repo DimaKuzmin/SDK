@@ -156,11 +156,11 @@ void xrDebug::do_exit	(const std::string &message)
 
 void xrDebug::backend	(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, bool &ignore_always)
 {
-	if (IsDebuggerPresent())
-	{
-		DebugBreak();
-		return;
-	}
+	// if (IsDebuggerPresent())
+	// {
+	// 	DebugBreak();
+	// 	return;
+	// }
 		static xrCriticalSection CS
 #ifdef PROFILE_CRITICAL_SECTIONS
 	(MUTEX_PROFILE_ID(xrDebug::backend))
@@ -656,68 +656,36 @@ void xrDebug::Callstack()
 		);
 	}
 
-	static void invalid_parameter_handler	(
-			const wchar_t *expression,
-			const wchar_t *function,
-			const wchar_t *file,
-			unsigned int line,
-			uintptr_t reserved
-		)
+	void invalid_parameter_handler(const wchar_t* expression, const wchar_t* function, const wchar_t* file, unsigned int line, uintptr_t reserved)
 	{
-		bool							ignore_always = false;
+		DebugBreak();
 
-		string4096						expression_;
-		string4096						function_;
-		string4096						file_;
-		size_t							converted_chars = 0;
-//		errno_t							err = 
+		string4096	expression_,
+			function_,
+			file_;
+
+		size_t converted_chars = 0;
+
 		if (expression)
-			wcstombs_s	(
-				&converted_chars, 
-				expression_,
-				sizeof(expression_),
-				expression,
-				(wcslen(expression) + 1)*2*sizeof(char)
-			);
+			wcstombs_s(&converted_chars, expression_, sizeof(expression_), expression, (wcslen(expression) + 1) * 2 * sizeof(char));
 		else
-			xr_strcpy					(expression_,"");
+			xr_strcpy(expression_, "");
 
 		if (function)
-			wcstombs_s	(
-				&converted_chars, 
-				function_,
-				sizeof(function_),
-				function,
-				(wcslen(function) + 1)*2*sizeof(char)
-			);
+			wcstombs_s(&converted_chars, function_, sizeof(function_), function, (wcslen(function) + 1) * 2 * sizeof(char));
 		else
-			xr_strcpy					(function_,__FUNCTION__);
+			xr_strcpy(function_, __FUNCTION__);
 
 		if (file)
-			wcstombs_s	(
-				&converted_chars, 
-				file_,
-				sizeof(file_),
-				file,
-				(wcslen(file) + 1)*2*sizeof(char)
-			);
-		else {
-			line						= __LINE__;
-			xr_strcpy					(file_,__FILE__);
+			wcstombs_s(&converted_chars, file_, sizeof(file_), file, (wcslen(file) + 1) * 2 * sizeof(char));
+		else
+		{
+			line = __LINE__;
+			xr_strcpy(file_, __FILE__);
 		}
 
-		Debug.backend					(
-			"error handler is invoked!",
-			expression_,
-			0,
-			0,
-			file_,
-			line,
-			function_,
-			ignore_always
-		);
-
-		// callstack_mdmp(0);
+		bool skip;
+		Debug.backend("Error handler is invoked!", expression_, nullptr, nullptr, file_, line, function_, skip);
 	}
 
 	static void pure_call_handler			()
