@@ -93,6 +93,7 @@ public:
 		}
 		vDcl.clear			();
 		vContainers.clear	();
+		vContainers.shrink_to_fit();
 	}
 };
 
@@ -138,6 +139,7 @@ public:
 			fs.w		(&*data[i].begin(),(u32)data[i].size()*2);
 		}
 		data.clear	();
+		data.shrink_to_fit();
 	}
 };
 
@@ -167,6 +169,7 @@ public:
 			fs.w		(data[i]->sw,sizeof(FSlideWindow)*data[i]->count);
 		}
 		data.clear		();
+		data.shrink_to_fit();
 	}
 };
 

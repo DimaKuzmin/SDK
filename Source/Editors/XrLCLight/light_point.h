@@ -9,11 +9,10 @@ enum
 	LP_dont_sun			= (1<<3),
 };
 
-enum LightSource
+static u32 GetCurrentFlags()
 {
-	LS_UNKNOWN,
-	LS_RGB,
-	LS_SUN,
-	LS_HEMI
-};
- 
+	return  (gCompilerMode.LC_NoRGB ? LP_dont_rgb : 0) | 
+			(gCompilerMode.LC_NoSun ? LP_dont_sun : 0) |
+			(gCompilerMode.LC_NoHemi ? LP_dont_hemi : 0);
+}
+

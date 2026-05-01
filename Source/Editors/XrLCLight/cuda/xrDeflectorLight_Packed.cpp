@@ -29,7 +29,7 @@ void PackedLighting::CleanupGPU()
 void PackedLighting::LightPointPacked_add_task(size_t IndexTask, void* Owner, Fvector& P, Fvector& N, Face* skip)
 {
 	// MT SAFE
-	if (recvest_array.size() >= MAX_RAYS_PER_TASK - 1024)
+	if (recvest_array.size() >= MAX_RAYS_PER_TASK )
 		LightPointPacked_run_tasks();
 
 	RayRecvestIndex task_data;

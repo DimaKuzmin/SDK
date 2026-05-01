@@ -424,7 +424,6 @@ public:
 
 thread_local RayTracer GPURayTracer;
 
-
 // Raytracer Initialize
 void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags)
 {

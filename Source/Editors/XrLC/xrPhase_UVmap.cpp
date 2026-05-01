@@ -7,7 +7,7 @@
 
 void Detach(vecFace* S)
 {
-	map_v2v			verts;
+ 	xr_map<Vertex*, Vertex*> verts;
 	verts.clear();
 
 	// Collect vertices
@@ -17,7 +17,7 @@ void Detach(vecFace* S)
 		{
 			Vertex* V = (*F)->v[i];
 			Vertex* VC;
-			map_v2v_it	W = verts.find(V);	// iterator
+			auto	W = verts.find(V);	// iterator
 
 			if (W == verts.end())
 			{	// where is no such-vertex

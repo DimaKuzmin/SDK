@@ -1,5 +1,4 @@
 #include "stdafx.h"
-
 #include "base_basis.h"
 
 bool	base_basis::similar			(const base_basis& o)

@@ -242,6 +242,6 @@ void xrMU_Model::calc_lighting()
 		xr_delete(M);
 	}
 
-	clMsg("model '%s' - REF_lighted.", *m_name);
+	// clMsg("model '%s' - REF_lighted.", *m_name);
 
 }

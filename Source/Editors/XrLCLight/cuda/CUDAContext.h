@@ -55,7 +55,7 @@ public:
     static void OptixLogCallback(unsigned int level, const char* tag, const char* message, void* cbdata)
     {
         string4096 formattedMsg;
-        sprintf_s(formattedMsg, "[OptiX][%s]: %s", tag, message);
+        sprintf_s(formattedMsg, "* [OptiX][%s]: %s", tag, message);
 
         R_ASSERT(xr_strlen(message) < 4096);
 

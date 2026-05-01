@@ -10,20 +10,19 @@
 #include "xrmu_model_reference.h"
 #include "../../xrcdb/xrcdb.h"
 
-bool g_using_smooth_groups = true;
-bool g_smooth_groups_by_faces = false;
-
 xrLC_GlobalData* data = 0;
   
- xrLC_GlobalData*	lc_global_data()
- {
-	 return data;
- }
+xrLC_GlobalData*	lc_global_data()
+{	
+	return data;
+}
+
 void	create_global_data()
 {
 	VERIFY( !inlc_global_data() );
 	data = xr_new<xrLC_GlobalData>();
 }
+
 void	destroy_global_data()
 {
 	VERIFY( inlc_global_data() );
@@ -32,7 +31,7 @@ void	destroy_global_data()
 	xr_delete(data);
 }
 
-xrLC_GlobalData::xrLC_GlobalData	(): _b_nosun(false),_gl_linear(false), b_vert_not_register( false )
+xrLC_GlobalData::xrLC_GlobalData	()  : b_vert_not_register( false )
 {
 	_cl_globs._RCAST_Model = 0;
 }
@@ -41,54 +40,18 @@ void	xrLC_GlobalData	::destroy_rcmodel	()
 {
 	xr_delete		(_cl_globs._RCAST_Model);
 }
-
-void xrLC_GlobalData::clear_build_textures_surface()
-{
-	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
-	//xr_vector<b_BuildTexture>		_textures;
-	xr_vector<b_BuildTexture>::iterator i = textures().begin();
-	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
-	for(;i!=e;++i)
-		::clear((*i));
-	Memory.mem_compact();
-	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
-}
-void xrLC_GlobalData::clear_build_textures_surface( const xr_vector<u32> &exept )
-{
-	clMsg( "mem usage before clear build textures surface: %u", Memory.mem_usage() );
-	xr_vector<b_BuildTexture>::iterator i = textures().begin();
-	xr_vector<b_BuildTexture>::const_iterator e = textures().end();
-	xr_vector<b_BuildTexture>::const_iterator b = textures().begin();
-	for(;i!=e;++i)
-	{
-		xr_vector<u32>::const_iterator ff = std::find( exept.begin(), exept.end(),u32( i - b ) );
-		if( ff ==  exept.end() )
-			::clear((*i));
-	}
-	Memory.mem_compact();
-	clMsg( "mem usage after clear build textures surface: %u", Memory.mem_usage() );
-}
-
+ 
 void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
 {
 	VERIFY(!_cl_globs._RCAST_Model);
 	_cl_globs._RCAST_Model				= xr_new<CDB::MODEL> ();
 	_cl_globs._RCAST_Model->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
-
-	Msg("RCModel Memory: %llu", _cl_globs._RCAST_Model->memory());
 }
 
 void		xrLC_GlobalData	::				initialize		()
 {
 }
 
-// MU CALC MATERIALS
-void xrLC_GlobalData::mu_models_calc_materials()
-{
-	for (u32 m=0; m<mu_models().size(); m++)
-		mu_models()[m]->calc_materials();
-}
- 
 bool xrLC_GlobalData::b_r_vertices	()		
 {
 	return false;
@@ -103,7 +66,7 @@ void vec_clear( xr_vector<T*> &v )
 {
 	typename xr_vector<T*>::iterator i = v.begin(), e = v.end();
 	for(;i!=e;++i)
-			xr_delete(*i);
+		xr_delete(*i);
 	v.clear();
 }
 
@@ -117,39 +80,32 @@ void vec_spetial_clear( xr_vector<T> &v )
 }
 
 void mu_mesh_clear();
-void	xrLC_GlobalData::clear_mu_models	()
-{	
-	clMsg( "mem usage before mu_clear %d", Memory.mem_usage() );
-	vec_clear(_mu_models);// not clear ogf
-	vec_clear(_mu_refs);
-	mu_mesh_clear();
-	Memory.mem_compact();
-	clMsg( "mem usage after mu_clear: %d", Memory.mem_usage() );
-}
+size_t GetHeapMemory();
+
 void		xrLC_GlobalData::				clear			()
 {
-		vec_spetial_clear(_cl_globs._textures );
-		_cl_globs._materials.clear();
-		_cl_globs._shaders.Unload();
+	vec_spetial_clear(_cl_globs._textures );
+	_cl_globs._materials.clear();
+	_cl_globs._shaders.Unload();
+	clMsg("mem usage Textures clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024) );
  
-		vec_clear(_g_lightmaps);
-		vec_clear(_mu_models); 
-		vec_clear(_mu_refs);
-		mu_mesh_clear();
-		gl_mesh_clear();
+	vec_clear(_g_lightmaps);
+	clMsg("mem usage lmaps clear:		%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
 
-		// 
-		gl_mesh_clear	();
-	    vec_clear		(_g_deflectors);
+	vec_clear(_mu_models); 
+	clMsg("mem usage _mu_models clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
 
- 		xr_delete(_cl_globs._RCAST_Model);
+	vec_clear(_mu_refs);
+	clMsg("mem usage _mu_refs clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
+
+	mu_mesh_clear();
+	clMsg("mem usage mu clear mesh:		%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
+	
+	gl_mesh_clear();
+ 	clMsg("mem usage static clear mesh: %u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
+
+	vec_clear		(_g_deflectors);
+	clMsg("mem usage deflectors clear mesh: %u mb",		(u32(GetHeapMemory()) / 1024 / 1024));
+
+	xr_delete(_cl_globs._RCAST_Model);
 }
-
-
-void		xrLC_GlobalData::set_faces_indexses		()
-{
-}
-void		xrLC_GlobalData::set_vertices_indexses	()
-{
-}
-

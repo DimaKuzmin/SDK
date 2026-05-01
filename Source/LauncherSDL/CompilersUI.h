@@ -64,9 +64,7 @@ struct CompilersMode
 
 	// SPAWN COMPILER
 	bool AI_BuildSpawn			= false;
-	bool AI_Map_NoLimits		= false;
-
-	
+	bool AI_Map_NoLimits		= false;	
  	char AI_spawn_name[256];
 	char AI_StartActor[256];
 	bool AI_NoSeparatorCheck = true;
@@ -79,6 +77,12 @@ struct CompilersMode
 
 	xr_vector<LevelFileData> Files;
 	ImFont* CompilerIconsFont;
+
+	shared_str LevelName;
+	LPCSTR get_level_name()
+	{
+		return *LevelName;
+	}
 };
 void RenderMainUI();
 void RenderCompilerUI(int X, int Y);

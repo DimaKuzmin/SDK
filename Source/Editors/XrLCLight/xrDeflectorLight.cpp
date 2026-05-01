@@ -167,9 +167,7 @@ IC void LightPoint(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector 
 				}
 				else
 				{
-					add = (inlc_global_data()->gl_linear())
-						? scale * (1 - R / L.range)
-						: scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+					add = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
 				}
 				break;
 			}
@@ -264,9 +262,7 @@ IC void LightPoint_Embree(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P,
 				}
 				else
 				{
-					add = (inlc_global_data()->gl_linear())
-						? scale * (1 - R / L.range)
-						: scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
+					add = scale * (1 / (L.attenuation0 + L.attenuation1 * R + L.attenuation2 * sqD) - R * L.falloff);
 				}
 				break;
 			}

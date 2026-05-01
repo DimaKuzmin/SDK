@@ -233,9 +233,6 @@
     <ClCompile Include="xrPhase_AdaptiveHT.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>
-    <ClCompile Include="xrPhase_GI.cpp">
-      <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
-    </ClCompile>
     <ClCompile Include="xrPhase_MergeGeometry.cpp">
       <Filter>%2a%2a%2a COMPILER %2a%2a%2a</Filter>
     </ClCompile>

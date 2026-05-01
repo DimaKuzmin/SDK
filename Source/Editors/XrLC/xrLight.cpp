@@ -172,7 +172,8 @@ void CBuild::Light()
 	//****************************************** Implicit
  
  	Phase("LIGHT: Implicit...");
- 	ImplicitLighting();
+	extern void ImplicitLightingExec();
+	ImplicitLightingExec();
 
 	//****************************************** LMaps
   	LMaps();

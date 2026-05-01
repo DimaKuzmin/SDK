@@ -133,5 +133,5 @@ void CBuild::SaveTREE	(IWriter &fs)
 	for (xr_vector<LPCSTR>::iterator T=g_Shaders.begin(); T!=g_Shaders.end(); T++)
 		fs.w_stringZ	(*T);
 	fs.close_chunk		();
-	//mem_Compact			();
+ 
 }

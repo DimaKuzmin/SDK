@@ -1,11 +1,9 @@
 #include "stdafx.h"
 #include "xrMU_Model.h"
-//#include "build.h"
 #include "../../xrcore/xrPool.h"
 poolSS<_face,8*1024>	&mu_faces_pool();
 poolSS<_vertex,8*1024>	&mu_vertices_pool();
-//extern u32		version;
-
+ 
 void xrMU_Model::Load	( IReader& F, u32 version )
 {
 	F.r_stringZ			(m_name);
@@ -27,8 +25,7 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 
 	xr_vector<u32>			sm_groups;
 	sm_groups.resize		(b_faces.size());
-	R_ASSERT				( version > 17 );
-	F.r	(&*sm_groups.begin(),(u32)sm_groups.size()*sizeof(u32));
+ 	F.r	(&*sm_groups.begin(),(u32)sm_groups.size()*sizeof(u32));
 
 	// CONVERT and OPTIMIZE
 	for (u32 v_it=0; v_it<b_vertices.size(); v_it++)
@@ -41,15 +38,7 @@ void xrMU_Model::Load	( IReader& F, u32 version )
 		_face *face = create_face		(m_vertices[F.v[0]],m_vertices[F.v[1]],m_vertices[F.v[2]],F);
 		face->sm_group = sm_groups[f_it];
 	}
-/*
-	// CONVERT and OPTIMIZE
-	for (u32 it=0; it<b_faces.size(); it++)
-	{
-		b_face&	F			= b_faces[it];
-		load_create_face	(b_vertices[F.v[0]],b_vertices[F.v[1]],b_vertices[F.v[2]],F);
-	}
-*/
-	// 
+  
 	clMsg	("* Loading model: '%s' - v(%d/%d), f(%d/%d)",*m_name,m_vertices.size(),b_vertices.size(),m_faces.size(),b_faces.size());
 }
 

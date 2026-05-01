@@ -97,7 +97,7 @@ static		xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
 void CBuild::xrPhase_TangentBasis()
 {
 	// ************************************* Declare inputs
-	Status						("Declarator...");
+	// Status						("Declarator...");
 	u32 v_count_reserve			= iFloor(float(lc_global_data()->g_vertices().size())*1.33f);
 	u32 i_count_reserve			= 3*lc_global_data()->g_faces().size();
 	
@@ -115,10 +115,10 @@ void CBuild::xrPhase_TangentBasis()
 
 	u32			v_was	= lc_global_data()->g_vertices().size();
 	u32			v_become= mender_in_out_verts.size();
-	clMsg		("duplication: was[%d] / become[%d] - %2.1f%%",v_was,v_become,100.f*float(v_become-v_was)/float(v_was));
+	// clMsg		("duplication: was[%d] / become[%d] - %2.1f%%",v_was,v_become,100.f*float(v_become-v_was)/float(v_was));
 
 	// ************************************* Perform mungle
-	Status			("Calculating basis...");
+	// Status			("Calculating basis...");
 	
 	MeshMender	mender	;
 
@@ -137,8 +137,7 @@ void CBuild::xrPhase_TangentBasis()
 	)
 	{
 		Debug.fatal	(DEBUG_INFO, "NVMeshMender failed " );
-		//Debug.fatal	(DEBUG_INFO,"NVMeshMender failed (%s)",mender.GetLastError().c_str());
-	}
+ 	}
 
 	// ************************************* Bind declarators
 	// bind

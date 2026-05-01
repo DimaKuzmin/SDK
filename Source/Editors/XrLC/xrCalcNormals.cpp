@@ -13,10 +13,14 @@ void CBuild::CalcNormals()
 {
 	Status("Calculate Normals ...");
 
+	CTimer TStats;  TStats.Start();
  	calculate_normals<Vertex>::calc_normals( lc_global_data()->g_vertices(), lc_global_data()->g_faces() );
 	
 	// Models
 	Status	("Calculate Normals Models...");
 	MU_ModelsCalculateNormals();
+
+
+	clMsg("Calculate Normals : %u ms", TStats.GetElapsed_ms());
 }
 

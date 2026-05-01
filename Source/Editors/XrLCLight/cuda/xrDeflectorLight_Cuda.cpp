@@ -9,10 +9,6 @@
 
 // Создание тоже может занимать время
 thread_local UVGridLazy<UVtri> uv_grid_cuda;
-
-// 08.12.2025 (Убрал 2Hash Нужно было для ускорения поиска по треугольникам) (для GPU кода будет сложно сделать)
-// 14.12.2025 (Повыпиливал лишние действие с Edge) там можно было и так посчитать ;
-
 extern void Jitter_Select(Fvector2*& Jitter, u32& Jcount);
 
 /// Запрашивает лучи у ГПУ
@@ -225,6 +221,11 @@ bool	compress_Zero(lm_layer& lm, u32 rms);
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
 {
+
+	// for (u32 ref = 254; ref > 0; ref--)
+	// 	if (!ApplyBorders(layer, ref))
+	// 		break;
+
 	if (compress_Zero(layer, rms_zero)) return;		// already with borders (Se7kills: Быстро очень обычно)
 
 	// se7kills : Убрал 2й проход со сжатием !

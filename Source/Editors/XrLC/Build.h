@@ -65,18 +65,11 @@ public:
 	Shader_xrLC_LIB					&shaders();
  
 	void	mem_Compact				();
-	void	mem_CompactSubdivs		();
 public:
-	void	CopyTexture(LPCSTR N, IWriter* w);
 	void	Load					(const b_params& P, const IReader&  fs);
-
-	void	TestMergeGeom(IWriter* writer);
-	void	ExportRayCastModel(IWriter* writer);
-
 	void	Run						(LPCSTR path);
  
 	void	RunAfterLight			( IWriter* fs	);
-	void	Tesselate				();
 	void	PreOptimize				();
 	void	CorrectTJunctions		();
 
@@ -96,16 +89,13 @@ public:
 	void	BuildCollectionDB		(CDB::CollectorPacked& CL);
  
 	void	SaveForOthers			(CDB::CollectorPacked& CL);
-
-	void	xrPhase_Radiosity		();
 		
 	void	IsolateVertices			(BOOL bProgress);
 	void	xrPhase_ResolveMaterials();
 	void	xrPhase_UVmap			();
 	void	xrPhase_Subdivide		();
-	void	ImplicitLighting		();
-	void	Light_prepare			();
-	
+
+	void	Light_prepare			();	
 	void	Light					();
 
 	void	LMaps					();
@@ -132,8 +122,6 @@ public:
 
 	CBuild	();
 	~CBuild	();
-
-	xr_map<u16, xr_vector<u32> >			geomX_Uvmap;
 };
 
 extern CBuild*		pBuild;			;

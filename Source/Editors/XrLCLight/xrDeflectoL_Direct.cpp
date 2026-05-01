@@ -1,11 +1,10 @@
 ﻿#include "stdafx.h"
-#include "..\LauncherSDL\xrThread.h"
+
 #include "xrdeflector.h"
 #include "xrlc_globaldata.h"
 #include "light_point.h"
 #include "xrface.h"
-#include "xrLight_Implicit.h"
-
+ 
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
 void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
@@ -45,8 +44,7 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		VERIFY(inlc_global_data()->RCAST_Model());
 
 
-		int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_DEFAULT;
-		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, flags, skip);
+ 		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, GetCurrentFlags(), skip);
 
 		C.mul(.5f);
 		lm.surface[_y * lm.width + _x]._set(C);
@@ -222,8 +220,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 						// We found triangle and have barycentric coords
  						FromBarry(UVTri->owner, wP, wN, B);
 
-						int flags = (inlc_global_data()->b_norgb() ? LP_dont_rgb : 0) | (inlc_global_data()->b_nosun() ? LP_dont_sun : 0) | (inlc_global_data()->b_nohemi() ? LP_dont_hemi : 0) | LP_UseFaceDisable;
-						LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, flags, UVTri->owner);
+						LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, GetCurrentFlags(), UVTri->owner);
 						Fcount += 1;
  						break;
 					}

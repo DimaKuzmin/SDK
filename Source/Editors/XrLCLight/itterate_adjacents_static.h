@@ -1,8 +1,30 @@
-#ifndef _ITTERATE_ADJACENTS_STATIC_H_
-#define _ITTERATE_ADJACENTS_STATIC_H_
+#pragma once
+
 #include "../XrECore/Editor/face_smoth_flags.h"
 
 
+template	<typename itterate_adjacents_params>
+class itterate_adjacents
+{
+	typedef	typename itterate_adjacents_params::type_vertex		type_vertex;
+	typedef	typename itterate_adjacents_params::type_face		type_face;
+
+public:
+
+	typedef	itterate_adjacents_params recurse_tri_params;
+
+	static	void RecurseTri(u32	start_face_idx, recurse_tri_params& p)
+	{
+
+		for (u32 test_face_idx = 0; test_face_idx < p.current_adjacents_size(); ++test_face_idx)
+		{
+			if (p.add_adjacents(start_face_idx, test_face_idx))
+				RecurseTri(test_face_idx, p);
+		}
+
+	}
+
+};
 
 
 
@@ -63,13 +85,9 @@ private:
 
 IC static bool do_connect_faces( const type_face &start, const type_face &test, u16 start_common_edge_idx, u16 test_common_edge_idx, float sm_cos )
 	{
-		if( g_using_smooth_groups )
+		if(!gCompilerMode.LC_NoSMG)
 		{
-			if( g_smooth_groups_by_faces )	
-				return ( start.sm_group != u32(-1) && 
-						start.sm_group == test.sm_group );
-			else
-				return do_connect_faces_by_faces_edge_flags( start.sm_group, test.sm_group, start_common_edge_idx, test_common_edge_idx ); 
+			return do_connect_faces_by_faces_edge_flags( start.sm_group, test.sm_group, start_common_edge_idx, test_common_edge_idx ); 
 		}
 		else
 		{
@@ -121,8 +139,3 @@ public:
 	}
 
 };
-
-
-
-
-#endif

@@ -60,6 +60,9 @@
     <Filter Include="RayTracing\Cuda\Packed Deflectors">
       <UniqueIdentifier>{bdb26ca2-9ffc-4afd-96ec-d194d6a6523a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Light\Mesh\calculate_normals">
+      <UniqueIdentifier>{01d3cb29-0f09-4ce0-a06a-4eb95d7d89ab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="_d3d_extensions.h">
@@ -98,13 +101,7 @@
     <ClInclude Include="mu_model_light.h">
       <Filter>Light\models\mu_light</Filter>
     </ClInclude>
-    <ClInclude Include="xrLight_Implicit.h">
-      <Filter>Light\LightImplicit</Filter>
-    </ClInclude>
     <ClInclude Include="xrLight_ImplicitDeflector.h">
-      <Filter>Light\LightImplicit</Filter>
-    </ClInclude>
-    <ClInclude Include="xrLight_ImplicitRun.h">
       <Filter>Light\LightImplicit</Filter>
     </ClInclude>
     <ClInclude Include="uv_tri.h">
@@ -129,9 +126,6 @@
       <Filter>Light\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="calculate_normals.h">
-      <Filter>Light\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="itterate_adjacents_static.h">
       <Filter>Light\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="MeshStructure.h">
@@ -223,6 +217,18 @@
     <ClInclude Include="embree_raytracing\EmbreeGeomBuilder.h">
       <Filter>RayTracing\EmbreeLib</Filter>
     </ClInclude>
+    <ClInclude Include="FaceComponentSplitter.h">
+      <Filter>Light\Mesh\calculate_normals</Filter>
+    </ClInclude>
+    <ClInclude Include="calculate_normals.h">
+      <Filter>Light\Mesh\calculate_normals</Filter>
+    </ClInclude>
+    <ClInclude Include="itterate_adjacents_static.h">
+      <Filter>Light\Mesh\calculate_normals</Filter>
+    </ClInclude>
+    <ClInclude Include="xrMu_Resampling.h">
+      <Filter>Light\models\mu_light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -274,9 +280,6 @@
       <Filter>Light\LightImplicit</Filter>
     </ClCompile>
     <ClCompile Include="xrLight_ImplicitDeflector.cpp">
-      <Filter>Light\LightImplicit</Filter>
-    </ClCompile>
-    <ClCompile Include="xrLight_ImplicitThread.cpp">
       <Filter>Light\LightImplicit</Filter>
     </ClCompile>
     <ClCompile Include="uv_tri.cpp">
@@ -395,6 +398,9 @@
     </ClCompile>
     <ClCompile Include="cuda\CUDAStatistic.cpp">
       <Filter>RayTracing\Cuda</Filter>
+    </ClCompile>
+    <ClCompile Include="cuda\xrMU_Reffernce_Cuda.cpp">
+      <Filter>RayTracing\Cuda\Packed Deflectors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

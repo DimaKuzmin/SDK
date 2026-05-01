@@ -217,6 +217,4 @@ void CBuild::Flex2OGF()
   			g_tree.push_back(pOGF);
 		};
 	}
-	 
-	g_XSplit.clear();
 }

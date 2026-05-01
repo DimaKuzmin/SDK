@@ -65,8 +65,7 @@ void destroy_face( Face* &v, bool unregister )
 
 Tvertex<DataVertex>::Tvertex()
 {
-	
-	VERIFY( inlc_global_data() );
+ 	VERIFY( inlc_global_data() );
 	if( inlc_global_data()->vert_construct_register() )
 	{	
  		inlc_global_data()->g_vertices().push_back(this);
@@ -144,18 +143,7 @@ template<>
 void Face::	Failure		()
 {
 	dwInvalidFaces			++;
-
-	// clMsg		("* ERROR: Invalid face. (A=%f,e0=%f,e1=%f,e2=%f)",
-	// 	CalcArea(),
-	// 	v[0]->P.distance_to(v[1]->P),
-	// 	v[0]->P.distance_to(v[2]->P),
-	// 	v[1]->P.distance_to(v[2]->P)
-	// 	);
-	// clMsg		("*        v0[%f,%f,%f], v1[%f,%f,%f], v2[%f,%f,%f]",
-	// 	VPUSH(v[0]->P),
-	// 	VPUSH(v[1]->P),
-	// 	VPUSH(v[2]->P)
-	// 	);
+  
 	inlc_global_data()->err_invalid().w_fvector3	(v[0]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[1]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[2]->P);
@@ -190,21 +178,6 @@ void start_unwarp_recursion()
  
 void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces )
 {
-	/* 
-	if (pDeflector)					return;
-	if (!D->OA_Place(this))		    return;
-	
-	faces.push_back(this);
-
-	// now iterate on all our neigbours
-	for (int i=0; i<3; ++i) 
-	for (vecFaceIt it=v[i]->m_adjacents.begin(); it!=v[i]->m_adjacents.end(); ++it) 
-	{
-		affected		+= 1;
-		(*it)->OA_Unwarp(D, faces);
-	}
-	*/
-
 	xr_stack<Face*> st;
 
 	Face* f = this;
@@ -261,3 +234,23 @@ BOOL	DataFace::hasImplicitLighting()
 	return (T.THM.flags.test(STextureParams::flImplicitLighted));
 }
   
+void FromBarry(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+{
+	Vertex* V1 = F->v[0];
+	Vertex* V2 = F->v[1];
+	Vertex* V3 = F->v[2];
+	wP.from_bary(V1->P, V2->P, V3->P, B);
+	wN.from_bary(V1->N, V2->N, V3->N, B);
+	wN.normalize();
+}
+
+
+void FromBarryNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
+{
+	Vertex* V1 = F->v[0];
+	Vertex* V2 = F->v[1];
+	Vertex* V3 = F->v[2];
+	wP.from_bary(V1->P, V2->P, V3->P, B);
+	wN.from_bary(V1->N, V2->N, V3->N, B);
+	wN.normalize();
+}

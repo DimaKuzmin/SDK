@@ -35,8 +35,6 @@ public:
 		u32		sw_id;
 	};
 
-	typedef xr_vector<_vertex>::iterator dummy_compiler_treatment;
-
 	//** 
 	typedef	xr_vector<_vertex*>			v_vertices;
 	typedef	v_vertices::iterator		v_vertices_it;

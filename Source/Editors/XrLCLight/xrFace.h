@@ -16,24 +16,23 @@ struct  DataVertex;
 typedef	Tvertex< DataVertex> Vertex;
 
 typedef std::pair<Vertex*, Vertex *>	PAIR_VV;
-typedef xr_map<Vertex*,Vertex*>			map_v2v;	// vertex to vertex translation
-typedef map_v2v::iterator				map_v2v_it;
-
 
 
 struct  XRLC_LIGHT_API DataVertex	: public base_Vertex
 {
 public:
-	//vecAdj		m_adjacents;
-	typedef		DataFace			DataFaceType;
+ 	typedef		DataFace			DataFaceType;
 
-	IC	BOOL	 similar			( Tvertex<DataVertex> &V, float eps );
-	IC  BOOL	 similar_avx		( Tvertex<DataVertex> &V, float eps );
-
+	bool similar(Tvertex<DataVertex>& V, float eps)
+	{
+		return P.similar(V.P, eps);
+	}
+ 
 	DataVertex				(){};
 	virtual		~DataVertex				(){};
 };
 
+ 
 typedef	 Tface<DataVertex>  Face;
 
 
@@ -59,27 +58,16 @@ public:
 	virtual ~DataFace(){};
 };
 
-class Material;
-class Edge;
-
-// Typedefs
-namespace detail
-{
-	typedef xr_vector<Vertex>::iterator	dummy_compiler_treatment;
-} // namespace detail
- 
 #include		"xrUVpoint.h"
-#include		"xrFaceInline.h"
-
-
+ 
+ 
 extern XRLC_LIGHT_API bool						g_bUnregister;
 
 #pragma pack(pop)
  
-extern "C" XRLC_LIGHT_API	void start_unwarp_recursion	();
+extern void start_unwarp_recursion	();
+extern void destroy_vertex			( Vertex* &v, bool unregister );
+extern void destroy_face			( Face* &v, bool unregister );
 
-extern "C" XRLC_LIGHT_API	void destroy_vertex			( Vertex* &v, bool unregister );
-
-							void destroy_face			( Face* &v, bool unregister );
-
- 
+extern void FromBarry(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
+extern void FromBarryNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B);

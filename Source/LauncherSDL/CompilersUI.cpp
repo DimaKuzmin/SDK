@@ -34,7 +34,27 @@ void DrawAIConfig();
 void DrawDOConfig();
 void DrawLCConfig();
 
+static bool autoScroll = true;
 bool ShowMainUI = true;
+
+void DrawBottonUI()
+{
+	if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
+		autoScroll = !autoScroll;
+	ImGui::SameLine();
+	ImGui::Checkbox("SwitchUI", &ShowMainUI);
+	ImGui::SameLine();
+	ImGui::TextColored(ImVec4(172, 172, 255, 255), "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
+	ImGui::SameLine();
+	if (ImGui::Button("SwitchTheme"))
+	{
+		if (CIMStyle.isRedTheme)
+			CIMStyle.BlackTheme();
+		else
+			CIMStyle.RedTheme();
+	}
+}
+
 void RenderMainUI()
 {
  	Uint32 flags = SDL_GetWindowFlags(g_AppInfo.Window);
@@ -53,14 +73,15 @@ void RenderMainUI()
 		return;
 	}
 
-	if (Size[0] != 1000 || Size[1] != 560)
+	if (Size[0] != 1000 || Size[1] != 615)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 560);
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 615);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
 	{
-		ImVec2 ListBoxSize = { float(Size[0] - 20), float(Size[1] - 75) };
+		u32 WindowSizeY = 100;
+		ImVec2 ListBoxSize = { float(Size[0] - 20), float(Size[1] - WindowSizeY) };
 		if (ImGui::BeginTable("##Levels", 5, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize))
 		{
 			// 
@@ -75,7 +96,7 @@ void RenderMainUI()
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
 
-			ImVec2 ListBoxSize2 = { 200, float(Size[1] - 115) };
+			ImVec2 ListBoxSize2 = { 200, float(Size[1] - (WindowSizeY + 40) ) };
 			if (ImGui::BeginTable("##Levels", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_Borders | ImGuiTableFlags_ScrollY, ListBoxSize2))
 			{
 				ImGui::TableSetupColumn("Name");
@@ -121,9 +142,9 @@ void RenderMainUI()
 			ImGui::EndTable();
 		}
 	}
+	
 	auto BSize = ImGui::GetContentRegionAvail();
-
-	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
+ 	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 	{
 		bool isReady = false;
 		if (gCompilerMode.LC || gCompilerMode.DO)
@@ -162,6 +183,8 @@ void RenderMainUI()
 		}
 
 	}
+
+	DrawBottonUI();
 
 	ImGui::End();
 }
@@ -590,7 +613,6 @@ void DrawGpuGraph(const float* values, int count, float maxValue = 100.0f)
 
 void RenderCompilerUI(int X, int Y)
 {
- 	static bool autoScroll = true;
 	static bool hideLogSection = false;
 	static bool ResizeMaximal = true;
  	// Set up the window
@@ -793,6 +815,10 @@ void RenderCompilerUI(int X, int Y)
 								ImGui::TextColored(getLogColor_new((char*)line.c_str()), "%s", line.c_str());
 							}
 						}
+
+ 						if (autoScroll)
+							ImGui::SetScrollY(ImGui::GetScrollMaxY());
+
 						ImGui::EndChild();
 					}
 
@@ -816,15 +842,8 @@ void RenderCompilerUI(int X, int Y)
   						ImGui::EndChild();
 					}
 
-
-					// if (autoScroll)
-					// 	ImGui::SetScrollY(ImGui::GetScrollMaxY());
-
 					ImGui::EndChild();
 				}
-				
-				if (autoScroll)
-					ImGui::SetScrollY(ImGui::GetScrollMaxY());
 			}
 
 			ImGui::Separator();
@@ -832,25 +851,8 @@ void RenderCompilerUI(int X, int Y)
 		 
 	
 		// draw bottom buttons
-		if (true)
-		{
-			if (ImGui::Button(autoScroll ? "Disable Auto-Scroll" : "Enable Auto-Scroll"))
-				autoScroll = !autoScroll;
- 			
-			ImGui::SameLine();
- 			ImGui::TextColored(getLogColor('*'), "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
- 			ImGui::SameLine();
-			if (ImGui::Button("SwitchTheme"))
-			{
-				if (CIMStyle.isRedTheme)
-					CIMStyle.BlackTheme();
-				else
-					CIMStyle.RedTheme();
-			}
- 		}
-
-	
-		
+ 		DrawBottonUI();		
 		ImGui::End();
 	}	
 }
+

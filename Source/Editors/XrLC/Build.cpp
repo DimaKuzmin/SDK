@@ -12,16 +12,12 @@
 #include "../XrLCLight/xrDeflector.h"
 #include "../XrLCLight/xrMU_Model_Reference.h"
 #include "../XrLCLight/cuda/xrDeflectorLight_Packed.h"
- 
-void	calc_ogf		( xrMU_Model &	mu_model );
+#include "OGF_Face.h"
+
+void	export_ogf(xrMU_Reference& mu_mode);
+void	calc_ogf(xrMU_Model& mu_model);
 void	export_geometry	( xrMU_Model &	mu_model );
-
-void	export_ogf		( xrMU_Reference& mu_reference );
  
-using namespace			std;
-struct OGF_Base;
-SBuildOptions			g_build_options;
-
 xr_vector<OGF_Base *>	g_tree;
 vec2Face				g_XSplit;
   
@@ -60,7 +56,20 @@ CBuild::CBuild()
 
 CBuild::~CBuild()
 {
+	clMsg("mem usage start clearing:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
 	destroy_global_data();
+ 
+ 	for (auto OGF : g_tree)
+ 		xr_delete(OGF);
+ 	g_tree.clear();
+	g_tree.shrink_to_fit();
+	clMsg("mem usage g_tree clearing:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
+	for (auto faces : g_XSplit)
+		xr_delete(faces);
+	g_XSplit.clear();
+	g_XSplit.shrink_to_fit();
+	clMsg("mem usage g_XSplit clearing:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
 }
  
 CMemoryWriter&	CBuild::err_invalid()
@@ -300,9 +309,4 @@ xr_vector<xrMU_Reference*>&CBuild::mu_refs()
 {
 	VERIFY(lc_global_data()); 
 	return lc_global_data()->mu_refs(); 
-}
-
-void CBuild::ImplicitLighting()
-{
-	::ImplicitLighting( g_build_options.b_net_light );
 }

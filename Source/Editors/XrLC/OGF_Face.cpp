@@ -223,7 +223,7 @@ void OGF::MakeProgressive(float metric_limit)
 	if (data.faces.size() < c_PM_FaceLimit * 4)		return;			// nv40 Теперь только
 
 	if (g_params().m_quality == ebqDraft)			return;
-	if (g_build_options.b_noise)				return;
+	if (gCompilerMode.LC_Noise)						return;
 
 	// Есть шанс словить вылет
 	if (data.faces.size() > 32 * 1024)

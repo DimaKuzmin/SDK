@@ -1,8 +1,10 @@
-#ifndef __CALCULATE_NORMALS_H__
-#define __CALCULATE_NORMALS_H__
+ï»¿#pragma once
 
+#include "../XrECore/Editor/face_smoth_flags.h"
+// #include "FaceComponentSplitter.h"
 #include "itterate_adjacents_static.h"
-#include "../XrECore/Editor/itterate_adjacents.h"
+
+
 
 template	<typename typeVertex>
 class calculate_normals
@@ -19,66 +21,40 @@ class calculate_normals
 
 	typedef vecFace												vecAdj;
 	typedef typename vecAdj::iterator							vecAdjIt;
-private:
 
-	typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
+private:
+    typedef  itterate_adjacents< itterate_adjacents_params_static<type_vertex> > itterate_adjacents_type;
 
 public:
 	static void	calc_normals(vecVertex& vertices, vecFace& faces)
 	{
+        u32 Vcount = vertices.size();
+        float sm_cos = _cos(deg2rad(g_params().m_sm_angle));
 
-		u32		Vcount = vertices.size();
-		float	p_total = 0;
-		float	p_cost = 1.f / (Vcount);
-
-		// Clear temporary flag
-		// Status("Processing Normals ...");
-		float sm_cos = _cos(deg2rad(g_params().m_sm_angle));
-
-		// CTimer t;
-		// t.Start();
-		for (vecFaceIt it = faces.begin(); it != faces.end(); it++)
+        // ----------------------------------------------------
+        // 1. Ð¡Ð±Ñ€Ð°ÑÑ‹Ð²Ð°ÐµÐ¼ Ð¸ ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸ Ñƒ Ð²ÑÐµÑ… Ð³Ñ€Ð°Ð½ÐµÐ¹
+        // ----------------------------------------------------
+        for (auto F : faces)
+        {
+			F->flags.bSplitted = false;
+			F->CalcNormal();
+        }
+ 
+  		for (u32 I = 0; I < Vcount; I++)
 		{
-			(*it)->flags.bSplitted = true;
-			(*it)->CalcNormal();
-		}
-
-		// Msg("Processing Time For Vertexies: %u", t.GetElapsed_ms());
-
-		// remark:
-		//	we use Face's bSplitted value to indicate that face is processed
-		//  so bSplitted means bUsed
-
-		
-		u64 CreateCopy = 0;
-		u64 recurse_tri_params = 0;
-		u64 ASorting = 0;
-		u64 AReplace = 0;
-
-		for (u32 I = 0; I < Vcount; I++)
-		{
-			// Ôèãíÿ íàãðóæàåò 
-			type_vertex* pTestVertex = vertices[I];
+ 			type_vertex* pTestVertex = vertices[I];
 			for (auto& F : pTestVertex->m_adjacents)
-			{
  				F->flags.bSplitted = false;
-			}
+ 
 			std::sort(pTestVertex->m_adjacents.begin(), pTestVertex->m_adjacents.end());
-			// Êîíåö òåñòîâ
-
-
 			while (pTestVertex->m_adjacents.size())
 			{
-				// Ñèëüíî ãðóçèò íàãðóæàåò > 30sec 
 				vecFace new_adj;
 				itterate_adjacents_type::recurse_tri_params p(pTestVertex, new_adj, sm_cos);
-				itterate_adjacents_type::RecurseTri(0, p); 
-				// End 
+				itterate_adjacents_type::RecurseTri(0, p);
 
-				// 5sec
 				type_vertex* pNewVertex = pTestVertex->CreateCopy_NOADJ(vertices);
- 
-				// 9sec
+
 				for (u32 a = 0; a < new_adj.size(); ++a)
 				{
 					type_face* test = new_adj[a];
@@ -87,19 +63,27 @@ public:
 
 				pNewVertex->normalFromAdj();
 			}
-
-			
-
-			Progress(p_total += p_cost);
 		}
-		Progress(1.f);
 
-
-		// clMsg("Total Time Elapsed: Copy: %llu, AReplace: %llu, ASorting: %llu, recurse_tri: %llu", 
-		// 	CreateCopy  / 10000,
-		// 	AReplace / 10000,
-		// 	ASorting / 10000,
-		// 	recurse_tri_params / 10000);
+        // for (u32 I = 0; I < Vcount; I++)
+        // {
+        //     // Ð¤Ð¸Ð³Ð½Ñ Ð½Ð°Ð³Ñ€ÑƒÐ¶Ð°ÐµÑ‚ 
+        //     type_vertex* pTestVertex = vertices[I];
+        // 
+        //     FaceComponentSplitter<type_vertex> splitter(pTestVertex, sm_cos);
+        //     xr_vector<xr_vector<type_face*>> components;
+        //     splitter.BuildComponents(components);
+        // 
+        //     for (auto& comp : components)
+        //     {
+        //         type_vertex* newV = pTestVertex->CreateCopy_NOADJ(vertices);
+        // 
+        //         for (type_face* f : comp)
+        //             f->VReplace(pTestVertex, newV);
+        // 
+        //         newV->normalFromAdj();
+        //     }
+        // }
 
 		// Destroy unused vertices
 
@@ -116,4 +100,3 @@ public:
 			(*it)->flags.bSplitted = false;
 	}
 };
-#endif //__CALCULATE_NORMALS_H__

@@ -14,29 +14,6 @@ BOOL	exact_normalize					(Fvector3&	a);
 BOOL	exact_normalize					(float*		a);
 
 
-//#include "../xrLCLight/xrFace.h"
-//#include "../xrLCLight/xrDeflector.h"
-//#include "vbm.h"
-//#include "OGF_Face.h"
-
-
-
-struct SBuildOptions
-{
-	BOOL						b_radiosity;
-	BOOL						b_noise;
-	BOOL						b_net_light;
-	SBuildOptions				():b_radiosity(FALSE), b_noise(FALSE), b_net_light(FALSE) 
-	{
-
-	}
-};
-
-extern SBuildOptions g_build_options;
-
-
-
-
 
 
 

@@ -32,10 +32,7 @@ static const int	idx2edge	[3][3]  = {
 	{-1,  0,  2},
 	{ 0, -1,  1},
 	{ 2,  1, -1}
-};
-extern XRLC_LIGHT_API bool g_using_smooth_groups;
-extern XRLC_LIGHT_API bool g_smooth_groups_by_faces;
- 
+}; 
 
 			XRLC_LIGHT_API void	xrCompileDO		 (u32 samples);
 extern "C"	XRLC_LIGHT_API  b_params	&g_params();

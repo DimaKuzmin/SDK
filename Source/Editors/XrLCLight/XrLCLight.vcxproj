@@ -68,6 +68,7 @@
     <ClInclude Include="base_face.h" />
     <ClInclude Include="base_lighting.h" />
     <ClInclude Include="b_build_texture.h" />
+    <ClInclude Include="FaceComponentSplitter.h" />
     <ClInclude Include="calculate_normals.h" />
     <ClInclude Include="cuda\CUDAContext.h" />
     <ClInclude Include="cuda\CUDAGeometryBuilder.h" />
@@ -111,11 +112,10 @@
     <ClInclude Include="xrLC_GlobalData.h" />
     <ClInclude Include="xrLC_Light.h" />
     <ClInclude Include="xrLightVertex.h" />
-    <ClInclude Include="xrLight_Implicit.h" />
     <ClInclude Include="xrLight_ImplicitDeflector.h" />
-    <ClInclude Include="xrLight_ImplicitRun.h" />
     <ClInclude Include="xrMU_Model.h" />
     <ClInclude Include="xrMU_Model_Reference.h" />
+    <ClInclude Include="xrMu_Resampling.h" />
     <ClInclude Include="_d3d_extensions.h" />
   </ItemGroup>
   <ItemGroup>
@@ -134,6 +134,7 @@
     <ClCompile Include="cuda\xrDeflectorLight_Packed.cpp" />
     <ClCompile Include="cuda\xrDeflectorLight_Cuda.cpp" />
     <ClCompile Include="cuda\xrLight_Implicit_Cuda.cpp" />
+    <ClCompile Include="cuda\xrMU_Reffernce_Cuda.cpp" />
     <ClCompile Include="detail_slot_calculate.cpp" />
     <ClCompile Include="embree_raytracing\EmbreeGeomBuilder.cpp" />
     <ClCompile Include="embree_raytracing\EmbreeRayTrace.cpp" />
@@ -168,7 +169,6 @@
     <ClCompile Include="xrLightVertex.cpp" />
     <ClCompile Include="xrLight_Implicit.cpp" />
     <ClCompile Include="xrLight_ImplicitDeflector.cpp" />
-    <ClCompile Include="xrLight_ImplicitThread.cpp" />
     <ClCompile Include="xrMU_Model.cpp" />
     <ClCompile Include="xrMU_Model_Calc_faceopacity.cpp" />
     <ClCompile Include="xrMU_Model_Calc_lighting.cpp" />

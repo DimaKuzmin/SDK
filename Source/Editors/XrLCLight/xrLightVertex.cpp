@@ -136,7 +136,8 @@ public:
 
 				CDB::COLLIDER	DB;
 				DB.ray_options	(0);
-				LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), (lc_global_data()->b_nosun()?LP_dont_sun:0)|LP_dont_hemi, 0);
+				LightPoint			(&DB, lc_global_data()->RCAST_Model(), vC, V->P, V->N, lc_global_data()->L_static(), LP_dont_hemi, 0);
+
 				vC._tmp_			= v_trans;
 				vC.mul				(.5f);
 				vC.hemi				= old.hemi;			// preserve pre-calculated hemisphere

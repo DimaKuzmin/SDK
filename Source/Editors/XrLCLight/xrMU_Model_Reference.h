@@ -1,5 +1,4 @@
-#ifndef XRMUMODEL_REFERENCE_H
-#define XRMUMODEL_REFERENCE_H
+#pragma once
 
 #include "base_color.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
@@ -44,4 +43,3 @@ public:
 
 
 };
-#endif

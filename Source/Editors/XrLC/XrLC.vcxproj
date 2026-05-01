@@ -260,7 +260,6 @@
     <ClCompile Include="xrMU_Model_export_OGF.cpp" />
     <ClCompile Include="xrOptimizeCFORM_qslim.cpp" />
     <ClCompile Include="xrPhase_AdaptiveHT.cpp" />
-    <ClCompile Include="xrPhase_GI.cpp" />
     <ClCompile Include="xrPhase_MergeGeometry.cpp" />
     <ClCompile Include="xrPhase_MergeLM.cpp" />
     <ClCompile Include="xrPhase_MergeLM_Surface.cpp" />

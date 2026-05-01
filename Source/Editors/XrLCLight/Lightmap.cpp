@@ -134,15 +134,14 @@ void CLightmap::Save( LPCSTR path )
 
 	// CTimer t; t.Start();
 	// Status("Apply Borders...");
-	// 
 	// int p = 0;
 	// for (u32 ref=254; ref>(254-16); ref--) 
 	// {
 	// 	p++;
-	// 	ApplyBorders	(lm,ref);
+	// 	ApplyBorders	(lm, ref);
  	// 	Progress		( float (p / 16 ) );
 	// }
-	// clMsg("Borders: %d sec", t.GetElapsed_sec());
+	// clMsg("Borders: %u sec", t.GetElapsed_ms());
 
 	Progress			(1.f);
  

@@ -1,8 +1,7 @@
 ﻿#pragma once
-
-#include "xrfacedefs.h"
 #include "tcf.h"
- 
+#include "xrFaceDefs.h"
+
 struct XRLC_LIGHT_API UVtri : public _TCF		
 {
 	Face*	owner;

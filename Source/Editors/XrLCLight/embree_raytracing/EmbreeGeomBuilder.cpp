@@ -19,7 +19,7 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
 
     if (raw_faces.empty())
     {
-        clMsg("$Raw Faces : %u size", raw_faces.size());
+        // clMsg("$Raw Faces : %u size", raw_faces.size());
         return;
     }
 

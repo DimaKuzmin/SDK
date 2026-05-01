@@ -39,11 +39,11 @@ bool OptixContext::Initialize()
 
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
-	options.logCallbackLevel = 4;
+	options.logCallbackLevel = 0;
 
-#ifdef DEBUG
-	options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
-#endif
+// #ifdef DEBUG
+// 	options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
+// #endif
 
 	// В этом режиме OptiX требует НЕ nullptr
 	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));

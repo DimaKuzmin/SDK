@@ -217,7 +217,7 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 		clMsg				("* %16s: %d","faces",lc_global_data()->g_faces().size());
 		F->close			();
 
-		if(g_using_smooth_groups)
+		if(!gCompilerMode.LC_NoSMG)
 		{
 			F = fs.open_chunk		(EB_SmoothGroups);
 			
