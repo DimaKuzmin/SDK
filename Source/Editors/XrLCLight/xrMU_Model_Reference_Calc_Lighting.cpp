@@ -5,7 +5,7 @@
 
 #include "light_point.h"
 #include "fitter.h"
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrLC_GlobalData.h"
 #include "xrMu_Resampling.h"
 

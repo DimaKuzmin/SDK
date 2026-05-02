@@ -1,7 +1,7 @@
 ﻿#include "stdafx.h"
 
 #include "uv_tri.h"
-#include "xrface.h"
+#include "xrFace.h"
 
 #include "xrLC_GlobalData.h"
 

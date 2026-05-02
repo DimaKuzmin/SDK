@@ -15,10 +15,10 @@ xrCriticalSection csMerge;
 struct data_material
 {
 	int face_id = 0;
-	vecFace* subdiv = nullptr;
+	xr_vector<Face*>* subdiv = nullptr;
 	bool merged = false;
 	Fbox bbox;
-	data_material(int fID, Fbox box, vecFace* faces)
+	data_material(int fID, Fbox box, xr_vector<Face*>* faces)
 	{
 		subdiv = faces;
 		bbox = box;
@@ -40,7 +40,7 @@ ICF void	MakeCube(Fbox& BB_dest, const Fbox& BB_src)
 	BB_dest.grow(max);
 }
 
-ICF void	CreateBox(vecFace& subdiv, Fbox& bb_base)
+ICF void	CreateBox(xr_vector<Face*>& subdiv, Fbox& bb_base)
 {
 	for (u32 it = 0; it < subdiv.size(); it++)
 	{
@@ -59,7 +59,7 @@ ICF BOOL	FaceEqual(Face* F1, Face* F2)
 	return TRUE;
 }
 
-ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
+ICF BOOL	NeedMerge(xr_vector<Face*>& subdiv, Fbox& bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -84,7 +84,7 @@ ICF BOOL	NeedMerge(vecFace& subdiv, Fbox& bb_base)
 }
 
 // Без постройки Fbox
-ICF BOOL	NeedMerge_for(vecFace& subdiv, Fbox bb_base)
+ICF BOOL	NeedMerge_for(xr_vector<Face*>& subdiv, Fbox bb_base)
 {
 	// 1. Amount of polygons
 	if (subdiv.size() >= u32(3 * c_SS_HighVertLimit / 4))
@@ -162,8 +162,8 @@ auto Validate = [](u32& CurrentProcessedID, u32& VecIndex, data_material& cmater
 					return;
 
 				float Volume = flt_max;
-				vecFace& TEST = *(g_XSplit[test.face_id]);
-				vecFace* subdiv = (g_XSplit[SelectedStart]);
+				xr_vector<Face*>& TEST = *(g_XSplit[test.face_id]);
+				xr_vector<Face*>* subdiv = (g_XSplit[SelectedStart]);
 
 				if (!FaceEqual(subdiv->front(), TEST.front())) return;
 
@@ -290,7 +290,7 @@ void MergeCandidate(u32 GridMAX, bool use_grid)
 				if (g_XSplit[faceID]->empty() || S_MERGE_DATA.merged)
 					continue;
 
-				vecFace& subdiv = *(g_XSplit[faceID]);
+				xr_vector<Face*>& subdiv = *(g_XSplit[faceID]);
 
 				bool		bb_base_orig_inited = false;
 				Fbox		bb_base_orig;
@@ -356,7 +356,7 @@ void MergeCandidate(u32 GridMAX, bool use_grid)
 			if (g_XSplit[faceID]->empty() || S_MERGE_DATA.merged)
 				continue;
 
-			vecFace& subdiv = *(g_XSplit[faceID]);
+			xr_vector<Face*>& subdiv = *(g_XSplit[faceID]);
 
 			bool		bb_base_orig_inited = false;
 			Fbox		bb_base_orig;
@@ -411,7 +411,7 @@ void MergeCandidate(u32 GridMAX, bool use_grid)
 	}
 
 	g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(),
-		[](vecFace* ptr)
+		[](xr_vector<Face*>* ptr)
 		{
 			if (ptr == nullptr)
 				return true;
@@ -509,7 +509,7 @@ struct SplitValue
 };
 
 using SplitMap = std::unordered_map<SplitKey, SplitValue>;
-SplitKey CalcSplitKey(const vecFace* split)
+SplitKey CalcSplitKey(const xr_vector<Face*>* split)
 {
 	auto& face = split->front();
 	return { face->lmap_layer, face->tc.size(), face->dwMaterial};

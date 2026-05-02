@@ -4,7 +4,7 @@
 #include "cl_intersect.h"
 #include "xrlc_globaldata.h"
 #include "light_point.h"
-#include "xrface.h"
+#include "xrFace.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
 
 // ORIGINAL 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "xrlight_implicitdeflector.h"
 #include "b_build_texture.h"
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrLC_GlobalData.h"
 
 #include <xrDeflector.h>

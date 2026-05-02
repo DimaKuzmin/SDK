@@ -4,7 +4,7 @@
 #include "xrlc_globaldata.h"
 
 #include "math.h"
-#include "xrface.h"
+#include "xrFace.h"
 
 typedef xr_vector<UVtri>::iterator UVIt;
 void blit			(u32* dest, u32 ds_x, u32 ds_y, u32* src, u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF)
@@ -242,7 +242,7 @@ BOOL CDeflector::OA_Place	(Face *owner)
 	return TRUE;
 }
 
-void CDeflector::OA_Place	(vecFace& lst)
+void CDeflector::OA_Place	(xr_vector<Face*>& lst)
 {
 	UVpolys.clear	();
 	UVpolys.reserve	(lst.size());
@@ -365,14 +365,6 @@ bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 
 bool CDeflector::similar_pos(const CDeflector& D, float eps) const
 {
-	/*
-	if (Sphere.P.x != D.Sphere.P.x) 
-		return Sphere.P.x < D.Sphere.P.x;
-    if (Sphere.P.y != D.Sphere.P.y)
-		return Sphere.P.y < D.Sphere.P.y;
-    return Sphere.P.z < D.Sphere.P.z;
-	*/
-
 	if (Sphere.P.x < (D.Sphere.P.x - eps) || Sphere.P.x >(D.Sphere.P.x + eps))
 		return false;
 
@@ -383,17 +375,4 @@ bool CDeflector::similar_pos(const CDeflector& D, float eps) const
 		return false;
 
 	return true;
-	
-	//return Sphere.P.magnitude() < D.Sphere.P.magnitude();
 } 
-
-int global_size_map = 1024;
-void setLMSIZE(int size)
-{
-	global_size_map = size;
-}
-
-u32 getLMSIZE()
-{
- 	return global_size_map;
-}

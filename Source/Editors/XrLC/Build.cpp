@@ -18,8 +18,8 @@ void	export_ogf(xrMU_Reference& mu_mode);
 void	calc_ogf(xrMU_Model& mu_model);
 void	export_geometry	( xrMU_Model &	mu_model );
  
-xr_vector<OGF_Base *>	g_tree;
-vec2Face				g_XSplit;
+xr_vector<OGF_Base *>						g_tree;
+xr_vector<xr_vector<Face*>*>				g_XSplit;
   
 void	CBuild::CheckBeforeSave( u32 stage )
 {
@@ -114,8 +114,8 @@ extern u16		RegisterShader		(LPCSTR T);
 
 void CBuild::Light_prepare()
 {
-	for (vecFaceIt I=lc_global_data()->g_faces().begin();	I!=lc_global_data()->g_faces().end(); I++) 
-		(*I)->CacheOpacity();
+	for (auto F : lc_global_data()->g_faces())
+		F->CacheOpacity();
 
 	for (u32 m=0; m<mu_models().size(); m++)	
 		mu_models()[m]->calc_faceopacity();

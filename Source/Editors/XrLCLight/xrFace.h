@@ -3,20 +3,10 @@
 
 #include "tcf.h"
 #include "base_face.h"
-
 #include "MeshStructure.h"
-#include <memory>
  
-#pragma pack(push,4)
-
 struct DataFace;
 class  CLightmap;
-
-struct  DataVertex;
-typedef	Tvertex< DataVertex> Vertex;
-
-typedef std::pair<Vertex*, Vertex *>	PAIR_VV;
-
 
 struct  XRLC_LIGHT_API DataVertex	: public base_Vertex
 {
@@ -32,10 +22,6 @@ public:
 	virtual		~DataVertex				(){};
 };
 
- 
-typedef	 Tface<DataVertex>  Face;
-
-
 struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
@@ -48,22 +34,17 @@ public:
 	u32						sm_group;
 	virtual Fvector2*		getTC0			( ) { return tc[0].uv; }
 
-
-	BOOL		RenderEqualTo		( Face *F );
-
-	void		AddChannel			( Fvector2 p1, Fvector2 p2, Fvector2 p3 ); 
-	BOOL		hasImplicitLighting	();
+	void					AddChannel			( Fvector2 p1, Fvector2 p2, Fvector2 p3 ); 
+	BOOL					hasImplicitLighting	();
 
 	DataFace(){};
 	virtual ~DataFace(){};
 };
 
-#include		"xrUVpoint.h"
- 
- 
+typedef	 Tvertex< DataVertex>	Vertex;
+typedef	 Tface<DataVertex>		Face;
+  
 extern XRLC_LIGHT_API bool						g_bUnregister;
-
-#pragma pack(pop)
  
 extern void start_unwarp_recursion	();
 extern void destroy_vertex			( Vertex* &v, bool unregister );

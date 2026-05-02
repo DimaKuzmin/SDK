@@ -3,7 +3,7 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrface.h"
 
-extern void		Detach		(vecFace* S);
+extern void		Detach		(xr_vector<Face*>* S);
 
 struct _counter
 {
@@ -78,7 +78,7 @@ void	CBuild::xrPhase_ResolveMaterials()
 	for (size_t i = 0; i < g_XSplit.size(); ++i)
 	{
 		// vecFace имеет конструктор от итераторов
-		g_XSplit[i] = new vecFace(bins[i].begin(), bins[i].end());
+		g_XSplit[i] = new xr_vector<Face*>(bins[i].begin(), bins[i].end());
 	}
 
 	// —тарый код
@@ -88,8 +88,9 @@ void	CBuild::xrPhase_ResolveMaterials()
 			if (g_XSplit[SP]->empty())
 				xr_delete(g_XSplit[SP]);
 		}
-		g_XSplit.erase(std::remove(g_XSplit.begin(), g_XSplit.end(), (vecFace*)NULL), g_XSplit.end());
-	}
+
+		g_XSplit.erase(std::remove_if(g_XSplit.begin(), g_XSplit.end(), [](xr_vector<Face*>* a) { return a == nullptr; }), g_XSplit.end());
+	} 
 
 	for (auto F : g_XSplit)
 		Detach(F);

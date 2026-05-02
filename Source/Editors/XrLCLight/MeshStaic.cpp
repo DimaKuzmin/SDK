@@ -2,7 +2,7 @@
 
 #include "xrLC_GlobalData.h"
 
-#include "xrface.h"
+#include "xrFace.h"
 #include "vector_clear.h"
 
 typedef poolSS<Vertex,8*1024>	poolVertices;

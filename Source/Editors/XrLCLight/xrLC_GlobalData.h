@@ -2,11 +2,10 @@
 
 #include "../Public/shader_xrlc.h"
 #include "../../xrcore/xrPool.h"
-#include "xrfacedefs.h"
-#include "xrdeflectordefs.h"
 #include "b_build_texture.h"
 #include "base_lighting.h"
 #include "../../editors/LevelEditor/Engine/communicate.h"
+#include "xrFace.h"
 
 namespace CDB
 {
@@ -14,6 +13,7 @@ namespace CDB
 	class CollectorPacked;
 };
 
+class CDeflector;
 class CLightmap;
 class xrMU_Model;
 class xrMU_Reference;
@@ -43,9 +43,9 @@ private:
 		xr_vector<CLightmap*>			_g_lightmaps;
 		xr_vector<xrMU_Model*>			_mu_models;
 		xr_vector<xrMU_Reference*>		_mu_refs;
-		vecVertex						_g_vertices;
-		vecFace							_g_faces;
-		vecDefl							_g_deflectors;
+		xr_vector<Vertex*>				_g_vertices;
+		xr_vector<Face*>				_g_faces;
+		xr_vector<CDeflector*>			_g_deflectors;
 
 
 public:
@@ -67,10 +67,9 @@ public:
 		Vertex						*create_vertex	()		;
 		void						destroy_vertex	(Vertex* &f );
 
-		vecVertex					&g_vertices		()		{	return	_g_vertices; }
-		vecFace						&g_faces		()		{	return	_g_faces; }
-		vecDefl						&g_deflectors	()		{	return	_g_deflectors; }
-		bool						b_r_vertices	()		;
+		xr_vector<Vertex*>			&g_vertices		()		{	return	_g_vertices; }
+		xr_vector<Face*>			&g_faces		()		{	return	_g_faces; }
+		xr_vector<CDeflector*>		&g_deflectors	()		{	return	_g_deflectors; }
 
 		base_lighting				&L_static		()		{	return _cl_globs._L_static; }
 		CDB::MODEL*					RCAST_Model		()		{	return _cl_globs._RCAST_Model; }
@@ -87,6 +86,7 @@ public:
 
 		bool						b_vert_not_register;
 		bool						vert_construct_register() { return !b_r_vertices() && !b_vert_not_register; }
+		bool						b_r_vertices();
 };													
 
 extern "C" XRLC_LIGHT_API xrLC_GlobalData*	lc_global_data();

@@ -3,7 +3,7 @@
 #include "xrdeflector.h"
 #include "xrlc_globaldata.h"
 #include "light_point.h"
-#include "xrface.h"
+#include "xrFace.h"
  
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
@@ -160,15 +160,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 thread_local UVGridLazy<UVtri> uv_grid;  	 
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
-	auto FromBarry = [](Face* F, Fvector& wP, Fvector& wN, Fvector& B)
-		{
-			wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
-			wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
-			exact_normalize(wN);
-			wN.add(F->N);
-			exact_normalize(wN);
-		};
-
 	lm_layer&	lm = layer;
 
 	// Setup variables
@@ -218,8 +209,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 					if (UVTri->isInside(P,B) )
 					{
 						// We found triangle and have barycentric coords
- 						FromBarry(UVTri->owner, wP, wN, B);
-
+ 						FromBarryNormalized(UVTri->owner, wP, wN, B);
 						LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, GetCurrentFlags(), UVTri->owner);
 						Fcount += 1;
  						break;

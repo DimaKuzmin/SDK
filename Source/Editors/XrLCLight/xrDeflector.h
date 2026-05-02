@@ -1,12 +1,11 @@
 #pragma once
 
-#include "xrfacedefs.h"
+#include "xrFace.h"
 #include "base_color.h"
 #include "lm_layer.h"
 #include "uv_tri.h"
 #include "../../xrcdb/xrCDB.h"
  
-#include "xrdeflectordefs.h"
 #include "R_light.h"
 #include "embree_raytracing/EmbreeRayTrace.h"
 
@@ -32,7 +31,7 @@ public:
 
 	void	OA_SetNormal		(Fvector &_N )	{ normal.set(_N); normal.normalize(); VERIFY(_valid(normal)); }
 	BOOL	OA_Place			(Face *owner);
-	void	OA_Place			(vecFace& lst);
+	void	OA_Place			(xr_vector<Face*>& lst);
 	void	OA_Export			();
 		
 	void	GetRect				(Fvector2 &min, Fvector2 &max);

@@ -1,34 +1,11 @@
-#ifndef __MESHSTRUCTURE_H__
-#define __MESHSTRUCTURE_H__
-
-#	define MESHSTRUCTURE_API XRLC_LIGHT_API
- 
-class MESHSTRUCTURE_API vector_item
-{
-protected:
-	vector_item		():m_self_index(u32(-1)){}
-private:
-	u32				m_self_index;
-public:
-	IC void set_index( u32 self_index )
-	{ 
-		m_self_index = self_index; 
-	}
-	IC u32		self_index( ) const
-	{ 
-		return m_self_index; 
-	}
-};
-
+#pragma once
 
 template <typename DataVertexType>
 struct Tvertex;
-
 class CDeflector;
 
-
 template <typename DataVertexType>
-struct MESHSTRUCTURE_API Tface: public DataVertexType::DataFaceType, public vector_item
+struct XRLC_LIGHT_API Tface: public DataVertexType::DataFaceType
 {
 	typedef	Tvertex<DataVertexType>	type_vertex;
 	typedef	Tface<DataVertexType>	type_face;
@@ -50,6 +27,7 @@ virtual		~Tface	();
 		R_ASSERT( index<3 );
 		v[index] = _v;
 	}
+
 	IC type_vertex*		vertex( u8 index )
 	{
 		R_ASSERT( index<3 );
@@ -147,8 +125,7 @@ virtual		~Tface	();
 
 	void	CalcNormal2	()
 	{
-		FPU::m64r		();
-		Dvector			v0,v1,v2,t1,t2,dN;
+ 		Dvector			v0,v1,v2,t1,t2,dN;
 		v0.set			(v[0]->P);
 		v1.set			(v[1]->P);
 		v2.set			(v[2]->P);
@@ -208,7 +185,7 @@ virtual		~Tface	();
 };
 
 template <typename DataVertexType>
-struct MESHSTRUCTURE_API Tvertex : public DataVertexType, public vector_item
+struct XRLC_LIGHT_API Tvertex : public DataVertexType
 {
 	typedef	Tface<DataVertexType>			type_face;
 	typedef	Tvertex<DataVertexType>			type_vertex;
@@ -216,7 +193,6 @@ struct MESHSTRUCTURE_API Tvertex : public DataVertexType, public vector_item
 	typedef xr_vector<type_face*>			v_faces;
 	typedef typename v_faces::iterator		v_faces_it;
 
-	//typedef typename xr_vector<type_vertex>::iterator v_dummy;
 	typedef xr_vector<type_vertex*>			 v_vertices;
 
 	typedef typename v_vertices::iterator	v_vertices_it;
@@ -256,7 +232,6 @@ virtual			~Tvertex();
 			N.add( (*ad)->N );
 		exact_normalize	( N );
 	}
-
 };
 
 
@@ -282,35 +257,31 @@ struct remove_pred
 	}
 } ;
 
+
 template<typename typeVertex>
-IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*> &vertices )
+IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*>& vertices)
 {
 	if (bProgress)
- 		Status		("Isolating vertices...");
- 
-	const u32 verts_old		= vertices.size();
+		Status("Isolating vertices...");
 
-	for (int it=0; it<int(verts_old); ++it)	
+	const u32 verts_old = vertices.size();
+
+	for (int it = 0; it<int(verts_old); ++it)
 	{
-		if (bProgress)	
-			Progress	(float(it)/float(verts_old));
+		if (bProgress)
+			Progress(float(it) / float(verts_old));
 
 		if (vertices[it] && vertices[it]->m_adjacents.empty())
-			_destroy_vertex( vertices[it], false );
-			
+			_destroy_vertex(vertices[it], false);
+
 	}
-	VERIFY( verts_old == vertices.size() );
+	VERIFY(verts_old == vertices.size());
 
-	xr_vector<typeVertex*>::iterator	_end	= std::remove	(vertices.begin(),vertices.end(), (typeVertex*) 0);
-	vertices.erase	(_end, vertices.end());
- 
-	Memory.mem_compact	();
-	
-	if (bProgress)	
-		Progress	(1.f);
+	xr_vector<typeVertex*>::iterator	_end = std::remove(vertices.begin(), vertices.end(), (typeVertex*)0);
+	vertices.erase(_end, vertices.end());
+
+	Memory.mem_compact();
+
+	if (bProgress)
+		Progress(1.f);
 }
-
-
-
-
-#endif //__MESHSTRUCTURE_H__

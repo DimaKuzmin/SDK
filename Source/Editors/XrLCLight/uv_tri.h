@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "tcf.h"
-#include "xrFaceDefs.h"
+#include "xrFace.h"
 
 struct XRLC_LIGHT_API UVtri : public _TCF		
 {

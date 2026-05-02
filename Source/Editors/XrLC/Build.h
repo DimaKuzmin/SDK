@@ -7,7 +7,7 @@
 #include "../Public/shader_xrlc.h"
 
 #include "../xrLCLight/b_build_texture.h"
-#include "../xrLCLight/xrfacedefs.h"
+#include "../xrLCLight/xrFace.h"
 #include "../../xrcdb/xrcdb.h"
 
 struct		 STextureParams;
@@ -124,5 +124,5 @@ public:
 	~CBuild	();
 };
 
-extern CBuild*		pBuild;			;
-extern vec2Face		g_XSplit		;
+extern CBuild*							pBuild;			 
+extern xr_vector<xr_vector<Face*>*>		g_XSplit;

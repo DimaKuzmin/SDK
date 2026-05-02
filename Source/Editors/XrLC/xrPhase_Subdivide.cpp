@@ -4,7 +4,7 @@
 #include "../xrLCLight/xrface.h"
 #include "../xrLCLight/xrlc_globaldata.h"
 
-extern void		Detach		(vecFace* S);
+extern void		Detach		(xr_vector<Face*>* S);
 
 void	setup_bbs	(Fbox& b1, Fbox& b2, Fbox& bb,int edge)	{
 	Fvector	size;
@@ -29,7 +29,7 @@ void	setup_bbs	(Fbox& b1, Fbox& b2, Fbox& bb,int edge)	{
 void CBuild::xrPhase_Subdivide()
 {
 	Status	("Subdividing in space...");
-	vecFace s1, s2;
+	xr_vector<Face*> s1, s2;
 	Fbox	b1, b2;
 	
 	size_t ErrorsSplitting = 0;
@@ -55,7 +55,7 @@ void CBuild::xrPhase_Subdivide()
 		Fvector size;
 		
 		bb.invalidate();
-		for (vecFaceIt F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
+		for (auto F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
 		{
 			Face *XF = *F;
 			bb.modify(XF->v[0]->P);
@@ -112,7 +112,7 @@ resplit:
 		s2.clear	();
 		s1.clear	();
 		iteration_per_edge		++	;
-		for (vecFaceIt F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
+		for (auto F=g_XSplit[X]->begin(); F!=g_XSplit[X]->end(); F++) 
 		{
 			Face *XF = *F;
 			Fvector C;
@@ -187,8 +187,8 @@ resplit:
 			// Delete old SPLIT and push two new
 			xr_delete				(g_XSplit[X]);
 			g_XSplit.erase			(g_XSplit.begin()+X); X--;
-			g_XSplit.push_back		(xr_new<vecFace>(s1));	Detach(&s1);
-			g_XSplit.push_back		(xr_new<vecFace>(s2));	Detach(&s2);
+			g_XSplit.push_back		(xr_new<xr_vector<Face*>>(s1));	Detach(&s1);
+			g_XSplit.push_back		(xr_new<xr_vector<Face*>>(s2));	Detach(&s2);
 		}
 		s1.clear	();
 		s2.clear	();

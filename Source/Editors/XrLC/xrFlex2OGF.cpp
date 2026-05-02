@@ -11,15 +11,15 @@
 void CBuild::validate_splits			()
 {
 	int Errors = 0;
-	for (splitIt it=g_XSplit.begin(); it!=g_XSplit.end(); it++)
+	u32 MODEL_ID = 0;
+	for (auto Faces : g_XSplit)
 	{
-		u32 MODEL_ID		= u32(it-g_XSplit.begin())	;
- 
-		if ((*it)->size() > c_SS_HighVertLimit*2 || (*it)->size() == 0)
+		if (Faces->size() > c_SS_HighVertLimit*2 || Faces->size() == 0)
 		{
 			Errors++;
-			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)",MODEL_ID,2*c_SS_HighVertLimit,(*it)->size());
+			clMsg	("! ERROR: subdiv #%d has more than %d faces (%d)", MODEL_ID, 2*c_SS_HighVertLimit, Faces->size());
 		}
+		MODEL_ID++;
 	};
 
 	clMsg("[Subdivide Splits] Errors: %d", Errors);
@@ -56,9 +56,9 @@ void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
 	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
 }
 
-void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
+void BuildOGFGeom( OGF &ogf, const xr_vector<Face*>& faces, bool _tc_ )
 {
-	for (vecFaceCit Fit=faces.begin(); Fit!=faces.end(); Fit++)
+	for (auto Fit=faces.begin(); Fit!=faces.end(); Fit++)
 	{
 		Face*	FF = *Fit;
 		R_ASSERT(FF);
@@ -66,7 +66,7 @@ void BuildOGFGeom( OGF &ogf, const vecFace& faces, bool _tc_ )
 	}
 }
  
-bool ConvertOgf(u32 THID, u32 MODEL_ID,  vecFace* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
+bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
 {
 	try 
 	{

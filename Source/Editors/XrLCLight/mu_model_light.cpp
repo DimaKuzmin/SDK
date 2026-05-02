@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "mu_model_light.h"
 
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrMU_Model.h"
 #include "xrMU_Model_Reference.h"
 #include "xrlc_globaldata.h"

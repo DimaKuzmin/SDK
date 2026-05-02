@@ -16,8 +16,7 @@ Tvertex<data_vertex>::Tvertex()
 
 _vertex*	_vertex::CreateCopy_NOADJ(v_vertices& vertises_storage ) const
 {
-	//xrMU_Model::_vertex* V	= create_vertex(Fvector().set(0,0,0));
-	_vertex*	V		= mu_vertices_pool().create();
+ 	_vertex*	V		= mu_vertices_pool().create();
 	vertises_storage.push_back( V );
 	V->P.set	( P );
 	V->N.set	( N );
@@ -44,6 +43,7 @@ poolSS<_vertex,8*1024>	&mu_vertices_pool()
 {
 	return mu_vertices;
 }
+
 poolSS<_face,8*1024>	&mu_faces_pool()
 {
 	return mu_faces;

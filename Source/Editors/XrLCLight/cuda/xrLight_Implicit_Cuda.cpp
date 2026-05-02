@@ -96,14 +96,12 @@ public:
 								Fvector2				P;
 								P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
 								P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
-								xr_vector<Face*>& space = cl_globs.query(P.x, P.y);
 
 								// World space
 								Fvector wP, wN, B;
-								for (vecFaceIt it = space.begin(); it != space.end(); it++)
+								for (auto F : cl_globs.query(P.x, P.y))
 								{
-									Face* F = *it;
-									_TCF& tc = F->tc[0];
+ 									_TCF& tc = F->tc[0];
 									if (tc.isInside(P, B))
 									{
 										// We found triangle and have barycentric coords

@@ -6,8 +6,7 @@ struct itterate_adjacents_params_dynamic
 {
 	typedef	typeVertex											type_vertex;
 	typedef	typename typeVertex::type_face						type_face;
-	//typedef xr_vector<type_face*>								vecFace;
-	
+ 	
 private:
 	 
 

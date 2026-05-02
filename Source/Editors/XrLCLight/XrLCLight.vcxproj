@@ -103,9 +103,7 @@
     <ClInclude Include="uv_tri.h" />
     <ClInclude Include="vector_clear.h" />
     <ClInclude Include="xrDeflector.h" />
-    <ClInclude Include="xrDeflectorDefs.h" />
     <ClInclude Include="xrFace.h" />
-    <ClInclude Include="xrFaceDefs.h" />
     <ClInclude Include="xrImage_Filter.h" />
     <ClInclude Include="xrImage_Resampler.h" />
     <ClInclude Include="xrIsect.h" />
@@ -157,7 +155,7 @@
     <ClCompile Include="tcf.cpp" />
     <ClCompile Include="tga.cpp" />
     <ClCompile Include="uv_tri.cpp" />
-    <ClCompile Include="xrDeflectoL_Direct.cpp" />
+    <ClCompile Include="xrDeflector_LDirect.cpp" />
     <ClCompile Include="xrDeflector.cpp" />
     <ClCompile Include="xrDeflectorLight.cpp" />
     <ClCompile Include="xrDeflector_ApplyBorders.cpp" />

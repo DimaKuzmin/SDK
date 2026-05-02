@@ -69,7 +69,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
  		concurrency::parallel_for(size_t(0), size_t(lc_global_data()->g_vertices().size()), [&](size_t ID)
 		{
 			base_color_c		vC;
-			vecVertex& verts = lc_global_data()->g_vertices();
+			xr_vector<Vertex*>& verts = lc_global_data()->g_vertices();
 			Vertex* V = verts[ID];
 			V->normalFromAdj();
 

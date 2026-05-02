@@ -9,7 +9,7 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
 #include "mu_model_face.h"
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrLC_GlobalData.h"
 #include "xrDeflector.h"
  

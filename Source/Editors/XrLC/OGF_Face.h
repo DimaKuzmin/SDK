@@ -5,7 +5,6 @@
 
 #include "vbm.h"
 
-#include "../xrLCLight/xruvpoint.h"
 #include "../xrLCLight/base_basis.h"
 #include "../xrLCLight/base_color.h"
 

@@ -2,7 +2,7 @@
 #include "xrLightVertex.h"
 #include "..\LauncherSDL\xrThread.h"
 
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrLC_GlobalData.h"
 #include "light_point.h"
 
@@ -10,14 +10,9 @@
 #include "xrDeflector.h"
 
 //-----------------------------------------------------------------------
-typedef	xr_multimap<float,vecVertex>	mapVert;
-typedef	mapVert::iterator				mapVertIt;
-mapVert*								g_trans;
-xrCriticalSection						g_trans_CS
-#ifdef PROFILE_CRITICAL_SECTIONS
-	(MUTEX_PROFILE_ID(g_trans_CS))
-#endif // PROFILE_CRITICAL_SECTIONS
-;
+  
+xr_multimap<float, xr_vector<Vertex*>>				g_trans;
+xrCriticalSection									g_trans_CS;
  
 void	g_trans_register_internal		(Vertex* V)
 {
@@ -28,18 +23,20 @@ void	g_trans_register_internal		(Vertex* V)
 	
 	// Search
 	const float key		= V->P.x;
-	mapVertIt	it		= g_trans->lower_bound	(key);
-	mapVertIt	it2		= it;
+	auto	it		= g_trans.lower_bound	(key);
+	auto	it2		= it;
 
 	// Decrement to the start and inc to end
-	while (it!=g_trans->begin() && ((it->first+eps2)>key)) it--;
-	while (it2!=g_trans->end() && ((it2->first-eps2)<key)) it2++;
-	if (it2!=g_trans->end())	it2++;
+	while (it!=g_trans.begin() && ((it->first+eps2)>key))
+		it--;
+	while (it2!=g_trans.end() && ((it2->first-eps2)<key)) 
+		it2++;
+	if (it2!=g_trans.end())	it2++;
 	
 	// Search
 	for (; it!=it2; it++)
 	{
-		vecVertex&	VL		= it->second;
+		auto&	VL			= it->second;
 		Vertex* Front		= VL.front();
 		R_ASSERT			(Front);
 		if (Front->P.similar(V->P,eps))
@@ -50,7 +47,7 @@ void	g_trans_register_internal		(Vertex* V)
 	}
 
 	// Register
-	mapVertIt	ins			= g_trans->insert(mk_pair(key,vecVertex()));
+	auto	ins			= g_trans.insert(mk_pair(key, xr_vector<Vertex*>()));
 	ins->second.reserve		(32);
 	ins->second.push_back	(V);
 }
@@ -68,11 +65,7 @@ class CVertexLightTasker
 	xrCriticalSection	cs;
 	volatile u32		index;	
 public:
-	CVertexLightTasker	() : index(0)
-#ifdef PROFILE_CRITICAL_SECTIONS
-		,cs(MUTEX_PROFILE_ID(CVertexLightTasker))
-#endif // PROFILE_CRITICAL_SECTIONS
-	{};
+	CVertexLightTasker	() : index(0) {};
 	
 	void	init		()
 	{
@@ -156,7 +149,7 @@ public:
 
 void LightVertex	()
 {
-	g_trans				= xr_new<mapVert>	();
+	g_trans.clear();
 
 	// Start threads, wait, continue --- perform all the work
 	Status				("Calculating...");
@@ -218,10 +211,10 @@ void LightVertex	()
 	 
 	// Process all groups
 	Status				("Transluenting...");
-	for (mapVertIt it=g_trans->begin(); it!=g_trans->end(); it++)
+	for (auto& vecVertex : g_trans)
 	{
 		// Unique
-		vecVertex&	VL	= it->second;
+		auto&	VL	= vecVertex.second;
 		std::sort		(VL.begin(),VL.end());
 		VL.erase		(std::unique(VL.begin(),VL.end()),VL.end());
 
@@ -249,6 +242,7 @@ void LightVertex	()
 			VL[v]->C._set		(R);
 		}
 	}
-	xr_delete	(g_trans);
-	Status				("Wating...");
+ 	Status				("Wating...");
+	
+	g_trans.clear();
 }

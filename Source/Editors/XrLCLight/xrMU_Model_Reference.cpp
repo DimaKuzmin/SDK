@@ -8,7 +8,7 @@
 
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
-#include "xrface.h"
+#include "xrFace.h"
  
 void xrMU_Reference::Load( IReader& F, xr_vector<xrMU_Model*>& mu_models )
 {

@@ -7,7 +7,7 @@
 #include "xrDeflector.h"
 #include "xrDXTC.h"
 #include "xrImage_Filter.h"
-#include "xrface.h"
+#include "xrFace.h"
  
 #include "ETextureParams.h"
 extern "C" bool __declspec(dllimport)  DXTCompress(LPCSTR out_name, u8* raw_data, u8* normal_map, u32 w, u32 h, u32 pitch, STextureParams* fmt, u32 depth);

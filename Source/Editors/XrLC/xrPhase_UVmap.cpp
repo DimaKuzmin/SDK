@@ -5,13 +5,13 @@
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrFace.h"
 
-void Detach(vecFace* S)
+void Detach(xr_vector<Face*>* S)
 {
  	xr_map<Vertex*, Vertex*> verts;
 	verts.clear();
 
 	// Collect vertices
-	for (vecFaceIt F = S->begin(); F != S->end(); ++F)
+	for (auto F = S->begin(); F != S->end(); ++F)
 	{
 		for (int i = 0; i < 3; ++i)
 		{
@@ -58,7 +58,7 @@ void CBuild::xrPhase_UVmap()
 	lc_global_data()->g_deflectors().reserve(64 * 1024);
 	float		p_cost = 1.f / float(g_XSplit.size());
 	float		p_total = 0.f;
-	vecFace		faces_affected;
+	xr_vector<Face*>		faces_affected;
 
 	int StartPoint = g_XSplit.size();
 	int DeflectorsAllocated = 0;
@@ -107,7 +107,7 @@ void CBuild::xrPhase_UVmap()
 
 					// detaching itself
 					Detach(&faces_affected);
-					g_XSplit.push_back(new vecFace(faces_affected));
+					g_XSplit.push_back(new xr_vector<Face*>(faces_affected));
 					DeflectorsAllocated++;
 					CreatedFaces += faces_affected.size();
 				}

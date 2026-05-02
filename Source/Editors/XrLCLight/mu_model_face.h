@@ -42,8 +42,6 @@ public:
 	//float				CalcMaxEdge			( );
 	//void				CalcCenter			( Fvector &C );
 
-	//BOOL				RenderEqualTo		( Face *F );
-
 	data_face()				{ sm_group = 0;};
 	virtual ~data_face()	{ };
 };

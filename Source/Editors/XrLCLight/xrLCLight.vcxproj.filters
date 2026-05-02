@@ -110,9 +110,6 @@
     <ClInclude Include="xrDeflector.h">
       <Filter>Light\xrDeflector</Filter>
     </ClInclude>
-    <ClInclude Include="xrDeflectorDefs.h">
-      <Filter>Light\xrDeflector</Filter>
-    </ClInclude>
     <ClInclude Include="xrImage_Resampler.h">
       <Filter>Light\xrDeflector</Filter>
     </ClInclude>
@@ -132,9 +129,6 @@
       <Filter>Light\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="xrFace.h">
-      <Filter>Light\Mesh</Filter>
-    </ClInclude>
-    <ClInclude Include="xrFaceDefs.h">
       <Filter>Light\Mesh</Filter>
     </ClInclude>
     <ClInclude Include="Lightmap.h">
@@ -285,7 +279,7 @@
     <ClCompile Include="uv_tri.cpp">
       <Filter>Light\xrDeflector</Filter>
     </ClCompile>
-    <ClCompile Include="xrDeflectoL_Direct.cpp">
+    <ClCompile Include="xrDeflector_LDirect.cpp">
       <Filter>Light\xrDeflector</Filter>
     </ClCompile>
     <ClCompile Include="xrDeflector.cpp">

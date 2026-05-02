@@ -28,8 +28,8 @@ struct RayQueryContext
 	Fvector B;
 
 	Face* skip = 0;
-	vecFace* static_dummy = nullptr;
-	vecFace* transp_dummy = nullptr;
+	xr_vector<Face*>* static_dummy = nullptr;
+	xr_vector<Face*>* transp_dummy = nullptr;
 	float energy = 1.0f;
 };
 

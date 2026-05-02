@@ -1,7 +1,7 @@
 #pragma once 
 
 #include "lm_layer.h"
-#include "xrFacedefs.h"
+#include "xrFace.h"
 struct  b_BuildTexture; 
 
 class ImplicitDeflector
@@ -9,7 +9,7 @@ class ImplicitDeflector
 public:
 	b_BuildTexture*			texture;
 	lm_layer				lmap;
-	vecFace					faces;
+	xr_vector<Face*>		faces;
 	
 	ImplicitDeflector() : texture(0)
 	{
@@ -63,7 +63,7 @@ public:
 		return *ImplicitHash;
 	}
 
-	vecFace& query(float px, float py) { return Hash().query(px, py); };
+	xr_vector<Face*>& query(float px, float py) { return Hash().query(px, py); };
 
 
 	void Allocate()

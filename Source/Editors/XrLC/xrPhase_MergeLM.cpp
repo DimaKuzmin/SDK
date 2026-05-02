@@ -11,7 +11,7 @@
 
 extern CompilersMode gCompilerMode;
 
-u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
+u32 MergeLmap(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 {
 	// Немного отступ делаем
 
@@ -67,7 +67,7 @@ u32 MergeLmap(vecDefl& Layer, CLightmap* lmap)
 
 extern float MAX_GRID_SPACE_WRITE;
 
-u32 MergeLmap_Compact(vecDefl& Layer, CLightmap* lmap)
+u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 {
 	// Sort layer by similarity (state changes) + calc material area
 	// Слишком много возьмет для помещения 
@@ -242,7 +242,7 @@ struct pred_remove
 void CBuild::xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors)
 {
 	// Phase("LIGHT: Merging lightmaps...");
-	vecDefl Layer;
+	xr_vector<CDeflector*> Layer;
 
 	// **** Select all deflectors, which contain this light-layer
 	Layer.clear();
@@ -295,7 +295,7 @@ void CBuild::xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors)
 		Progress(float(TotalMerged / float(StartSize)));
 
 		// Remove merged lightmaps
-		vecDeflIt last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
+		auto last = std::remove_if(Layer.begin(), Layer.end(), pred_remove());
 		Layer.erase(last, Layer.end());
 		lmap->Save(pBuild->path);
 

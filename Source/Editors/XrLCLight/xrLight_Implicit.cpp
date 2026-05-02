@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "xrLight_ImplicitDeflector.h"
-#include "xrface.h"
+#include "xrFace.h"
 #include "xrLC_GlobalData.h"
 
 ImplicitCalcGlobs cl_globs;
@@ -85,14 +85,12 @@ void ImplicitLightingExec()
  
 	// Sorting
 	Status("Sorting faces...");
-	for (vecFaceIt I=inlc_global_data()->g_faces().begin(); I!=inlc_global_data()->g_faces().end(); I++)
+	for (auto F : inlc_global_data()->g_faces())
 	{
-		Face* F = *I;
-		if (F->pDeflector)				continue;
+ 		if (F->pDeflector)				continue;
 		if (!F->hasImplicitLighting())	continue;
 		
-		Progress		(float(I-inlc_global_data()->g_faces().begin())/float(inlc_global_data()->g_faces().size()));
-		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
+ 		b_material&		M	= inlc_global_data()->materials()[F->dwMaterial];
 		u32				Tid = M.surfidx;
 		b_BuildTexture*	T	= &(inlc_global_data()->textures()[Tid]);
  

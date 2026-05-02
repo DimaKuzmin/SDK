@@ -12,16 +12,14 @@
 
 int GetVertexIndex(Vertex *F)
 {
-	vecVertexIt it = std::lower_bound(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),F);
-	
-	R_ASSERT	(it!=lc_global_data()->g_vertices().end());
-
-	return int(it-lc_global_data()->g_vertices().begin());
+	auto it = std::lower_bound(lc_global_data()->g_vertices().begin(),lc_global_data()->g_vertices().end(),F);
+ 	R_ASSERT	(it!=lc_global_data()->g_vertices().end());
+ 	return int(it-lc_global_data()->g_vertices().begin());
 }
 
-int getCFormVID(vecVertex& V,Vertex *F)
+int getCFormVID(xr_vector<Vertex*>& V,Vertex *F)
 {
-	vecVertexIt it = std::lower_bound(V.begin(),V.end(),F);
+	auto it = std::lower_bound(V.begin(),V.end(),F);
 	return int(it-V.begin());
 }
 int bCriticalErrCnt = 0;
@@ -31,7 +29,7 @@ void TestEdge			(Vertex *V1, Vertex *V2, Face* parent)
 	Face*	found	= 0;
 	int		f_count = 0;
 
-	for (vecFaceIt I=V1->m_adjacents.begin(); I!=V1->m_adjacents.end(); ++I)	
+	for (auto I=V1->m_adjacents.begin(); I!=V1->m_adjacents.end(); ++I)	
 	{
 		Face* test = *I;
 		if (test == parent) continue;
@@ -56,8 +54,8 @@ void CBuild::BuildCForm	()
   	// Collecting data
  	Phase("CFORM: collision model...");
 
-	vecFace*	cfFaces		= xr_new<vecFace>	();
-	vecVertex*	cfVertices	= xr_new<vecVertex>	();
+	xr_vector<Face*>*	cfFaces		= xr_new<xr_vector<Face*>>		();
+	xr_vector<Vertex*>*	cfVertices	= xr_new<xr_vector<Vertex*>>	();
 	
 	// Collect Faces
  	{
@@ -70,7 +68,7 @@ void CBuild::BuildCForm	()
 		Status("Collecting faces...");
 		cfFaces->reserve	(lc_global_data()->g_faces().size());
 
-		for (vecFaceIt I=lc_global_data()->g_faces().begin(); I!=lc_global_data()->g_faces().end(); ++I)
+		for (auto I=lc_global_data()->g_faces().begin(); I!=lc_global_data()->g_faces().end(); ++I)
 		{
 			Face* F = *I;
 			if (F->Shader().flags.bCollision) 
@@ -100,7 +98,7 @@ void CBuild::BuildCForm	()
 	float	p_cost  = 1.f/(cfVertices->size());
 	
 	Fbox BB; BB.invalidate();
-	for (vecVertexIt it = cfVertices->begin(); it!=cfVertices->end(); it++)
+	for (auto it = cfVertices->begin(); it!=cfVertices->end(); it++)
 		BB.modify((*it)->P );
 
 	// CForm
@@ -116,7 +114,7 @@ void CBuild::BuildCForm	()
 	CDB::CollectorPacked CL	(BB,cfVertices->size(),cfFaces->size());
  
  	int next_ID = 0;
-	for (vecFaceIt F = cfFaces->begin(); F!=cfFaces->end(); F++)
+	for (auto F = cfFaces->begin(); F!=cfFaces->end(); F++)
 	{
 		Face*	T = *F;
 		TestEdge	(T->v[0],T->v[1],T);
@@ -190,7 +188,7 @@ void CBuild::BuildCForm	()
 
 
 	// Clear pDeflector (it is stored in the same memory space with dwMaterialGame)
-	for (vecFaceIt I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
+	for (auto I = lc_global_data()->g_faces().begin(); I != lc_global_data()->g_faces().end(); I++)
 	{
 		Face* F = *I;
 		F->pDeflector = NULL;

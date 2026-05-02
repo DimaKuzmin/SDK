@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
-#include "xrface.h"
-//#include "build.h"
+#include "xrFace.h"
 #include "xrdeflector.h"
 #include "xrLC_globaldata.h"
  
@@ -78,10 +77,10 @@ Tvertex<DataVertex>::~Tvertex()
 {
 	if (g_bUnregister) 
 	{
-		vecVertexIt F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), this);
+		auto F = std::find(inlc_global_data()->g_vertices().begin(), inlc_global_data()->g_vertices().end(), this);
 		if (F!=inlc_global_data()->g_vertices().end())
 		{
-			vecVertex& verts = inlc_global_data()->g_vertices();
+			xr_vector<Vertex*>& verts = inlc_global_data()->g_vertices();
 			std::swap( *F, *( verts.end()-1 ) );
 			verts.pop_back();
 		}
@@ -90,7 +89,7 @@ Tvertex<DataVertex>::~Tvertex()
 	}
 }
 
-Vertex*	Vertex::CreateCopy_NOADJ( vecVertex& vertises_storage ) const
+Vertex*	Vertex::CreateCopy_NOADJ(xr_vector<Vertex*>& vertises_storage ) const
 {
 	VERIFY( &vertises_storage == &inlc_global_data()->g_vertices() );
 	Vertex* V	= inlc_global_data()->create_vertex();
@@ -122,14 +121,13 @@ Tface<DataVertex>::~Tface()
 {
 	if (g_bUnregister) 
 	{
-		vecFaceIt F = std::find(inlc_global_data()->g_faces().begin(), inlc_global_data()->g_faces().end(), this);
+		auto F = std::find(inlc_global_data()->g_faces().begin(), inlc_global_data()->g_faces().end(), this);
 		if (F!=inlc_global_data()->g_faces().end())
 		{
-			vecFace& faces = inlc_global_data()->g_faces();
+			xr_vector<Face*>& faces = inlc_global_data()->g_faces();
 			std::swap( *F, *( faces.end()-1 ) );
 			faces.pop_back();
-			//faces.erase(F);
-		}
+ 		}
 		else clMsg("* ERROR: Unregistered FACE destroyed");
 	}
 	// Remove 'this' from adjacency info in vertices
@@ -208,15 +206,6 @@ void Face::OA_Unwarp( CDeflector *D, xr_vector<type_face*>& faces )
 	}
 }
 
-
-BOOL	DataFace::RenderEqualTo	(Face *F)
-{
-	if (F->dwMaterial	!= dwMaterial		)	return FALSE;
- 	return TRUE;
-}
-
-
-
 void	DataFace::AddChannel	(Fvector2 p1, Fvector2 p2, Fvector2 p3) 
 {
 	_TCF	TC;
@@ -236,21 +225,16 @@ BOOL	DataFace::hasImplicitLighting()
   
 void FromBarry(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 {
-	Vertex* V1 = F->v[0];
-	Vertex* V2 = F->v[1];
-	Vertex* V3 = F->v[2];
-	wP.from_bary(V1->P, V2->P, V3->P, B);
-	wN.from_bary(V1->N, V2->N, V3->N, B);
+	wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
+	wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
 	wN.normalize();
 }
-
-
+ 
 void FromBarryNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B)
 {
-	Vertex* V1 = F->v[0];
-	Vertex* V2 = F->v[1];
-	Vertex* V3 = F->v[2];
-	wP.from_bary(V1->P, V2->P, V3->P, B);
-	wN.from_bary(V1->N, V2->N, V3->N, B);
-	wN.normalize();
+	wP.from_bary(F->v[0]->P, F->v[1]->P, F->v[2]->P, B);
+	wN.from_bary(F->v[0]->N, F->v[1]->N, F->v[2]->N, B);
+	exact_normalize(wN);
+	wN.add(F->N);
+	exact_normalize(wN);
 }

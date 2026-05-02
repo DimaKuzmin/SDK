@@ -30,7 +30,7 @@ IC bool				FaceEqual(Face& F1, Face& F2)
 
 void CBuild::PreOptimize()
 {
-    std::unordered_map<size_t, vecVertex> hashTable;
+    std::unordered_map<size_t, xr_vector<Vertex*>> hashTable;
     Fvector VMmin, VMscale, scale;
 
     // Calculate offset, scale, epsilon
