@@ -73,4 +73,26 @@ T	simple_optimize(xr_vector<T>& A, xr_vector<T>& B, T2& _scale, T2& _bias)
 	}
 }
 
+#include <numeric>
+template<typename T, typename T2> void vfComputeLinearRegression(xr_vector<T>& A, xr_vector<T>& B, T2& C, T2& D)
+{
+	u32				N = A.size();
+	T				sx = T(0), sy = T(0), sxy = T(0), sx2 = T(0), l_tDenominator;
+	sx = std::accumulate(A.begin(), A.end(), sx);
+	sy = std::accumulate(B.begin(), B.end(), sy);
+	sxy = std::inner_product(A.begin(), A.end(), B.begin(), sxy);
+	sx2 = std::inner_product(A.begin(), A.end(), A.begin(), sx2);
+	l_tDenominator = T(N) * sx2 - sx * sx;
+
+	if (_abs(l_tDenominator) > EPS_S)
+		C = T2((T(N) * sxy - sx * sy) / l_tDenominator);
+	else
+		C = T2(0);
+
+	if (N)
+		D = T2((sy - C * sx) / T(N));
+	else
+		D = T2(0);
+}
+
 void o_test(int iA, int iB, int count, base_color* A, base_color* B, float& C, float& D);

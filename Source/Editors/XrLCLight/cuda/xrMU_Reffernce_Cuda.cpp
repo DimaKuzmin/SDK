@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "xrMU_Model.h"
 #include "xrMu_Resampling.h"
-#include "fitter.h"
 
 // **** CUDA CODE  **** // 
 #include "cuda/xrDeflectorLight_Packed.h"

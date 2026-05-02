@@ -4,7 +4,6 @@
 #include "xrMU_Model.h"
 
 #include "light_point.h"
-#include "fitter.h"
 #include "xrFace.h"
 #include "xrLC_GlobalData.h"
 #include "xrMu_Resampling.h"

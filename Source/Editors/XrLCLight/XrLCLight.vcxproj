@@ -81,7 +81,6 @@
     <ClInclude Include="embree_raytracing\EmbreeGeomBuilder.h" />
     <ClInclude Include="embree_raytracing\EmbreeRayTrace.h" />
     <ClInclude Include="ETextureParams.h" />
-    <ClInclude Include="fitter.h" />
     <ClInclude Include="global_calculation_data.h" />
     <ClInclude Include="global_slots_data.h" />
     <ClInclude Include="hash2D.h" />
@@ -139,7 +138,6 @@
     <ClCompile Include="embree_raytracing\EmbreeRayTrace_Data.cpp" />
     <ClCompile Include="embree_raytracing\EmbreeRayTrace_Details.cpp" />
     <ClCompile Include="ETextureParams.cpp" />
-    <ClCompile Include="fitter.cpp" />
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
     <ClCompile Include="Lightmap.cpp" />

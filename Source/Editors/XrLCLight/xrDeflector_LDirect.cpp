@@ -72,7 +72,7 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		lm.create(lm.width, lm.height);
 		L_Direct(DB, LightsSelected);
 	};
-
+ 	LNewCalculate();
 
 	// for (u32 ref = 254; ref > 0; ref--)
 	// 	if (!ApplyBorders(layer, ref))
@@ -81,14 +81,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 	// Compression
 	if (compress_Zero(layer, rms_zero)) return;		// already with borders
  
-	u32	w, h;
-	if (compress_RMS(layer, rms_shrink, w, h))
-	{
-		// Reacalculate lightmap at lower resolution
-		layer.create(w, h);
-		LNewCalculate();
-	}
-
 	if (layer.width == 1)
 	{
 		// Horizontal ZERO - vertical line
