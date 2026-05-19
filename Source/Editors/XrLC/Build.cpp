@@ -171,9 +171,6 @@ void CBuild::Run(LPCSTR P)
 	CorrectTJunctions();
   	xrPhase_AdaptiveHT_tesselate();
 
-	Phase("Building normals...");
-	CalcNormals();
-
 	Phase("Building collision database...");
 	
 	if (gCompilerMode.LC_Cforms)
@@ -182,19 +179,6 @@ void CBuild::Run(LPCSTR P)
 		EmbreeMain.BuildRcast();
 	}
 
-	Light_prepare();
-	if (gCompilerMode.CUDA || gCompilerMode.Embree)
-		InitializeEmbreeDevice();
- 
- 	if (gCompilerMode.CUDA)
- 		GPUTaskinSystem.InitializeGPU();
-	else if (gCompilerMode.Embree)
- 		EmbreeMain.InitializeGeometry();
-	else  
-  		BuildRapid(false);
- 
-	xrPhase_AdaptiveHT_calculate();
-
 	// Просщитывем освещение 
  	Light						();
  	RunAfterLight				( fs );
@@ -202,10 +186,6 @@ void CBuild::Run(LPCSTR P)
  
 void CBuild::	RunAfterLight			( IWriter* fs	)
 {
- 	//****************************************** T-Basis
- 	Phase("Building tangent-basis...");
-	xrPhase_TangentBasis();
- 
 	// Tangent Basis To Convert OGF
 	BuildPortals(*fs);
 

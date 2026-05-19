@@ -212,79 +212,71 @@ bool	compress_Zero(lm_layer& lm, u32 rms);
 /// После сжатия пересчитываем
 void CDeflector::ApplyExpandBordersGPU()
 {
-
-	// for (u32 ref = 254; ref > 0; ref--)
-	// 	if (!ApplyBorders(layer, ref))
-	// 		break;
+	bLightProcessed = true;
+	layer.ApplyBordersFast(0);		// Быстрый метод применяем
 
 	if (compress_Zero(layer, rms_zero)) return;		// already with borders (Se7kills: Быстро очень обычно)
 
+	u8 BORDER = gCompilerMode.LC_lmap_BORDER;
 	// se7kills : Убрал 2й проход со сжатием !
-
-	// Expand with borders
-	try
+ 	// Expand with borders
+	if (layer.width == 1)
 	{
-		if (layer.width == 1)
+		// Horizontal ZERO - vertical line
+		lm_layer		T;
+		T.create(2 * BORDER, layer.height + 2 * BORDER);
+
+		// Transfer
+		for (u32 y = 0; y < T.height; y++)
 		{
-			// Horizontal ZERO - vertical line
-			lm_layer		T;
-			T.create(2 * BORDER, layer.height + 2 * BORDER);
-
-			// Transfer
-			for (u32 y = 0; y < T.height; y++)
-			{
-				int			py = int(y) - BORDER;
-				clamp(py, 0, int(layer.height - 1));				base_color	C = layer.surface[py];
-				T.surface[y * 2 + 0] = C;
-				T.marker[y * 2 + 0] = 255;
-				T.surface[y * 2 + 1] = C;
-				T.marker[y * 2 + 1] = 255;
-			}
-
-			// Exchange
-			T.width = 0;
-			T.height = layer.height;
-			layer = T;
+			int			py = int(y) - BORDER;
+			clamp(py, 0, int(layer.height - 1));				base_color	C = layer.surface[py];
+			T.surface[y * 2 + 0] = C;
+			T.marker[y * 2 + 0] = 255;
+			T.surface[y * 2 + 1] = C;
+			T.marker[y * 2 + 1] = 255;
 		}
-		else if (layer.height == 1)
-		{
-			// Vertical ZERO - horizontal line
-			lm_layer		T;
-			T.create(layer.width + 2 * BORDER, 2 * BORDER);
 
-			// Transfer
-			for (u32 x = 0; x < T.width; x++)
-			{
-				int			px = int(x) - BORDER;
-				clamp(px, 0, int(layer.width - 1));
-				base_color	C = layer.surface[px];
-				T.surface[0 * T.width + x] = C;
-				T.marker[0 * T.width + x] = 255;
-				T.surface[1 * T.width + x] = C;
-				T.marker[1 * T.width + x] = 255;
-			}
-
-			// Exchange
-			T.width = layer.width;
-			T.height = 0;
-			layer = T;
-		}
-		else
-		{
-			// Generic blit
-			lm_layer		lm_old = layer;
-			lm_layer		lm_new;
-			lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
-			lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
-			layer = lm_new;
-
-			layer.width = lm_old.width;
-			layer.height = lm_old.height;
-		}
+		// Exchange
+		T.width = 0;
+		T.height = layer.height;
+		layer = T;
 	}
-	catch (...)
+	else if (layer.height == 1)
 	{
-		clMsg("* ERROR: CDeflector::Light - BorderExpansion");
-	}
+		// Vertical ZERO - horizontal line
+		lm_layer		T;
+		T.create(layer.width + 2 * BORDER, 2 * BORDER);
 
+		// Transfer
+		for (u32 x = 0; x < T.width; x++)
+		{
+			int			px = int(x) - BORDER;
+			clamp(px, 0, int(layer.width - 1));
+			base_color	C = layer.surface[px];
+			T.surface[0 * T.width + x] = C;
+			T.marker[0 * T.width + x] = 255;
+			T.surface[1 * T.width + x] = C;
+			T.marker[1 * T.width + x] = 255;
+		}
+
+		// Exchange
+		T.width = layer.width;
+		T.height = 0;
+		layer = T;
+	}
+	else
+	{
+		// Generic blit
+		lm_layer		lm_old = layer;
+		lm_layer		lm_new;
+		lm_new.create(lm_old.width + 2 * BORDER, lm_old.height + 2 * BORDER);
+		lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
+		layer = lm_new;
+ 
+		layer.ApplyBordersFast(0);			// Как понял нужно только при увелечении текстуры !
+
+		layer.width = lm_old.width;
+		layer.height = lm_old.height;
+	}
 }

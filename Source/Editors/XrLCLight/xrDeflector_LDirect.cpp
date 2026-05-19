@@ -74,13 +74,12 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 	};
  	LNewCalculate();
 
-	// for (u32 ref = 254; ref > 0; ref--)
-	// 	if (!ApplyBorders(layer, ref))
-	// 		break;
+	layer.ApplyBordersFast(0);
 
 	// Compression
 	if (compress_Zero(layer, rms_zero)) return;		// already with borders
  
+	u8 BORDER = gCompilerMode.LC_lmap_BORDER;
 	if (layer.width == 1)
 	{
 		// Horizontal ZERO - vertical line
@@ -136,12 +135,8 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 		lblit(lm_new, lm_old, BORDER, BORDER, 255 - BORDER);
 		layer = lm_new;
 
-		// ApplyBorders(layer, 254);
-		// ApplyBorders(layer, 253);
-		// ApplyBorders(layer, 252);
-		// ApplyBorders(layer, 251);
-		// for (u32 ref = 250; ref > 0; ref--) if (!ApplyBorders(layer, ref)) break;
-
+		layer.ApplyBordersFast(0);
+		 
 		layer.width = lm_old.width;
 		layer.height = lm_old.height;
 	}

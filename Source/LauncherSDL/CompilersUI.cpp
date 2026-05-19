@@ -73,9 +73,9 @@ void RenderMainUI()
 		return;
 	}
 
-	if (Size[0] != 1000 || Size[1] != 615)
+	if (Size[0] != 1000 || Size[1] != 540)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 615);
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 540);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
@@ -189,11 +189,9 @@ void RenderMainUI()
 	ImGui::End();
 }
 
-int item_current_selected = 2;
 int item_current_jitter = 2;
 int item_current_jitter_mu = 6;
 
-const char* items[] = { "1024", "2048", "4096", "8192" };
 const char* itemsJitter[] = { "1", "4", "9" };
 const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6" };
 
@@ -206,56 +204,43 @@ void DrawLCConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.LC);
 
-		ImGui::Checkbox("DXT1 Availd Lighting", &gCompilerMode.LC_Dxt1Avail);
- 		ImGui::Checkbox("No Hemi", &gCompilerMode.LC_NoHemi);
-		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-		ImGui::Checkbox("No RGB", &gCompilerMode.LC_NoRGB);
-		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
-		ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
+			ImGui::Checkbox("DXT1 Availd Lighting", &gCompilerMode.LC_Dxt1Avail);
+ 			ImGui::Checkbox("No Hemi", &gCompilerMode.LC_NoHemi);
+			ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
+			ImGui::Checkbox("No RGB", &gCompilerMode.LC_NoRGB);
+			ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
+			ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
+			
+			ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
+			ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
+			ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+			ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
+			ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
+ 			ImGui::Separator();
+
+			// Lmaps Settings
+			ImGui::Spacing();
+			ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Lightmaps: ");
+			ImGui::Spacing();
+
+			ImGui::Text("BORDER:"); ImGui::SameLine(0, 30);
+			ImGui::InputInt("##border", &gCompilerMode.LC_lmap_BORDER, 1, 1);
+
+			static int			current_selected = 3;
+			static int			max_resolution = 5;
+			static const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384" };
+
+			ImGui::Text("Size:  "); ImGui::SameLine(0, 30);
+			ImGui::Combo("##lmaps", &current_selected, lightmap_resolution, max_resolution);
+ 			gCompilerMode.LC_lmap_size = atoi(lightmap_resolution[current_selected]);
+
+			ImGui::Text("Fill:  "); ImGui::SameLine(0, 30);
+			ImGui::InputFloat("##fill", &gCompilerMode.LC_lmap_fill, 0.01f, 0.01f);
 		
-		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
-		ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
-		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
-		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
-		ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
-		ImGui::Separator();
 
-		// Lmaps Settings
-		ImGui::SetNextItemWidth(100);
-		if (ImGui::Combo("DDS", &item_current_selected, items, 4))
-			gCompilerMode.LC_sizeLmaps = atoi(items[item_current_selected]);
-
-		ImGui::Checkbox("Lmaps FAST", &gCompilerMode.LC_lmaps_alternative);
-		ImGui::BeginDisabled(gCompilerMode.LC_lmaps_alternative);
-		ImGui::InputFloat("PosX max", &gCompilerMode.LC_lmaps_max_pixels);
-		ImGui::EndDisabled();
- 
-		ImGui::Separator();
-		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
-
-		if (true)
-		{
-			ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
-			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
-			ImGui::SetNextItemWidth(100);
-			ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
-			ImGui::SetNextItemWidth(100);
-			ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
-
-			gCompilerMode.LC_JSample = atoi(itemsJitter[item_current_jitter]);
-			gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
 
 			ImGui::EndDisabled();
-		}
-		
-		ImGui::EndDisabled();
-		//ImGui::EndChild();
 	}
-
-
 }
 
 void DrawDOConfig()
@@ -269,8 +254,7 @@ void DrawDOConfig()
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
 		ImGui::InputInt("Samples", &gCompilerMode.DO_Samples);
 		ImGui::EndDisabled();
-		//ImGui::EndChild();
-	}
+ 	}
 
 }
 
@@ -311,8 +295,7 @@ void DrawAIConfig()
 		ImGui::EndDisabled();
 
 		ImGui::EndDisabled();
-		//ImGui::EndChild();
-	}
+ 	}
 }
 
 void DrawCompilerConfig()
@@ -356,6 +339,30 @@ void DrawCompilerConfig()
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
+
+
+	ImGui::Separator();
+	
+	if (true)
+	{
+		ImGui::Checkbox("Overload Prebuild", &gCompilerMode.IsOverloadedSettings);
+
+		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
+		ImGui::SetNextItemWidth(100);
+		ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
+		ImGui::SetNextItemWidth(100);
+		ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+		ImGui::SetNextItemWidth(100);
+		ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
+		ImGui::SetNextItemWidth(100);
+		ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
+
+		gCompilerMode.LC_JSample = atoi(itemsJitter[item_current_jitter]);
+		gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
+
+		ImGui::EndDisabled();
+	}
+	
 }
 
 

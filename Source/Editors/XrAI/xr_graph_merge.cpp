@@ -408,7 +408,9 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 {
 	LPCSTR				_N,V;
 	string_path			caFileName, file_name;
-	for (u32 k = 0; Ini->r_line("levels",k,&_N,&V); k++) {
+
+	for (u32 k = 0; Ini->r_line("levels",k,&_N,&V); k++) 
+	{
 		string256		N;
 		xr_strcpy(N,_N);
 		strlwr			(N);
@@ -439,15 +441,17 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 		xr_strcpy		(S,_S);
 		strlwr			(S);
 
-		if (needed_levels) {
+		if (needed_levels) 
+		{
 			bool		found = false;
-			xr_vector<LPCSTR>::const_iterator	I = needed_levels->begin();
-			xr_vector<LPCSTR>::const_iterator	E = needed_levels->end();
-			for ( ; I != E; ++I)
-				if (!xr_strcmp(*I,S)) {
-					found	= true;
+			for (auto Level : *needed_levels)
+			{
+ 				if (strcmp(Level, S) == 0)
+				{
+ 					found = true;
 					break;
 				}
+			}
 
 			if (!found)
 				continue;
@@ -477,6 +481,7 @@ void read_levels(CInifile *Ini, xr_set<CLevelInfo> &levels, bool rebuild_graph, 
 			if (!ok)
 				continue;
 		}
+
 		IReader			*reader;
 		// ai
 		strconcat		(sizeof(caFileName),caFileName,S,"\\",LEVEL_GRAPH_NAME);
@@ -540,7 +545,7 @@ CGraphMerger::CGraphMerger(
 	)
 {
 	// load all the graphs
-	Phase("Processing level graphs");
+	// Phase("Processing level graphs");
 	
 	CInifile *Ini = xr_new<CInifile>(INI_FILE);
 	if (!Ini->section_exist("levels"))
@@ -562,7 +567,13 @@ CGraphMerger::CGraphMerger(
 	string4096						levels_string;
 	xr_strcpy						(levels_string,name);
 	strlwr							(levels_string);
-	fill_needed_levels				(levels_string,needed_levels);
+	fill_needed_levels				(levels_string, needed_levels);
+
+	bool		found = false;
+	for (auto S : needed_levels)
+	{
+		clMsg("$ [Compilation] Read Level : %s", S);
+	}
 
 	read_levels						(
 		Ini,
@@ -607,7 +618,7 @@ CGraphMerger::CGraphMerger(
 	
 	R_ASSERT(tpGraphs.size());
 	
-	Phase("Adding interconnection points");
+	// Phase("Adding interconnection points");
 	{
 		GRAPH_P_PAIR_IT				I = tpGraphs.begin();
 		GRAPH_P_PAIR_IT				E = tpGraphs.end();
@@ -665,7 +676,7 @@ CGraphMerger::CGraphMerger(
 	///////////////////////////////////////////////////
 	
 	// save all the graphs
-	Phase("Saving graph being merged");
+	// Phase("Saving graph being merged");
 	CMemoryWriter				F;
 	tGraphHeader.m_version		= XRAI_CURRENT_VERSION;
 	VERIFY						(dwOffset < (u32(1) << (8*sizeof(GameGraph::_GRAPH_ID))));
@@ -719,7 +730,6 @@ CGraphMerger::CGraphMerger(
 	F.save_to						(l_caFileName);
 
 	// free all the graphs
-	Phase("Freeing resources being allocated");
 	{
 		GRAPH_P_PAIR_IT				I = tpGraphs.begin();
 		GRAPH_P_PAIR_IT				E = tpGraphs.end();
@@ -727,7 +737,6 @@ CGraphMerger::CGraphMerger(
 			xr_free((*I).second);
 	}
 	xr_delete						(Ini);
-	Phase("Freeing resources end");
 }
 
 void xrMergeGraphs(

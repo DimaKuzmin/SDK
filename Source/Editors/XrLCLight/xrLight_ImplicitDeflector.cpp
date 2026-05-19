@@ -49,12 +49,12 @@ void	ImplicitDeflector::Bounds_Summary (Fbox2& bounds)
 void ImplicitDeflector::SaveTexture()
 {
 	// Expand
-	Status("Processing lightmap...");
-	// for (u32 ref = 254; ref > 0; ref--)
-	// {
-	// 	if (!ApplyBorders(lmap, ref))
-	// 		break;
-	// }
+	CTimer tStats; tStats.Start();
+	Status("Processing lightmap..."); 
+	lmap.ApplyBordersFast(0);
+
+
+	Msg("Apply Borders: %u ms", tStats.GetElapsed_ms());
 
 	Status("Mixing lighting with texture...");
 	{

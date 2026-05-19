@@ -22,25 +22,20 @@ virtual		~Tface	();
 	void	OA_Unwarp	(CDeflector * d, xr_vector<type_face*>& faces);
  
 //////////////////////////////////////////////////////////////////////////////////////////////////
-	IC void				raw_set_vertex( u8 index, type_vertex* _v )
-	{
-		R_ASSERT( index<3 );
-		v[index] = _v;
-	}
-
 	IC type_vertex*		vertex( u8 index )
 	{
 		R_ASSERT( index<3 );
 		return v[index];
 	}
-
-/////////////////////////////////////////////////////////
-// Does the face contains this vertex?
+	
+	/////////////////////////////////////////////////////////
+	// Does the face contains this vertex?
 	IC bool		VContains	( const type_vertex* pV )
 	{
 		return VIndex(pV)>=0;	
 	};
-// Replace ONE vertex by ANOTHER
+
+	// Replace ONE vertex by ANOTHER
 	IC void		VReplace	(type_vertex* what, type_vertex* to)
 	{
 		if (v[0]==what) { v[0]=to; what->prep_remove(this); to->prep_add(this); }
@@ -66,41 +61,28 @@ virtual		~Tface	();
 		v[idx]=V;
 		V->prep_add(this);
 	};
+
 	IC void	SetVertices(type_vertex *V1, type_vertex *V2, type_vertex *V3)
 	{
 		SetVertex(0,V1);
 		SetVertex(1,V2);
 		SetVertex(2,V3);
 	};
+
+	// при Pre-Optimize
 	IC BOOL isDegenerated()
 	{
 		return (v[0]==v[1] || v[0]==v[2] || v[1]==v[2]);
 	};
-	IC float	EdgeLen			(int edge)
-	{
-		type_vertex* V1 = v[edge2idx[edge][0]];
-		type_vertex* V2 = v[edge2idx[edge][1]];
-		return V1->P.distance_to(V2->P);
-	};
+
+	// Нормали, T-Junks
 	IC void	EdgeVerts		(int e, type_vertex** A, type_vertex** B) const
 	{
 		*A = v[edge2idx[e][0]];
 		*B = v[edge2idx[e][1]];
 	}
 
-	BOOL			isEqual		(type_face& F)
-	{
-		// Test for 6 variations
-		if ((v[0]==F.v[0]) && (v[1]==F.v[1]) && (v[2]==F.v[2])) return true;
-		if ((v[0]==F.v[0]) && (v[2]==F.v[1]) && (v[1]==F.v[2])) return true;
-		if ((v[2]==F.v[0]) && (v[0]==F.v[1]) && (v[1]==F.v[2])) return true;
-		if ((v[2]==F.v[0]) && (v[1]==F.v[1]) && (v[0]==F.v[2])) return true;
-		if ((v[1]==F.v[0]) && (v[0]==F.v[1]) && (v[2]==F.v[2])) return true;
-		if ((v[1]==F.v[0]) && (v[2]==F.v[1]) && (v[0]==F.v[2])) return true;
-		return false;
-	}
-
-
+	// При подсчете нормали !
 	void	CalcNormal	()
 	{
 		Fvector t1,t2;
@@ -115,9 +97,13 @@ virtual		~Tface	();
 		if (mag<EPS_S)
 		{
 			Fvector3		save_N	= N;
-			if (exact_normalize(save_N))	N			=save_N;
-			else							CalcNormal2	();
-		} else {
+			if (exact_normalize(save_N))
+				N			=save_N;
+			else					
+				CalcNormal2	();
+		}
+		else
+		{
 			N.div		(mag);
 			N.normalize	();
 		}
@@ -155,6 +141,7 @@ virtual		~Tface	();
 		}
 	}
 
+	// Meny usage
 	float CalcArea() const
 	{
 		float	e1 = v[0]->P.distance_to(v[1]->P);
@@ -164,17 +151,8 @@ virtual		~Tface	();
 		float	p  = (e1+e2+e3)/2.f;
 		return	_sqrt( p*(p-e1)*(p-e2)*(p-e3) );
 	}
-	float CalcMaxEdge()
-	{
-		float	e1 = v[0]->P.distance_to(v[1]->P);
-		float	e2 = v[0]->P.distance_to(v[2]->P);
-		float	e3 = v[1]->P.distance_to(v[2]->P);
 
-		if (e1>e2 && e1>e3) return e1;
-		if (e2>e1 && e2>e3) return e2;
-		return e3;
-	}
-
+	// Subdivide usage
 	void	CalcCenter	(Fvector &C)
 	{
 		C.set(v[0]->P);
@@ -194,8 +172,6 @@ struct XRLC_LIGHT_API Tvertex : public DataVertexType
 	typedef typename v_faces::iterator		v_faces_it;
 
 	typedef xr_vector<type_vertex*>			 v_vertices;
-
-	typedef typename v_vertices::iterator	v_vertices_it;
 //////////////////////////////////////////////////////////////
 				Tvertex();
 virtual			~Tvertex();
@@ -234,29 +210,11 @@ virtual			~Tvertex();
 	}
 };
 
-
-
 template<typename typeVertex>
 IC  void   _destroy_vertex( typeVertex* &v, bool unregister )
 {
 	destroy_vertex( v, unregister );
 }
-
-
-template<typename typeVertex>
-struct remove_pred
-{
-	bool operator() ( typeVertex* &v )
-	{
-		if (v && v->m_adjacents.empty())
-		{
-			_destroy_vertex( v, false );
-			return true;
-		}
-		return false;
-	}
-} ;
-
 
 template<typename typeVertex>
 IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*>& vertices)
@@ -265,8 +223,7 @@ IC void isolate_vertices(BOOL bProgress, xr_vector<typeVertex*>& vertices)
 		Status("Isolating vertices...");
 
 	const u32 verts_old = vertices.size();
-
-	for (int it = 0; it<int(verts_old); ++it)
+ 	for (int it = 0; it<int(verts_old); ++it)
 	{
 		if (bProgress)
 			Progress(float(it) / float(verts_old));

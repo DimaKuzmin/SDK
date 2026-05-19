@@ -100,11 +100,10 @@ public:
 
 	void	LMaps					();
 	void	ProcessLMAPS_CPU();
-
-
- 	void	LightVertex				();
 	
+	void	xrPhase_SortDeflectors();
 	void	xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors);
+ 
 	void	xrPhase_MergeGeometry	();
 
 	void	Flex2OGF				();

@@ -92,17 +92,15 @@ public:
 
 CCrossTableBuilder::CCrossTableBuilder(LPCSTR caProjectName)
 {
+	Phase("Building Cross-Table");
+
 	FILE_NAME			caFileName;
 	strconcat			(sizeof(caFileName),caFileName,caProjectName,GAME_LEVEL_GRAPH);
 	
-	Phase				("Loading level graph");
-	CGameGraph			tGraph(caFileName);
+ 	CGameGraph			tGraph(caFileName);
+  	CLevelGraph			tMap(caProjectName);
 	
-	Phase				("Loading AI map");
-	CLevelGraph			tMap(caProjectName);
-	
-	Phase				("Building dynamic objects");
-	FLOAT_VECTOR_VECTOR	tDistances;
+ 	FLOAT_VECTOR_VECTOR	tDistances;
 	int					iVertexCount	= tGraph.header().vertex_count();
 	R_ASSERT2			(iVertexCount > 0,"There are no graph points in the graph!");
 	int					iNodeCount		= tMap.header().vertex_count();
@@ -127,8 +125,7 @@ CCrossTableBuilder::CCrossTableBuilder(LPCSTR caProjectName)
 		}
 	}
 	
-	Phase				("Building cross table");
-	Progress(0.f);
+ 	Progress(0.f);
 	for (int i=0; i<iVertexCount; ++i) {
 		if (i)
 			for (int k=0; k<(int)tMap.header().vertex_count(); k++)
@@ -141,8 +138,7 @@ CCrossTableBuilder::CCrossTableBuilder(LPCSTR caProjectName)
 	}
 	Progress			(1.f);
 	
-	Phase				("Saving cross table");
-	CMemoryWriter					tMemoryStream;
+ 	CMemoryWriter					tMemoryStream;
 	CGameLevelCrossTable::CHeader	tCrossTableHeader;
 	
 	tCrossTableHeader.dwVersion			= XRAI_CURRENT_VERSION;

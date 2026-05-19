@@ -92,12 +92,9 @@ void StartupAI	()
 			name[xr_strlen(name)] = 0;
 
 		xr_string output = gCompilerMode.AI_spawn_name;
-
-		if (output.empty())
-		{
-			output = "new";
-		}
-
+ 		if (output.empty())
+ 			output = "new";
+ 
 		char* start_level = gCompilerMode.AI_StartActor;
 		if (!xr_strlen(start_level))
 		{
@@ -105,6 +102,8 @@ void StartupAI	()
 		}
 
 		clear_temp_folder();
+
+		clMsg("Processing : %s", name);
 		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
 

@@ -2,8 +2,6 @@
 
 #include "base_color.h"
 
-#define BORDER 1
-
 struct XRLC_LIGHT_API LightpointRequest
 {
 	u32 X;
@@ -38,7 +36,10 @@ struct XRLC_LIGHT_API  lm_layer
 	xr_vector<u8>			samples;
 
 public:	  
- 
+	// Constructor
+	lm_layer() { width = height = 0; }
+	~lm_layer() { clear_memory(); };
+
 	void					create			(u32 w, u32 h)
 	{
 		width				= w;
@@ -87,11 +88,14 @@ public:
 	}
 
 
-	u32						Area			()						{ return (width+2*BORDER)*(height+2*BORDER); }
+	u32						Area();
 	void					Pixel			(u32 ID, u8& r, u8& g, u8& b, u8& s, u8& h);
 	void					Pack			(xr_vector<u32>& dest)const;
 	void					Pack_hemi		(xr_vector<u32>& dest)const;
  
 	bool					similar			( const lm_layer &D, float eps =EPS ) const;
-							lm_layer()				{ width=height=0; }
+
+
+	bool					ApplyBorders(u32 ref);
+	bool					ApplyBordersFast(u32 ref);
 };

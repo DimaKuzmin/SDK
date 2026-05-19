@@ -31,7 +31,6 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
 	if (header().version() == 10)
 	{
-		Phase("Ai Map v10 Loading to Cache");
 		u32 MaxBits = u32((1 << MAX_NODE_BIT_COUNT_v10) - 1);
 		NodeCompressed* nodes = (NodeCompressed*) m_reader->pointer();
 		int Index = 0;
@@ -51,8 +50,6 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 	}
 	else
 	{
-		Phase("Ai Map v11 Loading to Cache");
-
 		u32 MaxBits = u32((1 << MAX_NODE_BIT_COUNT) - 1);
 		NodeCompressed11* nodes = (NodeCompressed11*)m_reader->pointer();
 		int Index = 0;

@@ -22,7 +22,8 @@ public:
 	lm_layer					layer;
 	Fsphere						Sphere;
 	
-	BOOL						bMerged;
+	bool						bMerged;
+	bool						bLightProcessed;
 public:
 
 						CDeflector					();
@@ -116,8 +117,7 @@ extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 
 extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
 extern XRLC_LIGHT_API void		LightPoint_Embree(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
-extern XRLC_LIGHT_API BOOL		ApplyBorders	(lm_layer &lm, u32 ref);
-
+ 
 #define rms_zero	((4+g_params().m_lm_rms_zero)/2)
 #define rms_shrink	((8+g_params().m_lm_rms)/2)
  

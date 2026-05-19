@@ -50,5 +50,5 @@ extern void start_unwarp_recursion	();
 extern void destroy_vertex			( Vertex* &v, bool unregister );
 extern void destroy_face			( Face* &v, bool unregister );
 
-extern void FromBarry(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
-extern void FromBarryNormalized(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
+extern void FromBarry				(Face* F, Fvector& wP, Fvector& wN, Fvector& B);
+extern void FromBarryNormalized		(Face* F, Fvector& wP, Fvector& wN, Fvector& B);

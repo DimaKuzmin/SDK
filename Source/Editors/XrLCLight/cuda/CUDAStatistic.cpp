@@ -99,7 +99,7 @@ void CudaStatisticThread()
 
 		char name[128];
 		nvmlDeviceGetName(device, name, sizeof(name));
-		Msg("Cuda Device: %s", name);
+		Msg("--- Cuda Device: %s", name);
 		isStatisticInitilized = true;
 	}
 

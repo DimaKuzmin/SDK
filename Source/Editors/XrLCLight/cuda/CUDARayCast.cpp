@@ -334,8 +334,7 @@ public:
 	void TraceRaysNew()
 	{
 		size_t CurrentWritedRays = LastIndexTask;
-
-		// Подготавливаем данные на хосте
+ 		// Подготавливаем данные на хосте
 		h_params[0].handle = CommitedScene.tlasHandle,
 
 		// Result Buffer

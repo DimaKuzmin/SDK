@@ -65,45 +65,19 @@ void	mem_Optimize	()
 
 void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name)
 {
-#ifndef WIN64
-	Msg("Win32 MaxNodeSize %u", g_nodes.max_size());
-#else 
-	Msg("Win64 MaxNodeSize %u", g_nodes.max_size());
-#endif
-
 	g_textures = xr_new< xr_vector<b_BuildTexture>>();
 	Phase		("Loading level...");
 	xrLoad		(name,draft_mode);
 	mem_Optimize();
 
-//	Phase("Building nodes...");
-//	xrBuildNodes();
-//	Msg("%d nodes created",int(g_nodes.size()));
-//	mem_Optimize();
-//	
-//	Phase("Smoothing nodes...");
-//	xrSmoothNodes();
-//	mem_Optimize();
-	
 	if (!draft_mode)
 	{
-		Phase("Lighting nodes...");
 		xrLight		();
-		//	xrDisplay	();
 		mem_Optimize();
 
-		Phase("Calculating coverage...");
 		xrCover		(pure_covers);
 		mem_Optimize();
 	}
-	/////////////////////////////////////
-
-//	Phase("Palettizing cover values...");
-//	xrPalettizeCovers();
-//	mem_Optimize();
-
-//	Phase("Visualizing nodes...");
-//	xrDisplay	();
 
 	Phase("Saving nodes...");
 	xrSaveNodes	(name,out_name);

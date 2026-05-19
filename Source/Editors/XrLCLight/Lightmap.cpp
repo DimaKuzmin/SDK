@@ -20,7 +20,7 @@ CLightmap::CLightmap()
 {
 	strcpy ( lm_texture.name, "");
 	if (lm.surface.empty())
-		lm.create(gCompilerMode.LC_sizeLmaps, gCompilerMode.LC_sizeLmaps);
+		lm.create(gCompilerMode.LC_lmap_size, gCompilerMode.LC_lmap_size);
 }
 
 CLightmap::~CLightmap()
@@ -30,6 +30,8 @@ CLightmap::~CLightmap()
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
 {
+	u8 BORDER = gCompilerMode.LC_lmap_BORDER;
+
   	xr_vector<UVtri>	tris;
 	D->RemapUV(tris, b_u + BORDER, b_v + BORDER, s_u - 2 * BORDER, s_v - 2 * BORDER, lm.width, lm.height, bRotated);
  
@@ -111,12 +113,15 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
     }
 }
  
-void CLightmap::Save( LPCSTR path )
+void CLightmap::Save( LPCSTR path, u32& timeMS)
 {
 	static int		lmapNameID = 0; ++lmapNameID;
  
  	// Borders correction
-	Status			("Borders...");
+	// Status			("Borders...");
+	u8 BORDER = gCompilerMode.LC_lmap_BORDER;
+	CTimer tStats;
+	tStats.Start();
 	for (u32 _y=0; _y< lm.width; _y++)
 	{
 		for (u32 _x=0; _x< lm.height; _x++)
@@ -131,18 +136,9 @@ void CLightmap::Save( LPCSTR path )
 			}
 		}
 	}
-
-	// CTimer t; t.Start();
-	// Status("Apply Borders...");
-	// int p = 0;
-	// for (u32 ref=254; ref>(254-16); ref--) 
-	// {
-	// 	p++;
-	// 	ApplyBorders	(lm, ref);
- 	// 	Progress		( float (p / 16 ) );
-	// }
-	// clMsg("Borders: %u sec", t.GetElapsed_ms());
-
+	 
+	lm.ApplyBordersFast(254-16);
+ 
 	Progress			(1.f);
  
 	xr_vector<u32>			lm_packed;
@@ -158,9 +154,8 @@ void CLightmap::Save( LPCSTR path )
 	lm.destroy					();
 	
 	// Saving			(DXT5.dds)
-	CTimer tStats; tStats.Start();
 
-	Status			("Compression base...");
+	// Status			("Compression base...");
  	{
 		string_path				FN;
 		xr_sprintf					(lm_texture.name,"lmap#%d",lmapNameID			); 
@@ -180,7 +175,7 @@ void CLightmap::Save( LPCSTR path )
 	}
  	lm_packed.clear();
 
-	Status			("Compression hemi..."); //.
+	// Status			("Compression hemi..."); //.
  	{
 
 
@@ -207,7 +202,8 @@ void CLightmap::Save( LPCSTR path )
 
 	lm_packed.shrink_to_fit();
 	hemi_packed.shrink_to_fit();
-
-	Msg("Saving DDS: %u ms", tStats.GetElapsed_ms());
+	
+	timeMS = tStats.GetElapsed_ms();
+	// Msg("Saving DDS: %u ms, Borders: %u ms", tStats.GetElapsed_ms());
 }
  

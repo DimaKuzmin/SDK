@@ -122,6 +122,7 @@ void EmbreeRayTraceModel::BuildRaytraceModel()
 	{
 		xr_vector<FaceDataIntel> temp_buffer;
 		ref->export_cform_rcast_new(temp_buffer);
+
 		for (auto& FaceIntel : temp_buffer)
 		{
 			Face* F = (Face*)FaceIntel.ptr;

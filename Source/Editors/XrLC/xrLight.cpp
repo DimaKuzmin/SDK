@@ -2,7 +2,6 @@
 #include "build.h"
 
 #include "../xrLCLight/xrdeflector.h"
-#include "..\LauncherSDL\xrThread.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrLightVertex.h"
 
@@ -13,6 +12,7 @@
 #include "../XrLCLight/base_face.h"
 
 #include <ppl.h>
+extern void ImplicitLightingExec();
 
 void CBuild::ProcessLMAPS_CPU()
 {
@@ -43,13 +43,9 @@ void CBuild::ProcessLMAPS_CPU()
 
 void	CBuild::LMaps()
 {
- 	const bool Cuda   = gCompilerMode.CUDA;
-	const bool Embree = gCompilerMode.Embree;
+	Status("Lighting...");
 
-	string128 tmp_phase;
-	sprintf(tmp_phase, "LIGHT: LMaps (*%s*)", Cuda ? "CUDA" : Embree ? "Embree" : "Opcode");
-	Phase(tmp_phase);
-
+	// Sorting Deflectors for Saving !
  	if (gCompilerMode.CUDA)
 	{
 		// Se7kills 
@@ -60,91 +56,50 @@ void	CBuild::LMaps()
 		GPUTaskinSystem.current_flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0) | LP_UseFaceDisable;
 
 		CTimer tStats; tStats.Start();
-		auto ProcessDeflectors = [](xr_vector<CDeflector*>& deflectors)
-		{
-			std::atomic<u32> IndexTaskID = 0, IndexTaskApply = 0, IndexTaskExpand = 0;
-			concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
+
+		auto& deflectors = lc_global_data()->g_deflectors();
+		std::atomic<u32> IndexTaskID = 0, IndexTaskApply = 0, IndexTaskExpand = 0;
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
 			{
 				while (true)
 				{
 					u32 Index = IndexTaskID.fetch_add(1);
 					if (Index >= deflectors.size()) break;
 					CDeflector* D = deflectors[Index];
- 					D->LightGPU();
+					if (D->bLightProcessed) continue;	// Временно в буфере находится !
 
-					AditionalData("*** [LMAPS] ID [%u/%u] W: %u | H: %u",
-						Index, deflectors.size(), D->layer.width, D->layer.height);
+					D->LightGPU();
+					AditionalData("*** [LMAPS] ID [%u/%u]", Index, deflectors.size());
 				}
 
 				// Система тасков щас иная
 				GPUTaskinSystem.LightPointPacked_run_tasks();
 			});
 
-			concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
 			{
 				while (true)
 				{
 					u32 Index = IndexTaskApply.fetch_add(1);
 					if (Index >= deflectors.size()) break;
 					CDeflector* D = deflectors[Index];
+					if (D->bLightProcessed) continue;	// Временно в буфере находится !
 
 					D->ApplyColors();
 					D->ApplyExpandBordersGPU();
 
-					AditionalData("*** [LMAPS] ApplyID [%u/%u] W: %u | H: %u",
-						Index, deflectors.size(), D->layer.width, D->layer.height);
+					AditionalData("*** [LMAPS] ApplyID [%u/%u]", Index, deflectors.size());
 				}
 			});
-		};
-
-		u32 AreaCollected = 0; u32 IndexD = 0;
-		xr_vector<CDeflector*> deflectors_map;
-		for (auto& D : lc_global_data()->g_deflectors())
-		{
-			// deflectors.
-			if (AreaCollected > 8192 * 8192 * 4 || IndexD == lc_global_data()->g_deflectors().size())
-			{
-				// Lmaps Process
-				ProcessDeflectors(deflectors_map);
-				// Merge LMAPS
-				xrPhase_MergeLM(deflectors_map);
-
-				deflectors_map.clear();
-				AreaCollected = 0;
-			}
-
-			IndexD++;
-			AreaCollected += D->layer.Area();
-			deflectors_map.push_back(D);
-		}
-
-		if (deflectors_map.size())
-		{
-			// Lmaps Process
-			ProcessDeflectors(deflectors_map);
-			// Merge LMAPS
-			xrPhase_MergeLM(deflectors_map);
-
-			deflectors_map.clear();
-			AreaCollected = 0;
-		}
-
-		clMsg("%d lightmaps builded", lc_global_data()->lightmaps().size());
 	}
 	else
  	{
 		// Main process (4 threads)
-		Status("Lighting...");
-
-		CTimer start_time; start_time.Start();
 		ProcessLMAPS_CPU();
-		clMsg("%f seconds", start_time.GetElapsed_sec());
-
-		//****************************************** Merge LMAPS
-		xrPhase_MergeLM(lc_global_data()->g_deflectors());
 	}
 
-
+	// Закрыть и записать !
+ 	xrPhase_MergeLM(lc_global_data()->g_deflectors());
 
 	clMsg("Start Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 	for (u32 it = 0; it < lc_global_data()->g_deflectors().size(); it++)
@@ -153,37 +108,67 @@ void	CBuild::LMaps()
 	clMsg("End Destroy Deflectors: Memory: %llu mb used", u32(GetHeapMemory() / 1024 / 1024));
 }
 
+
 void CBuild::Light()
-{	  
-	//****************************************** Resolve materials
- 	Phase("Resolving materials...");
- 	xrPhase_ResolveMaterials();
-	IsolateVertices(TRUE);
+{
+	auto BuildRayTraceModel = [this]()
+	{
+		if (gCompilerMode.CUDA || gCompilerMode.Embree)
+			InitializeEmbreeDevice();
+		if (gCompilerMode.CUDA)
+			GPUTaskinSystem.InitializeGPU();
+		else if (gCompilerMode.Embree)
+			EmbreeMain.InitializeGeometry();
+		else
+			BuildRapid(false);
+	};
+
+	auto BuildingUV = [this]() 
+	{
+ 		Phase("Building - UV ...");
+		xrPhase_ResolveMaterials();
+		IsolateVertices(TRUE);
+
+		xrPhase_UVmap();
+		IsolateVertices(TRUE);
+
+		xrPhase_Subdivide();
+	};
+	  
+	Phase("Building normals...");
+	CalcNormals();
+
+	//****************************************** T-Basis
+	Phase("Building tangent-basis...");
+	xrPhase_TangentBasis();
+
+	Light_prepare();				// Помечаем треугольники bOpacue !
+
+
+ 	// ***************************************** Raytrace Model
+	BuildRayTraceModel();
 
 	//****************************************** UV mapping
- 	Phase("Build UV mapping...");
- 	xrPhase_UVmap();
-	IsolateVertices(TRUE);
+	BuildingUV();
 
-	//****************************************** Subdivide geometry
- 	Phase("Subdividing geometry...");
- 	xrPhase_Subdivide();
+	Phase("Adaptive HT...");
+	xrPhase_AdaptiveHT_calculate();
 
-	//****************************************** Implicit
- 
+ 	//****************************************** Implicit
  	Phase("LIGHT: Implicit...");
-	extern void ImplicitLightingExec();
 	ImplicitLightingExec();
 
 	//****************************************** LMaps
-  	LMaps();
+	Phase("LIGHT: Lmaps...");
+	LMaps();
 	 
-	//****************************************** MU-Models Processing
- 	wait_mu_base();
-
 	//****************************************** Vertex
- 	Phase("LIGHT: Vertex...");
- 	LightVertex();
+	Phase("LIGHT: Vertex...");
+	::LightVertex();
+
+	//****************************************** MU-Models Processing
+	wait_mu_base();
+	 
  
  	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
@@ -196,8 +181,4 @@ void CBuild::Light()
 
 	lc_global_data()->destroy_rcmodel();
 }
-
-void CBuild::LightVertex	()
-{
-	::LightVertex();
-}
+ 

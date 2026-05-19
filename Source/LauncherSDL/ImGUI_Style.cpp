@@ -72,8 +72,7 @@ void ImGUIStyleCFG::RedTheme()
 	ImVec4* colors = ImGui::GetStyle().Colors;
 
 	colors[ImGuiCol_ChildBg] = ImVec4(0.005f, 0.005f, 0.005f, 0.98f);
-
-
+	 
 	colors[ImGuiCol_BorderShadow] = ImVec4(0.15f, 0.00f, 0.00f, 0.24f);
 	colors[ImGuiCol_FrameBgHovered] = ImVec4(0.35f, 0.05f, 0.05f, 0.54f);
 	colors[ImGuiCol_FrameBgActive] = ImVec4(0.45f, 0.08f, 0.08f, 1.00f);

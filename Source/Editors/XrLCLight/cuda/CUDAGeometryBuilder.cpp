@@ -215,8 +215,10 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     xrLC_GlobalData* globalData = lc_global_data();
     if (!globalData)        return false;
 
-
     OptixGeometryBuilder geometryBuilder;
+
+
+    CTimer TStats; TStats.Start();
 
     size_t StartMemory = GetMemory();
     // 1. Обрабатываем статическую геометрию
@@ -251,10 +253,15 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
         }
     }
 
+    Msg("$[GPU Accel Structure] Capturing time: %u ms", TStats.GetElapsed_ms()); TStats.Start();
+    
+
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces = geometryBuilder.RawFacesSize();
-    geometryBuilder.RemoveDublicates_Batched();
+    geometryBuilder.RemoveDublicatesVertexs();
     geometryBuilder.RemoveDublicateFaces();
+
+    Msg("$[GPU Accel Structure] Removing time: %u ms", TStats.GetElapsed_ms());
 
     Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
     Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());

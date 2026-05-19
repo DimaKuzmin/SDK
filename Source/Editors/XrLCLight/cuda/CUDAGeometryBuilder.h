@@ -93,7 +93,7 @@ public:
     }
 
     // Remove Dublicates
-    void RemoveDublicates()
+    void RemoveDublicatesVertexs()
     {
         size_t totalVerts = raw_faces.size() * 3;
         xr_vector<IndexedVertex> temp;

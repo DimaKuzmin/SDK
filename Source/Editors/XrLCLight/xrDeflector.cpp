@@ -116,11 +116,11 @@ IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
 
 CDeflector::CDeflector() 
 {
-	//Deflector		= this;
-	normal.set		(0,1,0);
+ 	normal.set		(0,1,0);
 	Sphere.P.set	(flt_max,flt_max,flt_max);
 	Sphere.R		= 0;
-	bMerged			= FALSE;
+	bMerged			= false;
+	bLightProcessed = false;
 	UVpolys.reserve	(32);
 
 }
@@ -219,8 +219,8 @@ void CDeflector::OA_Export()
 
 	// Surface
 	VERIFY(inlc_global_data());
-	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2*BORDER);
-	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2*BORDER);
+	u32 dwWidth		= iCeil(size.x*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwWidth, 1u, 512u-2 * gCompilerMode.LC_lmap_BORDER);
+	u32 dwHeight	= iCeil(size.y*inlc_global_data()->g_params().m_lm_pixels_per_meter*density+.5f); clamp(dwHeight,1u, 512u-2 * gCompilerMode.LC_lmap_BORDER);
 	// layer.create	(dwWidth,dwHeight); Убрал алокацию при разверитке (для больших локаций пиздец)
 	
 	layer.width = dwWidth;

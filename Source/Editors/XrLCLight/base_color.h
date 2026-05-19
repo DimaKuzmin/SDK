@@ -1,21 +1,9 @@
 #pragma once
 
 //On CUDA device we use different vector type, so there is a workaround
-#ifndef VECTORWORKAROUND_DEFINE
-#define VECTORWORKAROUND_DEFINE
 
-#if defined(__CUDACC__)
-typedef HardwareVector VectorType;
-#else
 typedef Fvector VectorType;
-#endif // end __CUDACC__
-
-#endif //end VECTORWORKAROUND_DEFINE
-
-#if defined(__CUDACC__)
-#define XRLC_LIGHT_API
-#endif
-
+ 
 struct  XRLC_LIGHT_API base_color_c
 {
 public:
@@ -24,8 +12,9 @@ public:
     float					sun;		// - sun
     float					_tmp_;		// - shit that used to hold transparent value from texture in some phases (to deliver one phase result to another, for further computing)
 
-#if !defined(__CUDACC__) && !defined(THIS_IS_OPENCL)
     base_color_c() { rgb.set(0, 0, 0); hemi = 0; sun = 0; _tmp_ = 0; }
+    void clear_color() { rgb.set(0, 0, 0); hemi = 0; sun = 0; _tmp_ = 0; };
+
 
     void					mul(float s) { rgb.mul(s);	hemi *= s; sun *= s; };
     void					add(float s) { rgb.add(s);	hemi += s; sun += s; };
@@ -33,10 +22,8 @@ public:
     void					scale(int samples) { mul(1.f / float(samples)); };
     void					max(base_color_c& s) { rgb.max(s.rgb); hemi = std::max(hemi, s.hemi); sun = std::max(sun, s.sun); };
     void					lerp(base_color_c& A, base_color_c& B, float s) { rgb.lerp(A.rgb, B.rgb, s); float is = 1 - s;  hemi = is * A.hemi + s * B.hemi; sun = is * A.sun + s * B.sun; };
-#endif
 };
 
-#if !defined(__CUDACC__) && !defined(THIS_IS_OPENCL)
 template<u32 range>
 struct fixed16
 {
@@ -85,5 +72,3 @@ public:
     bool					similar(const base_color& c, float eps = EPS) const;
 
 };
-
-#endif

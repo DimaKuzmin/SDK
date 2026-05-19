@@ -26,14 +26,10 @@ CGameSpawnConstructor::CGameSpawnConstructor	(LPCSTR name, LPCSTR output, LPCSTR
 	:m_critical_section(MUTEX_PROFILE_ID(CGameSpawnConstructor))
 #endif // PROFILE_CRITICAL_SECTIONS
 {
-	Phase("process load");
- 	load_spawns						(name,no_separator_check);
-	Phase("process spawns");
-	process_spawns					();
-	Phase("process actor");
-	process_actor					(start);
-	Phase("process save");
-	save_spawn						(name,output);
+  	load_spawns						(name,no_separator_check);
+ 	process_spawns					();
+ 	process_actor					(start);
+ 	save_spawn						(name,output);
 }
 
 CGameSpawnConstructor::~CGameSpawnConstructor	()
@@ -95,10 +91,8 @@ void CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 	generate_temp_file_name				("game_graph","",m_game_graph_id);
 	xrMergeGraphs						(m_game_graph_id,name,false);
 	m_game_graph						= xr_new<CGameGraph>(m_game_graph_id);
-
-
-	Phase("Load Levels");
-	// load levels
+ 
+ 	// load levels
 	GameGraph::SLevel					level;
 	LEVEL_INFO_STORAGE::const_iterator	I = m_levels.begin();
 	LEVEL_INFO_STORAGE::const_iterator	E = m_levels.end();
@@ -189,7 +183,7 @@ void CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 	m_spawn_header.m_spawn_count	= spawn_graph().vertex_count();
 	m_spawn_header.m_level_count	= (u32)m_level_spawns.size();
 
-	Msg("LevelSpawn: %d", m_spawn_header.m_level_count);
+	clMsg("* Builded Total Levels count: %u", m_spawn_header.m_level_count);
 	
 	stream.open_chunk				(0);
 	stream.w_u32					(m_spawn_header.m_version);
