@@ -84,7 +84,7 @@ bool SurfacePlacePerpixel::_rect_register(L_rect& R, lm_layer* D)
         RegisterSize++;
     }
 
-    return true;
+    return isCanRegister;
 }
 
 // --------------------------------------------------------
