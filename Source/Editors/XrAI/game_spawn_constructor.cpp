@@ -173,6 +173,8 @@ void CGameSpawnConstructor::verify_level_changers	()
 	//VERIFY2									(m_level_changers.empty(),"Some of the level changers setup incorrectly");
 }
 
+extern u32 XRAI_LOADED_VERSION;
+
 void CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 {
 	CMemoryWriter					stream;
@@ -183,7 +185,7 @@ void CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 	m_spawn_header.m_spawn_count	= spawn_graph().vertex_count();
 	m_spawn_header.m_level_count	= (u32)m_level_spawns.size();
 
-	clMsg("* Builded Total Levels count: %u", m_spawn_header.m_level_count);
+	clMsg("* AIMAP Version[%u] .spawn Version[%u] Builded Levels: %u", XRAI_LOADED_VERSION, m_spawn_header.m_version, m_spawn_header.m_level_count);
 	
 	stream.open_chunk				(0);
 	stream.w_u32					(m_spawn_header.m_version);

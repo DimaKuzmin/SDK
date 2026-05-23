@@ -95,9 +95,7 @@ namespace GameGraph {
 		Fvector						tLocalPoint;
 		Fvector						tGlobalPoint;
 
-		// se7kills Не нужно слишком большой ID GameGraphID 
-		// AI Map v10
-		u32							tLevelID:8;
+ 		u32							tLevelID:8;
 		u32							tNodeID:24;
 		u8							tVertexTypes[LOCATION_TYPE_COUNT];
 		u32							dwEdgeOffset;

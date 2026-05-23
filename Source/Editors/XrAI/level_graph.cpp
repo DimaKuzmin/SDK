@@ -13,6 +13,7 @@
 LPCSTR LEVEL_GRAPH_NAME = "level.ai";
 
 extern u32 XRAI_CURRENT_VERSION = 10;
+extern u32 XRAI_LOADED_VERSION = 0;
 
 CLevelGraph::CLevelGraph		(LPCSTR filename)
 {
@@ -26,8 +27,7 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 
 
 	Msg("Loaded Vertices Removed");
-	// loaded_vertices.clear();
-	
+ 	
 	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
 	if (header().version() == 10)
 	{
@@ -68,7 +68,8 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
  		}
 	}
 
-	XRAI_CURRENT_VERSION = header().version();
+	XRAI_CURRENT_VERSION		= header().version();
+	XRAI_LOADED_VERSION			= header().version();
 
 
 	m_row_length				= iFloor((header().box().max.z - header().box().min.z)/header().cell_size() + EPS_L + 1.5f);
@@ -76,7 +77,7 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 	m_access_mask.assign		(header().vertex_count(),true);
 	unpack_xz					(vertex_position(header().box().max),m_max_x,m_max_z);
 
-	Msg("Nodes Size: %u | Version Map : %u", m_header->vertex_count(), m_header->version());
+	Msg("AiMap::Loading Version[%u] | Nodes Size: %u", m_header->version(), m_header->vertex_count());
 }
 
 CLevelGraph::~CLevelGraph		()
