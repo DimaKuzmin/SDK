@@ -403,7 +403,7 @@ public:
 				C.hemi = Chw.hemi;
 				C.sun = Chw.sun;
 
-				C.rgb.set(Chw.rgb.x, Chw.rgb.y, Chw.rgb.z);
+				C.rgb.set(Chw.RGB.x, Chw.RGB.y, Chw.RGB.z);
 			};
 
 		// Добавляем результат в конец списка
