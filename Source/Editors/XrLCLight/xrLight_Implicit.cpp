@@ -34,6 +34,8 @@ void ProcessingCPU()
 			{
 				u32 V = Processed.fetch_add(1);
 				AditionalData("Processed: %u/%u", Processed.load(), defl.Height());
+				if (V >= defl.Height()) break;
+
 				for (u32 U = 0; U < defl.Width(); U++)
 				{
 					base_color_c	C;

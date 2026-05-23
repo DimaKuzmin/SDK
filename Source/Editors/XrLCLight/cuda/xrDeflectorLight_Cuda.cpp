@@ -157,7 +157,7 @@ bool CDeflector::ApplyColors()
 		for (u32 U = 0; U < lm.width; U++)
 		{
 			u32		Key = V * lm.width + U;
-			u8   Samples = lm.samples[Key];
+			u8    Samples = lm.samples[Key];
 			auto& CResult = lm.surface[Key];
 
 			if (Samples > 0)
@@ -190,14 +190,8 @@ void CDeflector::ApplyColor(size_t IKey, base_color_c& C)
 
 	if (Key < lm.surface.size())
 	{
-		auto& CResult = lm.surface[Key];
-		auto& Keys = lm.samples[Key];
-		Keys += 1;
-
-		base_color_c cNew;
-		CResult._get(cNew);
-		cNew.add(C);
-		CResult._set(cNew);
+		lm.surface[Key]._add(C);
+		lm.samples[Key]++;
 	}
 	else
 	{
