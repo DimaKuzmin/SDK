@@ -215,7 +215,7 @@ void DrawLCConfig()
 			ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
 			ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
 			ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
-			ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
+			// ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
  			ImGui::Separator();
 
 			// Lmaps Settings
