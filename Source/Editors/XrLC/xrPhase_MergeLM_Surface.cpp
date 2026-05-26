@@ -16,7 +16,7 @@ void SurfacePlacePerpixel::_InitSurface()
     BORDER = gCompilerMode.LC_lmap_BORDER;
     FilledCount = 0;
     RegisterSize = 0;
-    alpha_ref = 254 - BORDER;
+    alpha_ref = 254-BORDER;
 
     SurfaceGrid = gCompilerMode.LC_lmap_size;
 
@@ -32,17 +32,17 @@ bool SurfacePlacePerpixel::Place_Perpixel(L_rect& R, lm_layer* D)
 {
     u8* lm = &*(D->marker.begin());
 
-    u32 s_x = D->width + 2 * BORDER;
-    u32 s_y = D->height + 2 * BORDER;
+    u32 s_x = D->width  + (2 * BORDER);
+    u32 s_y = D->height + (2 * BORDER);
 
     for (u32 y = 0; y < s_y; y++)
     {
         BYTE* P = surface_tbb.data() + (y + R.a.y) * SurfaceGrid + R.a.x;
         u8* S = lm + y * s_x;
 
-        for (u32 x = 0; x < s_x; x++, P++, S++)
+        for (u32 x = 0; x < s_x; x++)
         {
-            if (*P && (*S >= alpha_ref))
+            if (S[x] >= alpha_ref && P[x])
                 return false;
         }
     }
@@ -60,7 +60,7 @@ bool SurfacePlacePerpixel::_rect_register(L_rect& R, lm_layer* D)
     {
         u8* lm = &*(D->marker.begin());
 
-        u32 s_x = D->width + 2 * BORDER;
+        u32 s_x = D->width  + 2 * BORDER;
         u32 s_y = D->height + 2 * BORDER;
 
         for (u32 y = 0; y < s_y; y++)
@@ -70,11 +70,11 @@ bool SurfacePlacePerpixel::_rect_register(L_rect& R, lm_layer* D)
             BYTE* P = surface_tbb.data() + _Y * SurfaceGrid + R.a.x;
             u8* S = lm + y * s_x;
 
-            for (u32 x = 0; x < s_x; x++, P++, S++)
+            for (u32 x = 0; x < s_x; x++)
             {
-                if (*S >= alpha_ref)
+                if (S[x] >= alpha_ref)
                 {
-                    *P = 255;
+                    P[x] = 255;
                     occupied_y[_Y]++;
                     FilledCount++;
                 }
@@ -90,8 +90,8 @@ bool SurfacePlacePerpixel::_rect_register(L_rect& R, lm_layer* D)
 // --------------------------------------------------------
 bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
 {
-    int SizeX = D->width + 2 * BORDER;
-    int SizeY = D->height + 2 * BORDER;
+    int SizeX = D->width  + (2 * BORDER);
+    int SizeY = D->height + (2 * BORDER);
 
     int x_max = SurfaceGrid - SizeX;
     int y_max = SurfaceGrid - SizeY;
@@ -116,7 +116,7 @@ bool SurfacePlacePerpixel::rect_place_full(L_rect& r, lm_layer* D)
                 return true;
             }
 
-            _X += std::max(1, SizeX);
+             _X += std::max(1, SizeX);
         }
     }
 

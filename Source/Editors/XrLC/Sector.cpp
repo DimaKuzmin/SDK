@@ -37,8 +37,6 @@ IC BOOL	ValidateMerge(Fbox& bb_base, Fbox& bb, float& volume, float SLimit)
 	return TRUE;
 }
 
-#include <execution>
-
 void CSector::BuildHierrarhy()
 {
 	Fvector		scene_size;
@@ -62,88 +60,59 @@ void CSector::BuildHierrarhy()
 	if (SizeLimit < 4.f)			SizeLimit = 4.f;
 	if (delimiter <= SizeLimit)	delimiter *= 2;		// just very small level
 
-	CTimer tStats;
-	u64 ElapsedMs = 0;
-
 	for (; SizeLimit <= delimiter; SizeLimit *= 2)
 	{
-		// Собираем кандидатов только этого сектора
-		xr_vector<int> candidates;
-		for (int idx = 0; idx < g_tree.size(); ++idx) {
-			if (!g_tree[idx]->bConnected && g_tree[idx]->Sector == SelfID)
-				candidates.push_back(idx);
-		}
+		int iSize = g_tree.size();
 
-		// Сортируем по центру (для быстрой фильтрации по X)
-		std::sort(std::execution::par, candidates.begin(), candidates.end(), [&](int a, int b)
-			{
-				Fvector C1, C2;
-				g_tree[a]->bbox.getcenter(C1);
-				g_tree[b]->bbox.getcenter(C2);
-				return C1.x < C2.x;
-			});
-
-		xr_vector<OGF_Node*> new_nodes;
-
-		AditionalData("Process : %.0f / %.0f | %u | Bounds: %u ms", SizeLimit, delimiter, candidates.size(), ElapsedMs);
-
-
-		for (int id : candidates)
+		for (int I = 0; I < iSize; I++)
 		{
-			if (g_tree[id]->bConnected) continue;
+			if (g_tree[I]->bConnected)		 continue;
+			if (g_tree[I]->Sector != SelfID) continue;
 
-			OGF_Node* pNode = new OGF_Node(iLevel, u16(SelfID));
-			pNode->AddChield(id);
+			OGF_Node* pNode = xr_new<OGF_Node>(iLevel, u16(SelfID));
+			pNode->AddChield(I);
 
-			for (;;) {
-				int best_id = -1;
-				float best_volume = flt_max;
+			// Find best object to connect with
+			for (;;)
+			{
+				// Find best object to connect with
+				int		best_id = -1;
+				float	best_volume = flt_max;
 
-				// Поиск только рядом по X
-				Fvector Center;
-				g_tree[id]->bbox.getcenter(Center);
-				const float cx = Center.x;
-				for (int cand : candidates) {
-					if (g_tree[cand]->bConnected) continue;
-					Fvector c2;
-					g_tree[cand]->bbox.getcenter(c2);
-					if (fabsf(c2.x - cx) > SizeLimit)
-						continue;
+				for (int J = 0; J < iSize; J++)
+				{
+					OGF_Base* candidate = g_tree[J];
+					if (candidate->bConnected)			continue;
+					if (candidate->Sector != SelfID)	continue;
 
 					float V;
-					if (ValidateMerge(pNode->bbox, g_tree[cand]->bbox, V, SizeLimit) && V < best_volume) {
-						best_volume = V;
-						best_id = cand;
+					if (ValidateMerge(pNode->bbox, candidate->bbox, V, SizeLimit))
+					{
+						if (V < best_volume) {
+							best_volume = V;
+							best_id = J;
+						}
 					}
 				}
 
-				if (best_id < 0) break;
+				// Analyze
+				if (best_id < 0)		break;
 				pNode->AddChield(best_id);
 			}
 
-			if (pNode->chields.size() > 1)
-			{
-				tStats.Start();
+			if (pNode->chields.size() > 1) {
 				pNode->CalcBounds();
-				ElapsedMs += tStats.GetElapsed_ms();
-
-				new_nodes.push_back(pNode);
+				g_tree.push_back(pNode);
 				bAnyNode = TRUE;
 			}
-			else
-			{
-				g_tree[id]->bConnected = false;
+			else {
+				g_tree[I]->bConnected = false;
 				xr_delete(pNode);
 			}
 		}
 
-		if (!new_nodes.empty()) {
-			g_tree.insert(g_tree.end(), new_nodes.begin(), new_nodes.end());
-			iLevel++;
-		}
+		if (iSize != (int)g_tree.size()) iLevel++;
 	}
-
-
 	TreeRoot = 0;
 	if (bAnyNode) TreeRoot = g_tree.back();
 	else {

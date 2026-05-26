@@ -48,6 +48,7 @@ struct CompilersMode
 	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 
+	bool LC_Se7kills_method = true;
  	int  LC_lmap_size	= 1024 * 8;
 	int  LC_lmap_BORDER = 1;
 	float  LC_lmap_fill	= 0.89f;

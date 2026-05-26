@@ -236,7 +236,7 @@ void DrawLCConfig()
 
 			ImGui::Text("Fill:  "); ImGui::SameLine(0, 30);
 			ImGui::InputFloat("##fill", &gCompilerMode.LC_lmap_fill, 0.01f, 0.01f);
-		
+			ImGui::Checkbox("Fast lmaps", &gCompilerMode.LC_Se7kills_method);
 
 
 			ImGui::EndDisabled();

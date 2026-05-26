@@ -1,10 +1,10 @@
-#pragma once
+﻿#pragma once
 
 #include <atomic>
 #include "xrPhase_MergeLM_Rect.h"
 #include "../XrLCLight/xrDeflector.h"
 #include <mutex> 
-
+#include <atomic>
 
 class lm_layer;
 
@@ -31,6 +31,5 @@ public:
 
 	float FilledSize_cnt() { return float(FilledCount) / float(SurfaceGrid * SurfaceGrid); };
 };
-
-extern SurfacePlacePerpixel	placer_perpixel;
  
+extern SurfacePlacePerpixel	placer_perpixel;
