@@ -1,10 +1,9 @@
 #include "stdafx.h"
 
 #include "global_calculation_data.h"
-
 #include "../Public/shader_xrlc.h"
-#include "embree_raytracing/EmbreeRayTrace.h"
- 
+#include "xrMU_Model.h"
+  
 global_claculation_data	gl_data;
 
 template <class T>
@@ -44,63 +43,8 @@ void global_claculation_data::xrLoad()
 	g_shaders_xrlc				= xr_new<Shader_xrLC_LIB> ();
 	g_shaders_xrlc->Load		( N );
 
-	// Load CFORM
-	{
-		FS.update_path			(N,"$level$","build.cform");
-		IReader*			fs = FS.r_open("$level$","build.cform");
-		
-		R_ASSERT			(fs->find_chunk(0));
-		hdrCFORM			H;
-		fs->r				(&H,sizeof(hdrCFORM));
-		R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
-		
-		Fvector*	verts	= (Fvector*) fs->pointer();
+	slots_data.Load();
  
-		xr_vector< CDB::TRI > tris(H.facecount);
-		{
-			u8* tris_pointer = (u8*)(verts + H.vertcount);
-			for (u32 i = 0; i < H.facecount; i++)
-			{
-				memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
-				tris_pointer += CDB::TRI::Size();
-			}
-		}
- 		// Embree Loader
-		EmbreeMain.build_data.build_fcnt = H.facecount;
-		EmbreeMain.build_data.build_vcnt = H.vertcount;
-		EmbreeMain.build_data.build_verts.clear();
-		EmbreeMain.build_data.build_verts.resize(H.vertcount);
-		EmbreeMain.build_data.build_faces.clear();
-		EmbreeMain.build_data.build_faces.resize(H.facecount);
-
-		for (u32 Vid = 0; Vid < H.vertcount; Vid++)
-			EmbreeMain.build_data.build_verts[Vid] = verts[Vid];
-		for (u32 Tid = 0; Tid < H.facecount; Tid++)
-			EmbreeMain.build_data.build_faces[Tid] = tris[Tid];
-		Phase("Loading RCast CDB...");
-				
-		// Create CFORM MODEL
-		clMsg("Raytrace Model: verts: %u, triangle: %u", H.vertcount, tris.size());
-		RCAST_Model.build	( verts, H.vertcount, tris.data(), H.facecount );
-
-		// Rcast Faces
-		g_rc_faces.resize	(H.facecount);
-		R_ASSERT(fs->find_chunk(1));
-		fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));
-
-		LevelBB.set			(H.aabb);
-	}
-
-
-	// Initialize Embree Details
-	EmbreeMain.InitEmbreeDetails();
-
-
-	
-	{
-		slots_data.Load( );
-	}
-
 	// Lights
 	{
 		IReader*			fs = FS.r_open("$level$","build.lights");
@@ -129,8 +73,7 @@ void global_claculation_data::xrLoad()
 
 		FS.r_close			(fs);
 	}
-
-	
+ 	
 	// Load level data
 	{
 		IReader*	fs		= FS.r_open ("$level$","build.prj");
@@ -257,6 +200,159 @@ void global_claculation_data::xrLoad()
 				g_textures.push_back	(BT);
 			}
 		}
+
+
+		xrLoadGeometry(fs);
+
 	}
+
+
+	
 }
    
+
+void global_claculation_data::xrCalculateOpacity()
+{
+	for (auto& F : building_embree_faces)
+	{
+		F.bOpaque = true;
+
+		b_material& M = gl_data.g_materials[F.dwMaterial];
+		b_BuildTexture& T = gl_data.g_textures[M.surfidx];
+		F.bOpaque = !T.bHasAlpha;
+
+		// pSurface was possible deleted
+		if (!F.bOpaque && (T.pSurface.Empty()))
+		{
+			F.bOpaque = true;
+			clMsg("Strange face detected... Has alpha without texture... [%s]", T.name);
+		}
+	}
+}
+
+void global_claculation_data::xrLoadGeometry(IReader* fs)
+{
+	auto GetShader = [](u32 dwMaterial) -> const Shader_xrLC&
+		{
+			return shader(dwMaterial, *gl_data.g_shaders_xrlc, gl_data.g_materials);
+		};
+
+
+	Status("Loading Vertices...");
+	xr_vector<Fvector> vertexs;
+	{
+		IReader* CHVertex = fs->open_chunk(EB_Vertices);
+
+		u32 v_count = CHVertex->length() / sizeof(b_vertex);
+
+		vertexs.resize(v_count);
+		for (u32 i = 0; i < v_count; i++)
+			CHVertex->r_fvector3(vertexs[i]);
+
+		CHVertex->close();
+	}
+
+	//*******
+	Status("Loading Faces...");
+	{
+		IReader* ChunkFaces = fs->open_chunk(EB_Faces);
+		R_ASSERT(ChunkFaces);
+		u32 f_count = ChunkFaces->length() / sizeof(b_face);
+
+		for (u32 i = 0; i < f_count; i++)
+		{
+			b_face	B;
+			ChunkFaces->r(&B, sizeof(B));
+			R_ASSERT(B.dwMaterialGame < 65536);
+
+			const Shader_xrLC& SH = GetShader(B.dwMaterial);
+			if (!SH.flags.bLIGHT_CastShadow) continue;
+
+			FaceDataEmbree& bFace = building_embree_faces.emplace_back();
+			bFace.dwMaterial = u16(B.dwMaterial);
+			bFace.dwMaterialGame = B.dwMaterialGame;
+			bFace.ptr = &bFace;
+
+			// Vertices and adjacement info
+			bFace.v1 = vertexs[B.v[0]];
+			bFace.v2 = vertexs[B.v[1]];
+			bFace.v3 = vertexs[B.v[2]];
+
+			// transfer TC
+			bFace.TC[0].set(B.t[0].x, B.t[0].y);
+			bFace.TC[1].set(B.t[1].x, B.t[1].y);
+			bFace.TC[2].set(B.t[2].x, B.t[2].y);
+
+		}
+		ChunkFaces->close();
+	}
+
+
+	//*******
+	Status("Models and References");
+	IReader* MUChunk = fs->open_chunk(EB_MU_models);
+
+	xr_map<u16, xr_vector<FaceDataEmbree>> mu_faces;
+	if (MUChunk)
+	{
+		int ModelID = 0;
+		while (!MUChunk->eof())
+		{
+			xrMU_Model().Load_Embree(*MUChunk, mu_faces[ModelID]);
+			ModelID++;
+		}
+		MUChunk->close();
+	}
+
+	IReader* MUChunkRef = fs->open_chunk(EB_MU_refs);
+	if (MUChunkRef)
+	{
+		while (!MUChunkRef->eof())
+		{
+			b_mu_reference		R;
+			MUChunkRef->r(&R, sizeof(R));
+
+			Fmatrix xform = R.transform;				// Transformation !
+			auto& faces = mu_faces[R.model_index];		// Model Buffer by Index !
+			for (auto& F : faces)
+			{
+				const Shader_xrLC& SH = GetShader(F.dwMaterial);
+				if (!SH.flags.bLIGHT_CastShadow) continue;
+
+				auto& F = building_embree_faces.emplace_back();
+
+				Fvector					P[3];
+				xform.transform_tiny(P[0], F.v1);
+				xform.transform_tiny(P[1], F.v2);
+				xform.transform_tiny(P[2], F.v3);
+
+				F.SetFace(P[0], P[1], P[2], &F);
+				F.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
+			}
+		}
+		MUChunkRef->close();
+	}
+
+	xrCalculateOpacity();
+
+	// Изза сраного BOX-QUERY Для расщета t_n !
+	if (true) // Rcast - Model
+	{
+		TriangleContainer container;
+		for (auto& F : building_embree_faces)
+		{
+			container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
+		}
+ 		container.RemoveDublicates();
+
+		auto& Vert = container.vertex();
+		auto& Tri  = container.faces();
+		xr_vector<CDB::TRI> faces;
+		for (auto T : Tri)
+			faces.push_back(T.Get());
+
+ 		RCAST_Model.build(Vert.data(), Vert.size(), faces.data(), faces.size(), nullptr);
+
+		EmbreeMain.InitEmbreeDetails(container);
+	}
+}

@@ -37,7 +37,6 @@ namespace CDB
 		u32				verts	[3];		// 3*4 = 12b
 		union	
 		{
-			
 			struct
 			{
 				u32			dummy;				// 4b
@@ -58,59 +57,8 @@ namespace CDB
 		IC u32			IDvert	(u32 ID)		{ return verts[ID];	}
 	};
 
-
-	
-
-	class XRCDB_API TRI_Build
-	{
-	public:
-		u32				verts[3];		// 3*4 = 12b
-#ifdef _WIN64
-		union {
-			u64			dummy;				// 8b
-			struct {
-				u64		material : 14;		// 
-				u64		suppress_shadows : 1;	// 
-				u64		suppress_wm : 1;		// 
-				u64		sector : 16;			// 
-				u64		dumb : 32;
-			};
-			struct {
-				u32 dummy_low;
-				u32 dummy_high;
-			};
-		};
-#else
-		union {
-			u32			dummy;				// 4b
-			struct {
-				u32		material : 14;		// 
-				u32		suppress_shadows : 1;	// 
-				u32		suppress_wm : 1;		// 
-				u32		sector : 16;			// 
-			};
-		};
-#endif
-	public:
-		IC u32			IDvert(u32 ID) { return verts[ID]; }
-	};
-
-   
-
 	// Build callback
 	typedef		void 	build_callback	(Fvector* V, int Vcnt, TRI* T, int Tcnt, void* params);
-
-	struct tri_m128
-	{
-		Fvector fv_e0;
-		Fvector fv_e1;
-		Fvector fv_e2;
-
-		__m128 e0;
-		__m128 e1;
-		__m128 e2;
-	};
-
 
 	// Model definition
 	class		XRCDB_API		MODEL
@@ -138,8 +86,6 @@ namespace CDB
 		Fvector*				verts;
 		int						verts_count;
  
-		tri_m128*				tres_edges;
-
 	public:
 		MODEL();
 		~MODEL();
@@ -150,9 +96,7 @@ namespace CDB
 		IC const TRI*			get_tris		()	const 	{ return tris;		}
 		IC TRI*					get_tris		()			{ return tris;		}
 		IC int					get_tris_count	()	const	{ return tris_count;}
-			
-		IC tri_m128*			get_edges() { return tres_edges; };
- 
+			 
 		IC void					syncronize		()	const
 		{
 			if (S_READY!=status)
@@ -164,13 +108,8 @@ namespace CDB
 			}
 		}
 
-		static	void			build_thread	(void*);
-		void					build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=NULL, void* bcp=NULL);
-
-		void					build_levelcdb_tree_save(string_path filename);
-
 		void					build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc=NULL, void* bcp=NULL);
-		size_t						memory			();
+		size_t					memory			();
 	};
 
 	// Collider result

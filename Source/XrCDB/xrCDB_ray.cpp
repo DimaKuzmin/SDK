@@ -3,7 +3,6 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include <xmmintrin.h>
-#include <immintrin.h>
 #pragma warning(pop)
 
 #include "xrCDB.h"
@@ -129,22 +128,18 @@ static const float _MM_ALIGN16
 ps_cst_plus_inf[4] = { flt_plus_inf,  flt_plus_inf,  flt_plus_inf,  flt_plus_inf },
 ps_cst_minus_inf[4] = { -flt_plus_inf, -flt_plus_inf, -flt_plus_inf, -flt_plus_inf };
 
-__m128 plus_inf = loadps(ps_cst_plus_inf);
-__m128 minus_inf = loadps(ps_cst_minus_inf);
-
-ICF BOOL isect_sse(const aabb_t& box, const __m128 pos, const __m128 inv_dir, float& dist) 
-{
+ICF BOOL isect_sse(const aabb_t& box, const ray_t& ray, float& dist) {
 	// you may already have those values hanging around somewhere
-	//const __m128
-	//	plus_inf = loadps(ps_cst_plus_inf),
-	//	minus_inf = loadps(ps_cst_minus_inf);
+	const __m128
+		plus_inf = loadps(ps_cst_plus_inf),
+		minus_inf = loadps(ps_cst_minus_inf);
 
 	// use whatever's apropriate to load.
 	const __m128
 		box_min = loadps(&box.min),
-		box_max = loadps(&box.max);
-		//pos = loadps(&ray.pos),
-		//inv_dir = loadps(&ray.inv_dir);
+		box_max = loadps(&box.max),
+		pos = loadps(&ray.pos),
+		inv_dir = loadps(&ray.inv_dir);
 
 	// use a div if inverted directions aren't available
 	const __m128 l1 = mulps(subps(box_min, pos), inv_dir);
@@ -180,48 +175,31 @@ ICF BOOL isect_sse(const aabb_t& box, const __m128 pos, const __m128 inv_dir, fl
 	//storess	(lmax, &rs.t_far);
 
 	return  ret;
-} 
-
-
- 
+}
 
 template <bool bUseSSE, bool bCull, bool bFirst, bool bNearest>
 class _MM_ALIGN16	ray_collider
 {
 public:
 	COLLIDER* dest;
-	MODEL* MDL;
 	TRI* tris;
-   
 	Fvector* verts;
- 	ray_t			ray;
+
+	ray_t			ray;
 	float			rRange;
 	float			rRange2;
- 	__m128 ray_pos;
-	__m128 fwd_dir;
-	__m128 inv_dir;
- 
- 	// SKIP CALC TRI EDGE
-	ICF void			_init(COLLIDER* CL, CDB::MODEL* model,  const Fvector& C, const Fvector& D, float R)
+
+	IC void			_init(COLLIDER* CL, Fvector* V, TRI* T, const Fvector& C, const Fvector& D, float R)
 	{
 		dest = CL;
-		tris = model->get_tris();
-		verts = model->get_verts();
-
-		MDL = model;
-
+		tris = T;
+		verts = V;
 		ray.pos.set(C);
 		ray.inv_dir.set(1.f, 1.f, 1.f).div(D);
 		ray.fwd_dir.set(D);
 		rRange = R;
 		rRange2 = R * R;
-
-		ray_pos = loadps(&ray.pos);
-		fwd_dir = loadps(&ray.fwd_dir);
-		inv_dir = loadps(&ray.inv_dir);
-
-		if (!bUseSSE) 
-		{
+		if (!bUseSSE) {
 			// for FPU - zero out inf
 			if (_abs(D.x) > flt_eps) {}
 			else ray.inv_dir.x = 0;
@@ -230,7 +208,7 @@ public:
 			if (_abs(D.z) > flt_eps) {}
 			else ray.inv_dir.z = 0;
 		}
- 	}
+	}
 
 	// fpu
 	ICF BOOL		_box_fpu(const Fvector& bCenter, const Fvector& bExtents, Fvector& coord)
@@ -240,7 +218,6 @@ public:
 		BB.max.add(bCenter, bExtents);
 		return 		isect_fpu(BB.min, BB.max, ray, coord);
 	}
-
 	// sse
 	ICF BOOL		_box_sse(const Fvector& bCenter, const Fvector& bExtents, float& dist)
 	{
@@ -257,22 +234,20 @@ public:
 		_mm_store_ps((float*)&box.min, _mm_sub_ps(CN, EX));
 		_mm_store_ps((float*)&box.max, _mm_add_ps(CN, EX));
 
- 		return 		isect_sse(box, ray_pos, inv_dir, dist);
+		return 		isect_sse(box, ray, dist);
 	}
 
-	Fvector edge1, edge2, pvec, tvec, qvec;
-	float det, inv_det;
- 
-	// FLOATING POINT
-	ICF bool _tri_original(Fvector* verts, bool bCull, ray_t& ray, u32* p, float& u, float& v, float& range)
+	IC bool			_tri(u32* p, float& u, float& v, float& range)
 	{
+		Fvector edge1, edge2, tvec, pvec, qvec;
+		float	det, inv_det;
+
 		// find vectors for two edges sharing vert0
 		Fvector& p0 = verts[p[0]];
 		Fvector& p1 = verts[p[1]];
 		Fvector& p2 = verts[p[2]];
 		edge1.sub(p1, p0);
 		edge2.sub(p2, p0);
-
 		// begin calculating determinant - also used to calculate U parameter
 		// if determinant is near zero, ray lies in plane of triangle
 		pvec.crossproduct(ray.fwd_dir, edge2);
@@ -306,23 +281,19 @@ public:
 		}
 		return true;
 	}
-	 
-	void _prim(DWORD prim)
+
+	void			_prim(DWORD prim)
 	{
- 		float	u, v, r;
-  		if (!_tri_original(verts, bCull, ray, tris[prim].verts, u, v, r))
-			return;
- 		 
-		if (r <= 0 || r > rRange)
-			return;
+		float	u, v, r;
+		if (!_tri(tris[prim].verts, u, v, r))	return;
+		if (r <= 0 || r > rRange)					return;
 
 		if (bNearest)
 		{
 			if (dest->r_count())
 			{
 				RESULT& R = *dest->r_begin();
-				if (r < R.range)
-				{
+				if (r < R.range) {
 					R.id = prim;
 					R.range = r;
 					R.u = u;
@@ -335,8 +306,7 @@ public:
 					rRange2 = r * r;
 				}
 			}
-			else 
-			{
+			else {
 				RESULT& R = dest->r_add();
 				R.id = prim;
 				R.range = r;
@@ -350,9 +320,8 @@ public:
 				rRange2 = r * r;
 			}
 		}
-		else 
-		{
- 			RESULT& R = dest->r_add();
+		else {
+			RESULT& R = dest->r_add();
 			R.id = prim;
 			R.range = r;
 			R.u = u;
@@ -360,7 +329,7 @@ public:
 			R.verts[0] = verts[tris[prim].verts[0]];
 			R.verts[1] = verts[tris[prim].verts[1]];
 			R.verts[2] = verts[tris[prim].verts[2]];
-			R.dummy = tris[prim].dummy;		 
+			R.dummy = tris[prim].dummy;
 		}
 	}
 	void			_stab(const AABBNoLeafNode* node)
@@ -369,15 +338,13 @@ public:
 		_mm_prefetch((char*)node->GetNeg(), _MM_HINT_NTA);
 
 		// Actual ray/aabb test
-		if (bUseSSE) 
-		{
+		if (bUseSSE) {
 			// use SSE
 			float		d;
 			if (!_box_sse((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, d))	return;
 			if (d > rRange)																	return;
 		}
-		else
-		{
+		else {
 			// use FPU
 			Fvector		P;
 			if (!_box_fpu((Fvector&)node->mAABB.mCenter, (Fvector&)node->mAABB.mExtents, P))	return;
@@ -385,129 +352,108 @@ public:
 		}
 
 		// 1st chield
-		if (node->HasLeaf())	
-			_prim(node->GetPrimitive());
-		else	
-			_stab(node->GetPos());
+		if (node->HasLeaf())	_prim(node->GetPrimitive());
+		else					_stab(node->GetPos());
 
 		// Early exit for "only first"
-		if (bFirst && dest->r_count())	
-			return;
+		if (bFirst && dest->r_count())														return;
 
 		// 2nd chield
-		if (node->HasLeaf2())
-			_prim(node->GetPrimitive2());
-		else	
-			_stab(node->GetNeg());
+		if (node->HasLeaf2())	_prim(node->GetPrimitive2());
+		else					_stab(node->GetNeg());
 	}
 };
-	
+
 void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvector& r_dir, float r_range)
 {
-	MODEL* MDL = const_cast<MODEL*>(m_def);
 	m_def->syncronize();
- 
+
 	// Get nodes
 	const AABBNoLeafTree* T = (const AABBNoLeafTree*)m_def->tree->GetTree();
 	const AABBNoLeafNode* N = T->GetNodes();
 	r_clear();
 
-	if (CPU::ID.feature & _CPU_FEATURE_SSE)
-	{
+	if (CPU::ID.feature & _CPU_FEATURE_SSE) {
 		// SSE
 		// Binary dispatcher
-		if (ray_mode & OPT_CULL) 
-		{
- 			if (ray_mode & OPT_ONLYFIRST) 
-			{
- 				if (ray_mode & OPT_ONLYNEAREST)
-				{
+		if (ray_mode & OPT_CULL) {
+			if (ray_mode & OPT_ONLYFIRST) {
+				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<true, true, true, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
-				else
-				{
+				else {
 					ray_collider<true, true, true, false>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}
-			else
-			{
- 				if (ray_mode & OPT_ONLYNEAREST)
-				{
+			else {
+				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<true, true, false, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
-				else
-				{
+				else {
 					ray_collider<true, true, false, false>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
- 					RC._stab(N); 
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
+					RC._stab(N);
 				}
 			}
 		}
-		else 
-		{
-			if (ray_mode & OPT_ONLYFIRST)
-			{
- 				if (ray_mode & OPT_ONLYNEAREST) {
+		else {
+			if (ray_mode & OPT_ONLYFIRST) {
+				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<true, false, true, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 				else {
 					ray_collider<true, false, true, false>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}
-			else 
-			{
- 				if (ray_mode & OPT_ONLYNEAREST)
-				{
+			else {
+				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<true, false, false, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
-				else 
-				{
-
- 					ray_collider<true, false, false, false>	RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
- 					RC._stab(N);
+				else {
+					ray_collider<true, false, false, false>	RC;
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
+					RC._stab(N);
 				}
 			}
 		}
 	}
-	else 
-	{
+	else {
 		// FPU
 		// Binary dispatcher
 		if (ray_mode & OPT_CULL) {
 			if (ray_mode & OPT_ONLYFIRST) {
 				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<false, true, true, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 				else {
 					ray_collider<false, true, true, false>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}
 			else {
 				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<false, true, false, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 				else {
 					ray_collider<false, true, false, false>	RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}
@@ -516,27 +462,24 @@ void	COLLIDER::ray_query(const MODEL* m_def, const Fvector& r_start, const Fvect
 			if (ray_mode & OPT_ONLYFIRST) {
 				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<false, false, true, true>		RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 				else {
 					ray_collider<false, false, true, false>	RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}
-			else 
-			{
-				if (ray_mode & OPT_ONLYNEAREST) 
-				{
+			else {
+				if (ray_mode & OPT_ONLYNEAREST) {
 					ray_collider<false, false, false, true>	RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
-				else 
-				{
+				else {
 					ray_collider<false, false, false, false>	RC;
-					RC._init(this, MDL, r_start, r_dir, r_range);
+					RC._init(this, m_def->verts, m_def->tris, r_start, r_dir, r_range);
 					RC._stab(N);
 				}
 			}

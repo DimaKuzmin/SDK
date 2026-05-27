@@ -82,8 +82,7 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
         tri.point3 = remap[i * 3 + 2];
         faces_v.push_back(tri);
 
-        auto Face = raw_faces[i].F;
-        dummy.push_back(Face);
+        dummy.push_back(raw_faces[i].F);
     }
 
     //----------------------

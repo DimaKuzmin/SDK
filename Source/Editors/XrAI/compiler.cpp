@@ -72,10 +72,7 @@ void xrCompiler	(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name
 
 	if (!draft_mode)
 	{
-		xrLight		();
-		mem_Optimize();
-
-		xrCover		(pure_covers);
+ 		xrCover		(pure_covers);
 		mem_Optimize();
 	}
 

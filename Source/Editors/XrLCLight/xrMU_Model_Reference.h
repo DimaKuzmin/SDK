@@ -6,7 +6,7 @@
 #include <ppl.h> 
 #include <concurrent_unordered_map.h>
 
-struct FaceDataIntel;
+struct FaceDataEmbree;
 class xrMU_Model;
 namespace CDB { class CollectorPacked; }
  
@@ -32,7 +32,7 @@ public:
 	void					export_cform_game	(CDB::CollectorPacked& CL);
 	void					export_cform_rcast	(CDB::CollectorPacked& CL);
 
-	void					export_cform_rcast_new  (xr_vector<FaceDataIntel>& faces);
+	void					export_cform_rcast_new  (xr_vector<FaceDataEmbree>& faces);
  
 	// Cuda Code: 
 	concurrency::concurrent_unordered_map<size_t, base_color_c> colors_cuda;

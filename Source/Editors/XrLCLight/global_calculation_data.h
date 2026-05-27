@@ -8,6 +8,8 @@
 #include "global_slots_data.h"
 #include "../../xrcdb/xrcdb.h"
 class Shader_xrLC_LIB;
+
+#include "embree_raytracing/EmbreeRayTrace.h"
 //-----------------------------------------------------------------
 struct global_claculation_data
 {
@@ -21,14 +23,14 @@ struct global_claculation_data
 	Fbox							LevelBB;//-----------============
 	global_slots_data				slots_data;//-------=============
 	xr_vector<b_shader>				g_shader_compile;//-----==========
-	xr_vector<b_rc_face>			g_rc_faces;//---------===============
-///////////////////////////////////////////////////////////////////////
- 
-//////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////////////////////////////
+   
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
 	void	xrLoad						( );
+
+	xr_vector<FaceDataEmbree>			building_embree_faces;
+
+	void	xrCalculateOpacity();
+	void	xrLoadGeometry(IReader* fs);
 };
 extern global_claculation_data	gl_data;
 //-----------------------------------------------------------------

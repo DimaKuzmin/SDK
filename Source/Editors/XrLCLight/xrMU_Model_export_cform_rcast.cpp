@@ -5,7 +5,7 @@
 #include "../../xrcdb/xrcdb.h"
 #include "../Public/shader_xrlc.h"
  
-void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix& xform)
+void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataEmbree>& faces, Fmatrix& xform)
 {
 	v_faces			adjacent;	adjacent.reserve(6 * 2 * 3);
 
@@ -20,7 +20,7 @@ void xrMU_Model::export_cform_rcast_new(xr_vector<FaceDataIntel>& faces, Fmatrix
 		xform.transform_tiny(P[1], F->v[1]->P);
 		xform.transform_tiny(P[2], F->v[2]->P);
 			
-		FaceDataIntel data;
+		FaceDataEmbree data;
 		data.v1 = P[0];
 		data.v2 = P[1];
 		data.v3 = P[2];

@@ -19,7 +19,6 @@ void transfer(const char *name, xr_vector<T> &dest, IReader& F, u32 chunk)
 	}
 	if (O)		O->close	();
 }
-
  
 inline bool Surface_Detect(string_path& F, LPSTR N)
 {
@@ -34,106 +33,7 @@ inline bool Surface_Detect(string_path& F, LPSTR N)
 	return false;
 }
 
-#include <memory>
-
-void filter_embree_function(const struct RTCFilterFunctionNArguments* args) 
-{
- 	RayQuaryStructure* ctxt = (RayQuaryStructure*) args->context;
- 
-	RTCHit* hit = (RTCHit*) args->hit;
-	RTCRay* ray = (RTCRay*) args->ray;
-	args->valid[0] = 0;
-	
-	if (!ctxt)		return;
-
-	b_rc_face& F								= g_rc_faces		[hit->primID];
-	b_material& M	= g_materials				[F.dwMaterial];
-	b_texture&	T	= (*g_textures)				[M.surfidx];
-	Shader_xrLCVec&	LIB = 		g_shaders_xrlc->Library	();
-		
-	if (M.shader_xrlc >=LIB.size())			// Hack 0
-	{
-		ctxt->energy = 0;
-		args->valid[0] = -1; 
-		return;		 
-	}
-
-	Shader_xrLC& SH	= LIB						[M.shader_xrlc];
-	if (!SH.flags.bLIGHT_CastShadow)			
-	{
-		ctxt->energy = 0;
-		args->valid[0] = -1; 
-		return;
-	}
-
-	if (T.pSurface.Empty())
- 		T.bHasAlpha = FALSE;
-
- 	if (!T.bHasAlpha)
-	{
-		args->valid[0] = -1; 
-		ctxt->energy = 0;
-		return;
-	}
-
-	// barycentric coords
-	// note: W,U,V order
-	Fvector B;
-	B.set	(1.0f - hit->u - hit->v, hit->u, hit->v);
-
-	// calc UV
-	Fvector2*	cuv = F.t;
-	Fvector2	uv;
-	uv.x = cuv[0].x*B.x + cuv[1].x*B.y + cuv[2].x*B.z;
-	uv.y = cuv[0].y*B.x + cuv[1].y*B.y + cuv[2].y*B.z;
-
-	int U = iFloor(uv.x*float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y*float(T.dwHeight)+ .5f);
-	U %= T.dwWidth;		if (U<0) U+=T.dwWidth;
-	V %= T.dwHeight;	if (V<0) V+=T.dwHeight;
- 
- 	u32 pixel = ((u32*)*T.pSurface)[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - float(pixel_a) / 255.f;
-	ctxt->energy *= opac;
-	
-}
-
-#include "cl_intersect.h"
-
-typedef Fvector	RayCache[3];
-
-float getLastRP_Scale(CDB::COLLIDER* DB, RayCache& C);
-
-
-SceneEmbreeAI			 SceneEmbreeInterface;
-
-
-// RayTracing
-float rayTrace	(CDB::COLLIDER* DB, Fvector& P, Fvector& D, float R, RayCache& C)
-{
-	R_ASSERT	(DB);
-
-	// 1. Check cached polygon
-	RTCRayHit rayhit;
-	rayhit.ray.tfar = R;
-	rayhit.ray.tnear = 0;
-
-	rayhit.ray.org_x = P.x;
-	rayhit.ray.org_y = P.y;
-	rayhit.ray.org_z = P.z;
-
-	rayhit.ray.dir_x = D.x;
-	rayhit.ray.dir_y = D.y;
-	rayhit.ray.dir_z = D.z;
-
-	RayQuaryStructure data;
-	data.energy = 1;
-
-	SceneEmbreeInterface.RayTrace(&rayhit, &data, false);
-	return data.energy;
-}
-
+void xrLoadRcast(IReader* fs);
 
 void xrLoad(LPCSTR name, bool draft_mode)
 {
@@ -146,146 +46,11 @@ void xrLoad(LPCSTR name, bool draft_mode)
 		FS.update_path			(N,"$game_data$","shaders_xrlc.xr");
 		g_shaders_xrlc			= xr_new<Shader_xrLC_LIB> ();
 		g_shaders_xrlc->Load	(N);
-
-		// Load CFORM
-		{
-			strconcat			(sizeof(N),N,name,"build.cform");
-
-			if (!FS.exist(N))
-			{
-				string_path tmp; sprintf(tmp, "No Find File: %s", N); 
-				R_ASSERT2(0, tmp);
-			}
-
-			Phase("Loading Build.cform");
-
-			if (FS.exist(N))
-			{
-				IReader*			fs = FS.r_open(N);
-				R_ASSERT			(fs->find_chunk(0));
-
-				hdrCFORM			H;
-				fs->r				(&H,sizeof(hdrCFORM));
-				R_ASSERT			(CFORM_CURRENT_VERSION==H.version);
-
-				Fvector*	verts	= (Fvector*) fs->pointer();
-						 
-				xr_vector< CDB::TRI> tris(H.facecount);
-				u8* tris_pointer = (u8*)(verts + H.vertcount);
-				for (u32 i = 0; i < H.facecount; i++)
-				{
-					memcpy(&tris[i], tris_pointer, CDB::TRI::Size());
-					tris_pointer += CDB::TRI::Size();
-				}				
- 
-				if ( true )
-				{
- 					CTimer t; t.Start();
-					for (auto VID =0; VID < H.vertcount; VID++)
- 						SceneEmbreeInterface.build_data.build_verts.push_back(verts[VID]);
-					for (auto TRI : tris)
-						SceneEmbreeInterface.build_data.build_faces.push_back(TRI);
-					SceneEmbreeInterface.build_data.build_fcnt = H.facecount;
-					SceneEmbreeInterface.build_data.build_vcnt = H.vertcount;
-
-					SceneEmbreeInterface.InitializeEmbree(&filter_embree_function);
-					Msg("Loading Embree Geom: %d ms", t.GetElapsed_ms());
-				}
-				else
-				{
-					CTimer t; t.Start();
-
-					Level.build			( verts, H.vertcount, tris.data(), H.facecount );
-					Level.syncronize	();
-
-					Msg("Loading Opcode Geom: %d", t.GetElapsed_ms());
-				}
-
-				g_rc_faces.resize	(H.facecount);
-				R_ASSERT(fs->find_chunk(1));
-				fs->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));			
-				LevelBB.set			(H.aabb);
-				FS.r_close			(fs);
-			}
-			else 
-			{
-				string_path path_vs, path_tri, path_rq;
-				strconcat			(sizeof(path_vs), path_vs, name,"build.cform_vs");
-				strconcat			(sizeof(path_tri), path_tri, name,"build.cform_tri");
-				strconcat			(sizeof(path_rq), path_rq, name,"build.cform_rq");
-
-				bool vs = FS.exist(path_vs);
-				bool rq = FS.exist(path_rq);
-				bool tri = FS.exist(path_tri);
-
-				if (vs && tri && rq)
-				{
-					IReader*			fs_tri = FS.r_open(path_tri);
-					IReader*			fs_rq = FS.r_open(path_rq);
-					IReader*			fs_vs = FS.r_open(path_vs);
-				   	
-					hdrCFORM			H;					
-					if (fs_tri && fs_tri->find_chunk(0))
- 						fs_tri->r				(&H,sizeof(hdrCFORM));			
-
- 					xr_vector<Fvector> verts(H.vertcount);
-
-					if (fs_vs && fs_vs->find_chunk(0))
-					{
- 						for (auto i = 0;i < H.vertcount;i++)	
-							fs_vs->r(&verts[i], sizeof(Fvector));
- 					}
-										
-					xr_vector< CDB::TRI> tris(H.facecount); 
-					if (fs_tri && fs_tri->find_chunk(1))
-					{		
-  						for (u32 i = 0; i < H.facecount; i++)
-							fs_tri->r(&tris[i], CDB::TRI::Size());
- 					}
-
-					if (fs_rq && fs_rq->find_chunk(0))
-					{
- 						g_rc_faces.resize	(H.facecount);
-  						fs_rq->r				(&*g_rc_faces.begin(),g_rc_faces.size()*sizeof(b_rc_face));		
- 					}
-
-					FS.r_close(fs_rq);
-					FS.r_close(fs_tri);
-					FS.r_close(fs_vs);
-
-					xr_delete(fs_rq);
-					xr_delete(fs_tri);
-					xr_delete(fs_vs);
-					
-
-					size_t commited;
-					size_t free;
-					size_t reserved;
-					vminfo(&free, &reserved, &commited);
-					Msg("Files Unload, commeted: %llu, free: %llu, reserved: %llu", 
-						commited / 1024 / 1024, free / 1024 / 1024, reserved / 1024 / 1024);
-
-					Msg("IB: %llu, VS: %llu, RQ: %llu",
-						
-						tris.size() * sizeof(CDB::TRI::Size()) / 1024 / 1024, 
-						verts.size() * sizeof(Fvector) / 1024 / 1024, 
-						g_rc_faces.size() * sizeof(b_rc_face) / 1024 / 1024 
-					);
-
- 					SceneEmbreeInterface.InitializeGeometryNew(& filter_embree_function);
-					LevelBB.set			(H.aabb);
-				}
-				else 
-				{
-					Msg("!!! xrLC CFORM Check: VS: %d, RQ: %d, TRI: %d", vs, rq, tri);
-				}
-			}
-		}
-
+		 
 		// Load level data
+ 		if (true)
 		{
-
-			Phase("Loading Build.prj");
+ 			Phase("Loading Build.prj");
  
 			strconcat			(sizeof(N),N,name,"build.prj");
 			IReader*	fs		= FS.r_open (N);
@@ -304,6 +69,9 @@ void xrLoad(LPCSTR name, bool draft_mode)
 			// Load level data
 			transfer("materials",	g_materials,			*fs,		EB_Materials);
 			transfer("shaders_xrlc",g_shader_compile,		*fs,		EB_Shaders_Compile);
+
+			// processing geometry !
+			xrLoadRcast(fs);
 
 			// process textures
 			Status			("Processing textures...");
@@ -394,10 +162,12 @@ void xrLoad(LPCSTR name, bool draft_mode)
 					g_textures->push_back	(BT);
 				}
 			}
+
 		}
 	}
 	
 	// Load lights
+	if (true)
 	{
 		strconcat				(sizeof(N),N,name,"build.prj");
 
@@ -449,7 +219,8 @@ void xrLoad(LPCSTR name, bool draft_mode)
 				RL.tri[2].set			(0,0,0);
 
 				// place into layer
-				if (0==temp.controller_ID)	g_lights.push_back		(RL);
+				if (0==temp.controller_ID)	
+					g_lights.push_back		(RL);
 			}
 			F->close		();
 		}
@@ -457,4 +228,123 @@ void xrLoad(LPCSTR name, bool draft_mode)
 	
 	
 	compiler_load_sdk_nodes(name);
+}
+
+void xrLoadRcast(IReader* fs)
+{
+	g_embree_faces.clear();
+
+	Status("Loading Vertices...");
+	xr_vector<Fvector> vertexs;
+	{
+		IReader* CHVertex = fs->open_chunk(EB_Vertices);
+
+		u32 v_count = CHVertex->length() / sizeof(b_vertex);
+
+		vertexs.resize(v_count);
+		for (u32 i = 0; i < v_count; i++)
+			CHVertex->r_fvector3(vertexs[i]);
+
+		CHVertex->close();
+	}
+
+	//*******
+	Status("Loading Faces...");
+	{
+		IReader* ChunkFaces = fs->open_chunk(EB_Faces);
+		R_ASSERT(ChunkFaces);
+		u32 f_count = ChunkFaces->length() / sizeof(b_face);
+
+		for (u32 i = 0; i < f_count; i++)
+		{
+			b_face	B;
+			ChunkFaces->r(&B, sizeof(B));
+
+			FaceDataEmbree& bFace = g_embree_faces.emplace_back();
+			bFace.SetFace(vertexs[B.v[0]], vertexs[B.v[1]], vertexs[B.v[2]], nullptr);
+			bFace.SetMaterial(B.dwMaterial, B.dwMaterialGame, B.t);
+		}
+		ChunkFaces->close();
+	}
+
+
+	//*******
+	Status("Models and References");
+	IReader* MUChunk = fs->open_chunk(EB_MU_models);
+
+	xr_map<u16, xr_vector<FaceDataEmbree>> mu_faces;
+ 	auto LoadMUBase = [](IReader& F, xr_vector<FaceDataEmbree>& faces)
+		{
+			u16 lodID;
+
+			shared_str name;
+			F.r_stringZ(name);
+
+			// READ: vertices
+			xr_vector<b_vertex>	b_vertices;
+			b_vertices.resize(F.r_u32());
+			F.r(&*b_vertices.begin(), (u32)b_vertices.size() * sizeof(b_vertex));
+
+			// READ: faces
+			xr_vector<b_face>	b_faces;
+			b_faces.resize(F.r_u32());
+			F.r(&*b_faces.begin(), (u32)b_faces.size() * sizeof(b_face));
+
+ 			// READ: lod-ID
+			F.r(&lodID, 2);
+
+			xr_vector<u32>			sm_groups;
+			sm_groups.resize(b_faces.size());
+			F.r(&*sm_groups.begin(), (u32)sm_groups.size() * sizeof(u32));
+
+ 			for (auto& F : b_faces)
+			{
+				FaceDataEmbree faceNew;
+				faceNew.SetFace(b_vertices[F.v[0]], b_vertices[F.v[1]], b_vertices[F.v[2]], nullptr);
+				faceNew.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.t);
+				faces.push_back(faceNew);
+			}
+
+			clMsg("* Loading model: '%s' - v(%d), f(%d)", *name, b_vertices.size(), b_faces.size());
+		};
+
+	if (MUChunk)
+	{
+		int ModelID = 0;
+		while (!MUChunk->eof())
+		{
+			LoadMUBase(*MUChunk, mu_faces[ModelID]);
+			ModelID++;
+		}
+		MUChunk->close();
+	}
+
+	IReader* MUChunkRef = fs->open_chunk(EB_MU_refs);
+	if (MUChunkRef)
+	{
+		while (!MUChunkRef->eof())
+		{
+			b_mu_reference		R;
+			MUChunkRef->r(&R, sizeof(R));
+
+			Fmatrix xform = R.transform;				// Transformation !
+			auto& faces = mu_faces[R.model_index];		// Model Buffer by Index !
+			for (auto& F : faces)
+			{
+ 				auto& F = g_embree_faces.emplace_back();
+
+				Fvector					P[3];
+				xform.transform_tiny(P[0], F.v1);
+				xform.transform_tiny(P[1], F.v2);
+				xform.transform_tiny(P[2], F.v3);
+
+				F.SetFace(P[0], P[1], P[2], nullptr);
+				F.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());
+			}
+		}
+		MUChunkRef->close();
+	}
+ 
+	extern SceneEmbreeAI			 SceneEmbreeInterface;
+	SceneEmbreeInterface.InitializeEmbree();
 }

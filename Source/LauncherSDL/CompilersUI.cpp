@@ -305,22 +305,15 @@ void DrawCompilerConfig()
 	ImGui::PushID("LightPreset");
 
 	{
-		static int RadioID = -1;
-		if (RadioID < 0)
-		{
-			RadioID = 0;
-			RadioID += 1 * (int)gCompilerMode.Embree;
-			RadioID += 2 * (int)gCompilerMode.CUDA;
-		}
- 		ImGui::RadioButton("Use OPCODE", &RadioID, 0);
-		ImGui::RadioButton("Use Intel Embree", &RadioID, 1);
- 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 2);
+		static int RadioID = 1;
+ 
+ 		ImGui::RadioButton("Use Intel Embree", &RadioID, 0);
+ 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 1);
  
 		switch (RadioID)
 		{
-			case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = false; break;
-			case 1: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
-			case 2: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
+ 			case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
+			case 1: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
 			default: break;
 		}
 	}

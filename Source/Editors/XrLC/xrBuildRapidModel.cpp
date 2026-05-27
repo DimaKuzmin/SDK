@@ -39,6 +39,7 @@ void SaveUVM(LPCSTR fname, xr_vector<b_rc_face>& vm)
 
 void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
 {
+	Phase("Build Rcast-Model (OPCODE)");
 	lc_global_data()->destroy_rcmodel();
 
 	// "Building tree..
@@ -51,6 +52,7 @@ void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
 
 void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
 {
+	
 	lc_global_data()->destroy_rcmodel();
 	
 	Status("Converting faces...");
@@ -63,7 +65,7 @@ void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
 	for (auto F : lc_global_data()->g_faces() )
 	{
 		const Shader_xrLC& SH = F->Shader();
- 		if (!SH.flags.bLIGHT_CastShadow) return;
+ 		if (!SH.flags.bLIGHT_CastShadow) continue;
 
 		b_material& M = lc_global_data()->materials()[F->dwMaterial];
 		CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
@@ -76,6 +78,7 @@ void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
 	// TODO : remove -> dublicate faces, vertexs
 
 	// Модель пока без уберания дубликатов !
+	lc_global_data()->create_rcmodel(CL);
 }
 
 void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)

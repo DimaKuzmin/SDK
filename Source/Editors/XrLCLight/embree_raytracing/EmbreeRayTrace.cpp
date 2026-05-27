@@ -28,16 +28,19 @@ struct RayQueryContext
 	Fvector B;
 
 	Face* skip = 0;
-	xr_vector<Face*>* static_dummy = nullptr;
-	xr_vector<Face*>* transp_dummy = nullptr;
 	float energy = 1.0f;
+};
+
+struct UserGeomData
+{
+	xr_vector<Face*> Faces;
 };
 
 // Сделать потом переключалку
 bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 {
 	const b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-	const b_texture& T = inlc_global_data()->textures()[M.surfidx];
+	const b_texture& T  = inlc_global_data()->textures()[M.surfidx];
 
 	// barycentrics (без Fvector, сразу в скаляры)
 	float Barry0 = 1.0f - hit->u - hit->v;
@@ -71,7 +74,9 @@ void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
 	RayQueryContext* ctxt = (RayQueryContext*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
-	Face* F = (*ctxt->static_dummy)[hit->primID];
+
+	auto UD = (UserGeomData*) args->geometryUserPtr;
+ 	Face* F = UD->Faces[hit->primID];
 	if (F != ctxt->skip)
 	{
 		ctxt->energy = 0;
@@ -87,7 +92,8 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
-	Face* F = (*ctxt->transp_dummy)[hit->primID];
+	auto UD = (UserGeomData*)args->geometryUserPtr;
+	Face* F = UD->Faces[hit->primID];
 	if (F != ctxt->skip && !CalculateEnergy(ctxt, hit, F, ctxt->B))
 	{
 		ctxt->energy = 0;
@@ -103,9 +109,7 @@ float EmbreeRayTraceModel::RaytraceEmbreeProcess(Fvector& P, Fvector& N, float r
 	RayQueryContext data_hits;
 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
-	data_hits.static_dummy = &static_geom.dummy;
-	data_hits.transp_dummy = &static_geom_transp.dummy;
-
+ 
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.1f, range);
 
@@ -148,6 +152,13 @@ void LoadGeomBuffer(RTCDevice& EmbreeDevice, RTCGeometry& geom, RTCBuildQuality&
 	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, geom_buffer.vertex().data(), 0, sizeof(Fvector), geom_buffer.vertex().size());
 	rtcSetSharedGeometryBuffer(geom, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, geom_buffer.faces().data(), 0, sizeof(Triangle), geom_buffer.faces().size());
 
+	UserGeomData* data = xr_new<UserGeomData>();
+	for (auto VFace : geom_buffer.UD())
+	{
+		data->Faces.push_back((Face*)VFace);
+	}
+	rtcSetGeometryUserData(geom, data);
+
 	rtcCommitGeometry(geom);
 };
 
@@ -183,7 +194,7 @@ void EmbreeRayTraceModel::InitializeGeometry()
 	csEmbree.Leave();
 }
 
-void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataIntel>& faces)
+void EmbreeRayTraceModel::InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces)
 {
 	BuildModel(faces);
 

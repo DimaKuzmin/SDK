@@ -253,13 +253,7 @@
     <ClCompile Include="compiler_build.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="compiler_cover.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
     <ClCompile Include="compiler_display.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_light.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
     <ClCompile Include="compiler_smooth.cpp">
@@ -389,6 +383,12 @@
       <Filter>Compiler\ai_map_new</Filter>
     </ClCompile>
     <ClCompile Include="EmbreeRayTracing.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClCompile>
+    <ClCompile Include="compiler_covers_helpers.cpp">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClCompile>
+    <ClCompile Include="compiler_cover.cpp">
       <Filter>Compiler\ai_map_new</Filter>
     </ClCompile>
   </ItemGroup>
@@ -913,6 +913,9 @@
       <Filter>INI</Filter>
     </ClInclude>
     <ClInclude Include="EmbreeRayTracing.h">
+      <Filter>Compiler\ai_map_new</Filter>
+    </ClInclude>
+    <ClInclude Include="compiler_cover_helpers.h">
       <Filter>Compiler\ai_map_new</Filter>
     </ClInclude>
   </ItemGroup>

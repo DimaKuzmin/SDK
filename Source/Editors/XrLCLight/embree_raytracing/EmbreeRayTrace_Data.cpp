@@ -67,7 +67,7 @@ IC bool	FaceEqual__(Face& F1, Face& F2)
 	return false;
 }
 
-void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataIntel>& faces)
+void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataEmbree>& faces)
 {
 	static_geom.ClearAll();
 	static_geom_transp.ClearAll();
@@ -88,13 +88,8 @@ void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataIntel>& faces)
 		if (!isOpcue) IndexFaceTransp++;
 	}
 
-	// clMsg("RawFaces total : %u | RawFaces Transp: %u", IndexFace, IndexFaceTransp);
-
-	static_geom.RemoveDublicatesVertexs(false, false);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-	static_geom_transp.RemoveDublicatesVertexs(true, false);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-
-	static_geom.RemoveDublicatesFaces(false, false);
-	static_geom_transp.RemoveDublicatesFaces(true, false);
+ 	static_geom_transp.RemoveDublicates();
+	static_geom.RemoveDublicates();
 }
 
 void EmbreeRayTraceModel::BuildRaytraceModel()
@@ -120,7 +115,7 @@ void EmbreeRayTraceModel::BuildRaytraceModel()
 
 	for (auto ref : lc_global_data()->mu_refs())
 	{
-		xr_vector<FaceDataIntel> temp_buffer;
+		xr_vector<FaceDataEmbree> temp_buffer;
 		ref->export_cform_rcast_new(temp_buffer);
 
 		for (auto& FaceIntel : temp_buffer)
@@ -137,139 +132,6 @@ void EmbreeRayTraceModel::BuildRaytraceModel()
 	}
 	Status("[RcastModel] Capturing Faces [%u ms]", t.GetElapsed_ms());
 
-	static_geom.RemoveDublicatesVertexs(false, true);			// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-	static_geom_transp.RemoveDublicatesVertexs(true, true);	// Обезательно вызывать иначе не будет Vertex, Tris (Убрал жрание памяти при создании)
-
-	static_geom.RemoveDublicatesFaces(false, true);
-	static_geom_transp.RemoveDublicatesFaces(true, true);
+	static_geom_transp.RemoveDublicates();
+	static_geom.RemoveDublicates();
 }
-
-#include "global_calculation_data.h"
-#include "xrLC_GlobalData.h"
-extern global_claculation_data	gl_data;
-
-void EmbreeRayTraceModel::BuildRaytraceModel_2()
-{
-	CTimer t; t.Start();
-	// Тут уже будет отфильтровано 
-	static_geom.ClearAll();
-	static_geom.verts_v.swap(build_data.build_verts);
-	static_geom.faces_v.resize(build_data.build_fcnt);
-	static_geom.dummy.resize(build_data.build_fcnt);
-
-	for (auto Fid = 0; Fid < build_data.build_faces.size(); Fid++)
-	{
-		auto& FCDB = build_data.build_faces[Fid];
-		auto& F = gl_data.g_rc_faces[Fid];
-
-		static_geom.faces_v[Fid].point1 = FCDB.verts[0];
-		static_geom.faces_v[Fid].point2 = FCDB.verts[1];
-		static_geom.faces_v[Fid].point3 = FCDB.verts[2];
-	}
-
-	// Чистим вектора
-	build_data.build_faces.clear();
-	build_data.build_faces.shrink_to_fit();
-	build_data.build_fcnt = 0;
-	build_data.build_vcnt = 0;
-
-	clMsg("$[Embree] Loading Geometry Time: %u ms", t.GetElapsed_ms());
-}
-
-#include "../xrLC/Build.h"
-extern CBuild* pBuild;
-
-void EmbreeRayTraceModel::BuildRcast()
-{
-	Status("Start Export Build.cform");
-	TriangleContainer container;
-
-	CTimer tStats;	tStats.Start();
-	Status("[RcastModel] Capturing Faces...");
-	for (auto F : lc_global_data()->g_faces())
-	{
-		const Shader_xrLC& SH = F->Shader();
-		if (!SH.flags.bLIGHT_CastShadow)	continue;
-		container.AddFaceRaw(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-	}
-
-
-	for (auto ref : lc_global_data()->mu_refs())
-	{
-		xr_vector<FaceDataIntel> temp_buffer;
-		ref->export_cform_rcast_new(temp_buffer);
-		for (auto& FaceIntel : temp_buffer)
-		{
-			Face* F = (Face*)FaceIntel.ptr;
-			container.AddFaceRaw(F, FaceIntel.v1, FaceIntel.v2, FaceIntel.v3);
-		}
-	}
-
-	container.RemoveDublicatesVertexs(false, true);	// Обезательно 
-	container.RemoveDublicatesFaces(false, true);		// Обезательно 
-
-	clMsg("Build.cform is builded at : %u ms", tStats.GetElapsed_ms());
-
-	tStats.Start();
-
-	string_path				fn;
-	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "build.cform"));
-	xr_vector<b_rc_face>	rc_faces;
-	rc_faces.resize(container.faces_cnt());
-
-	// Prepare faces
-	for (u32 k = 0; k < container.faces_cnt(); k++)
-	{
-		base_Face* F = container.dummy[k];
-
-		b_rc_face& cf = rc_faces[k];
-		cf.dwMaterial = F->dwMaterial;
-		cf.dwMaterialGame = F->dwMaterialGame;
-
-		Fvector2* cuv = F->getTC0();
-		cf.t[0].set(cuv[0]);
-		cf.t[1].set(cuv[1]);
-		cf.t[2].set(cuv[2]);
-	}
-	MFS->open_chunk(0);
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version   = CFORM_CURRENT_VERSION;
-	hdr.vertcount = (u32)container.vertex_cnt();
-	hdr.facecount = (u32)container.faces_cnt();
-	hdr.aabb = pBuild->scene_bb;
-
-	MFS->w(&hdr, sizeof(hdr));
-
-	// Data
-	for (auto Vert : container.vertex())
-	{
-		MFS->w(&Vert, sizeof(Vert));
-	}
-
-	for (auto T : container.faces())
-	{
-		auto TRI = T.Get();
-		MFS->w(&TRI, sizeof(TRI));
-	}
-
-	MFS->close_chunk();
-
-	MFS->open_chunk(1);
-	MFS->w(&*rc_faces.begin(), size_t(rc_faces.size() * sizeof(b_rc_face)));
-	MFS->close_chunk();
-
-	// size_t rqfaces_mem = rc_faces.size() * sizeof(b_rc_face);
-	// size_t vertex_mem  = container.vertex_cnt() * sizeof(Fvector);
-	// size_t faces_mem   = container.faces_cnt() * sizeof(CDB::TRI);
-	// clMsg("Memory Vertex need: %u mb", u32(vertex_mem / 1024 / 1024));
-	// clMsg("Memory Faces need: %u mb", faces_mem / 1024 / 1024);
-	// clMsg("Memory RC_Face need: %u mb", rqfaces_mem / 1024 / 1024);
-	// clMsg("File Saved Size: %u mb", MFS->tell() / 1024 / 1024);
-
-	FS.w_close(MFS);
-
-	clMsg("Build.cform is exported at : %u ms", tStats.GetElapsed_ms());
-}
-

@@ -1,16 +1,5 @@
-// xrCDB.cpp : Defines the entry point for the DLL application.
-//
-
 #include "stdafx.h"
-#pragma hdrstop
-
 #include "xrCDB.h"
- 
-#ifdef USE_ARENA_ALLOCATOR
-static const u32	s_arena_size = (128+16)*1024*1024;
-static char			s_fake_array[s_arena_size];
-doug_lea_allocator	g_collision_allocator( s_fake_array, s_arena_size, "collision" );
-#endif // #ifdef USE_ARENA_ALLOCATOR
 
 namespace Opcode {
 #	include "OPC_TreeBuilders.h"
@@ -37,9 +26,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 
 // Model building
 MODEL::MODEL	()
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:cs(MUTEX_PROFILE_ID(MODEL))
-#endif // PROFILE_CRITICAL_SECTIONS
 {
 	tree		= 0;
 	tris		= 0;
@@ -53,13 +39,11 @@ MODEL::MODEL	()
 MODEL::~MODEL()
 {
 	syncronize	();		// maybe model still in building
-	status		= S_INIT;
-	 
- 
+	status		= S_INIT; 
+
 	CDELETE		(tree);
 	CFREE		(tris);		tris_count = 0;
-	CFREE		(verts);	verts_count= 0;
-	//CFREE		(tris_edges); tris_edges_count = 0;
+	CFREE		(verts);	verts_count= 0; 
 }
 
 struct	BTHREAD_params
@@ -73,162 +57,68 @@ struct	BTHREAD_params
 	void*				BCP;
 };
 
-void	MODEL::build_thread		(void *params)
-{
-	_initialize_cpu_thread		();
-	FPU::m64r					();
-	BTHREAD_params	P			= *( (BTHREAD_params*)params );
-	P.M->cs.Enter				();
-	P.M->build_internal			(P.V,P.Vcnt,P.T,P.Tcnt,P.BC,P.BCP);
-	P.M->status					= S_READY;
-	P.M->cs.Leave				();
-	//Msg						("* xrCDB: cform build completed, memory usage: %d K",P.M->memory()/1024);
-}
-
+ 
 void	MODEL::build			(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
 {
 	R_ASSERT					(S_INIT == status);
     R_ASSERT					((Vcnt>=4)&&(Tcnt>=2));
 
 	_initialize_cpu_thread		();
-#ifdef _EDITOR    
-	build_internal				(V,Vcnt,T,Tcnt,bc,bcp);
-#else
-	if(!strstr(Core.Params, "-mt_cdb"))
-	{
-		build_internal				(V,Vcnt,T,Tcnt,bc,bcp);
-		status						= S_READY;
-	}
-	else
-	{
-		BTHREAD_params				P = { this, V, Vcnt, T, Tcnt, bc, bcp };
-		thread_spawn				(build_thread,"CDB-construction",0,&P);
-		while						(S_INIT	== status)	Sleep	(5);
-	}
-#endif
-}
-
-
-
-void	MODEL::build_internal	(Fvector* V, int Vcnt, TRI* T, int Tcnt, build_callback* bc, void* bcp)
-{
 	// verts
-	verts_count	= Vcnt;
-	verts		= CALLOC(Fvector,verts_count);
-	CopyMemory	(verts,V,verts_count*sizeof(Fvector));
-	
+	verts_count = Vcnt;
+	verts = CALLOC(Fvector, verts_count);
+	CopyMemory(verts, V, verts_count * sizeof(Fvector));
+
 	// tris
-	tris_count	= Tcnt;
-	tris		= CALLOC(TRI,tris_count);
-	CopyMemory	(tris,T,tris_count*sizeof(TRI));
-  
-	tres_edges = CALLOC(tri_m128, tris_count);
+	tris_count = Tcnt;
+	tris = CALLOC(TRI, tris_count);
+	CopyMemory(tris, T, tris_count * sizeof(TRI));
 
-	for (auto i = 0; i < Tcnt; i++)
-	{
-		Fvector& p0 = verts[T[i].verts[0]];
-		Fvector& p1 = verts[T[i].verts[1]];
-		Fvector& p2 = verts[T[i].verts[2]];
-
-		Fvector edge1, edge2;
-		edge1.sub(p1, p0);
-		edge2.sub(p2, p0);
-
-		tres_edges[i].fv_e0 = p0;
-		tres_edges[i].fv_e1 = edge1;
-		tres_edges[i].fv_e2 = edge2;
-
- 
-		tres_edges[i].e1 = _mm_load_ps((float*)&edge1);
-		tres_edges[i].e2 = _mm_load_ps((float*)&edge2);
-		tres_edges[i].e0 = _mm_load_ps((float*)&p0);
-	}
-
-	/*
-	tris_edges_count = Tcnt;
-	tris_edges = CALLOC(TRI_Edge, tris_count);
-
-	for (auto i = 0; i < Tcnt; i++)
-	{	 			 		
-		Fvector& p0	= verts[ T[i].verts[0] ];
-		Fvector& p1	= verts[ T[i].verts[1] ];
-		Fvector& p2	= verts[ T[i].verts[2] ];
-		
- 		Fvector edge1, edge2;
-   		edge1.sub			(p1, p0);
-		edge2.sub			(p2, p0);
-
-		tris_edges[i].edge1 = edge1;
-		tris_edges[i].edge2 = edge2;
-		tris_edges[i].v0 = p0;
-
-		tris_edges[i].edge1_128 = _mm_load_ps((float*) &edge1);
-		tris_edges[i].edge2_128 = _mm_load_ps((float*) &edge2);
-		tris_edges[i].v0_128	= _mm_load_ps((float*) &p0);
- 	}
-	*/
- 
- 
 	// callback
-	if (bc)		bc	(verts,Vcnt,tris,Tcnt,bcp);
+	if (bc)		bc(verts, Vcnt, tris, Tcnt, bcp);
 
 	// Release data pointers
-	status		= S_BUILD;
-	
+	status = S_BUILD;
+
 	// Allocate temporary "OPCODE" tris + convert tris to 'pointer' form
-	u32*		temp_tris	= CALLOC(u32,tris_count*3);
-	if (0==temp_tris)	
+	u32* temp_tris = CALLOC(u32, tris_count * 3);
+	if (0 == temp_tris)
 	{
-		CFREE		(verts);
-		CFREE		(tris);
+		CFREE(verts);
+		CFREE(tris);
 		return;
 	}
 
-	u32*		temp_ptr	= temp_tris;
-	for (int i=0; i<tris_count; i++)
+	u32* temp_ptr = temp_tris;
+	for (int i = 0; i < tris_count; i++)
 	{
-		*temp_ptr++	= tris[i].verts[0];
-		*temp_ptr++	= tris[i].verts[1];
-		*temp_ptr++	= tris[i].verts[2];
+		*temp_ptr++ = tris[i].verts[0];
+		*temp_ptr++ = tris[i].verts[1];
+		*temp_ptr++ = tris[i].verts[2];
 	}
-	
+
 	// Build a non quantized no-leaf tree
 	OPCODECREATE	OPCC;
-	OPCC.NbTris		= tris_count;
-	OPCC.NbVerts	= verts_count;
-	OPCC.Tris		= (unsigned*)temp_tris;
+	OPCC.NbTris     = tris_count;
+	OPCC.NbVerts    = verts_count;
+	OPCC.Tris	    = (unsigned*)temp_tris;
 	OPCC.Verts		= (Point*)verts;
 	OPCC.Rules		= SPLIT_COMPLETE | SPLIT_SPLATTERPOINTS | SPLIT_GEOMCENTER;
 	OPCC.NoLeaf		= true;
 	OPCC.Quantized	= false;
-	// if (Memory.debug_mode) OPCC.KeepOriginal = true;
-
-	tree			= CNEW(OPCODE_Model) ();
+ 
+	tree = CNEW(OPCODE_Model) ();
 	if (!tree->Build(OPCC))
 	{
-		CFREE		(verts);
-		CFREE		(tris);
-		CFREE		(temp_tris);
+		CFREE(verts);
+		CFREE(tris);
+		CFREE(temp_tris);
 		return;
 	};
 
 	// Free temporary tris
-	CFREE			(temp_tris);
-	return;
-}
-
-void CDB::MODEL::build_levelcdb_tree_save(string_path filename)
-{
-	IWriter* wstream = FS.w_open(filename);
-	CMemoryWriter memory;
-
-	if (tree)
-		tree->Save(&memory);
-	
-	wstream->w(memory.pointer(), memory.size());
-	FS.w_close(wstream);
-
- 	memory.free();
+	CFREE(temp_tris);
+	status = S_READY;
 }
 
 size_t MODEL::memory	()
@@ -236,7 +126,7 @@ size_t MODEL::memory	()
 	if (S_BUILD==status)	{ Msg	("! xrCDB: model still isn't ready"); return 0; }
 	size_t V					= verts_count*sizeof(Fvector);
 	size_t T					= tris_count *sizeof(TRI);	
-	//size_t TEdge				= tris_edges_count * sizeof(TRI_Edge);
+ 
 	size_t TreeOpcode			= sizeof(*tree) + tree->GetUsedBytes();
 	return sizeof(*this) + V + T + TreeOpcode; // + TEdge;
 }

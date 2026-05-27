@@ -11,16 +11,19 @@ struct RayQueryContext
 	RTCRayQueryContext context;
 	Fvector B;
 
-	Face* skip = 0;
+	void* skip = 0;
 	float energy = 1.0f;
 };
 
-
-bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
+struct UserGeomData
 {
-	auto& F = gl_data.g_rc_faces[PrimID];
-	b_material& M = gl_data.g_materials[F.dwMaterial];
-	b_texture& T = gl_data.g_textures[M.surfidx];
+	xr_vector<FaceDataEmbree*> Faces;
+};
+
+bool CalculateEnergy(FaceDataEmbree& F, Fvector& B, float& energy, float hu, float hv)
+{
+ 	b_material& M	= gl_data.g_materials[F.dwMaterial];
+	b_texture& T	= gl_data.g_textures[M.surfidx];
 
 	if (!T.bHasAlpha)
 		return false;
@@ -31,30 +34,32 @@ bool CalculateEnergy(int PrimID, Fvector& B, float& energy, float u, float v)
 		return false;
 	}
 
-	// barycentric coords
-	// note: W,U,V order
-	B.set(1.0f - u - v, u, v);
 
-	//// calc UV
-	Fvector2* cuv = F.t;
-	Fvector2	uv;
-	uv.x = cuv[0].x * B.x + cuv[1].x * B.y + cuv[2].x * B.z;
-	uv.y = cuv[0].y * B.x + cuv[1].y * B.y + cuv[2].y * B.z;
-	int U = iFloor(uv.x * float(T.dwWidth) + .5f);
-	int V = iFloor(uv.y * float(T.dwHeight) + .5f);
+	// barycentrics (без Fvector, сразу в скаляры)
+	float Barry0 = 1.0f - hu - hv;
+
+	// UV сразу float
+	const Fvector2* cuv = F.getTC0();
+	float u = cuv[0].x * Barry0 + cuv[1].x * hu + cuv[2].x * hv;
+	float v = cuv[0].y * Barry0 + cuv[1].y * hu + cuv[2].y * hv;
+
+	int U = (int)floor(u * float(T.dwWidth) + .5f);
+	int V = (int)floor(v * float(T.dwHeight) + .5f);
 	U %= T.dwWidth;		if (U < 0) U += T.dwWidth;
 	V %= T.dwHeight;	if (V < 0) V += T.dwHeight;
 
-	u32* raw = static_cast<u32*>(*T.pSurface);
-	u32 pixel = raw[V * T.dwWidth + U];
-	u32 pixel_a = color_get_A(pixel);
-	float opac = 1.f - _sqr(float(pixel_a) / 255.f);
+	// fetch pixel
+	const uint32_t* raw = static_cast<const uint32_t*>(*T.pSurface);
+	uint32_t pixel		= raw[V * T.dwWidth + U];
+	uint32_t pixel_a	= (pixel >> 24) & 0xFF;
 
-	// ���������� ���������
-	energy *= opac;
-	if (energy < 0.01f)
+	// LUT вместо деления и sqr
+	float a = float(pixel_a) / 255.f;
+	float opacity = 1.f - a * a;
+	energy *= opacity;
+	if (energy < 0.015f)
 		return false;
-
+ 
 	return true;
 }
 
@@ -64,7 +69,9 @@ ICF void FilterRaytraceD(const struct RTCFilterFunctionNArguments* args)
 	RTCHit* hit = (RTCHit*)args->hit;
 	RTCRay* ray = (RTCRay*)args->ray;
 
-	if (!CalculateEnergy(hit->primID, ctxt->B, ctxt->energy, hit->u, hit->v))
+	auto UD = (UserGeomData*) args->geometryUserPtr;
+	auto F = UD->Faces[hit->primID];
+	if (!CalculateEnergy(*F, ctxt->B, ctxt->energy, hit->u, hit->v))
 	{
 		ctxt->energy = 0;
 		args->valid[0] = -1; // Остановится
@@ -103,25 +110,31 @@ void errors_embree_det(void* userPtr, enum RTCError code, const char* str)
 }
 
 RTCDevice DeviceDetails = nullptr;
-void EmbreeRayTraceModel::InitEmbreeDetails()
+void EmbreeRayTraceModel::InitEmbreeDetails(TriangleContainer& data)
 {
 	DeviceDetails = rtcNewDevice(GetDeviceConfig());;
 	rtcSetDeviceErrorFunction(DeviceDetails, &errors_embree_det, nullptr);
 
 	// Загрузка Геометрии
-	auto GeometryLoad = [&]()
-		{
-			this->BuildRaytraceModel_2();
+	static_geom = data;
 
-			IntelGeometryDetails = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
-			rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_LOW);
-			rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceD);
+	IntelGeometryDetails = rtcNewGeometry(DeviceDetails, RTC_GEOMETRY_TYPE_TRIANGLE);
+	rtcSetGeometryBuildQuality(IntelGeometryDetails, RTCBuildQuality::RTC_BUILD_QUALITY_LOW);
+	rtcSetGeometryOccludedFilterFunction(IntelGeometryDetails, &FilterRaytraceD);
 
-			rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, static_geom.vertex().data(), 0, sizeof(Fvector), static_geom.vertex().size());
-			rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, static_geom.faces().data(), 0, sizeof(Triangle), static_geom.faces().size());
-			rtcCommitGeometry(IntelGeometryDetails);
-		};
-	GeometryLoad();
+	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_VERTEX, 0, RTC_FORMAT_FLOAT3, static_geom.vertex().data(), 0, sizeof(Fvector), static_geom.vertex().size());
+	rtcSetSharedGeometryBuffer(IntelGeometryDetails, RTC_BUFFER_TYPE_INDEX, 0, RTC_FORMAT_UINT3, static_geom.faces().data(), 0, sizeof(Triangle), static_geom.faces().size());
+	
+	UserGeomData* Udata = xr_new< UserGeomData>();
+ 	for (auto& VFace : data.UD())
+	{
+		Udata->Faces.push_back((FaceDataEmbree*) VFace);
+	}
+
+	rtcSetGeometryUserData(IntelGeometryDetails, Udata);
+	
+	rtcCommitGeometry(IntelGeometryDetails);
+
 	clMsg("Loading Embree : verts[%u] faces[%u]", static_geom.vertex_cnt(), static_geom.faces_cnt());
 
 

@@ -10,24 +10,9 @@
 
 #include "EmbreeGeomBuilder.h"
 
-struct FaceDataIntel
-{
-	Fvector v1, v2, v3;
-	void* ptr;
-};
-
 // ВАЖНЫЙ ПАРАМЕТР TNEAR Для пересечения с водой
 void SetRay1(RTCRay& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
 void SetRay1(RTCRayHit& rayhit, Fvector& pos, Fvector& dir, float near_, float range);
-
-struct BuildData
-{
-	xr_vector<CDB::TRI> build_faces;
-	xr_vector<Fvector>  build_verts;
-
-	u32		  build_vcnt;
-	u32		  build_fcnt;
-};
 
 // Vertex, Tri Buffers
 static RTCDevice	EmbreeDevice = nullptr;
@@ -35,6 +20,8 @@ static bool			isDeviceInitialized = false;
 
 const char* GetDeviceConfig();
 void InitializeEmbreeDevice();
+
+
 
 class EmbreeRayTraceModel
 {
@@ -54,19 +41,14 @@ protected:
 	void RemoveGeometry();
 	void CommitScene();
 
-	void BuildModel(xr_vector<FaceDataIntel>& faces);
-	void BuildRaytraceModel_2();
-	void BuildRaytraceModel();
+	void BuildModel(xr_vector<FaceDataEmbree>& faces);
+ 	void BuildRaytraceModel();
 
 public:
-	// Rcast Model Constructing (Build.cform)
-	BuildData	build_data;
-	void BuildRcast();
-
-	// Loading 
+ 	// Loading 
 	float RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip);
 	void  InitializeGeometry();		// Rcast-model
-	void  InitializeGeometry_Model(xr_vector<FaceDataIntel>& faces); // Single-Models (xrMU-Model)
+	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces); // Single-Models (xrMU-Model)
 
 	void  IntelEmbereUnloadAll();
 
@@ -74,7 +56,7 @@ public:
 	RTCScene	IntelSceneDetails = nullptr;
 	RTCGeometry IntelGeometryDetails = nullptr;
 	float RaytraceEmbreeDetails(Fvector& P, Fvector& N, float range);
-	void InitEmbreeDetails();
+	void InitEmbreeDetails(TriangleContainer& data);
 };
 
 extern EmbreeRayTraceModel EmbreeMain;

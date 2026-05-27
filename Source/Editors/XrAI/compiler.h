@@ -59,7 +59,7 @@ void	Compress	(CLevelGraph::CVertex& Dest, vertex& Src);
 
 struct R_Light
 {
-    u32           type;				// Type of light source		
+    u32				type;				// Type of light source		
     float			amount;				// Diffuse color of light	
     Fvector         position;			// Position in world space	
     Fvector         direction;			// Direction in world space	
@@ -118,12 +118,14 @@ struct b_BuildTexture : public b_texture
 	}
 };
 
+#include "EmbreeRayTracing.h"
+
 extern Shader_xrLC_LIB*				g_shaders_xrlc	;
 extern xr_vector<b_material>		g_materials		;
 extern xr_vector<b_shader>			g_shader_render	;
 extern xr_vector<b_shader>			g_shader_compile;
 extern xr_vector<b_BuildTexture>	*g_textures		;
-extern xr_vector<b_rc_face>			g_rc_faces		;
+extern xr_vector<FaceDataEmbree>	g_embree_faces;
 
 // phases
 void	xrLoad			(LPCSTR name, bool draft_mode);

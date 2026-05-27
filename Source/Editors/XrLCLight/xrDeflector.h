@@ -115,7 +115,7 @@ extern void		blit_r			(u32* dest,		u32 ds_x, u32 ds_y, u32* src,		u32 ss_x, u32 
 extern XRLC_LIGHT_API void		blit_r			(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src,	u32 ss_x, u32 ss_y, u32 px, u32 py, u32 aREF);
 extern void		lblit			(lm_layer& dst, lm_layer& src, u32 px, u32 py, u32 aREF);
 
-extern XRLC_LIGHT_API void		LightPoint		(CDB::COLLIDER* DB, CDB::MODEL* MDL, base_color_c &C, Fvector &P, Fvector &N, base_lighting& lights, u32 flags, Face* skip);
+extern XRLC_LIGHT_API void		LightPoint(base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
 extern XRLC_LIGHT_API void		LightPoint_Embree(EmbreeRayTraceModel* MDL, base_color_c& C, Fvector& P, Fvector& N, base_lighting& lights, u32 flags, Face* skip);
  
 #define rms_zero	((4+g_params().m_lm_rms_zero)/2)

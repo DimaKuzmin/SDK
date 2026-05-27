@@ -1,32 +1,6 @@
 #pragma once
-
 #include "base_color.h"
-
-struct XRLC_LIGHT_API LightpointRequest
-{
-	u32 X;
-	u32 Y;
-
-	Fvector Position;
-	Fvector Normal;
-
-	void* FaceToSkip;
-
-	LightpointRequest(u32 InX, u32 InY, Fvector InPosition, Fvector InNormal, void* InFaceToSkip)
-	{
-		X = InX;
-		Y = InY;
-
-		Position = InPosition;
-		Normal = InNormal;
-
-		FaceToSkip = InFaceToSkip;
-	}
-};
-
-
-
-class INetReader;
+ 
 struct XRLC_LIGHT_API  lm_layer
 {
 	u32						width;

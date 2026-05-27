@@ -64,6 +64,8 @@ public:
 							~xrMU_Model			();
 	void					clear_mesh			();
 	void					Load				( IReader& F, u32 version );
+	void					Load_Embree			( IReader& F, xr_vector<FaceDataEmbree>& faces);
+
 
 	void					calc_materials		();
 	void					calc_faceopacity	();
@@ -74,7 +76,7 @@ public:
 	
 	
 	void					export_cform_rcast		( CDB::CollectorPacked& CL, Fmatrix& xform );
-	void					export_cform_rcast_new	(xr_vector<FaceDataIntel>& faces, Fmatrix& xform);
+	void					export_cform_rcast_new	(xr_vector<FaceDataEmbree>& faces, Fmatrix& xform);
 	 
 
 	u32						find				( const _vertex *v )const;

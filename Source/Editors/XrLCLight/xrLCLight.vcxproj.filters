@@ -180,9 +180,6 @@
     <ClInclude Include="light_point.h">
       <Filter>RayTracing\base_lighting</Filter>
     </ClInclude>
-    <ClInclude Include="LightThread.h">
-      <Filter>do_light</Filter>
-    </ClInclude>
     <ClInclude Include="cuda\Vector3HW.cuh">
       <Filter>RayTracing\Cuda</Filter>
     </ClInclude>
@@ -321,9 +318,6 @@
     <ClCompile Include="xrLightVertex.cpp">
       <Filter>Light\LightVertex</Filter>
     </ClCompile>
-    <ClCompile Include="compiler.cpp">
-      <Filter>do_light</Filter>
-    </ClCompile>
     <ClCompile Include="detail_slot_calculate.cpp">
       <Filter>do_light</Filter>
     </ClCompile>
@@ -331,9 +325,6 @@
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="global_slots_data.cpp">
-      <Filter>do_light</Filter>
-    </ClCompile>
-    <ClCompile Include="LightThread.cpp">
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="recalculation.cpp">

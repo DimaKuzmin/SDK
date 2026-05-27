@@ -44,7 +44,7 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		VERIFY(inlc_global_data()->RCAST_Model());
 
 
- 		LightPoint(DB, inlc_global_data()->RCAST_Model(), C, P, N, *LightsSelected, GetCurrentFlags(), skip);
+ 		LightPoint( C, P, N, *LightsSelected, GetCurrentFlags(), skip);
 
 		C.mul(.5f);
 		lm.surface[_y * lm.width + _x]._set(C);
@@ -197,7 +197,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 					{
 						// We found triangle and have barycentric coords
  						FromBarryNormalized(UVTri->owner, wP, wN, B);
-						LightPoint(DB, inlc_global_data()->RCAST_Model(), C, wP, wN, *LightsSelected, GetCurrentFlags(), UVTri->owner);
+						LightPoint( C, wP, wN, *LightsSelected, GetCurrentFlags(), UVTri->owner);
 						Fcount += 1;
  						break;
 					}

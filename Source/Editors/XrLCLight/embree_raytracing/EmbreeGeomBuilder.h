@@ -1,7 +1,36 @@
 #pragma once
 
 #include "../XrCDB/xrCDB.h"
-#include "xrFace.h"
+ 
+// Прослойка !
+struct FaceDataEmbree
+{
+	void* ptr;
+	Fvector				v1, v2, v3;
+
+	bool				bOpaque = false;
+	u16					dwMaterial;
+	u32					dwMaterialGame;
+	Fvector2			TC[3];				// TC
+	Fvector2* getTC0() { return TC; }
+
+	void SetFace(Fvector& v_1, Fvector& v_2, Fvector& v_3, void* P)
+	{
+		v1 = v_1;
+		v2 = v_2;
+		v3 = v_3;
+		ptr = P;
+	};
+
+	void SetMaterial(u16 dwMt, u32 dwMtGame, Fvector2* TCn)
+	{
+		dwMaterial = dwMt;
+		dwMaterialGame = dwMtGame;
+		TC[0] = TCn[0];
+		TC[1] = TCn[1];
+		TC[2] = TCn[2];
+	}
+};
 
 struct Triangle
 {
@@ -56,18 +85,12 @@ struct IndexedTri
 
 struct TriangleContainer
 {
+private:
+	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
+	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
 	xr_vector<Fvector>				verts_v;
 	xr_vector<Triangle>				faces_v;
-
-	xr_vector<Face*>				dummy;
-
-	xr_vector<Fvector>& vertex() { return verts_v; }
-	xr_vector<Triangle>& faces() { return faces_v; }
-	u32 vertex_cnt() { return verts_v.size(); }
-	u32 faces_cnt() { return faces_v.size(); }
-
-	// Add Faces
-	void ClearAll();
+	xr_vector<void*>				dummy;
 
 	// Removeing Dublicates
 	struct IndexedVertex
@@ -80,18 +103,31 @@ struct TriangleContainer
 	struct FaceRaw
 	{
 		Fvector v[3];
-		Face* F;
+		void* F;
 
 		u16 material;
 		u16 Sector;
 	};
-
 	xr_vector<FaceRaw> raw_faces;
-	void AddFaceRaw(Face* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
+
+public:
+	xr_vector<Fvector>& vertex() { return verts_v; }
+	xr_vector<Triangle>& faces() { return faces_v; }
+	xr_vector<void*>	 UD() { return dummy; }
+	u32 vertex_cnt() { return verts_v.size(); }
+	u32 faces_cnt() { return faces_v.size(); }
+
+	// Add Faces
+	void ClearAll();
+
+ 	void AddFaceRaw(void* F, const Fvector& v1, const Fvector& v2, const Fvector& v3)
 	{
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
 
-	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
-	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
+	void RemoveDublicates()
+	{
+		RemoveDublicatesVertexs(false, false);
+		RemoveDublicatesFaces(false, false);
+	}
 };

@@ -110,14 +110,7 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 				N.random_dir(vN, deg2rad(30.f));
 				P.mad(vP, N, a);
 				
-				if (MDL && (gCompilerMode.Embree || gCompilerMode.CUDA))
-				{
-					LightPoint_Embree((EmbreeRayTraceModel*)MDL, vC, P, N, lights, flags, 0);
-				}
-				else
-				{
-					LightPoint(&DB, (CDB::MODEL*)MDL, vC, P, N, lights, flags, 0);
-				}
+				LightPoint_Embree((EmbreeRayTraceModel*)MDL, vC, P, N, lights, flags, 0);
 			}
 			vC.scale(n_samples);
 			vC._tmp_ = v_trans;
@@ -216,7 +209,7 @@ void xrMU_Model::calc_lighting()
 
 	if (gCompilerMode.Embree || gCompilerMode.CUDA)
 	{
-		xr_vector<FaceDataIntel> faces;
+		xr_vector<FaceDataEmbree> faces;
 		export_cform_rcast_new(faces, Fidentity);
 
 		R_ASSERT(faces.size());

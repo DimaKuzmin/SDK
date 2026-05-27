@@ -206,7 +206,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 #include "../xrMU_Model_Reference.h"
   
 
-struct FaceDataIntel;
+struct FaceDataEmbree;
 
 size_t GetMemory();
 
@@ -238,7 +238,7 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     // 2. Обрабатываем MU-референсы
     for (auto ref : globalData->mu_refs())
     {
-        xr_vector<FaceDataIntel> tempBuffer;
+        xr_vector<FaceDataEmbree> tempBuffer;
         ref->export_cform_rcast_new(tempBuffer);
 
         for (auto& pF : tempBuffer)

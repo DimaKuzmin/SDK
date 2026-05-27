@@ -176,8 +176,7 @@ void CBuild::Run(LPCSTR P)
 	if (gCompilerMode.LC_Cforms)
 	{
 		BuildCForm();
-		EmbreeMain.BuildRcast();
-	}
+ 	}
 
 	// Просщитывем освещение 
  	Light						();

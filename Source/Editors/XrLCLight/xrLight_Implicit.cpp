@@ -55,7 +55,7 @@ void ProcessingCPU()
 							{
 								// We found triangle and have barycentric coords
 								FromBarry(F, wP, wN, B);
-								LightPoint(&DB, inlc_global_data()->RCAST_Model(), C, wP, wN, inlc_global_data()->L_static(), GetCurrentFlags(), F);
+								LightPoint( C, wP, wN, inlc_global_data()->L_static(), GetCurrentFlags(), F);
 								Fcount++;
 							}
 						}

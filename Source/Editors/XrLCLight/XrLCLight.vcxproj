@@ -86,7 +86,6 @@
     <ClInclude Include="hash2D.h" />
     <ClInclude Include="itterate_adjacents_static.h" />
     <ClInclude Include="Lightmap.h" />
-    <ClInclude Include="LightThread.h" />
     <ClInclude Include="light_point.h" />
     <ClInclude Include="lm_layer.h" />
     <ClInclude Include="MeshStructure.h" />
@@ -123,7 +122,6 @@
     <ClCompile Include="base_face.cpp" />
     <ClCompile Include="base_lighting.cpp" />
     <ClCompile Include="b_build_texture.cpp" />
-    <ClCompile Include="compiler.cpp" />
     <ClCompile Include="cuda\CUDAContext.cpp" />
     <ClCompile Include="cuda\CUDAGeometryBuilder.cpp" />
     <ClCompile Include="cuda\CUDARayCast.cpp" />
@@ -141,7 +139,6 @@
     <ClCompile Include="global_calculation_data.cpp" />
     <ClCompile Include="global_slots_data.cpp" />
     <ClCompile Include="Lightmap.cpp" />
-    <ClCompile Include="LightThread.cpp" />
     <ClCompile Include="lm_layer.cpp" />
     <ClCompile Include="MeshStaic.cpp" />
     <ClCompile Include="mu_model_face.cpp" />
