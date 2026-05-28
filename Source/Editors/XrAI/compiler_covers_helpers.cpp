@@ -81,7 +81,7 @@ void compute_non_covers()
 	int startID = 0;
 	for (; I != E; ++I, ++J, startID++)
 	{
-		Progress((float)(startID / maxsize));
+		AditionalData("Progress: %u/%u", startID, maxsize);
 
 		if (*J)	continue;
 
