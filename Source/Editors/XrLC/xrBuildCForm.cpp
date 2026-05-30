@@ -52,9 +52,7 @@ extern void log_vminfo_new(LPCSTR msg);
 void CBuild::BuildCForm	()
 {
   	// Collecting data
- 	Phase("CFORM: collision model...");
-
-	xr_vector<Face*>*	cfFaces		= xr_new<xr_vector<Face*>>		();
+ 	xr_vector<Face*>*	cfFaces		= xr_new<xr_vector<Face*>>		();
 	xr_vector<Vertex*>*	cfVertices	= xr_new<xr_vector<Vertex*>>	();
 	
 	// Collect Faces

@@ -40,11 +40,7 @@ void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected
 		// ok - perform lighting
 		base_color_c	C;
 		Fvector			P;	P.mad(v1,vdir,time);
-		VERIFY(inlc_global_data());
-		VERIFY(inlc_global_data()->RCAST_Model());
-
-
- 		LightPoint( C, P, N, *LightsSelected, GetCurrentFlags(), skip);
+  		LightPoint( C, P, N, *LightsSelected, GetCurrentFlags(), skip);
 
 		C.mul(.5f);
 		lm.surface[_y * lm.width + _x]._set(C);

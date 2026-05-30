@@ -53,7 +53,9 @@ void OGF_AddFace( OGF &ogf, const Face& FF, bool _tc_ )
 	Face2OGF_Vertices( FF, V );
 	// build face
 	TRY				(ogf._BuildFace(V[0],V[1],V[2],_tc_));
-	V[0].UV.clear();V[1].UV.clear();V[2].UV.clear();
+	V[0].UV.clear();
+	V[1].UV.clear();
+	V[2].UV.clear();
 }
 
 void BuildOGFGeom( OGF &ogf, const xr_vector<Face*>& faces, bool _tc_ )
@@ -124,7 +126,6 @@ bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_mat
 			BuildOGFGeom(*pOGF, *faces, _tc_);
 		}
 		catch (...) { clMsg("* ERROR: Flex2OGF, model# %d, *faces*", MODEL_ID); }
-
 	}
 	catch (...)
 	{
@@ -134,10 +135,10 @@ bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_mat
 	if (! pOGF->data.vertices.size())
  		return false;
 
- 	pOGF->Optimize();
- 	pOGF->CalcBounds();
+	pOGF->Optimize();							
+ 	pOGF->CalcBounds();							
     pOGF->MakeProgressive(c_PM_MetricLimit_static);
-  	pOGF->Stripify();
+  	pOGF->Stripify();							
 
 	return true;
 };

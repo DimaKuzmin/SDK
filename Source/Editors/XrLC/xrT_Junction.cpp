@@ -46,7 +46,8 @@ static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
 		{
 			record&	rec = (*vecJunctions)[i];
 			if (rec.T==vTEST)						return;
-			if (rec.T->P.similar(vTEST->P,.002f))	bWeld = TRUE;
+			if (rec.T->P.similar(vTEST->P,.002f))
+				bWeld = TRUE;
 		}
 		
 		// register
@@ -57,16 +58,16 @@ static void check(Vertex* vE1, Vertex* vE2, Vertex* vTEST)
 		vecJunctions->push_back	(rec);
 		
 		// display
-		// if (bWeld)	clMsg	("ERROR. unwelded vertex      [%3.1f,%3.1f,%3.1f]",	VPUSH(vTEST->P));
-		// else			clMsg	("ERROR. T-junction at vertex [%3.1f,%3.1f,%3.1f]",	VPUSH(vTEST->P));
-		//pBuild->err_tjunction.w_fvector3	(vTEST->P);
+		// if (bWeld)			clMsg	("ERROR. unwelded vertex      [%3.1f,%3.1f,%3.1f]",	VPUSH(vTEST->P));
+		// else				clMsg	("ERROR. T-junction at vertex [%3.1f,%3.1f,%3.1f]",	VPUSH(vTEST->P));
+		// pBuild->err_tjunction().w_fvector3(vTEST->P);
 	}
 }
 
 static void edge(Vertex* vE1, Vertex* vE2)
 {
 	float		len	= vE1->P.distance_to(vE2->P);
-	if (len<32.f)	return;
+	if (len<32.f)								return;
 
 	// check for duplicated errors
 	if (vE1>vE2)	std::swap(vE1,vE2);
@@ -83,7 +84,8 @@ static void edge(Vertex* vE1, Vertex* vE2)
 	rec.T	= 0;
 	vecEdges->push_back	(rec);
 	
-	// clMsg	("ERROR: too long edge        %3.1fm [%3.1f,%3.1f,%3.1f] - [%3.1f,%3.1f,%3.1f]",len,VPUSH(vE1->P),VPUSH(vE2->P));
+	// if (len < 128.f)								return;
+	// clMsg	("ERROR: too long edge        %3.1fm [%3.1f,%3.1f,%3.1f] - [%3.1f,%3.1f,%3.1f]",len, VPUSH(vE1->P), VPUSH(vE2->P));
 }
 
 #include "ppl.h"
@@ -91,65 +93,65 @@ static void edge(Vertex* vE1, Vertex* vE2)
 
 void CBuild::CorrectTJunctions()
 {
-	// Status					("CorrectTJunctions Processing...");
-	// vecJunctions			= xr_new<xr_vector<record> > (); vecJunctions->reserve	(1024);
-	// vecEdges				= xr_new<xr_vector<record> > (); vecEdges->reserve		(1024);
-	// 
-	// for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
-	// {
-	//     Face* F = lc_global_data()->g_faces()[I];
-	// 
-	// 	// Iterate on edges
-	// 	for (u32 e = 0; e < 3; ++e)
-	// 	{
-	// 		Vertex* vA, * vB;
-	// 		F->EdgeVerts(e, &vA, &vB);
-	// 
-	// 		// Iterate on 'vA'-adjacent faces
-	// 		for (u32 f1 = 0; f1 != vA->m_adjacents.size(); ++f1)
-	// 		{
-	// 			Face* F1 = vA->m_adjacents[f1];
-	// 
-	// 			// Iterate on it's edges
-	// 			for (u32 e1 = 0; e1 < 3; ++e1)
-	// 			{
-	// 				Vertex* v1, * v2;
-	// 				F1->EdgeVerts(e1, &v1, &v2);
-	// 				edge(v1, v2);
-	// 
-	// 				if (v1 == vA && v2 != vB)
-	// 					check(vA, vB, v2);
-	// 				else
-	// 					if (v2 == vA && v1 != vB)
-	// 						check(vA, vB, v1);
-	// 			}
-	// 		}
-	// 		// Iterate on 'vB'-adjacent faces
-	// 		for (u32 f2 = 0; f2 != vB->m_adjacents.size(); ++f2)
-	// 		{
-	// 			Face* F2 = vB->m_adjacents[f2];
-	// 
-	// 			// Iterate on it's edges
-	// 			for (u32 e1 = 0; e1 < 3; ++e1)
-	// 			{
-	// 				Vertex* v1, * v2;
-	// 				F2->EdgeVerts(e1, &v1, &v2);
-	// 				edge(v1, v2);
-	// 				if (v1 == vB && v2 != vA)
-	// 					check(vA, vB, v2);
-	// 				else
-	// 					if (v2 == vB && v1 != vA)
-	// 						check(vA, vB, v1);
-	// 			}
-	// 		}
-	// 	}
-	// 	
-	// 	//IDs++;
-	// 	Progress(float(I) / float(lc_global_data()->g_faces().size()));
-	// }
- 	// 
-	// clMsg("*** %d junctions and %d long edges found.",vecJunctions->size(),vecEdges->size());
-	// 
-	// xr_delete(vecJunctions);
-	// xr_delete(vecEdges);
+	Status					("CorrectTJunctions Processing...");
+	vecJunctions			= xr_new<xr_vector<record> > (); vecJunctions->reserve	(1024);
+	vecEdges				= xr_new<xr_vector<record> > (); vecEdges->reserve		(1024);
+	
+	for (u32 I=0; I<lc_global_data()->g_faces().size(); ++I)
+	{
+	    Face* F = lc_global_data()->g_faces()[I];
+	
+		// Iterate on edges
+		for (u32 e = 0; e < 3; ++e)
+		{
+			Vertex* vA, * vB;
+			F->EdgeVerts(e, &vA, &vB);
+	
+			// Iterate on 'vA'-adjacent faces
+			for (u32 f1 = 0; f1 != vA->m_adjacents.size(); ++f1)
+			{
+				Face* F1 = vA->m_adjacents[f1];
+	
+				// Iterate on it's edges
+				for (u32 e1 = 0; e1 < 3; ++e1)
+				{
+					Vertex* v1, * v2;
+					F1->EdgeVerts(e1, &v1, &v2);
+					edge(v1, v2);
+	
+					if (v1 == vA && v2 != vB)
+						check(vA, vB, v2);
+					else
+						if (v2 == vA && v1 != vB)
+							check(vA, vB, v1);
+				}
+			}
+			// Iterate on 'vB'-adjacent faces
+			for (u32 f2 = 0; f2 != vB->m_adjacents.size(); ++f2)
+			{
+				Face* F2 = vB->m_adjacents[f2];
+	
+				// Iterate on it's edges
+				for (u32 e1 = 0; e1 < 3; ++e1)
+				{
+					Vertex* v1, * v2;
+					F2->EdgeVerts(e1, &v1, &v2);
+					edge(v1, v2);
+					if (v1 == vB && v2 != vA)
+						check(vA, vB, v2);
+					else
+						if (v2 == vB && v1 != vA)
+							check(vA, vB, v1);
+				}
+			}
+		}
+		
+		//IDs++;
+		Progress(float(I) / float(lc_global_data()->g_faces().size()));
+	}
+ 	
+	clMsg("*** %d junctions and %d long edges found.", vecJunctions->size(),vecEdges->size());
+	
+	xr_delete(vecJunctions);
+	xr_delete(vecEdges);
 }

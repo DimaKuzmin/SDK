@@ -16,7 +16,7 @@ void SDL_Application()
 	SDL_SetHint(SDL_HINT_IME_SHOW_UI, "1");
 
 	SDL_WindowFlags window_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
-	g_AppInfo.Window = SDL_CreateWindow("X-Ray 1.8 Level Builder", 1000, 560, window_flags);
+	g_AppInfo.Window = SDL_CreateWindow("X-Ray Level Builder", 1000, 560, window_flags);
 	SDL_Renderer* renderer = SDL_CreateRenderer(g_AppInfo.Window, NULL, SDL_RENDERER_PRESENTVSYNC | SDL_RENDERER_ACCELERATED);
 
 	SDL_SetWindowPosition(g_AppInfo.Window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);

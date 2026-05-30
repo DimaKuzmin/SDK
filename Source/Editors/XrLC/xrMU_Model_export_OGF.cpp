@@ -9,23 +9,21 @@
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
-int CountErrors;
-
 void export_ogf( xrMU_Reference& mu_reference )
 {
 	xr_vector<u32>		generated_ids;
 	xrMU_Model *model = mu_reference.model;
 	// Export nodes
 	{
-		for (xrMU_Model::v_subdivs_it it=model->m_subdivs.begin(); it!=model->m_subdivs.end(); it++)
+		for (auto& Sub : model->m_subdivs)
 		{
 			OGF_Reference*	pOGF	= xr_new<OGF_Reference> ();
-			b_material*		M		= &(pBuild->materials()[it->material]);	// and it's material
+			b_material*		M		= &(pBuild->materials()[Sub.material]);	// and it's material
 			R_ASSERT		(M);
 
 			// Common data
 			pOGF->Sector			= mu_reference.sector;
-			pOGF->material			= it->material;
+			pOGF->material			= Sub.material;
 
 			// Collect textures
 			OGF_Texture				T;
@@ -34,30 +32,20 @@ void export_ogf( xrMU_Reference& mu_reference )
 			TRY(pOGF->textures.push_back(T));
 
 			// Special
-			pOGF->model				= it->ogf;
-			pOGF->vb_id				= it->vb_id;
-			pOGF->vb_start			= it->vb_start;
-			pOGF->ib_id				= it->ib_id;
-			pOGF->ib_start			= it->ib_start;
+			pOGF->model				= Sub.ogf;
+			pOGF->vb_id				= Sub.vb_id;
+			pOGF->vb_start			= Sub.vb_start;
+			pOGF->ib_id				= Sub.ib_id;
+			pOGF->ib_start			= Sub.ib_start;
 			pOGF->xform.set			(mu_reference.xform);
 			pOGF->c_scale			= mu_reference.c_scale;
 			pOGF->c_bias			= mu_reference.c_bias;
-			pOGF->sw_id				= it->sw_id;
+			pOGF->sw_id				= Sub.sw_id;
 
 			pOGF->CalcBounds		();
 			generated_ids.push_back	((u32)g_tree.size());
 			g_tree.push_back		(pOGF);
 		}
-	}
-	
-	if (mu_reference.color.size() == 0)
-	{
-		if (CountErrors < 10)
-		{
-			Msg("MuRefference[%d]: %s is colors buffer == 0", model->m_lod_ID, mu_reference.model->m_name);
-		}
-		CountErrors++;
-		return;
 	}
 
 	// Now, let's fuck with LODs

@@ -20,7 +20,6 @@ bool OptixContext::Initialize()
 {
 	// --- 1. Primary context через CUDA Runtime ---
 	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
-	CUDA_CHECK(cudaFree(0));
 
 	cudaDeviceProp deviceProps;
 	CUDA_CHECK(cudaGetDeviceProperties(&deviceProps, cudaDeviceId));
@@ -40,10 +39,6 @@ bool OptixContext::Initialize()
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
 	options.logCallbackLevel = 0;
-
-// #ifdef DEBUG
-// 	options.validationMode = OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_ALL;
-// #endif
 
 	// В этом режиме OptiX требует НЕ nullptr
 	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));

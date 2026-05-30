@@ -59,8 +59,7 @@ void xrStripify		(xr_vector<u16> &indices, xr_vector<u16> &perturb, int iCacheSi
 
 void OGF::Stripify		()
 {
-	if (progressive_test())	
-		return;			// Mesh already progressive - don't stripify it
+	if (progressive_test())	 return;			// Mesh already progressive - don't stripify it
 
 	// fast verts
 	if (fast_path_data.vertices.size() && fast_path_data.faces.size())
@@ -87,6 +86,9 @@ void OGF::Stripify		()
 		}
 	}
 
+	if (data.faces.size() * 3 > 64 * 1024)		return;
+	if (!gCompilerMode.LC_MakeStriptify)		return;
+
 	// normal verts
 	try
 	{
@@ -97,8 +99,6 @@ void OGF::Stripify		()
 		indices.assign	(F,F+(data.faces.size()*3));
 		permute.resize	(data.vertices.size());
 		xrStripify		(indices,permute,c_vCacheSize,0);
-
-		// Msg("xrStripify: faces: %u verts: %u| new faces: %u, verts: %u", data.faces.size(), data.vertices.size(), indices.size(), permute.size());
 		
 		// Copy faces
 		CopyMemory		(&*data.faces.begin(),&*indices.begin(),(u32)indices.size()*sizeof(u16));

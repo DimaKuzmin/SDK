@@ -22,10 +22,9 @@ EmbreeRayTraceModel EmbreeMain;
 // можно и 0.10f Было раньше так
 float EmbreeEnergyMAX = 0.01f;
 
-struct RayQueryContext
+struct RayUserData : RTCRayQueryContext
 {
-	RTCRayQueryContext context;
-	Fvector B;
+ 	Fvector B;
 
 	Face* skip = 0;
 	float energy = 1.0f;
@@ -37,7 +36,7 @@ struct UserGeomData
 };
 
 // Сделать потом переключалку
-bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
+bool CalculateEnergy(RayUserData* ctxt, RTCHit* hit, Face* F, Fvector& B)
 {
 	const b_material& M = inlc_global_data()->materials()[F->dwMaterial];
 	const b_texture& T  = inlc_global_data()->textures()[M.surfidx];
@@ -72,7 +71,7 @@ bool CalculateEnergy(RayQueryContext* ctxt, RTCHit* hit, Face* F, Fvector& B)
 
 void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 {
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	RayUserData* ctxt = (RayUserData*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	auto UD = (UserGeomData*) args->geometryUserPtr;
@@ -88,7 +87,7 @@ void FilterRayTraceOpaque(const struct RTCFilterFunctionNArguments* args)
 
 void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 {
-	RayQueryContext* ctxt = (RayQueryContext*)args->context;
+	RayUserData* ctxt = (RayUserData*)args->context;
 	RTCHit* hit = (RTCHit*)args->hit;
 
 	// Собрать все
@@ -106,25 +105,21 @@ void FilterRaytraceTransparent(const struct RTCFilterFunctionNArguments* args)
 float EmbreeRayTraceModel::RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip)
 {
 	// Структура для RayTracing
-	RayQueryContext data_hits;
+	RayUserData data_hits;
 	data_hits.skip = (Face*)skip;
 	data_hits.energy = 1.0f;
- 
+	rtcInitRayQueryContext(&data_hits);
+
 	RTCRay ray;
 	SetRay1(ray, P, N, 0.1f, range);
 
 	RTCOccludedArguments args;
 	rtcInitOccludedArguments(&args);
-
-	RTCRayQueryContext context;
-	rtcInitRayQueryContext(&context);
-
+ 
 	// SET CONTEXT
-	data_hits.context = context;
-	args.context = &data_hits.context;
+ 	args.context		= &data_hits;
 	rtcOccluded1(IntelScene, &ray, &args);
-
-	return data_hits.energy;
+ 	return data_hits.energy;
 }
 
 // LOADING GEOMETRY
@@ -215,18 +210,11 @@ void EmbreeRayTraceModel::RemoveGeometry()
 	static_geom_transp.ClearAll();
 
 	IntelScene = 0;
-
 }
 
-void EmbreeRayTraceModel::IntelEmbereUnloadAll()
+void EmbreeRayTraceModel::IntelEmbereUnloadData()
 {
-	if (this == &EmbreeMain)
-		Msg("* Intel Embree Releasing Start| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
-
 	RemoveGeometry();
-
-	if (this == &EmbreeMain)
-		Msg("* Intel Embree Releasing End| Memory: %u mb", u32(GetMemory() / 1024 / 1024));
 }
 
 // Embree Device (Должен быть один)

@@ -121,7 +121,7 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
 #include <ppl.h>
 extern bool useDetails;
 
-void xrCompileDO(u32 Samples)
+void xrCompileDO()
 {
 	Phase("Loading level...");
 	gl_data.xrLoad();

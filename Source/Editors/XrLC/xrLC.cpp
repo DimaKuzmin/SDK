@@ -78,7 +78,7 @@ void MainCompilerLC()
 		{
 			g_params().m_lm_jitter_samples = gCompilerMode.LC_JSample;
 			g_params().m_lm_pixels_per_meter = gCompilerMode.LC_Pixels;
-			g_params().m_weld_distance = gCompilerMode.WeldDistance;
+			g_params().m_weld_distance = gCompilerMode.LC_WeldDistance;
 		}
 
 		FS.r_close(F);
@@ -103,7 +103,7 @@ void MainCompilerDO()
 		CTimer				dwStartupTime;
 		dwStartupTime.Start();
 
-		xrCompileDO(gCompilerMode.DO_Samples);
+		xrCompileDO();
 
 		// Show statistic
 		char	stats[256];

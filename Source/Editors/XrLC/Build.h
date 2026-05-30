@@ -85,11 +85,7 @@ public:
 
 	void	BuildCForm				();
 	void	BuildPortals			(IWriter &fs);
-	void	BuildRapid				(BOOL bSave);
-	void	BuildCollectionDB		(CDB::CollectorPacked& CL);
- 
-	void	SaveForOthers			(CDB::CollectorPacked& CL);
-		
+  		
 	void	IsolateVertices			(BOOL bProgress);
 	void	xrPhase_ResolveMaterials();
 	void	xrPhase_UVmap			();

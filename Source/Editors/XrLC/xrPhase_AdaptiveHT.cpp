@@ -101,7 +101,7 @@ void CBuild::xrPhase_AdaptiveHT_calculate()
 			V->normalFromAdj();
 			GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(VertexID, 0), nullptr, V->P, V->N, 0);
 
-			AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
+			// AditionalData("Vertex : %u / %u", VertexID, lc_global_data()->g_vertices().size());
 		}
 
 		GPUTaskinSystem.LightPointPacked_run_tasks();

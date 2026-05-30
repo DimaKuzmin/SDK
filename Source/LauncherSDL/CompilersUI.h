@@ -14,38 +14,46 @@ struct LevelFileData
 
 struct CompilersMode
 {
+	// ComboBox Values;
+	int RadioID = 0;
+	int item_current_jitter = 2;
+	int item_current_jitter_mu = 6;
+	int item_cuda_rays = 1;
+	int item_lmap_selected = 1;
+
 	Fbox scene_bbox;
 
 	int ThreadsNum = 8;
 
-	bool SkipRaytracing = false;
-	bool Silent = false;
+ 	bool Silent = false;
 	bool Embree = false;
 	bool CUDA   = true;
+	int	 LC_CUDA_RAYS_SIZE = 8192;
 
 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
 	bool ClearTemp = false;
 	bool SkipTHM = false;
-
-	bool use_avx2 = false;
+ 	bool use_avx2 = false;
  
 	bool AI = false;
 	bool DO = false;
 	bool LC = false;
 
-  	bool LC_Cforms = true;
-	bool LC_Dxt1Avail = false;
+ 	bool LC_Dxt1Avail = false;
   	bool LC_NoSun = false;
 	bool LC_NoHemi = false;
 	bool LC_NoRGB = false;
  
 	bool LC_NoSMG = true;
-	bool LC_Noise = true;
+	bool LC_MakeProgressive = true;
+	bool LC_MakeStriptify = true;
+
+	bool LC_Tangent = true;
 	bool LC_Tess = true;
+
+	bool LC_RemoveInvalidFaces = false;
 	bool LC_SkipInvalidFaces = true;
-	bool LC_tex_rgba = false;
-	bool LC_NoSubdivide = false;
 	bool LC_skipWeld = false;
 
 	bool LC_Se7kills_method = true;
@@ -58,10 +66,7 @@ struct CompilersMode
 	int LC_JSample = 9;
 	float LC_Pixels = 10;
 
-	float WeldDistance = 0.005f;
-
-	bool DO_NoSun = false;
-	int  DO_Samples = 7;
+	float LC_WeldDistance = 0.005f;
 
 	// SPAWN COMPILER
 	bool AI_BuildSpawn			= false;

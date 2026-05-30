@@ -75,7 +75,7 @@ void RenderMainUI()
 
 	if (Size[0] != 1000 || Size[1] != 540)
 	{
-		SDL_SetWindowSize(g_AppInfo.Window, 1000, 540);
+		SDL_SetWindowSize(g_AppInfo.Window, 1000, 600);
 	}
 
 	if (ImGui::Begin("MainForm", nullptr, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoNavFocus))
@@ -188,59 +188,104 @@ void RenderMainUI()
 
 	ImGui::End();
 }
+const ImVec4 getLogColor_new(char* text)
+{
+	if (text == nullptr || xr_strlen(text) == 0)
+		return ImVec4(RGBAColor(230, 230, 230, 255));
 
-int item_current_jitter = 2;
-int item_current_jitter_mu = 6;
+	xr_string TextEx = text;
+	TextEx = TextEx.RemoveWhitespaces();
+	size_t Pos = TextEx.find('|');
+
+	while (Pos != xr_string::npos)
+	{
+		TextEx.erase(Pos, 1);
+		Pos = TextEx.find('|');
+	}
+
+	char Word = TextEx[0];
+
+	switch (Word)
+	{
+		case '~': return ImVec4(RGBAColor(248, 248, 49, 255));
+		case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
+		case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
+		case '#': return ImVec4(RGBAColor(0, 222, 205, 155));
+		case '%': return ImVec4(RGBAColor(202, 85, 219, 155));
+		case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
+		case '*': return ImVec4(RGBAColor(248, 248, 49, 255));
+		case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
+		case '&': return ImVec4(RGBAColor(255, 255, 0, 255));
+		case '-': return ImVec4(RGBAColor(0, 255, 0, 255));
+		case '+': return ImVec4(RGBAColor(84, 255, 255, 255));
+		case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
+		case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
+	}
+
+	return ImVec4(RGBAColor(230, 230, 230, 255));
+}
+
 
 const char* itemsJitter[] = { "1", "4", "9" };
 const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6" };
+const char* itemsCudaRays[] = { "8000", "16000", "32000", "64000", "128000", "512000", "1024000"};
+const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384" };
 
 void DrawLCConfig()
 {
-	//if (ImGui::BeginChild("LC", { 200, 415 }, ImGuiChildFlags_Border, ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings))
+	ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
+	ImGui::Separator();
+
 	{
-		ImGui::Checkbox("Lighting Compiler", &gCompilerMode.LC);
-		ImGui::Separator();
-
 		ImGui::BeginDisabled(!gCompilerMode.LC);
+		
+		// Lighting Setup
+		ImGui::Spacing();
+		ImGui::TextColored(getLogColor_new("$"), "Lighting Setup: ");
+ 
+		ImGui::Checkbox("DXT1 Availd Lighting", &gCompilerMode.LC_Dxt1Avail);
+ 		ImGui::Checkbox("No Static Map",		&gCompilerMode.LC_NoRGB);
+	
+		// Geometry Setup
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::TextColored(getLogColor_new("!"), "Geometry Setup: ");
+ 
+		ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
+		ImGui::Checkbox("Remove invalid faces", &gCompilerMode.LC_RemoveInvalidFaces);
+		ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
+		ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
+		ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
 
-			ImGui::Checkbox("DXT1 Availd Lighting", &gCompilerMode.LC_Dxt1Avail);
- 			ImGui::Checkbox("No Hemi", &gCompilerMode.LC_NoHemi);
-			ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-			ImGui::Checkbox("No RGB", &gCompilerMode.LC_NoRGB);
-			ImGui::Checkbox("No Smooth Group", &gCompilerMode.LC_NoSMG);
-			ImGui::Checkbox("Noise", &gCompilerMode.LC_Noise);
-			
-			ImGui::Checkbox("Skip invalid faces", &gCompilerMode.LC_SkipInvalidFaces);
-			ImGui::Checkbox("Texture RGBA", &gCompilerMode.LC_tex_rgba);
-			ImGui::Checkbox("Skip Welding", &gCompilerMode.LC_skipWeld);
-			ImGui::Checkbox("Tesselation", &gCompilerMode.LC_Tess);
-			// ImGui::Checkbox("[dev] exports any.cform", &gCompilerMode.LC_Cforms);
- 			ImGui::Separator();
-
-			// Lmaps Settings
-			ImGui::Spacing();
-			ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "Lightmaps: ");
-			ImGui::Spacing();
-
-			ImGui::Text("BORDER:"); ImGui::SameLine(0, 30);
-			ImGui::InputInt("##border", &gCompilerMode.LC_lmap_BORDER, 1, 1);
-
-			static int			current_selected = 3;
-			static int			max_resolution = 5;
-			static const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384" };
-
-			ImGui::Text("Size:  "); ImGui::SameLine(0, 30);
-			ImGui::Combo("##lmaps", &current_selected, lightmap_resolution, max_resolution);
- 			gCompilerMode.LC_lmap_size = atoi(lightmap_resolution[current_selected]);
-
-			ImGui::Text("Fill:  "); ImGui::SameLine(0, 30);
-			ImGui::InputFloat("##fill", &gCompilerMode.LC_lmap_fill, 0.01f, 0.01f);
-			ImGui::Checkbox("Fast lmaps", &gCompilerMode.LC_Se7kills_method);
+		// Geometry Optimizing After Build
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::TextColored(getLogColor_new("!"), "Geometry OGF Optimize: ");
+ 
+		ImGui::Checkbox("Make TangentBasis", &gCompilerMode.LC_Tangent);
+		ImGui::Checkbox("Make Progressive",  &gCompilerMode.LC_MakeProgressive);
+		ImGui::Checkbox("Make Striptify",    &gCompilerMode.LC_MakeStriptify);
 
 
-			ImGui::EndDisabled();
+		// Lightmaps Setup
+		ImGui::Separator();
+		ImGui::Spacing();
+		ImGui::TextColored(getLogColor_new("*"), "Lightmaps Setup: ");
+ 
+		ImGui::Text("BORDER:"); ImGui::SameLine(0, 30);
+		ImGui::InputInt("##border", &gCompilerMode.LC_lmap_BORDER, 1, 1);
+
+		ImGui::Text("Size:  "); ImGui::SameLine(0, 30);
+		ImGui::Combo("##lmaps", &gCompilerMode.item_lmap_selected, lightmap_resolution, 5);
+		gCompilerMode.LC_lmap_size = atoi(lightmap_resolution[gCompilerMode.item_lmap_selected]);
+
+		ImGui::Text("Fill:  "); ImGui::SameLine(0, 30);
+		ImGui::InputFloat("##fill", &gCompilerMode.LC_lmap_fill, 0.01f, 0.01f);
+		ImGui::Checkbox("Fast lmaps", &gCompilerMode.LC_Se7kills_method);
+
+		ImGui::EndDisabled();
 	}
+
 }
 
 void DrawDOConfig()
@@ -252,8 +297,7 @@ void DrawDOConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.DO);
 		ImGui::Checkbox("No Sun", &gCompilerMode.LC_NoSun);
-		ImGui::InputInt("Samples", &gCompilerMode.DO_Samples);
-		ImGui::EndDisabled();
+ 		ImGui::EndDisabled();
  	}
 
 }
@@ -305,12 +349,10 @@ void DrawCompilerConfig()
 	ImGui::PushID("LightPreset");
 
 	{
-		static int RadioID = 1;
+  		ImGui::RadioButton("Use Intel Embree", &gCompilerMode.RadioID, 0);
+ 		ImGui::RadioButton("Use Nvidia CUDA",  &gCompilerMode.RadioID, 1);
  
- 		ImGui::RadioButton("Use Intel Embree", &RadioID, 0);
- 		ImGui::RadioButton("Use Nvidia CUDA", &RadioID, 1);
- 
-		switch (RadioID)
+		switch (gCompilerMode.RadioID)
 		{
  			case 0: gCompilerMode.CUDA = false; gCompilerMode.Embree = true; break;
 			case 1: gCompilerMode.CUDA = true;  gCompilerMode.Embree = false; break;
@@ -328,12 +370,22 @@ void DrawCompilerConfig()
 
 	ImGui::EndDisabled();
 
+	if (true)
+	{
+		ImGui::BeginDisabled(!gCompilerMode.CUDA);
+
+		ImGui::Combo("CudaRays", &gCompilerMode.item_cuda_rays, itemsCudaRays, 7);
+		gCompilerMode.LC_CUDA_RAYS_SIZE = atoi(itemsCudaRays[gCompilerMode.item_cuda_rays]);
+
+		ImGui::EndDisabled();
+	}
+
+
 	ImGui::Separator();
 
 	ImGui::SetNextItemWidth(100);
 	ImGui::InputInt("Threads", &gCompilerMode.ThreadsNum);
-
-
+ 
 	ImGui::Separator();
 	
 	if (true)
@@ -342,16 +394,16 @@ void DrawCompilerConfig()
 
 		ImGui::BeginDisabled(!gCompilerMode.IsOverloadedSettings);
 		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("JitterMU", &item_current_jitter_mu, itemsJitterMU, 7);
+		ImGui::Combo("JitterMU", &gCompilerMode.item_current_jitter_mu, itemsJitterMU, 7);
 		ImGui::SetNextItemWidth(100);
-		ImGui::Combo("Jitter", &item_current_jitter, itemsJitter, 3);
+		ImGui::Combo("Jitter", &gCompilerMode.item_current_jitter, itemsJitter, 3);
 		ImGui::SetNextItemWidth(100);
 		ImGui::InputFloat("Pixels", &gCompilerMode.LC_Pixels);
 		ImGui::SetNextItemWidth(100);
-		ImGui::InputFloat("Dist Weld", &gCompilerMode.WeldDistance);
+		ImGui::InputFloat("Dist Weld", &gCompilerMode.LC_WeldDistance);
 
-		gCompilerMode.LC_JSample = atoi(itemsJitter[item_current_jitter]);
-		gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[item_current_jitter_mu]);
+		gCompilerMode.LC_JSample   = atoi(itemsJitter  [gCompilerMode.item_current_jitter]);
+		gCompilerMode.LC_JSampleMU = atoi(itemsJitterMU[gCompilerMode.item_current_jitter_mu]);
 
 		ImGui::EndDisabled();
 	}
@@ -396,43 +448,6 @@ void getStatusInfo(IterationStatus status, xr_string& text, ImVec4& textCol, cha
 		icon = 'A';
 		break;
 	}
-}
-
-const ImVec4 getLogColor_new(char* text)
-{
-	if (text == nullptr || xr_strlen(text) == 0)
-		return ImVec4(RGBAColor(230, 230, 230, 255));
-
-	xr_string TextEx = text;
-	TextEx = TextEx.RemoveWhitespaces();
-	size_t Pos = TextEx.find('|');
-
-	while (Pos != xr_string::npos)
-	{
-		TextEx.erase(Pos, 1);
-		Pos = TextEx.find('|');
-	}
-
-	char Word = TextEx[0];
-
-	switch (Word)
-	{
-	case '~': return ImVec4(RGBAColor(248, 248, 49, 255));
-	case '!': return ImVec4(RGBAColor(204, 102, 102, 255));
-	case '@': return ImVec4(RGBAColor(125, 125, 241, 255));
-	case '#': return ImVec4(RGBAColor(0, 222, 205, 155));
-	case '%': return ImVec4(RGBAColor(202, 85, 219, 155));
-	case '$': return ImVec4(RGBAColor(172, 172, 255, 255));
-	case '*': return ImVec4(RGBAColor(248, 248, 49, 255));
-	case '^': return ImVec4(RGBAColor(100, 246, 121, 255));
-	case '&': return ImVec4(RGBAColor(255, 255, 0, 255));
-	case '-': return ImVec4(RGBAColor(0, 255, 0, 255));
-	case '+': return ImVec4(RGBAColor(84, 255, 255, 255));
-	case '=': return ImVec4(RGBAColor(205, 205, 105, 255));
-	case '/': return ImVec4(RGBAColor(146, 146, 252, 255));
-	}
-
-	return ImVec4(RGBAColor(230, 230, 230, 255));
 }
 
 const ImVec4 getLogColor(const char& c)

@@ -34,7 +34,7 @@ static const int	idx2edge	[3][3]  = {
 	{ 2,  1, -1}
 }; 
 
-			XRLC_LIGHT_API void	xrCompileDO		 (u32 samples);
+			XRLC_LIGHT_API void	xrCompileDO		 ();
 extern "C"	XRLC_LIGHT_API  b_params	&g_params();
 
 IC	u8	u8_clr				(float a)	{ s32 _a = iFloor(a*255.f); clamp(_a,0,255); return u8(_a);		};

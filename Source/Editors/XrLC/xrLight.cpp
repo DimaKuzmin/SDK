@@ -115,12 +115,11 @@ void CBuild::Light()
 	{
 		if (gCompilerMode.CUDA || gCompilerMode.Embree)
 			InitializeEmbreeDevice();
+
 		if (gCompilerMode.CUDA)
 			GPUTaskinSystem.InitializeGPU();
 		else if (gCompilerMode.Embree)
 			EmbreeMain.InitializeGeometry();
-		else
-			BuildRapid(false);
 	};
 
 	auto BuildingUV = [this]() 
@@ -137,10 +136,6 @@ void CBuild::Light()
 	  
 	Phase("Building normals...");
 	CalcNormals();
-
-	//****************************************** T-Basis
-	Phase("Building tangent-basis...");
-	xrPhase_TangentBasis();
 
 	Light_prepare();				// Помечаем треугольники bOpacue !
 
@@ -168,17 +163,11 @@ void CBuild::Light()
 
 	//****************************************** MU-Models Processing
 	wait_mu_base();
-	 
- 
+  
  	Phase("Merging geometry...");
  	xrPhase_MergeGeometry();
  	  
-	if (gCompilerMode.Embree)
-		EmbreeMain.IntelEmbereUnloadAll();
-
-	if (gCompilerMode.CUDA)
-		GPUTaskinSystem.CleanupGPU();
-
-	lc_global_data()->destroy_rcmodel();
+ 	EmbreeMain.IntelEmbereUnloadData();
+  	GPUTaskinSystem.CleanupGPU();
 }
  

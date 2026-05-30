@@ -168,16 +168,12 @@ void CBuild::Run(LPCSTR P)
 
 	Phase("Optimizing...");
   	PreOptimize();
-	CorrectTJunctions();
+	// CorrectTJunctions();
   	xrPhase_AdaptiveHT_tesselate();
-
-	Phase("Building collision database...");
 	
-	if (gCompilerMode.LC_Cforms)
-	{
-		BuildCForm();
- 	}
-
+	Phase("Building CFORM...");
+	BuildCForm();
+ 
 	// Просщитывем освещение 
  	Light						();
  	RunAfterLight				( fs );
@@ -188,30 +184,50 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	// Tangent Basis To Convert OGF
 	BuildPortals(*fs);
 
+	//****************************************** T-Basis
+	if (gCompilerMode.LC_Tangent)
+	{
+		Phase("Building tangent-basis...");
+		xrPhase_TangentBasis();
+	}
+
 	//****************************************** Convert to OGF
  	Phase("Converting to OGFs...");
  	Flex2OGF();
 
 	//****************************************** Export MU-models
- 	Phase						("Converting MU-models to OGFs...");
- 	Status			("MU : Models...");
-	for (u32 m=0; m<mu_models().size(); m++)	
+	Phase("Converting MU-models to OGFs...");
 	{
-		calc_ogf			(*mu_models()[m]);
-		export_geometry		(*mu_models()[m]);
-	}
+		Status("MU : Models...");
+		concurrency::parallel_for(size_t(0), size_t(mu_models().size()), [&](size_t m)
+		{
+			calc_ogf(*mu_models()[m]);
+		});
 
-	Status			("MU : References...");
-	for (u32 m = 0; m < mu_refs().size(); m++)
-	{
-		StatusNoMSG("References [%d]/[%d]", m, mu_models().size());
-		export_ogf(*mu_refs()[m]);
+		for (u32 m = 0; m < mu_models().size(); m++)
+		{
+			export_geometry(*mu_models()[m]);
+		}
+
+		Status("MU : References...");
+		for (u32 m = 0; m < mu_models().size(); m++)
+		{
+			export_ogf(*mu_refs()[m]);
+		}
 	}
- 
-	//****************************************** Destroy RCast-model
- 	Phase			("Destroying ray-trace model...");
- 	lc_global_data()->destroy_rcmodel();
- 
+	mem_Compact();
+
+	Status("MU : References...");
+	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
+	{
+		Progress(mRID / mu_refs().size());
+		export_ogf(*mu_refs()[mRID]);
+
+		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size());
+	}
+	mem_Compact();
+
+  
 	//****************************************** Build sectors
  	Phase("Building sectors...");
  	BuildSectors();

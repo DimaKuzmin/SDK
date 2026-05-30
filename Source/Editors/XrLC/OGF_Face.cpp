@@ -35,14 +35,12 @@ BOOL OGF_Vertex::similar(OGF* ogf, OGF_Vertex& V)
 	}
 	return TRUE;
 }
-void OGF_Vertex::dump	(u32 id)
-{
-//	Msg	("%d: ");
-}
+
 BOOL x_vertex::similar	(OGF* ogf, x_vertex& V)
 {
 	return P.similar(V.P);
 }
+
 u16 OGF::x_BuildVertex	(x_vertex& V1)
 {
 	for (itXV it=fast_path_data.vertices.begin(); it!=fast_path_data.vertices.end(); it++)
@@ -50,19 +48,22 @@ u16 OGF::x_BuildVertex	(x_vertex& V1)
 	fast_path_data.vertices.push_back	(V1);
 	return (u32)			fast_path_data.vertices.size()-1;
 }
+
 u16 OGF::_BuildVertex	(OGF_Vertex& V1)
 {
 	try 
 	{
 		for (itOGF_V it=data.vertices.begin(); it!=data.vertices.end(); it++)
 		{
-			if (it->similar(this,V1)) return u16(it-data.vertices.begin());
+			if (it->similar(this,V1)) 
+				return u16(it-data.vertices.begin());
 		}
 	} catch (...) { clMsg("* ERROR: OGF::_BuildVertex");	}
 
 	data.vertices.push_back	(V1);
 	return (u32)data.vertices.size()-1;
 }
+
 void OGF::x_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 {
 	if (_tc_)	return	;	// make empty-list for stuff that has relevant TCs
@@ -85,13 +86,19 @@ void OGF::_BuildFace	(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_)
 	F.v[0]	= _BuildVertex(V1);
 	F.v[1]	= _BuildVertex(V2);
 	F.v[2]	= _BuildVertex(V3);
-	if (!F.Degenerate()) {
-		for (itOGF_F I=data.faces.begin(); I!=data.faces.end(); I++)		if (I->Equal(F)) return;
+	
+	if (!F.Degenerate()) 
+	{
+		for (itOGF_F I=data.faces.begin(); I!=data.faces.end(); I++)		
+		if (I->Equal(F)) 
+			return;
 		data.faces.push_back	(F);
 		x_BuildFace		(V1,V2,V3,_tc_);
-	} else {
+	} 
+	else 
+	{
 		if (data.vertices.size()>VertCount) 
-				data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
+			data.vertices.erase(data.vertices.begin()+VertCount,data.vertices.end());
 	}
 }
 BOOL OGF::dbg_SphereContainsVertex(Fvector& c, float R)
@@ -101,109 +108,137 @@ BOOL OGF::dbg_SphereContainsVertex(Fvector& c, float R)
 		if (S.contains(data.vertices[it].P))	return	TRUE;
 	return FALSE	;
 }
-
-void OGF::adjacent_select	(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vector<bool>& fmark)
-{
-	// 0. Search for the group
-	for (u32 fit=0; fit<data.faces.size(); fit++)	{
-		OGF_Face&	F		= data.faces	[fit];
-		if (fmark[fit])		continue;			// already registered
-
-		// new face - if empty - just put it in, else check connectivity
-		if (dest.empty())	{
-			fmark[fit]		= true	;
-			dest.push_back	(F.v[0]);	vmark[F.v[0]]=true;
-			dest.push_back	(F.v[1]);	vmark[F.v[1]]=true;
-			dest.push_back	(F.v[2]);	vmark[F.v[2]]=true;
-		} else {
-			// check connectivity
-			BOOL	bConnected	=	FALSE;
-			for (u32 vid=0; vid<3; vid++)	{
-				u32		id = F.v	[vid];	// search in already registered verts
-				for (u32 sid=0; sid<dest.size(); sid++)
-				{
-					if (id==dest[sid])	{
-						bConnected	= TRUE;	// this face shares at least one vertex with already selected faces
-						break;
-					}
-				}
-				if (bConnected)	break;
-			}
-			if (bConnected)		{
-				// add this face's vertices
-				fmark[fit]	= true	;
-				if (!vmark[F.v[0]])	{ dest.push_back	(F.v[0]);	vmark[F.v[0]]=true; }
-				if (!vmark[F.v[1]])	{ dest.push_back	(F.v[1]);	vmark[F.v[1]]=true; }
-				if (!vmark[F.v[2]])	{ dest.push_back	(F.v[2]);	vmark[F.v[2]]=true; }
-			}
-		}
-	}
-}
-
+ 
 void OGF::Optimize	()
 {
-	// Real optimization
-	//////////////////////////////////////////////////////////////////////////
-	//////////////////////////////////////////////////////////////////////////
-	// Detect relevant number of UV pairs
-	try 
-	{
-		// se7kills (FIX TODO)
+	if (data.vertices.empty() || data.faces.empty()) return;
 
-		R_ASSERT			(data.vertices.size());
-		dwRelevantUV		= data.vertices.front().UV.size();
-		const Shader_xrLC*	SH	= pBuild->shaders().Get(pBuild->materials()[material].reserved);
-		if (!SH->flags.bOptimizeUV)	
-			return;
-	} 
-	catch(...)
+	const Shader_xrLC* SH = pBuild->shaders().Get(pBuild->materials()[material].reserved);
+
+	if (!SH->flags.bOptimizeUV) return;
+
+	const u32 V = (u32)data.vertices.size();
+	const u32 F = (u32)data.faces.size();
+
+	xr_vector<u8> vmark(V, 0);
+	xr_vector<u8> fmark(F, 0);
+
+	// =========================================================
+	// 1. Build adjacency: vertex -> faces
+	// =========================================================
+	xr_vector<xr_vector<u32>> vert_faces(V);
+
+	for (u32 fi = 0; fi < F; fi++)
 	{
-		Msg	("* ERROR: optimize: std-geom : find relevant UV");
+		const OGF_Face& face = data.faces[fi];
+		vert_faces[face.v[0]].push_back(fi);
+		vert_faces[face.v[1]].push_back(fi);
+		vert_faces[face.v[2]].push_back(fi);
 	}
 
-	// Optimize texture coordinates
-	xr_vector<bool>	vmarker;	vmarker.assign	(data.vertices.size(),false);
-	xr_vector<bool>	fmarker;	fmarker.assign	(data.faces.size(),false);
+	xr_vector<u32> queue;
+	queue.reserve(F);
 
-	for (;;)	
+	// =========================================================
+	// 2. Process components
+	// =========================================================
+	for (;;)
 	{
-		// 0. Search for the group
-		xr_vector<u32>	selection		;
-		for (;;)	{
-			u32		_old	= selection.size();
-			adjacent_select	(selection,vmarker,fmarker);
-			u32		_new	= selection.size();
-			if (_old==_new)	break;		// group selected !
-		}
-		if (selection.empty())		break;
+		queue.clear();
 
-		// 1. Calc bounds
-		Fvector2 Tdelta;
-		try {
-			Fvector2 Tmin,Tmax;
-			Tmin.set(flt_max,flt_max);
-			Tmax.set(flt_min,flt_min);
-			for (u32 j=0; j<selection.size(); j++)
+		// find start face
+		u32 start = F;
+		for (u32 i = 0; i < F; i++)
+		{
+			if (!fmark[i])
 			{
-				OGF_Vertex& V = data.vertices[selection[j]];
-				Tmin.min(V.UV[0]);
-				Tmax.max(V.UV[0]);
+				start = i;
+				break;
 			}
-			Tdelta.x = floorf((Tmax.x-Tmin.x)/2+Tmin.x);
-			Tdelta.y = floorf((Tmax.y-Tmin.y)/2+Tmin.y);
-		} catch(...) {
-			Msg	("* ERROR: optimize: std-geom : delta UV");
 		}
 
-		// 2. Recalc UV mapping
-		try {
-			for (u32 i=0; i<selection.size(); i++)
-				data.vertices[selection[i]].UV[0].sub(Tdelta);
-		} catch(...) {
-			Msg	("* ERROR: optimize: std-geom : recalc UV");
+		if (start == F)
+			break;
+
+		queue.push_back(start);
+		fmark[start] = 1;
+
+		xr_vector<u32> selection;
+		selection.reserve(128);
+
+		// BFS over faces
+		for (u32 qi = 0; qi < queue.size(); qi++)
+		{
+			u32 fid = queue[qi];
+			const OGF_Face& face = data.faces[fid];
+
+			for (int k = 0; k < 3; k++)
+			{
+				u32 v = face.v[k];
+
+				for (u32 nf : vert_faces[v])
+				{
+					if (fmark[nf])
+						continue;
+
+					fmark[nf] = 1;
+					queue.push_back(nf);
+				}
+
+				if (!vmark[v])
+				{
+					vmark[v] = 1;
+					selection.push_back(v);
+				}
+			}
 		}
-		selection.clear	();
+
+		// =====================================================
+		// 3. Compute UV bounds
+		// =====================================================
+		if (selection.empty())
+			continue;
+
+		Fvector2 Tmin, Tmax;
+		Tmin.set(flt_max, flt_max);
+		Tmax.set(flt_min, flt_min);
+
+		for (u32 i = 0; i < selection.size(); i++)
+		{
+			const Fvector2& uv = data.vertices[selection[i]].UV[0];
+			Tmin.min(uv);
+			Tmax.max(uv);
+		}
+
+		Fvector2 Tdelta;
+		Tdelta.x = floorf((Tmax.x - Tmin.x) * 0.5f + Tmin.x);
+		Tdelta.y = floorf((Tmax.y - Tmin.y) * 0.5f + Tmin.y);
+
+		// =====================================================
+		// 4. Apply UV shift
+		// =====================================================
+		for (u32 i = 0; i < selection.size(); i++)
+		{
+ 			data.vertices[selection[i]].UV[0].sub(Tdelta);
+		}
 	}
+
+
+	// =========================================================
+	// 3. Verify UV Boundery
+	// =========================================================
+	// #define MAX_UV_COORD 64
+	// 
+	// for (auto& V : data.vertices)
+	// {
+ 	// 	auto & Tdelta = V.UV[0];
+ 	// 	if (Tdelta.x > MAX_UV_COORD || Tdelta.y > MAX_UV_COORD)
+	// 	{
+ 	// 		Msg("Delta UV : Pos{%f, %f, %f} Sub{%f, %f}", VPUSH( V.P ), Tdelta.x, Tdelta.y);
+	// 		Tdelta.x = 0; Tdelta.y = 0;
+	// 	}		
+	// }
+
 }
 
 
@@ -222,7 +257,7 @@ void OGF::MakeProgressive(float metric_limit)
 	if (data.faces.size() < c_PM_FaceLimit * 4)		return;			// nv40 Теперь только
 
 	if (g_params().m_quality == ebqDraft)			return;
-	if (gCompilerMode.LC_Noise)						return;
+	if (!gCompilerMode.LC_MakeProgressive)						return;
 
 	// Есть шанс словить вылет
 	if (data.faces.size() > 32 * 1024)

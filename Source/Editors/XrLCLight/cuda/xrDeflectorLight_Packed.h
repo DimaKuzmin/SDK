@@ -10,10 +10,6 @@
 
 #include <ppl.h>
  
-// Initialize TASKS
-#define MAX_RAYS_PER_TASK   1024 * 1024				// Общее кол-во Задач (на запуск GPU)
-#define MAX_RAYS_PER_GPU	1024 * 1024				// Кол-во задач которое может обработать GPU за 1 заход Слишком большое кол-во вызывает недогруз ГПУ
-
 enum ColorsReturnType
 {
 	eImplicit,
@@ -35,8 +31,6 @@ struct RayRecvestIndex
 class PackedLighting
 {
 public:
-
-
 	// Unordered for maps
 	size_t MakeKey(u32 U, u32 V)
 	{
@@ -59,7 +53,7 @@ public:
 	/* Специальные релизация под разные типы освещения */
 	ColorsReturnType ColorsMapType = eCommon;
 	void LightPointPacked_add_task(size_t IndexTask, void* Refference, Fvector& P, Fvector& N, Face* skip);
-	void LightPointPacked_run_tasks();
+	void LightPointPacked_run_tasks(bool need_clear = true);
 
 	// Lightpoint Base
 	xrCriticalSection										csEnter;

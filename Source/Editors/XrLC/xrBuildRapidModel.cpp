@@ -1,28 +1,7 @@
 #include "stdafx.h"
-//#include "cl_collector.h"
 #include "build.h"
-#include "../xrLCLight/xrMU_Model.h"
-#include "../xrLCLight/xrMU_Model_Reference.h"
-
-#include "../xrLCLight/xrLC_GlobalData.h"
-#include "../../xrcdb/xrcdb.h"
-#include "../xrLCLight/xrface.h"
-#include "../XrLCLight/xrDeflector.h"
  
-CDB::MODEL* RCAST_Model = 0;
-
-IC bool				FaceEqual(Face& F1, Face& F2)
-{
-	// Test for 6 variations
-	if ((F1.v[0] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
-	if ((F1.v[0] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
-	if ((F1.v[2] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[1] == F2.v[2])) return true;
-	if ((F1.v[2] == F2.v[0]) && (F1.v[1] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
-	if ((F1.v[1] == F2.v[0]) && (F1.v[0] == F2.v[1]) && (F1.v[2] == F2.v[2])) return true;
-	if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
-	return false;
-}
-
+/*
 void SaveUVM(LPCSTR fname, xr_vector<b_rc_face>& vm)
 {
 	IWriter* W = FS.w_open(fname);
@@ -35,50 +14,6 @@ void SaveUVM(LPCSTR fname, xr_vector<b_rc_face>& vm)
 		W->w_string(tmp);
 	}
 	FS.w_close(W);
-}
-
-void CBuild::BuildRapid(BOOL bSaveForOtherCompilers)
-{
-	Phase("Build Rcast-Model (OPCODE)");
-	lc_global_data()->destroy_rcmodel();
-
-	// "Building tree..
-	Status("Building search tree...");
- 	CDB::CollectorPacked CL(scene_bb, lc_global_data()->g_vertices().size(), lc_global_data()->g_faces().size());
-	BuildCollectionDB(CL);
- 	if (bSaveForOtherCompilers)
-		SaveForOthers(CL);
-}
-
-void CBuild::BuildCollectionDB(CDB::CollectorPacked& CL)
-{
-	
-	lc_global_data()->destroy_rcmodel();
-	
-	Status("Converting faces...");
-	for (u32 fit = 0; fit < lc_global_data()->g_faces().size(); fit++)
-		lc_global_data()->g_faces()[fit]->flags.bProcessed = false;
-
-	xr_vector<Face*>			adjacent_vec;
-	adjacent_vec.reserve(6 * 2 * 3);
-
-	for (auto F : lc_global_data()->g_faces() )
-	{
-		const Shader_xrLC& SH = F->Shader();
- 		if (!SH.flags.bLIGHT_CastShadow) continue;
-
-		b_material& M = lc_global_data()->materials()[F->dwMaterial];
-		CL.add_face_D(F->v[0]->P, F->v[1]->P, F->v[2]->P, F, F->sm_group); //ThreadID
- 	};
-
-	Status("Models...");
-	for (auto ref : mu_refs())
-		ref->export_cform_rcast(CL);
-
-	// TODO : remove -> dublicate faces, vertexs
-
-	// Модель пока без уберания дубликатов !
-	lc_global_data()->create_rcmodel(CL);
 }
 
 void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
@@ -98,65 +33,5 @@ void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
 		W->w_string(tmp);
 	}
 	FS.w_close(W);
-}
-
-void CBuild::SaveForOthers(CDB::CollectorPacked& CL)
-{
-	// save source SMF
-	string_path				filename;
-
-	bool keep_temp_files = !!strstr(Core.Params, "-keep_temp_files");
- 	if (g_params().m_quality != ebqDraft && keep_temp_files)
-	{
-		SaveAsSMF(strconcat(sizeof(filename), filename, pBuild->path, "build_cform_source.smf"), CL);
-	}
-
-	// Saving for AI/DO usage
-	Status("Saving...");
-	string_path				fn;
-
-	xr_vector<b_rc_face>	rc_faces;
-	rc_faces.resize(CL.getTS());
-
-	// Prepare faces
-	for (u32 k = 0; k < CL.getTS(); k++)
-	{
-		CDB::TRI& T = CL.getT(k);
-		base_Face* F = (base_Face*)(T.pointer);
-		b_rc_face& cf = rc_faces[k];
-		cf.dwMaterial = F->dwMaterial;
-		cf.dwMaterialGame = F->dwMaterialGame;
-		Fvector2* cuv = F->getTC0();
-		cf.t[0].set(cuv[0]);
-		cf.t[1].set(cuv[1]);
-		cf.t[2].set(cuv[2]);
-	}
-
-	IWriter* MFS = FS.w_open(strconcat(sizeof(fn), fn, pBuild->path, "\\build.cform"));
-	MFS->open_chunk(0);
-
-	// Header
-	hdrCFORM hdr;
-	hdr.version = CFORM_CURRENT_VERSION;
-	hdr.vertcount = (u32)CL.getVS();
-	hdr.facecount = (u32)CL.getTS();
-	hdr.aabb = scene_bb;
-	MFS->w(&hdr, sizeof(hdr));
-
-	Status("Size: TRI: %llu, VS: %llu, RQ_Face: %llu", CL.getTS(), CL.getVS(), rc_faces.size());
-
-	// Data
-	MFS->w(CL.getV(), (u32)CL.getVS() * sizeof(Fvector));
-
-	for (size_t i = 0; i < CL.getTS(); i++)
-		MFS->w(&CL.getT()[i], CDB::TRI::Size());
-
-	MFS->close_chunk();
-
-	MFS->open_chunk(1);
-
-	MFS->w(&*rc_faces.begin(), (u32)rc_faces.size() * sizeof(b_rc_face));
-	MFS->close_chunk();
-
-	FS.w_close(MFS);
-}
+}*/
+ 

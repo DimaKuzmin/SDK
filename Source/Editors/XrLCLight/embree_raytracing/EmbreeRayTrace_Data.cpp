@@ -78,7 +78,7 @@ void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataEmbree>& faces)
 		Face* F = (Face*)Fe.ptr;
 
 		b_material& M = inlc_global_data()->materials()[F->dwMaterial];
-		b_texture& T = inlc_global_data()->textures()[M.surfidx];
+		b_texture& T  = inlc_global_data()->textures()[M.surfidx];
 
 		bool isOpcue = F->flags.bOpaque || T.pSurface.Empty() || !T.bHasAlpha;
 		auto& geom_buff = isOpcue ? static_geom : static_geom_transp;
@@ -88,8 +88,8 @@ void EmbreeRayTraceModel::BuildModel(xr_vector<FaceDataEmbree>& faces)
 		if (!isOpcue) IndexFaceTransp++;
 	}
 
- 	static_geom_transp.RemoveDublicates();
 	static_geom.RemoveDublicates();
+ 	static_geom_transp.RemoveDublicates();
 }
 
 void EmbreeRayTraceModel::BuildRaytraceModel()

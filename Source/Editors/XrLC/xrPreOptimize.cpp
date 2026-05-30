@@ -1,18 +1,15 @@
 #include "StdAfx.h"
-
 #include "Build.h"
 #include "../xrLCLight/xrLC_GlobalData.h"
 #include "../xrLCLight/xrFace.h"
 #include "execution"
+#include <unordered_map>
 
 const int	 HDIM_X = 512;
 const int	 HDIM_Y = 512;
 const int	 HDIM_Z = 512;
 
-const int    FLOOR_VALUE = 1;
-
-
-//extern volatile u32	dwInvalidFaces;
+const int    FLOOR_VALUE = 1; 
 
 IC bool				FaceEqual(Face& F1, Face& F2)
 {
@@ -25,8 +22,6 @@ IC bool				FaceEqual(Face& F1, Face& F2)
     if ((F1.v[1] == F2.v[0]) && (F1.v[2] == F2.v[1]) && (F1.v[0] == F2.v[2])) return true;
     return false;
 }
-
-#include <unordered_map>
 
 void CBuild::PreOptimize()
 {
@@ -41,62 +36,55 @@ void CBuild::PreOptimize()
     scale.set(float(HDIM_X), float(HDIM_Y), float(HDIM_Z));
     scale.div(VMscale);
 
-    u32 Vcount = lc_global_data()->g_vertices().size();
-    u32 Fcount = lc_global_data()->g_faces().size();
+    u32 Vcount   = lc_global_data()->g_vertices().size();
+    u32 Fcount   = lc_global_data()->g_faces().size();
     u32 Vremoved = 0;
     u32 Fremoved = 0;
 
     Status("Processing...");
     g_bUnregister = false;
-    for (int it = 0; it < (int)lc_global_data()->g_vertices().size(); it++)
+
+    if (!gCompilerMode.LC_skipWeld)
     {
-        if (it >= (int)lc_global_data()->g_vertices().size())
-            break;
-
-        if (it % 1000000 == 0)
+        for (int it = 0; it < (int)lc_global_data()->g_vertices().size(); it++)
         {
-            clMsg("%u vertex removed. Size:  %u/%u", Vremoved, it, lc_global_data()->g_vertices().size());
+            Vertex* pTest = lc_global_data()->g_vertices()[it];
+            Fvector& V = pTest->P;
+ 
+            u32 ix = iFloor((V.x - VMmin.x) * scale.x);
+            u32 iy = iFloor((V.y - VMmin.y) * scale.y);
+            u32 iz = iFloor((V.z - VMmin.z) * scale.z);
 
-            Progress(float(it) / float(lc_global_data()->g_vertices().size()));
-        }
+            // Generate hash key
+            size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
 
-        Vertex* pTest = lc_global_data()->g_vertices()[it];
-        Fvector& V = pTest->P;
-
-
-        u32 ix = iFloor((V.x - VMmin.x) * scale.x);
-        u32 iy = iFloor((V.y - VMmin.y) * scale.y);
-        u32 iz = iFloor((V.z - VMmin.z) * scale.z);
-
-        // Generate hash key
-        size_t hashKey = std::hash<u32>()(ix) ^ std::hash<u32>()(iy) ^ std::hash<u32>()(iz);
-
-        // Search for similar vertices
-        auto itHash = hashTable.find(hashKey);
-        if (itHash != hashTable.end())
-        {
-            Vertex* parsed = nullptr;
-            for (auto& v : itHash->second)
+            // Search for similar vertices
+            auto itHash = hashTable.find(hashKey);
+            if (itHash != hashTable.end())
             {
-                if (v->similar(*pTest, g_params().m_weld_distance))
+                Vertex* parsed = nullptr;
+                for (auto& v : itHash->second)
                 {
-                    parsed = v;
-                    break;
+                    if (v->similar(*pTest, g_params().m_weld_distance))
+                    {
+                        parsed = v;
+                        break;
+                    }
+                }
+
+                if (parsed)
+                {
+                    while (!pTest->m_adjacents.empty())
+                        pTest->m_adjacents.front()->VReplace(pTest, parsed);
+                    lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
+                    Vremoved++;
+                    continue;
                 }
             }
 
-            if (parsed)
-            {
-                while (!pTest->m_adjacents.empty())
-                    pTest->m_adjacents.front()->VReplace(pTest, parsed);
-                lc_global_data()->destroy_vertex(lc_global_data()->g_vertices()[it]);
-                Vremoved++;
-                continue;
-            }
+            // Register new vertex
+            hashTable[hashKey].push_back(pTest);
         }
-
-        // Register new vertex
-        hashTable[hashKey].push_back(pTest);
     }
 
     Status("Removing degenerated/duplicated faces...");
@@ -105,16 +93,26 @@ void CBuild::PreOptimize()
     {
         R_ASSERT(it >= 0 && it < (int)lc_global_data()->g_faces().size());
         Face* F = lc_global_data()->g_faces()[it];
-        if (F->isDegenerated()) {
+        if (F->isDegenerated()) 
+        {
             lc_global_data()->destroy_face(lc_global_data()->g_faces()[it]);
             Fremoved++;
         }
-        else {
-            // Check validity
+        else
+        {
             F->Verify();
         }
+
+        if (gCompilerMode.LC_RemoveInvalidFaces && F->isInvalid)
+        {
+            lc_global_data()->destroy_face(lc_global_data()->g_faces()[it]);
+            Fremoved++;
+        }
+
         Progress(float(it) / float(lc_global_data()->g_faces().size()));
     }
+
+    clMsg("* Removed Degenerated Faces [%u]", Fremoved - InvalideFaces());
 
     if (InvalideFaces())
     {

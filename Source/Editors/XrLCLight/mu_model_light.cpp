@@ -92,8 +92,7 @@ void	wait_mu_base		()
 	else
 	{
  		// REFERENSE
-		Phase("LIGHT: Waiting for MU-Secondary threads...");
-		task_id = 0;
+ 		task_id = 0;
 		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t THID)
 			{
 				// Priority

@@ -2,8 +2,7 @@
 
 #include "Build.h"
 #include "../xrLCLight/xrFace.h"
-#include <concurrent_unordered_map.h>
-
+ 
 xrCriticalSection csMerge;
 
 // Stuff For need
@@ -39,14 +38,12 @@ ICF BOOL	NeedMerge(xr_vector<Face*>& subdiv, Fbox& bb_base)
 
 	bb_base.grow(EPS_S);	// Enshure non-zero volume
 	bb_base.getsize(sz_base);
-	if (sz_base.x < c_SS_maxsize)
-		return TRUE;
-	if (sz_base.y < c_SS_maxsize)
-		return TRUE;
-	if (sz_base.z < c_SS_maxsize)
-		return TRUE;
 
-	return true;
+	if (sz_base.x < c_SS_maxsize) return true;
+	if (sz_base.y < c_SS_maxsize) return true;
+	if (sz_base.z < c_SS_maxsize) return true;
+
+	return false;
 }
 
 ICF BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, const Fvector& orig2, int iAxis)
@@ -58,7 +55,7 @@ ICF BOOL	ValidateMergeLinearSize(const Fvector& merged, const Fvector& orig1, co
 	else
 		return TRUE;
 }
- 
+
 // TBB Helpers
 
 Fvector Center(const Fbox& bb)
@@ -102,7 +99,7 @@ struct Cell {
 	static Cell FromVector(const Fvector& p)
 	{
 		// const float cellSize = 4 * c_SS_maxsize / 3;
-		const float cellSize = 256;
+		const float cellSize	= 4 * c_SS_maxsize / 3;
 		return { static_cast<int>(p.x / cellSize), static_cast<int>(p.z / cellSize) };
 	}
 };
@@ -152,7 +149,7 @@ using SplitMap = std::unordered_map<SplitKey, SplitValue>;
 SplitKey CalcSplitKey(const xr_vector<Face*>* split)
 {
 	auto& face = split->front();
-	return { face->lmap_layer, face->tc.size(), face->dwMaterial};
+	return { face->lmap_layer, face->tc.size(), face->dwMaterial };
 }
 
 struct SplitInfo
@@ -203,7 +200,7 @@ void xrPhase_MergeGeometry_Tbb()
 	int grain_max = _max(min, max);
 
 	tbb::combinable<SplitMap> tempMappings;
- 	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain_max), [&](const auto& r) {
+	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain_max), [&](const auto& r) {
 		auto& local = tempMappings.local();
 		for (auto i = r.begin(); i != r.end(); i++)
 		{
@@ -293,21 +290,14 @@ void xrPhase_MergeGeometry_Tbb()
 
 void CBuild::xrPhase_MergeGeometry()
 {
-	string128 tmp;
-	sprintf(tmp, "Merge Started... [%u]", g_XSplit.size());
-	clMsg(tmp);
-
-	u32 Recalculated = 0;
+  	u32 Recalculated = 0;
 	while (g_XSplit.size() != Recalculated)
 	{
-		Msg("Start Merging: %u", Recalculated);
-		Recalculated = g_XSplit.size();
+ 		Recalculated = g_XSplit.size();
 		xrPhase_MergeGeometry_Tbb();
 	}
 
 	// Проверяем на INFINITY
 	validate_splits();
-
-	clMsg("Splits Merged [%u]", g_XSplit.size());
-	AditionalData("Splits Merged [%u]", g_XSplit.size());
+  	AditionalData("Splits Merged [%u]", g_XSplit.size());
 }

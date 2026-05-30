@@ -71,7 +71,7 @@ public:
 	void					calc_faceopacity	();
 
 
-	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, void* MDL, base_lighting& lights, u32 flags);
+	void					calc_lighting		( xr_vector<base_color>& dest, const Fmatrix& xform, EmbreeRayTraceModel* MDL, base_lighting& lights, u32 flags);
 	void					calc_lighting		();
 	
 	

@@ -3,13 +3,15 @@
 #include	"MeshMenderLayerOGF.h"
 
 
-static		xr_vector< MeshMender::Vertex > mender_in_out_verts;
-static		xr_vector< unsigned int >		mender_in_out_indices;
-static		xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
+thread_local		xr_vector< MeshMender::Vertex > mender_in_out_verts;
+thread_local		xr_vector< unsigned int >		mender_in_out_indices;
+thread_local		xr_vector< unsigned int >		mender_mapping_out_to_in_vert;
 void		remove_isolated_verts( vecOGF_V &vertices, vecOGF_F &faces );
 // Calculate T&B
 void OGF::CalculateTB()
 {
+	if (!gCompilerMode.LC_Tangent)	return;
+
 	remove_isolated_verts( data.vertices, data.faces );
 		// ************************************* Declare inputs
 	// Status						( "Declarator..." );
@@ -61,5 +63,9 @@ void OGF::CalculateTB()
 	mender_in_out_verts				.clear( );
 	mender_in_out_indices			.clear( );
 	mender_mapping_out_to_in_vert	.clear( );
+
+	mender_in_out_verts.shrink_to_fit();
+	mender_in_out_indices.shrink_to_fit();
+	mender_mapping_out_to_in_vert.shrink_to_fit();
 }
 

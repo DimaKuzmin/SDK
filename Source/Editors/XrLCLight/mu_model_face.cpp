@@ -1,7 +1,6 @@
 #include "stdafx.h"
 
 #include "mu_model_face.h"
-
 #include "../../xrcore/xrPool.h"
 
 

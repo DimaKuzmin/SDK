@@ -45,12 +45,14 @@ protected:
  	void BuildRaytraceModel();
 
 public:
+	EmbreeRayTraceModel()  = default;
+ 
  	// Loading 
 	float RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip);
 	void  InitializeGeometry();		// Rcast-model
 	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces); // Single-Models (xrMU-Model)
 
-	void  IntelEmbereUnloadAll();
+	void  IntelEmbereUnloadData();
 
 	// Details Loading 
 	RTCScene	IntelSceneDetails = nullptr;

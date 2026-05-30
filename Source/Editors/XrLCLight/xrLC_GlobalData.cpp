@@ -33,19 +33,6 @@ void	destroy_global_data()
 
 xrLC_GlobalData::xrLC_GlobalData	()  : b_vert_not_register( false )
 {
-	_cl_globs._RCAST_Model = 0;
-}
-
-void	xrLC_GlobalData	::destroy_rcmodel	()
-{
-	xr_delete		(_cl_globs._RCAST_Model);
-}
- 
-void	xrLC_GlobalData	::create_rcmodel	(CDB::CollectorPacked& CL)
-{
-	VERIFY(!_cl_globs._RCAST_Model);
-	_cl_globs._RCAST_Model				= xr_new<CDB::MODEL> ();
-	_cl_globs._RCAST_Model->build		(CL.getV(),(int)CL.getVS(),CL.getT(),(int)CL.getTS());
 }
 
 void		xrLC_GlobalData	::				initialize		()
@@ -84,13 +71,18 @@ size_t GetHeapMemory();
 
 void		xrLC_GlobalData::				clear			()
 {
-	vec_spetial_clear(_cl_globs._textures );
-	_cl_globs._materials.clear();
-	_cl_globs._shaders.Unload();
+	vec_spetial_clear(_textures );
+	_materials.clear();
+	_shaders.Unload();
 	clMsg("mem usage Textures clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024) );
  
 	vec_clear(_g_lightmaps);
 	clMsg("mem usage lmaps clear:		%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
+
+ 	vec_clear(_g_deflectors);
+	clMsg("mem usage deflectors clear mesh: %u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
+	// Geometry Buffers !
 
 	vec_clear(_mu_models); 
 	clMsg("mem usage _mu_models clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
@@ -104,8 +96,4 @@ void		xrLC_GlobalData::				clear			()
 	gl_mesh_clear();
  	clMsg("mem usage static clear mesh: %u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
 
-	vec_clear		(_g_deflectors);
-	clMsg("mem usage deflectors clear mesh: %u mb",		(u32(GetHeapMemory()) / 1024 / 1024));
-
-	xr_delete(_cl_globs._RCAST_Model);
 }

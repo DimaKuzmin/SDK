@@ -35,7 +35,7 @@ union var
   
 //-----------------------------------------------------------------------
 
-void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform, void* MDL, base_lighting& lights, u32 flags)
+void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform, EmbreeRayTraceModel* MDL, base_lighting& lights, u32 flags)
 {
 	// trans-map
 	typedef	xr_multimap<float, v_vertices>	mapVert;
@@ -95,7 +95,6 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 
 		// multi-sample
  		const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : gCompilerMode.LC_JSampleMU;
-
 		if (n_samples == 0)
 		{
 			vC.hemi = 0.75f;
@@ -110,7 +109,14 @@ void xrMU_Model::calc_lighting(xr_vector<base_color>& dest, const Fmatrix& xform
 				N.random_dir(vN, deg2rad(30.f));
 				P.mad(vP, N, a);
 				
-				LightPoint_Embree((EmbreeRayTraceModel*)MDL, vC, P, N, lights, flags, 0);
+				if (MDL != nullptr)
+				{
+					LightPoint_Embree(MDL, vC, P, N, lights, flags, 0);
+				}
+				else
+				{
+					LightPoint(vC, P, N, lights, flags, 0);
+				}
 			}
 			vC.scale(n_samples);
 			vC._tmp_ = v_trans;
@@ -207,34 +213,16 @@ void xrMU_Model::calc_lighting()
 	for (v_vertices_it vit = m_vertices.begin(); vit != m_vertices.end(); vit++)
 		BB.modify((*vit)->P);
 
-	if (gCompilerMode.Embree || gCompilerMode.CUDA)
-	{
-		xr_vector<FaceDataEmbree> faces;
-		export_cform_rcast_new(faces, Fidentity);
+ 
+	xr_vector<FaceDataEmbree> faces;
+	export_cform_rcast_new(faces, Fidentity);
 
-		R_ASSERT(faces.size());
+	R_ASSERT(faces.size());
 
-		EmbreeRayTraceModel MDL;
-		MDL.InitializeGeometry_Model(faces);
+	EmbreeRayTraceModel MDL;
+	MDL.InitializeGeometry_Model(faces);
 
-		calc_lighting(color, Fidentity, (void*) & MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
+	calc_lighting(color, Fidentity, &MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
 
-		MDL.IntelEmbereUnloadAll();
-	}
-	else
-	{
-		CDB::CollectorPacked	CL (BB, (u32)m_vertices.size(), (u32)m_faces.size()) ;
-
-		// Export CForm
-		export_cform_rcast(CL, Fidentity);
-
-		CDB::MODEL* M = new CDB::MODEL();
-		M->build(CL.getV(), (u32)CL.getVS(), CL.getT(), (u32)CL.getTS());
-
-		calc_lighting(color, Fidentity, (void*)&M, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
-		xr_delete(M);
-	}
-
-	// clMsg("model '%s' - REF_lighted.", *m_name);
-
+	MDL.IntelEmbereUnloadData();
 }

@@ -15,7 +15,7 @@ void xrMU_Reference::calc_lighting_cuda_1()
 	tmp.transpose(R);
 	Rxform.invert(tmp);
 
-	u32 SampleMAX = 6;
+	u32 SampleMAX = gCompilerMode.LC_JSampleMU;
 	const int n_samples = (g_params().m_quality == ebqDraft) ? 1 : SampleMAX;
 
 	// Perform lighting

@@ -25,7 +25,7 @@ public:
 struct XRLC_LIGHT_API DataFace	: public base_Face
 {
 public:
-
+	bool					isInvalid = false;
  	Fvector					N;				// face normal
  	svector<_TCF,2>			tc;				// TC
 

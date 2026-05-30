@@ -27,7 +27,6 @@ struct OGF_Vertex
 	svector<Fvector2,2>	UV;
 
 	BOOL				similar		(OGF* p, OGF_Vertex&	other);
-	void				dump		(u32 id);
 };
 
 typedef xr_vector<OGF_Vertex>		vecOGF_V;
@@ -152,8 +151,6 @@ struct OGF : public OGF_Base
 	u16					_BuildVertex		(OGF_Vertex& V1);
 	void				_BuildFace			(OGF_Vertex& V1, OGF_Vertex& V2, OGF_Vertex& V3, bool _tc_ = true);
 
-	void				adjacent_select		(xr_vector<u32>& dest, xr_vector<bool>& vmark, xr_vector<bool>& fmark);
-
 	void				Optimize			();
 	void				CalculateTB			();
 	void				MakeProgressive		(float metric_limit);
@@ -216,8 +213,7 @@ struct OGF_Reference : public OGF_Base
 struct OGF_Node : public OGF_Base
 {
 	xr_vector<u32>		chields;
-	//xr_vector<xr_vector<OGF_Base*>::iterator> chields;
-
+ 
 	OGF_Node(int _L, u16 _Sector) : OGF_Base(_L) { Sector=_Sector; }
 
 	void				AddChield	(u32 ID)

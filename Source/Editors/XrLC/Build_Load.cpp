@@ -425,7 +425,10 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
 				 
 				if (!THM)
 				{
-					clMsg("! Cant Load Texture: %s", N);
+					string32 tmp; 
+					sprintf(tmp, "! Cant Load Texture: %s", N);
+					clMsg(tmp);
+					wTextures->w_string(tmp);
 
 					BT.dwWidth = 1024;
 					BT.dwHeight = 1024;
@@ -508,9 +511,9 @@ void CBuild::Load	(const b_params& Params, const IReader& _in_FS)
  						}
 						else
 						{
-							string128 tmp;
-							sprintf(tmp, "DXT1 (NO HAS ALPHA) Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
-							wTextures->w_string(tmp);
+							// string128 tmp;
+							// sprintf(tmp, "DXT1 (NO HAS ALPHA) Texture Ignoring Alpha: %s, FMT: %s", N, GetFormat(BT.THM.fmt));
+							// wTextures->w_string(tmp);
  							// clMsg("! ignoring texture: %s | Alpha: %u | impl_light: %u",
 							// 	N, BT.bHasAlpha, BT.THM.flags.test(STextureParams::flImplicitLighted));
 							

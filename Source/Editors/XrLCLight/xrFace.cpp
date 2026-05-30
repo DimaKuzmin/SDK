@@ -69,7 +69,7 @@ Tvertex<DataVertex>::Tvertex()
 	{	
  		inlc_global_data()->g_vertices().push_back(this);
 	}
-	m_adjacents.reserve	(4);
+	// m_adjacents.reserve	(4);
 }
 
 template <>
@@ -105,6 +105,8 @@ Tface<DataVertex>::Tface()
 {
 	pDeflector				= 0;
 	flags.bSplitted			= false;
+	isInvalid = false;
+
 	VERIFY( inlc_global_data() );
 	if( !do_not_add_to_vector_in_global_data )
 	{
@@ -141,17 +143,24 @@ template<>
 void Face::	Failure		()
 {
 	dwInvalidFaces			++;
-  
+
 	inlc_global_data()->err_invalid().w_fvector3	(v[0]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[1]->P);
 	inlc_global_data()->err_invalid().w_fvector3	(v[2]->P);
+
+	isInvalid = true;
 }
 
 void	Face::Verify		()
 {
+	if (isInvalid) return;
+
 	// 1st :: area
-	float	_a	= CalcArea();
-	if		(!_valid(_a) || (_a<EPS))		{ Failure(); return; }
+	float	_a = CalcArea();
+	if (!_valid(_a) || (_a < EPS))
+	{
+ 		Failure(); return;
+	}
 
 	// 2nd :: TC0
 	Fvector2*	tc			= getTC0();
@@ -160,11 +169,15 @@ void	Face::Verify		()
 	float	e1				= tc[1].distance_to(tc[2]);
 	float	e2				= tc[2].distance_to(tc[0]);
 	float	p				= e0+e1+e2;
-	if		(!_valid(_a) || (p<eps))		{ Failure(); return; }
+	if		(!_valid(_a) || (p<eps))		
+	{ 
+ 		Failure(); return; 
+	}
 
 	// 3rd :: possibility to calc normal
 	CalcNormal				();
-	if (!_valid(N))			{ Failure(); return; }
+	if (!_valid(N))			
+	  	Failure(); 
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int			affected	= 0;

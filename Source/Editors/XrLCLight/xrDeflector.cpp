@@ -107,13 +107,6 @@ void blit_r	(lm_layer& dst, u32 ds_x, u32 ds_y, lm_layer& src, u32 ss_x, u32 ss_
 	}
 }
 
-//-------------------------------------
-IC BOOL UVpointInside(Fvector2 &P, UVtri &T)
-{
-	Fvector B;
-	return T.isInside(P,B);
-}
-
 CDeflector::CDeflector() 
 {
  	normal.set		(0,1,0);
@@ -121,11 +114,14 @@ CDeflector::CDeflector()
 	Sphere.R		= 0;
 	bMerged			= false;
 	bLightProcessed = false;
-	UVpolys.reserve	(32);
-
+//	UVpolys.reserve	(32);
 }
+
 CDeflector::~CDeflector()
 {
+	layer.clear_memory();
+	UVpolys.clear();
+	UVpolys.shrink_to_fit();
 }
 
 void CDeflector::OA_Export()
@@ -134,8 +130,7 @@ void CDeflector::OA_Export()
 
 	// Correct normal
 	//  (semi-proportional to pixel density)
-	FPU::m64r		();
-	Fvector			tN;
+ 	Fvector			tN;
 	tN.set			(0,0,0);
 	float density	= 0;
 	float fcount	= 0;
@@ -144,7 +139,7 @@ void CDeflector::OA_Export()
 		Face	*F = it->owner;
 		Fvector	SN;
 		SN.set	(F->N);
-		SN.mul	(1+EPS*F->CalcArea());
+		SN.mul	(1+EPS * F->CalcArea());
 		tN.add	(SN);
 
 		density	+= F->Shader().lm_density;
@@ -205,7 +200,7 @@ void CDeflector::OA_Export()
 		Fvector	P;	// projected
 
 		for (int i=0; i<3; i++) {
-			mView.transform_tiny	(P,F->v[i]->P);
+			mView.transform_tiny	(P, F->v[i]->P);
 			T->uv[i].set			(P.x,P.y);
 			bb.modify				(F->v[i]->P);
 		}
@@ -336,31 +331,19 @@ u16	CDeflector:: GetBaseMaterial		()
  
 bool	CDeflector::similar					( const CDeflector &D, float eps/* =EPS */ ) const
 {
-	if( bMerged != D.bMerged )
-		return false;
-	
-	if( !normal.similar( D.normal, eps ) )
-		return false;
-
-	if( !Sphere.P.similar( D.Sphere.P, eps ) )
-		return false;
-
-	if( !fsimilar( Sphere.R, D.Sphere.R, eps ) )
-		return false;
-
-	if( UVpolys.size() != D.UVpolys.size() )
-		return false;
-
-	for( u32 i = 0; i < UVpolys.size(); ++i )
+	if( bMerged != D.bMerged )							return false;
+ 	if( !normal.similar( D.normal, eps ) )				return false;
+ 	if( !Sphere.P.similar( D.Sphere.P, eps ) )			return false;
+ 	if( !fsimilar( Sphere.R, D.Sphere.R, eps ) )		return false;
+ 	if( UVpolys.size() != D.UVpolys.size() )			return false;
+ 	for( u32 i = 0; i < UVpolys.size(); ++i )
 	{
 		if( !UVpolys[i].similar( D.UVpolys[i], eps ) )
 		{
 			return false;
 		}
 	}
-
-	return 
-		layer.similar( D.layer, eps );
+ 	return												layer.similar( D.layer, eps );
 }
 
 bool CDeflector::similar_pos(const CDeflector& D, float eps) const

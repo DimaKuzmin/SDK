@@ -36,7 +36,7 @@ void xrMU_Reference::calc_lighting()
 	model->calc_lighting(
 		color,
 		xform,
-		inlc_global_data()->RCAST_Model(),
+		nullptr,
 		inlc_global_data()->L_static(),
 		LP_DEFAULT
 	);
