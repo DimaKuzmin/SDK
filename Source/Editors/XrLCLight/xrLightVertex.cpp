@@ -207,6 +207,8 @@ void LightVertex	()
 
 			g_trans_register(V);
 		}
+
+		GPUTaskinSystem.RestartALL();
 	}
 	 
 	// Process all groups
@@ -245,4 +247,5 @@ void LightVertex	()
  	Status				("Wating...");
 	
 	g_trans.clear();
+ 
 }

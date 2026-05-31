@@ -95,4 +95,11 @@ void CBuild::SaveSectors(IWriter& fs)
 	}
 
 	fs.w_chunk(fsL_SECTORS,MFS.pointer(),MFS.size());
+
+	for (auto S : g_sectors)
+	{
+		xr_delete(S);
+	 }
+	g_sectors.clear();
+
 }

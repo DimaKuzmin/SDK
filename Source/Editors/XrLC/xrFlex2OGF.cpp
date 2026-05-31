@@ -5,6 +5,7 @@
 //#include "std_classes.h"
 #include "../xrLCLight/lightmap.h"
 #include "../xrLCLight/xrface.h"
+#include "../XrLCLight/xrLC_GlobalData.h"
 
 #define	TRY(a) try { a; } catch (...) { clMsg("* E: %s", #a); }
 
@@ -68,7 +69,7 @@ void BuildOGFGeom( OGF &ogf, const xr_vector<Face*>& faces, bool _tc_ )
 	}
 }
  
-bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, OGF* pOGF, CBuild* build)
+bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, OGF* pOGF)
 {
 	try 
 	{
@@ -78,8 +79,8 @@ bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_mat
 
 		// Collect textures
 		OGF_Texture			T;
-		TRY(T.name = build->textures()[M->surfidx].name);
-		TRY(T.pBuildSurface = &(build->textures()[M->surfidx]));
+		TRY(T.name			= lc_global_data()->textures()[M->surfidx].name);
+		TRY(T.pBuildSurface = &(lc_global_data()->textures()[M->surfidx]));
 		TRY(pOGF->textures.push_back(T));
 
 		try 
@@ -175,9 +176,10 @@ void CBuild::Flex2OGF()
 	if (g_XSplit.size() > 256)
 	{
 		static xrCriticalSection mtx;
-		std::atomic<int> current_idx = 0;
- 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t thID)
+		static std::atomic<int> current_idx = 0;
+		current_idx = 0;
+
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t thID)
 		{
 			std::wstring name = L"ThreadID : " + std::to_wstring(thID);
  			SetThreadDescription(GetCurrentThread(), name.c_str());
@@ -194,7 +196,9 @@ void CBuild::Flex2OGF()
 				Face* Face = SPLIT->front();			// first face
  
 				int VertexRemoved = 0;				 
-				ConvertOgf(thID, ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
+				auto material = lc_global_data()->materials()[Face->dwMaterial];
+
+				ConvertOgf(thID, ID, SPLIT, Face, &material, pOGF);
   
 				mtx.Enter();
 				g_tree.push_back(pOGF);
@@ -213,7 +217,7 @@ void CBuild::Flex2OGF()
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face			
-			ConvertOgf(0, ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF, this);
+			ConvertOgf(0, ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF);
 			 
   			g_tree.push_back(pOGF);
 		};

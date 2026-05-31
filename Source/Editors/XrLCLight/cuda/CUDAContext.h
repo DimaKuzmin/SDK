@@ -36,13 +36,14 @@
  
 class OptixContext
 {
-private:
+private: 
+    CUdevice cuDev;
     CUcontext cudaContext = nullptr;
     OptixDeviceContext optixContext = nullptr;
     OptixPipeline m_pipeline = nullptr;
     OptixShaderBindingTable m_sbt = {};
     int cudaDeviceId = 0;
-
+ 
 public:
     bool Initialize();
     void Destroy();
@@ -50,8 +51,7 @@ public:
     void CreatePipeline(const char* ptxCode);
 
     OptixDeviceContext GetOptixContext() const { return optixContext; }
-    CUcontext GetCudaContext() const { return cudaContext; }
-
+ 
     static void OptixLogCallback(unsigned int level, const char* tag, const char* message, void* cbdata)
     {
         string4096 formattedMsg;

@@ -169,12 +169,11 @@ void xrMU_Reference::calc_lighting_cuda_2()
 		base_color	ptColor = SafeVertices[I].C;
 		color[I] = ptColor;
 	}
-
-	colors_cuda.clear();
-
-	// se7kills: ’от€бы пам€ть убрать из юза
+  
 	SafeVertices.clear();
 	SafeVertices.shrink_to_fit();
+
+	colors_cuda.clear();
 }
 
 // Ref Code

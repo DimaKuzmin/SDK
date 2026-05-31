@@ -11,10 +11,7 @@
 
 CBuild*	pBuild		= NULL;
 u32		version		= 0;
-
-extern void logThread(void *dummy);
-extern volatile BOOL bClose;
-  
+ 
 static const char* h_str =
 "The following keys are supported / required:\n"
 "-? or -h	== this help\n"
@@ -35,11 +32,13 @@ extern CompilersMode gCompilerMode;
 
 void MainCompilerLC()
 {
-	// Load project
+	clMsg("MainCompilerLC");
+ 	// Load project
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
 		if (!Selected)	continue;
 
+		clMsg("Create GlobalData");
 		gCompilerMode.LevelName = Name.data();
 		create_global_data();
 
@@ -58,6 +57,8 @@ void MainCompilerLC()
 			MessageBoxA(nullptr, inf, "Error!", MB_OK | MB_ICONERROR);
 			return;
 		}
+
+		clMsg("Create Build file");
 
 		// Version
 		unsigned int version;
@@ -88,7 +89,13 @@ void MainCompilerLC()
 		FS.update_path(lfn, "$game_levels$", Name.data());
 
 		pBuild->Run(lfn);
-		xr_delete(pBuild);
+
+		Phase("Cleanup Data ...");
+
+		Msg("[Memory] Start Removing Build: %llu mb", (GetHeapMemory() / 1024 / 1024) );
+ 		xr_delete(pBuild);
+ 		Memory.mem_compact();
+ 		Msg("[Memory] Start Removing Build: %llu mb", (GetHeapMemory() / 1024 / 1024));
 	}
 }
 
@@ -112,7 +119,4 @@ void MainCompilerDO()
 
 		Status ("Построение Уровня Законечено! ");
 	}
-
-	bClose = TRUE;
-	
 }

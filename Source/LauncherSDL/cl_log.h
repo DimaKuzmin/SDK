@@ -9,9 +9,9 @@ void Progress		(const float F);
 void ProgressMT		(float F);
 
 void Phase			(const char *phase_name);
+void PhasesEnd		();
+extern size_t GetHeapMemory();
 
-void logThread	    ();
-  
 enum IterationStatus
 {
 	Skip = 0,

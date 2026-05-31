@@ -1,15 +1,16 @@
 #include "../stdafx.h"
 #include "xrDeflectorLight_Packed.h"
-
+#include <concurrent_vector.h>
 #include "CUDARayCast.h"
 #include "../light_point.h"
 #include "../xrLC_GlobalData.h"
 #include "../xrFace.h"
 #include "../xrDeflector.h"
 #include "../xrMU_Model_Reference.h"
+#include "../XrLC/Build.h"
 
 PackedLighting GPUTaskinSystem;
-thread_local xr_vector<RayRecvestIndex>	recvest_array;
+thread_local xr_vector<RayRecvestIndex>	recvest_array; 
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
   
 // Initializes
@@ -22,6 +23,8 @@ void PackedLighting::InitializeGPU()
 void PackedLighting::CleanupGPU()
 {
 	XRay::RayTrace::CUDA::CleanupRayTracing();
+	RestartALL();
+	clMsg("mem usage After GPU Cleaning:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
 }
 
 // Deflectors
@@ -85,5 +88,8 @@ void PackedLighting::LightPointPacked_run_tasks(bool need_clear)
 
 	recvest_array.clear();
 	if (need_clear)
-		recvest_array.shrink_to_fit();
+	{
+		recvest_array.shrink_to_fit();					// ThreadLocal буферы !
+		XRay::RayTrace::CUDA::RayTraceCleanup();		// ThreadLocal буферы !
+	}
 }

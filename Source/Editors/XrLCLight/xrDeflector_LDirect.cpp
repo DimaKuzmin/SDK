@@ -4,7 +4,8 @@
 #include "xrlc_globaldata.h"
 #include "light_point.h"
 #include "xrFace.h"
- 
+#include "uv_grid.h"
+
 extern void Jitter_Select	(Fvector2* &Jitter, u32& Jcount);
 
 void CDeflector::L_Direct_Edge (CDB::COLLIDER* DB, base_lighting* LightsSelected, Fvector2& p1, Fvector2& p2, Fvector& v1, Fvector& v2, Fvector& N, float texel_size, Face* skip)
@@ -139,7 +140,6 @@ void CDeflector::Light(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 
 }
 
-#include "uv_grid.h"
 thread_local UVGridLazy<UVtri> uv_grid;  	 
 void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 {
@@ -233,4 +233,7 @@ void CDeflector::L_Direct	(CDB::COLLIDER* DB, base_lighting* LightsSelected)
 			clMsg("* ERROR (Edge). Recovered. ");
 		}
 	} 
+
+
+	uv_grid.reset();
 }	  

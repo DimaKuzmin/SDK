@@ -17,7 +17,7 @@ class VBContainer
 public:
 	// Constructor & destructor
 	VBContainer()			{	R_DCL.clear();	}
-
+ 
 	// Methods
 	bool	is_empty		() const {return vDcl.empty() && vContainers.empty() && R_DCL .empty() && R_DATA.empty() ;}
 	void	Begin			(u32	dwFVF)
@@ -76,6 +76,10 @@ public:
 	}
 	void	Save	(IWriter &fs)
 	{
+		clMsg("[GeomData] vDcl Size: %u | %u mb",		vDcl.size(), (vDcl.size() * sizeof(VDeclarator)) / 1024 / 1024);
+		clMsg("[GeomData] vContainer Size: %u| %u mb",	vContainers.size(), (vContainers.size() * sizeof(u8)) / 1024 / 1024);
+		clMsg("[GeomData] RDATA Size: %u | %u mb",		R_DATA.size(), (R_DATA.size() * sizeof(u8)) / 1024 / 1024);
+
 		R_ASSERT		(R_DCL.empty());
 		R_ASSERT		(R_DATA.empty());
 		fs.w_u32		((u32)vDcl.size());
@@ -91,10 +95,20 @@ public:
 			fs.w_u32	(dwVertCount);													// Number of vertices
 			fs.w		(&*vContainers[i].begin(),dwTotalSize);
 		}
+
+
 		vDcl.clear			();
-		vContainers.clear	();
+		vDcl.shrink_to_fit();
+		  
+ 		vContainers.clear	();
 		vContainers.shrink_to_fit();
-	}
+
+ 		R_DATA.clear();
+		R_DATA.shrink_to_fit();
+
+		// fixed vector 
+		R_DCL.clear();
+ 	}
 };
 
 class IBContainer

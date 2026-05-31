@@ -209,7 +209,6 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 static bool isInitialized = false;
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
-	Phase("CUDA: Initialize Raytrace Model");
 	isInitialized = true;
 	// Однократная инициализация
 	if (optixContext.Initialize())
@@ -222,10 +221,12 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 		FATAL("[OptiX] Failed to initialize OptiX context");
 	}
  
+	// Phase("CUDA: Initialize Raytrace Model");
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
 
+	// Phase("CUDA: Initialize Data");
 	InitializeLights();
 	InitializeTexturesAlpha();
 }
@@ -411,46 +412,13 @@ public:
 
 thread_local RayTracer GPURayTracer;
 
-// При завершении работы
-concurrency::concurrent_vector<RayTracer*> RayTraces;
-
-void XRay::RayTrace::CUDA::CleanupRayTracing()
-{
-	if (isInitialized)
-	{
-		for (auto& S : RayTraces)
-		{
-			S->UnloadThread();
-		}
-		RayTraces.clear();
- 
-		OptixContext::DestroyCudaStream(cudaStream);
-		optixContext.Destroy();
-
-		for (auto& T : cpu_tex_gpu)
-			cudaFree(T.pSurface);
-
-		// Вычищяем большие буферы данных 
-		cudaFree(gpu_lights);
-		cudaFree(gpu_faces);
-		cudaFree(gpu_textures);
-
-		size_faces = 0;
-		size_lights = 0;
-		size_textures = 0;
-	}
-	isInitialized = false;
-}
-
-
 // Raytracer Initialize
 void XRay::RayTrace::CUDA::RayTraceInitialize(u8 CurrentFlags, u32 max_rays)
 {
 	if (!GPURayTracer.isInitialized)
 	{
 		GPURayTracer.Init(max_rays);
-		RayTraces.push_back(&GPURayTracer);
-	}
+ 	}
 	GPURayTracer.current_flags = CurrentFlags;
 }
 
@@ -464,8 +432,52 @@ void XRay::RayTrace::CUDA::RayTraceRun()
 	GPURayTracer.TraceRaysNew();
 }
 
+void XRay::RayTrace::CUDA::RayTraceCleanup()
+{
+	GPURayTracer.UnloadThread();
+}
+
 xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
 {
 	return GPURayTracer.GetColors();
 }
+ 
+// При завершении работы
+void XRay::RayTrace::CUDA::CleanupRayTracing()
+{
+	if (isInitialized)
+	{
+ 		size_t free, total;
+		cuMemGetInfo_v2(&free, &total);
+		clMsg("[CUDA] Device Memory Used: %u mb", (total - free) / 1024 / 1024);
 
+		Phase("CUDA: Cleanump...");
+		for (auto& T : cpu_tex_gpu)
+			cudaFree(T.pSurface);
+		cuMemGetInfo_v2(&free, &total);
+		clMsg("[CUDA] Textures Cleaned: %u mb", (total - free) / 1024 / 1024);
+
+		// Вычищяем большие буферы данных 
+		cudaFree(gpu_lights);
+		cudaFree(gpu_faces);
+		cudaFree(gpu_textures);
+
+		cuMemGetInfo_v2(&free, &total);
+		clMsg("[CUDA] Faces Cleaned: %u mb", (total - free) / 1024 / 1024);
+
+		// Вычищаем модель уровня из CUDA
+ 		cudaFree(reinterpret_cast<void*>(CommitedScene.blasBuffer));
+		cudaFree(reinterpret_cast<void*>(CommitedScene.tlasBuffer));
+ 
+		cuMemGetInfo_v2(&free, &total);
+		clMsg("[CUDA] Geom Cleaned: %u mb", (total - free) / 1024 / 1024);
+
+		size_faces = 0;
+		size_lights = 0;
+		size_textures = 0;
+
+		OptixContext::DestroyCudaStream(cudaStream);
+		optixContext.Destroy();
+	}
+	isInitialized = false;
+}

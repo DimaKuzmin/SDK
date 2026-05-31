@@ -2,9 +2,6 @@
 #include "EmbreeRayTracing.h"
 #include "compiler.h"
 
-#pragma comment(lib, "embree4.lib")
-#pragma comment(lib, "tbb12.lib")
-
 struct RayQuaryUserData : RTCRayQueryContext
 {
  	// RayTrace Tris

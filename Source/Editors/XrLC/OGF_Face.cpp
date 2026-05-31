@@ -222,23 +222,6 @@ void OGF::Optimize	()
  			data.vertices[selection[i]].UV[0].sub(Tdelta);
 		}
 	}
-
-
-	// =========================================================
-	// 3. Verify UV Boundery
-	// =========================================================
-	// #define MAX_UV_COORD 64
-	// 
-	// for (auto& V : data.vertices)
-	// {
- 	// 	auto & Tdelta = V.UV[0];
- 	// 	if (Tdelta.x > MAX_UV_COORD || Tdelta.y > MAX_UV_COORD)
-	// 	{
- 	// 		Msg("Delta UV : Pos{%f, %f, %f} Sub{%f, %f}", VPUSH( V.P ), Tdelta.x, Tdelta.y);
-	// 		Tdelta.x = 0; Tdelta.y = 0;
-	// 	}		
-	// }
-
 }
 
 

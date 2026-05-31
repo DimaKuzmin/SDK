@@ -67,8 +67,5 @@ public:
 	IC void			r_clear			()	{	CL.r_clear();				};
 };
 
-// ENGINE_API extern thread_local xrXRC XRC;
-
-
 extern __declspec(thread) xrXRC_Editor g_XRC;
  

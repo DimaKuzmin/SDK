@@ -14,30 +14,6 @@
 #include <ppl.h>
 extern void ImplicitLightingExec();
 
-void CBuild::ProcessLMAPS_CPU()
-{
-	thread_local CDB::COLLIDER	DB;
-	thread_local base_lighting	LightsSelected;
-
-	std::atomic<u32> CurrentIndex = 0;
-	concurrency::parallel_for(0, gCompilerMode.ThreadsNum, [&](int ThreadID)
-		{
-			while (true)
-			{
-				// Get task
-				u32 IndexTask = CurrentIndex.fetch_add(1); //-> prev ID
- 				if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
-				
-				Progress(float(IndexTask) / float(lc_global_data()->g_deflectors().size()));
-				AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
-
-				CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
- 				D->Light(&DB, &LightsSelected);
-			}
-		}
-	);
-};
-
 #include "../xrLCLight/cuda/xrDeflectorLight_Packed.h"
 #include "../xrLCLight/light_point.h"
 
@@ -57,10 +33,14 @@ void	CBuild::LMaps()
 
 		CTimer tStats; tStats.Start();
 
-		auto& deflectors = lc_global_data()->g_deflectors();
-		std::atomic<u32> IndexTaskID = 0, IndexTaskApply = 0, IndexTaskExpand = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
+ 		static std::atomic<u32> IndexTaskID = 0, IndexTaskApply = 0, IndexTaskExpand = 0;
+		IndexTaskID = 0;
+		IndexTaskApply = 0;
+		IndexTaskExpand = 0;
+		
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t TID)
 			{
+				auto& deflectors = lc_global_data()->g_deflectors();
 				while (true)
 				{
 					u32 Index = IndexTaskID.fetch_add(1);
@@ -76,8 +56,9 @@ void	CBuild::LMaps()
 				GPUTaskinSystem.LightPointPacked_run_tasks();
 			});
 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TID)
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t TID)
 			{
+				auto& deflectors = lc_global_data()->g_deflectors();
 				while (true)
 				{
 					u32 Index = IndexTaskApply.fetch_add(1);
@@ -94,8 +75,28 @@ void	CBuild::LMaps()
 	}
 	else
  	{
-		// Main process (4 threads)
-		ProcessLMAPS_CPU();
+		thread_local CDB::COLLIDER	DB;
+		thread_local base_lighting	LightsSelected;
+
+		static std::atomic<u32> CurrentIndex = 0;
+		CurrentIndex = 0;
+
+		concurrency::parallel_for(0, gCompilerMode.ThreadsNum, [](int ThreadID)
+			{
+				while (true)
+				{
+					// Get task
+					u32 IndexTask = CurrentIndex.fetch_add(1); //-> prev ID
+					if (IndexTask >= lc_global_data()->g_deflectors().size()) break;
+
+					Progress(float(IndexTask) / float(lc_global_data()->g_deflectors().size()));
+					AditionalData("Deflectors: %u / %u", IndexTask, lc_global_data()->g_deflectors().size());
+
+					CDeflector* D = lc_global_data()->g_deflectors()[IndexTask];
+					D->Light(&DB, &LightsSelected);
+				}
+			}
+		);
 	}
 
 	// Закрыть и записать !
@@ -117,7 +118,7 @@ void CBuild::Light()
 			InitializeEmbreeDevice();
 
 		if (gCompilerMode.CUDA)
-			GPUTaskinSystem.InitializeGPU();
+			GPUTaskinSystem.InitializeGPU();		// Обезательно в этом потоке там конекст CUDA
 		else if (gCompilerMode.Embree)
 			EmbreeMain.InitializeGeometry();
 	};
@@ -168,6 +169,6 @@ void CBuild::Light()
  	xrPhase_MergeGeometry();
  	  
  	EmbreeMain.IntelEmbereUnloadData();
-  	GPUTaskinSystem.CleanupGPU();
+  	GPUTaskinSystem.CleanupGPU();			// Обезательно в этом потоке там конекст CUDA
 }
  

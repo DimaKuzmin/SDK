@@ -16,7 +16,7 @@ std::atomic<u32> task_id = 0;
 void	wait_mu_base		()
 {
 	// Light models		
-	Phase("LIGHT: Waiting for MU-First");
+	Phase("LIGHT: Waiting for MU-First...");
 	task_id = 0;
 
 	// Basic Types
@@ -47,8 +47,10 @@ void	wait_mu_base		()
 		// Gathering
 		CTimer tStats; tStats.Start();
 
-		std::atomic<u32> REF_INDEX = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t ThreadID)
+		static std::atomic<u32> REF_INDEX = 0;
+		REF_INDEX = 0;
+
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t ThreadID)
 			{
 				while (true)
 				{
@@ -69,7 +71,7 @@ void	wait_mu_base		()
 
 		tStats.Start();
 		REF_INDEX = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t ThreadID)
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t ThreadID)
 			{
 				while (true)
 				{

@@ -83,7 +83,6 @@ void		xrLC_GlobalData::				clear			()
 	clMsg("mem usage deflectors clear mesh: %u mb", (u32(GetHeapMemory()) / 1024 / 1024));
 
 	// Geometry Buffers !
-
 	vec_clear(_mu_models); 
 	clMsg("mem usage _mu_models clear:	%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
 
@@ -93,7 +92,6 @@ void		xrLC_GlobalData::				clear			()
 	mu_mesh_clear();
 	clMsg("mem usage mu clear mesh:		%u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
 	
-	gl_mesh_clear();
+ 	gl_mesh_clear();
  	clMsg("mem usage static clear mesh: %u mb",			(u32(GetHeapMemory()) / 1024 / 1024));
-
 }

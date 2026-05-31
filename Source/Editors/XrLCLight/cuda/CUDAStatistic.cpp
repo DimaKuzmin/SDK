@@ -103,7 +103,7 @@ void CudaStatisticThread()
 		isStatisticInitilized = true;
 	}
 
-	std::thread([] 
+	std::thread newThread([] 
 	{
 		while (true)
 		{
@@ -128,8 +128,8 @@ void CudaStatisticThread()
 
 			Sleep(33);
  		};
-	
-	}).detach();
+ 	});
+	newThread.detach();
 }
 
 void CudaStatsShutdown()

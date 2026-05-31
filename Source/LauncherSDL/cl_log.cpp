@@ -3,6 +3,7 @@
 #include <mmsystem.h>
 #include <CommCtrl.h>
 #include "cl_log.h"
+
 #include <Psapi.h>
 #pragma comment(lib, "Psapi.lib")
  
@@ -22,8 +23,6 @@ xr_vector<xr_string>& GetLogVector()
 {
 	return myLogVector;
 }
-
-volatile BOOL				bClose				= FALSE;
 
 static char					status	[1024	]	="";
 static char					phase	[1024	]	="";
@@ -62,24 +61,12 @@ void StatusNoMSG(const char* format, ...)
  
 IterationData* ActiveIteration = nullptr;
 
-extern size_t;
-
-size_t last_update_memory = 0;
-CTimer tMemory;
-size_t GetHeapMemory(bool now = false)
+size_t GetHeapMemory()
 {
-	// Не слишком часто обновляться
-	if (tMemory.GetElapsed_ms() < 500 && now == true)
-	{
-		return last_update_memory;
-	}
-
 	PROCESS_MEMORY_COUNTERS_EX pmc;
 	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
 	{
-		tMemory.Start();
-		last_update_memory = pmc.PrivateUsage;
-		return pmc.PrivateUsage;
+ 		return pmc.PrivateUsage;
 	}
 };
 
@@ -87,11 +74,10 @@ void Phase			(const char *phase_name)
 {
   	phase_total_time = timeGetTime() - phase_start_time;
 	 
-
 	// Start _new phase
 	if (ActiveIteration->phases.size() > 0)
 	{
-  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory(true);
+  		ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
 		ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
 	}
 
@@ -106,25 +92,50 @@ void Phase			(const char *phase_name)
 	log_vminfo();
 }
 
-extern CTimer	dwStartupTime;
- 
-void logThread()
+void PhasesEnd()
 {
-	extern void StartupCompilers();
+	for (auto I : GetIterationData())
+	{
+		if (I.phases.size() > 0)
+		{
+			I.phases[I.phases.size() - 1].used_memory = GetHeapMemory();
+ 			I.phases[I.phases.size() - 1].status	  = Complited;
+		}
 
-	SetLogCB(MyLogCallback);
 
-	StartupCompilers();
- 	SetLogCB(0);
+		// Start _new phase
+		// if (ActiveIteration->phases.size() > 0)
+		// {
+		// 	ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
+		// 	ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
+		// }
+	}
+
 }
- 
+
+extern CTimer	dwStartupTime;
+  
+static bool isLogCallback = false;
+
 void clLog(const char* msg )
 {
+	if (!isLogCallback)
+	{
+		SetLogCB(MyLogCallback);
+		isLogCallback = true;
+	}
+
  	Log				(msg);
 }
 
 void clMsg( const char *format, ...)
 {
+	if (!isLogCallback)
+	{
+		SetLogCB(MyLogCallback); 
+		isLogCallback = true;
+	}
+
 	va_list		mark;
 	char buf	[4*256];
 	va_start	( mark, format );

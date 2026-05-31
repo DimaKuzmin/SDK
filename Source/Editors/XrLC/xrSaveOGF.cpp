@@ -2,9 +2,10 @@
 #include "build.h"
 #include "OGF_Face.h"
 
-SWIContainer			g_SWI,x_SWI;
-VBContainer				g_VB,x_VB;
-IBContainer				g_IB,x_IB;
+
+SWIContainer			g_SWI, x_SWI;
+VBContainer				g_VB,  x_VB;
+IBContainer				g_IB,  x_IB;
 
 bool CBuild::IsOGFContainersEmpty()
 {
@@ -123,8 +124,7 @@ void CBuild::SaveTREE	(IWriter &fs)
 		100.f * float(g_batch_1000)/float(g_batch_count),
 		100.f * float(g_batch_5000)/float(g_batch_count)
 		);
-	mem_Compact			();
-
+ 
 	SaveGEOMs			("level.geom",	g_VB,g_IB,g_SWI);	// Normal
 	SaveGEOMs			("level.geomx",	x_VB,x_IB,x_SWI);	// Fast-Path
 

@@ -10,8 +10,7 @@
 #define RGBAColor(r,g,b,a) r/(float)255, g/(float)255, b/(float)255, a/(float)255
 
 extern CompilersMode gCompilerMode;
-extern size_t GetHeapMemory(bool now);
-
+ 
 void InitializeUIData()
 {
 	string_path LevelsDir = {};
@@ -44,7 +43,7 @@ void DrawBottonUI()
 	ImGui::SameLine();
 	ImGui::Checkbox("SwitchUI", &ShowMainUI);
 	ImGui::SameLine();
-	ImGui::TextColored(ImVec4(172, 172, 255, 255), "Memory: %u mb", GetHeapMemory(false) / 1024 / 1024);
+	ImGui::TextColored(ImVec4(172, 172, 255, 255), "Memory: %u mb", GetHeapMemory() / 1024 / 1024);
 	ImGui::SameLine();
 	if (ImGui::Button("SwitchTheme"))
 	{
@@ -146,26 +145,10 @@ void RenderMainUI()
 	auto BSize = ImGui::GetContentRegionAvail();
  	if (ImGui::Button("Run Compiler", { BSize.x, 50 }))
 	{
-		bool isReady = false;
-		if (gCompilerMode.LC || gCompilerMode.DO)
-		{
-			isReady = true;
-		}
-
-		if (gCompilerMode.AI)
-		{
-
-			if (gCompilerMode.AI_BuildLevel)
-			{
-				isReady = true;
-			}
-
-			if (gCompilerMode.AI_BuildSpawn)
-			{
-				isReady = true;
-			}
-		}
-
+		bool isReady = gCompilerMode.LC || gCompilerMode.DO;
+ 		if (gCompilerMode.AI) 
+			isReady = gCompilerMode.AI_BuildLevel || gCompilerMode.AI_BuildSpawn;
+ 
 		if (isReady)
 		{
 			for (auto& FILE : gCompilerMode.Files)
@@ -185,9 +168,10 @@ void RenderMainUI()
 	}
 
 	DrawBottonUI();
-
 	ImGui::End();
 }
+
+
 const ImVec4 getLogColor_new(char* text)
 {
 	if (text == nullptr || xr_strlen(text) == 0)
@@ -652,8 +636,8 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::Separator();
 
 			ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-			if (X != 1280 || Y != 768)
-			 	SDL_SetWindowSize(g_AppInfo.Window, 1280, 768);
+			if (X != 1600 || Y != 900)
+			 	SDL_SetWindowSize(g_AppInfo.Window, 1600, 900);
 
  			// Table
 			if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {

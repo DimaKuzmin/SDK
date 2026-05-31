@@ -31,11 +31,7 @@ typedef void	tesscb_vertex		(Vertex*	V);	// new vertex
 
 class  base_lighting;
 class  INetReader;
-
-#include <psapi.h>
-
-size_t GetHeapMemory();
-
+ 
 //////////////////////////////////////////////////////////////////////////
 class CBuild  
 {
@@ -64,8 +60,7 @@ public:
 
 	Shader_xrLC_LIB					&shaders();
  
-	void	mem_Compact				();
-public:
+ public:
 	void	Load					(const b_params& P, const IReader&  fs);
 	void	Run						(LPCSTR path);
  
@@ -95,8 +90,7 @@ public:
 	void	Light					();
 
 	void	LMaps					();
-	void	ProcessLMAPS_CPU();
-	
+ 	
 	void	xrPhase_SortDeflectors();
 	void	xrPhase_MergeLM(xr_vector<CDeflector*>& deflectors);
  

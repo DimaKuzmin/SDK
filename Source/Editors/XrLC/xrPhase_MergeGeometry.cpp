@@ -200,7 +200,8 @@ void xrPhase_MergeGeometry_Tbb()
 	int grain_max = _max(min, max);
 
 	tbb::combinable<SplitMap> tempMappings;
-	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain_max), [&](const auto& r) {
+	tbb::parallel_for(tbb::blocked_range<u32>(0, g_XSplit.size(), grain_max), [&tempMappings, &info](const auto& r) 
+	{
 		auto& local = tempMappings.local();
 		for (auto i = r.begin(); i != r.end(); i++)
 		{
@@ -209,7 +210,7 @@ void xrPhase_MergeGeometry_Tbb()
 			value.splits.push_back(i);
 			value.hash[Cell::FromVector(Center(info[i].bb))].push_back(i);
 		}
-		});
+	});
 
 	SplitMap mappings;
 	tempMappings.combine_each([&mappings](const SplitMap& x)
@@ -218,7 +219,6 @@ void xrPhase_MergeGeometry_Tbb()
 				mappings[k].merge(v);
 		});
 
-	std::atomic<u32> progress{ 0 };
 	xr_vector<SplitKey> keys;
 	keys.reserve(mappings.size());
 	std::transform(mappings.begin(), mappings.end(), std::back_inserter(keys), [](const auto& x) { return x.first; });
@@ -231,7 +231,7 @@ void xrPhase_MergeGeometry_Tbb()
 	}
 
 	clMsg("* Need merge size: %u", need_merge);
-	tbb::parallel_for(tbb::blocked_range<u32>(0, keys.size()), [&](const auto& r)
+	tbb::parallel_for(tbb::blocked_range<u32>(0, keys.size()), [&keys, &info, &mappings](const auto& r)
 		{
 			for (auto i = r.begin(); i != r.end(); i++) {
 				const auto& key = keys[i];
@@ -277,8 +277,6 @@ void xrPhase_MergeGeometry_Tbb()
 							candidates = std::move(next);
 						}
 					}
-					progress.fetch_add(1);
-					Progress((float)progress.load() / g_XSplit.size());
 				}
 			}
 		});

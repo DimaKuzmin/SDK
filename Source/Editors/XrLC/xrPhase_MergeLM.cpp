@@ -83,7 +83,7 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	CurrentIndex = 0;
 	ErrorsPlace  = 0;
 	MergedCount  = 0;
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [lmap, Layer](size_t thread_id)
+	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&lmap, &Layer](size_t thread_id)
 	{
 		u32 MaxSize = Layer.size();
  		while (true)
@@ -140,8 +140,7 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	Progress(1.f);
 	return MergedCount;
 }
-
-
+ 
 void MergeLmapFast(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 {
 	u32 BORDER = gCompilerMode.LC_lmap_BORDER;
@@ -220,7 +219,7 @@ void CBuild::xrPhase_SortDeflectors()
 
 void CBuild::xrPhase_MergeLM(xr_vector<CDeflector*>& Layer)
 {
- 	Phase("Building Lmaps ...");
+ 	// Phase("Building Lmaps ...");
 
 	xrPhase_SortDeflectors();
 

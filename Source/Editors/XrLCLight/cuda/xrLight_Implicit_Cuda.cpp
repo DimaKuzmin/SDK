@@ -59,18 +59,6 @@ public:
 		CTimer tStats;
 		tStats.Start();
 
-		// Setup variables
-		Fvector2 dim, half;
-		dim.set(float(defl->Width()), float(defl->Height()));
-		half.set(.5f / dim.x, .5f / dim.y);
-
-		// Jitter data
-		Fvector2 JS;
-		JS.set(.499f / dim.x, .499f / dim.y);
-		u32 Jcount;
-		Fvector2* Jitter;
-		Jitter_Select(Jitter, Jcount);
-
 		GPUTaskinSystem.RestartALL();
 
 		u32 flags = (gCompilerMode.LC_NoSun ? LP_dont_sun : 0);
@@ -78,9 +66,25 @@ public:
 		GPUTaskinSystem.ColorsMapType = eImplicit;
 
 		// Однопоточный режим пока что 
-		std::atomic<u32> task_height = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&](size_t TaskID)
+		static std::atomic<u32> task_height = 0;
+		task_height = 0;
+
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t TaskID)
 			{
+				auto defl = &cl_globs.DATA();
+
+				// Setup variables
+				Fvector2 dim, half;
+				dim.set(float(defl->Width()), float(defl->Height()));
+				half.set(.5f / dim.x, .5f / dim.y);
+
+				// Jitter data
+				Fvector2 JS;
+				JS.set(.499f / dim.x, .499f / dim.y);
+				u32 Jcount;
+				Fvector2* Jitter;
+				Jitter_Select(Jitter, Jcount);
+
 				while (true)
 				{
 					auto V = task_height.fetch_add(1);

@@ -18,7 +18,6 @@
 extern LPCSTR LEVEL_GRAPH_NAME;
 extern void	xrCompiler			(LPCSTR name, bool draft_mode, bool pure_covers, LPCSTR out_name);
  
-extern volatile BOOL bClose;
 extern void	verify_level_graph	(LPCSTR name, bool verbose);
    
 string_path_ai INI_FILE;

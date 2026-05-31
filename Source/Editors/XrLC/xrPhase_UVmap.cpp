@@ -136,10 +136,3 @@ void CBuild::xrPhase_UVmap()
   	clMsg("%d subdivisions...", g_XSplit.size());
 	err_save();
 }
-
-void CBuild::mem_Compact()
-{
-	log_vminfo();
-	Memory.mem_compact();
-	log_vminfo();
-}

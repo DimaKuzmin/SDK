@@ -18,6 +18,7 @@ xr_path GetExecutableDir()
 
 bool OptixContext::Initialize()
 {
+	Phase("CUDA: Initialize context ...");
 	// --- 1. Primary context через CUDA Runtime ---
 	CUDA_CHECK(cudaSetDevice(cudaDeviceId));
 
@@ -26,22 +27,20 @@ bool OptixContext::Initialize()
 	Msg("[OptiX] Using CUDA device: %s (SM %d.%d)", deviceProps.name, deviceProps.major, deviceProps.minor);
 
 	// --- 2. Получаем primary CUcontext через Driver API ---
-	CUdevice cuDev;
-	CUcontext cuCtx;
+ 	CUDA_CHECK_2(cuDeviceGet(&cuDev, cudaDeviceId));
+	CUDA_CHECK_2(cuDevicePrimaryCtxRetain(&cudaContext, cuDev));
+	CUDA_CHECK_2(cuCtxSetCurrent(cudaContext));
 
-	CUDA_CHECK_2(cuDeviceGet(&cuDev, cudaDeviceId));
-	CUDA_CHECK_2(cuDevicePrimaryCtxRetain(&cuCtx, cuDev));
-	CUDA_CHECK_2(cuCtxSetCurrent(cuCtx));
 
 	// --- 3. OptiX ---
-	OPTIX_CHECK(optixInit());
+ 	OPTIX_CHECK(optixInit());
 
 	OptixDeviceContextOptions options = {};
 	options.logCallbackFunction = &OptixLogCallback;
 	options.logCallbackLevel = 0;
 
 	// В этом режиме OptiX требует НЕ nullptr
-	OPTIX_CHECK(optixDeviceContextCreate(cuCtx, &options, &optixContext));
+	OPTIX_CHECK(optixDeviceContextCreate(cudaContext, &options, &optixContext));
 
 	// --- 4. Pipeline ---
 	xr_path fullPtxPath = GetExecutableDir() / "CuTrace.ptx";
@@ -52,11 +51,22 @@ bool OptixContext::Initialize()
 
 void OptixContext::Destroy()
 {
-	if (optixContext)
+	size_t free, total;
+
+ 	if (optixContext)
 	{
 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
+ 	cuMemGetInfo_v2(&free, &total);
+	clMsg("[CUDA] Optix is Destroyed: %u mb", (total - free) / 1024 / 1024);
+	 
+	CUDA_CHECK_2 ( cuDevicePrimaryCtxRelease_v2(cuDev) );
+	CUDA_CHECK ( cudaDeviceReset() );
+  	CUDA_CHECK( cudaDeviceSynchronize() );
+
+	cuMemGetInfo_v2(&free, &total);
+	clMsg("[CUDA] Cuda context is Resting: %u mb", (total-free) / 1024 / 1024);
 }
 
 // Структура для записи SBT
@@ -100,7 +110,7 @@ void OptixContext::CreatePipeline(const char* ptxCode)
 	pipelineCompileOptions.usesMotionBlur = false;
 
 	// Todo Сделать где то глобальным параметром через DEFINE
-	pipelineCompileOptions.numPayloadValues = 2;	// se7kills (Важное влияет на количество аргументов OptixTrace)
+	pipelineCompileOptions.numPayloadValues = 2;								// se7kills (Важное влияет на количество аргументов OptixTrace)
 	pipelineCompileOptions.numAttributeValues = 2;
 	pipelineCompileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
 	pipelineCompileOptions.pipelineLaunchParamsVariableName = "g_params";		// Переменная куда запишется struct OPTICK_Params

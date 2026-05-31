@@ -35,19 +35,7 @@ void	CBuild::TempSave( u32 stage )
 {
 	CheckBeforeSave( stage );
 }
-
-size_t GetHeapMemory()
-{
-	PROCESS_MEMORY_COUNTERS_EX pmc;
-	if (GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)))
-	{
-		return pmc.PrivateUsage;
-	}
-
-	return 0;
-}
-
-
+ 
 //////////////////////////////////////////////////////////////////////
 
 CBuild::CBuild()
@@ -191,6 +179,8 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 		xrPhase_TangentBasis();
 	}
 
+	clMsg("mem usage ConvertToOgf:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
 	//****************************************** Convert to OGF
  	Phase("Converting to OGFs...");
  	Flex2OGF();
@@ -199,9 +189,9 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Phase("Converting MU-models to OGFs...");
 	{
 		Status("MU : Models...");
-		concurrency::parallel_for(size_t(0), size_t(mu_models().size()), [&](size_t m)
+		concurrency::parallel_for(size_t(0), size_t(mu_models().size()), [](size_t m)
 		{
-			calc_ogf(*mu_models()[m]);
+			calc_ogf(*lc_global_data()->mu_models()[m]);
 		});
 
 		for (u32 m = 0; m < mu_models().size(); m++)
@@ -215,8 +205,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 			export_ogf(*mu_refs()[m]);
 		}
 	}
-	mem_Compact();
-
+ 
 	Status("MU : References...");
 	for (auto mRID = 0; mRID < (mu_refs().size()); mRID++)
 	{
@@ -225,9 +214,9 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 
 		AditionalData("MU : Refference: %u / %u", mRID, mu_refs().size());
 	}
-	mem_Compact();
-
   
+	clMsg("mem usage Sectors:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
 	//****************************************** Build sectors
  	Phase("Building sectors...");
  	BuildSectors();
@@ -236,7 +225,7 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
  	Phase			("Saving...");
  	SaveLights		(*fs);
 
-	fs->open_chunk	(fsL_GLOWS);
+ 	fs->open_chunk	(fsL_GLOWS);
 	
 	for (u32 i=0; i<glows.size(); i++)
 	{
@@ -252,7 +241,12 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	}
 	fs->close_chunk	();
 
+	clMsg("mem usage Saving Geom:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
 	SaveTREE		(*fs);
+
+	clMsg("mem usage Saving Sectors:	%u mb", (u32(GetHeapMemory()) / 1024 / 1024));
+
 	SaveSectors		(*fs);
 
 	err_save		();

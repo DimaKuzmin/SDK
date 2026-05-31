@@ -26,6 +26,9 @@ CLightmap::CLightmap()
 CLightmap::~CLightmap()
 {
 	strcpy(lm_texture.name, "");
+ 
+	lm.clear_memory();
+	lm_texture.pSurface.Clear();
 }
  
 void CLightmap::Capture		(CDeflector *D, int b_u, int b_v, int s_u, int s_v, BOOL bRotated)
@@ -173,8 +176,7 @@ void CLightmap::Save( LPCSTR path, u32& timeMS)
 		fmt.flags.set			(STextureParams::flBinaryAlpha,		FALSE);
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
- 	lm_packed.clear();
-
+ 
 	// Status			("Compression hemi..."); //.
  	{
 
@@ -196,14 +198,6 @@ void CLightmap::Save( LPCSTR path, u32& timeMS)
 		DXTCompress				(FN,raw_data,0,w,h,pitch,&fmt,4);
 	}
  
-	// Утечка закрыта
-	lm_packed.clear();
-	hemi_packed.clear();
-
-	lm_packed.shrink_to_fit();
-	hemi_packed.shrink_to_fit();
-	
 	timeMS = tStats.GetElapsed_ms();
-	// Msg("Saving DDS: %u ms, Borders: %u ms", tStats.GetElapsed_ms());
 }
  
