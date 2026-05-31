@@ -103,20 +103,8 @@ void MainCompilerDO()
 {
   	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		if (!Selected)
-			continue;
+		if (!Selected)			continue;
 		FS.get_path("$level$")->_set(Name.c_str());
-
-		CTimer				dwStartupTime;
-		dwStartupTime.Start();
-
 		xrCompileDO();
-
-		// Show statistic
-		char	stats[256];
-		xr_sprintf(stats, "Time elapsed: %s", make_time((dwStartupTime.GetElapsed_ms()) / 1000).c_str());
-		clMsg(stats);
-
-		Status ("Построение Уровня Законечено! ");
 	}
 }

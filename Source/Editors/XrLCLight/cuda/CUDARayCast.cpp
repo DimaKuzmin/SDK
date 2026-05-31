@@ -2,6 +2,8 @@
 #include "CUDARayCast.h"
 #include "CUDAContext.h"
 #include "CUDAGeometryBuilder.h"
+
+#include "../global_calculation_data.h"
 #include "../xrLC_GlobalData.h"
 #include "../xrDeflector.h"
 #include "../cuda/xrDeflectorLight_Packed.h"
@@ -15,8 +17,7 @@
 // Пример использования:
 OptixContext optixContext;
 OptixMeshBuffers CommitedScene;
-static CUstream cudaStream = nullptr;
-
+ 
 // Lighting 
 int					  size_lights;
 Hardware_Lighting*	  gpu_lights = nullptr;			// GPU alloc
@@ -38,7 +39,8 @@ struct TextureDataCPU
 
 void XRay::RayTrace::CUDA::InitializeLights()
 {
-	auto Lights = lc_global_data()->L_static();
+  	auto& Lights = gCompilerMode.builder_type == LCBuildingType::eLC ? 
+		lc_global_data()->L_static() : gl_data.g_lights;
 
 	auto Light = [&](R_Light& L, eTypeGPU type)
 		{
@@ -91,23 +93,42 @@ void XRay::RayTrace::CUDA::InitializeLights()
 	size_lights = numLights;
 }
 
-void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
+void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<void*>& Faces)
 {
 	xr_vector<Hardware_FaceData> faces_host;
 	faces_host.resize(Faces.size());
 
+	bool isLC = gCompilerMode.builder_type == LCBuildingType::eLC;
+	auto& materials = lc_global_data()->materials();
+	 
 	int IndexFace = 0;
-	for (auto& F : Faces)
+	for (auto& Fv : Faces)
 	{
-		unsigned short surface = lc_global_data()->materials()[F->dwMaterial].surfidx;
+ 		unsigned short surface = 0;
+		Fvector2* TC = nullptr;
+		bool bOpacue = false;
+
+		if (isLC)
+		{
+			Face* F = (Face*)Fv;
+			surface = lc_global_data()->materials()[((Face*)F)->dwMaterial].surfidx;
+			TC = F->getTC0();
+			bOpacue = F->flags.bOpaque;
+		}
+		else
+		{
+			FaceDataEmbree* F = (FaceDataEmbree*)Fv;
+			surface = gl_data.g_materials[F->dwMaterial].surfidx;
+			TC = F->getTC0();
+			bOpacue = F->bOpaque;
+		}
+
 		Hardware_FaceData& FaceGPU = faces_host[IndexFace];
-		FaceGPU.bOpacue = F->flags.bOpaque;
-		FaceGPU.bWater = F->flags.bWater;
-
 		FaceGPU.surfidx = surface;
+		FaceGPU.bWater = false;
+		FaceGPU.bOpacue = bOpacue;
 
-		auto TC = F->getTC0();
-		FaceGPU.TC0[0].x = __float2half(TC[0].x);
+ 		FaceGPU.TC0[0].x = __float2half(TC[0].x);
 		FaceGPU.TC0[0].y = __float2half(TC[0].y);
 
 		FaceGPU.TC0[1].x = __float2half(TC[1].x);
@@ -133,8 +154,10 @@ void XRay::RayTrace::CUDA::InitializeFaces(xr_vector<Face*>& Faces)
 
 void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 {
+	auto& TX =  gCompilerMode.builder_type == LCBuildingType::eLC ?	lc_global_data()->textures() : gl_data.g_textures;
+
 	xr_vector<TextureDataCPU>  Textures;
-	for (auto& T : lc_global_data()->textures())
+	for (auto& T : TX)
 	{
 		if (T.pSurface.Empty() || !T.bHasAlpha)
 		{
@@ -206,25 +229,16 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 	Msg("[GPU DEVICE MEMORY] Textures[%u] Allocate : %llu kb", cpu_tex_gpu.size(), allocated / 1024);
 }
 
-static bool isInitialized = false;
+static bool isGPUInitialized = false;
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
-	isInitialized = true;
-	// Однократная инициализация
-	if (optixContext.Initialize())
-	{
-		cudaStream = OptixContext::CreateCudaStream();
-		Msg("[OptiX] Successfully initialized OptiX context");
- 	}
-	else
-	{
+	isGPUInitialized = true;
+ 	if (!optixContext.Initialize())
 		FATAL("[OptiX] Failed to initialize OptiX context");
-	}
  
-	// Phase("CUDA: Initialize Raytrace Model");
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
-	BuildSceneFromLCGlobalData(context, cudaStream, CommitedScene);
+	BuildSceneFromLCGlobalData(context, CommitedScene);
 
 	// Phase("CUDA: Initialize Data");
 	InitializeLights();
@@ -257,11 +271,7 @@ public:
 	u8  current_flags = 0;
 	bool isInitialized = false;
 
-	~RayTracer()
-	{
-		UnloadThread();
-	}
-
+ 
 	void UnloadThread()
 	{
 		if (h_params) cudaFreeHost(h_params);
@@ -272,7 +282,7 @@ public:
 		if (d_rays) cudaFree(d_rays);
 		if (d_colors) cudaFree(d_colors);
 
-		/// cudaStreamDestroy(stream);
+		cudaStreamDestroy(stream);
 		isInitialized = false;
 	}
 
@@ -325,20 +335,20 @@ public:
 
 		size_t CurrentWritedRays = LastIndexTask;
  		// Подготавливаем данные на хосте
-		h_params[0].handle = CommitedScene.tlasHandle,
+		h_params[0].handle		   = CommitedScene.tlasHandle,
 
 		// Result Buffer
-		h_params[0].flags = current_flags;
-		h_params[0].rays = d_rays;
-		h_params[0].colors = d_colors;
-
-		h_params[0].lights = gpu_lights;
-		h_params[0].counts_lights = size_lights;
-
-		h_params[0].faces = gpu_faces;
-		h_params[0].count_faces = size_faces;
-
-		h_params[0].textures = gpu_textures;
+		h_params[0].flags		   = current_flags;
+		h_params[0].rays		   = d_rays;
+		h_params[0].colors		   = d_colors;
+								   
+		h_params[0].lights		   = gpu_lights;
+		h_params[0].counts_lights  = size_lights;
+								   
+		h_params[0].faces		   = gpu_faces;
+		h_params[0].count_faces	   = size_faces;
+								   
+		h_params[0].textures	   = gpu_textures;
 		h_params[0].count_textures = size_textures;
 
 		// Копируем Стартовые параметры !!! асинхронно
@@ -431,53 +441,40 @@ void XRay::RayTrace::CUDA::RayTraceRun()
 {
 	GPURayTracer.TraceRaysNew();
 }
+ 
+xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
+{
+	return GPURayTracer.GetColors();
+}
 
 void XRay::RayTrace::CUDA::RayTraceCleanup()
 {
 	GPURayTracer.UnloadThread();
 }
-
-xr_vector<base_color_c>& XRay::RayTrace::CUDA::RayTraceResult()
-{
-	return GPURayTracer.GetColors();
-}
  
 // При завершении работы
 void XRay::RayTrace::CUDA::CleanupRayTracing()
 {
-	if (isInitialized)
+	if (isGPUInitialized)
 	{
- 		size_t free, total;
-		cuMemGetInfo_v2(&free, &total);
-		clMsg("[CUDA] Device Memory Used: %u mb", (total - free) / 1024 / 1024);
-
 		Phase("CUDA: Cleanump...");
 		for (auto& T : cpu_tex_gpu)
 			cudaFree(T.pSurface);
-		cuMemGetInfo_v2(&free, &total);
-		clMsg("[CUDA] Textures Cleaned: %u mb", (total - free) / 1024 / 1024);
 
 		// Вычищяем большие буферы данных 
 		cudaFree(gpu_lights);
 		cudaFree(gpu_faces);
 		cudaFree(gpu_textures);
 
-		cuMemGetInfo_v2(&free, &total);
-		clMsg("[CUDA] Faces Cleaned: %u mb", (total - free) / 1024 / 1024);
-
 		// Вычищаем модель уровня из CUDA
  		cudaFree(reinterpret_cast<void*>(CommitedScene.blasBuffer));
 		cudaFree(reinterpret_cast<void*>(CommitedScene.tlasBuffer));
  
-		cuMemGetInfo_v2(&free, &total);
-		clMsg("[CUDA] Geom Cleaned: %u mb", (total - free) / 1024 / 1024);
-
 		size_faces = 0;
 		size_lights = 0;
 		size_textures = 0;
 
-		OptixContext::DestroyCudaStream(cudaStream);
-		optixContext.Destroy();
+ 		optixContext.Destroy();
 	}
-	isInitialized = false;
+	isGPUInitialized = false;
 }

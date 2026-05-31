@@ -114,13 +114,12 @@ void CBuild::Light()
 {
 	auto BuildRayTraceModel = [this]()
 	{
-		if (gCompilerMode.CUDA || gCompilerMode.Embree)
-			InitializeEmbreeDevice();
+ 		InitializeEmbreeDevice();
 
+		if (gCompilerMode.Embree)
+			EmbreeMain.InitializeGeometry();
 		if (gCompilerMode.CUDA)
 			GPUTaskinSystem.InitializeGPU();		// Обезательно в этом потоке там конекст CUDA
-		else if (gCompilerMode.Embree)
-			EmbreeMain.InitializeGeometry();
 	};
 
 	auto BuildingUV = [this]() 

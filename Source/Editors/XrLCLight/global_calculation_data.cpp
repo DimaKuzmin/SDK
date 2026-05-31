@@ -203,11 +203,25 @@ void global_claculation_data::xrLoad()
 
 
 		xrLoadGeometry(fs);
-
+		FS.r_close(fs);
 	}
+}
 
-
+void global_claculation_data::xrUnload()
+{
+ 	xr_delete(RCAST_Model);
+	xr_delete(g_shaders_xrlc);
 	
+	// lights 
+	g_lights.clear_lighting();
+
+	// vectors
+	g_shader_compile.clear(); g_shader_compile.shrink_to_fit();
+	g_materials.clear();	  g_materials.shrink_to_fit();
+	g_textures.clear();		  g_textures.shrink_to_fit();
+
+	building_embree_faces.clear(); building_embree_faces.shrink_to_fit();
+  	slots_data.Free();
 }
    
 
@@ -334,25 +348,4 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 	}
 
 	xrCalculateOpacity();
-
-	// Изза сраного BOX-QUERY Для расщета t_n !
-	if (true) // Rcast - Model
-	{
-		TriangleContainer container;
-		for (auto& F : building_embree_faces)
-		{
-			container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
-		}
- 		container.RemoveDublicates();
-
-		auto& Vert = container.vertex();
-		auto& Tri  = container.faces();
-		xr_vector<CDB::TRI> faces;
-		for (auto T : Tri)
-			faces.push_back(T.Get());
-
- 		RCAST_Model.build(Vert.data(), Vert.size(), faces.data(), faces.size(), nullptr);
-
-		EmbreeMain.InitEmbreeDetails(container);
-	}
 }

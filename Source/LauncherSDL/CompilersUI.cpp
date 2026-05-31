@@ -636,8 +636,8 @@ void RenderCompilerUI(int X, int Y)
 			ImGui::Separator();
 
 			ImVec4 phaseTextCol = { 78, 178, 98, 0.78 };
-			if (X != 1600 || Y != 900)
-			 	SDL_SetWindowSize(g_AppInfo.Window, 1600, 900);
+			if (X != 1280 || Y != 768)
+			 	SDL_SetWindowSize(g_AppInfo.Window, 1280, 768);
 
  			// Table
 			if (ImGui::BeginTable("IterationsTable", 9, ImGuiTableFlags_ScrollY | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg | ImGuiTableFlags_Resizable)) {

@@ -15,6 +15,7 @@ enum ColorsReturnType
 	eImplicit,
 	eDeflectors,
 	eMumodel,
+	eDetails,
 	eCommon
 };
 

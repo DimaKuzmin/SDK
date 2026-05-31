@@ -215,6 +215,12 @@ void EmbreeRayTraceModel::RemoveGeometry()
 void EmbreeRayTraceModel::IntelEmbereUnloadData()
 {
 	RemoveGeometry();
+
+	if (isDeviceInitialized)
+	{
+		rtcReleaseDevice(EmbreeDevice);
+		isDeviceInitialized = false;
+	}
 }
 
 // Embree Device (Должен быть один)

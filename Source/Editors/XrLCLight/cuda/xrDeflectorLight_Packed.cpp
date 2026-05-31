@@ -12,7 +12,8 @@
 PackedLighting GPUTaskinSystem;
 thread_local xr_vector<RayRecvestIndex>	recvest_array; 
 extern void ApplyColorGPU(size_t IndexTask, base_color_c& C);
-  
+extern void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C);
+
 // Initializes
 void PackedLighting::InitializeGPU()
 {
@@ -64,6 +65,11 @@ void PackedLighting::LightPointPacked_run_tasks(bool need_clear)
 
 		switch (ColorsMapType)
 		{
+			case eDetails:
+			{
+				ApplyColorDetailGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);
+			}break;
+
 			case eImplicit:
 			{
 				ApplyColorGPU(RAY_INFO.INDEX_TASK, colors[RecvestID]);

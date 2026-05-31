@@ -28,13 +28,13 @@ namespace XRay::RayTrace::CUDA
     void InitializeLights();
 
     // Загрузить Faces
-    void InitializeFaces(xr_vector<Face*>& Faces);
+    void InitializeFaces(xr_vector<void*>& Faces);
 
     // Загрузить Альфу Текстур
     void InitializeTexturesAlpha();
 
     // Builder Scene
-    bool BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene);
+    bool BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene);
 
     // RayTracing
     void InitializeRayTracing();

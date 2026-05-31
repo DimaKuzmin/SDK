@@ -13,19 +13,20 @@ class Shader_xrLC_LIB;
 //-----------------------------------------------------------------
 struct global_claculation_data
 {
-	base_lighting					g_lights; /////////////////////lc
-	Shader_xrLC_LIB*				g_shaders_xrlc;////////////////lc
-	b_params						g_params;//////////////////////lc
-	xr_vector<b_material>			g_materials;///////////////////lc
-	xr_vector<b_BuildTexture>		g_textures;////////////////////lc
-	CDB::MODEL						RCAST_Model;///////////////////lc
+	base_lighting					g_lights; 
+	Shader_xrLC_LIB*				g_shaders_xrlc;
+	b_params						g_params;
+	xr_vector<b_material>			g_materials;
+	xr_vector<b_BuildTexture>		g_textures;
+	CDB::MODEL*						RCAST_Model;
 
-	Fbox							LevelBB;//-----------============
-	global_slots_data				slots_data;//-------=============
-	xr_vector<b_shader>				g_shader_compile;//-----==========
+	Fbox							LevelBB;
+	global_slots_data				slots_data;
+	xr_vector<b_shader>				g_shader_compile; 
    
 			global_claculation_data		(): g_shaders_xrlc( 0 ) {}
-	void	xrLoad						( );
+	void	xrLoad						( );	
+	void	xrUnload();
 
 	xr_vector<FaceDataEmbree>			building_embree_faces;
 

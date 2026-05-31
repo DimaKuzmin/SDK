@@ -12,8 +12,17 @@ struct LevelFileData
 	bool Select = false;
 };
 
+enum class LCBuildingType
+{
+	eNone = -1,
+	eLC = 0,
+	eAI = 1,
+	eDO = 2
+};
+
 struct CompilersMode
 {
+	LCBuildingType builder_type = LCBuildingType::eNone;;
 	// ComboBox Values;
 	int RadioID = 0;
 	int item_current_jitter = 2;

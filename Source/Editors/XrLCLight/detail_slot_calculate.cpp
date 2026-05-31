@@ -11,15 +11,20 @@
 #include "base_lighting.h"
 #include "global_calculation_data.h"
 #include "../Public/shader_xrlc.h"
-#include "embree_raytracing/EmbreeRayTrace.h"
 #include "light_point.h"
 #include "xrDeflector.h"
+
+// Cuda - Embree
+#include "embree_raytracing/EmbreeRayTrace.h"
+#include "CUDA/xrDeflectorLight_Packed.h"
+
 
 //-----------------------------------------------------------------------------------------------------------------
 XRLC_LIGHT_API extern int	LIGHT_Count				=	7;
     
-bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
+bool detail_slot_calculate( u32 _x, u32 _z)
 {
+	DetailSlot& DS = gl_data.slots_data.get_slot(_x, _z);
 	process_pallete(DS);
 	if (gl_data.slots_data.skip_slot(_x, _z)) return false;
  
@@ -35,10 +40,12 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
 	Fsphere		S;
 	BB.getsphere( S.P, S.R );
 
+	R_ASSERT(gl_data.RCAST_Model);
+
 	// Select polygons
 	Fvector				bbC,bbD;
 	BB.get_CD			( bbC, bbD );	bbD.add( 0.01f );
-	DB.box_query		( &gl_data.RCAST_Model, bbC, bbD );
+	DB.box_query		( gl_data.RCAST_Model, bbC, bbD );
 	
 
 	box_result.clear	();
@@ -48,8 +55,8 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
 	if (box_result.empty())	
 		return false; 
 
-	CDB::TRI*	tris	= gl_data.RCAST_Model.get_tris();
-	Fvector*	verts	= gl_data.RCAST_Model.get_verts();
+	CDB::TRI*	tris	= gl_data.RCAST_Model->get_tris();
+	Fvector*	verts	= gl_data.RCAST_Model->get_verts();
 
 	// select lights
 	Selected.select		( gl_data.g_lights, S.P, S.R );
@@ -101,19 +108,30 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
 			if (P.y<BB.min.y) continue;
 			
 			// light point
-			LightPoint		 ( amount, P, t_n, Selected, 0, 0);
+			if (gCompilerMode.Embree)
+				LightPoint(amount, P, t_n, Selected, 0, 0);
+ 			else if (gCompilerMode.CUDA)
+			{
+				size_t idx = GPUTaskinSystem.MakeKey(_x, _z);
+				GPUTaskinSystem.LightPointPacked_add_task(idx, nullptr, P, t_n, nullptr);
+			}
+  
 			count			+= 1;
 		}
 	}
 
-	// calculation of luminocity
-	amount.scale		(count);
-	amount.mul			(.5f);
-	DS.c_dir			= DS.w_qclr	(amount.sun,15);
-	DS.c_hemi			= DS.w_qclr	(amount.hemi,15);
-	DS.c_r				= DS.w_qclr	(amount.rgb.x,15);
-	DS.c_g				= DS.w_qclr	(amount.rgb.y,15);
-	DS.c_b				= DS.w_qclr	(amount.rgb.z,15);
+	if (gCompilerMode.Embree)
+	{
+		// calculation of luminocity
+		amount.scale(count);
+		amount.mul(.5f);
+		DS.c_dir = DS.w_qclr(amount.sun, 15);
+		DS.c_hemi = DS.w_qclr(amount.hemi, 15);
+		DS.c_r = DS.w_qclr(amount.rgb.x, 15);
+		DS.c_g = DS.w_qclr(amount.rgb.y, 15);
+		DS.c_b = DS.w_qclr(amount.rgb.z, 15);
+	}
+
 	////////////////////////////////////////////////////////////
 	return true;
 }
@@ -121,43 +139,160 @@ bool detail_slot_calculate( u32 _x, u32 _z, DetailSlot&	DS)
 #include <ppl.h>
 extern bool useDetails;
 
+xr_vector<u32>			 samples;
+xr_vector<base_color_c>  detail_colors;
+u32 size_x;
+u32 size_z;
+
+void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C)
+{
+	u32 x = GPUTaskinSystem.GetU(IndexTask);
+	u32 z = GPUTaskinSystem.GetV(IndexTask);
+
+	u32 idx = z * size_x + x;
+	samples[idx]++;
+	detail_colors[idx].add(C);
+}
+
+void ApplyColorsGPU()
+{
+	for (auto x = 0; x < gl_data.slots_data.size_x(); x++)
+		for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
+		{
+			// Getter - Detail Slot
+			auto& DS = gl_data.slots_data.get_slot(x, z);
+
+			u32 idx = z * size_x + x;
+			auto& count = samples[idx];
+			if (count > 0)
+			{
+				auto& color = detail_colors[idx];
+				color.scale(count);
+				color.mul(.5f);
+
+				// Пишется результат в (level.details) !
+				DS.c_dir = DS.w_qclr(color.sun, 15);
+				DS.c_hemi = DS.w_qclr(color.hemi, 15);
+				DS.c_r = DS.w_qclr(color.rgb.x, 15);
+				DS.c_g = DS.w_qclr(color.rgb.y, 15);
+				DS.c_b = DS.w_qclr(color.rgb.z, 15);
+
+				//if (color.hemi > 0.001)
+				// 	Msg("Colors x[%u] z[%u] Hemi: %.3f Sampl: %u", x,z, color.hemi, count);
+			}
+		}
+
+	samples.clear();
+	samples.shrink_to_fit();
+
+	detail_colors.clear();
+	detail_colors.shrink_to_fit();
+}
+
+
+
+void BuildModel(TriangleContainer& container)
+{
+	for (auto& F : gl_data.building_embree_faces)
+	{
+		container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
+	}
+	container.RemoveDublicates();
+
+
+	gl_data.RCAST_Model = xr_new<CDB::MODEL>();
+
+	auto& Vert = container.vertex();
+ 	xr_vector<CDB::TRI> faces;
+	for (auto T : container.faces())
+		faces.push_back(T.Get());
+	gl_data.RCAST_Model->build(Vert.data(), Vert.size(), faces.data(), faces.size(), nullptr);
+
+	faces.clear();
+	faces.shrink_to_fit();
+}
+
+
 void xrCompileDO()
 {
 	Phase("Loading level...");
 	gl_data.xrLoad();
 
-	Phase("Lighting nodes...");
-	CDB::COLLIDER		DB;
-	DB.ray_options(CDB::OPT_CULL);
-	DB.box_options(CDB::OPT_FULL_TEST);
-	base_lighting		Selected;
+	Phase("Building Model...");
+	TriangleContainer container;
+	BuildModel(container);
+ 
+	if (gCompilerMode.Embree)
+	{
+		EmbreeMain.InitEmbreeDetails(container);
+		container.ClearAll();
 
-	static std::atomic<u32> atomic_task;
-	CTimer start_time; start_time.Start();
+		static std::atomic<u32> atomic_task; 
+		atomic_task = 0;
+		// Lightpoint поментка чтобы использовал алогоритм с Details !
+		useDetails = true;
 
-	// Lightpoint поментка чтобы использовал алогоритм с Details !
-	useDetails = true;
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t tID)
-		{
-			while (true)
+
+		Phase("Lighting Details...");
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t tID)
 			{
-				u32 Z = atomic_task.fetch_add(1);
- 				if (Z >= gl_data.slots_data.size_z()) break;
-
-				AditionalData("Process: %u/%u", Z, gl_data.slots_data.size_z());
-
-				for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+				while (true)
 				{
-					DetailSlot& DS = gl_data.slots_data.get_slot(X, Z);
- 					detail_slot_calculate(X, Z, DS);
- 				}
+					u32 Z = atomic_task.fetch_add(1);
+					if (Z >= gl_data.slots_data.size_z()) break;
+
+					AditionalData("Embree Process: %u/%u", Z, gl_data.slots_data.size_z());
+
+					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+					{
+ 						detail_slot_calculate(X, Z);
+					}
+				}
 			}
- 		}
-	);
+		);
 
-	useDetails = false;
+		useDetails = false;
+	}
+	else if (gCompilerMode.CUDA)
+	{
+		size_x = gl_data.slots_data.size_x();
+		size_z = gl_data.slots_data.size_z();
 
-	Msg("%d seconds elapsed.", (start_time.GetElapsed_ms()) / 1000);
+		samples.resize(size_x * size_z);
+		detail_colors.resize(size_x * size_z);
 
-	gl_data.slots_data.Free();
+		GPUTaskinSystem.InitializeGPU();
+ 		GPUTaskinSystem.ColorsMapType = eDetails;
+
+		static std::atomic<u32> atomic_task;
+		atomic_task = 0;
+
+		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t threadID)
+			{
+				while (true)
+				{
+					u32 Z = atomic_task.fetch_add(1);
+					AditionalData("Cuda Process: %u/%u", Z, gl_data.slots_data.size_z());
+
+					if (Z >= gl_data.slots_data.size_z()) break;
+
+					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+						detail_slot_calculate(X, Z);
+				}
+
+				GPUTaskinSystem.LightPointPacked_run_tasks();
+			}
+		);
+		GPUTaskinSystem.RestartALL();
+
+
+ 		ApplyColorsGPU();
+	}
+
+	Phase("Unloading data buffers...");
+	gl_data.xrUnload();
+	container.ClearAll();
+
+	EmbreeMain.IntelEmbereUnloadData();
+	GPUTaskinSystem.CleanupGPU();
 }

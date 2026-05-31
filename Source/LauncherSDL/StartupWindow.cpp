@@ -85,10 +85,7 @@ void StartCompile()
 	(
 		[]()
 		{
-			SetThreadDescription(GetCurrentThread(), L"Startup LC Thread");
-
-			clMsg("Thread is Running!");
-
+			SetThreadDescription(GetCurrentThread(), L"Startup Compiler Thread");
 			GetIterationData().clear();
 			GetLogVector().clear();
 
@@ -96,35 +93,47 @@ void StartCompile()
 			GetIterationData().push_back({ "xrAI" });
 			GetIterationData().push_back({ "xrDO" });
 
-			auto UpdateIteration = [](u32 Index, bool IsStage, LPCSTR StageName)
-			{
-				SetActiveIteration(&(GetIterationData()[Index]));
-				if (IsStage)
+
+			clMsg("EmbreeISLoaded: %s", gCompilerMode.Embree ? "true" :"false");
+			clMsg("CudaISLoaded: %s", gCompilerMode.CUDA ? "true" : "false");
+
+
+			auto InitilizeIteration = [](LCBuildingType Type, bool active, LPCSTR phase)
 				{
-					GetActiveIteration()->status = InProgress;
-					Phase(StageName);
+					SetActiveIteration(&(GetIterationData()[(int)Type]));
+					gCompilerMode.builder_type = Type;
+					if (active)
+					{
+						GetActiveIteration()->status = InProgress;
 
-					u32 dwTime = timeGetTime();
-					if (Index == 0)	MainCompilerLC();
-					if (Index == 1) {
-						setup_luabind_allocator();
-						StartupAI();
+						u32 dwTime = timeGetTime();
+						Phase(phase);
+
+						if (Type == LCBuildingType::eLC)
+							MainCompilerLC();
+  						else if (Type == LCBuildingType::eDO)
+							MainCompilerDO();
+						else if (Type == LCBuildingType::eAI)
+						{
+							setup_luabind_allocator();
+							StartupAI();
+						}
+
+						dwTime = (timeGetTime() - dwTime) / 1000;
+
+						GetActiveIteration()->status = Complited;
+						GetActiveIteration()->elapsed_time = dwTime;
 					}
-					if (Index == 2)	MainCompilerDO();
-					dwTime = (timeGetTime() - dwTime) / 1000;
+					else
+						GetActiveIteration()->status = Skip;
 
-					// PhaseEnd();
-					GetActiveIteration()->status = Complited;
-					GetActiveIteration()->elapsed_time = dwTime;
- 				}
-				else
-					GetActiveIteration()->status = Skip;
-			};
+					PhasesEnd();
+				};
 
-			UpdateIteration(0, gCompilerMode.LC, "xrLC Startup...");
-			UpdateIteration(1, gCompilerMode.AI, "xrAI Startup...");
-			UpdateIteration(2, gCompilerMode.DO, "xrDO Startup...");
-
+			InitilizeIteration(LCBuildingType::eLC, gCompilerMode.LC, "xrLC Startup");
+			InitilizeIteration(LCBuildingType::eAI, gCompilerMode.AI, "xrAI Startup");
+ 			InitilizeIteration(LCBuildingType::eDO, gCompilerMode.DO, "xrDO Startup");
+			 
 			// Show statistic
 			extern xr_string make_time(u32 sec);
 			for (auto& I : GetIterationData())
@@ -134,8 +143,7 @@ void StartCompile()
 
 				clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time));
 			}
-
-			
+ 			
 			Msg("LastHeamMeory: %u mb", GetHeapMemory() / 1024 / 1024);
 
 			PhasesEnd();

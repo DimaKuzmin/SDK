@@ -38,7 +38,6 @@ protected:
 	TriangleContainer			static_geom_transp;
 
 
-	void RemoveGeometry();
 	void CommitScene();
 
 	void BuildModel(xr_vector<FaceDataEmbree>& faces);
@@ -46,13 +45,14 @@ protected:
 
 public:
 	EmbreeRayTraceModel()  = default;
- 
+
  	// Loading 
 	float RaytraceEmbreeProcess(Fvector& P, Fvector& N, float range, void* skip);
 	void  InitializeGeometry();		// Rcast-model
 	void  InitializeGeometry_Model(xr_vector<FaceDataEmbree>& faces); // Single-Models (xrMU-Model)
 
 	void  IntelEmbereUnloadData();
+	void RemoveGeometry();
 
 	// Details Loading 
 	RTCScene	IntelSceneDetails = nullptr;

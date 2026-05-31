@@ -212,7 +212,6 @@ void xrMU_Model::calc_lighting()
 	BB.invalidate();
 	for (v_vertices_it vit = m_vertices.begin(); vit != m_vertices.end(); vit++)
 		BB.modify((*vit)->P);
-
  
 	xr_vector<FaceDataEmbree> faces;
 	export_cform_rcast_new(faces, Fidentity);
@@ -224,5 +223,5 @@ void xrMU_Model::calc_lighting()
 
 	calc_lighting(color, Fidentity, &MDL, inlc_global_data()->L_static(), LP_dont_rgb + LP_dont_sun);
 
-	MDL.IntelEmbereUnloadData();
+	MDL.RemoveGeometry();
 }

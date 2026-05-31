@@ -2,7 +2,7 @@
 #include "CUDAGeometryBuilder.h"
 #include "../../xrLC/Build.h"
 
-bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers, CUstream stream)
+bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffers& outBuffers)
 {
     if (vertices.empty() || triangles.empty()) return false;
 
@@ -73,6 +73,8 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     emitDesc.type = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
     emitDesc.result = d_compactedSize;
 
+    auto stream = OptixContext::CreateCudaStream();
+
     // 8. Сборка BLAS
     OPTIX_CHECK(optixAccelBuild
     (
@@ -128,10 +130,12 @@ bool OptixGeometryBuilder::BuildBLAS(OptixDeviceContext context, OptixMeshBuffer
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tmp_vertexBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tmp_indexBuffer)));
 
+    OptixContext::DestroyCudaStream(stream);
+
     return true;
 }
 
-bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene, CUstream stream)
+bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
     if (outScene.blasHandle == 0) {
         Msg("! ERROR: Invalid BLAS handle");
@@ -179,6 +183,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&d_tempBuffer), bufferSizes.tempSizeInBytes));
     CUDA_CHECK(cudaMalloc(reinterpret_cast<void**>(&outScene.tlasBuffer), bufferSizes.outputSizeInBytes));
 
+    auto stream = OptixContext::CreateCudaStream();
     OPTIX_CHECK(optixAccelBuild(
         context,
         stream,
@@ -194,6 +199,7 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
     ));
 
     CUDA_CHECK(cudaStreamSynchronize(stream));
+    OptixContext::DestroyCudaStream(stream);
 
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_tempBuffer)));
     CUDA_CHECK(cudaFree(reinterpret_cast<void*>(d_instances)));
@@ -202,87 +208,98 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 }
 
 // Scene Global Data
+#include "global_calculation_data.h"
 #include "../xrLC_GlobalData.h"
 #include "../xrMU_Model_Reference.h"
   
 
 struct FaceDataEmbree;
-
 size_t GetMemory();
 
-bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, CUstream stream, OptixMeshBuffers& outScene)
+bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
     xrLC_GlobalData* globalData = lc_global_data();
     if (!globalData)        return false;
 
     OptixGeometryBuilder geometryBuilder;
+ 
 
 
-    CTimer TStats; TStats.Start();
-
-    size_t StartMemory = GetMemory();
-    // 1. Обрабатываем статическую геометрию
-    for (Face* F : globalData->g_faces())
+    if (gCompilerMode.builder_type == LCBuildingType::eLC)
     {
-        const Shader_xrLC& SH = F->Shader();
-        if (!SH.flags.bLIGHT_CastShadow) { continue; }
+        xrLC_GlobalData* globalData = lc_global_data();
+        if (!globalData)        return false;
 
-        u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
-        b_texture& T = globalData->textures()[surfaceID];
 
-        bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
-        F->flags.bOpaque = !isTransparent;
-        geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
-    }
-
-    // 2. Обрабатываем MU-референсы
-    for (auto ref : globalData->mu_refs())
-    {
-        xr_vector<FaceDataEmbree> tempBuffer;
-        ref->export_cform_rcast_new(tempBuffer);
-
-        for (auto& pF : tempBuffer)
+        // 1. Обрабатываем статическую геометрию
+        for (Face* F : globalData->g_faces())
         {
-            Face* F = (Face*)pF.ptr;
-            b_material& M = globalData->materials()[F->dwMaterial];
-            b_texture& T = globalData->textures()[M.surfidx];
+            const Shader_xrLC& SH = F->Shader();
+            if (!SH.flags.bLIGHT_CastShadow) { continue; }
+
+            u16 surfaceID = globalData->materials()[F->dwMaterial].surfidx;
+            b_texture& T = globalData->textures()[surfaceID];
 
             bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
-            F->flags.bOpaque = isTransparent;
-            geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            F->flags.bOpaque = !isTransparent;
+            geometryBuilder.AddFace(F, F->v[0]->P, F->v[1]->P, F->v[2]->P);
+        }
+
+        // 2. Обрабатываем MU-референсы
+        xr_vector<FaceDataEmbree> tempBuffer;
+        for (auto ref : globalData->mu_refs())
+        {
+            tempBuffer.clear();
+            ref->export_cform_rcast_new(tempBuffer);
+
+            for (auto& pF : tempBuffer)
+            {
+                Face* F = (Face*)pF.ptr;
+                b_material& M = globalData->materials()[F->dwMaterial];
+                b_texture& T = globalData->textures()[M.surfidx];
+
+                bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
+                F->flags.bOpaque = isTransparent;
+                geometryBuilder.AddFace(F, pF.v1, pF.v2, pF.v3);
+            }
+        }
+        tempBuffer.clear();
+        tempBuffer.shrink_to_fit();
+    }
+    else if (gCompilerMode.builder_type == LCBuildingType::eDO)
+    {
+        auto globalData = &gl_data;
+        if (!globalData)        return false;
+
+        // 1. Обрабатываем статическую геометрию
+        for (auto& F : globalData->building_embree_faces)
+        {
+            u16 surfaceID = globalData->g_materials[F.dwMaterial].surfidx;
+            b_texture& T  = globalData->g_textures[surfaceID];
+
+            bool isTransparent = (!T.pSurface.Empty() && T.bHasAlpha);
+            F.bOpaque = !isTransparent;
+            geometryBuilder.AddFace(&F, F.v1, F.v2, F.v3);
         }
     }
-
-    Msg("$[GPU Accel Structure] Capturing time: %u ms", TStats.GetElapsed_ms()); TStats.Start();
-    
-
+ 
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
     size_t pFaces = geometryBuilder.RawFacesSize();
     geometryBuilder.RemoveDublicatesVertexs();
     geometryBuilder.RemoveDublicateFaces();
 
-    Msg("$[GPU Accel Structure] Removing time: %u ms", TStats.GetElapsed_ms());
-
     Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
     Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
 
-    Msg("*[GPU Accel Structure] MU-Faces Memory: %u mb", u32((GetMemory() - StartMemory) / 1024 / 1024));
-
-    StartMemory = GetMemory();
-
     // 3. Строим BLAS
-    if (!geometryBuilder.BuildBLAS(context, outScene, stream))          return false;
+    if (!geometryBuilder.BuildBLAS(context, outScene))          return false;
 
     // 4. Строим TLAS
-    if (!geometryBuilder.BuildTLAS(context, outScene, stream))          return false;
-    Msg("*[GPU Accel Structure] Cpu (GPU Used) Memory: %u mb", u32((GetMemory() - StartMemory) / 1024 / 1024));
+    if (!geometryBuilder.BuildTLAS(context, outScene))          return false;
 
-    StartMemory = GetMemory();
     // 5: Face Pointers Loading to GPU
     XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
-    Msg("*[GPU Accel Structure] GPU FACES COPY Memory: %u mb", u32((GetMemory() - StartMemory) / 1024 / 1024));
-
-
+ 
     geometryBuilder.Clear();
     geometryBuilder.MemoryDealoc();
 

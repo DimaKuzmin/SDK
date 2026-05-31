@@ -12,6 +12,17 @@ public:
 
 	void					select		(xr_vector<R_Light>& dest, xr_vector<R_Light>& src, Fvector& P, float R);
 	void					select		(base_lighting& from, Fvector& P, float R);
+
+	void					clear_lighting()
+	{
+		rgb.clear();
+		hemi.clear();
+		sun.clear();
+
+		rgb.shrink_to_fit();
+		hemi.shrink_to_fit();
+		sun.shrink_to_fit();
+	};
  
 };
 #pragma pack(pop)
