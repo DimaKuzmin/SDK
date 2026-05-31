@@ -101,14 +101,6 @@ void PhasesEnd()
 			I.phases[I.phases.size() - 1].used_memory = GetHeapMemory();
  			I.phases[I.phases.size() - 1].status	  = Complited;
 		}
-
-
-		// Start _new phase
-		// if (ActiveIteration->phases.size() > 0)
-		// {
-		// 	ActiveIteration->phases[ActiveIteration->phases.size() - 1].used_memory = GetHeapMemory();
-		// 	ActiveIteration->phases[ActiveIteration->phases.size() - 1].status = Complited;
-		// }
 	}
 
 }

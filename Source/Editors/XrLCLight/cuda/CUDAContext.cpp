@@ -51,22 +51,15 @@ bool OptixContext::Initialize()
 
 void OptixContext::Destroy()
 {
-	size_t free, total;
-
  	if (optixContext)
 	{
 		OPTIX_CHECK(optixDeviceContextDestroy(optixContext));
 		optixContext = nullptr;
 	}
- 	cuMemGetInfo_v2(&free, &total);
-	clMsg("[CUDA] Optix is Destroyed: %u mb", (total - free) / 1024 / 1024);
 	 
 	CUDA_CHECK_2 ( cuDevicePrimaryCtxRelease_v2(cuDev) );
 	CUDA_CHECK ( cudaDeviceReset() );
   	CUDA_CHECK( cudaDeviceSynchronize() );
-
-	cuMemGetInfo_v2(&free, &total);
-	clMsg("[CUDA] Cuda context is Resting: %u mb", (total-free) / 1024 / 1024);
 }
 
 // Структура для записи SBT
@@ -90,13 +83,13 @@ struct __align__(OPTIX_SBT_RECORD_ALIGNMENT) HitGroupRecord
 void OptixContext::CreatePipeline(const char* ptxCode)
 {
 	auto LoadPTXLambda = [](const std::string& filename)
-		{
-			clMsg("Optix Loading PTX File: %s", filename.c_str());
-			std::ifstream file(filename, std::ios::binary);
-			if (!file)
-				throw std::runtime_error("Failed to open PTX file");
-			return std::string(std::istreambuf_iterator<char>(file), {});
-		};
+	{
+		clMsg("Optix Loading PTX File: %s", filename.c_str());
+		std::ifstream file(filename, std::ios::binary);
+		if (!file)
+			throw std::runtime_error("Failed to open PTX file");
+		return std::string(std::istreambuf_iterator<char>(file), {});
+	};
 
 	// Создание модуля
 	OptixModule module = nullptr;

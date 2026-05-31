@@ -653,8 +653,7 @@ void RenderCompilerUI(int X, int Y)
   				ImGui::TableSetupColumn("Information", ImGuiTableColumnFlags_WidthFixed, 350.0f);
 
 				ImGui::TableHeadersRow();
-
-
+ 
 				for (auto& row : GetIterationData()) {
 
 					xr_string rowStatus;
