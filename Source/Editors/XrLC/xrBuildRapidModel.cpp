@@ -16,7 +16,7 @@ void SaveUVM(LPCSTR fname, xr_vector<b_rc_face>& vm)
 	FS.w_close(W);
 }
 
-void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
+void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL) -> OBJ
 {
 	IWriter* W = FS.w_open(fname);
 	string256 tmp;
@@ -33,5 +33,6 @@ void SaveAsSMF(LPCSTR fname, CDB::CollectorPacked& CL)
 		W->w_string(tmp);
 	}
 	FS.w_close(W);
-}*/
+}
+*/
  

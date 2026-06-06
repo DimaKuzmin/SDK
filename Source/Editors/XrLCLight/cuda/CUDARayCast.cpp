@@ -232,6 +232,8 @@ void XRay::RayTrace::CUDA::InitializeTexturesAlpha()
 static bool isGPUInitialized = false;
 void XRay::RayTrace::CUDA::InitializeRayTracing()
 {
+	clMsg("[CUDA] InitializeRayTracing !");
+
 	isGPUInitialized = true;
  	if (!optixContext.Initialize())
 		FATAL("[OptiX] Failed to initialize OptiX context");
@@ -239,15 +241,12 @@ void XRay::RayTrace::CUDA::InitializeRayTracing()
 	// Использование контекста
 	OptixDeviceContext context = optixContext.GetOptixContext();
 	BuildSceneFromLCGlobalData(context, CommitedScene);
-
-	// Phase("CUDA: Initialize Data");
-	InitializeLights();
+  	InitializeLights();
 	InitializeTexturesAlpha();
 }
 
 
 // Работа с лучами !
-
 class RayTracer
 {
 	// Colors (Result)
@@ -261,8 +260,7 @@ class RayTracer
 	// Parrrams (.cu export __constant__	Params g_params; )
 	OPTICK_Params* h_params;				// CPU alloc
 	OPTICK_Params* d_params;				// GPU alloc)
-
-
+ 
 	int			  max_rays;					// Макс. количество лучей в батче
 	CUstream	  stream;					// Отдельный стрим
 
@@ -270,21 +268,33 @@ public:
 	xr_vector<base_color_c> colors;
 	u8  current_flags = 0;
 	bool isInitialized = false;
-
- 
+  
 	void UnloadThread()
 	{
-		if (h_params) cudaFreeHost(h_params);
-		if (h_rays) cudaFreeHost(h_rays);
-		if (h_colors) cudaFreeHost(h_colors);
+		if (isInitialized)
+		{
+			if (h_params) cudaFreeHost(h_params);
+			if (h_rays) cudaFreeHost(h_rays);
+			if (h_colors) cudaFreeHost(h_colors);
 
-		if (d_params) cudaFree(d_params);
-		if (d_rays) cudaFree(d_rays);
-		if (d_colors) cudaFree(d_colors);
+			if (d_params) cudaFree(d_params);
+			if (d_rays) cudaFree(d_rays);
+			if (d_colors) cudaFree(d_colors);
 
-		cudaStreamDestroy(stream);
+			CUDA_CHECK(cudaStreamDestroy(stream));
+			CUDA_CHECK(cudaDeviceSynchronize());
+
+			h_params = nullptr;
+			h_colors = nullptr;
+			h_rays = nullptr;
+
+			d_params = nullptr;
+			d_colors = nullptr;
+			d_rays = nullptr;
+		}
+		
 		isInitialized = false;
-	}
+ 	}
 
 	void Init(int max_rays)
 	{
@@ -326,7 +336,7 @@ public:
 	{
 		h_rays[INDEX].Position  = make_float3(Task.P.x, Task.P.y, Task.P.z);
 		h_rays[INDEX].Direction = make_float3(Task.N.x, Task.N.y, Task.N.z);
- 		LastIndexTask = INDEX;
+ 		LastIndexTask = INDEX + 1;
 	}
 
 	void TraceRaysNew()
@@ -460,11 +470,16 @@ void XRay::RayTrace::CUDA::CleanupRayTracing()
 		Phase("CUDA: Cleanump...");
 		for (auto& T : cpu_tex_gpu)
 			cudaFree(T.pSurface);
+		cpu_tex_gpu.clear();
 
 		// Вычищяем большие буферы данных 
 		cudaFree(gpu_lights);
 		cudaFree(gpu_faces);
 		cudaFree(gpu_textures);
+
+		gpu_lights   = nullptr;
+		gpu_faces	 = nullptr;
+		gpu_textures = nullptr;
 
 		// Вычищаем модель уровня из CUDA
  		cudaFree(reinterpret_cast<void*>(CommitedScene.blasBuffer));

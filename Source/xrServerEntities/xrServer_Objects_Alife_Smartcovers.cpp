@@ -533,7 +533,7 @@ void CSE_SmartCover::load_draw_data () {
 			H.animation_loophole_sdk = parse_string(table, "animation_play_sdk");
 
 		if (H.fov_direction.square_magnitude() < EPS_L) {
-			Msg				("! fov direction for loophole %s is setup incorrectly", H.string_identifier.c_str());
+		//	Msg				("! fov direction for loophole %s is setup incorrectly", H.string_identifier.c_str());
 			H.fov_direction.set(0.f, 0.f, 1.f);
 		}
 		else
@@ -542,7 +542,7 @@ void CSE_SmartCover::load_draw_data () {
 		H.enter_direction		= parse_fvector(table, "enter_direction");
 
 		if (H.enter_direction.square_magnitude() < EPS_L) {
-			Msg				("! enter direction for loophole %s is setup incorrectly", H.string_identifier.c_str());
+		//	Msg				("! enter direction for loophole %s is setup incorrectly", H.string_identifier.c_str());
 			H.enter_direction.set(0.f, 0.f, 1.f);
 		}
 		else

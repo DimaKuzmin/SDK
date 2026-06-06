@@ -54,3 +54,22 @@ xr_string make_time(u32 sec);
 
 
 void AditionalData(const char* format, ...);
+
+// Run Threads
+#include <functional>
+#include <thread>
+static void runThreadsMax(std::function<void()>&& function_to_call, u32 ThreadsMax)
+{
+	xr_vector<std::thread*> threads;
+	for (auto i = 0; i < ThreadsMax; i++)
+	{
+		threads.push_back(new std::thread(function_to_call));
+	}
+	for (auto i = 0; i < ThreadsMax; i++)
+	{
+		threads[i]->join();
+		xr_delete(threads[i]);
+	}
+
+	threads.clear();
+}

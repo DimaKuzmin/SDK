@@ -167,9 +167,6 @@
     <ClInclude Include="global_slots_data.h">
       <Filter>do_light</Filter>
     </ClInclude>
-    <ClInclude Include="recalculation.h">
-      <Filter>do_light</Filter>
-    </ClInclude>
     <ClInclude Include="..\Shader_xrLC.h" />
     <ClInclude Include="R_light.h">
       <Filter>RayTracing\base_lighting</Filter>
@@ -325,9 +322,6 @@
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="global_slots_data.cpp">
-      <Filter>do_light</Filter>
-    </ClCompile>
-    <ClCompile Include="recalculation.cpp">
       <Filter>do_light</Filter>
     </ClCompile>
     <ClCompile Include="..\..\xrEngine\xrLoadSurface.cpp">

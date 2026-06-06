@@ -104,17 +104,14 @@ IC  u32 z_size() const
 
 IC	u32		slot_index	( int _x, int _z ) const 
 {
-	//return _z*size_x+_x;
-	u32 ret = _z*size_x+_x;
-//#ifdef DEBUG
-	int xx, zz;
+ 	u32 ret = _z*size_x+_x;
+
+ 	int xx, zz;
 	slot_x_z( ret, xx, zz );
 	R_ASSERT(zz == _z);
 	R_ASSERT(xx == _x);
 
-//#endif
-
- return ret;
+	return ret;
 }
 
 IC	void		slot_x_z	( u32 idx, int &_x, int &_z ) const

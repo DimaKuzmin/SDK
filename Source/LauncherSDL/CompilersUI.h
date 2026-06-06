@@ -27,8 +27,10 @@ struct CompilersMode
 	int RadioID = 0;
 	int item_current_jitter = 2;
 	int item_current_jitter_mu = 6;
-	int item_cuda_rays = 1;
+	int item_cuda_rays = 3;
 	int item_lmap_selected = 1;
+
+	bool SaveObjectRcast = false;
 
 	Fbox scene_bbox;
 
@@ -37,7 +39,7 @@ struct CompilersMode
  	bool Silent = false;
 	bool Embree = false;
 	bool CUDA   = true;
-	int	 LC_CUDA_RAYS_SIZE = 8192;
+	int	 LC_CUDA_RAYS_SIZE = 64*1024;
 
 	bool EmbreeBVHCompact = false;
 	bool EmbreeBVHRobust = false;
@@ -97,6 +99,11 @@ struct CompilersMode
 	LPCSTR get_level_name()
 	{
 		return *LevelName;
+	}
+
+	void set_level_name(LPCSTR name)
+	{
+		LevelName = name;
 	}
 };
 void RenderMainUI();

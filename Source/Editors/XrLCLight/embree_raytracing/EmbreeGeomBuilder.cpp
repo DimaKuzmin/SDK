@@ -8,8 +8,6 @@
 
 void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_msg)
 {
-    size_t VertexStart = verts_v.size();
-
     CTimer tStats;
     tStats.Start();
     //----------------------
@@ -17,12 +15,8 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
     //----------------------
     size_t totalVerts = raw_faces.size() * 3;
 
-    if (raw_faces.empty())
-    {
-        // clMsg("$Raw Faces : %u size", raw_faces.size());
-        return;
-    }
-
+    if (raw_faces.empty()) return;
+ 
     xr_vector<IndexedVertex> temp;
     temp.reserve(totalVerts);
 
@@ -33,6 +27,9 @@ void TriangleContainer::RemoveDublicatesVertexs(bool isTransparent, bool enable_
             temp.push_back({ raw_faces[i].v[j], static_cast<uint32_t>(i * 3 + j) });
         }
     }
+
+    size_t VertexStart = temp.size();
+ 
     //----------------------
     // 2. Сортируем вершины
     //----------------------
@@ -124,7 +121,7 @@ void TriangleContainer::RemoveDublicatesFaces(bool isTransparent, bool enable_ms
 
     for (size_t i = 1; i < temp.size(); ++i)
     {
-        if (!temp[i].similar(temp[i - 1]))
+        if (!temp[i].similar(temp[i - 1]) && !temp[i].isDegenerated())
         {
             new_faces.push_back(faces_v[temp[i].originalIndex]);
             new_dummy.push_back(dummy[temp[i].originalIndex]);
@@ -143,7 +140,7 @@ void TriangleContainer::RemoveDublicatesFaces(bool isTransparent, bool enable_ms
     if (enable_msg)
         Msg("$ Geometry %s Remove Dublicate Triangles : from %u to %u",
             isTransparent ? "Transparent" : "Opacue",
-            pFaces, faces_v.size());
+            pFaces, faces_v.size());     
 }
 
 void TriangleContainer::ClearAll()
@@ -156,4 +153,4 @@ void TriangleContainer::ClearAll()
     verts_v.shrink_to_fit();
     dummy.shrink_to_fit();
 }
-
+ 

@@ -10,4 +10,3 @@
 #include "../../LauncherSDL/CompilersUI.h"
 #include "../../LauncherSDL/cl_log.h"
 #include "../XrCore/log.h"
- 

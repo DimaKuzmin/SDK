@@ -1,25 +1,25 @@
-#ifndef __GLOBAL_SLOTS_DATA_H__
-#define __GLOBAL_SLOTS_DATA_H__
+#pragma once
 
-#include "detailformat.h"
-#include "recalculation.h"
+#include "detailformat.h" 
+
 class INetReader;
 class IWriter;
 class global_slots_data
 {
 private:
 	DetailHeader					dtH;
-	DetailSlot						*dtS;
-	CVirtualFileRW					*dtFS;
- public:
-	global_slots_data(): dtS( 0 ), dtFS( 0 ) {}
-
-	void				Load			();
-	void				Free			();
-	
-	void				FreeOnAgent		();
+	DetailSlot* dtS;
+	CVirtualFileRW* dtFS;
  
-	IC const DetailHeader &header( )const { return dtH; }
+public:
+	global_slots_data() : dtS(0), dtFS(0) {}
+
+	void				Load();
+	void				Free();
+
+	void				FreeOnAgent();
+
+	IC const DetailHeader& header()const { return dtH; }
 
 	IC u32 size_x() const
 	{
@@ -30,70 +30,64 @@ private:
 	{
 		return dtH.z_size();
 	}
-  
-	IC bool skip_slot( int _x, int _z ) const
+   
+	IC bool skip_slot(int _x, int _z) const
 	{
-		return	is_empty( get_slot( _x, _z ) );
+		return	is_empty(get_slot(_x, _z));
 	}
 
-	IC DetailSlot&	get_slot( int _x, int _z )
+	IC DetailSlot& get_slot(int _x, int _z)
 	{
-		return dtS[ dtH.slot_index( _x, _z ) ];
+		return dtS[dtH.slot_index(_x, _z)];
 	}
 
-	IC const DetailSlot&	get_slot( int _x, int _z ) const
+	IC const DetailSlot& get_slot(int _x, int _z) const
 	{
-		return dtS[ dtH.slot_index( _x, _z ) ];
+		return dtS[dtH.slot_index(_x, _z)];
 	}
-	
-	IC const DetailSlot&	get_slot( u32 idx ) const
+
+	IC const DetailSlot& get_slot(u32 idx) const
 	{
-		VERIFY( idx< dtH.slots_count() );
+		VERIFY(idx < dtH.slots_count());
 		return dtS[idx];
 	}
-	IC  DetailSlot&	get_slot( u32 idx )
+	IC  DetailSlot& get_slot(u32 idx)
 	{
-		VERIFY( idx< dtH.slots_count() );
+		VERIFY(idx < dtH.slots_count());
 		return dtS[idx];
 	}
 
 
-	IC Fvector& get_slot_box_min( Fvector &min, int _x, int _z ) const
+	IC Fvector& get_slot_box_min(Fvector& min, int _x, int _z) const
 	{
-		const DetailSlot& DS =  get_slot( _x, _z );
-		min.set( dtH.slot_min_x( _x ),
-				 DS.r_ybase()	,
-				 dtH.slot_min_z( _z ) 
-				);
+		const DetailSlot& DS = get_slot(_x, _z);
+		min.set(dtH.slot_min_x(_x),
+			DS.r_ybase(),
+			dtH.slot_min_z(_z)
+		);
 		return min;
 	}
 
 
-	IC Fvector& get_slot_box_max( Fvector &max, int _x, int _z ) const
+	IC Fvector& get_slot_box_max(Fvector& max, int _x, int _z) const
 	{
 		Fvector min, diameter;
-		get_slot_box_min( min, _x, _z );
-		get_slot_diameter( diameter, get_slot( _x, _z ) );
-		max.add( min, diameter );
+		get_slot_box_min(min, _x, _z);
+		get_slot_diameter(diameter, get_slot(_x, _z));
+		max.add(min, diameter);
 		return max;
 	}
 
-	IC void get_slot_box( Fbox &BB, int _x, int _z ) const
+	IC void get_slot_box(Fbox& BB, int _x, int _z) const
 	{
-		get_slot_box_min(  BB.min, _x, _z ) ;
+		get_slot_box_min(BB.min, _x, _z);
 
 		Fvector diameter;
-		get_slot_diameter( diameter, get_slot( _x, _z ) );
+		get_slot_diameter(diameter, get_slot(_x, _z));
 
-		BB.max.add	( BB.min, diameter );
-		BB.grow		( 0.05f );
+		BB.max.add(BB.min, diameter);
+		BB.grow(0.05f);
 	}
 	void process_all_pallete();
 
 };
-
-
-
-
-
-#endif //__GLOBAL_SLOTS_DATA_H__

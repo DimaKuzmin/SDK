@@ -218,13 +218,7 @@ size_t GetMemory();
 
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
-    xrLC_GlobalData* globalData = lc_global_data();
-    if (!globalData)        return false;
-
     OptixGeometryBuilder geometryBuilder;
- 
-
-
     if (gCompilerMode.builder_type == LCBuildingType::eLC)
     {
         xrLC_GlobalData* globalData = lc_global_data();
@@ -288,18 +282,21 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
     geometryBuilder.RemoveDublicatesVertexs();
     geometryBuilder.RemoveDublicateFaces();
 
-    Msg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
-    Msg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
+    clMsg("$[GPU Accel Structure] Remove Dublicate Vert : %llu to %llu", pVertex, geometryBuilder.vertices.size());
+    clMsg("$[GPU Accel Structure] Remove Dublicate Face : %llu to %llu", pFaces, geometryBuilder.triangles.size());
 
     // 3. Строим BLAS
     if (!geometryBuilder.BuildBLAS(context, outScene))          return false;
 
     // 4. Строим TLAS
     if (!geometryBuilder.BuildTLAS(context, outScene))          return false;
+    clMsg("$[GPU Accel Structure] Model BLAS, TLAS Builded!");
+
 
     // 5: Face Pointers Loading to GPU
     XRay::RayTrace::CUDA::InitializeFaces(geometryBuilder.facePointers);
- 
+    clMsg("$[GPU Accel Structure] Model Faces Loaded to GPU !");
+
     geometryBuilder.Clear();
     geometryBuilder.MemoryDealoc();
 

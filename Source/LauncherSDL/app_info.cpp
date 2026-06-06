@@ -93,9 +93,6 @@ void SaveConfigFile(CInifile* file)
 	file->w_bool(SECTION, "AI_Verbose", gCompilerMode.AI_Verbose);
 	file->w_bool(SECTION, "AI_Verify", gCompilerMode.AI_Verify);
 
-	file->w_string(SECTION, "AI_SpawnName", gCompilerMode.AI_spawn_name);
-	file->w_string(SECTION, "AI_StartActor", gCompilerMode.AI_StartActor);
-
 	file->save_as();
 	xr_delete(file);
 }
@@ -162,9 +159,6 @@ void LoadConfigFile(CInifile* file)
 	file->r_bool(SECTION, "AI_Draft", gCompilerMode.AI_Draft);
 	file->r_bool(SECTION, "AI_Verbose", gCompilerMode.AI_Verbose);
 	file->r_bool(SECTION, "AI_Verify", gCompilerMode.AI_Verify);
-
-	// xr_strcpy( gCompilerMode.AI_spawn_name, file->r_string(SECTION, "AI_SpawnName") );
-	// xr_strcpy( gCompilerMode.AI_StartActor,  file->r_string(SECTION, "AI_StartActor") );
 
 	xr_delete(file);
 }

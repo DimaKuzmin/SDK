@@ -212,7 +212,7 @@ const ImVec4 getLogColor_new(char* text)
 
 const char* itemsJitter[] = { "1", "4", "9" };
 const char* itemsJitterMU[] = { "0", "1", "2", "3", "4", "5", "6" };
-const char* itemsCudaRays[] = { "8000", "16000", "32000", "64000", "128000", "512000", "1024000"};
+const char* itemsCudaRays[] = { "32000", "64000", "128000", "512000"};
 const char* lightmap_resolution[] = { "1024", "2048", "4096", "8192", "16384" };
 
 void DrawLCConfig()
@@ -314,11 +314,8 @@ void DrawAIConfig()
 		ImGui::BeginDisabled(!gCompilerMode.AI_BuildSpawn);
 
 		ImGui::Checkbox("No Separator Check", &gCompilerMode.AI_NoSeparatorCheck);
-
-		ImGui::Text("Name all.spawn :");
-		ImGui::InputText("#1", gCompilerMode.AI_spawn_name, sizeof(gCompilerMode.AI_spawn_name));
-		ImGui::Text("Name level start:");
-		ImGui::InputText("#2", gCompilerMode.AI_StartActor, sizeof(gCompilerMode.AI_StartActor));
+		ImGui::Checkbox("LevelName .spawn", &gCompilerMode.AI_Spawn_SingleLevel);
+		ImGui::Checkbox("Freemp .spawn", &gCompilerMode.AI_Spawn_By_Freemp);
 
 		ImGui::EndDisabled();
 
@@ -329,6 +326,8 @@ void DrawAIConfig()
 void DrawCompilerConfig()
 {
 	ImGui::Checkbox("Silent mode", &gCompilerMode.Silent);
+	ImGui::Checkbox("Save OBJ Rcast-Model", &gCompilerMode.SaveObjectRcast);
+
 
 	ImGui::PushID("LightPreset");
 
@@ -358,7 +357,7 @@ void DrawCompilerConfig()
 	{
 		ImGui::BeginDisabled(!gCompilerMode.CUDA);
 
-		ImGui::Combo("CudaRays", &gCompilerMode.item_cuda_rays, itemsCudaRays, 7);
+		ImGui::Combo("CudaRays", &gCompilerMode.item_cuda_rays, itemsCudaRays, 4);
 		gCompilerMode.LC_CUDA_RAYS_SIZE = atoi(itemsCudaRays[gCompilerMode.item_cuda_rays]);
 
 		ImGui::EndDisabled();

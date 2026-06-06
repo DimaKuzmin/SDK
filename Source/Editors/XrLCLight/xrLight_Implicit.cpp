@@ -17,65 +17,66 @@ void ProcessingCPU()
 	static std::atomic <int> Processed;
 	Processed = 0;
 
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t threadID)
+	auto function = []( )
+	{
+		ImplicitDeflector& defl = cl_globs.DATA();
+		CDB::COLLIDER DB; DB.ray_options(0);
+
+		Fvector2 dim;   dim.set(float(defl.Width()), float(defl.Height()));
+		Fvector2 half;  half.set(.5f / dim.x, .5f / dim.y);
+
+		// Jitter data
+		Fvector2 JS; JS.set(.499f / dim.x, .499f / dim.y);
+		Fvector2* Jitter = nullptr; u32 Jcount = 0;
+		Jitter_Select(Jitter, Jcount);
+
+		while (true)
 		{
-			ImplicitDeflector& defl = cl_globs.DATA();
-			CDB::COLLIDER DB; DB.ray_options(0);
+			u32 V = Processed.fetch_add(1);
+			AditionalData("Processed: %u/%u", Processed.load(), defl.Height());
+			if (V >= defl.Height()) break;
 
-			Fvector2 dim;   dim.set(float(defl.Width()), float(defl.Height()));
-			Fvector2 half;  half.set(.5f / dim.x, .5f / dim.y);
-
-			// Jitter data
-			Fvector2 JS; JS.set(.499f / dim.x, .499f / dim.y);
-			Fvector2* Jitter = nullptr; u32 Jcount = 0;
-			Jitter_Select(Jitter, Jcount);
-
-			while (true)
+			for (u32 U = 0; U < defl.Width(); U++)
 			{
-				u32 V = Processed.fetch_add(1);
-				AditionalData("Processed: %u/%u", Processed.load(), defl.Height());
-				if (V >= defl.Height()) break;
-
-				for (u32 U = 0; U < defl.Width(); U++)
+				base_color_c	C;
+				u32	Fcount = 0;
+				for (u32 J = 0; J < Jcount; J++)
 				{
-					base_color_c	C;
-					u32	Fcount = 0;
-					for (u32 J = 0; J < Jcount; J++)
-					{
-						// LUMEL space
-						Fvector2				P;
-						P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
-						P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
+					// LUMEL space
+					Fvector2				P;
+					P.x = float(U) / dim.x + half.x + Jitter[J].x * JS.x;
+					P.y = float(V) / dim.y + half.y + Jitter[J].y * JS.y;
 
-						Fvector wP, wN, B;
-						for (auto F : cl_globs.Hash().query(P.x, P.y))
+					Fvector wP, wN, B;
+					for (auto F : cl_globs.Hash().query(P.x, P.y))
+					{
+						_TCF& tc = F->tc[0];
+						if (tc.isInside(P, B))
 						{
-							_TCF& tc = F->tc[0];
-							if (tc.isInside(P, B))
-							{
-								// We found triangle and have barycentric coords
-								FromBarry(F, wP, wN, B);
-								LightPoint( C, wP, wN, inlc_global_data()->L_static(), GetCurrentFlags(), F);
-								Fcount++;
-							}
+							// We found triangle and have barycentric coords
+							FromBarry(F, wP, wN, B);
+							LightPoint(C, wP, wN, inlc_global_data()->L_static(), GetCurrentFlags(), F);
+							Fcount++;
 						}
 					}
+				}
 
-					if (Fcount)
-					{
-						C.scale(Fcount);
-						C.mul(.5f);
-						defl.Lumel(U, V)._set(C);
-						defl.Marker(U, V) = 255;
-					}
-					else
-					{
-						defl.Marker(U, V) = 0;
-					}
+				if (Fcount)
+				{
+					C.scale(Fcount);
+					C.mul(.5f);
+					defl.Lumel(U, V)._set(C);
+					defl.Marker(U, V) = 255;
+				}
+				else
+				{
+					defl.Marker(U, V) = 0;
 				}
 			}
-		});
+		}
+	};
 
+	runThreadsMax(function, gCompilerMode.ThreadsNum);
 }
 
 void ImplicitLightingExec()

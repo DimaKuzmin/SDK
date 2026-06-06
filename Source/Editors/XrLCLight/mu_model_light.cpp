@@ -20,7 +20,7 @@ void	wait_mu_base		()
 	task_id = 0;
 
 	// Basic Types
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t THID)
+	auto task_base = []()
 	{
 		xrMU_Model* model = 0;
 		while (true)
@@ -32,8 +32,9 @@ void	wait_mu_base		()
 			model->calc_materials();
 			model->calc_lighting();
 		}
-	});
+	};
 
+	runThreadsMax(task_base, gCompilerMode.ThreadsNum);
 
 	Phase("LIGHT: Waiting for MU-Refs...");
 
@@ -50,42 +51,44 @@ void	wait_mu_base		()
 		static std::atomic<u32> REF_INDEX = 0;
 		REF_INDEX = 0;
 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t ThreadID)
+		auto task1 = []( )
+		{
+			while (true)
 			{
-				while (true)
-				{
-					u32 IndexTask = REF_INDEX.fetch_add(1);
-					if (IndexTask >= inlc_global_data()->mu_refs().size()) break;
+				u32 IndexTask = REF_INDEX.fetch_add(1);
+				if (IndexTask >= inlc_global_data()->mu_refs().size()) break;
 
-					AditionalData("REF LIGHT: %u/%u", IndexTask, inlc_global_data()->mu_refs().size());
-					auto MRef = inlc_global_data()->mu_refs()[IndexTask];
-					MRef->calc_lighting_cuda_1();
-				};
+				AditionalData("REF LIGHT: %u/%u", IndexTask, inlc_global_data()->mu_refs().size());
+				auto MRef = inlc_global_data()->mu_refs()[IndexTask];
+				MRef->calc_lighting_cuda_1();
+			};
 
-				// Завершаем накопленые данные
-				GPUTaskinSystem.LightPointPacked_run_tasks();
-			});
+			// Завершаем накопленые данные
+			GPUTaskinSystem.LightPointPacked_run_tasks();
+		};
+		runThreadsMax(task1, gCompilerMode.ThreadsNum);
 		Msg("[MURefs] Elapsed For Compute: %u ms", tStats.GetElapsed_ms());
 
 		// APPLY
 
 		tStats.Start();
 		REF_INDEX = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t ThreadID)
+		auto task2 = []()
+		{
+			while (true)
 			{
-				while (true)
-				{
-					u32 Index = REF_INDEX.fetch_add(1);
-					if (Index >= inlc_global_data()->mu_refs().size()) break;
+				u32 Index = REF_INDEX.fetch_add(1);
+				if (Index >= inlc_global_data()->mu_refs().size()) break;
 
-					auto REF = inlc_global_data()->mu_refs()[Index];
+				auto REF = inlc_global_data()->mu_refs()[Index];
 
-					REF->calc_lighting_cuda_2();
-					REF->calc_lighting_cuda_3();
+				REF->calc_lighting_cuda_2();
+				REF->calc_lighting_cuda_3();
 
-					AditionalData("REF LIGHT APPLY: %u/%u", Index, inlc_global_data()->mu_refs().size());
-				}
-			});
+				AditionalData("REF LIGHT APPLY: %u/%u", Index, inlc_global_data()->mu_refs().size());
+			}
+		};
+ 		runThreadsMax(task2, gCompilerMode.ThreadsNum);
 
 		Msg("[MURefs] Elapsed For Apply Colors: %u ms", tStats.GetElapsed_ms());
 
@@ -95,7 +98,7 @@ void	wait_mu_base		()
 	{
  		// REFERENSE
  		task_id = 0;
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t THID)
+		auto task = []()
 			{
 				// Priority
 				xrMU_Reference* ref = 0;
@@ -108,7 +111,9 @@ void	wait_mu_base		()
 					ref = inlc_global_data()->mu_refs()[id];
 					ref->calc_lighting();
 				}
-			});
+			};
+
+		runThreadsMax(task, gCompilerMode.ThreadsNum);
 	}
 
 }

@@ -92,7 +92,6 @@
     <ClInclude Include="mu_model_face.h" />
     <ClInclude Include="mu_model_face_defs.h" />
     <ClInclude Include="mu_model_light.h" />
-    <ClInclude Include="recalculation.h" />
     <ClInclude Include="R_light.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="tcf.h" />
@@ -143,7 +142,6 @@
     <ClCompile Include="MeshStaic.cpp" />
     <ClCompile Include="mu_model_face.cpp" />
     <ClCompile Include="mu_model_light.cpp" />
-    <ClCompile Include="recalculation.cpp" />
     <ClCompile Include="stdafx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -180,7 +178,7 @@
       <Include Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">C:\ProgramData\NVIDIA Corporation\OptiX SDK 9.0.0\Include\</Include>
       <Keep Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">true</Keep>
       <NvccCompilation Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">ptx</NvccCompilation>
-      <CompileOut Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">C:\SDK\Bin\$(Platform)\$(Configuration)\%(Filename).ptx</CompileOut>
+      <CompileOut Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">$(OutDir)%(Filename).ptx</CompileOut>
       <GPUDebugInfo Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</GPUDebugInfo>
       <GenerateLineInfo Condition="'$(Configuration)|$(Platform)'=='DevCPU_V11|x64'">false</GenerateLineInfo>
     </CudaCompile>

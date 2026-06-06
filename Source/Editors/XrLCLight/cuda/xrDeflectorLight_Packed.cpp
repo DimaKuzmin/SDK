@@ -59,6 +59,9 @@ void PackedLighting::LightPointPacked_run_tasks(bool need_clear)
 
 	// Получаем результаты
 	auto& colors = XRay::RayTrace::CUDA::RayTraceResult();
+
+
+
 	for (auto RecvestID = 0; RecvestID < recvest_array.size(); RecvestID++)
 	{
 		auto& RAY_INFO = recvest_array[RecvestID];

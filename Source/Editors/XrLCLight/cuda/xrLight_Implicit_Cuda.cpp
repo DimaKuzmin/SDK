@@ -69,74 +69,75 @@ public:
 		static std::atomic<u32> task_height = 0;
 		task_height = 0;
 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t TaskID)
+		auto ProcessLmap = []( )
+		{
+			auto defl = &cl_globs.DATA();
+
+			// Setup variables
+			Fvector2 dim, half;
+			dim.set(float(defl->Width()), float(defl->Height()));
+			half.set(.5f / dim.x, .5f / dim.y);
+
+			// Jitter data
+			Fvector2 JS;
+			JS.set(.499f / dim.x, .499f / dim.y);
+			u32 Jcount;
+			Fvector2* Jitter;
+			Jitter_Select(Jitter, Jcount);
+
+			while (true)
 			{
-				auto defl = &cl_globs.DATA();
+				auto V = task_height.fetch_add(1);
+				if (V >= defl->Height()) break;
 
-				// Setup variables
-				Fvector2 dim, half;
-				dim.set(float(defl->Width()), float(defl->Height()));
-				half.set(.5f / dim.x, .5f / dim.y);
-
-				// Jitter data
-				Fvector2 JS;
-				JS.set(.499f / dim.x, .499f / dim.y);
-				u32 Jcount;
-				Fvector2* Jitter;
-				Jitter_Select(Jitter, Jcount);
-
-				while (true)
+				for (u32 U = 0; U < defl->Width(); U++)
 				{
-					auto V = task_height.fetch_add(1);
-					if (V >= defl->Height()) break;
-
-					for (u32 U = 0; U < defl->Width(); U++)
+					try
 					{
-						try
+						for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
 						{
-							for (u32 SampleID = 0; SampleID < Jcount; SampleID++)
+							// LUMEL space
+							Fvector2				P;
+							P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
+							P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
+
+							// World space
+							Fvector wP, wN, B;
+							for (auto F : cl_globs.query(P.x, P.y))
 							{
-								// LUMEL space
-								Fvector2				P;
-								P.x = float(U) / dim.x + half.x + Jitter[SampleID].x * JS.x;
-								P.y = float(V) / dim.y + half.y + Jitter[SampleID].y * JS.y;
-
-								// World space
-								Fvector wP, wN, B;
-								for (auto F : cl_globs.query(P.x, P.y))
+								_TCF& tc = F->tc[0];
+								if (tc.isInside(P, B))
 								{
- 									_TCF& tc = F->tc[0];
-									if (tc.isInside(P, B))
-									{
-										// We found triangle and have barycentric coords
-										Vertex* V1 = F->v[0];
-										Vertex* V2 = F->v[1];
-										Vertex* V3 = F->v[2];
-										wP.from_bary(V1->P, V2->P, V3->P, B);
-										wN.from_bary(V1->N, V2->N, V3->N, B);
-										wN.normalize();
+									// We found triangle and have barycentric coords
+									Vertex* V1 = F->v[0];
+									Vertex* V2 = F->v[1];
+									Vertex* V3 = F->v[2];
+									wP.from_bary(V1->P, V2->P, V3->P, B);
+									wN.from_bary(V1->N, V2->N, V3->N, B);
+									wN.normalize();
 
-										GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(U, V), nullptr, wP, wN, F);
-									}
+									GPUTaskinSystem.LightPointPacked_add_task(GPUTaskinSystem.MakeKey(U, V), nullptr, wP, wN, F);
 								}
 							}
 						}
-						catch (...)
-						{
-							clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
-						}
 					}
+					catch (...)
+					{
+						clMsg("* THREAD #%d: Access violation. Possibly recovered.");//,thID
+					}
+				}
 
-					AditionalData("Current: %u", V);
-				};
+				AditionalData("Current: %u", V);
+			};
 
-				// Остаток доработать 
-				GPUTaskinSystem.LightPointPacked_run_tasks();
-			});
+			// Остаток доработать 
+			GPUTaskinSystem.LightPointPacked_run_tasks();
+		};
+ 
+		runThreadsMax(ProcessLmap, gCompilerMode.ThreadsNum);
 
 		ApplyColors();
-
-		GPUTaskinSystem.RestartALL();
+ 		GPUTaskinSystem.RestartALL();
 	}
 };
 

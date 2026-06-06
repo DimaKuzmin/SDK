@@ -209,6 +209,8 @@ void global_claculation_data::xrLoad()
 
 void global_claculation_data::xrUnload()
 {
+	slots_data.Free();
+
  	xr_delete(RCAST_Model);
 	xr_delete(g_shaders_xrlc);
 	
@@ -221,7 +223,7 @@ void global_claculation_data::xrUnload()
 	g_textures.clear();		  g_textures.shrink_to_fit();
 
 	building_embree_faces.clear(); building_embree_faces.shrink_to_fit();
-  	slots_data.Free();
+
 }
    
 
@@ -229,9 +231,9 @@ void global_claculation_data::xrCalculateOpacity()
 {
 	for (auto& F : building_embree_faces)
 	{
-		F.bOpaque = true;
+		if (F.bOpaque) continue;
 
-		b_material& M = gl_data.g_materials[F.dwMaterial];
+ 		b_material& M = gl_data.g_materials[F.dwMaterial];
 		b_BuildTexture& T = gl_data.g_textures[M.surfidx];
 		F.bOpaque = !T.bHasAlpha;
 
@@ -247,9 +249,14 @@ void global_claculation_data::xrCalculateOpacity()
 void global_claculation_data::xrLoadGeometry(IReader* fs)
 {
 	auto GetShader = [](u32 dwMaterial) -> const Shader_xrLC&
-		{
-			return shader(dwMaterial, *gl_data.g_shaders_xrlc, gl_data.g_materials);
-		};
+	{
+		return shader(dwMaterial, *gl_data.g_shaders_xrlc, gl_data.g_materials);
+	};
+
+	auto GetTexture = [&](u32 dwMaterial) -> const b_texture&
+	{
+		return g_textures[g_materials[dwMaterial].surfidx];
+	};
 
 
 	Status("Loading Vertices...");
@@ -258,7 +265,7 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 		IReader* CHVertex = fs->open_chunk(EB_Vertices);
 
 		u32 v_count = CHVertex->length() / sizeof(b_vertex);
-
+		clMsg("Build Vertex Counts : %u", v_count);
 		vertexs.resize(v_count);
 		for (u32 i = 0; i < v_count; i++)
 			CHVertex->r_fvector3(vertexs[i]);
@@ -272,6 +279,7 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 		IReader* ChunkFaces = fs->open_chunk(EB_Faces);
 		R_ASSERT(ChunkFaces);
 		u32 f_count = ChunkFaces->length() / sizeof(b_face);
+		clMsg("Build Faces Counts : %u", f_count);
 
 		for (u32 i = 0; i < f_count; i++)
 		{
@@ -280,12 +288,15 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			R_ASSERT(B.dwMaterialGame < 65536);
 
 			const Shader_xrLC& SH = GetShader(B.dwMaterial);
-			if (!SH.flags.bLIGHT_CastShadow) continue;
-
+ 			if (!SH.flags.bLIGHT_CastShadow) continue;
+ 
 			FaceDataEmbree& bFace = building_embree_faces.emplace_back();
 			bFace.dwMaterial = u16(B.dwMaterial);
 			bFace.dwMaterialGame = B.dwMaterialGame;
 			bFace.ptr = &bFace;
+
+ 			if (SH.flags.bLIGHT_CastShadow)
+				bFace.bOpaque = true;
 
 			// Vertices and adjacement info
 			bFace.v1 = vertexs[B.v[0]];
@@ -330,15 +341,17 @@ void global_claculation_data::xrLoadGeometry(IReader* fs)
 			auto& faces = mu_faces[R.model_index];		// Model Buffer by Index !
 			for (auto& F : faces)
 			{
-				const Shader_xrLC& SH = GetShader(F.dwMaterial);
+				auto& SH = GetShader(F.dwMaterial);
 				if (!SH.flags.bLIGHT_CastShadow) continue;
-
 				auto& F = building_embree_faces.emplace_back();
 
 				Fvector					P[3];
 				xform.transform_tiny(P[0], F.v1);
 				xform.transform_tiny(P[1], F.v2);
 				xform.transform_tiny(P[2], F.v3);
+
+				if (SH.flags.bLIGHT_CastShadow)
+					F.bOpaque = true;
 
 				F.SetFace(P[0], P[1], P[2], &F);
 				F.SetMaterial(F.dwMaterial, F.dwMaterialGame, F.getTC0());

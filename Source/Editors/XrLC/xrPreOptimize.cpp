@@ -43,7 +43,8 @@ void CBuild::PreOptimize()
 
     Status("Processing...");
     g_bUnregister = false;
-
+ 
+    // se7kills: Нужно ли ? А то при RCast когда я строю уровень делается тоже самое !
     if (!gCompilerMode.LC_skipWeld)
     {
         for (int it = 0; it < (int)lc_global_data()->g_vertices().size(); it++)
@@ -87,6 +88,8 @@ void CBuild::PreOptimize()
         }
     }
 
+
+    // se7kills: Нужно в постройку геометрии добавиить !
     Status("Removing degenerated/duplicated faces...");
     g_bUnregister = false;
     for (u32 it = 0; it < lc_global_data()->g_faces().size(); it++)

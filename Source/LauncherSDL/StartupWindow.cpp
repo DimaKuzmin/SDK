@@ -93,11 +93,6 @@ void StartCompile()
 			GetIterationData().push_back({ "xrAI" });
 			GetIterationData().push_back({ "xrDO" });
 
-
-			clMsg("EmbreeISLoaded: %s", gCompilerMode.Embree ? "true" :"false");
-			clMsg("CudaISLoaded: %s", gCompilerMode.CUDA ? "true" : "false");
-
-
 			auto InitilizeIteration = [](LCBuildingType Type, bool active, LPCSTR phase)
 				{
 					SetActiveIteration(&(GetIterationData()[(int)Type]));
@@ -144,8 +139,6 @@ void StartCompile()
 				clMsg("* Compiler (%s) : Time elapsed: %s ", I.iterationName.c_str(), make_time(I.elapsed_time));
 			}
  			
-			Msg("LastHeamMeory: %u mb", GetHeapMemory() / 1024 / 1024);
-
 			PhasesEnd();
 		}
 	).detach(); 

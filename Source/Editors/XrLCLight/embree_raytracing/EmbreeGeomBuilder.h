@@ -81,6 +81,11 @@ struct IndexedTri
 	{
 		return i1 == other.i1 && i2 == other.i2 && i3 == other.i3;
 	}
+
+	bool isDegenerated() const
+	{
+		return i1 == i2 || i2 == i3 || i3 == i1;
+	}
 };
 
 struct TriangleContainer
@@ -88,6 +93,7 @@ struct TriangleContainer
 private:
 	void RemoveDublicatesVertexs(bool isTransparent, bool enable_msg);
 	void RemoveDublicatesFaces(bool isTransparent, bool enable_msg);
+	
 	xr_vector<Fvector>				verts_v;
 	xr_vector<Triangle>				faces_v;
 	xr_vector<void*>				dummy;
@@ -125,9 +131,11 @@ public:
 		raw_faces.push_back({ {v1, v2, v3}, F, 0, 0 });
 	};
 
-	void RemoveDublicates()
+	void RemoveDublicates(bool use_msg = false)
 	{
-		RemoveDublicatesVertexs(false, false);
-		RemoveDublicatesFaces(false, false);
+		RemoveDublicatesVertexs(false, use_msg);
+		RemoveDublicatesFaces(false, use_msg);
 	}
+
+ 
 };

@@ -18,7 +18,6 @@
 #include "embree_raytracing/EmbreeRayTrace.h"
 #include "CUDA/xrDeflectorLight_Packed.h"
 
-
 //-----------------------------------------------------------------------------------------------------------------
 XRLC_LIGHT_API extern int	LIGHT_Count				=	7;
     
@@ -125,11 +124,11 @@ bool detail_slot_calculate( u32 _x, u32 _z)
 		// calculation of luminocity
 		amount.scale(count);
 		amount.mul(.5f);
-		DS.c_dir = DS.w_qclr(amount.sun, 15);
+		DS.c_dir  = DS.w_qclr(amount.sun, 15);
 		DS.c_hemi = DS.w_qclr(amount.hemi, 15);
-		DS.c_r = DS.w_qclr(amount.rgb.x, 15);
-		DS.c_g = DS.w_qclr(amount.rgb.y, 15);
-		DS.c_b = DS.w_qclr(amount.rgb.z, 15);
+		DS.c_r    = DS.w_qclr(amount.rgb.x, 15);
+		DS.c_g    = DS.w_qclr(amount.rgb.y, 15);
+		DS.c_b    = DS.w_qclr(amount.rgb.z, 15);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -157,30 +156,27 @@ void ApplyColorDetailGPU(size_t IndexTask, base_color_c& C)
 void ApplyColorsGPU()
 {
 	for (auto x = 0; x < gl_data.slots_data.size_x(); x++)
-		for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
+	for (auto z = 0; z < gl_data.slots_data.size_z(); z++)
+	{
+		// Getter - Detail Slot
+		auto& DS = gl_data.slots_data.get_slot(x, z);
+
+		u32 idx = z * size_x + x;
+		auto& count = samples[idx];
+		if (count > 0)
 		{
-			// Getter - Detail Slot
-			auto& DS = gl_data.slots_data.get_slot(x, z);
-
-			u32 idx = z * size_x + x;
-			auto& count = samples[idx];
-			if (count > 0)
-			{
-				auto& color = detail_colors[idx];
-				color.scale(count);
-				color.mul(.5f);
-
-				// Пишется результат в (level.details) !
-				DS.c_dir = DS.w_qclr(color.sun, 15);
-				DS.c_hemi = DS.w_qclr(color.hemi, 15);
-				DS.c_r = DS.w_qclr(color.rgb.x, 15);
-				DS.c_g = DS.w_qclr(color.rgb.y, 15);
-				DS.c_b = DS.w_qclr(color.rgb.z, 15);
-
-				//if (color.hemi > 0.001)
-				// 	Msg("Colors x[%u] z[%u] Hemi: %.3f Sampl: %u", x,z, color.hemi, count);
-			}
+			auto& color = detail_colors[idx];
+ 			color.scale(count);
+			color.mul(.5f);
+			
+			// Пишется результат в (level.details) !
+			DS.c_dir  = DS.w_qclr(color.sun, 15);
+			DS.c_hemi = DS.w_qclr(color.hemi, 15);
+			DS.c_r    = DS.w_qclr(color.rgb.x, 15);
+			DS.c_g    = DS.w_qclr(color.rgb.y, 15);
+			DS.c_b    = DS.w_qclr(color.rgb.z, 15);
 		}
+	}
 
 	samples.clear();
 	samples.shrink_to_fit();
@@ -191,14 +187,35 @@ void ApplyColorsGPU()
 
 
 
+void SaveAsOBJ(TriangleContainer& Container)
+{
+	IWriter* W = FS.w_open("$level$", "rcast_model.obj");
+ 
+ 	string256 tmp;
+	// vertices
+	for (auto& V: Container.vertex()) {
+ 		xr_sprintf(tmp, "v %f %f %f", V.x, V.y, -V.z);
+		W->w_string(tmp);
+	}
+	// transfer faces
+	for (auto& TRI : Container.faces())
+	{
+ 		xr_sprintf(tmp, "f %d %d %d", TRI.point1 + 1, TRI.point2 + 1, TRI.point3 + 1);
+		W->w_string(tmp);
+	}
+	FS.w_close(W);
+}
+
 void BuildModel(TriangleContainer& container)
 {
 	for (auto& F : gl_data.building_embree_faces)
 	{
 		container.AddFaceRaw(&F, F.v1, F.v2, F.v3);
 	}
-	container.RemoveDublicates();
-
+	container.RemoveDublicates(true);
+	
+	if (gCompilerMode.SaveObjectRcast)
+		SaveAsOBJ(container);
 
 	gl_data.RCAST_Model = xr_new<CDB::MODEL>();
 
@@ -234,7 +251,7 @@ void xrCompileDO()
 
 
 		Phase("Lighting Details...");
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t tID)
+		auto Task = []()
 			{
 				while (true)
 				{
@@ -245,11 +262,12 @@ void xrCompileDO()
 
 					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
 					{
- 						detail_slot_calculate(X, Z);
+						detail_slot_calculate(X, Z);
 					}
 				}
-			}
-		);
+			};
+		runThreadsMax(Task, gCompilerMode.ThreadsNum);
+
 
 		useDetails = false;
 	}
@@ -267,7 +285,7 @@ void xrCompileDO()
 		static std::atomic<u32> atomic_task;
 		atomic_task = 0;
 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t threadID)
+		auto Task = []()
 			{
 				while (true)
 				{
@@ -277,12 +295,16 @@ void xrCompileDO()
 					if (Z >= gl_data.slots_data.size_z()) break;
 
 					for (u32 X = 0; X < gl_data.slots_data.size_x(); X++)
+					{
 						detail_slot_calculate(X, Z);
+ 					}
 				}
 
 				GPUTaskinSystem.LightPointPacked_run_tasks();
-			}
-		);
+			};
+
+		runThreadsMax(Task, gCompilerMode.ThreadsNum);
+		 
 		GPUTaskinSystem.RestartALL();
 
 

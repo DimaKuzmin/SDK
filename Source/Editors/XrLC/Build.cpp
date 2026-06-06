@@ -189,10 +189,19 @@ void CBuild::	RunAfterLight			( IWriter* fs	)
 	Phase("Converting MU-models to OGFs...");
 	{
 		Status("MU : Models...");
-		concurrency::parallel_for(size_t(0), size_t(mu_models().size()), [](size_t m)
+		static std::atomic<u32> worker_id;
+		worker_id = 0;
+
+		auto task = []()
 		{
-			calc_ogf(*lc_global_data()->mu_models()[m]);
-		});
+			while (true)
+			{
+				u32 ID = worker_id.fetch_add(1);
+				if (ID >= lc_global_data()->mu_models().size()) break;
+				calc_ogf(*lc_global_data()->mu_models()[ID]);
+			}
+		};
+		runThreadsMax(task, gCompilerMode.ThreadsNum);
 
 		for (u32 m = 0; m < mu_models().size(); m++)
 		{

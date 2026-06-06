@@ -83,21 +83,22 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 	CurrentIndex = 0;
 	ErrorsPlace  = 0;
 	MergedCount  = 0;
-	concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&lmap, &Layer](size_t thread_id)
+
+	auto MergeLmap = [&lmap, &Layer]()
 	{
 		u32 MaxSize = Layer.size();
- 		while (true)
+		while (true)
 		{
 			u32 IndexTask = CurrentIndex.fetch_add(1);
 			if (IndexTask >= MaxSize) break;
 			auto D = Layer[IndexTask];
 			lm_layer& L = D->layer;
-			 			
+
 			if (ErrorsPlace.load() > 256 && L.Area() > 4) { continue; }; // нету места !
 			if (ErrorsPlace.load() > 1024) break;	// Вообще не влезло !
-  
+
 			AditionalData("ID(%u/%u) fill(%u/%.1f) Err(%u)",
-				IndexTask, MaxSize, 
+				IndexTask, MaxSize,
 				MergedCount, placer_perpixel.FilledSize_cnt(),
 				ErrorsPlace.load());
 
@@ -109,7 +110,7 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 			rS.iArea = L.Area();
 			rT = rS;
 
- 			if (placer_perpixel.rect_place_full(rT, &L))
+			if (placer_perpixel.rect_place_full(rT, &L))
 			{
 				IndexLock.Enter();
 				if (D->bMerged == false)
@@ -122,11 +123,15 @@ u32 MergeLmap_Compact(xr_vector<CDeflector*>& Layer, CLightmap* lmap)
 				IndexLock.Leave();
 			}
 			else
-			if (placer_perpixel.FilledSize_cnt() > 0.75f)
- 				ErrorsPlace.fetch_add(1);
+				if (placer_perpixel.FilledSize_cnt() > 0.75f)
+					ErrorsPlace.fetch_add(1);
 		}
-	});
-	
+	};
+
+	runThreadsMax(MergeLmap, gCompilerMode.ThreadsNum);
+
+
+ 	
 	// Удаляем то что сделали !
 	Layer.erase(std::remove_if(Layer.begin(), Layer.end(),
 		[](CDeflector* D)

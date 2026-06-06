@@ -115,10 +115,12 @@ IC void line	( int x1, int y1, int x2, int y2, b_texture* T )
         }
     }
 }
- 
+
+int lmapNameID = 0;
+
 void CLightmap::Save( LPCSTR path, u32& timeMS)
 {
-	static int		lmapNameID = 0; ++lmapNameID;
+	 ++lmapNameID;
  
  	// Borders correction
 	// Status			("Borders...");

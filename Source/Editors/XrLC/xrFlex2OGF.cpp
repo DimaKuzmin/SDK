@@ -69,7 +69,7 @@ void BuildOGFGeom( OGF &ogf, const xr_vector<Face*>& faces, bool _tc_ )
 	}
 }
  
-bool ConvertOgf(u32 THID, u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, OGF* pOGF)
+bool ConvertOgf(u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, OGF* pOGF)
 {
 	try 
 	{
@@ -179,33 +179,32 @@ void CBuild::Flex2OGF()
 		static std::atomic<int> current_idx = 0;
 		current_idx = 0;
 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [](size_t thID)
+		auto Task = []()
 		{
-			std::wstring name = L"ThreadID : " + std::to_wstring(thID);
- 			SetThreadDescription(GetCurrentThread(), name.c_str());
-			while (true)
+ 			while (true)
 			{
-				u32 ID = current_idx.load();
-				current_idx.fetch_add(1);
+				u32 ID = current_idx.fetch_add(1);
  				if (current_idx.load() >= g_XSplit.size())  break;
 
-   				AditionalData("Processed MT OGF (%u|%u)", ID, g_XSplit.size());
- 				 
+				AditionalData("Processed MT OGF (%u|%u)", ID, g_XSplit.size());
+
 				OGF* pOGF = xr_new<OGF>();
 				auto& SPLIT = g_XSplit[ID];
 				Face* Face = SPLIT->front();			// first face
- 
-				int VertexRemoved = 0;				 
+
+				int VertexRemoved = 0;
 				auto material = lc_global_data()->materials()[Face->dwMaterial];
 
-				ConvertOgf(thID, ID, SPLIT, Face, &material, pOGF);
-  
+				ConvertOgf(ID, SPLIT, Face, &material, pOGF);
+
 				mtx.Enter();
 				g_tree.push_back(pOGF);
 				mtx.Leave();
-			}	
-		});
- 	}
+			}
+		};
+
+		runThreadsMax(Task, gCompilerMode.ThreadsNum);
+  	}
 	else
 	{
 		int Removed = 0;
@@ -217,7 +216,7 @@ void CBuild::Flex2OGF()
 			OGF* pOGF = xr_new<OGF>();
 			auto& SPLIT = g_XSplit[ID];
 			Face* Face = SPLIT->front();			// first face			
-			ConvertOgf(0, ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF);
+			ConvertOgf(ID, SPLIT, Face, &(materials()[Face->dwMaterial]), pOGF);
 			 
   			g_tree.push_back(pOGF);
 		};

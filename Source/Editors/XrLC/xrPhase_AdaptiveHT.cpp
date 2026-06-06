@@ -350,48 +350,52 @@ void CBuild::u_SmoothVertColors(int count)
 
 		static std::atomic<u32> ProgressCalculate = 0;
 		ProgressCalculate = 0;
-		 
-		concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), [&colors](size_t threadID)
-		{
-			auto ProcessData = [](xr_vector<base_color>* colors)
+		
+		auto Worker = [&colors]()
 			{
-				// Circle
-				xr_vector<Vertex*>	circle_vec;
-				while (true)
-				{
-					circle_vec.clear();
-
-					auto IDX = ProgressCalculate.fetch_add(1);
-					if (IDX >= lc_global_data()->g_vertices().size()) break;
-
-					Vertex* V = lc_global_data()->g_vertices()[IDX];
-					for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
+				auto ProcessData = [](xr_vector<base_color>* colors)
 					{
-						Face* F = V->m_adjacents[fit];
-						circle_vec.push_back(F->v[0]);
-						circle_vec.push_back(F->v[1]);
-						circle_vec.push_back(F->v[2]);
-					}
-					std::sort(circle_vec.begin(), circle_vec.end());
-					circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
+						// Circle
+						xr_vector<Vertex*>	circle_vec;
+						while (true)
+						{
+							circle_vec.clear();
 
-					// Average
-					base_color_c		avg, tmp;
-					for (u32 cit = 0; cit < circle_vec.size(); ++cit)
-					{
-						circle_vec[cit]->C._get(tmp);
-						avg.add(tmp);
-					}
-					avg.scale(circle_vec.size());
-					(*colors)[IDX]._set(avg);
-				}
-				circle_vec.clear();
-				circle_vec.shrink_to_fit();
+							auto IDX = ProgressCalculate.fetch_add(1);
+							if (IDX >= lc_global_data()->g_vertices().size()) break;
+
+							Vertex* V = lc_global_data()->g_vertices()[IDX];
+							for (u32 fit = 0; fit < V->m_adjacents.size(); ++fit)
+							{
+								Face* F = V->m_adjacents[fit];
+								circle_vec.push_back(F->v[0]);
+								circle_vec.push_back(F->v[1]);
+								circle_vec.push_back(F->v[2]);
+							}
+							std::sort(circle_vec.begin(), circle_vec.end());
+							circle_vec.erase(std::unique(circle_vec.begin(), circle_vec.end()), circle_vec.end());
+
+							// Average
+							base_color_c		avg, tmp;
+							for (u32 cit = 0; cit < circle_vec.size(); ++cit)
+							{
+								circle_vec[cit]->C._get(tmp);
+								avg.add(tmp);
+							}
+							avg.scale(circle_vec.size());
+							(*colors)[IDX]._set(avg);
+						}
+						circle_vec.clear();
+						circle_vec.shrink_to_fit();
+					};
+
+
+				ProcessData(&colors);
 			};
+		 
+		runThreadsMax(Worker, gCompilerMode.ThreadsNum);
 
-
-			ProcessData(&colors);
-		});
+		// concurrency::parallel_for(size_t(0), size_t(gCompilerMode.ThreadsNum), );
 		 
 		// Transfer
 		for (u32 it=0; it<lc_global_data()->g_vertices().size(); ++it)
