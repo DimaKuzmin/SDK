@@ -17,8 +17,7 @@ private:
 	Fvector3 vec_box_max = Fvector().set(0, 0, 0);
 
 	// BOX Выборка Обьектов
-	bool use_outside_box = false;
-	xr_map<CCustomObject*, Fvector> objects_to_move;
+ 	xr_map<CCustomObject*, Fvector> objects_to_move;
 
 
 private:
@@ -132,7 +131,7 @@ public:
 	bool ExportDir(xr_string& dir);
 	void ExportAllObjects();
 	void ExportSelectObjects();
-	void ExportInsideBox();
+	void ExportInsideBox(bool use_move_to_zero);
 
 	void ImportObjects(Fvector offset = Fvector(), bool use_path = false, xr_string path = { 0 });
 	void ImportMultiply();
@@ -144,7 +143,9 @@ private:
 	xr_map<int, Fvector3> merge_offsets;
 public:
 	bool LoadAIMap();							// Загружаем
-	void ExportAIMap(Fbox* box, LPCSTR name);	// Экспортим
+	void ExportAIMap(Fbox* box, LPCSTR name, bool ZeroPos);	// Экспортим
+ 
+
  	void MergeAIMAP(u32 file);
  
 	// Rename 

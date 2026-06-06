@@ -224,7 +224,7 @@ public:
 	virtual bool 	LoadLTX			(CInifile& ini, LPCSTR sect_name);
 	virtual void 	SaveStream			(IWriter&);
 	virtual void 	SaveLTX			(CInifile& ini, LPCSTR sect_name);
-
+     
     virtual bool	ExportGame		(SExportStreams* data){return true;}
 
 	virtual bool 	GetBox			(Fbox& box)	 {return false;}

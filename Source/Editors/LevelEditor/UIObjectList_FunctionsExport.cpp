@@ -3,6 +3,7 @@
 #include "CustomObject.h"
 #include <ESceneAIMapTools.h>
 #include "SceneObject.h"
+#include "WayPoint.h"
 
 // Указываем Листы для движения 
 void UIObjectList::SetListToMove()
@@ -100,11 +101,15 @@ void UIObjectList::ExportSelectObjects()
 	}
 }
 
-void UIObjectList::ExportInsideBox()
+void UIObjectList::ExportInsideBox(bool use_move_to_zero)
 {
 	Fbox box;
 	box.min = vec_box_min;
 	box.max = vec_box_max;
+
+	Fvector C;
+	box.getcenter(C);
+	box.grow(150);
 
 	xr_string temp_fn = "";
 
@@ -117,35 +122,38 @@ void UIObjectList::ExportInsideBox()
 		for (SceneToolsMapPairIt it = Scene->FirstTool(); it != Scene->LastTool(); ++it)
 		{
 			ESceneCustomOTool* ot = dynamic_cast<ESceneCustomOTool*>(it->second);
-			if (!ot)
-				continue;
-
-			if (ot->FClassID == OBJCLASS_DUMMY)
-				continue;
-
-			if (!ot->can_use_inifile())
-				continue;
+			if (!ot)							continue;
+ 			if (ot->FClassID == OBJCLASS_DUMMY)	continue;
+ 			if (!ot->can_use_inifile())			continue;
 
 			ObjectList& lst = ot->GetObjects();
 			for (auto obj : lst)
 			{
 				Fbox newB;
 				obj->GetBox(newB);
-
-				if (!use_outside_box && box.contains(newB) || use_outside_box && !box.contains(newB))
+ 			
+				if ( box.contains(newB) )
 				{
 					string32 buffer = { 0 };
-					sprintf(buffer, "object_%d", i);
-					Scene->SaveObjectLTX(obj, buffer, file);
-					++i;
-				}
+					sprintf(buffer, "object_%d", i); 	++i;
+
+					if (!use_move_to_zero)
+						Scene->SaveObjectLTX(obj, buffer, file);
+					else
+					{
+						Fvector pos = obj->GetPosition();
+						pos.sub(C);
+ 						Scene->SaveObjectLTX_Pos(obj, buffer, file, pos);
+					}
+  				}		
+				
 			}
 		}
 		file.save_as(temp_fn.c_str());
 
 		string_path p;
-		sprintf(p, "%s_ai", temp_fn.c_str());
-		ExportAIMap(&box, p);
+		sprintf(p, "%s.ai", temp_fn.c_str());
+		ExportAIMap(&box, p, use_move_to_zero);
 	}
 }
 
@@ -208,7 +216,7 @@ void UIObjectList::ExportAllObjects()
 		file->save_as(name);
 	}
 
-	ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str());
+	ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str(), false);
 }
 
 // Чистит все в указаном BBox

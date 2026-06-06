@@ -41,7 +41,7 @@ void UIObjectList::UpdateDefaultMeny()
 		}
 
 		if (ImGui::Button("export map", ImVec2(-1, 0)))
-			ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str());
+			ExportAIMap(0, Scene->m_LevelOp.m_FNLevelPath.c_str(), false);
 
 		/*
 		
@@ -270,10 +270,10 @@ void UIObjectList::UpdateUIObjectList()
 
 			ImGui::Text("BBOX EXPORT: ");
 
-			ImGui::Checkbox("use_outside (EXPORT_IN_BOX)", &use_outside_box);
-
+			static bool zeroPoint = false;
+			ImGui::Checkbox("use zero point", &zeroPoint);
 			if (ImGui::Button("Export Objects InBox" , ImVec2(-1, 0)  ) )
-				ExportInsideBox();
+				ExportInsideBox(zeroPoint);
 			
 			if (ImGui::Button("Remove Objects InBox", ImVec2(-1, 0)))
 				RemoveAllInsideBox();

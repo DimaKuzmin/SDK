@@ -80,7 +80,8 @@ enum {
 };
 //------------------------------------------------------------------------------
 
-class CLevelMain: public TUI{
+class CLevelMain: public TUI
+{
 	typedef TUI inherited;
     
     virtual void 	RealUpdateScene			();

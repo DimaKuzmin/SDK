@@ -695,6 +695,17 @@ void EScene::SaveObjectLTX(CCustomObject* O, LPCSTR sect_name, CInifile& ini)
 	O->SaveLTX	(ini, sect_name);
 }
 
+void EScene::SaveObjectLTX_Pos(CCustomObject* O, LPCSTR sect_name, CInifile& ini, Fvector Position)
+{
+    ini.w_u32(sect_name, "clsid", O->FClassID);
+   
+    // Хитрость со сдвигом в 0 коорды !
+    Fvector prevPosition = O->FPosition;
+    O->SetPosition(Position);
+    O->SaveLTX(ini, sect_name);
+    O->SetPosition(prevPosition);
+}
+
 void EScene::SaveObjectStream( CCustomObject* O, IWriter& F )
 {
     F.open_chunk	(CHUNK_OBJECT_CLASS);

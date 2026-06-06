@@ -52,10 +52,13 @@ bool UIObjectList::LoadAIMap()
 		return false;
 }
 
-void UIObjectList::ExportAIMap(Fbox* box, LPCSTR name)
+void UIObjectList::ExportAIMap(Fbox* box, LPCSTR name, bool ZeroPos)
 {
  	if (box)
 	{
+		Fvector C;
+		box->getcenter(C);
+
 		ESceneAIMapTool* ai_tool = (ESceneAIMapTool*)Scene->GetTool(OBJCLASS_AIMAP);
 
 		if (ai_tool)
@@ -68,14 +71,28 @@ void UIObjectList::ExportAIMap(Fbox* box, LPCSTR name)
 			for (auto node : ai_tool->Nodes())
 			{
 				if (box->contains(node->Pos))
+				{
 					cnt++;
+				}
 			}
 
 			ai_map->w_u32(cnt);
 			for (auto node : ai_tool->Nodes())
 			{
-				if (!use_outside_box && box->contains(node->Pos) || use_outside_box && !box->contains(node->Pos))
-					ai_map->w_fvector3(node->Pos);
+				auto& Npos = node->Pos;
+				if (box->contains(Npos))
+				{
+					if (ZeroPos)
+					{
+						Fvector PosNew = Npos;
+						PosNew.sub(C);
+						ai_map->w_fvector3(PosNew);
+					}
+					else
+					{
+						ai_map->w_fvector3(Npos);
+					}
+				}
 			}
 
 			ai_map->close_chunk();

@@ -80,24 +80,21 @@ public:
     SFuzzyData*		m_FuzzyData;
 
     virtual void	OnUpdateTransform();
-    void  	OnTypeChange	(PropValue* value);
+    void  	        OnTypeChange	(PropValue* value);
 
-    void   OnFuzzyFlagChange	(PropValue* value);
-    void  	OnFuzzyDataChange	(PropValue* value);
-    void  	OnFuzzyTypeChange	(PropValue* value);
+    void            OnFuzzyFlagChange	(PropValue* value);
+    void  	        OnFuzzyDataChange	(PropValue* value);
+    void  	        OnFuzzyTypeChange	(PropValue* value);
 
-    void  	OnFuzzyGenerateClick(ButtonValue* value, bool& bModif, bool& bSafe);
-    void  	OnAutoClick		(ButtonValue* value, bool& bModif, bool& bSafe);
-    void  	OnNeedUpdate	(PropValue* value);
+    void  	        OnFuzzyGenerateClick(ButtonValue* value, bool& bModif, bool& bSafe);
+    void  	        OnAutoClick		(ButtonValue* value, bool& bModif, bool& bSafe);
+    void  	        OnNeedUpdate	(PropValue* value);
 
-    void  	OnPointDataChange(PropValue* value);
-    void   OnAttenuationDraw(CanvasValue* sender);
-    void  	OnPointDataTestEqual(CanvasValue* a, CanvasValue* b, bool& res);
-protected:
-//    virtual Fvector& GetPosition	()						{ return m_D3D.position; 	}
-//    virtual void 	SetPosition		(const Fvector& pos)	{ m_D3D.position.set(pos);	UpdateTransform();}
-public:
-					CLight			(LPVOID data, LPCSTR name);
+    void  	        OnPointDataChange(PropValue* value);
+    void            OnAttenuationDraw(CanvasValue* sender);
+    void  	        OnPointDataTestEqual(CanvasValue* a, CanvasValue* b, bool& res);
+
+ 					CLight			(LPVOID data, LPCSTR name);
 	void 			Construct		(LPVOID data);
 	virtual 		~CLight			();
     void			CopyFrom		(CLight* src);

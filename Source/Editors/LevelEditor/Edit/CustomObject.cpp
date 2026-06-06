@@ -203,8 +203,7 @@ bool ch_value(Fvector v)
 void CCustomObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
 {
 	ini.w_u32		(sect_name, "co_flags", m_CO_Flags.get());
-
-	ini.w_string	(sect_name, "name", FName.c_str());
+ 	ini.w_string	(sect_name, "name", FName.c_str());
     
     
     Fvector3 zero;
@@ -213,25 +212,6 @@ void CCustomObject::SaveLTX(CInifile& ini, LPCSTR sect_name)
     ini.w_fvector3(sect_name, "position", ch_value(FPosition) ? FPosition : zero);
     ini.w_fvector3 	(sect_name, "rotation", ch_value(FRotation) ? FRotation : zero);
     ini.w_fvector3 	(sect_name, "scale", ch_value(FScale) ? FScale : zero );
-
-   // ini.w_fvector3(sect_name, "position", FPosition);
-   // ini.w_fvector3(sect_name, "rotation", FRotation);
-   // ini.w_fvector3(sect_name, "scale", FScale);
-
-/*
-    // object motion
-    if (m_CO_Flags.is(flMotion))
-    {
-    	R_ASSERT		(0);
-
-    	VERIFY			(m_Motion);
-		F.open_chunk	(CUSTOMOBJECT_CHUNK_MOTION);
-		m_Motion->Save	(F);
-		F.close_chunk	();
-
-        ini.w_float		(sect_name, "motion_params_t", m_MotionParams->t_current);
-    }
-*/
 }
 
 void CCustomObject::SaveStream(IWriter& F)

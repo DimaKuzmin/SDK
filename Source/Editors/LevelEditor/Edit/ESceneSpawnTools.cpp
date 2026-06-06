@@ -68,8 +68,10 @@ CEditableObject* ESceneSpawnTool::get_draw_visual(u8 _RP_TeamID, u8 _RP_Type, co
             
 			if(_GameType.MatchType(eGameIDCaptureTheArtefact))
             {
-            	if(_RP_TeamID==0)
-                	Msg("! incorrect ActorRP teamID [%d] for CTA",_RP_TeamID);
+                if (_RP_TeamID == 0)
+                {
+                   Msg("$ incorrect ActorRP teamID [%d] for CTA",_RP_TeamID);
+                }
                 else
             	if(_RP_TeamID==1)
             		ret = m_draw_RP_visuals[4];

@@ -88,8 +88,13 @@ public:
     void			Convert2Link	();
     bool			Add1Link		();
     bool			Add2Link		();
+
     // change position/orientation methods
-	virtual void 	MoveTo			(const Fvector& pos, const Fvector& up);
+    virtual bool    AnyInside(Fbox& box);
+    virtual void 	TranslateTo     (const Fvector& pos);
+    virtual void    DumpPath();
+    
+    virtual void 	MoveTo			(const Fvector& pos, const Fvector& up);
 	virtual void 	Move			(Fvector& amount);
 	virtual void 	RotateParent	(Fvector& axis, float angle ){;}
 	virtual void 	RotateLocal		(Fvector& axis, float angle ){;}
@@ -113,9 +118,9 @@ public:
 
     virtual bool 	OnSelectionRemove();
 
-    virtual WPVec GetWPoints() {return m_WayPoints;};
-    virtual const Fvector& GetPosition	()	const { return m_WayPoints.front()->m_vPosition; 	}
-    virtual void 	SetPosition		(const Fvector& pos)	{ MoveTo(pos, Fvector().set(0,1,0) );	UpdateTransform();}
+    virtual WPVec   GetWPoints() {return m_WayPoints;};
+    virtual const   Fvector& GetPosition	()	const { return m_WayPoints.front()->m_vPosition; 	}
+    virtual void 	SetPosition		(const Fvector& pos)	{ MoveTo( pos, Fvector().set(0,1,0) );	UpdateTransform();}
 };
 #endif /*_INCDEF_WayPoint_H_*/
 

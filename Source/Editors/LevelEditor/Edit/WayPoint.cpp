@@ -341,6 +341,34 @@ bool CWayObject::Add2Link()
     return bRes;
 }
 
+bool CWayObject::AnyInside(Fbox& box)
+{
+    
+
+    return false;
+}
+
+void CWayObject::TranslateTo(const Fvector& pos)
+{
+    if (!m_WayPoints.empty())
+    {
+        Fvector 	diff;
+        diff.sub(pos, m_WayPoints.front()->m_vPosition);
+        for (WPIt it = m_WayPoints.begin(); it != m_WayPoints.end(); it++)
+            (*it)->m_vPosition.add(diff);
+    }
+}
+
+void CWayObject::DumpPath()
+{
+    int ID = 0;
+    for (auto& Way : m_WayPoints)
+    {
+        ID++;
+        Msg("Way[%s] P[%u] : Pos{%f, %f, %f}", GetName(), ID, VPUSH( Way->m_vPosition ) );
+    }
+}
+
 void CWayObject::RemoveLink()
 {
 	WPVec objects;
@@ -481,7 +509,8 @@ bool CWayObject::GetBox( Fbox& box )
 
 void CWayObject::MoveTo(const Fvector& pos, const Fvector& up)
 {
-	if (IsPointMode()){
+	if (IsPointMode())
+    {
     	CWayPoint* sel_point = 0;
         for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++) 
         	if ((*it)->m_bSelected){ 
@@ -489,8 +518,11 @@ void CWayObject::MoveTo(const Fvector& pos, const Fvector& up)
             	sel_point=*it;
         	}
         if (sel_point) sel_point->m_vPosition.set(pos);
-    }else{
-    	if (!m_WayPoints.empty()){
+    }
+    else
+    {
+    	if (!m_WayPoints.empty())
+        {
             Fvector 	diff;
             diff.sub	(pos,m_WayPoints.front()->m_vPosition);
             for (WPIt it=m_WayPoints.begin(); it!=m_WayPoints.end(); it++)

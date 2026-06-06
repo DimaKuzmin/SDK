@@ -183,6 +183,10 @@ public:
 
 	void 			SaveObjectStream	(CCustomObject* O,IWriter& F);
 	void 			SaveObjectLTX		(CCustomObject* O, LPCSTR sect_name, CInifile& ini);
+
+	void 			SaveObjectLTX_Pos	(CCustomObject* O, LPCSTR sect_name, CInifile& ini, Fvector position);
+
+
     void 			SaveObjectsStream	(ObjectList& lst, u32 chunk_id, IWriter& F );
 	void 			SaveObjectsLTX		(ObjectList& lst, LPCSTR sect_name_parent, LPCSTR sect_name_prefix, CInifile& ini);
 
