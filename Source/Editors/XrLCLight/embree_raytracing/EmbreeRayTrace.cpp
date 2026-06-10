@@ -157,6 +157,26 @@ void LoadGeomBuffer(RTCDevice& EmbreeDevice, RTCGeometry& geom, RTCBuildQuality&
 	rtcCommitGeometry(geom);
 };
 
+void SaveAsOBJ(TriangleContainer& Container, LPCSTR container_name)
+{
+	IWriter* W = FS.w_open("$level$", container_name);
+
+	string256 tmp;
+	// vertices
+	for (auto& V : Container.vertex()) {
+		xr_sprintf(tmp, "v %f %f %f", V.x, V.y, -V.z);
+		W->w_string(tmp);
+	}
+	// transfer faces
+	for (auto& TRI : Container.faces())
+	{
+		xr_sprintf(tmp, "f %d %d %d", TRI.point1 + 1, TRI.point2 + 1, TRI.point3 + 1);
+		W->w_string(tmp);
+	}
+	FS.w_close(W);
+}
+
+
 void EmbreeRayTraceModel::CommitScene()
 {
 	if (gCompilerMode.EmbreeBVHCompact) scene_flags = scene_flags | RTC_SCENE_FLAG_COMPACT;
@@ -164,6 +184,12 @@ void EmbreeRayTraceModel::CommitScene()
 
 	IntelScene = rtcNewScene(EmbreeDevice);
 	rtcSetSceneFlags(IntelScene, scene_flags);
+
+	if (gCompilerMode.SaveObjectRcast)
+	{
+		SaveAsOBJ(static_geom, "raycast_model_opacue.obj");
+		SaveAsOBJ(static_geom, "raycast_model_transp.obj");
+	}
 
 	if (static_geom.faces_cnt() > 0)
 	{

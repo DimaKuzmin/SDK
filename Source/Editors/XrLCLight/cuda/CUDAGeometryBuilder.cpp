@@ -216,6 +216,26 @@ bool OptixGeometryBuilder::BuildTLAS(OptixDeviceContext context, OptixMeshBuffer
 struct FaceDataEmbree;
 size_t GetMemory();
 
+void SaveAsOBJ_New(OptixGeometryBuilder& Container, LPCSTR container_name)
+{
+    IWriter* W = FS.w_open("$level$", container_name);
+
+    string256 tmp;
+    // vertices
+    for (auto& V : Container.vertices) {
+        xr_sprintf(tmp, "v %f %f %f", V.x, V.y, -V.z);
+        W->w_string(tmp);
+    }
+    // transfer faces
+    for (auto& TRI : Container.triangles)
+    {
+        xr_sprintf(tmp, "f %d %d %d", TRI.verts[0] + 1, TRI.verts[1] + 1, TRI.verts[2] + 1);
+        W->w_string(tmp);
+    }
+    FS.w_close(W);
+}
+
+
 bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context, OptixMeshBuffers& outScene)
 {
     OptixGeometryBuilder geometryBuilder;
@@ -275,6 +295,11 @@ bool XRay::RayTrace::CUDA::BuildSceneFromLCGlobalData(OptixDeviceContext context
             F.bOpaque = !isTransparent;
             geometryBuilder.AddFace(&F, F.v1, F.v2, F.v3);
         }
+    }
+
+    if (gCompilerMode.SaveObjectRcast)
+    {
+        SaveAsOBJ_New(geometryBuilder, "raycast_model_cuda.obj");
     }
  
     size_t pVertex = geometryBuilder.RawFacesSize() * 3;
