@@ -84,8 +84,7 @@ private:
 			float		path_distance				(const u32 &game_vertex_id0, const u32 &game_vertex_id1);
 			void		generate_edges				(const u32 &vertex_id);
 			void		generate_edges				(const float &start, const float &amount);
-			void		connectivity_check			(const float &start, const float &amount);
-			void		create_tripples				(const float &start, const float &amount);
+ 			void		create_tripples				(const float &start, const float &amount);
 			void		process_tripple				(const TRIPPLE &tripple);
 			void		optimize_graph				(const float &start, const float &amount);
 			void		save_graph					(const float &start, const float &amount);

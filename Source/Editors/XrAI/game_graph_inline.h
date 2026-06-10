@@ -9,19 +9,23 @@
 #pragma once
 
 #ifdef AI_COMPILER
-IC CGameGraph::CGameGraph									(LPCSTR file_name, u32 current_version)
+IC CGameGraph::CGameGraph									(LPCSTR file_name)
 {
 	m_reader						= FS.r_open(file_name);
 	VERIFY							(m_reader);
 	m_header.load					(m_reader);
 	R_ASSERT2						(header().version() == XRAI_CURRENT_VERSION,"Graph version mismatch!");
+ 
 	m_nodes							= (CVertex*)m_reader->pointer();
 	m_current_level_some_vertex_id	= _GRAPH_ID(-1);
 	m_enabled.assign				(header().vertex_count(),true);
+	
 	u8								*temp = (u8*)(m_nodes + header().vertex_count());
 	temp							+= header().edge_count()*sizeof(CGameGraph::CEdge);
 	m_cross_tables					= (u32*)(((CLevelPoint*)temp) + header().death_point_count());
 	m_current_level_cross_table		= 0;
+
+	Msg("Loading CrossTable: %p", m_cross_tables);
 }
 #endif // AI_COMPILER
 

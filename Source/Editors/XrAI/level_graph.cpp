@@ -19,14 +19,14 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 {
 	string256					file_name;
 	strconcat					(sizeof(file_name), file_name, filename, LEVEL_GRAPH_NAME);
+
+
+	Msg("Open LevelAI: %s", file_name);
 	m_reader					= FS.r_open	(file_name);
 
 	// m_header & data
 	m_header					= (CHeader*) m_reader->pointer();
  	m_reader->advance			(sizeof(CHeader));
-
-
-	Msg("Loaded Vertices Removed");
  	
 	m_nodes = xr_alloc<CVertex>(m_header->vertex_count());
 	if (header().version() == 10)
@@ -83,8 +83,7 @@ CLevelGraph::CLevelGraph		(LPCSTR filename)
 CLevelGraph::~CLevelGraph		()
 {
 	FS.r_close(m_reader);
-
-	xr_free(m_nodes);
+ 	xr_free(m_nodes);
 }
 
 u32	CLevelGraph::vertex		(const Fvector &position) const

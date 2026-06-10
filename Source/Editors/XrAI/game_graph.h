@@ -47,7 +47,7 @@ private:
 
 public:
 #ifdef AI_COMPILER
-	IC 								CGameGraph				(LPCSTR file_name, u32 current_version = XRAI_CURRENT_VERSION);
+	IC 								CGameGraph				(LPCSTR file_name);
 #endif // AI_COMPILER
 
 public:

@@ -9,7 +9,6 @@
 #include "xr_graph_merge.h"
 #include "game_spawn_constructor.h"
 
-#include "xrCrossTable.h"
 #include "game_graph_builder.h"
 #include <mmsystem.h>
 #include "spawn_patcher.h"
@@ -33,12 +32,10 @@ void StartupAI	()
 	// Load project
 	for (auto& [Name, Selected] : gCompilerMode.Files)
 	{
-		if (!Selected)
-			continue;
+		if (!Selected)			continue;
 
 		string4096 name;
 		strcpy(name, Name.data());
-
 		if (xr_strlen(name))
 			xr_strcat(name, "\\");
 
@@ -72,38 +69,41 @@ void StartupAI	()
 
 	if (gCompilerMode.AI_BuildSpawn)
 	{
-		xr_string Levels;
-
-		for (auto& [Name, Selected] : gCompilerMode.Files)
+		if (gCompilerMode.AI_Spawn_By_Freemp || gCompilerMode.AI_Spawn_SingleLevel)
 		{
-			if (!Selected)
-				continue;
 
-			if (!Levels.empty())
-				Levels += ",";
+			for (auto& [Name, Selected] : gCompilerMode.Files)
+			{
+				if (!Selected) continue;
 
-			Levels += Name;
+				FS.get_path("$level$")->_set(Name.c_str());
+				gCompilerMode.set_level_name( Name.c_str() );
+
+				std::thread([&Name]
+					{
+					clear_temp_folder();
+					CGameSpawnConstructor(Name.c_str());
+				}).join();
+				
+			} 			
 		}
-
-		string512 name = {};
-		strcpy(name, Levels.data());
-		if (xr_strlen(name))
-			name[xr_strlen(name)] = 0;
-
-		xr_string output = gCompilerMode.AI_spawn_name;
- 		if (output.empty())
- 			output = "new";
+ 		else
+		{
+			xr_string Levels;
+			for (auto& [Name, Selected] : gCompilerMode.Files)
+			{
+				if (!Selected)	continue;
+ 				if (!Levels.empty()) Levels += ",";
+				Levels += Name;
+			}
  
-		char* start_level = gCompilerMode.AI_StartActor;
-		if (!xr_strlen(start_level))
-		{
-			start_level = nullptr;
+			std::thread([&Levels]
+				{
+					clear_temp_folder();
+					CGameSpawnConstructor(Levels.c_str());
+				});
+			// CGameSpawnConstructor(Levels.c_str());
 		}
-
-		clear_temp_folder();
-
-		clMsg("Processing : %s", name);
-		CGameSpawnConstructor* BuilderSpawn = new CGameSpawnConstructor(name, output.data(), start_level, gCompilerMode.AI_NoSeparatorCheck);
 	}
 
 } 

@@ -11,7 +11,8 @@
 #ifdef AI_COMPILER
 IC CGameLevelCrossTable::CGameLevelCrossTable(LPCSTR fName)
 {
-	m_tpCrossTableVFS	= FS.r_open(fName);
+	Msg("Crosstable : %s", fName);
+ 	m_tpCrossTableVFS	= FS.r_open(fName);
 	R_ASSERT2			(m_tpCrossTableVFS,"Can't open cross table!");
 	
 	IReader				*chunk = m_tpCrossTableVFS->open_chunk(CROSS_TABLE_CHUNK_VERSION);
@@ -27,8 +28,7 @@ IC CGameLevelCrossTable::CGameLevelCrossTable(LPCSTR fName)
 }
 #endif // AI_COMPILER
 
-IC CGameLevelCrossTable::CGameLevelCrossTable	(const void *buffer, const u32 &buffer_size) :
-	m_tpCrossTableVFS	(0)
+IC CGameLevelCrossTable::CGameLevelCrossTable	(const void *buffer, const u32 &buffer_size) : m_tpCrossTableVFS	(0)
 {
 	Memory.mem_copy		(&m_tCrossTableHeader,buffer,sizeof(m_tCrossTableHeader));
 	buffer				= (const u8*)buffer + sizeof(m_tCrossTableHeader);

@@ -155,9 +155,6 @@
     <Filter Include="ALife\search\graph_engine">
       <UniqueIdentifier>{8df6efa2-07e7-40f7-8e30-87af575b71f2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ALife\Cross">
-      <UniqueIdentifier>{8ef28111-3ed8-419e-a92e-12f15ed44042}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ALife\Graph">
       <UniqueIdentifier>{e33e9a89-81e4-461b-87c4-d835bbbd5395}</UniqueIdentifier>
     </Filter>
@@ -285,9 +282,6 @@
     </ClCompile>
     <ClCompile Include="level_graph_vertex.cpp">
       <Filter>ALife\search\graphs\level_graph</Filter>
-    </ClCompile>
-    <ClCompile Include="xrCrossTable.cpp">
-      <Filter>ALife\Cross</Filter>
     </ClCompile>
     <ClCompile Include="game_graph_builder.cpp">
       <Filter>ALife\Graph</Filter>
@@ -671,9 +665,6 @@
     </ClInclude>
     <ClInclude Include="graph_engine_space.h">
       <Filter>ALife\search\graph_engine</Filter>
-    </ClInclude>
-    <ClInclude Include="xrCrossTable.h">
-      <Filter>ALife\Cross</Filter>
     </ClInclude>
     <ClInclude Include="game_graph_builder.h">
       <Filter>ALife\Graph</Filter>

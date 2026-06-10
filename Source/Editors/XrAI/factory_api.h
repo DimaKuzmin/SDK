@@ -1,4 +1,5 @@
 #pragma once
+#include "../xrServerEntities/xrServer_Objects.h"
 
 extern "C" {
 	typedef __declspec(dllimport)  ISE_Abstract*	 __stdcall SEFactory_Create(LPCSTR section);

@@ -69,8 +69,8 @@ private:
 
 private:
 	IC		shared_str				actor_level_name		();
-	IC		shared_str				spawn_name				(LPCSTR output);
-			void					save_spawn				(LPCSTR name, LPCSTR output);
+	IC		shared_str				spawn_name				( );
+			void					save_spawn				(LPCSTR name);
 			void					verify_level_changers	();
 			void					verify_spawns			(ALife::_SPAWN_ID spawn_id);
 			void					verify_spawns			();
@@ -82,7 +82,7 @@ private:
 			void					process_actor			(LPCSTR start_level_name);
 
 public:
-									CGameSpawnConstructor	(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check);
+									CGameSpawnConstructor	(LPCSTR name);
 	virtual							~CGameSpawnConstructor	();
 			void					add_story_object		(ALife::_STORY_ID id,CSE_ALifeDynamicObject *object, LPCSTR level_name);
 			void					add_object				(CSE_Abstract *object);

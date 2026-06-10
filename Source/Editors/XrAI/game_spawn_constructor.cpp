@@ -19,17 +19,12 @@
 extern LPCSTR GAME_CONFIG;
 extern LPCSTR generate_temp_file_name			(LPCSTR header0, LPCSTR header1, string_path& buffer);
 
-#define NO_MULTITHREADING
-
-CGameSpawnConstructor::CGameSpawnConstructor	(LPCSTR name, LPCSTR output, LPCSTR start, bool no_separator_check)
-#ifdef PROFILE_CRITICAL_SECTIONS
-	:m_critical_section(MUTEX_PROFILE_ID(CGameSpawnConstructor))
-#endif // PROFILE_CRITICAL_SECTIONS
+CGameSpawnConstructor::CGameSpawnConstructor	(LPCSTR name)
 {
-  	load_spawns						(name,no_separator_check);
+  	load_spawns						(name, gCompilerMode.AI_NoSeparatorCheck);
  	process_spawns					();
- 	process_actor					(start);
- 	save_spawn						(name,output);
+ 	process_actor					("");
+ 	save_spawn						(name);
 }
 
 CGameSpawnConstructor::~CGameSpawnConstructor	()
@@ -88,8 +83,10 @@ void CGameSpawnConstructor::load_spawns	(LPCSTR name, bool no_separator_check)
 	);
 
  	// init game graph
-	generate_temp_file_name				("game_graph","",m_game_graph_id);
-	xrMergeGraphs						(m_game_graph_id,name,false);
+	generate_temp_file_name				("game_graph", "", m_game_graph_id);
+
+	Msg("$ Initialize GameGraph: %s", m_game_graph_id);
+	xrMergeGraphs						(m_game_graph_id, name, false);
 	m_game_graph						= xr_new<CGameGraph>(m_game_graph_id);
  
  	// load levels
@@ -120,13 +117,6 @@ void CGameSpawnConstructor::process_spawns	()
 		(*I)->Execute();
 		Msg("Level: %s, TimeSpawn: %u", (*I)->level().m_name.c_str(), t.GetElapsed_ticks());
 	}
-
-
-#ifdef NO_MULTITHREADING
-#else
-		m_thread_manager.start			(*I);
-		m_thread_manager.wait				();
-#endif
 
 	I									= m_level_spawns.begin();
 	for ( ; I != E; ++I)
@@ -175,7 +165,7 @@ void CGameSpawnConstructor::verify_level_changers	()
 
 extern u32 XRAI_LOADED_VERSION;
 
-void CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
+void CGameSpawnConstructor::save_spawn				(LPCSTR name)
 {
 	CMemoryWriter					stream;
 
@@ -211,20 +201,28 @@ void CGameSpawnConstructor::save_spawn				(LPCSTR name, LPCSTR output)
 	m_game_graph->save				(stream);
 	stream.close_chunk				();
 
-	stream.save_to					(*spawn_name(output));
+	stream.save_to					(*spawn_name());
 }
 
-shared_str CGameSpawnConstructor::spawn_name	(LPCSTR output)
+shared_str CGameSpawnConstructor::spawn_name	( )
 {
 	string_path					file_name;
-	if (!output)
-		FS.update_path			(file_name,"$game_spawn$",*actor_level_name());
-	else {
-		actor_level_name		();
-		string_path				out;
-		strconcat				(sizeof(out),out,output,".spawn");
+	
+	if (gCompilerMode.AI_Spawn_SingleLevel)
+	{
+ 		string_path				out;
+		strconcat				(sizeof(out), out, gCompilerMode.get_level_name(), ".spawn");
 		FS.update_path			(file_name,"$game_spawn$",out);
 	}
+	else if (gCompilerMode.AI_Spawn_By_Freemp)
+	{
+		FS.update_path(file_name, "$level$", "alife.spawn");
+	}
+	else
+	{
+  		FS.update_path(file_name, "$game_spawn$", "all.spawn");
+	}
+
 	return						(file_name);
 }
 
@@ -273,8 +271,7 @@ void CGameSpawnConstructor::process_actor			(LPCSTR start_level_name)
 
 	R_ASSERT2						(m_actor,"There is no ACTOR spawn point!");
 
-	if (!start_level_name)
-		return;
+	if (!start_level_name)		return;
 
 	if (!xr_strcmp(*actor_level_name(),start_level_name))
 		return;

@@ -19,11 +19,11 @@ void SDL_Application();
 
 #define AI_COMPILER
 
-#include "../Editors/XrAI/xr_graph_merge.h"
-#include "../Editors/XrAI/game_spawn_constructor.h"
-#include "../Editors/XrAI/xrCrossTable.h"
-#include "../Editors/XrAI/game_graph_builder.h"
-#include "../Editors/XrAI/spawn_patcher.h"
+// #include "../Editors/XrAI/xr_graph_merge.h"
+// #include "../Editors/XrAI/game_spawn_constructor.h"
+//  
+// #include "../Editors/XrAI/game_graph_builder.h"
+// #include "../Editors/XrAI/spawn_patcher.h"
 
 #include "../Editors/XrAI/factory_api.h"
   

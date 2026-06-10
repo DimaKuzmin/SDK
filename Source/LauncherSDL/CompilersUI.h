@@ -82,8 +82,10 @@ struct CompilersMode
 	// SPAWN COMPILER
 	bool AI_BuildSpawn			= false;
 	bool AI_Map_NoLimits		= false;	
- 	char AI_spawn_name[256];
-	char AI_StartActor[256];
+
+	bool AI_Spawn_SingleLevel   = false;
+	bool AI_Spawn_By_Freemp     = false;
+ 
 	bool AI_NoSeparatorCheck = true;
 
 	bool AI_BuildLevel = false;
