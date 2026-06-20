@@ -118,12 +118,10 @@
     <ClCompile Include="compiler_build.cpp" />
     <ClCompile Include="compiler_cover.cpp" />
     <ClCompile Include="compiler_covers_helpers.cpp" />
-    <ClCompile Include="compiler_display.cpp" />
     <ClCompile Include="compiler_load.cpp" />
     <ClCompile Include="compiler_load_sdk.cpp" />
     <ClCompile Include="compiler_save.cpp">
     </ClCompile>
-    <ClCompile Include="compiler_smooth.cpp" />
     <ClCompile Include="EmbreeRayTracing.cpp" />
     <ClCompile Include="game_graph_builder.cpp" />
     <ClCompile Include="game_spawn_constructor.cpp" />
@@ -216,7 +214,7 @@
     <ClInclude Include="cl_intersect.h" />
     <ClInclude Include="communicate.h" />
     <ClInclude Include="compiler.h" />
-    <ClInclude Include="compiler_cover_helpers.h" />
+    <ClInclude Include="compiler_covers_helpers.h" />
     <ClInclude Include="cover_point.h" />
     <ClInclude Include="cover_point_inline.h" />
     <ClInclude Include="data_storage_binary_heap.h" />

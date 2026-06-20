@@ -8,9 +8,9 @@
 #include "Etextureparams.h"
 
 // base patch used all the time up to merging
-const u32 InvalidNode		= (1<<31)-1;
-const u32 UnkonnectedNode	= 0xfffffff0;
-const WORD	InvalidSector	= 0xff;
+constexpr u32    InvalidNode		= 0xffffffff;
+constexpr u32    UnkonnectedNode	= 0xfffffff0;
+constexpr WORD	 InvalidSector		= 0xff;
 
 struct vertex					// definition of "patch" or "node"
 {
@@ -90,9 +90,7 @@ extern	Lights				g_lights;
 extern	SAIParams			g_params;
 extern	CDB::MODEL			Level;
 extern	CDB::COLLIDER		XRC;
-
 extern	Fbox				LevelBB;
-//extern	Vectors				Emitters;
 
 struct b_BuildTexture : public b_texture
 {
@@ -129,16 +127,11 @@ extern xr_vector<FaceDataEmbree>	g_embree_faces;
 
 // phases
 void	xrLoad			(LPCSTR name, bool draft_mode);
-//void	xrBuildNodes	();
-void	xrSmoothNodes	();
-void	xrLight			();
 void	xrCover			(bool pure_covers);
-void	xrMerge			();
-void	xrConvertAndLink();
 void	xrDisplay		();
-//void	xrPalettizeCovers();
 void	xrSaveNodes		(LPCSTR name, LPCSTR out_name);
 
+// errors manager 
 void xrADD_ERRORED_NODE(int pxz);
 
 // constants

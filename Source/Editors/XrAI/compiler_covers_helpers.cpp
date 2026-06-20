@@ -1,13 +1,13 @@
 #include "StdAfx.h"
 #include "compiler.h"
-#include "compiler_cover_helpers.h"
+#include "compiler_covers_helpers.h"
 
 #include "quadtree.h"
 #include "object_broker.h"
 #include "cover_point.h"
 
 typedef CQuadTree<CCoverPoint>	CPointQuadTree;
-static CPointQuadTree* g_covers = 0;
+static CPointQuadTree*				g_covers = 0;
 extern xr_vector<bool>				g_cover_nodes;
 
 extern float	CalculateHeight(Fbox& BB);

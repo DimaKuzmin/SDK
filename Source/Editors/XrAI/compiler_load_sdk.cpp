@@ -49,7 +49,7 @@ void compiler_load_sdk_nodes(LPCSTR name)
 		R_ASSERT2(F, file_name);
 
 		R_ASSERT(F->open_chunk(E_AIMAP_CHUNK_VERSION));
-		R_ASSERT(F->r_u16() == E_AIMAP_VERSION);
+		R_ASSERT(F->r_u16() <= E_AIMAP_VERSION);
 
 		R_ASSERT(F->open_chunk(E_AIMAP_CHUNK_BOX));
 		F->r(&LevelBB, sizeof(LevelBB));

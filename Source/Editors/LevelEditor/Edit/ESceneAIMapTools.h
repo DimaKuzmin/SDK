@@ -12,9 +12,7 @@
 class ESceneAIMapTool;
 struct SAINode;
 
-// const u32 InvalidNode		= u32 ( (1 << 32) - 1);
-// const u32 InvalidNode_32bit = u32 ( (1 << 23) - 1);
-const u32 InvalidNode_64bit = u32 ( (1 << 31) - 1);
+const u32 InvalidNode_64bit     = 0xffffffff;
 
 #pragma pack(push,1)
 struct SAINode					// definition of "patch" or "node"

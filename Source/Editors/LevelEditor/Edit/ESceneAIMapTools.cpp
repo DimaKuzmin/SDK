@@ -280,12 +280,6 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
 	u16 version = 0;
 
     R_ASSERT(F.r_chunk(AIMAP_CHUNK_VERSION,&version));
-    if( version!=AIMAP_VERSION )
-    {
-       // ELog.DlgMsg( mtError, "AIMap: Unsupported version.");
-       // return false;
-    }
-
     ai_version = version;
 
     R_ASSERT(F.find_chunk(AIMAP_CHUNK_FLAGS));
@@ -311,17 +305,13 @@ bool ESceneAIMapTool::LoadStream(IReader& F)
     	(*it)->LoadStream	(F,this);
     }
 
-
-    int InvalidNode_32bit = u32(1 << 23) - 1;
-    u32 ch_node = version > 0x0002 ? InvalidNode_64bit : InvalidNode_32bit;
- 
     ids = 0;
     for (auto it = vec.begin(); it != vec.end(); it++, ids++)
     {
-        (*it)->n1 = ((u32)(*it)->n1 >= ch_node) ? 0 : vec[(u32)(*it)->n1];
-        (*it)->n2 = ((u32)(*it)->n2 >= ch_node) ? 0 : vec[(u32)(*it)->n2];
-        (*it)->n3 = ((u32)(*it)->n3 >= ch_node) ? 0 : vec[(u32)(*it)->n3];
-        (*it)->n4 = ((u32)(*it)->n4 >= ch_node) ? 0 : vec[(u32)(*it)->n4];
+        (*it)->n1 = ((u32)(*it)->n1 >= size) ? 0 : vec[(u32)(*it)->n1];
+        (*it)->n2 = ((u32)(*it)->n2 >= size) ? 0 : vec[(u32)(*it)->n2];
+        (*it)->n3 = ((u32)(*it)->n3 >= size) ? 0 : vec[(u32)(*it)->n3];
+        (*it)->n4 = ((u32)(*it)->n4 >= size) ? 0 : vec[(u32)(*it)->n4];
     }   
 
     for (auto node : vec)

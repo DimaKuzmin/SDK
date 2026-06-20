@@ -250,12 +250,6 @@
     <ClCompile Include="compiler_build.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
-    <ClCompile Include="compiler_display.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
-    <ClCompile Include="compiler_smooth.cpp">
-      <Filter>Compiler</Filter>
-    </ClCompile>
     <ClCompile Include="motion_simulator.cpp">
       <Filter>Compiler</Filter>
     </ClCompile>
@@ -906,7 +900,7 @@
     <ClInclude Include="EmbreeRayTracing.h">
       <Filter>Compiler\ai_map_new</Filter>
     </ClInclude>
-    <ClInclude Include="compiler_cover_helpers.h">
+    <ClInclude Include="compiler_covers_helpers.h">
       <Filter>Compiler\ai_map_new</Filter>
     </ClInclude>
   </ItemGroup>

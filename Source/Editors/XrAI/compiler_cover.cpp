@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "compiler.h"
-#include "compiler_cover_helpers.h"
+#include "compiler_covers_helpers.h"
 
 #include "cl_intersect.h"
 #include "quadtree.h"

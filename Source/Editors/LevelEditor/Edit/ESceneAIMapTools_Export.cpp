@@ -5,7 +5,6 @@
 #include "ESceneAIMapTools.h"
 
 // SDK FIX
-  
 void ESceneAIMapTool::UnpackPosition(Fvector& Pdest, const SNodePositionOld& Psrc, Fbox& bb, SAIParams& params)
 {
     Pdest.x = float(Psrc.x)*params.fPatchSize;
@@ -30,13 +29,13 @@ void ESceneAIMapTool::PackPosition(SNodePositionOld& Dest, Fvector& Src, Fbox& b
 
 bool ESceneAIMapTool::Export(LPCSTR path)
 {
-//.?	if (!RealUpdateSnapList()) return false;
-	if (!Valid()) return false;
+ 	if (!Valid()) return false;
 
     // calculate bbox
     Fbox bb;		CalculateNodesBBox(bb);
 
     xr_string fn	= xr_string(path)+"build.aimap";
+
 
     // export
     IWriter* F		= FS.w_open(fn.c_str());
