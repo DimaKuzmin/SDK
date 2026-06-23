@@ -121,27 +121,69 @@ bool ConvertOgf(u32 MODEL_ID, xr_vector<Face*>* faces , Face* F, b_material* M, 
 
 		// Collect faces & vertices
 		F->CacheOpacity();
+		
 		bool	_tc_ = !(F->flags.bOpaque);
 		try 
 		{
 			BuildOGFGeom(*pOGF, *faces, _tc_);
 		}
-		catch (...) { clMsg("* ERROR: Flex2OGF, model# %d, *faces*", MODEL_ID); }
+		catch (...)
+		{ 
+			clMsg("* ERROR: Flex2OGF, model# %d, faces[%u]", MODEL_ID, faces->size());
+		}
 	}
 	catch (...)
 	{
-		clMsg("* ERROR: Flex2OGF, 1st part, model# %d", MODEL_ID);
+		clMsg("* ERROR: Flex2OGF, 1st part, model# %d | faces: %u", MODEL_ID, faces->size());
 	}
 
-	if (! pOGF->data.vertices.size())
- 		return false;
+	bool anyErrors = false;
+	try {
+		pOGF->Optimize();
+ 	}
+	catch (...)
+	{
+		clMsg("* pOGF [%d] | Error Optimize | faces: %u | Box min{%f, %f, %f} max{%f, %f, %f}", 
+			MODEL_ID, faces->size(), pOGF, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+		anyErrors = true;
+	}
 
-	pOGF->Optimize();							
- 	pOGF->CalcBounds();							
-    pOGF->MakeProgressive(c_PM_MetricLimit_static);
-  	pOGF->Stripify();							
+	try
+	{
+		pOGF->CalcBounds();
+	}
+	catch (...)
+	{
+		clMsg("* pOGF [%d] | Error CalculateBounds | faces: %u | Box min{%f, %f, %f} max{%f, %f, %f}",
+			MODEL_ID, faces->size(), pOGF, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+		anyErrors = true;
+	}
+	
+	try
+	{
+ 		pOGF->MakeProgressive(c_PM_MetricLimit_static);
+	
+	}
+	catch (...)
+	{
+		clMsg("* pOGF [%d] | Error MakeProgressive | faces: %u | Box min{%f, %f, %f} max{%f, %f, %f}",
+			MODEL_ID, faces->size(), pOGF, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+		anyErrors = true;  		 
+	}
 
-	return true;
+	try
+	{
+		pOGF->Stripify();
+	}
+	catch (...)
+	{
+		clMsg("* pOGF [%d] | Error Striptify | faces: %u | Box min{%f, %f, %f} max{%f, %f, %f}",
+			MODEL_ID, faces->size(), pOGF, VPUSH(pOGF->bbox.min), VPUSH(pOGF->bbox.max));
+		anyErrors = true;
+	}
+
+ 
+	return !anyErrors;
 };
  
 

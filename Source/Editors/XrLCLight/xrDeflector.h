@@ -63,27 +63,37 @@ public:
 		dest.modify		(TC.uv[1]);
 		dest.modify		(TC.uv[2]);
 	}
+
 	void	Bounds_Summary		(Fbox2& bounds)
 	{
 		bounds.invalidate();
 		for (u32 I=0; I<UVpolys.size(); I++)
 		{
 			Fbox2	B;
-			Bounds	(I,B);
+			Bounds	(I, B);
 			bounds.merge(B);
 		}
 
-		if (bounds.min.x == bounds.max.x)
+		if (bounds.min.x == bounds.max.x || bounds.min.y == bounds.max.y)
 		{
 			Msg("! Deflector bounds min[%f][%f] max[%f][%f]",
 				bounds.min.x, bounds.max.y,
 				bounds.max.x, bounds.max.y
 			);
+
+			for (auto F : UVpolys)
+			{
+				Fvector C;
+				F.owner->CalcCenter(C);
+				Msg("! Face Pos error {%f, %f, %f}", VPUSH(C) );
+			}
+
 		}
 
 		R_ASSERT(bounds.min.x != bounds.max.x);
 		R_ASSERT(bounds.min.y != bounds.max.y);
 	}
+
 	void	RemapUV				(xr_vector<UVtri>& dest, u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
 	void	RemapUV				(u32 base_u, u32 base_v, u32 size_u, u32 size_v, u32 lm_u, u32 lm_v, BOOL bRotate);
 	  	

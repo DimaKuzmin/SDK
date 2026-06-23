@@ -101,7 +101,7 @@ void StartupAI	()
 				{
 					clear_temp_folder();
 					CGameSpawnConstructor(Levels.c_str());
-				});
+				}).join();
 			// CGameSpawnConstructor(Levels.c_str());
 		}
 	}
